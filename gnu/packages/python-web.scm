@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,14 +90,13 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.6.2")
+    (version "3.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32
-         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
+        (base32 "0i9n7h8n06m2d8ryqyk4fv1si1m44ibq7blbfaxq46vx7jydg339"))
        (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
     (build-system python-build-system)
     (arguments
@@ -221,6 +221,60 @@ The package includes a module with full coverage of JSON RPC versions 1.0 and
 2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
 comes with a SOCKS proxy client.")
     (license (list license:expat license:bsd-2))))
+
+(define-public python-asgiref
+  (package
+    (name "python-asgiref")
+    (version "3.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "asgiref" version))
+              (sha256
+               (base32
+                "06kg3hnnvh7qg0w9amkvk1hd6n6bs055r04b7if6ipa7w4g92lby"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (home-page "https://github.com/django/asgiref/")
+    (synopsis "ASGI specs, helper code, and adapters")
+    (description
+     "ASGI is a standard for Python asynchronous web apps and servers to
+communicate with each other, and positioned as an asynchronous successor to
+WSGI.  This package includes libraries for implementing ASGI servers.")
+    (license license:bsd-3)))
+
+(define-public python-css-html-js-minify
+  (package
+    (name "python-css-html-js-minify")
+    (version "2.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "css-html-js-minify" version ".zip"))
+              (sha256
+               (base32
+                "0v3l2dqdk2y4r6ax259gs4ij1zzm9yxg6491s6254vs9w3vi37sa"))))
+    (build-system python-build-system)
+    ;; XXX: The git repository has no tags, and the PyPI releases do not
+    ;; contain tests.
+    (arguments '(#:tests? #f))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://github.com/juancarlospaco/css-html-js-minify")
+    (synopsis "CSS/HTML/JS minifier")
+    (description
+     "This package provides a single-file minifier for CSS, HTML, and JavaScript.")
+    ;; XXX: The README just says "GNU GPL and GNU LGPL and MIT".  From
+    ;; <https://github.com/juancarlospaco/css-html-js-minify/issues/9> it
+    ;; looks like the user can choose a license.
+    (license (list license:gpl3+ license:lgpl3+ license:expat))))
 
 (define-public python-falcon
   (package
@@ -675,9 +729,9 @@ both of which are installed automatically if you install this library.")
     (home-page
       "https://github.com/html5lib/html5lib-python")
     (synopsis
-      "Python HTML parser based on the WHATWG HTML specifcation")
+      "Python HTML parser based on the WHATWG HTML specification")
     (description
-      "Html5lib is an HTML parser based on the WHATWG HTML specifcation
+      "Html5lib is an HTML parser based on the WHATWG HTML specification
 and written in Python.")
     (license license:expat)))
 
@@ -817,14 +871,14 @@ is Python’s.")
 (define-public python-openid
   (package
     (name "python-openid")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python3-openid" version))
        (sha256
         (base32
-         "00l5hrjh19740w00b3fnsqldnla41wbr2rics09dl4kyd1fkd3b2"))))
+         "1bxf9a3ny1js422j962zfzl4a9dhj192pvai05whn7j0iy9gdyrk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1879,16 +1933,71 @@ WebSocket usage in Python programs.")
       "Purl is a Python package for handling URLs.")
     (license license:expat)))
 
+(define-public python-apiron
+  (package
+    (name "python-apiron")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "apiron" version))
+       (sha256
+        (base32 "1qwbqn47sf0aqznj1snbv37v8ijx476qqkjf5l9pac7xjkxsr8qk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "--cov" "-k"
+                     ;; This test tries to connect to the internet.
+                     "not test_call"))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/ithaka/apiron")
+    (synopsis "Python wrapper for interacting with RESTful APIs")
+    (description
+     "@code{apiron} provides a declarative, structured configuration of
+services and endpoints with a unified interface for interacting with RESTful
+APIs.")
+    (license license:expat)))
+
+(define-public python-beren
+  (package
+    (name "python-beren")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beren" version))
+       (sha256
+        (base32 "1v3mdwfqsyza892zvs124ym9w1bkng1j56b7l4dwfjir3723xcgf"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The test tries to open a connection to a remote server.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-apiron" ,python-apiron)))
+    (home-page "https://github.com/teffalump/beren")
+    (synopsis "REST client for Orthanc DICOM servers")
+    (description
+     "@code{beren} provides a REST client for Orthanc, a DICOM server.")
+    (license license:gpl3+)))
+
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.23.0")
+    (version "2.24.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1rhpg0jb08v0gd7f19jjiwlcdnxpmqi1fhvw7r4s9avddi4kvx5k"))))
+               "06r3017hz0hzxv42gpg73l8xvdjbzw7q904ljvp36b5p3l9rlmdk"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -2029,16 +2138,38 @@ with python-requests.")
      `(;; FIXME: Some tests require network access.
        #:tests? #f))))
 
+(define-public python-requests-ftp
+  (package
+    (name "python-requests-ftp")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-ftp" version))
+       (sha256
+        (base32
+         "0yh5v21v36dsjsgv4y9dx4mmz35741l5jf6pbq9w19d8rfsww13m"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/Lukasa/requests-ftp")
+    (synopsis "FTP Transport Adapter for Requests")
+    (description
+     "Requests-FTP is an implementation of a simple FTP transport
+adapter for use with the Requests library.")
+    (license license:asl2.0)))
+
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
-    (version "3.0.1")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "oauthlib" version))
               (sha256
                (base32
-                "163jg4a8f7c5ki655grrr47kgljy12wri3qly7ijf64sk1fjrqqc"))))
+                "12gqnabwck30gdlpwm6af3s28qm9p2yc7b1w8s4fk9ncbz1irr5y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2113,7 +2244,6 @@ authenticated session objects providing things like keep-alive.")
        ("python-certifi" ,python-certifi)
        ("python-cryptography" ,python-cryptography)
        ("python-idna" ,python-idna)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-pysocks" ,python-pysocks)))
     (home-page "https://urllib3.readthedocs.io/")
@@ -2122,6 +2252,7 @@ authenticated session objects providing things like keep-alive.")
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
 can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
+    (properties `((python2-variant . ,(delay python2-urllib3))))
     (license license:expat)))
 
 ;; Some software requires an older version of urllib3, notably Docker.
@@ -2137,7 +2268,12 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 
 (define-public python2-urllib3
-  (package-with-python2 python-urllib3))
+  (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
+    (package/inherit
+     base
+     (propagated-inputs
+      `(("python-ipaddress" ,python2-ipaddress)
+        ,@(package-propagated-inputs base))))))
 
 (define-public awscli
   (package
@@ -2211,13 +2347,13 @@ and to spawn subprocesses to handle requests.")
 (define-public python-pastedeploy
   (package
     (name "python-pastedeploy")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PasteDeploy" version))
        (sha256
-        (base32 "16qsq5y6mryslmbp5pn35x4z8z3ndp5rpgl42h226879nrw9hmg7"))))
+        (base32 "05s88qdjdwd9d9qs13fap7nqgxs7qs5qfzzjbrc5va13k2mxdskd"))))
     (build-system python-build-system)
     (arguments
      '(#:test-target "pytest"))
@@ -3041,15 +3177,29 @@ for Flask.")
 (define-public python-webassets
   (package
     (name "python-webassets")
-    (version "0.12.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "webassets" version))
        (sha256
         (base32
-         "1nrqkpb7z46h2b77xafxihqv3322cwqv6293ngaky4j3ff4cing7"))))
+         "1kc1042jydgk54xpgcp0r1ib4gys91nhy285jzfcxj3pfqrk4w8n"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-some-tests
+                    (lambda _
+                      ;; This test requires 'postcss' and 'babel' which are
+                      ;; not yet available in Guix.
+                      (delete-file "tests/test_filters.py")
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-mock" ,python-mock)
@@ -3255,14 +3405,14 @@ authentication for Flask routes.")
 (define-public python-uritemplate
   (package
     (name "python-uritemplate")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "uritemplate" version))
        (sha256
         (base32
-         "0781gm9g34wa0asc19dx81ng0nqq07igzv3bbvdqmz13pv7469n0"))))
+         "1bkwmgr0ia9gcn4bszs2xlvml79f0bi2s4a87xg22ky9rq8avy2s"))))
     (build-system python-build-system)
     (home-page "https://uritemplate.readthedocs.org")
     (synopsis "Library to deal with URI Templates")
@@ -3972,7 +4122,7 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
              #t)))))
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
-       ("python-aiohttp", python-aiohttp)
+       ("python-aiohttp" ,python-aiohttp)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)
@@ -4310,7 +4460,7 @@ and serve updated contents upon changes to the directory.")
 (define-public python-httpcore
   (package
     (name "python-httpcore")
-    (version "0.10.2")
+    (version "0.11.0")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4320,7 +4470,7 @@ and serve updated contents upon changes to the directory.")
              (commit  version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00gn8nfv814rg6fj7xv97mrra3fvx6fzjcgx9y051ihm6hxljdsi"))))
+        (base32 "01bhajcxqgkdzg7b7x0fqs2lwcfsajlgqwi1nlxx58jss7g2kxn9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4385,7 +4535,7 @@ Some things HTTP Core does do:
 (define-public python-httpx
   (package
     (name "python-httpx")
-    (version "0.14.3")
+    (version "0.15.4")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4395,7 +4545,7 @@ Some things HTTP Core does do:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mn8gqkgaij3s2pbwgrih20iq34f3f82dfvypaw3nnh7n63vna43"))))
+        (base32 "1qr91xw6jxynvihmw953bi5446ssm9ffmb2c4nhfa77v7883sp21"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4403,8 +4553,16 @@ Some things HTTP Core does do:
          (replace 'check
            (lambda _
              (invoke "pytest" "-vv" "-k"
-                     ;; This test tries to open an outgoing connection.
-                     "not test_connect_timeout[asyncio]"))))))
+                     ;; These tests try to open an outgoing connection.
+                     (string-append
+                      "not test_connect_timeout"
+                      " and not test_that_send_cause_async_client_to_be_not_"
+                      "closed"
+                      " and not test_that_async_client_caused_warning_when_"
+                      "being_deleted"
+                      " and not test_that_send_cause_client_to_be_not_closed"
+                      " and not test_async_proxy_close"
+                      " and not test_sync_proxy_close")))))))
     (native-inputs
      `(("python-autoflake" ,python-autoflake)
        ("python-black" ,python-black)
@@ -4430,7 +4588,7 @@ Some things HTTP Core does do:
        ("python-idna" ,python-idna)
        ("python-rfc3986" ,python-rfc3986)
        ("python-sniffio" ,python-sniffio)))
-    (home-page "https://github.com/encode/httpx")
+    (home-page "https://www.python-httpx.org/")
     (synopsis "HTTP client for Python")
     (description
      "HTTPX is a fully featured HTTP client for Python 3, which provides sync
@@ -4577,7 +4735,7 @@ major web browsers.")
        ("python-pytest-cov" ,python-pytest-cov)))
     (arguments '(#:test-target "pytest"))
     (home-page "https://docs.pylonsproject.org/projects/venusian")
-    (synopsis "Library for defering decorator actions")
+    (synopsis "Library for deferring decorator actions")
     (description
      "Venusian is a library which allows framework authors to defer decorator
 actions.  Instead of taking actions when a function (or class) decorator is

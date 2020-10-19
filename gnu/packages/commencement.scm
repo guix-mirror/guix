@@ -381,7 +381,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     (inputs '())
     (propagated-inputs '())
     (native-inputs
-     `(("nyacc-source" ,(origin (inherit (package-source nyacc))
+     `(("nyacc-source" ,(origin (inherit (package-source nyacc-0.99))
                                 (snippet #f)))
        ("mes" ,%bootstrap-mes-rewired)
        ("mescc-tools" ,%bootstrap-mescc-tools)
@@ -477,7 +477,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     (propagated-inputs '())
     (native-inputs
      `(("mes" ,mes-boot)
-       ("nyacc-source" ,(origin (inherit (package-source nyacc))
+       ("nyacc-source" ,(origin (inherit (package-source nyacc-0.99))
                                 (snippet #f)))
        ("mescc-tools" ,%bootstrap-mescc-tools)
        ,@(%boot-gash-inputs)))
@@ -3842,8 +3842,12 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                                                      "libc-static")))
                        #t))))
 
-      (native-search-paths (package-native-search-paths gcc))
-      (search-paths (package-search-paths gcc))
+      (native-search-paths
+       (append (package-native-search-paths gcc)
+               (package-native-search-paths libc))) ;GUIX_LOCPATH
+      (search-paths
+       (append (package-search-paths gcc)
+               (package-search-paths libc)))
 
       (license (package-license gcc))
       (synopsis "Complete GCC tool chain for C/C++ development")

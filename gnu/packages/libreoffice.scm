@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2018, 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
@@ -42,6 +42,7 @@
   #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -712,14 +713,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.15")
+    (version "0.3.16")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libmwaw/libmwaw/libmwaw-"
                           version "/libmwaw-" version ".tar.xz"))
-      (sha256 (base32
-               "1cdhm9yhanyv3w4vr73zhgyynmkhhkp3dyld7m11jd2yy04vnh04"))))
+      (sha256
+       (base32 "0s0qvrmxzs8wv4304p7zx9mrasglyaszafqrfmaxwyr9lpdrwqqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -739,14 +740,14 @@ spreadsheet documents.")
 (define-public libstaroffice
   (package
     (name "libstaroffice")
-    (version "0.0.6")
+    (version "0.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
                            version "/libstaroffice-" version ".tar.xz"))
        (sha256 (base32
-                "1i0ykl0c94lc1qzb5mbyf9jr7qw8p38ja424whmhgrllh7ny203b"))))
+                "1ny8411273k2bq7mnpmcvri3rd46b2j67wfypqkp3y8nhanv0kzr"))))
     (build-system gnu-build-system)
     (inputs
      `(("librevenge" ,librevenge)
@@ -970,6 +971,41 @@ library.")
     (home-page "https://sjp.pl/slownik/ort/")
     (license
      (list license:gpl2 license:mpl1.1 license:cc-by4.0 license:lgpl2.1 license:asl2.0))))
+
+(define-public hunspell-dict-de
+  (package
+    (name "hunspell-dict-de")
+    (version "20161207")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.j3e.de/ispell/igerman98/dict/"
+                           "igerman98-" version ".tar.bz2"))
+       (sha256
+        (base32 "1a3055hp2bc4q4nlg3gmg0147p3a1zlfnc65xiv2v9pyql1nya8p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("hunspell/de_DE.dic")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/hunspell/")))
+               (install-file "hunspell/de_DE.aff" share)
+               (install-file "hunspell/de_DE.dic" share)
+               #t))))
+       #:tests? #f))        ; no tests
+    (native-inputs
+     `(("hunspell" ,hunspell)
+       ("ispell" ,ispell)
+       ("perl" ,perl)))
+    (synopsis "Hunspell dictionary for German (de_DE)")
+    (description "This package provides a dictionary for the Hunspell
+spell-checking library.")
+    (home-page "https://www.j3e.de/ispell/igerman98/")
+    (license (list license:gpl2 license:gpl3))))
 
 (define-public hyphen
   (package

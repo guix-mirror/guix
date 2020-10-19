@@ -321,7 +321,7 @@ you to figure out what is going on in that merge you keep avoiding.")
 (define-public patchwork
   (package
     (name "patchwork")
-    (version "2.1.5")
+    (version "2.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -330,7 +330,7 @@ you to figure out what is going on in that merge you keep avoiding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n4hfwlgmw6mj5kp261zfx47mgb0l7g2yzl1rf0rnm8x69lr3as6"))))
+                "1cr3lhm589zhvcgfm8gni036866k2livq1rcxbnigjxlw9p5znaf"))))
     (build-system python-build-system)
     (arguments
      `(;; TODO: Tests require a running database
@@ -396,22 +396,9 @@ application = get_wsgi_application()\n") port)))))
                            (install-file file (string-append out "/bin")))
                          (list
                           (string-append out-site-packages
-                                         "patchwork/bin/pwclient")
-                          (string-append out-site-packages
                                          "patchwork/bin/parsemail.sh")
                           (string-append out-site-packages
                                          "patchwork/bin/parsemail-batch.sh")))
-
-               ;; Delete the symlink to pwclient, and replace it with the
-               ;; actual file, as this can cause issues when serving the file
-               ;; from a webserver.
-               (let ((template-pwclient (string-append
-                                         out-site-packages
-                                         "patchwork/templates/patchwork/pwclient")))
-                 (delete-file template-pwclient)
-                 (copy-file (string-append out-site-packages
-                                           "patchwork/bin/pwclient")
-                            template-pwclient))
 
                ;; Collect the static assets, this includes JavaScript, CSS and
                ;; fonts. This is a standard Django process when running a
@@ -467,7 +454,7 @@ if __name__ == \"__main__\":
     (inputs
      `(("python-wrapper" ,python-wrapper)))
     (propagated-inputs
-     `(("python-django" ,python-django)
+     `(("python-django" ,python-django-2.2)
        ;; TODO: Make this configurable
        ("python-psycopg2" ,python-psycopg2)
        ("python-mysqlclient" ,python-mysqlclient)

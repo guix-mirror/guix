@@ -86,14 +86,14 @@ periodic timestamps for seeking.")
 (define libvorbis
   (package
    (name "libvorbis")
-   (version "1.3.6")
+   (version "1.3.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://downloads.xiph.org/releases/vorbis/"
                                 "libvorbis-" version ".tar.xz"))
             (sha256
              (base32
-              "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
+              "0jwmf87x5sdis64rbv0l87mdpah1rbilkkxszipbzg128f9w8g5k"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
    (arguments `(#:configure-flags '("LDFLAGS=-lm"
@@ -494,7 +494,7 @@ things in between.")
 (define-public libshout
   (package
     (name "libshout")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -502,7 +502,7 @@ things in between.")
                     "libshout-" version ".tar.gz"))
               (sha256
                (base32
-                "1zhdshas539cs8fsz8022ljxnnncr5lafhfd1dqr1gs125fzb2hd"))))
+                "1hz670a4pfpsb89b0mymy8nw4rx8x0vmh61gq6j1vbg70mfhrscc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

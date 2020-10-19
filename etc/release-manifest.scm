@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@ TARGET."
   (append (map specification->package
                '("xorg-server" "xfce" "gnome" "mate" "enlightenment"
                  "openbox" "awesome" "i3-wm" "ratpoison"
+                 "emacs" "emacs-exwm" "emacs-desktop-environment"
                  "xlockmore" "slock" "libreoffice"
                  "connman" "network-manager" "network-manager-applet"
                  "openssh" "ntp" "tor"

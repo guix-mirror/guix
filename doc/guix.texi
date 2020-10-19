@@ -40,7 +40,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
-Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
+Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
@@ -59,7 +59,7 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
-Copyright @copyright{} 2018, 2019 Florian Pelz@*
+Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
@@ -68,7 +68,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
-Copyright @copyright{} 2019 Guillaume Le Vaillant@*
+Copyright @copyright{} 2019, 2020 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
@@ -80,6 +80,7 @@ Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 R Veera Kumar@*
 Copyright @copyright{} 2020 Pierre Langlois@*
 Copyright @copyright{} 2020 pinoaffe@*
+Copyright @copyright{} 2020 André Batista@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -146,6 +147,7 @@ Project}.
 * System Installation::         Installing the whole operating system.
 * Getting Started::             Your first steps.
 * Package Management::          Package installation, upgrade, etc.
+* Channels::                    Customizing the package collection.
 * Development::                 Guix-aided software development.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
@@ -178,6 +180,7 @@ Installation
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 * Application Setup::           Application-specific setup.
+* Upgrading Guix::              Upgrading Guix and its build daemon.
 
 Setting Up the Daemon
 
@@ -197,8 +200,6 @@ System Installation
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
 
-Getting Started
-
 Manual Installation
 
 * Keyboard Layout and Networking and Partitioning:: Initial setup.
@@ -212,7 +213,6 @@ Package Management
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
-* Channels::                    Customizing the package collection.
 * Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
@@ -227,17 +227,32 @@ Substitutes
 * Substitution Failure::        What happens when substitution fails.
 * On Trusting Binaries::        How can you trust that binary blob?
 
+Channels
+
+* Specifying Additional Channels::  Extending the package collection.
+* Using a Custom Guix Channel::  Using a customized Guix.
+* Replicating Guix::            Running the @emph{exact same} Guix.
+* Channel Authentication::      How Guix verifies what it fetches.
+* Creating a Channel::          How to write your custom channel.
+* Package Modules in a Sub-directory::  Specifying the channel's package modules location.
+* Declaring Channel Dependencies::  How to depend on other channels.
+* Specifying Channel Authorizations::  Defining channel authors authorizations.
+* Primary URL::                 Distinguishing mirror to original.
+* Writing Channel News::        Communicating information to channel's users.
+
 Development
 
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
 * The GCC toolchain::           Working with languages supported by GCC.
+* Invoking guix git authenticate:: Authenticating Git repositories.
 
 Programming Interface
 
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
 * Build Systems::               Specifying how packages are built.
+* Build Utilities::             Helpers for your package definitions and more.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
@@ -300,6 +315,7 @@ Services
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
+* Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
@@ -310,6 +326,7 @@ Services
 * Telephony Services::          Telephony services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
+* LDAP Services::               LDAP services.
 * Web Services::                Web servers.
 * Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
@@ -324,7 +341,7 @@ Services
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
-* Hurd Services::               Services specific to a Hurd System.
+* Hurd Services::               Services specific for a Hurd System.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -333,6 +350,11 @@ Defining Services
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
 * Shepherd Services::           A particular type of service.
+
+Bootstrapping
+
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
+* Preparing to Use the Bootstrap Binaries:: Building that what matters most.
 
 @end detailmenu
 @end menu
@@ -456,10 +478,10 @@ Packages are currently available on the following platforms:
 @table @code
 
 @item x86_64-linux
-Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
+Intel/AMD @code{x86_64} architecture, Linux-Libre kernel.
 
 @item i686-linux
-Intel 32-bit architecture (IA32), Linux-Libre kernel;
+Intel 32-bit architecture (IA32), Linux-Libre kernel.
 
 @item armhf-linux
 ARMv7-A architecture with hard float, Thumb-2 and NEON,
@@ -468,6 +490,16 @@ and Linux-Libre kernel.
 
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
+
+@item i586-gnu
+@uref{https://hurd.gnu.org, GNU/Hurd} on the Intel 32-bit architecture
+(IA32).
+
+This configuration is experimental and under development.  The easiest
+way for you to give it a try is by setting up an instance of
+@code{hurd-vm-service-type} on your GNU/Linux machine
+(@pxref{transparent-emulation-qemu, @code{hurd-vm-service-type}}).
+@xref{Contributing}, on how to help!
 
 @item mips64el-linux (deprecated)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
@@ -1056,11 +1088,33 @@ is requested, for instance via @code{guix build}, the daemon attempts to
 offload it to one of the machines that satisfy the constraints of the
 derivation, in particular its system types---e.g., @code{x86_64-linux}.
 A single machine can have multiple system types, either because its
-architecture natively supports it, via emulation (@pxref{Transparent
-Emulation with QEMU}), or both.  Missing prerequisites for the build are
+architecture natively supports it, via emulation
+(@pxref{transparent-emulation-qemu, Transparent Emulation with QEMU}),
+or both.  Missing prerequisites for the build are
 copied over SSH to the target machine, which then proceeds with the
 build; upon success the output(s) of the build are copied back to the
-initial machine.
+initial machine.  The offload facility comes with a basic scheduler that
+attempts to select the best machine.  The best machine is chosen among
+the available machines based on criteria such as:
+
+@enumerate
+@item
+The availability of a build slot.  A build machine can have as many
+build slots (connections) as the value of the @code{parallel-builds}
+field of its @code{build-machine} object.
+
+@item
+Its relative speed, as defined via the @code{speed} field of its
+@code{build-machine} object.
+
+@item
+Its load.  The normalized machine load must be lower than a threshold
+value, configurable via the @code{overload-threshold} field of its
+@code{build-machine} object.
+
+@item
+Disk space availability.  More than a 100 MiB must be available.
+@end enumerate
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
@@ -1163,6 +1217,13 @@ when transferring files to and from build machines.
 @item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
 File name of the Unix-domain socket @command{guix-daemon} is listening
 to on that machine.
+
+@item @code{overload-threshold} (default: @code{0.6})
+The load threshold above which a potential offload machine is
+disregarded by the offload scheduler.  The value roughly translates to
+the total processor usage of the build machine, ranging from 0.0 (0%) to
+1.0 (100%).  It can also be disabled by setting
+@code{overload-threshold} to @code{#f}.
 
 @item @code{parallel-builds} (default: @code{1})
 The number of builds that may run in parallel on the machine.
@@ -2547,8 +2608,7 @@ The installation image described above was built using the @command{guix
 system} command, specifically:
 
 @example
-guix system disk-image --file-system-type=iso9660 \
-  gnu/system/install.scm
+guix system disk-image -t iso9660 gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
@@ -2804,7 +2864,6 @@ guix install emacs-guix
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
-* Channels::                    Customizing the package collection.
 * Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
@@ -3081,6 +3140,29 @@ Note that this upgrades package to the latest version of packages found
 in the distribution currently installed.  To update your distribution,
 you should regularly run @command{guix pull} (@pxref{Invoking guix
 pull}).
+
+@cindex package transformations, upgrades
+When upgrading, package transformations that were originally applied
+when creating the profile are automatically re-applied (@pxref{Package
+Transformation Options}).  For example, assume you first installed Emacs
+from the tip of its development branch with:
+
+@example
+guix install emacs-next --with-branch=emacs-next=master
+@end example
+
+Next time you run @command{guix upgrade}, Guix will again pull the tip
+of the Emacs development branch and build @code{emacs-next} from that
+checkout.
+
+Note that transformation options such as @option{--with-branch} and
+@option{--with-source} depend on external state; it is up to you to
+ensure that they work as expected.  You can also discard a
+transformations that apply to a package by running:
+
+@example
+guix install @var{package}
+@end example
 
 @item --do-not-upgrade[=@var{regexp} @dots{}]
 When used together with the @option{--upgrade} option, do @emph{not}
@@ -4181,473 +4263,6 @@ information.
 In addition, @command{guix pull} supports all the common build options
 (@pxref{Common Build Options}).
 
-@node Channels
-@section Channels
-
-@cindex channels
-@cindex @file{channels.scm}, configuration file
-@cindex configuration file for channels
-@cindex @command{guix pull}, configuration file
-@cindex configuration of @command{guix pull}
-Guix and its package collection are updated by running @command{guix pull}
-(@pxref{Invoking guix pull}).  By default @command{guix pull} downloads and
-deploys Guix itself from the official GNU@tie{}Guix repository.  This can be
-customized by defining @dfn{channels} in the
-@file{~/.config/guix/channels.scm} file.  A channel specifies a URL and branch
-of a Git repository to be deployed, and @command{guix pull} can be instructed
-to pull from one or more channels.  In other words, channels can be used
-to @emph{customize} and to @emph{extend} Guix, as we will see below.
-Before that, some security considerations.
-
-@subsection Channel Authentication
-
-@anchor{channel-authentication}
-@cindex authentication, of channel code
-The @command{guix pull} and @command{guix time-machine} commands
-@dfn{authenticate} the code retrieved from channels: they make sure each
-commit that is fetched is signed by an authorized developer.  The goal
-is to protect from unauthorized modifications to the channel that would
-lead users to run malicious code.
-
-As a user, you must provide a @dfn{channel introduction} in your
-channels file so that Guix knows how to authenticate its first commit.
-A channel specification, including its introduction, looks something
-along these lines:
-
-@lisp
-(channel
-  (name 'my-channel)
-  (url "https://example.org/my-channel.git")
-  (introduction
-   (make-channel-introduction
-    "6f0d8cc0d88abb59c324b2990bfee2876016bb86"
-    (openpgp-fingerprint
-     "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
-@end lisp
-
-The specification above shows the name and URL of the channel.  The call
-to @code{make-channel-introduction} above specifies that authentication
-of this channel starts at commit @code{6f0d8cc@dots{}}, which is signed
-by the OpenPGP key with fingerprint @code{CABB A931@dots{}}.
-
-For the main channel, called @code{guix}, you automatically get that
-information from your Guix installation.  For other channels, include
-the channel introduction provided by the channel authors in your
-@file{channels.scm} file.  Make sure you retrieve the channel
-introduction from a trusted source since that is the root of your trust.
-
-If you're curious about the authentication mechanics, read on!
-
-@subsection Using a Custom Guix Channel
-
-The channel called @code{guix} specifies where Guix itself---its command-line
-tools as well as its package collection---should be downloaded.  For instance,
-suppose you want to update from your own copy of the Guix repository at
-@code{example.org}, and specifically the @code{super-hacks} branch, you can
-write in @code{~/.config/guix/channels.scm} this specification:
-
-@lisp
-;; Tell 'guix pull' to use my own repo.
-(list (channel
-        (name 'guix)
-        (url "https://example.org/my-guix.git")
-        (branch "super-hacks")))
-@end lisp
-
-@noindent
-From there on, @command{guix pull} will fetch code from the @code{super-hacks}
-branch of the repository at @code{example.org}.
-
-@subsection Specifying Additional Channels
-
-@cindex extending the package collection (channels)
-@cindex personal packages (channels)
-@cindex channels, for personal packages
-You can also specify @emph{additional channels} to pull from.  Let's say you
-have a bunch of custom package variants or personal packages that you think
-would make little sense to contribute to the Guix project, but would like to
-have these packages transparently available to you at the command line.  You
-would first write modules containing those package definitions (@pxref{Package
-Modules}), maintain them in a Git repository, and then you and anyone else can
-use it as an additional channel to get packages from.  Neat, no?
-
-@c What follows stems from discussions at
-@c <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22629#134> as well as
-@c earlier discussions on guix-devel@gnu.org.
-@quotation Warning
-Before you, dear user, shout---``woow this is @emph{soooo coool}!''---and
-publish your personal channel to the world, we would like to share a few words
-of caution:
-
-@itemize
-@item
-Before publishing a channel, please consider contributing your package
-definitions to Guix proper (@pxref{Contributing}).  Guix as a project is open
-to free software of all sorts, and packages in Guix proper are readily
-available to all Guix users and benefit from the project's quality assurance
-process.
-
-@item
-When you maintain package definitions outside Guix, we, Guix developers,
-consider that @emph{the compatibility burden is on you}.  Remember that
-package modules and package definitions are just Scheme code that uses various
-programming interfaces (APIs).  We want to remain free to change these APIs to
-keep improving Guix, possibly in ways that break your channel.  We never
-change APIs gratuitously, but we will @emph{not} commit to freezing APIs
-either.
-
-@item
-Corollary: if you're using an external channel and that channel breaks, please
-@emph{report the issue to the channel authors}, not to the Guix project.
-@end itemize
-
-You've been warned!  Having said this, we believe external channels are a
-practical way to exert your freedom to augment Guix' package collection and to
-share your improvements, which are basic tenets of
-@uref{https://www.gnu.org/philosophy/free-sw.html, free software}.  Please
-email us at @email{guix-devel@@gnu.org} if you'd like to discuss this.
-@end quotation
-
-To use a channel, write @code{~/.config/guix/channels.scm} to instruct
-@command{guix pull} to pull from it @emph{in addition} to the default Guix
-channel(s):
-
-@vindex %default-channels
-@lisp
-;; Add my personal packages to those Guix provides.
-(cons (channel
-        (name 'my-personal-packages)
-        (url "https://example.org/personal-packages.git"))
-      %default-channels)
-@end lisp
-
-@noindent
-Note that the snippet above is (as always!)@: Scheme code; we use @code{cons} to
-add a channel the list of channels that the variable @code{%default-channels}
-is bound to (@pxref{Pairs, @code{cons} and lists,, guile, GNU Guile Reference
-Manual}).  With this file in place, @command{guix pull} builds not only Guix
-but also the package modules from your own repository.  The result in
-@file{~/.config/guix/current} is the union of Guix with your own package
-modules:
-
-@example
-$ guix pull --list-generations
-@dots{}
-Generation 19	Aug 27 2018 16:20:48
-  guix d894ab8
-    repository URL: https://git.savannah.gnu.org/git/guix.git
-    branch: master
-    commit: d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300
-  my-personal-packages dd3df5e
-    repository URL: https://example.org/personal-packages.git
-    branch: master
-    commit: dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb
-  11 new packages: my-gimp, my-emacs-with-cool-features, @dots{}
-  4 packages upgraded: emacs-racket-mode@@0.0.2-2.1b78827, @dots{}
-@end example
-
-@noindent
-The output of @command{guix pull} above shows that Generation@tie{}19 includes
-both Guix and packages from the @code{my-personal-packages} channel.  Among
-the new and upgraded packages that are listed, some like @code{my-gimp} and
-@code{my-emacs-with-cool-features} might come from
-@code{my-personal-packages}, while others come from the Guix default channel.
-
-To create a channel, create a Git repository containing your own package
-modules and make it available.  The repository can contain anything, but a
-useful channel will contain Guile modules that export packages.  Once you
-start using a channel, Guix will behave as if the root directory of that
-channel's Git repository has been added to the Guile load path (@pxref{Load
-Paths,,, guile, GNU Guile Reference Manual}).  For example, if your channel
-contains a file at @file{my-packages/my-tools.scm} that defines a Guile
-module, then the module will be available under the name @code{(my-packages
-my-tools)}, and you will be able to use it like any other module
-(@pxref{Modules,,, guile, GNU Guile Reference Manual}).
-
-@cindex dependencies, channels
-@cindex meta-data, channels
-@subsection Declaring Channel Dependencies
-
-Channel authors may decide to augment a package collection provided by other
-channels.  They can declare their channel to be dependent on other channels in
-a meta-data file @file{.guix-channel}, which is to be placed in the root of
-the channel repository.
-
-The meta-data file should contain a simple S-expression like this:
-
-@lisp
-(channel
- (version 0)
- (dependencies
-  (channel
-   (name some-collection)
-   (url "https://example.org/first-collection.git")
-
-   ;; The 'introduction' bit below is optional: you would
-   ;; provide it for dependencies that can be authenticated.
-   (introduction
-    (channel-introduction
-      (version 0)
-      (commit "a8883b58dc82e167c96506cf05095f37c2c2c6cd")
-      (signer "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
-  (channel
-   (name some-other-collection)
-   (url "https://example.org/second-collection.git")
-   (branch "testing"))))
-@end lisp
-
-In the above example this channel is declared to depend on two other channels,
-which will both be fetched automatically.  The modules provided by the channel
-will be compiled in an environment where the modules of all these declared
-channels are available.
-
-For the sake of reliability and maintainability, you should avoid dependencies
-on channels that you don't control, and you should aim to keep the number of
-dependencies to a minimum.
-
-@cindex subdirectory, channels
-@subsection Package Modules in a Sub-directory
-
-As a channel author, you may want to keep your channel modules in a
-sub-directory.  If your modules are in the sub-directory @file{guix}, you must
-add a meta-data file @file{.guix-channel} that contains:
-
-@lisp
-(channel
-  (version 0)
-  (directory "guix"))
-@end lisp
-
-@cindex channel authorizations
-@subsection Specifying Channel Authorizations
-
-@anchor{channel-authorizations}
-As we saw above, Guix ensures the source code it pulls from channels
-comes from authorized developers.  As a channel author, you need to
-specify the list of authorized developers in the
-@file{.guix-authorizations} file in the channel's Git repository.  The
-authentication rule is simple: each commit must be signed by a key
-listed in the @file{.guix-authorizations} file of its parent
-commit(s)@footnote{Git commits form a @dfn{directed acyclic graph}
-(DAG).  Each commit can have zero or more parents; ``regular'' commits
-have one parent and merge commits have two parent commits.  Read
-@uref{https://eagain.net/articles/git-for-computer-scientists/, @i{Git
-for Computer Scientists}} for a great overview.}  The
-@file{.guix-authorizations} file looks like this:
-
-@lisp
-;; Example '.guix-authorizations' file.
-
-(authorizations
- (version 0)               ;current file format version
-
- (("AD17 A21E F8AE D8F1 CC02  DBD9 F8AE D8F1 765C 61E3"
-   (name "alice"))
-  ("2A39 3FFF 68F4 EF7A 3D29  12AF 68F4 EF7A 22FB B2D5"
-   (name "bob"))
-  ("CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"
-   (name "charlie"))))
-@end lisp
-
-Each fingerprint is followed by optional key/value pairs, as in the
-example above.  Currently these key/value pairs are ignored.
-
-This authentication rule creates a chicken-and-egg issue: how do we
-authenticate the first commit?  Related to that: how do we deal with
-channels whose repository history contains unsigned commits and lack
-@file{.guix-authorizations}?  And how do we fork existing channels?
-
-@cindex channel introduction
-Channel introductions answer these questions by describing the first
-commit of a channel that should be authenticated.  The first time a
-channel is fetched with @command{guix pull} or @command{guix
-time-machine}, the command looks up the introductory commit and verifies
-that it is signed by the specified OpenPGP key.  From then on, it
-authenticates commits according to the rule above.
-
-Additionally, your channel must provide all the OpenPGP keys that were
-ever mentioned in @file{.guix-authorizations}, stored as @file{.key}
-files, which can be either binary or ``ASCII-armored''.  By default,
-those @file{.key} files are searched for in the branch named
-@code{keyring} but you can specify a different branch name in
-@code{.guix-channel} like so:
-
-@lisp
-(channel
-  (version 0)
-  (keyring-reference "my-keyring-branch"))
-@end lisp
-
-To summarize, as the author of a channel, there are three things you have
-to do to allow users to authenticate your code:
-
-@enumerate
-@item
-Export the OpenPGP keys of past and present committers with @command{gpg
---export} and store them in @file{.key} files, by default in a branch
-named @code{keyring} (we recommend making it an @dfn{orphan branch}).
-
-@item
-Introduce an initial @file{.guix-authorizations} in the channel's
-repository.  Do that in a signed commit (@pxref{Commit Access}, for
-information on how to sign Git commits.)
-
-@item
-Advertise the channel introduction, for instance on your channel's web
-page.  The channel introduction, as we saw above, is the commit/key
-pair---i.e., the commit that introduced @file{.guix-authorizations}, and
-the fingerprint of the OpenPGP used to sign it.
-@end enumerate
-
-Before pushing to your public Git repository, you can run @command{guix
-git-authenticate} to verify that you did sign all the commits you are
-about to push with an authorized key:
-
-@example
-guix git authenticate @var{commit} @var{signer}
-@end example
-
-@noindent
-where @var{commit} and @var{signer} are your channel introduction.
-@xref{Invoking guix git authenticate}, for details.
-
-Publishing a signed channel requires discipline: any mistake, such as an
-unsigned commit or a commit signed by an unauthorized key, will prevent
-users from pulling from your channel---well, that's the whole point of
-authentication!  Pay attention to merges in particular: merge commits
-are considered authentic if and only if they are signed by a key present
-in the @file{.guix-authorizations} file of @emph{both} branches.
-
-@cindex primary URL, channels
-@subsection Primary URL
-
-Channel authors can indicate the primary URL of their channel's Git
-repository in the @file{.guix-channel} file, like so:
-
-@lisp
-(channel
-  (version 0)
-  (url "https://example.org/guix.git"))
-@end lisp
-
-This allows @command{guix pull} to determine whether it is pulling code
-from a mirror of the channel; when that is the case, it warns the user
-that the mirror might be stale and displays the primary URL.  That way,
-users cannot be tricked into fetching code from a stale mirror that does
-not receive security updates.
-
-This feature only makes sense for authenticated repositories, such as
-the official @code{guix} channel, for which @command{guix pull} ensures
-the code it fetches is authentic.
-
-@cindex news, for channels
-@subsection Writing Channel News
-
-Channel authors may occasionally want to communicate to their users
-information about important changes in the channel.  You'd send them all
-an email, but that's not convenient.
-
-Instead, channels can provide a @dfn{news file}; when the channel users
-run @command{guix pull}, that news file is automatically read and
-@command{guix pull --news} can display the announcements that correspond
-to the new commits that have been pulled, if any.
-
-To do that, channel authors must first declare the name of the news file
-in their @file{.guix-channel} file:
-
-@lisp
-(channel
-  (version 0)
-  (news-file "etc/news.txt"))
-@end lisp
-
-The news file itself, @file{etc/news.txt} in this example, must look
-something like this:
-
-@lisp
-(channel-news
-  (version 0)
-  (entry (tag "the-bug-fix")
-         (title (en "Fixed terrible bug")
-                (fr "Oh la la"))
-         (body (en "@@emph@{Good news@}!  It's fixed!")
-               (eo "Certe ĝi pli bone funkcias nun!")))
-  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
-         (title (en "Added a great package")
-                (ca "Què vol dir guix?"))
-         (body (en "Don't miss the @@code@{hello@} package!"))))
-@end lisp
-
-While the news file is using the Scheme syntax, avoid naming it with a
-@file{.scm} extension or else it will get picked up when building the
-channel and yield an error since it is not a valid module.
-Alternatively, you can move the channel module to a subdirectory and
-store the news file in another directory.
-
-The file consists of a list of @dfn{news entries}.  Each entry is
-associated with a commit or tag: it describes changes made in this
-commit, possibly in preceding commits as well.  Users see entries only
-the first time they obtain the commit the entry refers to.
-
-The @code{title} field should be a one-line summary while @code{body}
-can be arbitrarily long, and both can contain Texinfo markup
-(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
-a list of language tag/message tuples, which allows @command{guix pull}
-to display news in the language that corresponds to the user's locale.
-
-If you want to translate news using a gettext-based workflow, you can
-extract translatable strings with @command{xgettext} (@pxref{xgettext
-Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
-you write news entries in English first, the command below creates a PO
-file containing the strings to translate:
-
-@example
-xgettext -o news.po -l scheme -ken etc/news.txt
-@end example
-
-To sum up, yes, you could use your channel as a blog.  But beware, this
-is @emph{not quite} what your users might expect.
-
-@subsection Replicating Guix
-
-@cindex pinning, channels
-@cindex replicating Guix
-@cindex reproducibility, of Guix
-The @command{guix pull --list-generations} output above shows precisely which
-commits were used to build this instance of Guix.  We can thus replicate it,
-say, on another machine, by providing a channel specification in
-@file{~/.config/guix/channels.scm} that is ``pinned'' to these commits:
-
-@lisp
-;; Deploy specific commits of my channels of interest.
-(list (channel
-       (name 'guix)
-       (url "https://git.savannah.gnu.org/git/guix.git")
-       (commit "6298c3ffd9654d3231a6f25390b056483e8f407c"))
-      (channel
-       (name 'my-personal-packages)
-       (url "https://example.org/personal-packages.git")
-       (commit "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
-@end lisp
-
-The @command{guix describe --format=channels} command can even generate this
-list of channels directly (@pxref{Invoking guix describe}).  The resulting
-file can be used with the -C options of @command{guix pull}
-(@pxref{Invoking guix pull}) or @command{guix time-machine}
-(@pxref{Invoking guix time-machine}).
-
-At this point the two machines run the @emph{exact same Guix}, with access to
-the @emph{exact same packages}.  The output of @command{guix build gimp} on
-one machine will be exactly the same, bit for bit, as the output of the same
-command on the other machine.  It also means both machines have access to all
-the source code of Guix and, transitively, to all the source code of every
-package it defines.
-
-This gives you super powers, allowing you to track the provenance of binary
-artifacts with very fine grain, and to reproduce software environments at
-will---some sort of ``meta reproducibility'' capabilities, if you will.
-@xref{Inferiors}, for another way to take advantage of these super powers.
-
 @node Invoking guix time-machine
 @section Invoking @command{guix time-machine}
 
@@ -5047,9 +4662,11 @@ the store.
 @item --generate-key[=@var{parameters}]
 @cindex signing, archives
 Generate a new key pair for the daemon.  This is a prerequisite before
-archives can be exported with @option{--export}.  Note that this
-operation usually takes time, because it needs to gather enough entropy
-to generate the key pair.
+archives can be exported with @option{--export}.  This
+operation is usually instantaneous but it can take time if the system's
+entropy pool needs to be refilled.  On Guix System,
+@code{guix-service-type} takes care of generating this key pair the
+first boot.
 
 The generated key pair is typically stored under @file{/etc/guix}, in
 @file{signing-key.pub} (public key) and @file{signing-key.sec} (private
@@ -5112,6 +4729,508 @@ $ wget -O - \
 @end example
 
 @end table
+
+@c *********************************************************************
+@node Channels
+@chapter Channels
+
+@cindex channels
+@cindex @file{channels.scm}, configuration file
+@cindex configuration file for channels
+@cindex @command{guix pull}, configuration file
+@cindex configuration of @command{guix pull}
+Guix and its package collection are updated by running @command{guix pull}
+(@pxref{Invoking guix pull}).  By default @command{guix pull} downloads and
+deploys Guix itself from the official GNU@tie{}Guix repository.  This can be
+customized by defining @dfn{channels} in the
+@file{~/.config/guix/channels.scm} file.  A channel specifies a URL and branch
+of a Git repository to be deployed, and @command{guix pull} can be instructed
+to pull from one or more channels.  In other words, channels can be used
+to @emph{customize} and to @emph{extend} Guix, as we will see below.
+Guix is able to take into account security concerns and deal with authenticated
+updates.
+
+@menu
+* Specifying Additional Channels::  Extending the package collection.
+* Using a Custom Guix Channel::  Using a customized Guix.
+* Replicating Guix::            Running the @emph{exact same} Guix.
+* Channel Authentication::      How Guix verifies what it fetches.
+* Creating a Channel::          How to write your custom channel.
+* Package Modules in a Sub-directory::  Specifying the channel's package modules location.
+* Declaring Channel Dependencies::  How to depend on other channels.
+* Specifying Channel Authorizations::  Defining channel authors authorizations.
+* Primary URL::                 Distinguishing mirror to original.
+* Writing Channel News::        Communicating information to channel's users.
+@end menu
+
+@node Specifying Additional Channels
+@section Specifying Additional Channels
+
+@cindex extending the package collection (channels)
+@cindex variant packages (channels)
+You can specify @emph{additional channels} to pull from. To use a channel, write
+@code{~/.config/guix/channels.scm} to instruct @command{guix pull} to pull from it
+@emph{in addition} to the default Guix channel(s):
+
+@vindex %default-channels
+@lisp
+;; Add variant packages to those Guix provides.
+(cons (channel
+        (name 'variant-packages)
+        (url "https://example.org/variant-packages.git"))
+      %default-channels)
+@end lisp
+
+@noindent
+Note that the snippet above is (as always!)@: Scheme code; we use @code{cons} to
+add a channel the list of channels that the variable @code{%default-channels}
+is bound to (@pxref{Pairs, @code{cons} and lists,, guile, GNU Guile Reference
+Manual}).  With this file in place, @command{guix pull} builds not only Guix
+but also the package modules from your own repository.  The result in
+@file{~/.config/guix/current} is the union of Guix with your own package
+modules:
+
+@example
+$ guix pull --list-generations
+@dots{}
+Generation 19	Aug 27 2018 16:20:48
+  guix d894ab8
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300
+  variant-packages dd3df5e
+    repository URL: https://example.org/variant-packages.git
+    branch: master
+    commit: dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb
+  11 new packages: variant-gimp, variant-emacs-with-cool-features, @dots{}
+  4 packages upgraded: emacs-racket-mode@@0.0.2-2.1b78827, @dots{}
+@end example
+
+@noindent
+The output of @command{guix pull} above shows that Generation@tie{}19 includes
+both Guix and packages from the @code{variant-personal-packages} channel.  Among
+the new and upgraded packages that are listed, some like @code{variant-gimp} and
+@code{variant-emacs-with-cool-features} might come from
+@code{variant-packages}, while others come from the Guix default channel.
+
+@node Using a Custom Guix Channel
+@section Using a Custom Guix Channel
+
+The channel called @code{guix} specifies where Guix itself---its command-line
+tools as well as its package collection---should be downloaded.  For instance,
+suppose you want to update from another copy of the Guix repository at
+@code{example.org}, and specifically the @code{super-hacks} branch, you can
+write in @code{~/.config/guix/channels.scm} this specification:
+
+@lisp
+;; Tell 'guix pull' to use another repo.
+(list (channel
+        (name 'guix)
+        (url "https://example.org/another-guix.git")
+        (branch "super-hacks")))
+@end lisp
+
+@noindent
+From there on, @command{guix pull} will fetch code from the @code{super-hacks}
+branch of the repository at @code{example.org}.  The authentication concern is
+addressed below ((@pxref{Channel  Authentication}).
+
+@node Replicating Guix
+@section Replicating Guix
+
+@cindex pinning, channels
+@cindex replicating Guix
+@cindex reproducibility, of Guix
+The @command{guix pull --list-generations} output above shows precisely which
+commits were used to build this instance of Guix.  We can thus replicate it,
+say, on another machine, by providing a channel specification in
+@file{~/.config/guix/channels.scm} that is ``pinned'' to these commits:
+
+@lisp
+;; Deploy specific commits of my channels of interest.
+(list (channel
+       (name 'guix)
+       (url "https://git.savannah.gnu.org/git/guix.git")
+       (commit "6298c3ffd9654d3231a6f25390b056483e8f407c"))
+      (channel
+       (name 'variant-packages)
+       (url "https://example.org/variant-packages.git")
+       (commit "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
+@end lisp
+
+The @command{guix describe --format=channels} command can even generate this
+list of channels directly (@pxref{Invoking guix describe}).  The resulting
+file can be used with the -C options of @command{guix pull}
+(@pxref{Invoking guix pull}) or @command{guix time-machine}
+(@pxref{Invoking guix time-machine}).
+
+At this point the two machines run the @emph{exact same Guix}, with access to
+the @emph{exact same packages}.  The output of @command{guix build gimp} on
+one machine will be exactly the same, bit for bit, as the output of the same
+command on the other machine.  It also means both machines have access to all
+the source code of Guix and, transitively, to all the source code of every
+package it defines.
+
+This gives you super powers, allowing you to track the provenance of binary
+artifacts with very fine grain, and to reproduce software environments at
+will---some sort of ``meta reproducibility'' capabilities, if you will.
+@xref{Inferiors}, for another way to take advantage of these super powers.
+
+@node Channel Authentication
+@section Channel Authentication
+
+@anchor{channel-authentication}
+@cindex authentication, of channel code
+The @command{guix pull} and @command{guix time-machine} commands
+@dfn{authenticate} the code retrieved from channels: they make sure each
+commit that is fetched is signed by an authorized developer.  The goal
+is to protect from unauthorized modifications to the channel that would
+lead users to run malicious code.
+
+As a user, you must provide a @dfn{channel introduction} in your
+channels file so that Guix knows how to authenticate its first commit.
+A channel specification, including its introduction, looks something
+along these lines:
+
+@lisp
+(channel
+  (name 'some-channel)
+  (url "https://example.org/some-channel.git")
+  (introduction
+   (make-channel-introduction
+    "6f0d8cc0d88abb59c324b2990bfee2876016bb86"
+    (openpgp-fingerprint
+     "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
+@end lisp
+
+The specification above shows the name and URL of the channel.  The call
+to @code{make-channel-introduction} above specifies that authentication
+of this channel starts at commit @code{6f0d8cc@dots{}}, which is signed
+by the OpenPGP key with fingerprint @code{CABB A931@dots{}}.
+
+For the main channel, called @code{guix}, you automatically get that
+information from your Guix installation.  For other channels, include
+the channel introduction provided by the channel authors in your
+@file{channels.scm} file.  Make sure you retrieve the channel
+introduction from a trusted source since that is the root of your trust.
+
+If you're curious about the authentication mechanics, read on!
+
+@node Creating a Channel
+@section Creating a Channel
+
+@cindex personal packages (channels)
+@cindex channels, for personal packages
+Let's say you have a bunch of custom package variants or personal packages
+that you think would make little sense to contribute to the Guix project, but
+would like to have these packages transparently available to you at the
+command line.  You would first write modules containing those package
+definitions (@pxref{Package Modules}), maintain them in a Git repository, and
+then you and anyone else can use it as an additional channel to get packages
+from.  Neat, no?
+
+@c What follows stems from discussions at
+@c <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22629#134> as well as
+@c earlier discussions on guix-devel@gnu.org.
+@quotation Warning
+Before you, dear user, shout---``woow this is @emph{soooo coool}!''---and
+publish your personal channel to the world, we would like to share a few words
+of caution:
+
+@itemize
+@item
+Before publishing a channel, please consider contributing your package
+definitions to Guix proper (@pxref{Contributing}).  Guix as a project is open
+to free software of all sorts, and packages in Guix proper are readily
+available to all Guix users and benefit from the project's quality assurance
+process.
+
+@item
+When you maintain package definitions outside Guix, we, Guix developers,
+consider that @emph{the compatibility burden is on you}.  Remember that
+package modules and package definitions are just Scheme code that uses various
+programming interfaces (APIs).  We want to remain free to change these APIs to
+keep improving Guix, possibly in ways that break your channel.  We never
+change APIs gratuitously, but we will @emph{not} commit to freezing APIs
+either.
+
+@item
+Corollary: if you're using an external channel and that channel breaks, please
+@emph{report the issue to the channel authors}, not to the Guix project.
+@end itemize
+
+You've been warned!  Having said this, we believe external channels are a
+practical way to exert your freedom to augment Guix' package collection and to
+share your improvements, which are basic tenets of
+@uref{https://www.gnu.org/philosophy/free-sw.html, free software}.  Please
+email us at @email{guix-devel@@gnu.org} if you'd like to discuss this.
+@end quotation
+
+To create a channel, create a Git repository containing your own package
+modules and make it available.  The repository can contain anything, but a
+useful channel will contain Guile modules that export packages.  Once you
+start using a channel, Guix will behave as if the root directory of that
+channel's Git repository has been added to the Guile load path (@pxref{Load
+Paths,,, guile, GNU Guile Reference Manual}).  For example, if your channel
+contains a file at @file{my-packages/my-tools.scm} that defines a Guile
+module, then the module will be available under the name @code{(my-packages
+my-tools)}, and you will be able to use it like any other module
+(@pxref{Modules,,, guile, GNU Guile Reference Manual}).
+
+As a channel author, consider bundling authentication material with your
+channel so that users can authenticate it.  @xref{Channel
+Authentication}, and @ref{Specifying Channel Authorizations}, for info
+on how to do it.
+
+
+@node Package Modules in a Sub-directory
+@section Package Modules in a Sub-directory
+
+@cindex subdirectory, channels
+As a channel author, you may want to keep your channel modules in a
+sub-directory.  If your modules are in the sub-directory @file{guix}, you must
+add a meta-data file @file{.guix-channel} that contains:
+
+@lisp
+(channel
+  (version 0)
+  (directory "guix"))
+@end lisp
+
+@node Declaring Channel Dependencies
+@section Declaring Channel Dependencies
+
+@cindex dependencies, channels
+@cindex meta-data, channels
+Channel authors may decide to augment a package collection provided by other
+channels.  They can declare their channel to be dependent on other channels in
+a meta-data file @file{.guix-channel}, which is to be placed in the root of
+the channel repository.
+
+The meta-data file should contain a simple S-expression like this:
+
+@lisp
+(channel
+ (version 0)
+ (dependencies
+  (channel
+   (name 'some-collection)
+   (url "https://example.org/first-collection.git")
+
+   ;; The 'introduction' bit below is optional: you would
+   ;; provide it for dependencies that can be authenticated.
+   (introduction
+    (channel-introduction
+      (version 0)
+      (commit "a8883b58dc82e167c96506cf05095f37c2c2c6cd")
+      (signer "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
+  (channel
+   (name 'some-other-collection)
+   (url "https://example.org/second-collection.git")
+   (branch "testing"))))
+@end lisp
+
+In the above example this channel is declared to depend on two other channels,
+which will both be fetched automatically.  The modules provided by the channel
+will be compiled in an environment where the modules of all these declared
+channels are available.
+
+For the sake of reliability and maintainability, you should avoid dependencies
+on channels that you don't control, and you should aim to keep the number of
+dependencies to a minimum.
+
+@node Specifying Channel Authorizations
+@section Specifying Channel Authorizations
+
+@cindex channel authorizations
+@anchor{channel-authorizations}
+As we saw above, Guix ensures the source code it pulls from channels
+comes from authorized developers.  As a channel author, you need to
+specify the list of authorized developers in the
+@file{.guix-authorizations} file in the channel's Git repository.  The
+authentication rule is simple: each commit must be signed by a key
+listed in the @file{.guix-authorizations} file of its parent
+commit(s)@footnote{Git commits form a @dfn{directed acyclic graph}
+(DAG).  Each commit can have zero or more parents; ``regular'' commits
+have one parent and merge commits have two parent commits.  Read
+@uref{https://eagain.net/articles/git-for-computer-scientists/, @i{Git
+for Computer Scientists}} for a great overview.}  The
+@file{.guix-authorizations} file looks like this:
+
+@lisp
+;; Example '.guix-authorizations' file.
+
+(authorizations
+ (version 0)               ;current file format version
+
+ (("AD17 A21E F8AE D8F1 CC02  DBD9 F8AE D8F1 765C 61E3"
+   (name "alice"))
+  ("2A39 3FFF 68F4 EF7A 3D29  12AF 68F4 EF7A 22FB B2D5"
+   (name "bob"))
+  ("CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"
+   (name "charlie"))))
+@end lisp
+
+Each fingerprint is followed by optional key/value pairs, as in the
+example above.  Currently these key/value pairs are ignored.
+
+This authentication rule creates a chicken-and-egg issue: how do we
+authenticate the first commit?  Related to that: how do we deal with
+channels whose repository history contains unsigned commits and lack
+@file{.guix-authorizations}?  And how do we fork existing channels?
+
+@cindex channel introduction
+Channel introductions answer these questions by describing the first
+commit of a channel that should be authenticated.  The first time a
+channel is fetched with @command{guix pull} or @command{guix
+time-machine}, the command looks up the introductory commit and verifies
+that it is signed by the specified OpenPGP key.  From then on, it
+authenticates commits according to the rule above.
+
+Additionally, your channel must provide all the OpenPGP keys that were
+ever mentioned in @file{.guix-authorizations}, stored as @file{.key}
+files, which can be either binary or ``ASCII-armored''.  By default,
+those @file{.key} files are searched for in the branch named
+@code{keyring} but you can specify a different branch name in
+@code{.guix-channel} like so:
+
+@lisp
+(channel
+  (version 0)
+  (keyring-reference "my-keyring-branch"))
+@end lisp
+
+To summarize, as the author of a channel, there are three things you have
+to do to allow users to authenticate your code:
+
+@enumerate
+@item
+Export the OpenPGP keys of past and present committers with @command{gpg
+--export} and store them in @file{.key} files, by default in a branch
+named @code{keyring} (we recommend making it an @dfn{orphan branch}).
+
+@item
+Introduce an initial @file{.guix-authorizations} in the channel's
+repository.  Do that in a signed commit (@pxref{Commit Access}, for
+information on how to sign Git commits.)
+
+@item
+Advertise the channel introduction, for instance on your channel's web
+page.  The channel introduction, as we saw above, is the commit/key
+pair---i.e., the commit that introduced @file{.guix-authorizations}, and
+the fingerprint of the OpenPGP used to sign it.
+@end enumerate
+
+Before pushing to your public Git repository, you can run @command{guix
+git-authenticate} to verify that you did sign all the commits you are
+about to push with an authorized key:
+
+@example
+guix git authenticate @var{commit} @var{signer}
+@end example
+
+@noindent
+where @var{commit} and @var{signer} are your channel introduction.
+@xref{Invoking guix git authenticate}, for details.
+
+Publishing a signed channel requires discipline: any mistake, such as an
+unsigned commit or a commit signed by an unauthorized key, will prevent
+users from pulling from your channel---well, that's the whole point of
+authentication!  Pay attention to merges in particular: merge commits
+are considered authentic if and only if they are signed by a key present
+in the @file{.guix-authorizations} file of @emph{both} branches.
+
+@node Primary URL
+@section Primary URL
+
+@cindex primary URL, channels
+Channel authors can indicate the primary URL of their channel's Git
+repository in the @file{.guix-channel} file, like so:
+
+@lisp
+(channel
+  (version 0)
+  (url "https://example.org/guix.git"))
+@end lisp
+
+This allows @command{guix pull} to determine whether it is pulling code
+from a mirror of the channel; when that is the case, it warns the user
+that the mirror might be stale and displays the primary URL.  That way,
+users cannot be tricked into fetching code from a stale mirror that does
+not receive security updates.
+
+This feature only makes sense for authenticated repositories, such as
+the official @code{guix} channel, for which @command{guix pull} ensures
+the code it fetches is authentic.
+
+@node Writing Channel News
+@section Writing Channel News
+
+@cindex news, for channels
+Channel authors may occasionally want to communicate to their users
+information about important changes in the channel.  You'd send them all
+an email, but that's not convenient.
+
+Instead, channels can provide a @dfn{news file}; when the channel users
+run @command{guix pull}, that news file is automatically read and
+@command{guix pull --news} can display the announcements that correspond
+to the new commits that have been pulled, if any.
+
+To do that, channel authors must first declare the name of the news file
+in their @file{.guix-channel} file:
+
+@lisp
+(channel
+  (version 0)
+  (news-file "etc/news.txt"))
+@end lisp
+
+The news file itself, @file{etc/news.txt} in this example, must look
+something like this:
+
+@lisp
+(channel-news
+  (version 0)
+  (entry (tag "the-bug-fix")
+         (title (en "Fixed terrible bug")
+                (fr "Oh la la"))
+         (body (en "@@emph@{Good news@}!  It's fixed!")
+               (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
+         (title (en "Added a great package")
+                (ca "Què vol dir guix?"))
+         (body (en "Don't miss the @@code@{hello@} package!"))))
+@end lisp
+
+While the news file is using the Scheme syntax, avoid naming it with a
+@file{.scm} extension or else it will get picked up when building the
+channel and yield an error since it is not a valid module.
+Alternatively, you can move the channel module to a subdirectory and
+store the news file in another directory.
+
+The file consists of a list of @dfn{news entries}.  Each entry is
+associated with a commit or tag: it describes changes made in this
+commit, possibly in preceding commits as well.  Users see entries only
+the first time they obtain the commit the entry refers to.
+
+The @code{title} field should be a one-line summary while @code{body}
+can be arbitrarily long, and both can contain Texinfo markup
+(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
+a list of language tag/message tuples, which allows @command{guix pull}
+to display news in the language that corresponds to the user's locale.
+
+If you want to translate news using a gettext-based workflow, you can
+extract translatable strings with @command{xgettext} (@pxref{xgettext
+Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
+you write news entries in English first, the command below creates a PO
+file containing the strings to translate:
+
+@example
+xgettext -o news.po -l scheme -ken etc/news.txt
+@end example
+
+To sum up, yes, you could use your channel as a blog.  But beware, this
+is @emph{not quite} what your users might expect.
 
 
 @c *********************************************************************
@@ -5420,8 +5539,9 @@ device.
 @item --link-profile
 @itemx -P
 For containers, link the environment profile to @file{~/.guix-profile}
-within the container.  This is equivalent to running the command
-@samp{ln -s $GUIX_ENVIRONMENT ~/.guix-profile} within the container.
+within the container and set @code{GUIX_ENVIRONMENT} to that.
+This is equivalent to making @file{~/.guix-profile} a symlink to the
+actual profile within the container.
 Linking will fail and abort the environment if the directory already
 exists, which will certainly be the case if @command{guix environment}
 was invoked in the user's home directory.
@@ -5716,7 +5836,7 @@ direct syscalls are not intercepted either, leading to erratic behavior.
 @vindex GUIX_EXECUTION_ENGINE
 When running a wrapped program, you can explicitly request one of the
 execution engines listed above by setting the
-@code{GUIX_EXECUTION_ENGINE} environment variable accordingly.
+@env{GUIX_EXECUTION_ENGINE} environment variable accordingly.
 @end quotation
 
 @cindex entry point, for Docker images
@@ -5966,6 +6086,7 @@ package definitions.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
 * Build Systems::               Specifying how packages are built.
+* Build Utilities::             Helpers for your package definitions and more.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
@@ -6122,6 +6243,10 @@ represents the familiar GNU Build System, where packages may be
 configured, built, and installed with the usual @code{./configure &&
 make && make check && make install} command sequence.
 
+When you start packaging non-trivial software, you may need tools to
+manipulate those build phases, manipulate files, and so on.  @xref{Build
+Utilities}, for more on this.
+
 @item
 The @code{arguments} field specifies options for the build system
 (@pxref{Build Systems}).  Here it is interpreted by
@@ -6236,12 +6361,12 @@ transformation is @dfn{input rewriting}, whereby the dependency tree of
 a package is rewritten by replacing specific inputs by others:
 
 @deffn {Scheme Procedure} package-input-rewriting @var{replacements} @
-           [@var{rewrite-name}]
+           [@var{rewrite-name}] [#:deep? #t]
 Return a procedure that, when passed a package, replaces its direct and
-indirect dependencies (but not its implicit inputs) according to
-@var{replacements}.  @var{replacements} is a list of package pairs; the
-first element of each pair is the package to replace, and the second one
-is the replacement.
+indirect dependencies, including implicit inputs when @var{deep?} is
+true, according to @var{replacements}.  @var{replacements} is a list of
+package pairs; the first element of each pair is the package to replace,
+and the second one is the replacement.
 
 Optionally, @var{rewrite-name} is a one-argument procedure that takes
 the name of a package and returns its new name after rewrite.
@@ -6270,12 +6395,13 @@ This is exactly what the @option{--with-input} command-line option does
 The following variant of @code{package-input-rewriting} can match packages to
 be replaced by name rather than by identity.
 
-@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements}
-Return a procedure that, given a package, applies the given @var{replacements} to
-all the package graph (excluding implicit inputs).  @var{replacements} is a list of
-spec/procedures pair; each spec is a package specification such as @code{"gcc"} or
-@code{"guile@@2"}, and each procedure takes a matching package and returns a
-replacement for that package.
+@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements} [#:deep? #t]
+Return a procedure that, given a package, applies the given
+@var{replacements} to all the package graph, including implicit inputs
+unless @var{deep?} is false.  @var{replacements} is a list of
+spec/procedures pair; each spec is a package specification such as
+@code{"gcc"} or @code{"guile@@2"}, and each procedure takes a matching
+package and returns a replacement for that package.
 @end deffn
 
 The example above could be rewritten this way:
@@ -6294,10 +6420,11 @@ A more generic procedure to rewrite a package dependency graph is
 @code{package-mapping}: it supports arbitrary changes to nodes in the
 graph.
 
-@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}]
+@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}] [#:deep? #f]
 Return a procedure that, given a package, applies @var{proc} to all the packages
 depended on and returns the resulting package.  The procedure stops recursion
-when @var{cut?} returns true for a given package.
+when @var{cut?} returns true for a given package.  When @var{deep?} is true, @var{proc} is
+applied to implicit inputs as well.
 @end deffn
 
 @menu
@@ -6370,21 +6497,22 @@ this area (@pxref{Invoking guix lint}).
 
 @anchor{package-propagated-inputs}
 Lastly, @code{propagated-inputs} is similar to @code{inputs}, but the
-specified packages will be automatically installed alongside the package
+specified packages will be automatically installed to profiles
+(@pxref{Features, the role of profiles in Guix}) alongside the package
 they belong to (@pxref{package-cmd-propagated-inputs, @command{guix
 package}}, for information on how @command{guix package} deals with
 propagated inputs).
 
-For example this is necessary when a C/C++ library needs headers of
-another library to compile, or when a pkg-config file refers to another
-one @i{via} its @code{Requires} field.
+For example this is necessary when packaging a C/C++ library that needs
+headers of another library to compile, or when a pkg-config file refers
+to another one @i{via} its @code{Requires} field.
 
 Another example where @code{propagated-inputs} is useful is for languages
 that lack a facility to record the run-time search path akin to the
 @code{RUNPATH} of ELF files; this includes Guile, Python, Perl, and
-more.  To ensure that libraries written in those languages can find
-library code they depend on at run time, run-time dependencies must be
-listed in @code{propagated-inputs} rather than @code{inputs}.
+more.  When packaging libraries written in those languages, ensure they
+can find library code they depend on at run time by listing run-time
+dependencies in @code{propagated-inputs} rather than @code{inputs}.
 
 @item @code{outputs} (default: @code{'("out")})
 The list of output names of the package.  @xref{Packages with Multiple
@@ -6445,6 +6573,35 @@ cross-compiling:
 @end lisp
 
 It is an error to refer to @code{this-package} outside a package definition.
+@end deffn
+
+Because packages are regular Scheme objects that capture a complete
+dependency graph and associated build procedures, it is often useful to
+write procedures that take a package and return a modified version
+thereof according to some parameters.  Below are a few examples.
+
+@cindex tool chain, choosing a package's tool chain
+@deffn {Scheme Procedure} package-with-c-toolchain @var{package} @var{toolchain}
+Return a variant of @var{package} that uses @var{toolchain} instead of
+the default GNU C/C++ toolchain.  @var{toolchain} must be a list of
+inputs (label/package tuples) providing equivalent functionality, such
+as the @code{gcc-toolchain} package.
+
+The example below returns a variant of the @code{hello} package built
+with GCC@tie{}10.x and the rest of the GNU tool chain (Binutils and the
+GNU C Library) instead of the default tool chain:
+
+@lisp
+(let ((toolchain (specification->package "gcc-toolchain@@10")))
+  (package-with-c-toolchain hello `(("toolchain" ,toolchain))))
+@end lisp
+
+The build tool chain is part of the @dfn{implicit inputs} of
+packages---it's usually not listed as part of the various ``inputs''
+fields and is instead pulled in by the build system.  Consequently, this
+procedure works by changing the build system of @var{package} so that it
+pulls in @var{toolchain} instead of the defaults.  @ref{Build Systems},
+for more on build systems.
 @end deffn
 
 @node origin Reference
@@ -6583,6 +6740,9 @@ ornamentation---in other words, a bag is a lower-level representation of
 a package, which includes all the inputs of that package, including some
 that were implicitly added by the build system.  This intermediate
 representation is then compiled to a derivation (@pxref{Derivations}).
+The @code{package-with-c-toolchain} is an example of a way to change the
+implicit inputs that a package's build system pulls in (@pxref{package
+Reference, @code{package-with-c-toolchain}}).
 
 Build systems accept an optional list of @dfn{arguments}.  In package
 definitions, these are passed @i{via} the @code{arguments} field
@@ -6662,7 +6822,8 @@ The list of phases used for a particular package can be changed with the
 @end example
 
 means that all the phases described above will be used, except the
-@code{configure} phase.
+@code{configure} phase.  @xref{Build Utilities}, for more info on
+@code{modify-phases} and build phases in general.
 
 In addition, this build system ensures that the ``standard'' environment
 for GNU packages is available.  This includes tools such as GCC, libc,
@@ -6751,30 +6912,27 @@ Additionally, the corresponding source package should be labeled using
 the same convention as python packages (see @ref{Python Modules}), using
 the @code{cl-} prefix.
 
-For binary packages, each system should be defined as a Guix package.
-If one package @code{origin} contains several systems, package variants
-can be created in order to build all the systems.  Source packages,
-which use @code{asdf-build-system/source}, may contain several systems.
-
 In order to create executable programs and images, the build-side
 procedures @code{build-program} and @code{build-image} can be used.
-They should be called in a build phase after the @code{create-symlinks}
-phase, so that the system which was just built can be used within the
-resulting image.  @code{build-program} requires a list of Common Lisp
-expressions to be passed as the @code{#:entry-program} argument.
+They should be called in a build phase after the
+@code{create-asdf-configuration} phase, so that the system which was
+just built can be used within the resulting image.  @code{build-program}
+requires a list of Common Lisp expressions to be passed as the
+@code{#:entry-program} argument.
 
-If the system is not defined within its own @file{.asd} file of the same
-name, then the @code{#:asd-file} parameter should be used to specify
-which file the system is defined in.  Furthermore, if the package
-defines a system for its tests in a separate file, it will be loaded
-before the tests are run if it is specified by the
+By default, all the @file{.asd} files present in the sources are read to
+find system definitions.  The @code{#:asd-files} parameter can be used
+to specify the list of @file{.asd} files to read.  Furthermore, if the
+package defines a system for its tests in a separate file, it will be
+loaded before the tests are run if it is specified by the
 @code{#:test-asd-file} parameter.  If it is not set, the files
 @code{<system>-tests.asd}, @code{<system>-test.asd}, @code{tests.asd},
 and @code{test.asd} will be tried if they exist.
 
 If for some reason the package must be named in a different way than the
-naming conventions suggest, the @code{#:asd-system-name} parameter can
-be used to specify the name of the system.
+naming conventions suggest, or if several systems must be compiled, the
+@code{#:asd-systems} parameter can be used to specify the list of system
+names.
 
 @end defvr
 
@@ -6800,8 +6958,8 @@ In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
 parameters available to cargo.  It will also remove an included
 @code{Cargo.lock} file to be recreated by @code{cargo} during the
-@code{build} phase.  The @code{install} phase installs any crate the binaries
-if they are defined by the crate.
+@code{build} phase.  The @code{install} phase installs the binaries
+defined by the crate.
 @end defvr
 
 
@@ -7047,7 +7205,7 @@ implements the build procedure used by @uref{https://julialang.org/,
 julia} packages, which essentially is similar to running @samp{julia -e
 'using Pkg; Pkg.add(package)'} in an environment where
 @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
-Tests are run not run.
+Tests are run with @code{Pkg.test}.
 
 Julia packages require the source @code{file-name} to be the real name of the
 package, correctly capitalized.
@@ -7498,6 +7656,294 @@ must be a Scheme expression that builds the package output(s)---as
 with @code{build-expression->derivation} (@pxref{Derivations,
 @code{build-expression->derivation}}).
 @end defvr
+
+@node Build Utilities
+@section Build Utilities
+
+As soon as you start writing non-trivial package definitions
+(@pxref{Defining Packages}) or other build actions
+(@pxref{G-Expressions}), you will likely start looking for helpers for
+``shell-like'' actions---creating directories, copying and deleting
+files recursively, manipulating build phases, and so on.  The
+@code{(guix build utils)} module provides such utility procedures.
+
+Most build systems load @code{(guix build utils)} (@pxref{Build
+Systems}).  Thus, when writing custom build phases for your package
+definitions, you can usually assume those procedures are in scope.
+
+When writing G-expressions, you can import @code{(guix build utils)} on
+the ``build side'' using @code{with-imported-modules} and then put it in
+scope with the @code{use-modules} form (@pxref{Using Guile Modules,,,
+guile, GNU Guile Reference Manual}):
+
+@lisp
+(with-imported-modules '((guix build utils))  ;import it
+  (computed-file "empty-tree"
+                 #~(begin
+                     ;; Put it in scope.
+                     (use-modules (guix build utils))
+
+                     ;; Happily use its 'mkdir-p' procedure.
+                     (mkdir-p (string-append #$output "/a/b/c")))))
+@end lisp
+
+The remainder of this section is the reference for most of the utility
+procedures provided by @code{(guix build utils)}.
+
+@c TODO Document what's missing.
+
+@subsection Dealing with Store File Names
+
+This section documents procedures that deal with store file names.
+
+@deffn {Scheme Procedure} %store-directory
+Return the directory name of the store.
+@end deffn
+
+@deffn {Scheme Procedure} store-file-name? @var{file}
+Return true if @var{file} is in the store.
+@end deffn
+
+@deffn {Scheme Procedure} strip-store-file-name @var{file}
+Strip the @file{/gnu/store} and hash from @var{file}, a store file name.
+The result is typically a @code{"@var{package}-@var{version}"} string.
+@end deffn
+
+@deffn {Scheme Procedure} package-name->name+version @var{name}
+Given @var{name}, a package name like @code{"foo-0.9.1b"}, return two
+values: @code{"foo"} and @code{"0.9.1b"}.  When the version part is
+unavailable, @var{name} and @code{#f} are returned.  The first hyphen
+followed by a digit is considered to introduce the version part.
+@end deffn
+
+@subsection File Types
+
+The procedures below deal with files and file types.
+
+@deffn {Scheme Procedure} directory-exists? @var{dir}
+Return @code{#t} if @var{dir} exists and is a directory.
+@end deffn
+
+@deffn {Scheme Procedure} executable-file? @var{file}
+Return @code{#t} if @var{file} exists and is executable.
+@end deffn
+
+@deffn {Scheme Procedure} symbolic-link? @var{file}
+Return @code{#t} if @var{file} is a symbolic link (aka. a ``symlink'').
+@end deffn
+
+@deffn {Scheme Procedure} elf-file? @var{file}
+@deffnx {Scheme Procedure} ar-file? @var{file}
+@deffnx {Scheme Procedure} gzip-file? @var{file}
+Return @code{#t} if @var{file} is, respectively, an ELF file, an
+@code{ar} archive (such as a @file{.a} static library), or a gzip file.
+@end deffn
+
+@deffn {Scheme Procedure} reset-gzip-timestamp @var{file} [#:keep-mtime? #t]
+If @var{file} is a gzip file, reset its embedded timestamp (as with
+@command{gzip --no-name}) and return true.  Otherwise return @code{#f}.
+When @var{keep-mtime?} is true, preserve @var{file}'s modification time.
+@end deffn
+
+@subsection File Manipulation
+
+The following procedures and macros help create, modify, and delete
+files.  They provide functionality comparable to common shell utilities
+such as @command{mkdir -p}, @command{cp -r}, @command{rm -r}, and
+@command{sed}.  They complement Guile's extensive, but low-level, file
+system interface (@pxref{POSIX,,, guile, GNU Guile Reference Manual}).
+
+@deffn {Scheme Syntax} with-directory-excursion @var{directory} @var{body}@dots{}
+Run @var{body} with @var{directory} as the process's current directory.
+
+Essentially, this macro changes the current directory to @var{directory}
+before evaluating @var{body}, using @code{chdir} (@pxref{Processes,,,
+guile, GNU Guile Reference Manual}).  It changes back to the initial
+directory when the dynamic extent of @var{body} is left, be it @i{via}
+normal procedure return or @i{via} a non-local exit such as an
+exception.
+@end deffn
+
+@deffn {Scheme Procedure} mkdir-p @var{dir}
+Create directory @var{dir} and all its ancestors.
+@end deffn
+
+@deffn {Scheme Procedure} install-file @var{file} @var{directory}
+Create @var{directory} if it does not exist and copy @var{file} in there
+under the same name.
+@end deffn
+
+@deffn {Scheme Procedure} make-file-writable @var{file}
+Make @var{file} writable for its owner.
+@end deffn
+
+@deffn {Scheme Procedure} copy-recursively @var{source} @var{destination} @
+  [#:log (current-output-port)] [#:follow-symlinks? #f] [#:keep-mtime? #f]
+Copy @var{source} directory to @var{destination}.  Follow symlinks if
+@var{follow-symlinks?}  is true; otherwise, just preserve them.  When
+@var{keep-mtime?} is true, keep the modification time of the files in
+@var{source} on those of @var{destination}.  Write verbose output to the
+@var{log} port.
+@end deffn
+
+@deffn {Scheme Procedure} delete-file-recursively @var{dir} @
+  [#:follow-mounts? #f]
+Delete @var{dir} recursively, like @command{rm -rf}, without following
+symlinks.  Don't follow mount points either, unless @var{follow-mounts?}
+is true.  Report but ignore errors.
+@end deffn
+
+@deffn {Scheme Syntax} substitute* @var{file} @
+  ((@var{regexp} @var{match-var}@dots{}) @var{body}@dots{}) @dots{}
+Substitute @var{regexp} in @var{file} by the string returned by
+@var{body}.  @var{body} is evaluated with each @var{match-var} bound to
+the corresponding positional regexp sub-expression.  For example:
+
+@lisp
+(substitute* file
+  (("hello")
+   "good morning\n")
+  (("foo([a-z]+)bar(.*)$" all letters end)
+   (string-append "baz" letter end)))
+@end lisp
+
+Here, anytime a line of @var{file} contains @code{hello}, it is replaced
+by @code{good morning}.  Anytime a line of @var{file} matches the second
+regexp, @code{all} is bound to the complete match, @code{letters} is bound
+to the first sub-expression, and @code{end} is bound to the last one.
+
+When one of the @var{match-var} is @code{_}, no variable is bound to the
+corresponding match substring.
+
+Alternatively, @var{file} may be a list of file names, in which case
+they are all subject to the substitutions.
+
+Be careful about using @code{$} to match the end of a line; by itself it
+won't match the terminating newline of a line.
+@end deffn
+
+@subsection File Search
+
+@cindex file, searching
+This section documents procedures to search and filter files.
+
+@deffn {Scheme Procedure} file-name-predicate @var{regexp}
+Return a predicate that returns true when passed a file name whose base
+name matches @var{regexp}.
+@end deffn
+
+@deffn {Scheme Procedure} find-files @var{dir} [@var{pred}] @
+  [#:stat lstat] [#:directories? #f] [#:fail-on-error? #f]
+Return the lexicographically sorted list of files under @var{dir} for
+which @var{pred} returns true.  @var{pred} is passed two arguments: the
+absolute file name, and its stat buffer; the default predicate always
+returns true.  @var{pred} can also be a regular expression, in which
+case it is equivalent to @code{(file-name-predicate @var{pred})}.
+@var{stat} is used to obtain file information; using @code{lstat} means
+that symlinks are not followed.  If @var{directories?} is true, then
+directories will also be included.  If @var{fail-on-error?} is true,
+raise an exception upon error.
+@end deffn
+
+Here are a few examples where we assume that the current directory is
+the root of the Guix source tree:
+
+@lisp
+;; List all the regular files in the current directory.
+(find-files ".")
+@result{} ("./.dir-locals.el" "./.gitignore" @dots{})
+
+;; List all the .scm files under gnu/services.
+(find-files "gnu/services" "\\.scm$")
+@result{} ("gnu/services/admin.scm" "gnu/services/audio.scm" @dots{})
+
+;; List ar files in the current directory.
+(find-files "." (lambda (file stat) (ar-file? file)))
+@result{} ("./libformat.a" "./libstore.a" @dots{})
+@end lisp
+
+@deffn {Scheme Procedure} which @var{program}
+Return the complete file name for @var{program} as found in
+@code{$PATH}, or @code{#f} if @var{program} could not be found.
+@end deffn
+
+@subsection Build Phases
+
+@cindex build phases
+The @code{(guix build utils)} also contains tools to manipulate
+@dfn{build phases} as found in @code{gnu-build-system} and in fact most
+build systems (@pxref{Build Systems}).  Build phases are represented as
+association lists or ``alists'' (@pxref{Association Lists,,, guile, GNU
+Guile Reference Manual}) where each key is a symbol for the name of the
+phase, and the associated value is a procedure that accepts an arbitrary
+number of arguments.
+
+Guile core and the @code{(srfi srfi-1)} module both provide tools to
+manipulate alists.  The @code{(guix build utils)} module complements
+those with tools written with build phases in mind.
+
+@cindex build phases, modifying
+@deffn {Scheme Syntax} modify-phases @var{phases} @var{clause}@dots{}
+Modify @var{phases} sequentially as per each @var{clause}, which may
+have one of the following forms:
+
+@lisp
+(delete @var{old-phase-name})
+(replace @var{old-phase-name} @var{new-phase})
+(add-before @var{old-phase-name} @var{new-phase-name} @var{new-phase})
+(add-after @var{old-phase-name} @var{new-phase-name} @var{new-phase})
+@end lisp
+
+Where every @var{phase-name} above is an expression evaluating to a
+symbol, and @var{new-phase} an expression evaluating to a procedure.
+@end deffn
+
+The example below is taken from the definition of the @code{grep}
+package.  It adds a phase to run after the @code{install} phase, called
+@code{fix-egrep-and-fgrep}.  That phase is a procedure (@code{lambda*}
+is for anonymous procedures) that takes a @code{#:outputs} keyword
+argument and ignores extra keyword arguments (@pxref{Optional
+Arguments,,, guile, GNU Guile Reference Manual}, for more on
+@code{lambda*} and optional and keyword arguments.)  The phase uses
+@code{substitute*} to modify the installed @file{egrep} and @file{fgrep}
+scripts so that they refer to @code{grep} by its absolute file name:
+
+@lisp
+(modify-phases %standard-phases
+  (add-after 'install 'fix-egrep-and-fgrep
+    ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
+    ;; absolute file name instead of searching for it in $PATH.
+    (lambda* (#:key outputs #:allow-other-keys)
+      (let* ((out (assoc-ref outputs "out"))
+             (bin (string-append out "/bin")))
+        (substitute* (list (string-append bin "/egrep")
+                           (string-append bin "/fgrep"))
+          (("^exec grep")
+           (string-append "exec " bin "/grep")))
+        #t))))
+@end lisp
+
+In the example below, phases are modified in two ways: the standard
+@code{configure} phase is deleted, presumably because the package does
+not have a @file{configure} script or anything similar, and the default
+@code{install} phase is replaced by one that manually copies the
+executable files to be installed:
+
+@lisp
+(modify-phases %standard-phases
+  (delete 'configure)      ;no 'configure' script
+  (replace 'install
+    (lambda* (#:key outputs #:allow-other-keys)
+      ;; The package's Makefile doesn't provide an "install"
+      ;; rule so do it by ourselves.
+      (let ((bin (string-append (assoc-ref outputs "out")
+                                "/bin")))
+        (install-file "footswitch" bin)
+        (install-file "scythe" bin)
+        #t))))
+@end lisp
+
+@c TODO: Add more examples.
 
 @node The Store
 @section The Store
@@ -9051,11 +9497,9 @@ Non-deterministic build processes are a problem because they make it
 practically impossible for users to @emph{verify} whether third-party
 binaries are genuine.  @xref{Invoking guix challenge}, for more.
 
-Note that, currently, the differing build results are not kept around,
-so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export}
-(@pxref{Invoking guix archive}), then rebuilding, and finally comparing
-the two results.
+When used in conjunction with @option{--keep-failed}, the differing
+output is kept in the store, under @file{/gnu/store/@dots{}-check}.
+This makes it easy to look for differences between the two results.
 
 @item --no-offload
 Do not use offload builds to other machines (@pxref{Daemon Offload
@@ -9139,6 +9583,10 @@ variants}---for instance, packages built from different source code.
 This is a convenient way to create customized packages on the fly
 without having to type in the definitions of package variants
 (@pxref{Defining Packages}).
+
+Package transformation options are preserved across upgrades:
+@command{guix upgrade} attempts to apply transformation options
+initially used when creating the profile to the upgraded packages.
 
 @table @code
 
@@ -9226,6 +9674,44 @@ must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
 
+@cindex tool chain, changing the build tool chain of a package
+@item --with-c-toolchain=@var{package}=@var{toolchain}
+This option changes the compilation of @var{package} and everything that
+depends on it so that they get built with @var{toolchain} instead of the
+default GNU tool chain for C/C++.
+
+Consider this example:
+
+@example
+guix build octave-cli \
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+The command above builds a variant of the @code{fftw} and @code{fftwf}
+packages using version 10 of @code{gcc-toolchain} instead of the default
+tool chain, and then builds a variant of the GNU@tie{}Octave
+command-line interface using them.  GNU@tie{}Octave itself is also built
+with @code{gcc-toolchain@@10}.
+
+This other example builds the Hardware Locality (@code{hwloc}) library
+and its dependents up to @code{intel-mpi-benchmarks} with the Clang C
+compiler:
+
+@example
+guix build --with-c-toolchain=hwloc=clang-toolchain \
+           intel-mpi-benchmarks
+@end example
+
+@quotation Note
+There can be application binary interface (ABI) incompatibilities among
+tool chains.  This is particularly true of the C++ standard library and
+run-time support libraries such as that of OpenMP.  By rebuilding all
+dependents with the same tool chain, @option{--with-c-toolchain} minimizes
+the risks of incompatibility but cannot entirely eliminate them.  Choose
+@var{package} wisely.
+@end quotation
+
 @item --with-git-url=@var{package}=@var{url}
 @cindex Git, using the latest commit
 @cindex latest commit, building
@@ -9275,6 +9761,34 @@ guix build --with-branch=guile-sqlite3=master cuirass
 This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
 Git commit SHA1 identifier or a tag.
+
+@cindex test suite, skipping
+@item --without-tests=@var{package}
+Build @var{package} without running its tests.  This can be useful in
+situations where you want to skip the lengthy test suite of a
+intermediate package, or if a package's test suite fails in a
+non-deterministic fashion.  It should be used with care because running
+the test suite is a good way to ensure a package is working as intended.
+
+Turning off tests leads to a different store item.  Consequently, when
+using this option, anything that depends on @var{package} must be
+rebuilt, as in this example:
+
+@example
+guix install --without-tests=python python-notebook
+@end example
+
+The command above installs @code{python-notebook} on top of
+@code{python} built without running its test suite.  To do so, it also
+rebuilds everything that depends on @code{python}, including
+@code{python-notebook} itself.
+
+Internally, @option{--without-tests} relies on changing the
+@code{#:tests?} option of a package's @code{check} phase (@pxref{Build
+Systems}).  Note that some packages use a customized @code{check} phase
+that does not respect a @code{#:tests? #f} setting.  Therefore,
+@option{--without-tests} has no effect on these packages.
+
 @end table
 
 @node Additional Build Options
@@ -9890,7 +10404,7 @@ package expressions for all those packages that are not yet in Guix.
 
 When @option{--archive=bioconductor} is added, metadata is imported from
 @uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
-packages for for the analysis and comprehension of high-throughput
+packages for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
 Information is extracted from the @file{DESCRIPTION} file contained in the
@@ -11954,11 +12468,15 @@ following in your operating system declaration:
     (guix-service-type config =>
                        (guix-configuration
                         (inherit config)
-                        (use-substitutes? #f)
-                        (extra-options '("--gc-keep-derivations"))))
+                        ;; Fetch substitutes from example.org.
+                        (substitute-urls
+                          (list "https://example.org/guix"
+                                "https://ci.guix.gnu.org"))))
     (mingetty-service-type config =>
                            (mingetty-configuration
-                            (inherit config)))))
+                            (inherit config)
+                            ;; Automatially log in as "guest".
+                            (auto-login "guest")))))
 
 (operating-system
   ;; @dots{}
@@ -12756,8 +13274,19 @@ User accounts and groups are entirely managed through the
                           "audio"   ;sound card
                           "video"   ;video devices such as webcams
                           "cdrom")) ;the good ol' CD-ROM
-  (comment "Bob's sister")
-  (home-directory "/home/alice"))
+  (comment "Bob's sister"))
+@end lisp
+
+Here's a user account that uses a different shell and a custom home
+directory (the default would be @file{"/home/bob"}):
+
+@lisp
+(user-account
+  (name "bob")
+  (group "users")
+  (comment "Alice's bro")
+  (shell (file-append zsh "/bin/zsh"))
+  (home-directory "/home/robert"))
 @end lisp
 
 When booting or upon completion of @command{guix system reconfigure},
@@ -12802,7 +13331,19 @@ if it does not exist yet.
 
 @item @code{shell} (default: Bash)
 This is a G-expression denoting the file name of a program to be used as
-the shell (@pxref{G-Expressions}).
+the shell (@pxref{G-Expressions}).  For example, you would refer to the
+Bash executable like this:
+
+@lisp
+(file-append bash "/bin/bash")
+@end lisp
+
+@noindent
+... and to the Zsh executable like that:
+
+@lisp
+(file-append zsh "/bin/zsh")
+@end lisp
 
 @item @code{system?} (default: @code{#f})
 This Boolean value indicates whether the account is a ``system''
@@ -14608,7 +15149,7 @@ It takes the following parameters:
 @item @code{wpa-supplicant} (default: @code{wpa-supplicant})
 The WPA Supplicant package to use.
 
-@item @code{requirement} (default: @code{'(user-processes dbus-system loopback syslogd)}
+@item @code{requirement} (default: @code{'(user-processes loopback syslogd)}
 List of services that should be started before WPA Supplicant starts.
 
 @item @code{dbus?} (default: @code{#t})
@@ -15188,6 +15729,9 @@ example:
 This is the configuration record for OpenSSH's @command{sshd}.
 
 @table @asis
+@item @code{openssh} (default @var{openssh})
+The Openssh package to use.
+
 @item @code{pid-file} (default: @code{"/var/run/sshd.pid"})
 Name of the file where @command{sshd} writes its PID.
 
@@ -15445,6 +15989,81 @@ connection, such that port @var{n} is the base monitoring port and
 The list of command-line arguments to pass to @command{ssh} when it is
 run.  Options @option{-f} and @option{-M} are reserved for AutoSSH and
 may cause undefined behaviour.
+
+@end table
+@end deftp
+
+@cindex WebSSH
+@deffn {Scheme Variable} webssh-service-type
+This is the type for the @uref{https://webssh.huashengdun.org/, WebSSH}
+program that runs a web SSH client.  WebSSH can be run manually from the
+command-line by passing arguments to the binary @command{wssh} from the
+package @code{webssh}, but it can also be run as a Guix service.  This
+latter use case is documented here.
+
+For example, to specify a service running WebSSH on loopback interface
+on port @code{8888} with reject policy with a list of allowed to
+connection hosts, and NGINX as a reverse-proxy to this service listening
+for HTTPS connection, add this call to the operating system's
+@code{services} field:
+
+@lisp
+(service webssh-service-type
+  (webssh-configuration (address "127.0.0.1")
+                        (port 8888)
+                        (policy 'reject)
+                        (known-hosts '("localhost ecdsa-sha2-nistp256 AAAA…"
+                                       "127.0.0.1 ecdsa-sha2-nistp256 AAAA…"))))
+
+(service nginx-service-type
+         (nginx-configuration
+          (server-blocks
+           (list
+            (nginx-server-configuration
+             (inherit %webssh-configuration-nginx)
+             (server-name '("webssh.example.com"))
+             (listen '("443 ssl"))
+             (ssl-certificate (letsencrypt-certificate "webssh.example.com"))
+             (ssl-certificate-key (letsencrypt-key "webssh.example.com"))
+             (locations
+              (cons (nginx-location-configuration
+                     (uri "/.well-known")
+                     (body '("root /var/www;")))
+                    (nginx-server-configuration-locations %webssh-configuration-nginx))))))))
+@end lisp
+@end deffn
+
+@deftp {Data Type} webssh-configuration
+Data type representing the configuration for @code{webssh-service}.
+
+@table @asis
+@item @code{package} (default: @var{webssh})
+@code{webssh} package to use.
+
+@item @code{user-name} (default: @var{"webssh"})
+User name or user ID that file transfers to and from that module should take
+place.
+
+@item @code{group-name} (default: @var{"webssh"})
+Group name or group ID that will be used when accessing the module.
+
+@item @code{address} (default: @var{#f})
+IP address on which @command{webssh} listens for incoming connections.
+
+@item @code{port} (default: @var{8888})
+TCP port on which @command{webssh} listens for incoming connections.
+
+@item @code{policy} (default: @var{#f})
+Connection policy.  @var{reject} policy requires to specify @var{known-hosts}.
+
+@item @code{known-hosts} (default: @var{'()})
+List of hosts which allowed for SSH connection from @command{webssh}.
+
+@item @code{log-file} (default: @file{"/var/log/webssh.log"})
+Name of the file where @command{rsync} writes its log file.
+
+@item @code{log-level} (default: @var{#f})
+Logging level.
 
 @end table
 @end deftp
@@ -17165,6 +17784,8 @@ their default values are:
 @code{suspend}
 @item handle-lid-switch-docked
 @code{ignore}
+@item handle-lid-switch-external-power
+@code{ignore}
 @item power-key-ignore-inhibited?
 @code{#f}
 @item suspend-key-ignore-inhibited?
@@ -17530,10 +18151,10 @@ List of settings to set in @file{daemon.conf}, formatted just like
 @var{client-conf}.
 
 @item @var{script-file} (default: @code{(file-append pulseaudio "/etc/pulse/default.pa")})
-Script file to use as as @file{default.pa}.
+Script file to use as @file{default.pa}.
 
 @item @var{system-script-file} (default: @code{(file-append pulseaudio "/etc/pulse/system.pa")})
-Script file to use as as @file{system.pa}.
+Script file to use as @file{system.pa}.
 @end table
 @end deftp
 
@@ -19531,7 +20152,8 @@ Mailutils Manual}, for details.
 @cindex jabber
 @cindex XMPP
 The @code{(gnu services messaging)} module provides Guix service
-definitions for messaging services: currently only Prosody is supported.
+definitions for messaging services.  Currently it provides the following
+services:
 
 @subsubheading Prosody Service
 
@@ -19721,7 +20343,7 @@ can create such a file with:
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string curve
-Curve for Elliptic curve Diffie-Hellman. Prosody's default is
+Curve for Elliptic curve Diffie-Hellman.  Prosody's default is
 @samp{"secp384r1"}.
 @end deftypevr
 
@@ -21661,7 +22283,29 @@ names of loadable modules, as in this example:
 (modules
  (list
   (file-append nginx-accept-language-module "\
-/etc/nginx/modules/ngx_http_accept_language_module.so")))
+/etc/nginx/modules/ngx_http_accept_language_module.so")
+  (file-append nginx-lua-module "\
+/etc/nginx/modules/ngx_http_lua_module.so")))
+@end lisp
+
+@item @code{lua-package-path} (default: @code{'()})
+List of nginx lua packages to load.  This should be a list of package
+names of loadable lua modules, as in this example:
+
+@lisp
+(lua-package-path (list lua-resty-core
+                        lua-resty-lrucache
+                        lua-resty-signal
+                        lua-tablepool
+                        lua-resty-shell))
+@end lisp
+
+@item @code{lua-package-cpath} (default: @code{'()})
+List of nginx lua C packages to load.  This should be a list of package
+names of loadable lua C modules, as in this example:
+
+@lisp
+(lua-package-cpath (list lua-resty-signal))
 @end lisp
 
 @item @code{global-directives} (default: @code{'((events . ()))})
@@ -22664,7 +23308,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{id} (default: @code{""})
-An identifier for ether configuration fields to refer to this key. IDs must be
+An identifier for other configuration fields to refer to this key. IDs must be
 unique and must not be empty.
 
 @item @code{address} (default: @code{'()})
@@ -23153,6 +23797,60 @@ disables caching.
 
 @item @code{negative-cache?} (default: @code{#t})
 When false, disable negative caching.
+
+@item @code{tftp-enable?} (default: @code{#f})
+Whether to enable the built-in TFTP server.
+
+@item @code{tftp-no-fail?} (default: @code{#f})
+If true, does not fail dnsmasq if the TFTP server could not start up.
+
+@item @code{tftp-single-port?} (default: @code{#f})
+Whether to use only one single port for TFTP.
+
+@item @code{tftp-secure?} (default: @code{#f})
+If true, only files owned by the user running the dnsmasq process are accessible.
+
+If dnsmasq is being run as root, different rules apply:
+@code{tftp-secure?} has no effect, but only files which have the
+world-readable bit set are accessible.
+
+@item @code{tftp-max} (default: @code{#f})
+If set, sets the maximal number of concurrent connections allowed.
+
+@item @code{tftp-mtu} (default: @code{#f})
+If set, sets the MTU for TFTP packets to that value.
+
+@item @code{tftp-no-blocksize?} (default: @code{#f})
+If true, stops the TFTP server from negotiating the blocksize with a client.
+
+@item @code{tftp-lowercase?} (default: @code{#f})
+Whether to convert all filenames in TFTP requests to lowercase.
+
+@item @code{tftp-port-range} (default: @code{#f})
+If set, fixes the dynamical ports (one per client) to the given range
+(@code{"<start>,<end>"}).
+
+@item @code{tftp-root} (default: @code{/var/empty,lo})
+Look for files to transfer using TFTP relative to the given directory.
+When this is set, TFTP paths which include ".." are rejected, to stop clients
+getting outside the specified root. Absolute paths (starting with /) are
+allowed, but they must be within the tftp-root. If the optional interface
+argument is given, the directory is only used for TFTP requests via that
+interface.
+
+@item @code{tftp-unique-root} (default: @code{#f})
+If set, add the IP or hardware address of the TFTP client as a path component
+on the end of the TFTP-root.  Only valid if a TFTP root is set and the
+directory exists.  Defaults to adding IP address (in standard dotted-quad
+format).
+
+For instance, if --tftp-root is "/tftp" and client 1.2.3.4 requests file
+"myfile" then the effective path will be "/tftp/1.2.3.4/myfile" if
+/tftp/1.2.3.4 exists or /tftp/myfile otherwise. When "=mac" is specified
+it will append the MAC address instead, using lowercase zero padded digits
+separated by dashes, e.g.: 01-02-03-04-aa-bb Note that resolving MAC
+addresses is only possible if the client is in the local network or obtained
+a DHCP lease from dnsmasq.
 
 @end table
 @end deftp
@@ -23909,6 +24607,14 @@ Location of the log file.
 @item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
 Location of the log file used by the web interface.
 
+@item @code{queries-log-file} (default: @code{#f})
+Location of the SQL queries log file. By default, SQL queries logging is
+disabled.
+
+@item @code{web-queries-log-file} (default: @code{#f})
+Location of the web SQL queries log file. By default, web SQL queries
+logging is disabled.
+
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
 
@@ -24593,7 +25299,7 @@ mixer, the @code{null} mixer (allows setting the volume, but with no
 effect; this can be used as a trick to implement an external mixer
 External Mixer) or no mixer (@code{none}).
 
-@item @code{extra-options} (default: @code{'()"})
+@item @code{extra-options} (default: @code{'()})
 An association list of option symbols to string values to be appended to
 the audio output configuration.
 
@@ -24618,13 +25324,14 @@ an HTTP audio streaming output.
 
 
 @node Virtualization Services
-@subsection Virtualization services
+@subsection Virtualization Services
 
 The @code{(gnu services virtualization)} module provides services for
 the libvirt and virtlog daemons, as well as other virtualization-related
 services.
 
 @subsubheading Libvirt daemon
+
 @code{libvirtd} is the server side daemon component of the libvirt
 virtualization management system. This daemon runs on host servers
 and performs required management tasks for virtualized guests.
@@ -24651,7 +25358,7 @@ Libvirt package.
 
 @deftypevr {@code{libvirt-configuration} parameter} boolean listen-tls?
 Flag listening for secure TLS connections on the public TCP/IP port.
-must set @code{listen} for this to have any effect.
+You must set @code{listen} for this to have any effect.
 
 It is necessary to setup a CA and issue server certificates before using
 this capability.
@@ -24661,28 +25368,28 @@ Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} boolean listen-tcp?
-Listen for unencrypted TCP connections on the public TCP/IP port.  must
+Listen for unencrypted TCP connections on the public TCP/IP port.  You must
 set @code{listen} for this to have any effect.
 
 Using the TCP socket requires SASL authentication by default.  Only SASL
 mechanisms which support data encryption are allowed.  This is
-DIGEST_MD5 and GSSAPI (Kerberos5)
+DIGEST_MD5 and GSSAPI (Kerberos5).
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} string tls-port
-Port for accepting secure TLS connections This can be a port number, or
-service name
+Port for accepting secure TLS connections.   This can be a port number,
+or service name.
 
 Defaults to @samp{"16514"}.
 
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} string tcp-port
-Port for accepting insecure TCP connections This can be a port number,
-or service name
+Port for accepting insecure TCP connections.  This can be a port number,
+or service name.
 
 Defaults to @samp{"16509"}.
 
@@ -24994,7 +25701,7 @@ Defaults to @samp{3}.
 Logging filters.
 
 A filter allows to select a different logging level for a given category
-of logs The format for a filter is one of:
+of logs.  The format for a filter is one of:
 
 @itemize @bullet
 @item
@@ -25325,7 +26032,8 @@ Maximum number of backup files to keep.
 Defaults to @samp{3}
 
 @end deftypevr
-@node Transparent Emulation with QEMU
+
+@anchor{transparent-emulation-qemu}
 @subsubheading Transparent Emulation with QEMU
 
 @cindex emulation
@@ -25335,6 +26043,8 @@ emulation of program binaries built for different architectures---e.g.,
 it allows you to transparently execute an ARMv7 program on an x86_64
 machine.  It achieves this by combining the @uref{https://www.qemu.org,
 QEMU} emulator and the @code{binfmt_misc} feature of the kernel Linux.
+This feature only allows you to emulate GNU/Linux on a different
+architecture, but see below for GNU/Hurd support.
 
 @defvr {Scheme Variable} qemu-binfmt-service-type
 This is the type of the QEMU/binfmt service for transparent emulation.
@@ -25419,16 +26129,41 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @cindex childhurd
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
-virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
-a Shepherd service that can be referred to by the names @code{hurd-vm}
-and @code{childhurd} and be controlled with commands such as:
+virtual machine (VM), a so-called @dfn{childhurd}.  This service is meant
+to be used on GNU/Linux and the given GNU/Hurd operating system
+configuration is cross-compiled.  The virtual machine is a Shepherd
+service that can be referred to by the names @code{hurd-vm} and
+@code{childhurd} and be controlled with commands such as:
 
 @example
 herd start hurd-vm
 herd stop childhurd
 @end example
 
-The given GNU/Hurd operating system configuration is cross-compiled.
+When the service is running, you can view its console by connecting to
+it with a VNC client, for example with:
+
+@example
+guix environment --ad-hoc tigervnc-client -- \
+         vncviewer localhost:5900
+@end example
+
+The default configuration (see @code{hurd-vm-configuration} below)
+spawns a secure shell (SSH) server in your GNU/Hurd system, which QEMU
+(the virtual machine emulator) redirects to port 10222 on the host.
+Thus, you can connect over SSH to the childhurd with:
+
+@example
+ssh root@@localhost -p 10022
+@end example
+
+The childhurd is volatile and stateless: it starts with a fresh root
+file system every time you restart it.  By default though, all the files
+under @file{/etc/childhurd} on the host are copied as is to the root
+file system of the childhurd when it boots.  This allows you to
+initialize ``secrets'' inside the VM: SSH host keys, authorized
+substitute keys, and so on---see the explanation of @code{secret-root}
+below.
 
 @defvr {Scheme Variable} hurd-vm-service-type
 This is the type of the Hurd in a Virtual Machine service.  Its value
@@ -25489,15 +26224,17 @@ By default, it produces
 @lisp
 '("--device" "rtl8139,netdev=net0"
   "--netdev" "user,id=net0\
-              ,hostfwd=tcp:127.0.0.1:<secrets-port>-:1004\
-              ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
-              ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
+              ,hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004\
+              ,hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222\
+              ,hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900")
 @end lisp
-with forwarded ports
+
+with forwarded ports:
+
 @example
-<ssh-port>: @code{(+ 11004 (* 1000 @var{ID}))}
-<ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
-<vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
+@var{secrets-port}: @code{(+ 11004 (* 1000 @var{ID}))}
+@var{ssh-port}: @code{(+ 10022 (* 1000 @var{ID}))}
+@var{vnc-port}: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
 
 @item @code{secret-root} (default: @file{/etc/childhurd})
@@ -25510,10 +26247,11 @@ If the @file{/etc/childhurd} directory does not exist, the
 @code{secret-service} running in the Childhurd will be sent an empty
 list of secrets.
 
-Typical use to populate @file{"/etc/childhurd"} with a tree of
-non-volatile secrets, like so
+By default, the service automatically populates @file{/etc/childhurd}
+with the following non-volatile secrets, unless they already exist:
 
 @example
+/etc/childhurd/etc/guix/acl
 /etc/childhurd/etc/guix/signing-key.pub
 /etc/childhurd/etc/guix/signing-key.sec
 /etc/childhurd/etc/ssh/ssh_host_ed25519_key
@@ -25522,8 +26260,32 @@ non-volatile secrets, like so
 /etc/childhurd/etc/ssh/ssh_host_ecdsa_key.pub
 @end example
 
-to be sent to the Childhurd, including permissions.
+These files are automatically sent to the guest Hurd VM when it boots,
+including permissions.
 
+@cindex childhurd, offloading
+@cindex Hurd, offloading
+Having these files in place means that only a couple of things are
+missing to allow the host to offload @code{i586-gnu} builds to the
+childhurd:
+
+@enumerate
+@item
+Authorizing the childhurd's key on the host so that the host accepts
+build results coming from the childhurd, which can be done like so:
+
+@example
+guix archive --authorize < \
+  /etc/childhurd/etc/guix/signing-key.pub
+@end example
+
+@item
+Adding the childhurd to @file{/etc/guix/machines.scm} (@pxref{Daemon
+Offload Setup}).
+@end enumerate
+
+We're working towards making that happen automatically---get in touch
+with us at @email{guix-devel@@gnu.org} to discuss it!
 @end table
 @end deftp
 
@@ -25536,7 +26298,7 @@ the @code{--snapshot} flag using something along these lines:
 (service hurd-vm-service-type
          (hurd-vm-configuration
           (image   (const "/out/of/store/writable/hurd.img"))
-          (options '("--hda"))))
+          (options '())))
 @end lisp
 
 @subsubheading Ganeti
@@ -26115,7 +26877,7 @@ When true, the daemon performs additional logging for debugging purposes.
 @defvr {Scheme Variable} ganeti-watcher-service-type
 @command{ganeti-watcher} is a script designed to run periodically and ensure
 the health of a cluster.  It will automatically restart instances that have
-stopped without Ganetis consent, and repairs DRBD links in case a node has
+stopped without Ganeti's consent, and repairs DRBD links in case a node has
 rebooted.  It also archives old cluster jobs and restarts Ganeti daemons
 that are not running.  If the cluster parameter @code{ensure_node_health}
 is set, the watcher will also shutdown instances and DRBD devices if the
@@ -27493,6 +28255,168 @@ The complete list of possible options can be found in the man page for
 @node Guix Services
 @subsection Guix Services
 
+@subsubheading Guix Build Coordinator
+The @uref{https://git.cbaines.net/guix/build-coordinator/,Guix Build
+Coordinator} aids in distributing derivation builds among machines
+running an @dfn{agent}.  The build daemon is still used to build the
+derivations, but the Guix Build Coordinator manages allocating builds
+and working with the results.
+
+@quotation Note
+This service is considered experimental.  Configuration options may be
+changed in a backwards-incompatible manner, and not all features have
+been thorougly tested.
+@end quotation
+
+The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
+more connected @dfn{agent} processes. The coordinator process handles
+clients submitting builds, and allocating builds to agents. The agent
+processes talk to a build daemon to actually perform the builds, then
+send the results back to the coordinator.
+
+There is a script to run the coordinator component of the Guix Build
+Coordinator, but the Guix service uses a custom Guile script instead, to
+provide better integration with G-expressions used in the configuration.
+
+@defvar {Scheme Variable} guix-build-coordinator-service-type
+Service type for the Guix Build Coordinator.  Its value must be a
+@code{guix-build-coordinator-configuration} object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-configuration
+Data type representing the configuration of the Guix Build Coordinator.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-build-coordinator"})
+The system group to run the service as.
+
+@item @code{database-uri-string} (default: @code{"sqlite:///var/lib/guix-build-coordinator/guix_build_coordinator.db"})
+The URI to use for the database.
+
+@item @code{agent-communication-uri} (default: @code{"http://0.0.0.0:8745"})
+The URI describing how to listen to requests from agent processes.
+
+@item @code{client-communication-uri} (default: @code{"http://127.0.0.1:8746"})
+The URI describing how to listen to requests from clients.  The client
+API allows submitting builds and currently isn't authenticated, so take
+care when configuring this value.
+
+@item @code{allocation-strategy} (default: @code{#~basic-build-allocation-strategy})
+A G-expression for the allocation strategy to be used.  This is a
+procedure that takes the datastore as an argument and populates the
+allocation plan in the database.
+
+@item @code{hooks} (default: @var{'()})
+An association list of hooks.  These provide a way to execute arbitrary
+code upon certain events, like a build result being processed.
+
+@item @code{guile} (default: @code{guile-3.0-latest})
+The Guile package with which to run the Guix Build Coordinator.
+
+@end table
+@end deftp
+
+@defvar {Scheme Variable} guix-build-coordinator-agent-service-type
+Service type for a Guix Build Coordinator agent.  Its value must be a
+@code{guix-build-coordinator-agent-configuration} object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-agent-configuration
+Data type representing the configuration a Guix Build Coordinator agent.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator-agent"})
+The system user to run the service as.
+
+@item @code{coordinator} (default: @code{"http://localhost:8745"})
+The URI to use when connecting to the coordinator.
+
+@item @code{uuid}
+The UUID of the agent.  This should be generated by the coordinator
+process, stored in the coordinator database, and used by the intended
+agent.
+
+@item @code{password} (default: @code{#f})
+The password to use when connecting to the coordinator.  A file to read
+the password from can also be specified, and this is more secure.
+
+@item @code{password-file} (default: @code{#f})
+A file containing the password to use when connecting to the
+coordinator.
+
+@item @code{systems} (default: @var{#f})
+The systems for which this agent should fetch builds.  The agent process
+will use the current system it's running on as the default.
+
+@item @code{max-parallel-builds} (default: @code{1})
+The number of builds to perform in parallel.
+
+@item @code{derivation-substitute-urls} (default: @code{1})
+URLs from which to attempt to fetch substitutes for derivations, if the
+derivations aren't already available.
+
+@item @code{non-derivation-substitute-urls} (default: @code{1})
+URLs from which to attempt to fetch substitutes for build inputs, if the
+input store items aren't already available.
+
+@end table
+@end deftp
+
+The Guix Build Coordinator package contains a script to query an
+instance of the Guix Data Service for derivations to build, and then
+submit builds for those derivations to the coordinator.  The service
+type below assists in running this script.  This is an additional tool
+that may be useful when building derivations contained within an
+instance of the Guix Data Service.
+
+@defvar {Scheme Variable} guix-build-coordinator-queue-builds-service-type
+Service type for the
+guix-build-coordinator-queue-builds-from-guix-data-service script.  Its
+value must be a @code{guix-build-coordinator-queue-builds-configuration}
+object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-queue-builds-configuration
+Data type representing the options to the queue builds from guix data
+service script.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator-queue-builds"})
+The system user to run the service as.
+
+@item @code{coordinator} (default: @code{"http://localhost:8745"})
+The URI to use when connecting to the coordinator.
+
+@item @code{systems} (default: @code{#f})
+The systems for which to fetch derivations to build.
+
+@item @code{systems-and-targets} (default: @code{#f})
+An association list of system and target pairs for which to fetch
+derivations to build.
+
+@item @code{guix-data-service} (default: @code{"https://data.guix.gnu.org"})
+The Guix Data Service instance from which to query to find out about
+derivations to build.
+
+@item @code{processed-commits-file} (default: @code{"/var/cache/guix-build-coordinator-queue-builds/processed-commits"})
+A file to record which commits have been processed, to avoid needlessly
+processing them again if the service is restarted.
+
+@end table
+@end deftp
+
 @subsubheading Guix Data Service
 The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
 and provides data about GNU Guix.  This includes information about
@@ -27667,22 +28591,22 @@ This is the data type representing the configuration for the zram-device
 service.
 
 @table @asis
-@item @code{size} (default @var{"1G"})
+@item @code{size} (default @code{"1G"})
 This is the amount of space you wish to provide for the zram device.  It
 accepts a string and can be a number of bytes or use a suffix, eg.:
-@var{"512M"} or @var{1024000}.
-@item @code{compression-algorithm} (default @var{'lzo})
+@code{"512M"} or @code{1024000}.
+@item @code{compression-algorithm} (default @code{'lzo})
 This is the compression algorithm you wish to use.  It is difficult to
 list all the possible compression options, but common ones supported by
-Guix's Linux Libre Kernel include @var{'lzo}, @var{'lz4} and @var{'zstd}.
-@item @code{memory-limit} (default @var{0})
+Guix's Linux Libre Kernel include @code{'lzo}, @code{'lz4} and @code{'zstd}.
+@item @code{memory-limit} (default @code{0})
 This is the maximum amount of memory which the zram device can use.
 Setting it to '0' disables the limit.  While it is generally expected
 that compression will be 2:1, it is possible that uncompressable data
 can be written to swap and this is a method to limit how much memory can
 be used.  It accepts a string and can be a number of bytes or use a
-suffix, eg.: @var{"2G"}.
-@item @code{priority} (default @var{-1})
+suffix, eg.: @code{"2G"}.
+@item @code{priority} (default @code{-1})
 This is the priority of the swap device created from the zram device.
 @code{swapon} accepts values between -1 and 32767, with higher values
 indicating higher priority.  Higher priority swap will generally be used
@@ -27997,7 +28921,10 @@ This is the data type representing the configuration of Docker and Containerd.
 @table @asis
 
 @item @code{package} (default: @code{docker})
-The Docker package to use.
+The Docker daemon package to use.
+
+@item @code{package} (default: @code{docker-cli})
+The Docker client package to use.
 
 @item @code{containerd} (default: @var{containerd})
 The Containerd package to use.
@@ -28092,7 +29019,7 @@ The @code{(gnu services science)} module provides the following service.
 @defvr {Scheme Variable} rshiny-service-type
 
 This is a type of service which is used to run a webapp created with
-@code{r-shiny}.  This service sets the @code{R_LIBS_USER} environment
+@code{r-shiny}.  This service sets the @env{R_LIBS_USER} environment
 variable and runs the provided script to call @code{runApp}.
 
 @deftp {Data Type} rshiny-configuration
@@ -28647,7 +29574,15 @@ The type of a bootloader configuration declaration.
 @cindex BIOS, bootloader
 The bootloader to use, as a @code{bootloader} object. For now
 @code{grub-bootloader}, @code{grub-efi-bootloader},
-@code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
+@code{grub-efi-netboot-bootloader}, @code{extlinux-bootloader} and
+@code{u-boot-bootloader} are supported.
+
+@cindex ARM, bootloaders
+@cindex AArch64, bootloaders
+Available bootloaders are described in @code{(gnu bootloader @dots{})}
+modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
+of bootloaders for a wide range of ARM and AArch64 systems, using the
+@uref{https://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @vindex grub-efi-bootloader
 @code{grub-efi-bootloader} allows to boot on modern systems using the
@@ -28659,12 +29594,52 @@ when you boot it on your system.
 @code{grub-bootloader} allows you to boot in particular Intel-based machines
 in ``legacy'' BIOS mode.
 
-@cindex ARM, bootloaders
-@cindex AArch64, bootloaders
-Available bootloaders are described in @code{(gnu bootloader @dots{})}
-modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
-of bootloaders for a wide range of ARM and AArch64 systems, using the
-@uref{https://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
+@vindex grub-efi-netboot-bootloader
+@code{grub-efi-netboot-bootloader} allows you to boot your system over network
+through TFTP.  In combination with an NFS root file system this allows you to
+build a diskless Guix system.
+
+The installation of the @code{grub-efi-netboot-bootloader} generates the content
+of the TFTP root directory at @code{target}
+(@pxref{Bootloader Configuration, @code{target}}), to be served by a TFTP server.
+ You may want to mount your TFTP server directory onto @code{target} to move the
+required files to the TFTP server automatically.
+
+If you plan to use an NFS root file system as well (actually if you mount the
+store from an NFS share), then the TFTP server needs to serve the file
+@file{/boot/grub/grub.cfg} and other files from the store (like GRUBs background
+image, the kernel (@pxref{operating-system Reference, @code{kernel}}) and the
+initrd (@pxref{operating-system Reference, @code{initrd}})), too.  All these
+files from the store will be accessed by GRUB through TFTP with their normal
+store path, for example as
+@file{tftp://tftp-server/gnu/store/…-initrd/initrd.cpio.gz}.
+
+Two symlinks are created to make this possible.  The first symlink is
+@code{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
+@file{../../../boot/grub/grub.cfg},
+where @code{target} may be @file{/boot}.  In this case the link is not leaving
+the served TFTP root directory, but otherwise it does.  The second link is
+@code{target}@file{/gnu/store} and points to @file{../gnu/store}.  This link
+is leaving the served TFTP root directory.
+
+The assumption behind all this is that you have an NFS server exporting the root
+file system for your Guix system, and additionally a TFTP server exporting your
+@code{target} directory—usually @file{/boot}—from that same root file system for
+your Guix system.  In this constellation the symlinks will work.
+
+For other constellations you will have to program your own bootloader installer,
+which then takes care to make necessary files from the store accessible through
+TFTP, for example by copying them into the TFTP root directory at @code{target}.
+
+It is important to note that symlinks pointing outside the TFTP root directory
+may need to be allowed in the configuration of your TFTP server.  Further the
+store link exposes the whole store through TFTP.  Both points need to be
+considered carefully for security aspects.
+
+Beside the @code{grub-efi-netboot-bootloader}, the already mentioned TFTP and
+NFS servers, you also need a properly configured DHCP server to make the booting
+over netboot possible.  For all this we can currently only recommend you to look
+for instructions about @acronym{PXE, Preboot eXecution Environment}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
@@ -28675,7 +29650,9 @@ The interpretation depends on the bootloader in question.  For
 the bootloader @command{installer} command, such as @code{/dev/sda} or
 @code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
 @code{grub-efi-bootloader}, it should be the mount point of the EFI file
-system, usually @file{/boot/efi}.
+system, usually @file{/boot/efi}.  For @code{grub-efi-netboot-bootloader},
+@code{target} should be the mount point corresponding to the TFTP root
+directory of your TFTP server.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -28837,7 +29814,7 @@ Data type representing the configuration of the GRUB theme.
 
 @table @asis
 @item @code{gfxmode} (default: @code{'("auto")})
-The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
+The GRUB @code{gfxmode} to set (a list of screen resolution strings,
 @pxref{gfxmode,,, grub, GNU GRUB manual}).
 @end table
 @end deftp
@@ -29158,23 +30135,27 @@ a value.  Docker images are built to contain exactly what they need, so
 the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
-You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to @code{ext4}.  When its
-value is @code{iso9660}, the @option{--label} option can be used to specify
-a volume ID with @code{disk-image}.
+The @code{disk-image} command can produce various image types.  The
+image type can be selected using the @command{--image-type} option.  It
+defaults to @code{raw}. When its value is @code{iso9660}, the
+@option{--label} option can be used to specify a volume ID with
+@code{disk-image}.
 
-When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
-for more information on how to run the image in a virtual machine.
-
-When using @code{disk-image}, a raw disk image is produced; it can be
-copied as is to a USB stick, for instance.  Assuming @code{/dev/sdc} is
-the device corresponding to a USB stick, one can copy the image to it
-using the following command:
+When using the @code{raw} image type, a raw disk image is produced; it
+can be copied as is to a USB stick, for instance.  Assuming
+@code{/dev/sdc} is the device corresponding to a USB stick, one can copy
+the image to it using the following command:
 
 @example
 # dd if=$(guix system disk-image my-os.scm) of=/dev/sdc status=progress
 @end example
+
+The @code{--list-image-types} command lists all the available image
+types.
+
+When using @code{vm-image}, the returned image is in qcow2 format, which
+the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
+for more information on how to run the image in a virtual machine.
 
 When using @code{docker-image}, a Docker image is produced.  Guix builds
 the image from scratch, not from a pre-existing Docker base image.  As a
@@ -29277,17 +30258,17 @@ information, one can rebuild the image to make sure it really contains
 what it pretends to contain; or they could use that to derive a variant
 of the image.
 
-@item --file-system-type=@var{type}
+@item --image-type=@var{type}
 @itemx -t @var{type}
-For the @code{disk-image} action, create a file system of the given
-@var{type} on the image.
+For the @code{disk-image} action, create an image with given @var{type}.
 
-When this option is omitted, @command{guix system} uses @code{ext4}.
+When this option is omitted, @command{guix system} uses the @code{raw}
+image type.
 
 @cindex ISO-9660 format
 @cindex CD image format
 @cindex DVD image format
-@option{--file-system-type=iso9660} produces an ISO-9660 image, suitable
+@option{--image-type=iso9660} produces an ISO-9660 image, suitable
 for burning on CDs and DVDs.
 
 @item --image-size=@var{size}
@@ -29496,7 +30477,8 @@ a Virtual Private Server (VPS) provider.  In such a case, a different
 
 Do note that you first need to generate a key pair on the coordinator machine
 to allow the daemon to export signed archives of files from the store
-(@pxref{Invoking guix archive}).
+(@pxref{Invoking guix archive}), though this step is automatic on Guix
+System:
 
 @example
 # guix archive --generate-key
@@ -29886,7 +30868,7 @@ A service of this type is instantiated like this:
 (service guix-service-type
          (guix-configuration
            (build-accounts 5)
-           (use-substitutes? #f)))
+           (extra-options '("--gc-keep-derivations"))))
 @end lisp
 
 The second argument to the @code{service} form is a value representing

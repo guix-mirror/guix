@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,6 +141,46 @@ large and/or frequently changing (network) environment.")
     ;; fedfs/ is GPL-2-only but not built.
     (license (list license:bsd-3        ; modules/cyrus-sasl.c
                    license:gpl2+))))    ; the rest
+
+(define-public bindfs
+  (package
+    (name "bindfs")
+    (version "1.14.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bindfs.org/downloads/bindfs-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15y4brlcrqhxl6z73785m0dr1vp2q3wc6xss08x9jjr0apzmmjp5"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The tests have no hope of passing until there is a "nogroup"
+     ;; entry (or at least some group to which the guix builder does
+     ;; not belong) in the /etc/group file of the build environment.
+     ;; Currently we do not have such a group.  Disable tests for now.
+     '(#:tests? #f))
+    (native-inputs
+       ;; Native inputs to run the tests
+       ;; ("ruby" ,ruby)
+       ;; ("valgrind" ,valgrind)
+       ;; ("which" ,which)
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)))
+    (home-page "https://bindfs.org")
+    (synopsis "Bind mount a directory and alter permission bits")
+    (description
+     "@command{bindfs} is a FUSE filesystem for mounting a directory to
+another location, similar to @command{mount --bind}.  It can be used for:
+@itemize
+@item Making a directory read-only.
+@item Making all executables non-executable.
+@item Sharing a directory with a list of users (or groups).
+@item Modifying permission bits using rules with chmod-like syntax.
+@item Changing the permissions with which files are created.
+@end itemize ")
+    (license license:gpl2+)))
 
 (define-public fsarchiver
   (package
@@ -504,8 +545,8 @@ non-determinism in the build process.")
            (lambda _ (invoke "./autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("libtirpc", libtirpc)
-       ("rpcsvc-proto", rpcsvc-proto)
+       ("libtirpc" ,libtirpc)
+       ("rpcsvc-proto" ,rpcsvc-proto)
        ("python-2" ,python-2) ; must be version 2
        ("flex" ,flex)
        ("bison" ,bison)
@@ -515,15 +556,15 @@ non-determinism in the build process.")
        ("cmocka" ,cmocka)))
     (inputs
      `(("acl" ,acl)
-       ("fuse", fuse)
+       ("fuse" ,fuse)
        ("openssl" ,openssl)
        ("liburcu" ,liburcu)
        ("libuuid" ,util-linux "lib")
        ("libxml2" ,libxml2)
        ("readline" ,readline)
        ("zlib" ,zlib)
-       ("libaio", libaio)
-       ("rdma-core", rdma-core)))
+       ("libaio" ,libaio)
+       ("rdma-core" ,rdma-core)))
     (home-page "https://www.gluster.org")
     (synopsis "Distributed file system")
     (description "GlusterFS is a distributed scalable network file system
@@ -768,7 +809,7 @@ community.")
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.29.0")
+    (version "2.31.0")
     (source
      (origin
        (method url-fetch)
@@ -776,7 +817,7 @@ community.")
                            version "/mergerfs-" version ".tar.gz"))
        (sha256
         (base32
-         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+         "0k4asbg5n9dhy5jpjkw6simqqnr1zira2y4i71cq05091dfwm90p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -797,8 +838,9 @@ community.")
              ;; The Makefile does not allow overriding PREFIX via make variables.
              (substitute* '("Makefile" "libfuse/Makefile")
                (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               (("= /sbin") "= $(EXEC_PREFIX)/sbin")
                ;; cannot chown as build user
-               (("chown root:root") "true"))
+               (("chown root(:root)?") "true"))
              #t)))))
     ;; mergerfs bundles a heavily modified copy of libfuse.
     (inputs `(("util-linux" ,util-linux)))
@@ -813,8 +855,8 @@ is similar to mhddfs, unionfs, and aufs.")
               ))))
 
 (define-public mergerfs-tools
-  (let ((commit "c926779d87458d103f3b674603bf97801ae2486d")
-        (revision "1"))
+  (let ((commit "480296ed03d1c3c7909697d7ef96d35840ee26b8")
+        (revision "2"))
     (package
       (name "mergerfs-tools")
       ;; No released version exists.
@@ -828,7 +870,7 @@ is similar to mhddfs, unionfs, and aufs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "04hhwcib0xv4cf1mkj8zrp2aqpxkncml9iqg4m1mz6a5zhzsk0vm"))))
+           "0xr06gi4xcr832rzy0hkp5c1n231s7w5iq1nkjvx9kvm0dl7chpq"))))
       (build-system copy-build-system)
       (inputs
        `(("python" ,python)
@@ -917,5 +959,5 @@ Dropbox API v2.")
   (synopsis "User-space file system for Dropbox")
   (description
    "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
-local filesystem using FUSE.")
+local file system using FUSE.")
   (license license:gpl3+)))

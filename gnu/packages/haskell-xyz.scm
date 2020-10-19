@@ -5524,8 +5524,8 @@ Vim.")
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/hex")
     (synopsis "Convert strings into hexadecimal and back")
-    (description "This package provides conversion functions between
-bytestrings and their hexademical representation.")
+    (description "This package converts between bytestrings and their
+hexadecimal string representation.")
     (license license:bsd-3)))
 
 (define-public ghc-highlighting-kate

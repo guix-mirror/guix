@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,9 @@
   (docker
    (package docker)
    "Docker daemon package.")
+  (docker-cli
+   (package docker-cli)
+   "Docker client package.")
   (containerd
    (package containerd)
    "containerd package.")
@@ -80,7 +84,8 @@ loop-back communications.")
 
 (define (containerd-shepherd-service config)
   (let* ((package (docker-configuration-containerd config))
-         (debug? (docker-configuration-debug? config)))
+         (debug? (docker-configuration-debug? config))
+         (containerd (docker-configuration-containerd config)))
     (shepherd-service
            (documentation "containerd daemon.")
            (provision '(containerd))
@@ -89,6 +94,9 @@ loop-back communications.")
                            #$@(if debug?
                                   '("--log-level=debug")
                                   '()))
+                     ;; For finding containerd-shim binary.
+                     #:environment-variables
+                     (list (string-append "PATH=" #$containerd "/bin"))
                      #:log-file "/var/log/containerd.log"))
            (stop #~(make-kill-destructor)))))
 
@@ -118,9 +126,11 @@ loop-back communications.")
                            #$@(if debug?
                                   '("--debug" "--log-level=debug")
                                   '())
-                           (if #$enable-proxy? "--userland-proxy" "")
-                           "--userland-proxy-path" (string-append #$proxy
-                                                                  "/bin/proxy")
+                           #$@(if enable-proxy?
+                                  (list "--userland-proxy=true"
+                                        #~(string-append
+                                           "--userland-proxy-path=" #$proxy "/bin/proxy"))
+                                  '("--userland-proxy=false"))
                            (if #$enable-iptables?
                                "--iptables"
                                "--iptables=false"))
@@ -136,7 +146,7 @@ bundles in Docker containers.")
                  (list
                   ;; Make sure the 'docker' command is available.
                   (service-extension profile-service-type
-                                     (list docker-cli))
+                                     (compose list docker-configuration-docker-cli))
                   (service-extension activation-service-type
                                      %docker-activation)
                   (service-extension shepherd-root-service-type

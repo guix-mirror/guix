@@ -180,7 +180,7 @@ Return the corresponding association list of '((KEY . VALUE) (KEY2 . VALUE2)
 (define (connman-state)
   "Return the state of connman. The nominal states are 'offline, 'idle,
 'ready, 'oneline.  If an unexpected state is read, 'unknown is
-returned. Finally, an error is raised if the comman output could not be
+returned. Finally, an error is raised if the connman output could not be
 parsed, usually because the connman daemon is not responding."
   (let* ((output (connman "state"))
          (state-keys (parse-keys output)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,18 +42,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages certs)
-  #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages ssh)
-  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
-  #:use-module (gnu packages disk)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages nvi)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
@@ -445,6 +441,12 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (label (string-append "GNU Guix installation "
                           (package-version guix)))
 
+    ;; XXX: The AMD Radeon driver is reportedly broken, which makes kmscon
+    ;; non-functional:
+    ;; <https://lists.gnu.org/archive/html/guix-devel/2019-03/msg00441.html>.
+    ;; Thus, blacklist it.
+    (kernel-arguments '("quiet" "modprobe.blacklist=radeon"))
+
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
@@ -490,27 +492,14 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (cons* glibc ;for 'tzselect' & co.
-                     parted gptfdisk ddrescue
-                     fontconfig
-                     font-dejavu font-gnu-unifont
-                     grub                  ;mostly so xrefs to its manual work
-                     cryptsetup
-                     mdadm
-                     dosfstools         ;mkfs.fat, for the UEFI boot partition
-                     btrfs-progs
-                     f2fs-tools
-                     jfsutils
-                     openssh    ;we already have sshd, having ssh/scp can help
-                     wireless-tools iw wpa-supplicant-minimal iproute
-                     ;; XXX: We used to have GNU fdisk here, but as of version
-                     ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
-                     ;; space; furthermore util-linux's fdisk is already
-                     ;; available here, so we keep that.
-                     bash-completion
-                     nvi                          ;:wq!
-                     nss-certs ; To access HTTPS, use git, etc.
-                     %base-packages))))
+    (packages (append
+                (list glibc         ; for 'tzselect' & co.
+                      fontconfig
+                      font-dejavu font-gnu-unifont
+                      grub          ; mostly so xrefs to its manual work
+                      nss-certs)    ; To access HTTPS, use git, etc.
+                %base-packages-disk-utilities
+                %base-packages))))
 
 (define* (os-with-u-boot os board #:key (bootloader-target "/dev/mmcblk0")
                          (triplet "arm-linux-gnueabihf"))

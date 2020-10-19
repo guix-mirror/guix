@@ -173,14 +173,14 @@ line client and a client based on Qt.")
 (define-public homebank
   (package
     (name "homebank")
-    (version "5.4.2")
+    (version "5.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homebank.free.fr/public/homebank-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bkjvd819kw9cwmr3macggbg8yil3yc8v2za8pjrl6g746s89kn6"))))
+                "02wd569viwy6ncy0144z9nxr3zmpl4shkqhz7zzwyky4gknxf8lj"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -480,7 +480,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.1.0")
+    (version "4.1.1")
     (source
      (origin
        (method git-fetch)
@@ -489,14 +489,14 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ccfm6kkmbkvykfdzrisxvr0lx9kgq4l43ixk6v3xnvhnbfwz4s2"))))
+        (base32 "1fllz2s20lg4hrppzmnlgjy9mrq7gaq66l2apb3vz1avzvsjw3gm"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
-       ("libsecp256k1", libsecp256k1-bitcoin-cash)
+       ("libsecp256k1" ,libsecp256k1-bitcoin-cash)
        ("openssl" ,openssl)
        ("python-cython" ,python-cython)
-       ("python-dateutil", python-dateutil)
+       ("python-dateutil" ,python-dateutil)
        ("python-dnspython" ,python-dnspython)
        ("python-ecdsa" ,python-ecdsa)
        ("python-hidapi" ,python-hidapi)
@@ -555,7 +555,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.16.0.3")
+    (version "0.17.1.0")
     (source
      (origin
        (method git-fetch)
@@ -575,7 +575,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "1r9x3712vhb24dxxirfiwj5f9x0h4m7x0ngiiavf5983dfdlgz33"))))
+        (base32 "1cngniv7sndy8r0fcfgk737640k53q3kwd36g891p5igcb985qdw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -605,7 +605,6 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        #:configure-flags
        (list "-DARCH=default"
              "-DBUILD_TESTS=ON"
-             "-DBUILD_GUI_DEPS=ON"
              (string-append "-DReadline_ROOT_DIR="
                             (assoc-ref %build-inputs "readline")))
        #:phases
@@ -651,17 +650,11 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                (invoke "tests/unit_tests/unit_tests"
                        (string-append "--gtest_filter=-"
                                       excluded-unit-tests)))))
-         (add-after 'install 'install-librandomx
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (install-file "external/randomx/librandomx.a" lib)
-               #t)))
-         (add-after 'install 'delete-dead-links
+         (add-after 'install 'delete-unused-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (delete-file (string-append out "/lib/libprotobuf.so"))
-               (delete-file (string-append out "/lib/libusb-1.0.so"))
-               #t))))))
+               (delete-file-recursively (string-append out "/include")))
+             #t)))))
     (home-page "https://web.getmonero.org/")
     (synopsis "Command-line interface to the Monero currency")
     (description
@@ -672,7 +665,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.16.0.3")
+    (version "0.17.1.0")
     (source
      (origin
        (method git-fetch)
@@ -681,21 +674,15 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0iwjp8x5swy8i8pzrlm5v55awhm54cf48pm1vz98lcq361lhfzk6"))))
+        (base32 "07r78ipv4g3i6z822kq380vi3qwlb958rccsy6lyybkhj9y0rx84"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("monero-source" ,(package-source monero))
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     `(,@(package-native-inputs monero)
+       ("monero-source" ,(package-source monero))))
     (inputs
-     `(("boost" ,boost)
-       ("hidapi" ,hidapi)
+     `(,@(package-inputs monero)
        ("libgcrypt" ,libgcrypt)
-       ("libsodium" ,libsodium)
-       ("libunwind" ,libunwind)
-       ("libusb" ,libusb)
-       ("openssl" ,openssl)
-       ("protobuf" ,protobuf)
+       ("monero" ,monero)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -704,78 +691,54 @@ the Monero command line client and daemon.")
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2",qtquickcontrols2)
        ("qtsvg" ,qtsvg)
-       ("qtxmlpatterns" ,qtxmlpatterns)
-       ("unbound" ,unbound)))
-    (propagated-inputs
-     `(("monero" ,monero)))
+       ("qtxmlpatterns" ,qtxmlpatterns)))
     (arguments
      `(#:tests? #f ; No tests
+       #:configure-flags
+       (list "-DARCH=default"
+             "-DENABLE_PASS_STRENGTH_METER=ON"
+             (string-append "-DReadline_ROOT_DIR="
+                            (assoc-ref %build-inputs "readline"))
+             "-DCMAKE_BUILD_TYPE=Release")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'get-monero-extra-files
-           ;; Some headers and GnuPG public keys of the monero package source
-           ;; code are required to build the GUI.
+         (add-after 'unpack 'extract-monero-sources
+           ;; Some of the monero package source code is required
+           ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "tar" "-xv" "--wildcards" "--strip-components=1"
+             (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
-                     "-f" (assoc-ref inputs "monero-source")
-                     "*.asc" "*.h")
+                     "-f" (assoc-ref inputs "monero-source"))
              #t))
-         (add-after 'get-monero-extra-files 'fix-makefile-vars
+         (add-after 'extract-monero-sources 'fix-build
            (lambda _
+             (substitute* "monero/src/version.cpp.in"
+               (("@VERSION_IS_RELEASE@")
+                "false"))
+             (substitute* "src/version.js.in"
+               (("@VERSION_TAG_GUI@")
+                ,version))
              (substitute* "src/zxcvbn-c/makefile"
                (("\\?=") "="))
              #t))
-         (add-after 'fix-makefile-vars 'fix-paths
+         (add-before 'configure 'generate-zxcvbn-c-header
+           (lambda _
+             (invoke "make" "-C" "src/zxcvbn-c" "dict-src.h")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "../build/bin/monero-wallet-gui" bin))
+             #t))
+         (add-after 'qt-wrap 'install-monerod-link
+           ;; The monerod program must be available so that monero-wallet-gui
+           ;; can start a Monero daemon if necessary.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((boost (assoc-ref inputs "boost"))
-                   (monero (assoc-ref inputs "monero"))
-                   (openssl (assoc-ref inputs "openssl"))
-                   (qttools (assoc-ref inputs "qttools"))
-                   (out (assoc-ref outputs "out")))
-               (substitute* "monero-wallet-gui.pro"
-                 (("-L/usr/local/lib")
-                  "")
-                 (("-L/usr/local/opt/openssl/lib")
-                  (string-append "-L" openssl "/lib"))
-                 (("-L/usr/local/opt/boost/lib")
-                  (string-append "-L" boost "/lib"))
-                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                  (string-append qttools "/bin/lrelease"))
-                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate")
-                  (string-append qttools "/bin/lupdate")))
-               (substitute* "deployment.pri"
-                 (("/opt/\\$\\$\\{TARGET\\}/bin")
-                  (string-append out "/bin")))
-               (substitute* "src/daemon/DaemonManager.cpp"
-                 (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
-                  (string-append "\"" monero "/bin/monerod")))
-               #t)))
-         (add-after 'fix-paths 'make-qt-deterministic
-           (lambda _
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-             #t))
-         (add-after 'make-qt-deterministic 'fix-version
-           (lambda _
-             (substitute* "build.sh"
-               (("echo .*> version.js")
-                ""))
-             (with-output-to-file "version.js"
-               (lambda _
-                 (format #t
-                         "var GUI_VERSION = \"~a\"~@
-                          var GUI_MONERO_VERSION = \"~a\"~%"
-                         ,version
-                         ,(package-version monero))))
-             #t))
-         (replace 'configure
-           (lambda _
-             (mkdir-p "build")
-             (chdir "build")
-             (invoke "qmake" "../monero-wallet-gui.pro" "CONFIG+=release")))
-         (add-before 'build 'build-zxcvbn-c
-           (lambda _
-             (invoke "make" "-C" "../src/zxcvbn-c"))))))
+             (symlink (string-append (assoc-ref inputs "monero")
+                                     "/bin/monerod")
+                      (string-append (assoc-ref outputs "out")
+                                     "/bin/monerod"))
+             #t)))))
     (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description
@@ -1061,7 +1024,7 @@ amongst which a great number of VAT and other tax numbers,
 personal identity and company identification codes,
 international standard numbers (ISBN, IBAN, EAN, etc.)
 and various other formats.
-The module also inclused implementations of the Verhoeff,
+The module also includes implementations of the Verhoeff,
 Luhn and family of ISO/IEC 7064 check digit algorithms. ")
     (license license:lgpl2.1+)))
 
@@ -1071,26 +1034,18 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.57.0")
+    (version "0.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "0rw2c7r9gcqhymp82gbk1ky45zqbypsi2q5x4vdwjc6g00kh7h6l"))))
+        (base32 "0djn6ykmqbp8l2xbg6z8r7rkz9ijgygp2pr0gc6i7dsrlsqmjh32"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Tests fail with: "ModuleNotFoundError: No module named
-     ;; 'tests'".  Not sure how to handle this.
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         ;; "setup.py" tries to open missing "requirements.txt".
-         (add-after 'unpack 'ignore-missing-file
-           (lambda _
-             (substitute* "setup.py"
-               (("open\\('requirements\\.txt'\\)") "[]"))
-             #t)))))
+     ;; FIXME: Tests fail with: "TypeError: block_uid() missing 1 required
+     ;; positional argument: 'value'".
+     `(#:tests? #f))
     (propagated-inputs
      `(("aiohttp" ,python-aiohttp)
        ("attrs" ,python-attrs)
@@ -1399,7 +1354,7 @@ entity management.")
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "1.9.0.0")
+    (version "1.9.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1408,7 +1363,7 @@ entity management.")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a64h7mcqdra4ahnw1nycp4ysx308ymgbl4yn5fj5jfaszdzvy0h"))))
+        (base32 "1pan24g3d5csa004d7zvlizj4mv58ly5i579341isp944phl3g5v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1443,31 +1398,19 @@ entity management.")
                        "/bin/lrelease")
         (string-append "ac_cv_path_LUPDATE="
                        (assoc-ref %build-inputs "qttools")
-                       "/bin/lupdate"))
+                       "/bin/lupdate")
+        "--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build
-           (lambda _
-             ;; The 'stack' header was not included in unlimited.cpp, which
-             ;; caused the build to fail.
-             (substitute* "src/unlimited.cpp"
-               (("#include <queue>" all)
-                (string-append all "\n#include <stack>")))
-             #t))
          (add-after 'unpack 'fix-tests
            (lambda _
-             ;; TODO: Find why txvalidationcache_tests fails and
-             ;; utilprocess_tests never ends. Disable for now.
+             ;; Disable utilprocess_tests because it never ends.
+             ;; It looks like it tries to start /bin/sleep and waits until it
+             ;; is in the list of running processes, but /bin/sleep doesn't
+             ;; exist.
              (substitute* "src/Makefile.test.include"
-               (("test/txvalidationcache_tests.cpp")
-                "")
                (("test/utilprocess_tests.cpp")
                 ""))
-             #t))
-         (add-before 'configure 'make-qt-deterministic
-           (lambda _
-             ;; Make Qt deterministic.
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
              #t))
          (add-before 'check 'set-home
            (lambda _

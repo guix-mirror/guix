@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -130,7 +130,7 @@ code is Valgrind-clean and unit tested.")
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.37")
+   (version "1.6.37")  ; Remember to also update libpng-apng if possible!
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -163,7 +163,7 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libpng-apng
   (package
     (name "libpng-apng")
-    (version "1.6.28")
+    (version "1.6.37")
     (source
      (origin
        (method url-fetch)
@@ -177,7 +177,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "/libpng16/libpng-" version ".tar.xz")))
        (sha256
         (base32
-         "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+         "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -211,7 +211,7 @@ library.  It supports almost all PNG features and is extensible.")
                                   version "/libpng-" version "-apng.patch.gz"))
                   (sha256
                    (base32
-                    "0m5nv70n9903x3xzxw9qqc6sgf2rp106ha0x6gix0xf8wcrljaab"))))))
+                    "1dh0250mw9b2hx7cdmnb2blk7ddl49n6vx8zz7jdmiwxy38v4fw2"))))))
     (native-inputs
      `(("libtool" ,libtool)))
     ;; libpng.la says "-lz", so propagate it.
@@ -337,7 +337,7 @@ Currently all documentation resides in @file{pnglite.h}.")
 (define-public libimagequant
   (package
     (name "libimagequant")
-    (version "2.12.5")
+    (version "2.12.6")
     (source
      (origin
        (method git-fetch)
@@ -346,7 +346,7 @@ Currently all documentation resides in @file{pnglite.h}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cp68w04ja5pv77ssfafsn958w9hh9zb8crrlb5j3gsrcmdc032k"))))
+        (base32 "00w7fny3xf14cfyhbdnmqyh9ddqdh1irvgzxd35a2z65kp7vnvj0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -976,7 +976,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -984,8 +984,10 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v8n3dswx7rxqfd0q03xwc7j2w1mv8lv18rdxv487a1xw5vklfad"))))
+                "0zdk4afdrrr1539f2q15zja19j4wwfmpswzws2ffgflcnhywlxhr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--disable-static")))
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
     (inputs
@@ -1410,7 +1412,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.20")
+    (version "2.0.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1419,21 +1421,10 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bn4mg6l5afryrlyk3y7p3accdq113fis8hpwywy5g51ycablz3h"))))
+                "1qw96mwwd9xw21jg5s7njqgbam566skj93i81aflijy40s31dfwz"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-checking-disabled-things
-           (lambda _
-             ;; The MIF codec was disabled for security reasons in JasPer 2.0.20
-             ;; but its test suite still assumes that the format is supported.
-             (for-each delete-file
-                       (find-files "data/test" "\\.mif$")) ; for run_test_1
-             (substitute* "test/bin/run_test_2"
-               (("image_formats\\+=\\(mif\\)") ""))
-             #t)))))
-    (inputs `(("libjpeg" ,libjpeg-turbo)))
+    (inputs
+     `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -1541,33 +1532,6 @@ differences in file encoding, image quality, and other small variations.")
 files (known as @dfn{steganography}).  Neither color nor sample frequencies are
 changed, making the embedding resistant against first-order statistical tests.")
     (license license:gpl2+)))
-
-(define-public stb-image-for-extempore
-  (let ((revision "1")
-        (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
-    (package
-      (name "stb-image-for-extempore")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source
-       (origin (method git-fetch)
-               (uri (git-reference
-                     (url "https://github.com/extemporelang/stb")
-                     (commit commit)))
-               (sha256
-                (base32
-                 "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
-               (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments `(#:tests? #f))        ; no tests included
-      ;; Extempore refuses to build on architectures other than x86_64
-      (supported-systems '("x86_64-linux"))
-      (home-page "https://github.com/extemporelang/stb")
-      (synopsis "Image library for Extempore")
-      (description
-       "This package is a collection of assorted single-file libraries.  Of
-all included libraries only the image loading and decoding library is
-installed as @code{stb_image}.")
-      (license license:public-domain))))
 
 (define-public optipng
   (package
@@ -1950,7 +1914,8 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))))
+      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))
+     (patches (search-patches "grim-revert-output-rotation.patch"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("scdoc" ,scdoc)))
@@ -2181,12 +2146,12 @@ by AOM, including with alpha.")
      `(("imlib2" ,imlib2)
        ("libtiff" ,libtiff)
        ("libpng" ,libpng)
-       ("libungif", libungif)
-       ("libjpeg", libjpeg-turbo)
+       ("libungif" ,libungif)
+       ("libjpeg" ,libjpeg-turbo)
        ("libwebp" ,libwebp)
        ("openjpeg" ,openjpeg)
        ("lcms" ,lcms)
-       ("zlib", zlib)
+       ("zlib" ,zlib)
        ("glib" ,glib)
        ;; Support for gtk3 is in the testing stage.
        ("gtk+" ,gtk+-2)))

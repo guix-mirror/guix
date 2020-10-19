@@ -280,7 +280,7 @@ and the GTK+ toolkit.")
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.9rel.1")
+    (version "2.9.0dev.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -288,7 +288,7 @@ and the GTK+ toolkit.")
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32
-                "15cmyyma2kz1hfaa6mwjgli8zwdzq3jv0q2cl6nwzycjfwyijzrq"))))
+                "1cjkpwxc1r8x8q73bgh9a4skaph1bwa0anml6f6lvf7lh5zvxw3q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -344,7 +344,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.13.1")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
@@ -352,7 +352,7 @@ access.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "1n72dvrv4dch4i07lsis76p7g16a039fwx8rk7w8q9f60wgqb5i8"))))
+        (base32 "0jip413yvyhdaywz0iadc32aaanjnhbx1d1vwzx3z1xbgc4i9svn"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -461,7 +461,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-1")
+    (version "2-pre-release-2")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +472,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0aipsmzqnlkmy001cihz2jnc0hja8c10rm08jycxr05j3gx3qsxd"))
+         "0wqq8ppn0n7js3pxzzb36h0lf3r3gqhs2hi8h85c3n8a54hnbp8q"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -534,45 +534,42 @@ driven and does not detract you from your daily work.")
      `(("prove" ,sbcl-prove)
        ("sbcl" ,sbcl)))
     (inputs
-     ;; We need to avoid sbcl-* inputs (sbcl-cl-cffi-gtk in particular) as they
-     ;; seem to cause Nyxt to hang into a hogging process in about 10 minutes.
-     ;; Probably an issue between CFFI and how we build SBCL packages.
-     ;; See https://github.com/atlas-engineer/nyxt/issues/680.
-     `(("alexandria" ,cl-alexandria)
-       ("bordeaux-threads" ,cl-bordeaux-threads)
-       ("cl-containers" ,cl-containers)
-       ("cl-css" ,cl-css)
-       ("cl-json" ,cl-json)
-       ("cl-markup" ,cl-markup)
-       ("cl-ppcre" ,cl-ppcre)
-       ("cl-prevalence" ,cl-prevalence)
-       ("closer-mop" ,cl-closer-mop)
-       ("cluffer" ,cl-cluffer)
-       ("dexador" ,cl-dexador)
-       ("enchant" ,cl-enchant)
-       ("fset" ,cl-fset)
-       ("iolib" ,cl-iolib)
-       ("local-time" ,cl-local-time)
-       ("log4cl" ,cl-log4cl)
-       ("lparallel" ,cl-lparallel)
-       ("mk-string-metrics" ,cl-mk-string-metrics)
-       ("moptilities" ,cl-moptilities)
-       ("osicat" ,sbcl-osicat)         ; SBCL version needed for libosicat.so.
-       ("parenscript" ,cl-parenscript)
-       ("plump" ,cl-plump)
-       ("quri" ,cl-quri)
-       ("serapeum" ,cl-serapeum)
-       ("str" ,cl-str)
-       ("swank" ,cl-slime-swank)
-       ("trivia" ,cl-trivia)
-       ("trivial-clipboard" ,cl-trivial-clipboard)
-       ("trivial-features" ,cl-trivial-features)
-       ("trivial-package-local-nicknames" ,cl-trivial-package-local-nicknames)
-       ("trivial-types" ,cl-trivial-types)
-       ("unix-opts" ,cl-unix-opts)
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-containers" ,sbcl-cl-containers)
+       ("cl-css" ,sbcl-cl-css)
+       ("cl-json" ,sbcl-cl-json)
+       ("cl-markup" ,sbcl-cl-markup)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("cl-prevalence" ,sbcl-cl-prevalence)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("cluffer" ,sbcl-cluffer)
+       ("dexador" ,sbcl-dexador)
+       ("enchant" ,sbcl-enchant)
+       ("fset" ,sbcl-fset)
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
+       ("iolib" ,sbcl-iolib)
+       ("local-time" ,sbcl-local-time)
+       ("log4cl" ,sbcl-log4cl)
+       ("lparallel" ,sbcl-lparallel)
+       ("mk-string-metrics" ,sbcl-mk-string-metrics)
+       ("moptilities" ,sbcl-moptilities)
+       ("osicat" ,sbcl-osicat)
+       ("parenscript" ,sbcl-parenscript)
+       ("plump" ,sbcl-plump)
+       ("quri" ,sbcl-quri)
+       ("serapeum" ,sbcl-serapeum)
+       ("str" ,sbcl-cl-str)
+       ("swank" ,sbcl-slime-swank)
+       ("trivia" ,sbcl-trivia)
+       ("trivial-clipboard" ,sbcl-trivial-clipboard)
+       ("trivial-features" ,sbcl-trivial-features)
+       ("trivial-package-local-nicknames" ,sbcl-trivial-package-local-nicknames)
+       ("trivial-types" ,sbcl-trivial-types)
+       ("unix-opts" ,sbcl-unix-opts)
        ;; WebKitGTK deps
-       ("cl-cffi-gtk" ,cl-cffi-gtk)
-       ("cl-webkit" ,cl-webkit)
+       ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
+       ("cl-webkit" ,sbcl-cl-webkit)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (synopsis "Extensible web-browser in Common Lisp")

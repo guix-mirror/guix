@@ -26,6 +26,7 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix memoization)
   #:use-module (guix grafts)
 
   #:use-module (guix utils)
@@ -38,6 +39,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix profiles)
+  #:use-module (guix diagnostics)
   #:autoload   (guix http-client) (http-fetch http-get-error?)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -46,6 +48,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
   #:autoload   (guix download) (download-to-store)
@@ -61,6 +64,7 @@
 
             %transformation-options
             options->transformation
+            manifest-entry-with-transformations
             show-transformation-options-help
 
             guix-build
@@ -393,6 +397,102 @@ a checkout of the Git repository at the given URL."
         (rewrite obj)
         obj)))
 
+(define (package-dependents/spec top bottom)
+  "Return the list of dependents of BOTTOM, a spec string, that are also
+dependencies of TOP, a package."
+  (define-values (name version)
+    (package-name->name+version bottom))
+
+  (define dependent?
+    (mlambda (p)
+      (and (package? p)
+           (or (and (string=? name (package-name p))
+                    (or (not version)
+                        (version-prefix? version (package-version p))))
+               (match (bag-direct-inputs (package->bag p))
+                 (((labels dependencies . _) ...)
+                  (any dependent? dependencies)))))))
+
+  (filter dependent? (package-closure (list top))))
+
+(define (package-toolchain-rewriting p bottom toolchain)
+  "Return a procedure that, when passed a package that's either BOTTOM or one
+of its dependents up to P so, changes it so it is built with TOOLCHAIN.
+TOOLCHAIN must be an input list."
+  (define rewriting-property
+    (gensym " package-toolchain-rewriting"))
+
+  (match (package-dependents/spec p bottom)
+    (()                                           ;P does not depend on BOTTOM
+     identity)
+    (set
+     ;; SET is the list of packages "between" P and BOTTOM (included) whose
+     ;; toolchain needs to be changed.
+     (package-mapping (lambda (p)
+                        (if (or (assq rewriting-property
+                                      (package-properties p))
+                                (not (memq p set)))
+                            p
+                            (let ((p (package-with-c-toolchain p toolchain)))
+                              (package/inherit p
+                                (properties `((,rewriting-property . #t)
+                                              ,@(package-properties p)))))))
+                      (lambda (p)
+                        (or (assq rewriting-property (package-properties p))
+                            (not (memq p set))))
+                      #:deep? #t))))
+
+(define (transform-package-toolchain replacement-specs)
+  "Return a procedure that, when passed a package, changes its toolchain or
+that of its dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is
+a list of strings like \"fftw=gcc-toolchain@10\" meaning that the package to
+the left of the equal sign must be built with the toolchain to the right of
+the equal sign."
+  (define split-on-commas
+    (cute string-tokenize <> (char-set-complement (char-set #\,))))
+
+  (define (specification->input spec)
+    (let ((package (specification->package spec)))
+      (list (package-name package) package)))
+
+  (define replacements
+    (map (lambda (spec)
+           (match (string-tokenize spec %not-equal)
+             ((spec (= split-on-commas toolchain))
+              (cons spec (map specification->input toolchain)))
+             (_
+              (leave (G_ "~a: invalid toolchain replacement specification~%")
+                     spec))))
+         replacement-specs))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (or (any (match-lambda
+                   ((bottom . toolchain)
+                    ((package-toolchain-rewriting obj bottom toolchain) obj)))
+                 replacements)
+            obj)
+        obj)))
+
+(define (transform-package-tests specs)
+  "Return a procedure that, when passed a package, sets #:tests? #f in its
+'arguments' field."
+  (define (package-without-tests p)
+    (package/inherit p
+      (arguments
+       (substitute-keyword-arguments (package-arguments p)
+         ((#:tests? _ #f) #f)))))
+
+  (define rewrite
+    (package-input-rewriting/spec (map (lambda (spec)
+                                         (cons spec package-without-tests))
+                                       specs)))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -403,7 +503,17 @@ a checkout of the Git repository at the given URL."
     (with-graft  . ,transform-package-inputs/graft)
     (with-branch . ,transform-package-source-branch)
     (with-commit . ,transform-package-source-commit)
-    (with-git-url . ,transform-package-source-git-url)))
+    (with-git-url . ,transform-package-source-git-url)
+    (with-c-toolchain . ,transform-package-toolchain)
+    (without-tests . ,transform-package-tests)))
+
+(define (transformation-procedure key)
+  "Return the transformation procedure associated with KEY, a symbol such as
+'with-source', or #f if there is none."
+  (any (match-lambda
+         ((k . proc)
+          (and (eq? k key) proc)))
+       %transformations))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -423,11 +533,15 @@ a checkout of the Git repository at the given URL."
           (option '("with-commit") #t #f
                   (parser 'with-commit))
           (option '("with-git-url") #t #f
-                  (parser 'with-git-url)))))
+                  (parser 'with-git-url))
+          (option '("with-c-toolchain") #t #f
+                  (parser 'with-c-toolchain))
+          (option '("without-tests") #t #f
+                  (parser 'without-tests)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
-      --with-source=SOURCE
+      --with-source=[PACKAGE=]SOURCE
                          use SOURCE when building the corresponding package"))
   (display (G_ "
       --with-input=PACKAGE=REPLACEMENT
@@ -443,7 +557,13 @@ a checkout of the Git repository at the given URL."
                          build PACKAGE from COMMIT"))
   (display (G_ "
       --with-git-url=PACKAGE=URL
-                         build PACKAGE from the repository at URL")))
+                         build PACKAGE from the repository at URL"))
+  (display (G_ "
+      --with-c-toolchain=PACKAGE=TOOLCHAIN
+                         build PACKAGE and its dependents with TOOLCHAIN"))
+  (display (G_ "
+      --without-tests=PACKAGE
+                         build PACKAGE without running its tests")))
 
 
 (define (options->transformation opts)
@@ -454,32 +574,69 @@ derivation, etc.), applies the transformations specified by OPTS."
     ;; order in which they appear on the command line.
     (filter-map (match-lambda
                   ((key . value)
-                   (match (any (match-lambda
-                                 ((k . proc)
-                                  (and (eq? k key) proc)))
-                               %transformations)
+                   (match (transformation-procedure key)
                      (#f
                       #f)
                      (transform
                       ;; XXX: We used to pass TRANSFORM a list of several
                       ;; arguments, but we now pass only one, assuming that
                       ;; transform composes well.
-                      (cons key (transform (list value)))))))
+                      (list key value (transform (list value)))))))
                 (reverse opts)))
 
+  (define (package-with-transformation-properties p)
+    (package/inherit p
+      (properties `((transformations
+                     . ,(map (match-lambda
+                               ((key value _)
+                                (cons key value)))
+                             applicable))
+                    ,@(package-properties p)))))
+
   (lambda (store obj)
-    (fold (match-lambda*
-            (((name . transform) obj)
-             (let ((new (transform store obj)))
-               (when (eq? new obj)
-                 (warning (G_ "transformation '~a' had no effect on ~a~%")
-                          name
-                          (if (package? obj)
-                              (package-full-name obj)
-                              obj)))
-               new)))
-          obj
-          applicable)))
+    (define (tagged-object new)
+      (if (and (not (eq? obj new))
+               (package? new) (not (null? applicable)))
+          (package-with-transformation-properties new)
+          new))
+
+    (tagged-object
+     (fold (match-lambda*
+             (((name value transform) obj)
+              (let ((new (transform store obj)))
+                (when (eq? new obj)
+                  (warning (G_ "transformation '~a' had no effect on ~a~%")
+                           name
+                           (if (package? obj)
+                               (package-full-name obj)
+                               obj)))
+                new)))
+           obj
+           applicable))))
+
+(define (package-transformations package)
+  "Return the transformations applied to PACKAGE according to its properties."
+  (match (assq-ref (package-properties package) 'transformations)
+    (#f '())
+    (transformations transformations)))
+
+(define (manifest-entry-with-transformations entry)
+  "Return ENTRY with an additional 'transformations' property if it's not
+already there."
+  (let ((properties (manifest-entry-properties entry)))
+    (if (assq 'transformations properties)
+        entry
+        (let ((item (manifest-entry-item entry)))
+          (manifest-entry
+            (inherit entry)
+            (properties
+             (match (and (package? item)
+                         (package-transformations item))
+               ((or #f '())
+                properties)
+               (transformations
+                `((transformations . ,transformations)
+                  ,@properties)))))))))
 
 
 ;;;
@@ -805,7 +962,28 @@ must be one of 'package', 'all', or 'transitive'~%")
 build---packages, gexps, derivations, and so on."
   (define (validate-type x)
     (unless (or (derivation? x) (file-like? x) (gexp? x) (procedure? x))
-      (leave (G_ "~s: not something we can build~%") x)))
+      (raise (make-compound-condition
+               (formatted-message (G_ "~s: not something we can build~%") x)
+               (condition
+                (&fix-hint
+                 (hint
+                   (if (unspecified? x)
+                       (G_ "If you build from a file, make sure the last Scheme
+expression returns a package value.  @code{define-public} defines a variable,
+but returns @code{#<unspecified>}.  To fix this, add a Scheme expression at
+the end of the file that consists only of the package's variable name you
+defined, as in this example:
+
+@example
+(define-public my-package
+  (package
+    ...))
+
+my-package
+@end example")
+                       (G_ "If you build from a file, make sure the last
+Scheme expression returns a package, gexp, derivation or a list of such
+values.")))))))))
 
   (define (ensure-list x)
     (let ((lst (match x

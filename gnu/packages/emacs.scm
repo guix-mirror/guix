@@ -196,11 +196,16 @@
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
              ;; twice.  This also fixes a minor issue, where WMs would not be
-             ;; able to track emacs back to emacs.desktop.
+             ;; able to track emacs back to emacs.desktop.  The version is
+             ;; accessed using using THIS-PACKAGE so it "just works" for
+             ;; inherited Emacs packages of different versions.
              (with-directory-excursion (assoc-ref outputs "out")
                (copy-file (string-append
                            "bin/emacs-"
-                           ,(version-major+minor (package-version emacs)))
+                           ,(let ((this-version (package-version this-package)))
+                              (or (false-if-exception
+                                   (version-major+minor+point this-version))
+                                  (version-major+minor this-version))))
                           "bin/emacs")
                #t)))
          (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
@@ -279,11 +284,10 @@ languages.")
 
 (define-public emacs-next
   (let ((commit "2ea34662c20f71d35dd52a5ed996542c7386b9cb")
-        (revision "0")
-        (emacs-version "28.0.50.1"))
+        (revision "0"))
     (package/inherit emacs
       (name "emacs-next")
-      (version (git-version emacs-version revision commit))
+      (version (git-version "28.0.50" revision commit))
       (source
        (origin
          (inherit (package-source emacs))
@@ -295,24 +299,20 @@ languages.")
          (sha256
           (base32
            "0igjm9kwiswn2dpiy2k9xikbdfc7njs07ry48fqz70anljj8y7y3"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments emacs)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'strip-double-wrap
-               (lambda* (#:key outputs #:allow-other-keys)
-                 ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
-                 ;; twice.  This also fixes a minor issue, where WMs would not be
-                 ;; able to track emacs back to emacs.desktop.
-                 (with-directory-excursion (assoc-ref outputs "out")
-                   (copy-file (string-append
-                               "bin/emacs-"
-                               ,(version-major+minor+point (package-version emacs-next)))
-                              "bin/emacs")
-                   #t)))))))
       (native-inputs
        `(("autoconf" ,autoconf)
-         ,@(package-native-inputs emacs))))))
+         ,@(package-native-inputs emacs)))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "EMACSLOADPATH")
+              ;; The versioned entry is for the Emacs' builtin libraries.
+              (files (list "share/emacs/site-lisp"
+                           (string-append "share/emacs/"
+                                          (version-major+minor+point version)
+                                          "/lisp"))))
+             (search-path-specification
+              (variable "INFOPATH")
+              (files '("share/info"))))))))
 
 (define-public emacs-minimal
   ;; This is the version that you should use as an input to packages that just

@@ -35,44 +35,86 @@
 ;;;
 ;;; Code:
 
-(define* (secret-service-send-secrets port secret-root #:key (retry 60))
-  "Copy all files under SECRET-ROOT using TCP to secret-service listening at
-local PORT.  If connect fails, sleep 1s and retry RETRY times."
+(define-syntax log
+  (lambda (s)
+    "Log the given message."
+    (syntax-case s ()
+      ((_ fmt args ...)
+       (with-syntax ((fmt (string-append "secret service: "
+                                         (syntax->datum #'fmt))))
+         ;; Log to the current output port.  That way, when
+         ;; 'secret-service-send-secrets' is called from shepherd, output goes
+         ;; to syslog.
+         #'(format (current-output-port) fmt args ...))))))
 
+(define* (secret-service-send-secrets port secret-root
+                                      #:key (retry 60)
+                                      (handshake-timeout 120))
+  "Copy all files under SECRET-ROOT using TCP to secret-service listening at
+local PORT.  If connect fails, sleep 1s and retry RETRY times; once connected,
+wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
+#f on failure."
   (define (file->file+size+mode file-name)
     (let ((stat (stat file-name))
           (target (substring file-name (string-length secret-root))))
       (list target (stat:size stat) (stat:mode stat))))
 
-  (format (current-error-port) "sending secrets to ~a~%" port)
-  (let ((sock (socket AF_INET SOCK_STREAM 0))
-        (addr (make-socket-address AF_INET INADDR_LOOPBACK port)))
-    ;; connect to wait for port
-    (let loop ((retry retry))
-      (catch 'system-error
-        (cute connect sock addr)
-        (lambda (key . args)
-          (when (zero? retry)
-            (apply throw key args))
-          (format (current-error-port) "retrying connection~%")
-          (sleep 1)
-          (loop (1- retry)))))
-
-    (format (current-error-port) "connected!  sending files in ~s %~"
-            secret-root)
+  (define (send-files sock)
     (let* ((files (if secret-root (find-files secret-root) '()))
            (files-sizes-modes (map file->file+size+mode files))
            (secrets `(secrets
                       (version 0)
                       (files ,files-sizes-modes))))
       (write secrets sock)
-      (for-each (compose (cute dump-port <> sock)
-                         (cute open-input-file <>))
-                files))))
+      (for-each (lambda (file)
+                  (call-with-input-file file
+                    (lambda (input)
+                      (dump-port input sock))))
+                files)))
+
+  (log "sending secrets to ~a~%" port)
+  (let ((sock (socket AF_INET SOCK_STREAM 0))
+        (addr (make-socket-address AF_INET INADDR_LOOPBACK port)))
+    ;; Connect to QEMU on the forwarded port.  The 'connect' call succeeds as
+    ;; soon as QEMU is ready, even if there's no server listening on the
+    ;; forward port inside the guest.
+    (let loop ((retry retry))
+      (catch 'system-error
+        (cute connect sock addr)
+        (lambda (key . args)
+          (when (zero? retry)
+            (apply throw key args))
+          (log "retrying connection [~a attempts left]~%"
+               (- retry 1))
+          (sleep 1)
+          (loop (1- retry)))))
+
+    (log "connected; waiting for handshake...~%")
+
+    ;; Wait for "hello" message from the server.  This is the only way to know
+    ;; that we're really connected to the server inside the guest.
+    (match (select (list sock) '() '() handshake-timeout)
+      (((_) () ())
+       (match (read sock)
+         (('secret-service-server ('version version ...))
+          (log "sending files from ~s...~%" secret-root)
+          (send-files sock)
+          (log "done sending files to port ~a~%" port)
+          (close-port sock)
+          secret-root)
+         (x
+          (log "invalid handshake ~s~%" x)
+          (close-port sock)
+          #f)))
+      ((() () ())                                 ;timeout
+       (log "timeout while sending files to ~a~%" port)
+       (close-port sock)
+       #f))))
 
 (define (secret-service-receive-secrets port)
   "Listen to local PORT and wait for a secret service client to send secrets.
-Write them to the file system."
+Write them to the file system.  Return the list of files installed on success,
+and #f otherwise."
 
   (define (wait-for-client port)
     ;; Wait for a TCP connection on PORT.  Note: We cannot use the
@@ -81,16 +123,26 @@ Write them to the file system."
     (let ((sock (socket AF_INET SOCK_STREAM 0)))
       (bind sock AF_INET INADDR_ANY port)
       (listen sock 1)
-      (format (current-error-port)
-              "waiting for secrets on port ~a...~%"
-              port)
-      (match (accept sock)
-        ((client . address)
-         (format (current-error-port) "client connection from ~a~%"
+      (log "waiting for secrets on port ~a...~%" port)
+      (match (select (list sock) '() '() 60)
+        (((_) () ())
+         (match (accept sock)
+           ((client . address)
+            (log "client connection from ~a~%"
                  (inet-ntop (sockaddr:fam address)
                             (sockaddr:addr address)))
+
+            ;; Send a "hello" message.  This allows the client running on the
+            ;; host to know that it's now actually connected to server running
+            ;; in the guest.
+            (write '(secret-service-server (version 0)) client)
+            (force-output client)
+            (close-port sock)
+            client)))
+        ((() () ())
+         (log "did not receive any secrets; time out~%")
          (close-port sock)
-         client))))
+         #f))))
 
   ;; TODO: Remove when (@ (guix build utils) dump-port) has a 'size'
   ;; parameter.
@@ -115,23 +167,24 @@ Write them to the file system."
       (('secrets ('version 0)
                  ('files ((files sizes modes) ...)))
        (for-each (lambda (file size mode)
-                   (format (current-error-port)
-                           "installing file '~a' (~a bytes)...~%"
-                           file size)
+                   (log "installing file '~a' (~a bytes)...~%"
+                        file size)
                    (mkdir-p (dirname file))
                    (call-with-output-file file
                      (lambda (output)
                        (dump port output size)
                        (chmod file mode))))
-                 files sizes modes))
+                 files sizes modes)
+       (log "received ~a secret files~%" (length files))
+       files)
       (_
-       (format (current-error-port)
-               "invalid secrets received~%")
+       (log "invalid secrets received~%")
        #f)))
 
-  (let* ((port (wait-for-client port))
-         (result (read-secrets port)))
-    (close-port port)
+  (let* ((port   (wait-for-client port))
+         (result (and=> port read-secrets)))
+    (when port
+      (close-port port))
     result))
 
 ;;; secret-service.scm ends here

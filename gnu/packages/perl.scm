@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,8 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xorg))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -454,14 +456,14 @@ list manipulation routines.")
 (define-public perl-async-interrupt
   (package
     (name "perl-async-interrupt")
-    (version "1.25")
+    (version "1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "Async-Interrupt-" version ".tar.gz"))
               (sha256
                (base32
-                "0jh94wj1b6a0cnni8prsb59g5lak5rfj2fw5ng96291zmz2yqp1w"))))
+                "0nq8wqy0gsnwhiw23wsp1dmgzzbf2q1asi85yd0d7cmg4haxsmib"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-canary-stability" ,perl-canary-stability)))
@@ -1961,7 +1963,7 @@ the caller.")
     (synopsis "Extract data from Macintosh BinHex files")
     (description
      "BinHex is a format for transporting files safely through electronic
-mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
+mail, as short-lined, 7-bit, semi-compressed data streams.  This module
 provides a means of converting those data streams back into into binary
 data.")
     (license license:perl-license)))
@@ -2211,7 +2213,7 @@ Password Generator\".")
 (define-public perl-crypt-rijndael
   (package
     (name "perl-crypt-rijndael")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
       (method url-fetch)
@@ -2219,8 +2221,7 @@ Password Generator\".")
             "mirror://cpan/authors/id/L/LE/LEONT/Crypt-Rijndael-"
             version ".tar.gz"))
       (sha256
-       (base32
-        "03l5nwq97a8q9na4dpd4m3r7vrwpranx225vw8xm40w7zvgw6lb4"))))
+       (base32 "0qs1b6ma4sj0ip5d8544fzgc1bbankc4qlmznp8hay8dk5arp650"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Crypt-Rijndael")
     (synopsis "Crypt::CBC compliant Rijndael encryption module")
@@ -3812,24 +3813,15 @@ of the input.  MD4 is described in RFC 1320.")
 (define-public perl-digest-md5
   (package
     (name "perl-digest-md5")
-    (version "2.55")
+    (version "2.58")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/Digest-MD5-"
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/Digest-MD5-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0g0fklbrm2krswc1xhp4iwn1dhqq71fqh2p5wm8xj9a4s6i9ic83"))))
+        (base32 "057psy6k7im0pr3344ny6k5rsnbqj8aizkmwgw53kbbngabh20kx"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'set-permissions
-           (lambda _
-             ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
-             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
@@ -7870,6 +7862,64 @@ technology to store hierarchical information such as links to other
 documents within a single file.")
     (license (package-license perl))))
 
+(define-public perl-opengl
+  (package
+    (name "perl-opengl")
+    (version "0.70")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/C/CH/CHM/OpenGL-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1q3lz168q081iwl9jg21fbzhp9la79gav9mv6nmh2jab83s2l3mj"))))
+    (build-system perl-build-system)
+    (inputs `(("freeglut" ,freeglut)
+              ("libxi" ,libxi)
+              ("libxmu" ,libxmu)))
+    (arguments
+     '(#:tests? #f ; test.pl fails with our empty glversion.txt, while
+                   ; the package still seems to work on the examples
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'glversion
+           ;; Building utils/glversion.txt fails, and is probably
+           ;; dependent on the graphics card in the build system.
+           ;; Replace it by a content-free file; while this breaks
+           ;; the tests, the examples in the examples/ subdirectory
+           ;; can be run.
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("unlink") "# unlink") ; prevent utils/glversion.txt
+                                       ; from being deleted once...
+               (("\\.\"\\$make_ver clean\"") "")) ; ...and twice...
+             (substitute* "utils/Makefile"
+               (("all: glversion.txt") "all: ")) ; ...and thrice.
+             (call-with-output-file "utils/glversion.txt"
+               (lambda (port)
+                 (display (string-append "FREEGLUT=\nGLUT=\nVERSION=\n"
+                                         "VENDOR=\nRENDERER=\n"
+                                         "EXTENSIONS=\n")
+                          port)))
+             #t))
+         (add-before 'configure 'fix-library-flags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.PL"
+               (("-L/usr/local/freeglut/lib")
+                (string-append "-L" (assoc-ref inputs "freeglut") "/lib\n"
+                               "-L" (assoc-ref inputs "glu") "/lib\n"
+                               "-L" (assoc-ref inputs "mesa") "/lib\n")))
+             #t)))))
+    (home-page "https://metacpan.org/release/OpenGL")
+    (synopsis
+      "Perl bindings to the OpenGL API, GLU, and GLUT/FreeGLUT")
+    (description "The package provides Perl bindings to OpenGL, GLU
+and FreeGLUT.")
+    (license (package-license perl))))
+
 (define-public perl-package-anon
   (package
     (name "perl-package-anon")
@@ -8555,14 +8605,14 @@ and @code{deserialize_regexp}.")
 (define-public perl-role-tiny-2
   (package
     (inherit perl-role-tiny)
-    (version "2.001001")
+    (version "2.001004")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Role-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "16yryg3cr14xw201gm8k8ci00hs60fy8lk2xhnaqa85n5m68flk8"))))))
+        (base32 "11qn516352yhi794www3ykwa9xv2gxpfnhn9jcn10x0ahl95gflj"))))))
 
 (define-public perl-safe-isa
   (package

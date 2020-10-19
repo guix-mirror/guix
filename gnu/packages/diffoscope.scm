@@ -254,7 +254,7 @@ install.")
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)
-       ("python-libarchive-c", python-libarchive-c)
+       ("python-libarchive-c" ,python-libarchive-c)
        ("python-rstr" ,python-rstr)))
     (native-inputs
      `(("diffoscope" ,diffoscope)

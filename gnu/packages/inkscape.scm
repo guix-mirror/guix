@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,7 +118,7 @@ as the native format.")
 (define-public inkscape-1.0
   (package
     (name "inkscape")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -126,7 +127,7 @@ as the native format.")
                            "inkscape-" version ".tar.xz"))
        (sha256
         (base32
-         "1fwl7yjkykqb86555k4fm24inhc40mrvxqwgl2v2vi9alv8j7hc9"))
+         "1hjp5nnyx2m3miji6q4lcb6zgbi498v641dc7apkqqvayknrb4ng"))
        (modules '((guix build utils)
                   (ice-9 format)))
        (snippet

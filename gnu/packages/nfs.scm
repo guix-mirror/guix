@@ -62,7 +62,8 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `("--without-tcp-wrappers"
+       `("--disable-static"
+         "--without-tcp-wrappers"
          ,(string-append "--with-start-statd="
                          (assoc-ref %outputs "out") "/sbin/start-statd")
          ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5"))

@@ -157,6 +157,17 @@ for other software in the GNU system that uses Mach-based inter-process
 communication.")
     (license gpl2+)))
 
+(define-public mig/32-bit
+  ;; When cross-compiling from x86_64-linux to i586-gnu, we need this 32-bit
+  ;; native MIG.
+  (package
+    (inherit mig)
+    (arguments
+     (substitute-keyword-arguments (package-arguments mig)
+       ((#:system _ #f)
+        "i686-linux")))
+    (properties `((hidden? . #t)))))
+
 (define-public hurd-headers
   ;; Resort to a post-0.9 snapshot that provides the 'file_utimens' and
   ;; 'file_exec_paths' RPCs that glibc 2.28 expects.
@@ -536,9 +547,7 @@ exec ${system}/rc \"$@\"
        ("mig" ,(if (%current-target-system)
                    ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
                    ;; hence this hack.
-                   (package
-                     (inherit mig)
-                     (arguments `(#:system "i686-linux")))
+                   mig/32-bit
                    mig))
        ("perl" ,perl)
        ("texinfo" ,texinfo-4)

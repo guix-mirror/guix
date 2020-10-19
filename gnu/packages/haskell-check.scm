@@ -501,12 +501,9 @@ use HUnit assertions as QuickCheck properties.")
         (base32
          "0426j43af8v3qmdjjqxivazsvr3a2brac8yw09vpgpjkb2m0nmkv"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
     (inputs
      `(("ghc-random" ,ghc-random)
-       ("ghc-splitmix" ,ghc-splitmix-bootstrap)
-       ("ghc-tf-random" ,ghc-tf-random)))
+       ("ghc-splitmix" ,ghc-splitmix-bootstrap)))
     (home-page "https://github.com/nick8325/quickcheck")
     (synopsis "Automatic testing of Haskell programs")
     (description
@@ -1033,7 +1030,7 @@ library's promised without anyone noticing.
 
 This package provides a disciplined way of specifying such properties, and
 have them checked by the compiler.  This way, this checking can be part of the
-ususal development cycle and regressions caught early.
+regular development cycle and regressions caught early.
 
 See the documentation in \"Test.Inspection\" or the project webpage for more
 examples and more information.")

@@ -83,7 +83,7 @@
         ("rust-dirs" ,rust-dirs-2.0)
         ;;("rust-failure" included
         ("rust-filetime" ,rust-filetime-0.2)
-        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-flate2" ,rust-flate2-1)
         ("rust-fs2" ,rust-fs2-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
@@ -98,7 +98,7 @@
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-nettle" ,rust-nettle-7)
         ("rust-parity-tokio-ipc" ,rust-parity-tokio-ipc-0.4)
-        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
@@ -107,11 +107,11 @@
         ("rust-rusqlite" ,rust-rusqlite-0.19)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-thiserror" ,rust-thiserror-1)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-zbase32" ,rust-zbase32-0.1))
        #:cargo-development-inputs
        (("rust-bindgen" ,rust-bindgen-0.51) ;; FIXME for nettle-sys and rusqlite

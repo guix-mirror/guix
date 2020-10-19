@@ -34,6 +34,7 @@
             openpgp-error?
             openpgp-unrecognized-packet-error?
             openpgp-unrecognized-packet-error-port
+            openpgp-unrecognized-packet-error-type
             openpgp-invalid-signature-error?
             openpgp-invalid-signature-error-port
 
@@ -110,7 +111,7 @@
 (define-alias fx/ /)
 (define-alias fxdiv quotient)
 (define-alias fxand logand)
-(define-alias fxbit-set? bit-set?)
+(define-inlinable (fxbit-set? n index) (bit-set? index n))
 (define-alias fxbit-field bit-field)
 (define-alias bitwise-bit-field bit-field)
 (define-alias fxarithmetic-shift-left ash)
@@ -132,6 +133,7 @@
 ;; Error raised when reading an unsupported or unrecognized packet tag.
 (define-condition-type &openpgp-unrecognized-packet-error &openpgp-error
   openpgp-unrecognized-packet-error?
+  (type openpgp-unrecognized-packet-error-type)
   (port openpgp-unrecognized-packet-error-port))
 
 ;; Error raised when reading an invalid signature packet.
@@ -477,7 +479,8 @@ hexadecimal format for fingerprints."
      ((= tag PACKET-ONE-PASS-SIGNATURE)
       'one-pass-signature)                        ;TODO: implement
      (else
-      (raise (condition (&openpgp-unrecognized-packet-error (port p))))))))
+      (raise (condition (&openpgp-unrecognized-packet-error (type tag)
+                                                            (port p))))))))
 
 (define-record-type <openpgp-public-key>
   (make-openpgp-public-key version subkey? time value fingerprint)
@@ -817,6 +820,7 @@ FINGERPRINT, a bytevector."
         (if critical?
             (raise (condition
                     (&openpgp-unrecognized-packet-error
+                     (type type)
                      (port signature-port))))
             (list 'unsupported-subpacket type data))))))
 

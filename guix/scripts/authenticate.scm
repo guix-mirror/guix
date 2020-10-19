@@ -31,6 +31,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 iconv)
   #:export (guix-authenticate))
 
 ;;; Commentary:
@@ -122,8 +123,9 @@ by colon, followed by the given number of characters."
                 (reverse result))
                (else
                 (let* ((len (string->number (read-delimited ":" port)))
-                       (str (utf8->string
-                             (get-bytevector-n port len))))
+                       (str (bytevector->string
+                             (get-bytevector-n port len)
+                             "ISO-8859-1" 'error)))
                   (loop (cons str result))))))))))
 
 (define-syntax define-enumerate-type              ;TODO: factorize
@@ -150,7 +152,7 @@ by colon, followed by the given number of characters."
 
   (define (send-reply code str)
     ;; Send CODE and STR as a reply to our client.
-    (let ((bv (string->utf8 str)))
+    (let ((bv (string->bytevector str "ISO-8859-1" 'error)))
       (format #t "~a ~a:" code (bytevector-length bv))
       (put-bytevector (current-output-port) bv)
       (force-output (current-output-port))))

@@ -88,7 +88,7 @@
                               (rewind-strategy 'previous)
                               (menu-proc (const #f)))
   "Run the COMPUTE procedure of all <installer-step> records in STEPS
-sequencially. If the &installer-step-abort condition is raised, fallback to a
+sequentially.  If the &installer-step-abort condition is raised, fallback to a
 previous install-step, accordingly to the specified REWIND-STRATEGY.
 
 REWIND-STRATEGY possible values are 'previous, 'menu and 'start.  If 'previous

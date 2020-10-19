@@ -53,7 +53,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.20.1")
+    (version "2.21")
     (source
      (origin
        (method url-fetch)
@@ -61,13 +61,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "0rimjikni96m52vhymgsg1b9g99af6ggyzd1lpvhgqsznxwj0y42"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "rust/libnewsboat/Cargo.toml"
-             (("= 1.0.17") "1.0.17"))
-           #t))))
+         "0ccwbb3maini18453wjqn8m3bd7zzm6dn5a9vpb8smxv8vfv6ihc"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -77,7 +71,7 @@
        ("asciidoctor" ,ruby-asciidoctor)))
     (inputs
      `(("curl" ,curl)
-       ("json-c" ,json-c-0.13)
+       ("json-c" ,json-c)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("stfl" ,stfl)
@@ -93,18 +87,15 @@
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-curl-sys" ,rust-curl-sys-0.4)
-        ("rust-dirs" ,rust-dirs-2.0)
-        ("rust-gettext-rs" ,rust-gettext-rs-0.4)
+        ("rust-gettext-rs" ,rust-gettext-rs-0.5)
         ("rust-gettext-sys" ,rust-gettext-sys-0.19)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-natord" ,rust-natord-1.0)
         ("rust-nom" ,rust-nom-5)
-        ("rust-once-cell" ,rust-once-cell-1.2)
-        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
-        ("rust-rand" ,rust-rand-0.6)
-        ("rust-smallvec" ,rust-smallvec-0.6)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-url" ,rust-url-2)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-xdg" ,rust-xdg-2.2))
        #:cargo-development-inputs
@@ -118,6 +109,11 @@
              ;; Don't keep the whole tarball in the vendor directory
              (delete-file-recursively
                (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
+             #t))
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "Makefile"
+               (("Cargo.lock") ""))
              #t))
          (replace 'build
            (lambda* args
@@ -169,6 +165,9 @@ file system, and many more features.")
                '("asciidoctor" "openssl"))
        ;; For building documentation.
        ("asciidoc" ,asciidoc)))
+    (inputs
+     `(("json-c" ,json-c-0.13)
+       ,@(alist-delete "json-c" (package-inputs newsboat))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

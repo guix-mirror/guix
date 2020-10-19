@@ -15,9 +15,9 @@ XGETTEXT_OPTIONS =				\
   --keyword=description				\
   --keyword=n_
 
-COPYRIGHT_HOLDER = Ludovic Courtès
+COPYRIGHT_HOLDER = the authors of Guix (msgids)
 
-MSGID_BUGS_ADDRESS = ludo@gnu.org
+MSGID_BUGS_ADDRESS = bug-guix@gnu.org
 
 EXTRA_LOCALE_CATEGORIES =
 

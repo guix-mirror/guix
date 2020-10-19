@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
@@ -312,9 +312,8 @@ directory structure and file attributes.")
              (lua-api-version ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
                "CFLAGS='-D HAVE_SYS_SYSCTL_H=0'" ; sys/sysctl.h is deprecated
-               (string-append "DESTDIR=" out)
-               (string-append "LUA_APIS=" lua-api-version)
-               "prefix="))
+               (string-append "prefix=" out)
+               (string-append "LUA_APIS=" lua-api-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -880,3 +879,182 @@ on numbers.")
      "Selene is a simple C++11 header-only library enabling seamless
  interoperability between C++ and Lua programming language.")
     (license license:zlib)))
+
+(define-public lua-resty-core
+  (package
+    (name "lua-resty-core")
+    (version "0.1.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-core")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11fyli6yrg7b91nv9v2sbrc6y7z3h9lgf4lrrhcjk2bb906576a0"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua"))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/resty"))
+                                     (copy-recursively (string-append input "/lib/ngx")
+                                                       (string-append output "/lib/ngx"))
+                                     (symlink (string-append output "/lib/lua/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-core")
+    (synopsis "Lua API for NGINX")
+    (description "This package provides a FFI-based Lua API for
+@code{ngx_http_lua_module} or @code{ngx_stream_lua_module}.")
+    (license license:bsd-2)))
+
+(define-public lua-resty-lrucache
+  (package
+    (name "lua-resty-lrucache")
+    (version "0.09")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-lrucache")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1mwiy55qs8bija1kpgizmqgk15ijizzv4sa1giaz9qlqs2kqd7q2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                     (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-lrucache")
+    (synopsis "Lua LRU cache based on the LuaJIT FFI")
+    (description
+     "This package provides Lua LRU cache based on the LuaJIT FFI.")
+    (license license:bsd-2)))
+
+(define-public lua-resty-signal
+  (package
+    (name "lua-resty-signal")
+    (version "0.02")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-signal")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13y1pqn45y49mhqwywasfdsid46d0c33yi6mrnracbnmvyxz1cif"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;TODO: Run the test suite.
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'install-lua
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (guix build utils))
+             (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                    (package-lua-resty (lambda (input output)
+                                         (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                         (copy-recursively (string-append input "/lib/resty")
+                                                           (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                         (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                                  (string-append output "/lib/resty")))))
+               (package-lua-resty (assoc-ref inputs "source")
+                                  (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "https://github.com/openresty/lua-resty-signal")
+    (synopsis "Lua library for killing or sending signals to Linux processes")
+    (description "This package provides Lua library for killing or sending
+signals to Linux processes.")
+    (license license:bsd-3)))
+
+(define-public lua-tablepool
+  (package
+    (name "lua-tablepool")
+    (version "0.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-tablepool")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03yjj3w6znvj6843prg84m0lkrn49l901f9hj9bgy3cj9s0awl6y"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib")
+                                                       (string-append output "/lib")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-tablepool")
+    (synopsis "Lua table recycling pools for LuaJIT")
+    (description "This package provides Lua table recycling pools for LuaJIT.")
+    (license license:bsd-2)))
+
+(define-public lua-resty-shell
+  (package
+    (name "lua-resty-shell")
+    (version "0.03")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-shell")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1s6g04ip4hr97r2pd8ry3alq063604s9a3l0hn9nsidh81ps4dp7"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                     (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-shell")
+    (synopsis "Lua module for nonblocking system shell command executions")
+    (description "This package provides Lua module for nonblocking system
+shell command executions.")
+    (license license:bsd-3)))

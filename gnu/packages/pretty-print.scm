@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -190,6 +190,19 @@ to @code{IOStreams}.")
     ;; The library is bsd-2, but documentation and tests include other licenses.
     (license (list bsd-2 bsd-3 psfl))))
 
+(define-public fmt-6
+  (package
+    (inherit fmt)
+    (name "fmt")
+    (version "6.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
+                           version "/fmt-" version ".zip"))
+       (sha256
+        (base32 "06l8g59frbsbwj15kg6x2bbn6p8yidh6wzsigdhbdjncvm1agzll"))))))
+
 (define-public source-highlight
   (package
     (name "source-highlight")
@@ -217,6 +230,18 @@ to @code{IOStreams}.")
        #:parallel-tests? #f             ;There appear to be race conditions
        #:phases
        (modify-phases %standard-phases
+         ,@(if (%current-target-system)
+               ;; 'doc/Makefile.am' tries to run stuff even when
+               ;; cross-compiling.  Explicitly skip it.
+               ;; XXX: Inline this on next rebuild cycle.
+               `((add-before 'build 'skip-doc-directory
+                   (lambda _
+                     (substitute* "Makefile"
+                       (("^SUBDIRS = (.*) doc(.*)$" _ before after)
+                        (string-append "SUBDIRS = " before
+                                       " " after "\n")))
+                     #t)))
+               '())
          (add-before 'check 'patch-test-files
            (lambda _
              ;; Unpatch shebangs in test input so that source-highlight

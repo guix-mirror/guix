@@ -44,6 +44,21 @@ else
     test $? = 42
 fi
 
+# Make sure "localhost" resolves.
+guix environment --container --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c '(exit (pair? (getaddrinfo "localhost" "80")))'
+
+# We should get ECONNREFUSED, not ENETUNREACH, which would indicate that "lo"
+# is down.
+guix environment --container --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c "(exit (= ECONNREFUSED
+  (catch 'system-error
+    (lambda ()
+      (let ((sock (socket AF_INET SOCK_STREAM 0)))
+        (connect sock AF_INET INADDR_LOOPBACK 12345)))
+    (lambda args
+      (pk 'errno (system-error-errno args))))))"
+
 # Make sure '--preserve' is honored.
 result="`FOOBAR=42; export FOOBAR; guix environment -C --ad-hoc --bootstrap \
    guile-bootstrap -E ^FOO -- guile -c '(display (getenv \"FOOBAR\"))'`"
@@ -127,11 +142,15 @@ grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
 rm $tmpdir/mounts
 
-# Make sure 'GUIX_ENVIRONMENT' is linked to '~/.guix-profile' when requested
+# Make sure 'GUIX_ENVIRONMENT' is set to '~/.guix-profile' when requested
 # within a container.
 (
-  linktest='(exit (string=? (getenv "GUIX_ENVIRONMENT")
-(readlink (string-append (getenv "HOME") "/.guix-profile"))))'
+  linktest='
+(exit (and (string=? (getenv "GUIX_ENVIRONMENT")
+                     (string-append (getenv "HOME") "/.guix-profile"))
+           (string-prefix? "'"$NIX_STORE_DIR"'"
+                           (readlink (string-append (getenv "HOME")
+                                                    "/.guix-profile")))))'
 
   cd "$tmpdir" \
      && guix environment --bootstrap --container --link-profile \

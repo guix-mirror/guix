@@ -1277,7 +1277,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "16812")
+    (version "17013")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1286,7 +1286,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "131ly6ah9ygrah1wq1h2199v4hyzgflnh62ychs4jqvy9wz0dal6"))
+                "12mcqswjijvx2n7hz7lnx83i3vjr5ib58cazqin10hczcwnd778q"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1761,7 +1761,7 @@ track your position right from your laptop.")
                    license:zlib))))
 
 (define-public grass
-  (let* ((version "7.8.2")
+  (let* ((version "7.8.4")
          (majorminor (string-join (list-head (string-split version #\.) 2) ""))
          (grassxx (string-append "grass" majorminor)))
     (package
@@ -1773,10 +1773,10 @@ track your position right from your laptop.")
          (uri (string-append "https://grass.osgeo.org/" grassxx
                              "/source/grass-" version ".tar.gz"))
          (sha256
-          (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
+          (base32 "1yfghvp522ijww3n3l5xarjbc21rm0gmlgr3lvwxrv23bvxmllyr"))))
       (build-system gnu-build-system)
       (inputs
-       `(("bzip2", bzip2)
+       `(("bzip2" ,bzip2)
          ("cairo" ,cairo)
          ("fftw" ,fftw)
          ("freetype" ,freetype)
@@ -1865,8 +1865,14 @@ track your position right from your laptop.")
                  (symlink (string-append dir "/lib")
                           (string-append out "/lib")))
                #t))
-           (add-after 'install-links 'wrap-python
-             (assoc-ref python:%standard-phases 'wrap)))))
+           (add-after 'install-links 'python:wrap
+             (assoc-ref python:%standard-phases 'wrap))
+           (add-after 'python:wrap 'wrap-with-python-interpreter
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/" ,grassxx)
+                   `("GRASS_PYTHON" = (,(which "python3"))))
+                 #t))))))
       (synopsis "GRASS Geographic Information System")
       (description
        "GRASS (Geographic Resources Analysis Support System), is a Geographic

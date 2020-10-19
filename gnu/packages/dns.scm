@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
@@ -65,9 +67,11 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -313,7 +317,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.6")
+    (version "9.16.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -321,7 +325,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "1jvi6ms51vyrhpflx05xlb7gblyd59zsyj28b8s3pl3xnkrv0rxm"))))
+                "1l8lhgnkj3fnl1101bs3pzj5gv2x5m9ahvrbyscsc9mxxc91hzcz"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -529,14 +533,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.3.2")
+    (version "4.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0ac3mbn5z4nc18782m9aswdpi2m9f4665vidw0ciyigdh0pywp2v"))))
+        (base32 "0lgdiqnkfvy245h6kkiqic586qjwmg51lsfs86vlc0kwjwddiijz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -756,16 +760,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.9")
+    (version "2.3.10")
     (source
-     (let ((build "8497"))
+     (let ((build "9729"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0xvyr91sfgzkpw6g3h893ldbwnki3w2472n56rr18w67qghs1sa5")))))
+          (base32 "0azaignqmylfdzr4x02s8y3pkn4f0xkpz3d1pkiiz8mwk92zgybn")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -803,44 +807,63 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.9.6")
+    (version "3.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                           "knot-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.nic.cz/knot/knot-dns")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1rxjjisr6rz1wa4279ghvj5zzhgyjhncmb9dkzqm8nw2qs1jhx5z"))
+        (base32 "10mlzldxqvbaw78nghkr0s73rlbpz9wg16z14321xw2l9xfibkad"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; Delete bundled libraries.
-           (with-directory-excursion "src/contrib"
-             (delete-file-recursively "lmdb"))
+           ;; Remove Ragel-generated C files.  We'll recreate them below.
+           (for-each delete-file (find-files "." "\\.c\\.[gt]."))
+           (delete-file "src/libknot/yparser/ypbody.c")
+           ;; Remove bundled library to ensure we always use the system's.
+           (delete-file-recursively "src/contrib/libbpf")
            #t))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("fstrm" ,fstrm)
-       ("gnutls" ,gnutls)
-       ("jansson" ,jansson)
-       ("libcap-ng" ,libcap-ng)
-       ("libedit" ,libedit)
-       ("libidn" ,libidn)
-       ("liburcu" ,liburcu)
-       ("lmdb" ,lmdb)
-       ("ncurses" ,ncurses)
-       ("protobuf-c" ,protobuf-c)))
+    (outputs (list "out" "doc" "lib" "tools"))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "doc")
+                            "/share/" ,name "-" ,version)
+             (string-append "--infodir=" (assoc-ref %outputs "doc")
+                            "/share/info")
+             (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
+             "--sysconfdir=/etc"
+             "--localstatedir=/var"
+             "--enable-dnstap"          ; let tools read/write capture files
+             "--enable-fastparser"      ; disabled by default when .git/ exists
+             "--enable-xdp=auto"        ; XXX [=yes] currently means =embedded
+             "--with-module-dnstap=yes") ; detailed query capturing & logging
+       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'link-missing-libbpf-dependency
+           ;; Linking against -lbpf later would fail to find -lz: libbpf.pc has
+           ;; zlib in its Requires.private (not Requires) field.  Add it here.
+           (lambda _
+             (substitute* "configure.ac"
+               (("enable_xdp=yes" match)
+                (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))
+             #true))
+         (add-before 'bootstrap 'update-parser
+           (lambda _
+             (with-directory-excursion "src"
+               (invoke "sh" "../scripts/update-parser.sh"))))
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
              ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
              #t))
+         (add-after 'build 'build-info
+           (lambda _
+             (invoke "make" "info")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -848,15 +871,51 @@ Extensions} (DNSSEC).")
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install")))))
-       #:configure-flags
-       (list "--sysconfdir=/etc"
-             "--localstatedir=/var"
-             "--enable-dnstap"          ; let tools read/write capture files
-             "--with-module-dnstap=yes" ; detailed query capturing & logging
-             (string-append "--with-bash-completions="
-                            (assoc-ref %outputs "out")
-                            "/etc/bash_completion.d"))))
+                       "install"))))
+         (add-after 'install 'install-info
+           (lambda _
+             (invoke "make" "install-info")))
+         (add-after 'install 'break-circular-:lib->:out-reference
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (assoc-ref outputs "lib")))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("(prefix=).*" _ assign)
+                              (string-append assign lib "\n"))))
+                         (find-files lib "\\.pc$"))
+               #true)))
+         (add-after 'install 'split-:tools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (tools (assoc-ref outputs "tools")))
+               (mkdir-p (string-append tools "/share/man"))
+               (rename-file (string-append out   "/bin")
+                            (string-append tools "/bin"))
+               (rename-file (string-append out   "/share/man/man1")
+                            (string-append tools "/share/man/man1"))
+               #true))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("ragel" ,ragel)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
+       ("jansson" ,jansson)
+       ("libbpf" ,libbpf)
+       ("libcap-ng" ,libcap-ng)
+       ("libedit" ,libedit)
+       ("libelf" ,libelf)
+       ("libidn" ,libidn)
+       ("libnghttp2" ,nghttp2 "lib")
+       ("liburcu" ,liburcu)
+       ("lmdb" ,lmdb)
+       ("ncurses" ,ncurses)
+       ("protobuf-c" ,protobuf-c)))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
     (description "Knot DNS is an authoritative name server for the @dfn{Domain
@@ -878,14 +937,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "4.3.0")
+    (version "5.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
+                "12s5070nqqf599s1mb6rjas2as481rjf751qk5yrz6p34y885k90"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddoc=enabled")
@@ -927,16 +986,12 @@ synthesis, and on-the-fly re-configuration.")
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
-       ("knot" ,knot)
+       ("knot:lib" ,knot "lib")
        ("libuv" ,libuv)
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
        ;; TODO: Add optional lua modules: basexx and psl.
-       ("lua-bitop" ,lua5.1-bitop)
-       ("lua-cqueues" ,lua5.1-cqueues)
-       ("lua-filesystem" ,lua5.1-filesystem)
-       ("lua-sec" ,lua5.1-sec)
-       ("lua-socket" ,lua5.1-socket)))
+       ("lua-bitop" ,lua5.1-bitop)))
     (home-page "https://www.knot-resolver.cz/")
     (synopsis "Caching validating DNS resolver")
     (description

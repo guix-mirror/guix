@@ -53,6 +53,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -1327,34 +1328,20 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.1.2")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32 "1c4fz1nfg0nqnqx9iipayhzcsiqdmfxm2i95nw9dbhshhsdnrhf4"))))
+        (base32 "11vknasm5dna2vqr6gk343qynh7nhsq3kf60zayarn1vb5z6as8l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build
-           ;; XXX: The following works around a build failure introduced when
-           ;; Fluidsynth was updated to version 2.1.  It has been applied
-           ;; upstream as 68758a879e0c8ecc0d40962516d4e808aa4e15e5 and can be
-           ;; removed once this commit makes it into a release.
-           (lambda _
-             (substitute* "audio/softsynth/fluidsynth.cpp"
-               (("#include <fluidsynth.h>") "")
-               (("#include \"common/scummsys.h\"") "#include \"config.h\"")
-               (("#include \"common/config-manager.h\"" line)
-                (string-append "#include <fluidsynth.h>\n"
-                               "#include \"common/scummsys.h\"\n"
-                               line)))
-             #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
@@ -1374,6 +1361,7 @@ multi-system game/emulator system.")
        ("faad2" ,faad2)
        ("fluidsynth" ,fluidsynth)
        ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
        ("liba52" ,liba52)
        ("libflac" ,flac)
        ("libjpeg-turbo" ,libjpeg-turbo)
@@ -1397,7 +1385,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.224")
+    (version "0.225")
     (source
      (origin
        (method git-fetch)
@@ -1406,7 +1394,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dpg4hz2f1wlp0rmk5c5xq57fy0sblh97z3l66p814wkgzap4bhx"))
+        (base32 "1n61v1yqmc69399khcm8gdabqaz8rwwj822m8vm5mbyxnw92icqg"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1891,7 +1879,7 @@ framework based on QEMU.")
 (define-public ppsspp
   (package
     (name "ppsspp")
-    (version "1.10")
+    (version "1.10.3")
     (source
      (origin
        (method git-fetch)
@@ -1899,7 +1887,7 @@ framework based on QEMU.")
              (url "https://github.com/hrydgard/ppsspp")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "02yx1w0ygclnmdl0imsvgj24lkzi55wvxkf47q617j0jgrqhy8yl"))
+        (base32 "0znxlbj6cfw7gn0naay0mzhc0k5saw8nrwpspcn7gap1023p06w2"))
        (file-name (git-file-name name version))
        (patches
         (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
@@ -1950,7 +1938,7 @@ framework based on QEMU.")
                              " spirv-cross-reflect spirv-cross-util")))
            (substitute* "ext/CMakeLists.txt"
              (("add_subdirectory\\(glew\\)") "")
-             (("add_subdirectory\\(glslang\\)") "")
+             (("add_subdirectory\\(glslang( [A-Z_]*)*\\)") "")
              (("add_subdirectory\\(snappy\\)") "")
              (("add_subdirectory\\(SPIRV-Cross-build\\)") ""))
            ;; Finally, we can delete the bundled sources.
@@ -1993,14 +1981,14 @@ framework based on QEMU.")
        ;; TODO: unbundle armips.
        ("armips-source" ,(package-source armips))
        ("lang"
-        ,(let ((commit "d184ba2b607a03435be579406b816c90add334e6"))
+        ,(let ((commit "1c64b8fbd3cb6bd87935eb53f302f7de6f86e209"))
            (origin
              (method git-fetch)
              (uri (git-reference
                    (url "https://github.com/hrydgard/ppsspp-lang")
                    (commit commit)))
              (sha256
-              (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))
+              (base32 "0rprn3yd8xfrvi0fm62sgpqa8n73jk7zmlscp8cp0h2fawqpiamd"))
              (file-name (git-file-name "ppsspp-lang" commit)))))
        ("tests"
         ,(let ((commit "328b839c7243e7f733f9eae88d059485e3d808e7"))

@@ -128,8 +128,9 @@ REPL.
 @item
 Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in
 Lisp lingo).  An expression can be a literal such as numbers and strings, or a
-compound which is a parenthesized list of compounds and literals.  @code{#t}
-and @code{#f} stand for the Booleans ``true'' and ``false'', respectively.
+compound which is a parenthesized list of compounds and literals.  @code{#true}
+and @code{#false} (abbreviated @code{#t} and @code{#f}) stand for the
+Booleans ``true'' and ``false'', respectively.
 
 Examples of valid expressions:
 
@@ -249,8 +250,10 @@ definitions.
 @end lisp
 
 @item
-The keyword syntax is @code{#:}; it is used to create unique identifiers.
-@pxref{Keywords,,, guile, GNU Guile Reference Manual}.
+@dfn{Keywords} are typically used to identify the named parameters of a
+procedure.  They are prefixed by @code{#:} (hash, colon) followed by
+alphanumeric characters: @code{#:like-this}.
+@xref{Keywords,,, guile, GNU Guile Reference Manual}.
 
 @item
 The percentage @code{%} is typically used for read-only global variables in
@@ -791,11 +794,11 @@ another, more sophisticated package (slightly modified from the source):
                 (snippet '(begin
                             ;; Remove bundled software.
                             (delete-file-recursively "deps")
-                            #t))))
+                            #true))))
       (build-system cmake-build-system)
       (outputs '("out" "debug"))
       (arguments
-       `(#:tests? #t                            ; Run the test suite (this is the default)
+       `(#:tests? #true                         ; Run the test suite (this is the default)
          #:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
          #:phases
          (modify-phases %standard-phases
@@ -806,12 +809,12 @@ another, more sophisticated package (slightly modified from the source):
                (substitute* "tests/clar/fs.h"
                  (("/bin/cp") (which "cp"))
                  (("/bin/rm") (which "rm")))
-               #t))
+               #true))
            ;; Run checks more verbosely.
            (replace 'check
              (lambda _ (invoke "./libgit2_clar" "-v" "-Q")))
            (add-after 'unpack 'make-files-writable-for-tests
-               (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
+             (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
       (inputs
        `(("libssh2" ,libssh2)
          ("http-parser" ,http-parser)
@@ -1029,7 +1032,7 @@ If you want to know more about what happens during those phases, consult the
 associated procedures.
 
 For instance, as of this writing the definition of @code{unpack} for the GNU build
-system is
+system is:
 
 @lisp
 (define* (unpack #:key source #:allow-other-keys)
@@ -1044,13 +1047,13 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t))
+                          #:keep-mtime? #true))
       (begin
         (if (string-suffix? ".zip" source)
             (invoke "unzip" source)
             (invoke "tar" "xvf" source))
         (chdir (first-subdirectory "."))))
-  #t)
+  #true)
 @end lisp
 
 Note the @code{chdir} call: it changes the working directory to where the source was
@@ -1066,16 +1069,16 @@ the following forms:
 
 @itemize
 @item
-@code{(add-before PHASE NEW-PHASE PROCEDURE)}: Run @code{PROCEDURE} named @code{NEW-PHASE} before @code{PHASE}.
+@code{(add-before @var{phase} @var{new-phase} @var{procedure})}: Run @var{procedure} named @var{new-phase} before @var{phase}.
 @item
-@code{(add-after PHASE NEW-PHASE PROCEDURE)}: Same, but afterwards.
+@code{(add-after @var{phase} @var{new-phase} @var{procedure})}: Same, but afterwards.
 @item
-@code{(replace PHASE PROCEDURE)}.
+@code{(replace @var{phase} @var{procedure})}.
 @item
-@code{(delete PHASE)}.
+@code{(delete @var{phase})}.
 @end itemize
 
-The @code{PROCEDURE} supports the keyword arguments @code{inputs} and @code{outputs}.  Each
+The @var{procedure} supports the keyword arguments @code{inputs} and @code{outputs}.  Each
 input (whether @emph{native}, @emph{propagated} or not) and output directory is referenced
 by their name in those variables.  Thus @code{(assoc-ref outputs "out")} is the store
 directory of the main output of the package.  A phase procedure may look like
@@ -1083,16 +1086,16 @@ this:
 
 @lisp
 (lambda* (#:key inputs outputs #:allow-other-keys)
-  (let (((bash-directory (assoc-ref inputs "bash"))
-         (output-directory (assoc-ref outputs "out"))
-         (doc-directory (assoc-ref outputs "doc"))
-  ; ...
-  #t)
+  (let ((bash-directory (assoc-ref inputs "bash"))
+        (output-directory (assoc-ref outputs "out"))
+        (doc-directory (assoc-ref outputs "doc")))
+    ;; ...
+    #true))
 @end lisp
 
-The procedure must return @code{#t} on success.  It's brittle to rely on the return
+The procedure must return @code{#true} on success.  It's brittle to rely on the return
 value of the last expression used to tweak the phase because there is no
-guarantee it would be a @code{#t}.  Hence the trailing @code{#t} to ensure the right value
+guarantee it would be a @code{#true}.  Hence the trailing @code{#true} to ensure the right value
 is returned on success.
 
 @subsubsection Code staging
@@ -1118,7 +1121,7 @@ Some of those functions can be found in
 @samp{$GUIX_CHECKOUT/guix/guix/build/utils.scm}.  Most of them mirror the behaviour
 of the traditional Unix system commands:
 
-@table @asis
+@table @code
 @item which
 Like the @samp{which} system command.
 @item find-files
@@ -1141,6 +1144,9 @@ then restore the previous working directory.
 @item substitute*
 A ``@command{sed}-like'' function.
 @end table
+
+@xref{Build Utilities,,, guix, GNU Guix Reference Manual}, for more
+information on these utilities.
 
 @subsubsection Module prefix
 
@@ -1352,6 +1358,7 @@ reference.
 * Running Guix on a Linode Server:: Running Guix on a Linode Server
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 * Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
+* Setting up NGINX with Lua:: Configuring NGINX web-server to load Lua modules.
 @end menu
 
 @node Customizing the Kernel
@@ -1384,8 +1391,8 @@ creates a package.
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
-                           (extra-version #f)
-                           (configuration-file #f)
+                           (extra-version #false)
+                           (configuration-file #false)
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options)
                            (patches (list %boot-logo-patch)))
@@ -1428,7 +1435,7 @@ the @code{make-linux-libre} package definition:
       (begin
         (copy-file config ".config")
         (chmod ".config" #o666))
-      (invoke "make" ,defconfig))
+      (invoke "make" ,defconfig)))
 @end lisp
 
 Below is a sample kernel package.  The @code{linux-libre} package is nothing
@@ -1459,7 +1466,7 @@ it:
 @lisp
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-   ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
+   ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #true)
    ;; Modules required for initrd:
    ("CONFIG_NET_9P" . m)
    ("CONFIG_NET_9P_VIRTIO" . m)
@@ -1476,9 +1483,9 @@ it:
   (string-join (map (match-lambda
                       ((option . 'm)
                        (string-append option "=m"))
-                      ((option . #t)
+                      ((option . #true)
                        (string-append option "=y"))
-                      ((option . #f)
+                      ((option . #false)
                        (string-append option "=n")))
                     options)
                "\n"))
@@ -1494,7 +1501,7 @@ And in the custom configure script from the `make-linux-libre` package:
   (display extra-configuration port)
   (close-port port))
 
-(invoke "make" "oldconfig"))))
+(invoke "make" "oldconfig")
 @end lisp
 
 So by not providing a configuration-file the @file{.config} starts blank, and
@@ -1865,7 +1872,7 @@ is below. Save the resulting file as @file{guix-config.scm}.
                (bootloader
                 (bootloader
                  (inherit grub-bootloader)
-                 (installer #~(const #t))))))
+                 (installer #~(const #true))))))
   (file-systems (cons (file-system
                         (device "/dev/sda")
                         (mount-point "/")
@@ -1897,7 +1904,7 @@ is below. Save the resulting file as @file{guix-config.scm}.
              (service openssh-service-type
                       (openssh-configuration
                        (openssh openssh-sans-x)
-                       (password-authentication? #f)
+                       (password-authentication? #false)
                        (authorized-keys
                         `(("janedoe" ,(local-file "janedoe_rsa.pub"))
                           ("root" ,(local-file "janedoe_rsa.pub"))))))
@@ -2112,6 +2119,63 @@ want to get a substitute from the Tor tunnel run:
 sudo herd set-http-proxy guix-daemon http://localhost:9250
 guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …
 @end example
+
+@node Setting up NGINX with Lua
+@section Setting up NGINX with Lua
+@cindex nginx, lua, openresty, resty
+
+NGINX could be extended with Lua scripts.
+
+Guix provides NGINX service with ability to load Lua module and specific
+Lua packages, and reply to requests by evaluating Lua scripts.
+
+The following example demonstrates system definition with configuration
+to evaluate @file{index.lua} Lua script on HTTP request to
+@uref{http://localhost/hello} endpoint:
+
+@example
+local shell = require "resty.shell"
+
+local stdin = ""
+local timeout = 1000  -- ms
+local max_size = 4096  -- byte
+
+local ok, stdout, stderr, reason, status =
+   shell.run([[/run/current-system/profile/bin/ls /tmp]], stdin, timeout, max_size)
+
+ngx.say(stdout)
+@end example
+
+@lisp
+(use-modules (gnu))
+(use-service-modules #;… web)
+(use-package-modules #;… lua)
+(operating-system
+  ;; …
+  (services
+   ;; …
+   (service nginx-service-type
+            (nginx-configuration
+             (modules
+              (list
+               (file-append nginx-lua-module "/etc/nginx/modules/ngx_http_lua_module.so")))
+             (lua-package-path (list lua-resty-core
+                                     lua-resty-lrucache
+                                     lua-resty-signal
+                                     lua-tablepool
+                                     lua-resty-shell))
+             (lua-package-cpath (list lua-resty-signal))
+             (server-blocks
+              (list (nginx-server-configuration
+                     (server-name '("localhost"))
+                     (listen '("80"))
+                     (root "/etc")
+                     (locations (list
+                                 (nginx-location-configuration
+                                  (uri "/hello")
+                                  (body (list #~(format #f "content_by_lua_file ~s;"
+                                                        #$(local-file "index.lua"))))))))))))))
+@end lisp
 
 @c *********************************************************************
 @node Advanced package management

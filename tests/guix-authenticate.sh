@@ -61,6 +61,15 @@ sed -i "$sig"											\
 code="$(echo "verify $(cat $sig)" | guix authenticate | cut -f1 -d ' ')"
 test "$code" -ne 0
 
+# Make sure byte strings are correctly encoded.  The hash string below is
+# "café" repeated 8 times.  Libgcrypt would normally choose to write it as a
+# string rather than a hex sequence.  We want that string to be Latin-1
+# encoded independently of the current locale: <https://bugs.gnu.org/43421>.
+hash="636166e9636166e9636166e9636166e9636166e9636166e9636166e9636166e9"
+latin1_cafe="caf$(printf '\351')"
+echo "sign 21:tests/signing-key.sec 64:$hash" | guix authenticate \
+    | LC_ALL=C grep "hash sha256 \"$latin1_cafe"
+
 # Test for <http://bugs.gnu.org/17312>: make sure 'guix authenticate' produces
 # valid signatures when run in the C locale.
 hash="5eff0b55c9c5f5e87b4e34cd60a2d5654ca1eb78c7b3c67c3179fed1cff07b4c"

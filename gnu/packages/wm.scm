@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -973,6 +973,9 @@ experience.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-paths
            (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/awful/completion.lua"
+               (("/usr/bin/env")
+                ""))
              ;; The build process needs to load Cairo dynamically.
              (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib"))
                     (lua-version ,(version-major+minor (package-version lua)))
@@ -1021,9 +1024,9 @@ experience.")
                     (lua-version ,(version-major+minor (package-version lua)))
                     (lua-lgi (assoc-ref inputs "lua-lgi")))
                (wrap-program (string-append awesome "/bin/awesome")
-                 `("LUA_PATH" suffix
+                 `("LUA_PATH" ";" suffix
                    (,(format #f "~a/share/lua/~a/?.lua" lua-lgi lua-version)))
-                 `("LUA_CPATH" suffix
+                 `("LUA_CPATH" ";" suffix
                    (,(format #f "~a/lib/lua/~a/?.so" lua-lgi lua-version)))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
                  `("LD_LIBRARY_PATH" suffix (,cairo)))
@@ -1383,6 +1386,8 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
+    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
+    ;; be dropped from the grim package.
     (version "1.4")
     (source
      (origin
@@ -1514,7 +1519,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -1523,10 +1528,10 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ks719khhg2zwpyiwa2079i6962qcxpapm28hmr4ckpsp2n659ck"))))
+        (base32 "038vnma7y7z81caywp45yr364bc1aq8d01j5vycyiyfv33nm76fy"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
-              ("fmt" ,fmt)
+              ("fmt" ,fmt-6)
               ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
@@ -1592,16 +1597,20 @@ compositors that support the layer-shell protocol.")
         (base32 "1ha8803ll7472kqxsy2xz0v5d4sv8apmc9z631d67m31q0z1m9rz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
-                     ("texinfo" ,texinfo)))
+                     ("texinfo" ,texinfo)
+
+                     ;; To build the manual.
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
               ("clx" ,sbcl-clx)
               ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:asd-system-name "stumpwm"
+     '(#:asd-systems '("stumpwm")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'create-symlinks 'build-program
+         (add-after 'create-asdf-configuration 'build-program
            (lambda* (#:key outputs #:allow-other-keys)
              (build-program
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
@@ -1626,13 +1635,12 @@ compositors that support the layer-shell protocol.")
                     out)))
                #t)))
          (add-after 'install 'install-manual
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The proper way to the manual is bootstrapping a full autotools
-             ;; build system and running ‘./configure && make stumpwm.info’ to
-             ;; do some macro substitution.  We can get away with much less.
+           (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (info (string-append out "/share/info")))
-               (invoke "makeinfo" "stumpwm.texi.in")
+               (invoke "./autogen.sh")
+               (invoke "sh" "./configure" "SHELL=sh")
+               (apply invoke "make" "stumpwm.info" make-flags)
                (install-file "stumpwm.info" info)
                #t))))))
     (synopsis "Window manager written in Common Lisp")
@@ -1670,20 +1678,15 @@ productive, customizable lisp based systems.")
                       (program (string-append out "/bin/stumpwm")))
                  (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
-                                #:dependencies '("stumpwm"
-                                                 ,@(@@ (gnu packages lisp-xyz) slynk-systems))
+                                #:dependencies '("stumpwm" "slynk")
                                 #:dependency-prefixes
                                 (map (lambda (input) (assoc-ref inputs input))
                                      '("stumpwm" "slynk")))
-                 ;; Remove unneeded file.
-                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
                  #t)))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
-           (delete 'create-asd-file)
-           (delete 'cleanup)
-           (delete 'create-symlinks)))))))
+           (delete 'cleanup)))))))
 
 (define stumpwm-contrib
   (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
@@ -1745,7 +1748,7 @@ productive, customizable lisp based systems.")
      `(("stumpwm" ,stumpwm "lib")
        ("clx-truetype" ,sbcl-clx-truetype)))
     (arguments
-     '(#:asd-system-name "ttf-fonts"
+     '(#:asd-systems '("ttf-fonts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1762,7 +1765,7 @@ rendering.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-pass")
     (arguments
-     '(#:asd-system-name "pass"
+     '(#:asd-systems '("pass")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1779,7 +1782,7 @@ password-store into StumpWM.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-globalwindows")
     (arguments
-     '(#:asd-system-name "globalwindows"
+     '(#:asd-systems '("globalwindows")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1796,7 +1799,7 @@ windows in the current X session.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-swm-gaps")
     (arguments
-     '(#:asd-system-name "swm-gaps"
+     '(#:asd-systems '("swm-gaps")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1813,7 +1816,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-net")
     (arguments
-     '(#:asd-system-name "net"
+     '(#:asd-systems '("net")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1831,7 +1834,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-wifi")
     (arguments
-     '(#:asd-system-name "wifi"
+     '(#:asd-systems '("wifi")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1849,7 +1852,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-stumptray")
     (arguments
-     '(#:asd-system-name "stumptray"
+     '(#:asd-systems '("stumptray")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1871,7 +1874,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-kbd-layouts")
     (arguments
-     '(#:asd-system-name "kbd-layouts"
+     '(#:asd-systems '("kbd-layouts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -2039,3 +2042,39 @@ execute a shell command on a configurable action.  The icons can be moved on
 the desktop by dragging them, and the icons will remember their positions on
 start-up.")
     (license license:bsd-3)))
+
+(define-public xnotify
+  (package
+    (name "xnotify")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/phillbush/xnotify")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ris7jhi7hgw7nxkwkn3zk7n3y4nvnnm6dbz0qs0g2srp2k67v7v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("imlib2" ,imlib2)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output)
+             (string-append "CFLAGS="
+                            "-I" (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
+       #:tests? #f ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/phillbush/xnotify")
+    (synopsis "Displays a notification on the screen")
+    (description "XNotify receives a notification specification in stdin and
+shows a notification for the user on the screen.")
+    (license license:expat)))

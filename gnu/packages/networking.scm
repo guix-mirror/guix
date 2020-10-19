@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
@@ -39,6 +39,8 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
+;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -306,7 +308,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
 (define-public srt
   (package
     (name "srt")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -316,7 +318,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01xaq44j95kbgqfl41pnybvqy0yq6wd4wdw88ckylzf0nzp977xz"))))
+        (base32 "01nx3a35hzq2x0dvp2n2b86phpdy1z83kdraag7aq3hmc7f8iagg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -343,6 +345,24 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
 performance across unpredictable networks, such as the Internet.")
     (home-page "https://www.srtalliance.org/")
     (license license:mpl2.0)))
+
+;; FFmpeg, GStreamer, and VLC don't support SRT 1.4.2 yet.
+(define-public srt-1.4.1
+  (package
+    (inherit srt)
+    (name "srt")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Haivision/srt.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "01xaq44j95kbgqfl41pnybvqy0yq6wd4wdw88ckylzf0nzp977xz"))))))
 
 (define-public lksctp-tools
   (package
@@ -418,7 +438,8 @@ at the link-layer level.")
     (arguments
      `(#:configure-flags
        (list "-DNNG_ENABLE_COVERAGE=ON"
-             "-DNNG_ENABLE_TLS=ON")
+             "-DNNG_ENABLE_TLS=ON"
+             "-DBUILD_SHARED_LIBS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
@@ -837,18 +858,17 @@ transparently check connection attempts against an access control list.")
     (license (license:non-copyleft "file://DISCLAIMER"
                                    "See the file DISCLAIMER in the distribution."))))
 
-
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.3.2")
+    (version "4.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/zeromq/libzmq/releases"
                                   "/download/v" version "/zeromq-" version ".tar.gz"))
               (sha256
                (base32
-                "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
+                "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
     (build-system gnu-build-system)
     (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
@@ -1021,14 +1041,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.8")
+    (version "5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0ikmz36bdfwxscsfcgjmyzg70hwr8i3wpdhcp1vmk3q4ip858frg"))))
+                "0vwam1ay184z237vnl8ivb0rdjjbljp9pj3kjzhc6yzq180k4aai"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1213,7 +1233,7 @@ test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
        #:test-target "test"))
     (inputs `(("net-tools" ,net-tools)
               ("zlib" ,zlib)))
-    (native-inputs `(("check" ,check)
+    (native-inputs `(("check" ,check-0.14)
                      ("pkg-config" ,pkg-config)))
     (home-page "https://code.kryo.se/iodine/")
     (synopsis "Tunnel IPv4 data through a DNS server")
@@ -1269,14 +1289,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.6")
+    (version "3.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1wmlbrym6l5fkvic596yx74jz1pn4pfjihsx341fxv5w76zfxcgb"))))
+        (base32 "1nkhglzxj05hwhgzrgan4glv0z67rmasf9djx1dmqicwdnw2z0xy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1436,8 +1456,9 @@ handling network namespaces in Go.")
 
 (define-public go-sctp
   ;; docker-libnetwork-cmd-proxy requires this exact commit.
-  (let ((commit "07191f837fedd2f13d1ec7b5f885f0f3ec54b1cb")
-        (revision "1"))
+  ;; This commit is mentioned in docker-libnetwork-cmd-proxy's vendor.conf.
+  (let ((commit "6e2cb1366111dcf547c13531e3a263a067715847")
+        (revision "2"))
     (package
       (name "go-sctp")
       (version (git-version "0.0.0" revision commit))
@@ -1449,10 +1470,11 @@ handling network namespaces in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1mk9ncm10gwi5pn5wcw4skbyf4qg7n5qdf1mim4gf3mrckvi6g6h"))))
+                  "1ba90fmpdwxa1ba4hrsjhi3gfy3pwmz7x8amw1p5dc9p5a7nnqrb"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/ishidawataru/sctp"))
+       `(#:tests? #f    ; Test suite is flakey.
+         #:import-path "github.com/ishidawataru/sctp"))
       (home-page "https://github.com/ishidawataru/sctp")
       (synopsis "SCTP library for the Go programming language")
       (description "This library provides methods for using the stream control
@@ -1788,7 +1810,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.24")
+  (version "1.27")
   (source
     (origin
       (method url-fetch)
@@ -1799,7 +1821,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "0qyy5k4k0llqjjmkkfg96919gqybdc1z5fy9047n9imidjxc59hi"))))
+       (base32 "0hdx5ajr34f39rycai090y9w8gq9v0shgziynaaj0rzk21vjfdpk"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -2656,14 +2678,14 @@ can be whipped up with little effort.")
 (define-public mtr
   (package
     (name "mtr")
-    (version "0.93")
+    (version "0.94")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "ftp://ftp.bitwizard.nl/mtr/"
                            "mtr-" version ".tar.gz"))
        (sha256
-        (base32 "03gid8g4r6a9r40855s4345xm1bylj2kfqkicjwxpmvvccyng712"))))
+        (base32 "1glxvlqskcmjkxlqk9i12hcfaxb389cx2n8ji7776gmix3aq4z1z"))))
     (build-system gnu-build-system)
     (inputs
      `(("libcap" ,libcap)
@@ -3270,9 +3292,9 @@ communication over HTTP.")
        ("pcre2" ,pcre2)
        ("sobjectizer" ,sobjectizer)))
     (propagated-inputs
-     `(("asio", asio)
+     `(("asio" ,asio)
        ("fmt" ,fmt)
-       ("http-parser", http-parser)))
+       ("http-parser" ,http-parser)))
     (arguments
      `(#:configure-flags '("-DRESTINIO_INSTALL=on")
        #:tests? #f ; TODO: The tests are called from the root CMakelist, need RESTINIO_TEST=on.

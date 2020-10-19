@@ -297,7 +297,8 @@ VARIABLE and return it, or #f if none was found."
                                   (hash-map->list (lambda (name module)
                                                     module)
                                                   (module-submodules head)))))
-             (match (module-local-variable head variable)
+             (match (and=> (module-public-interface head)
+                           (cut module-local-variable <> variable))
                (#f (loop next suggestions visited))
                (_
                 (match (module-name head)
@@ -492,7 +493,7 @@ part."
 lines:
 
 @example
-guix package -i glibc-utf8-locales
+guix install glibc-utf8-locales
 export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
 @end example
 
@@ -2134,7 +2135,7 @@ and signal handling have already been set up."
              (G_ "guix: missing command name~%"))
      (show-guix-usage))
     ((or ("-h") ("--help"))
-     (show-guix-help))
+     (leave-on-EPIPE (show-guix-help)))
     ((or ("-V") ("--version"))
      (show-version-and-exit "guix"))
     (((? option? o) args ...)
@@ -2145,7 +2146,7 @@ and signal handling have already been set up."
      (apply run-guix-command (string->symbol command)
             '("--help")))
     (("help" args ...)
-     (show-guix-help))
+     (leave-on-EPIPE (show-guix-help)))
     ((command args ...)
      (apply run-guix-command
             (string->symbol command)

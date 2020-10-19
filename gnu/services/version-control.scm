@@ -307,10 +307,15 @@ access to exported repositories under @file{/srv/git}."
                 (pubkey-file (string-append
                               #$home "/"
                               (basename
-                               (strip-store-file-name admin-pubkey)))))
+                               (strip-store-file-name admin-pubkey))))
+                (rc-file #$(string-append home "/.gitolite.rc")))
 
            (simple-format #t "guix: gitolite: installing ~A\n" #$rc-file)
-           (copy-file #$rc-file #$(string-append home "/.gitolite.rc"))
+           (copy-file #$rc-file rc-file)
+           ;; ensure gitolite's user can read the configuration
+           (chown rc-file
+                  (passwd:uid user-info)
+                  (passwd:gid user-info))
 
            ;; The key must be writable, so copy it from the store
            (copy-file admin-pubkey pubkey-file)

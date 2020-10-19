@@ -8,7 +8,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright @ 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,6 +40,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
@@ -256,6 +257,64 @@ structures and functions commonly needed, such as maps, deques, linked lists,
 string formatting and autoresizing, option and config file parsing, type
 checking casts and more.")
     (license license:lgpl2.1+)))
+
+(define-public libwuya
+  ;; This commit is the one before "wuy_pool.h" was removed from libwuya,
+  ;; which libleak currently requires.
+  (let ((revision "1")
+        (commit "883502041044f4616cfbf75c8f2bb60059f704a9"))
+    (package
+      (name "libwuya")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/WuBingzheng/libwuya")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1xrsqbgr13g2v0ag165ryp7xrwzv41xfygzk2a3445ca98c1qpdc"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;no test suite
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-lua-includes
+                      (lambda _
+                        (substitute* '("wuy_cflua.h" "wuy_cflua.c")
+                          (("<lua5\\.1/") "<"))
+                        #t))
+                    (add-after 'unpack 'add--fPIC-to-CFLAGS
+                      (lambda _
+                        (substitute* "Makefile"
+                          (("CFLAGS[^\n]*" all)
+                           (string-append all " -fPIC")))
+                        #t))
+                    (add-before 'build 'set-CC
+                      (lambda _
+                        (setenv "CC" "gcc")
+                        #t))
+                    (delete 'configure) ;no configure script
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let* ((out (assoc-ref outputs "out"))
+                               (include-dir (string-append out "/include"))
+                               (headers (find-files "." "\\.h$")))
+                          (for-each (lambda (h)
+                                      (install-file h include-dir))
+                                    headers)
+                          (install-file "libwuya.a" (string-append out "/lib"))
+                          #t))))))
+      (inputs `(("lua" ,lua)))
+      (home-page "https://github.com/WuBingzheng/libwuya/")
+      (synopsis "C library implementing various data structures")
+      (description "The @code{libwuya} library implements data structures such
+as dictionaries, skip lists, and memory pools.")
+      ;; There is no clear information as to what license this is distributed
+      ;; under, but it is included (bundled) with libleak from the same author
+      ;; under the GNU GPL v2 or later license, so use this here until it is
+      ;; clarified (see: https://github.com/WuBingzheng/libwuya/issues/2).
+      (license license:gpl2+))))
 
 (define-public packcc
   (package

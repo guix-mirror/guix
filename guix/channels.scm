@@ -783,7 +783,8 @@ modules in the old ~/.config/guix/latest style."
                    ;; derivation that builds modules.  We have to infer what the
                    ;; dependencies of these modules were.
                    (list guile-json-3 guile-git guile-bytestructures
-                         (ssh -> guile-ssh) (tls -> gnutls)))))
+                         (ssh -> guile-ssh) (tls -> gnutls))
+                   #:guile (default-guile))))
 
 (define (old-style-guix? drv)
   "Return true if DRV corresponds to a ~/.config/guix/latest style of

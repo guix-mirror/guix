@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,11 +43,17 @@
 ;;;
 ;;; Code:
 
+(define initial-program-arguments
+  ;; Save the initial program arguments.  This allows us to see the "real"
+  ;; 'guix' program, even if 'guix repl -s' calls 'set-program-arguments'
+  ;; later on.
+  (program-arguments))
+
 (define current-profile
   (mlambda ()
     "Return the profile (created by 'guix pull') the calling process lives in,
 or #f if this is not applicable."
-    (match (command-line)
+    (match initial-program-arguments
       ((program . _)
        (and (string-suffix? "/bin/guix" program)
             ;; Note: We want to do _lexical dot-dot resolution_.  Using ".."

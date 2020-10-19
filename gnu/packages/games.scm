@@ -429,7 +429,9 @@ physics settings to tweak as well.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
-       #:configure-flags '("-DDATADIR=share/astromenace")
+       #:configure-flags (list (string-append "-DDATADIR="
+                                              (assoc-ref %outputs "out")
+                                              "/share/astromenace"))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
@@ -1811,58 +1813,63 @@ Every puzzle has a complete solution, although there may be more than one.")
    (license license:gpl2+)))
 
 (define-public retux
-  (package
-    (name "retux")
-    (version "1.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/retux-game/retux/"
-                                  "releases/download/v"
-                                  (version-major+minor version) "/retux-"
-                                  version "-src.tar.gz"))
-              (sha256
-               (base32
-                "1hxy1pvlxhk0ci3wh2i3mmr82faqdjnnxsiwwr5gcr93nfnw9w5f"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ; no check target
-       #:phases
-       (modify-phases %standard-phases
-         ;; no setup.py script
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (bin    (string-append out "/bin"))
-                    (data   (string-append out "/share/retux")))
-               (mkdir-p bin)
+  (let ((release "1.4.1")
+        (revision 1))
+    (package
+      (name "retux")
+      (version (if (zero? revision)
+                   release
+                   (string-append release "-"
+                                  (number->string revision))))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/retux-game/retux/"
+                                    "releases/download/v"
+                                    version "/retux-"
+                                    release "-src.tar.gz"))
+                (sha256
+                 (base32
+                  "1vrldg2qh2gqfswj7vkpc589ldrrjd903j6cnfdik9zh0jhlq4h2"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           ;; no setup.py script
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out    (assoc-ref outputs "out"))
+                      (bin    (string-append out "/bin"))
+                      (data   (string-append out "/share/retux")))
+                 (mkdir-p bin)
 
-               (substitute* "retux.py"
-                 ;; Use the correct data directory.
-                 (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
-                  (string-append "\"" data "\",")))
+                 (substitute* "retux.py"
+                   ;; Use the correct data directory.
+                   (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
+                    (string-append "\"" data "\",")))
 
-               (copy-file "retux.py" (string-append bin "/retux"))
-               (copy-recursively "data" data)
-               #t))))))
-    (inputs
-     `(("python-sge-pygame" ,python-sge-pygame)
-       ("python-six" ,python-six)
-       ("python-xsge" ,python-xsge)))
-    (home-page "https://retux-game.github.io/")
-    (synopsis "Action platformer game")
-    (description
-     "ReTux is an action platformer loosely inspired by the Mario games,
+                 (copy-file "retux.py" (string-append bin "/retux"))
+                 (copy-recursively "data" data)
+                 #t))))))
+      (inputs
+       `(("python-sge-pygame" ,python-sge-pygame)
+         ("python-six" ,python-six)
+         ("python-xsge" ,python-xsge)))
+      (home-page "https://retux-game.github.io/")
+      (synopsis "Action platformer game")
+      (description
+       "ReTux is an action platformer loosely inspired by the Mario games,
 utilizing the art assets from the @code{SuperTux} project.")
-    ;; GPL version 3 or later is the license for the code and some art.
-    ;; The rest of the licenses are for the art exclusively, as listed in
-    ;; data/LICENSES.
-    (license (list license:cc0
-                   license:cc-by3.0
-                   license:cc-by-sa3.0
-                   license:cc-by-sa4.0
-                   license:gpl2+
-                   license:gpl3+))))
+      ;; GPL version 3 or later is the license for the code and some art.
+      ;; The rest of the licenses are for the art exclusively, as listed in
+      ;; data/LICENSES.
+      (license (list license:cc0
+                     license:cc-by3.0
+                     license:cc-by-sa3.0
+                     license:cc-by-sa4.0
+                     license:gpl2+
+                     license:gpl3+)))))
 
 (define-public roguebox-adventures
   (package
@@ -2721,7 +2728,7 @@ interface or via an external visual interface such as GNU XBoard.")
                   (ftp-directory . "/chess")))
     (license license:gpl3+)))
 
-(define freedink-engine
+(define-public freedink-engine
   (package
     (name "freedink-engine")
     (version "109.6")
@@ -2751,7 +2758,16 @@ interface or via an external visual interface such as GNU XBoard.")
 	     (invoke "autoreconf")
 	     ;; Build fails when autom4te.cache exists.
 	     (delete-file-recursively "autom4te.cache")
-             #t)))))
+             #t))
+         (add-after 'install 'delete-freedinkedit-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+             ;; freedinkedit does not know where to find freedink data
+             ;; freedink data is read-only, so it cannot be edited anyway.
+             ;; TODO: fix freedink.desktop
+             (delete-file-recursively (string-append
+                            out "/share/applications"))
+             #t))))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("cxxtest" ,cxxtest)
@@ -2773,7 +2789,7 @@ game data files but it also supports user-produced game mods or \"D-Mods\".
 To that extent, it also includes a front-end for managing all of your D-Mods.")
     (license license:gpl3+)))
 
-(define freedink-data
+(define-public freedink-data
   (package
     (name "freedink-data")
     (version "1.08.20190120")
@@ -3459,15 +3475,15 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/supertuxkart/SuperTuxKart/"
-                           version "/supertuxkart-" version "-src.tar.xz"))
+                           version "/SuperTuxKart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "1s0ai07g3sswck9mr0142989mrgzzq1njc1qxk5als5b245jpc79"))
+         "0dvx56hmy6wdhl7m9dw8zc1n3jqfp05gnxl6zs1rbfdyzl5dybh5"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -3475,12 +3491,9 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; Supertuxkart uses modified versions of the Irrlicht engine
            ;; and the bullet library.  The developers gave an explanation
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-           ;; FIXME: try to unbundle angelscript and libraqm
+           ;; FIXME: try to unbundle angelscript, libmcpp and libraqm
            (for-each delete-file-recursively
-                     '("lib/zlib"
-                       "lib/libpng"
-                       "lib/jpeglib"
-                       "lib/glew"
+                     '("lib/glew"
                        "lib/wiiuse"
                        "lib/enet"))
            #t))))
@@ -3489,34 +3502,31 @@ This game is based on the GPL version of the famous game TuxRacer.")
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             ;; Do not use the bundled zlib, glew and enet.
-             "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
              "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
              ;; In order to use the system ENet library, IPv6 support (added in
              ;; SuperTuxKart version 1.1) must be disabled.
              "-DUSE_IPV6=FALSE"
              ;; FIXME: needs libopenglrecorder
-             "-DBUILD_RECORDER=0"
-             ;; Irrlicht returns an integer instead of a boolean
-             "-DCMAKE_C_FLAGS=-fpermissive")))
+             "-DBUILD_RECORDER=0")))
     (inputs
-     `(("glew" ,glew)
-       ("zlib" ,zlib)
-       ("openal" ,openal)
-       ("libvorbis" ,libvorbis)
+     `(("curl" ,curl)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("glew" ,glew)
        ("harfbuzz" ,harfbuzz)
-       ("mesa" ,mesa)
+       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
-       ("curl" ,curl)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
+       ("enet" ,enet)
        ("libjpeg" ,libjpeg-turbo)
-       ("openssl" ,openssl)
-       ("enet" ,enet)))
+       ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://supertuxkart.net/Main_Page")
@@ -3904,7 +3914,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")
     (description
-     "The OpenGFX projects is an implementation of the OpenTTD base grahics
+     "The OpenGFX project is an implementation of the OpenTTD base graphics
 set that aims to ensure the best possible out-of-the-box experience.
 
 OpenGFX provides you with...
@@ -4785,7 +4795,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4794,7 +4804,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "1nvi277cazsw36b6nhd5nmk0cjvm71rlxasy24mf18j7fsvq9vp8"))))
+                "0jz2lgvmp299nks6ajg2yxbx4xcaxlc4cpfr61861p7m7z2nv84y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5073,7 +5083,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.02")
+    (version "2.02.04")
     (source
      (origin
        (method url-fetch)
@@ -5081,7 +5091,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32 "11ylbp8ip7dwmh4gzb53z147pcfxkl3lwhyy8ngyn2zc634vdn65"))))
+        (base32 "1w1y20vqcikg59gnbxjbhyq2yanwqz1a6wp8vd1qnmil240id4j7"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -7172,7 +7182,7 @@ original.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cmocka" ,cmocka)
-       ("perl-env-path", perl-env-path)
+       ("perl-env-path" ,perl-env-path)
        ("perl-inline" ,perl-inline)
        ("perl-inline-c" ,perl-inline-c)
        ("perl-string-shellquote" ,perl-string-shellquote)
@@ -7767,7 +7777,7 @@ their own levels.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libmanette/"
@@ -7775,7 +7785,7 @@ their own levels.")
                                   "libmanette-" version ".tar.xz"))
               (sha256
                (base32
-                "1xrc6rh73v5w3kbkflzv1yg8sbxk4wf06hfk95raxhxlssza9q2g"))))
+                "0awsl0d34k3w18jdiyh377r7qi00s4kmh5gc97vx9jy0h22f01l0"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources
@@ -10168,7 +10178,7 @@ This package is part of the KDE games module.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("kdoctools" ,kdoctools)))
     (inputs
-     `(("karchive", karchive)
+     `(("karchive" ,karchive)
        ("kconfig" ,kconfig)
        ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
@@ -10314,7 +10324,7 @@ This package is part of the KDE games module.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("kdoctools" ,kdoctools)))
     (inputs
-     `(("kcompletion", kcompletion)
+     `(("kcompletion" ,kcompletion)
        ("kconfig" ,kconfig)
        ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
@@ -10706,7 +10716,7 @@ This package is part of the KDE games module.")
        ("kdbusaddons" ,kdbusaddons)
        ("ki18n" ,ki18n)
        ("kio" ,kio)
-       ("knewstuff", knewstuff)
+       ("knewstuff" ,knewstuff)
        ("ktextwidgets" ,ktextwidgets)
        ("kxmlgui" ,kxmlgui)
        ("libkdegames" ,libkdegames)
@@ -11399,7 +11409,7 @@ etc.  You can also play games on FICS or against an engine.")
 (define-public stockfish
   (package
     (name "stockfish")
-    (version "11")
+    (version "12")
     (source
      (origin
        (method git-fetch)
@@ -11408,8 +11418,15 @@ etc.  You can also play games on FICS or against an engine.")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12mppipinymj8s1ipq9a7is453vncly49c32ym9wvyklsgyxfzlk"))))
+        (base32 "0vcymbwp5nf114pp3ax40s21ki5dckda15vmhr77d1mnq3fn0l32"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("neural-network"
+        ,(origin
+           (method url-fetch)
+           (uri "https://tests.stockfishchess.org/api/nn/nn-82215d0fd0df.nnue")
+           (sha256
+            (base32 "1r4yqrh4di05syyhl84hqcz84djpbd605b27zhbxwg6zs07ms8c2"))))))
     (arguments
      `(#:tests? #f
        #:make-flags (list "-C" "src"
@@ -11425,10 +11442,17 @@ etc.  You can also play games on FICS or against an engine.")
                                             ("mips64el-linux" "general-64")
                                             (_ "general-32"))))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  ;; The official neural network file is needed for building
+                  ;; and is embedded in the resulting binary.
+                  (add-after 'unpack 'copy-net
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (copy-file (assoc-ref inputs "neural-network")
+                                 "src/nn-82215d0fd0df.nnue")
+                      #t)))))
     (synopsis "Strong chess engine")
     (description
-     "Stockfish is a very strong chess engines.  It is much stronger than the
+     "Stockfish is a very strong chess engine.  It is much stronger than the
 best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
     (home-page "https://stockfishchess.org/")

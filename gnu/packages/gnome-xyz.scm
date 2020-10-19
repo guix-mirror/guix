@@ -234,7 +234,7 @@ some media players, are meant to run long-term in the background even after you
 close their window.  These applications remain accessible by adding an icon to
 the GNOME Shell Legacy Tray.  However, the Legacy Tray was removed in GNOME
 3.26.  TopIcons Redux brings those icons back into the top panel so that it's
-easier to keep track of apps running in the backround.")
+easier to keep track of applications running in the background.")
     (license license:gpl2+)))
 
 (define-public gnome-shell-extension-dash-to-dock

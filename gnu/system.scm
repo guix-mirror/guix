@@ -5,11 +5,13 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,24 +40,28 @@
   #:use-module ((guix utils) #:select (substitute-keyword-arguments))
   #:use-module (guix i18n)
   #:use-module (guix diagnostics)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages disk)
+  #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages firmware)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages admin)
   #:use-module (gnu packages hurd)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages package-management)
   #:use-module (gnu packages less)
-  #:use-module (gnu packages zile)
-  #:use-module (gnu packages nano)
-  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages nano)
+  #:use-module (gnu packages nvi)
+  #:use-module (gnu packages package-management)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages firmware)
+  #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
@@ -143,6 +149,7 @@
             boot-parameters-bootloader-menu-entries
             boot-parameters-store-device
             boot-parameters-store-mount-point
+            boot-parameters-locale
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
@@ -159,6 +166,7 @@
             %base-packages-interactive
             %base-packages-linux
             %base-packages-networking
+            %base-packages-disk-utilities
             %base-packages-utils
             %base-firmware
             %default-kernel-arguments))
@@ -291,6 +299,7 @@ directly by the user."
    boot-parameters-bootloader-menu-entries)
   (store-device     boot-parameters-store-device)
   (store-mount-point boot-parameters-store-mount-point)
+  (locale           boot-parameters-locale)
   (kernel           boot-parameters-kernel)
   (kernel-arguments boot-parameters-kernel-arguments)
   (initrd           boot-parameters-initrd)
@@ -367,6 +376,11 @@ file system labels."
        (match (assq 'multiboot-modules rest)
          ((_ args) args)
          (#f       '())))
+
+      (locale
+       (match (assq 'locale rest)
+         ((_ locale) locale)
+         (#f         #f)))
 
       (store-device
        ;; Linux device names like "/dev/sda1" are not suitable GRUB device
@@ -634,6 +648,8 @@ bookkeeping."
                            (operating-system-file-systems os)))
           (pam-root-service (operating-system-pam-services os))
           (operating-system-etc-service os)
+          (service setuid-program-service-type
+                   (operating-system-setuid-programs os))
           (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
@@ -690,7 +706,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
  (cons* procps psmisc which
         (@ (gnu packages admin) shadow) ;for 'passwd'
 
-        guile-3.0
+        guile-3.0-latest
 
         ;; The packages below are also in %FINAL-INPUTS, so take them from
         ;; there to avoid duplication.
@@ -708,6 +724,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
 (define %base-packages-interactive
   ;; Default set of common interactive packages.
   (list less zile nano
+        nvi
         man-db
         info-reader                     ;the standalone Info reader (no Perl)
         bash-completion
@@ -725,6 +742,19 @@ of PROVENANCE-SERVICE-TYPE to its services."
         ;; wireless-tools is deprecated in favor of iw, but it's still what
         ;; many people are familiar with, so keep it around.
         iw wireless-tools))
+
+(define %base-packages-disk-utilities
+  ;; A well-rounded set of packages for interacting with disks, partitions
+  ;; and filesystems.
+  (list parted gptfdisk ddrescue
+        ;; We used to provide fdisk from GNU fdisk, but as of version 2.0.0a
+        ;; it pulls Guile 1.8, which takes unreasonable space; furthermore
+        ;; util-linux's fdisk is already available, in %base-packages-linux.
+        cryptsetup mdadm
+        dosfstools
+        btrfs-progs
+        f2fs-tools
+        jfsutils))
 
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
@@ -1212,6 +1242,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
   (let* ((file-systems    (operating-system-file-systems os))
          (root-fs         (operating-system-root-file-system os))
          (root-device     (file-system-device root-fs))
+         (locale          (operating-system-locale os))
          (params          (operating-system-boot-parameters
                            os root-device
                            #:system-kernel-arguments? #t))
@@ -1224,6 +1255,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
 
     (generate-config-file bootloader-conf (list entry)
                           #:old-entries old-entries
+                          #:locale locale
                           #:store-directory-prefix
 			  (btrfs-store-subvolume-file-name file-systems))))
 
@@ -1262,6 +1294,7 @@ such as '--root' and '--load' to <boot-parameters>."
   (let* ((initrd          (and (not (operating-system-hurd os))
                                (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
+         (locale          (operating-system-locale os))
          (bootloader      (bootloader-configuration-bootloader
                            (operating-system-bootloader os)))
          (bootloader-name (bootloader-name bootloader))
@@ -1280,6 +1313,7 @@ such as '--root' and '--load' to <boot-parameters>."
      (bootloader-name bootloader-name)
      (bootloader-menu-entries
       (bootloader-configuration-menu-entries (operating-system-bootloader os)))
+     (locale locale)
      (store-device (ensure-not-/dev (file-system-device store)))
      (store-mount-point (file-system-mount-point store)))))
 
@@ -1332,6 +1366,7 @@ being stored into the \"parameters\" file)."
                              (or (and=> (operating-system-bootloader os)
                                         bootloader-configuration-menu-entries)
                                  '())))
+                     (locale #$(boot-parameters-locale params))
                      (store
                       (device
                        #$(device->sexp (boot-parameters-store-device params)))

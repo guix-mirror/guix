@@ -149,7 +149,7 @@ artists to web-designers to people with low vision.")
     (inputs
      `(("kauth" ,kauth)
        ("kcoreaddons" ,kcoreaddons)
-       ("kconfigwidgets", kconfigwidgets)
+       ("kconfigwidgets" ,kconfigwidgets)
        ("kdbusaddons" ,kdbusaddons)
        ("ki18n" ,ki18n)
        ("kiconthemes" ,kiconthemes)
@@ -187,8 +187,8 @@ whom pressing buttons hurts.")
        ("kdoctools" ,kdoctools)))
     (inputs
      `(("kcompletion" ,kcompletion)
-       ("kconfig", kconfig)
-       ("kconfigwidgets", kconfigwidgets)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
        ("kcrash" ,kcrash)
        ("ki18n" ,ki18n)
@@ -228,7 +228,7 @@ sentences to be re-spoken.")
     (inputs
      `(("kauth" ,kauth)
        ("kconfig" ,kconfig)
-       ("kconfigwidgets", kconfigwidgets)
+       ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
        ("kcrash" ,kcrash)
        ("ki18n" ,ki18n)
@@ -289,7 +289,7 @@ twin-panel (commander-style) file manager, similar to Midnight Commander or
 Total Commander
 
 It provides all the file management features you could possibly want.  Plus:
-extensive archive handling, mounted filesystem support, FTP, advanced search
+extensive archive handling, mounted file system support, FTP, advanced search
 module, an internal viewer/editor, directory synchronisation, file content
 comparisons, powerful batch renaming and much much more.  It supports a wide
 variety of archive formats and can handle other KIO slaves such as smb or

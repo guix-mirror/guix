@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.25")
+    (version "4.29")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -43,7 +44,7 @@
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0mjjk2b7ika3v4y99cnaqz3z1iq1a50r1psn9i3s87gr46z0khqb"))))
+               "10i5x637x0jqmdi47grkzgn56fg6770naa3wrhr4dmsrh3dnna12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -72,7 +73,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.52.1")
+    (version "3.57")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -83,9 +84,9 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0y4jb9095f7bbgw7d7kvzm4c3g4p5i6y68fwhb8wlkpb7b1imj5w"))
+                "10n3pncg6k81ikjz12la147rppwqn57bkrdl9gb820w6pq0nra2m"))
               ;; Create nss.pc and nss-config.
-              (patches (search-patches "nss-pkgconfig.patch"
+              (patches (search-patches "nss-3.56-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -138,38 +139,29 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2020-02-01" "./nss/tests/all.sh")))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append (assoc-ref outputs "bin") "/bin"))
-                      (inc (string-append out "/include/nss"))
-                      (lib (string-append out "/lib/nss"))
-                      (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
-                             ((obj) (string-append "dist/" obj)))))
-                 ;; Install nss-config to $out/bin.
-                 (install-file (string-append obj "/bin/nss-config")
-                               (string-append out "/bin"))
-                 (delete-file (string-append obj "/bin/nss-config"))
-                 ;; Install nss.pc to $out/lib/pkgconfig.
-                 (install-file (string-append obj "/lib/pkgconfig/nss.pc")
-                               (string-append out "/lib/pkgconfig"))
-                 (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
-                 (rmdir (string-append obj "/lib/pkgconfig"))
-                 ;; Install other files.
-                 (copy-recursively "dist/public/nss" inc)
-                 (copy-recursively (string-append obj "/bin") bin)
-                 (copy-recursively (string-append obj "/lib") lib)
-
-                 ;; FIXME: libgtest1.so is installed in the above step, and it's
-                 ;; (unnecessarily) linked with several NSS libraries, but
-                 ;; without the needed rpaths, causing the 'validate-runpath'
-                 ;; phase to fail.  Here we simply delete libgtest1.so, since it
-                 ;; seems to be used only during the tests.
-                 (delete-file (string-append lib "/libgtest1.so"))
-                 (delete-file (string-append lib "/libgtestutil.so"))
-
-                 #t))))))
+             (invoke "faketime" "2020-10-01" "./nss/tests/all.sh")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append (assoc-ref outputs "bin") "/bin"))
+                    (inc (string-append out "/include/nss"))
+                    (lib (string-append out "/lib/nss"))
+                    (obj (match (scandir "dist" (cut string-suffix? "OBJ" <>))
+                           ((obj) (string-append "dist/" obj)))))
+               ;; Install nss-config to $out/bin.
+               (install-file (string-append obj "/bin/nss-config")
+                             (string-append out "/bin"))
+               (delete-file (string-append obj "/bin/nss-config"))
+               ;; Install nss.pc to $out/lib/pkgconfig.
+               (install-file (string-append obj "/lib/pkgconfig/nss.pc")
+                             (string-append out "/lib/pkgconfig"))
+               (delete-file (string-append obj "/lib/pkgconfig/nss.pc"))
+               (rmdir (string-append obj "/lib/pkgconfig"))
+               ;; Install other files.
+               (copy-recursively "dist/public/nss" inc)
+               (copy-recursively (string-append obj "/bin") bin)
+               (copy-recursively (string-append obj "/lib") lib)
+               #t))))))
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))

@@ -49,16 +49,19 @@
             condition))
 
 ;; Define a PEG parser for the opam format
-(define-peg-pattern comment none (and "#" (* STRCHR) "\n"))
+(define-peg-pattern comment none (and "#" (* COMMCHR) "\n"))
 (define-peg-pattern SP none (or " " "\n" comment))
 (define-peg-pattern SP2 body (or " " "\n"))
 (define-peg-pattern QUOTE none "\"")
 (define-peg-pattern QUOTE2 body "\"")
 (define-peg-pattern COLON none ":")
 ;; A string character is any character that is not a quote, or a quote preceded by a backslash.
+(define-peg-pattern COMMCHR none
+                    (or " " "!" "\\" "\"" (range #\# #\頋)))
 (define-peg-pattern STRCHR body
                     (or " " "!" "\n" (and (ignore "\\") "\"")
-                        (and (ignore "\\") "\\") (range #\# #\頋)))
+                        (ignore "\\\n") (and (ignore "\\") "\\")
+                        (range #\# #\頋)))
 (define-peg-pattern operator all (or "=" "!" "<" ">"))
 
 (define-peg-pattern records body (* (and (or record weird-record) (* SP))))
@@ -69,8 +72,12 @@
 (define-peg-pattern choice-pat all (and (ignore "(") (* SP) choice (* SP)  (ignore ")")))
 (define-peg-pattern choice body
   (or (and (or conditional-value ground-value) (* SP) (ignore "|") (* SP) choice)
+      group-pat
       conditional-value
       ground-value))
+(define-peg-pattern group-pat all
+                    (and (or conditional-value ground-value) (* SP) (ignore "&") (* SP)
+                         (or group-pat conditional-value ground-value)))
 (define-peg-pattern ground-value body (and (or multiline-string string-pat choice-pat list-pat var) (* SP)))
 (define-peg-pattern conditional-value all (and ground-value (* SP) condition))
 (define-peg-pattern string-pat all (and QUOTE (* STRCHR) QUOTE))
@@ -189,6 +196,7 @@ path to the repository."
     (('string-pat str) str)
     ;; Arbitrary select the first dependency
     (('choice-pat choice ...) (dependency->input (car choice)))
+    (('group-pat val ...) (map dependency->input val))
     (('conditional-value val condition)
      (if (native? condition) "" (dependency->input val)))))
 
@@ -196,7 +204,8 @@ path to the repository."
   (match dependency
     (('string-pat str) "")
     ;; Arbitrary select the first dependency
-    (('choice-pat choice ...) (dependency->input (car choice)))
+    (('choice-pat choice ...) (dependency->native-input (car choice)))
+    (('group-pat val ...) (map dependency->native-input val))
     (('conditional-value val condition)
      (if (native? condition) (dependency->input val) ""))))
 
@@ -204,7 +213,8 @@ path to the repository."
   (match dependency
     (('string-pat str) str)
     ;; Arbitrary select the first dependency
-    (('choice-pat choice ...) (dependency->input (car choice)))
+    (('choice-pat choice ...) (dependency->name (car choice)))
+    (('group-pat val ...) (map dependency->name val))
     (('conditional-value val condition)
      (dependency->name val))))
 
@@ -256,9 +266,10 @@ REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
   (and-let* ((opam-file (opam-fetch name repository))
              (version (assoc-ref opam-file "version"))
-             (opam-content (assoc-ref opam-file "metadata"))
+             (opam-content (pk (assoc-ref opam-file "metadata")))
              (url-dict (metadata-ref opam-content "url"))
-             (source-url (metadata-ref url-dict "src"))
+             (source-url (or (metadata-ref url-dict "src")
+                             (metadata-ref url-dict "archive")))
              (requirements (metadata-ref opam-content "depends"))
              (dependencies (dependency-list->names requirements))
              (native-dependencies (depends->native-inputs requirements))
@@ -308,7 +319,7 @@ or #f on failure."
                     (filter
                       (lambda (name)
                         (not (member name '("dune" "jbuilder"))))
-		      dependencies))))))))
+                      dependencies))))))))
 
 (define (opam-recursive-import package-name)
   (recursive-import package-name #f

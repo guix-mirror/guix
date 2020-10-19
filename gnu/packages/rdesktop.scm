@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
@@ -35,6 +35,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
@@ -81,15 +82,16 @@ to remotely control a user's Windows desktop.")
 (define-public freerdp
   (package
     (name "freerdp")
-    (version "2.0.0-rc4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "git://github.com/FreeRDP/FreeRDP.git")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "0546i0m2d4nz5jh84ngwzpcm3c43fp987jk6cynqspsmvapab6da"))))
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://github.com/FreeRDP/FreeRDP.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02zlg5r704zbryx09a5rjjf7q137kj16i9qh25dw9q1y69ri619n"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("docbook-xml" ,docbook-xml)
@@ -104,6 +106,7 @@ to remotely control a user's Windows desktop.")
        ("cups" ,cups)
        ("ffmpeg" ,ffmpeg)
        ("libjpeg" ,libjpeg-turbo)
+       ("libusb" ,libusb)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
        ("libxkbfile" ,libxkbfile)
@@ -123,7 +126,6 @@ to remotely control a user's Windows desktop.")
      `(#:build-type "RELEASE"
        #:configure-flags
        (list "-DWITH_JPEG=ON"
-             "-DWITH_LIBSYSTEMD=OFF"
              ,@(if (string-prefix? "x86_64"
                                    (or (%current-target-system)
                                        (%current-system)))

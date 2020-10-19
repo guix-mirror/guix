@@ -32,7 +32,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (newt)
   #:use-module (parted)
-  #:export (run-partioning-page))
+  #:export (run-partitioning-page))
 
 (define (button-exit-action)
   "Raise the &installer-step-abort condition."
@@ -725,7 +725,7 @@ by pressing the Exit button.~%~%")))
           (run-disk-page result-disks new-user-partitions
                          #:guided? guided?)))))
 
-(define (run-partioning-page)
+(define (run-partitioning-page)
   "Run a page asking the user for a partitioning method."
   (define (run-page devices)
     (let* ((items

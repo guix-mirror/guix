@@ -29,6 +29,8 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,6 +139,7 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
@@ -147,6 +150,7 @@
   #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
@@ -743,16 +747,64 @@ MusePack, Monkey's Audio, and WavPack files.")
                                " --mcpu=generic --attr=none")))
              #t)))))
     (inputs
-     `(("llvm" ,llvm-for-extempore)
+     `(("llvm"
+        ,(package
+           (inherit llvm-3.8)
+           (name "llvm-for-extempore")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append "http://extempore.moso.com.au/extras/"
+                                  "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
+              (sha256
+               (base32
+                "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))))
        ("libffi" ,libffi)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("glfw" ,glfw)
        ("apr" ,apr)
-       ("stb-image" ,stb-image-for-extempore)
+       ("stb-image"
+        ,(let ((revision "1")
+               (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
+           (package
+             (inherit stb-image)
+             (name "stb-image-for-extempore")
+             (version (git-version "0" revision commit))
+             (source
+              (origin (method git-fetch)
+                      (uri (git-reference
+                            (url "https://github.com/extemporelang/stb")
+                            (commit commit)))
+                      (sha256
+                       (base32
+                        "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
+                      (file-name (git-file-name name version))))
+             (build-system cmake-build-system)
+             (arguments `(#:tests? #f)) ;no tests included
+             (inputs '()))))
        ("kiss-fft" ,kiss-fft-for-extempore)
        ("nanovg" ,nanovg-for-extempore)
-       ("portmidi" ,portmidi-for-extempore)
+       ("portmidi"
+        ,(let ((version "217")
+               (revision "0")
+               (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
+           (package
+             (inherit portmidi)
+             (name "portmidi-for-extempore")
+             (version (git-version version revision commit))
+             (source (origin
+                       (method git-fetch)
+                       (uri (git-reference
+                             (url "https://github.com/extemporelang/portmidi")
+                             (commit commit)))
+                       (file-name (git-file-name name version))
+                       (sha256
+                        (base32
+                         "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
+             (build-system cmake-build-system)
+             (arguments `(#:tests? #f)) ;no tests
+             (native-inputs '()))))
        ("assimp" ,assimp)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)
@@ -776,6 +828,75 @@ required.  Extempore also has strong timing and concurrency semantics, which
 are helpful when working in problem spaces where timing is important (such as
 audio and video).")
     (license license:bsd-2)))
+
+(define-public surge-synth
+  (package
+   (name "surge-synth")
+   (version "1.7.1")
+   (source
+     (origin
+       (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/surge-synthesizer/surge")
+               (commit (string-append "release_" version))
+               (recursive? #t))) ; build system expects modules to be there
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1jhk8iaqh89dnci4446b47315v2lc8gclraygk8m9jl20zpjxl0l"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:tests? #f ; no tests included
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'replace-python
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "CMakeLists.txt"
+              ((" python ")
+               (string-append " " (assoc-ref inputs "python")
+                              "/bin/python3 ")))
+            #t))
+        (add-after 'unpack 'fix-data-directory-name
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "src/common/SurgeStorage.cpp"
+              (("/usr") (assoc-ref outputs "out")))
+            #t))
+        (replace 'install ; no install target
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((src (assoc-ref inputs "source"))
+                   (out (assoc-ref outputs "out"))
+                   (share (string-append out "/share"))
+                   (lib (string-append out "/lib"))
+                   (lv2 (string-append lib "/lv2"))
+                   (vst3 (string-append lib "/vst3")))
+              (mkdir-p lv2)
+              (mkdir-p vst3)
+              ;; Install LV2 plugin.
+              (copy-recursively "surge_products/Surge.lv2"
+                                (string-append lv2 "/Surge.lv2"))
+              ;; Install VST3 plugin.
+              (copy-recursively "surge_products/Surge.vst3"
+                                (string-append vst3 "/Surge.vst3"))
+              ;; Install data.
+              (copy-recursively (string-append src "/resources/data")
+                                (string-append share "/Surge"))
+              #t))))))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libxkbcommon" ,libxkbcommon)
+      ("python" ,python)
+      ("xcb-util" ,xcb-util)
+      ("xcb-util-cursor" ,xcb-util-cursor)
+      ("xcb-util-keysyms" ,xcb-util-keysyms)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://surge-synthesizer.github.io/")
+   (synopsis "Synthesizer plugin")
+   (description
+    "Surge is a subtractive hybrid digital synthesizer.  Each patch contains
+two @dfn{scenes} which are separate instances of the entire synthesis
+engine (except effects) that can be used for layering or split patches.")
+   (license license:gpl3+)))
 
 (define-public klick
   (package
@@ -1233,7 +1354,7 @@ device supports.")
 (define-public bsequencer
   (package
     (name "bsequencer")
-    (version "1.6.0")
+    (version "1.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1242,7 +1363,7 @@ device supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w21kzq695xy4i1r6xvvh7sad5m0rlmdgc7ykmrlzfsm1252dz80"))))
+                "0w7iwzz2r4a699fi24qk71vv2k3jpl9ylzlgmvyc3rlgad0m01k1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1321,9 +1442,9 @@ B.Choppr is the successor of B.Slizr.")
         (base32
          "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
     (inputs
-     `(("cairo", cairo)
-       ("libsndfile", libsndfile)
-       ("lv2", lv2)))
+     `(("cairo" ,cairo)
+       ("libsndfile" ,libsndfile)
+       ("lv2" ,lv2)))
     (synopsis "Pattern-controlled audio stream/sample re-sequencer LV2 plugin")
     (description "B.Jumblr is a pattern-controlled audio stream / sample
 re-sequencer LV2 plugin.")
@@ -1346,11 +1467,11 @@ re-sequencer LV2 plugin.")
         (base32
          "1c09acqrbd387ba41f8ch1qykdap5h6cg9if5pgd16i4dmjnpghj"))))
     (inputs
-     `(("cairo", cairo)
+     `(("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
-       ("libsndfile", libsndfile)
+       ("libsndfile" ,libsndfile)
        ("libx11" ,libx11)
-       ("lv2", lv2)))
+       ("lv2" ,lv2)))
     (home-page "https://github.com/sjaehn/BSchaffl")
     (synopsis "Pattern-controlled MIDI amp & time stretch LV2 plugin")
     (description "This package provides an LV2 plugin that allows for
@@ -1984,7 +2105,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-1")
+    (version "0.51-2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1992,7 +2113,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0imbha9h96vqa967cbmdj7kkx7zrs054n5w2bjnifxdzws3qbxf6"))))
+                "1jgklcnaxypc8hr5j6mng8dd4na4ygfdixsfch8b86glssddi6mh"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -2112,29 +2233,6 @@ main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
      "PortMidi is a library supporting real-time input and output of MIDI data
 using a system-independent interface.")
     (license license:expat)))
-
-(define-public portmidi-for-extempore
-  (let ((version "217")
-        (revision "0")
-        (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
-    (package (inherit portmidi)
-      (name "portmidi-for-extempore")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/extemporelang/portmidi")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
-      (build-system cmake-build-system)
-      (arguments `(#:tests? #f))        ; no tests
-      (native-inputs '())
-      ;; Extempore refuses to build on architectures other than x86_64
-      (supported-systems '("x86_64-linux"))
-      (home-page "https://github.com/extemporelang/portmidi/"))))
 
 (define-public python-pyportmidi
   (package
@@ -2605,14 +2703,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.16")
+    (version "0.9.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1l19g7cvgb7gfjmaihnd899k5hhxyf4sz22380y830xjfs2fvqxc"))))
+                "0mcfli3wffz5a9pkpcxli03ysyrr53ij3569m81ck9h8pr7yng4b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -2846,7 +2944,7 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public picard
   (package
     (name "picard")
-    (version "2.1.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2854,7 +2952,8 @@ event-based scripts for scrobbling, notifications, etc.")
                     "picard/picard-" version ".tar.gz"))
               (sha256
                (base32
-                "19w5k3bf4886gdycxjds9nkjvir0gwy2r5cqkz0lbls4ikk4y14f"))))
+                "1c5l7i43jaj3s4wklc0cba6nn2x9cmpcggk4q4h9m1bci2xilsiy"))
+              (patches (search-patches "picard-fix-id3-rename-test.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:use-setuptools? #f
@@ -2873,7 +2972,8 @@ event-based scripts for scrobbling, notifications, etc.")
                  (assoc-ref inputs "chromaprint") "/bin/fpcalc")))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)
+       ("python-dateutil" ,python-dateutil)))
     (inputs
      `(("chromaprint" ,chromaprint)
        ("python-discid" ,python-discid)
@@ -2889,16 +2989,18 @@ formats, looking up tracks through metadata and audio fingerprints.")
 (define-public python-mutagen
   (package
     (name "python-mutagen")
-    (version "1.38")
+    (version "1.45.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mutagen" version))
               (sha256
                (base32
-                "0rl7sxn1rcjl48fwga3dqf9f6pzspsny4ngxyf6pp337mrq0z693"))))
+                "1qdk6i8gyhbi1c4j5jmbfpac3q8sff2ysri1pnp7nb9wzcp615v3"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-flake8" ,python-flake8)))
     (home-page "https://bitbucket.org/lazka/mutagen")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It
@@ -3085,6 +3187,13 @@ websites such as Libre.fm.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Reported upstream: <https://github.com/beetbox/beets/issues/3771>.
+         ;; Disable the faulty test as the fix is unclear.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "test/test_mediafile.py"
+               (("def test_read_audio_properties") "def _test_read_audio_properties"))
+             #t))
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
@@ -4085,7 +4194,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.5")
+    (version "3.5.1")
     (source
      (origin
        (method git-fetch)
@@ -4094,7 +4203,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1s8767imzv9hclpzvvvsqb3iyiv4y2klr6agf95zwym2xafy8p26"))
+        (base32 "01jj6rbvbjxvmv6q13a22vfqp3id52a5mf2a1vzph2giz7pr313x"))
        (modules '((guix build utils)))
        (snippet
         ;; Un-bundle OpenSSL and remove unused libraries.
@@ -5005,7 +5114,7 @@ and reverb.")
 (define-public lsp-plugins
   (package
     (name "lsp-plugins")
-    (version "1.1.24")
+    (version "1.1.26")
     (source
       (origin
         (method git-fetch)
@@ -5014,7 +5123,7 @@ and reverb.")
                (commit (string-append "lsp-plugins-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0rzgzkg6wvhjcf664i16nz4v30drgv80s34bhdflcjzx2x7ix5zk"))))
+         (base32 "1apw8zh3a3il4smkjji6bih4vbsymj0hjs10fgkrd4nazqkjvgyd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -5025,18 +5134,18 @@ and reverb.")
          (string-append "ETC_PATH=" (assoc-ref %outputs "out") "/etc"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))   ; no configure
+         (delete 'configure))           ; no configure script
        #:test-target "test"))
     (inputs
-     `(("cairo", cairo)
-       ("hicolor-icon-theme", hicolor-icon-theme)
-       ("jack", jack-1)
-       ("ladspa", ladspa)
-       ("libsndfile", libsndfile)
-       ("lv2", lv2)
-       ("mesa", mesa)))
+     `(("cairo" ,cairo)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libsndfile" ,libsndfile)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Audio plugin collection")
     (description "LSP (Linux Studio Plugins) is a collection of audio
 plugins available as LADSPA/LV2 plugins and as standalone JACK
@@ -5146,12 +5255,12 @@ as a whole to realisticly reproduce the features and flaws of the real deal.")
      `(("pkg-config" ,pkg-config)
        ("xxd" ,xxd)))
     (inputs
-     `(("cairo", cairo)
-       ("fftw", fftw)
-       ("fftwf", fftwf)
-       ("jack", jack-1)
-       ("lv2", lv2)
-       ("mesa", mesa)))
+     `(("cairo" ,cairo)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
     (synopsis "Realtime graphical spectrum analyzer")
     (description "Spectacle is a real-time spectral analyzer using the
 short-time Fourier transform, available as LV2 audio plugin and JACK client.")
@@ -5267,7 +5376,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "2.3.7")
+    (version "2.3.8")
     (source
      (origin
        (method git-fetch)
@@ -5276,8 +5385,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1wdcbwiyy6i5agq5lffkyilyc8mv1cc4mp9h0nybn240vb2flqc2"))))
+        (base32 "07809yy2q7dd6fcp0yndlg1vw2ca2zisnsplb3xrxvzdvrqlw910"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5445,12 +5553,12 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
        ("freetype2" ,freetype)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libxcursor" ,libxcursor)
-       ("libxinerama", libxinerama)
-       ("jack", jack-1)
+       ("libxinerama" ,libxinerama)
+       ("jack" ,jack-1)
        ("mesa" ,mesa)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("lv2", lv2)))
+       ("lv2" ,lv2)))
     (home-page "https://tytel.org/helm/")
     (synopsis "Polyphonic synth with lots of modulation")
     (description "Helm is a cross-platform polyphonic synthesizer available standalone
@@ -5465,7 +5573,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "0.8.911")
+    (version "1.0.0-alpha.3.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5473,7 +5581,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "1xyp70sjc2k5pfdqbwqa988v86da0rmmyl8ry86bqv4ja80sc6g9"))))
+            "06025367x08y4g9grhcn35bk1dsrpgm04c8l8j50i3p49dl3s1n0"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5485,15 +5593,8 @@ and as an LV2 plugin.")
         "-Dgraphviz=enabled" ; for exporting routing graphs
         "-Dguile=enabled" ; for Guile scripting
         "-Djack=enabled" ; for JACK audio/MIDI backend
-        "-Dsdl=enabled") ; for SDL audio backend (which uses ALSA)
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'patch-xdg-open
-          (lambda _
-            (substitute* "src/utils/io.c"
-                         (("OPEN_DIR_CMD")
-                          (string-append "\"" (which "xdg-open") "\"")))
-            #t)))))
+        "-Drtmidi=enabled" ; for RtMidi backend (ALSA sequencer)
+        "-Dsdl=enabled"))) ; for SDL audio backend (which uses ALSA)
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
@@ -5775,9 +5876,9 @@ plugin and a standalone JACK application.")
                               "/lib/lv2")
                        "install"))))))
       (inputs
-        `(("lv2", lv2)))
+        `(("lv2" ,lv2)))
       (native-inputs
-        `(("pkg-config", pkg-config)))
+        `(("pkg-config" ,pkg-config)))
       (synopsis "Audio plugin collection")
       (description "TAP (Tom's Audio Processing) plugins is a collection of
   audio effect plugins originally released as LADSPA plugins.  This package
@@ -5833,9 +5934,9 @@ plugin and a standalone JACK application.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-      `(("jack", jack-1)
-        ("lv2", lv2)
-        ("mesa", mesa)))
+      `(("jack" ,jack-1)
+        ("lv2" ,lv2)
+        ("mesa" ,mesa)))
     (synopsis "Waveshaper plugin")
     (description "Wolf Shaper is a waveshaper plugin with a graph editor.
 It is provided as an LV2 plugin and as a standalone Jack application.")
@@ -5915,12 +6016,12 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
-        `(("cairo", cairo)
-          ("glu", glu)
-          ("jack", jack-1)
-          ("lv2", lv2)
-          ("mesa", mesa)
-          ("pango", pango)))
+        `(("cairo" ,cairo)
+          ("glu" ,glu)
+          ("jack" ,jack-1)
+          ("lv2" ,lv2)
+          ("mesa" ,mesa)
+          ("pango" ,pango)))
       (synopsis "Audio plugin collection")
       (description "Shiru plugins is a collection of audio plugins created
   by Shiru, ported to LV2 by the Linux MAO project using the DISTRHO plugin

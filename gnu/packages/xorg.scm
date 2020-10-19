@@ -2466,7 +2466,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.8.0")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
@@ -2474,21 +2474,10 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "04a2klvii0in9ln8r85mk2cm73jq8ry2m3yzmf2z8xyjxzjcmlr0"))))
+         "1jvsphdrs1i54ccjcn6ll26jy42am7h28lbsvwa6pmxgqm43qq7m"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'pedantry
-                    (lambda _
-                      ;; XXX: libevdev includes kernel headers, which causes this
-                      ;; compile test to fail with:
-                      ;; ...-headers-4.14.67/include/asm-generic/posix_types.h:88:14:
-                      ;;error: ISO C90 does not support ‘long long’ [-Werror=long-long]
-                      (substitute* "test/Makefile.in"
-                        (("-pedantic -Werror -std=c89")
-                         "-pedantic -Werror -std=c99"))
-                      #t)))))
+     `(#:configure-flags '("--disable-static")))
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
@@ -2539,7 +2528,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.28.2")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2547,7 +2536,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0818vr0yhk9j1y1wcbxzcd458vrvp06rrhi8k43bhqkb5jb4dcxq"))))
+                "1h4np66p87jf0c85ig524w8f5rbhl5gx8fww1qg0c55f87yzkizr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -4032,7 +4021,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.29")
+    (version "2.31")
     (source
       (origin
         (method url-fetch)
@@ -4042,7 +4031,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "00hqc8nykvy8c09b8vab64dcd0ij3n5klxjn6rl00q7hickpah8x"))))
+            "18xddaxh83zm698syh50w983jg6b7b8zgv0dfaf7ha485hgihi6s"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
@@ -5320,8 +5309,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.8")
-    (replacement xorg-server/fixed)
+    (version "1.20.9")
     (source
       (origin
         (method url-fetch)
@@ -5329,7 +5317,7 @@ over Xlib, including:
                             "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "0ih15m7gh1z1ly6z7g82bkni719yisqmbk61a1wgp82bxrmn8yyi"))
+          "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))
         (patches
          (list
           ;; See:
@@ -5443,35 +5431,13 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
-(define xorg-server/fixed  ; security fixes
-  (package
-    (inherit xorg-server)
-    (version "1.20.9")
-    (source
-     (origin
-       (inherit (package-source xorg-server))
-       (uri (string-append "mirror://xorg/individual/xserver/"
-                           "xorg-server-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))))))
-
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
-;; TODO: Update this in the next rebuild cycle.
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.7")
-     (source (origin
-               (inherit (package-source xorg-server))
-               (uri (string-append "mirror://xorg/individual/xserver/"
-                                   "xorg-server-" version ".tar.bz2"))
-               (sha256
-                (base32
-                 "18bfl04ihw1jr3h0fs522nnxxq5ixjay77y9dcymnkzk23q8cndx")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server
@@ -6094,7 +6060,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "359")
+    (version "361")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -6104,7 +6070,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "0lcjifz027j99zf2dnms0h43xp5zznxr39safrpyarv59jlmdjii"))))
+                "0gv27akkfb796aww1snq3c2sxmi8vajgfxk83g60awp4slh0yqc5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6288,15 +6254,16 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.3")
+    (version "4.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.xz"))
        (sha256
-        (base32 "05afdspf51fbya6jg6971i3ddqn8p4mg3v3aaqyi3chx4q1807rp"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
+        (base32 "10alqdfmgml9ixdi1nyd9xlw8a5q0j8m2sv4g9p83pd6z1a0rpv2"))
+       (patches (search-patches "xpra-4.0.1-systemd-run.patch"
+                                "xpra-4.0.4-norequests.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(
@@ -6323,7 +6290,7 @@ basic eye-candy effects.")
               ("python-pillow" ,python-pillow)
               ;; Optional dependencies.
               ("python-rencode" ,python-rencode) ; For speed.
-              ("python-numpy", python-numpy)
+              ("python-numpy" ,python-numpy)
               ("python-pyopengl" ,python-pyopengl) ; Drawing acceleration.
               ("python-pyopengl-accelerate" ,python-pyopengl-accelerate) ; Same.
               ("python-paramiko" ,python-paramiko) ; Tunneling over SSH.
@@ -6651,7 +6618,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.196")
+    (version "1.197")
     (source
      (origin
        (method git-fetch)
@@ -6659,7 +6626,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0c79rycgpna8910as6blw3z3sajzzakz4qlvr6js2yr8zq2d0ylg"))
+        (base32 "0m2q30f94vd1wb2zqpiyplpgfchjlm8j41xiyxcqdjzdgqbs7l27"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -6708,7 +6675,7 @@ output.")
     (synopsis "Set up the Linux console font and keyboard")
     (description
      "console-setup provides the console with the same keyboard
-configuration scheme that X Window System has.  In particular, the
+configuration scheme that the X Window System has.  In particular, the
 @command{ckbcomp} program compiles an XKB keyboard description to a keymap
 suitable for @command{loadkeys} or @command{kbdcontrol}.  As a result, there
 is no need to duplicate or change the console keyboard files just to make

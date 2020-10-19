@@ -50,6 +50,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
@@ -130,8 +131,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "44c6e6f590b706f1ecfea6a7e7406bbd7cb70736")
-        (revision 25))
+        (commit "875c01f82dc5f2c4ca82952ea88b3240fbe8bede")
+        (revision 30))
     (package
       (name "guix")
 
@@ -143,11 +144,11 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.savannah.gnu.org/r/guix.git")
+                      (url "https://git.savannah.gnu.org/git/guix.git")
                       (commit commit)))
                 (sha256
                  (base32
-                  "17kmn9yrk9pxi88v4d48h9q3m5dpd2j0pf15fhxzh4k915jv8n6k"))
+                  "0mh1hnrk84h5nzqp6aflh9ab3kxr5672c8bx44minzyd26177yik"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -196,6 +197,13 @@
                         (substitute* "nix/local.mk"
                           (("^sysvinitservicedir = .*$")
                            (string-append "sysvinitservicedir = \
+$(prefix)/etc/init.d\n")))
+
+                        ;; Install OpenRC init files to $(prefix)/etc rather
+                        ;; than to /etc.
+                        (substitute* "nix/local.mk"
+                          (("^openrcservicedir = .*$")
+                           (string-append "openrcservicedir = \
 $(prefix)/etc/init.d\n")))
 
                         (invoke "sh" "bootstrap")))
@@ -418,7 +426,7 @@ the Nix package manager.")
      (fold alist-delete (package-native-inputs guix)
            '("po4a" "graphviz" "help2man")))
     (inputs
-     `(("gnutls" ,guile3.0-gnutls)
+     `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
        ("guile-json" ,guile-json-3)
        ("guile-gcrypt" ,guile-gcrypt)
@@ -981,6 +989,92 @@ environments.")
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
+(define-public guix-build-coordinator
+  (let ((commit "e701d4d7f24a11d94cf504e7efbcee4e1091b092")
+        (revision "1"))
+    (package
+    (name "guix-build-coordinator")
+    (version (git-version "0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.cbaines.net/git/guix/build-coordinator")
+                    (commit commit)))
+              (sha256
+               (base32
+                "16f09sl527b6bgyxs2ybyjfncli60dwzg4v1c58h4hcl2zm8qx70"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-GUILE_AUTO_COMPILE
+           (lambda _
+             ;; To avoid warnings relating to 'guild'.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile"))
+                    (version (target-guile-effective-version))
+                    (scm (string-append out "/share/guile/site/" version))
+                    (go  (string-append out "/lib/guile/" version "/site-ccache")))
+               (for-each
+                (lambda (file)
+                  (simple-format (current-error-port) "wrapping: ~A\n" file)
+                  (wrap-program file
+                    `("PATH" ":" prefix
+                      (,bin
+                       ;; Support building without sqitch as an input, as it
+                       ;; can't be cross-compiled yet
+                       ,@(or (and=> (assoc-ref inputs "sqitch")
+                                    list)
+                             '())))
+                    `("GUILE_LOAD_PATH" ":" prefix
+                      (,scm ,(getenv "GUILE_LOAD_PATH")))
+                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
+                (find-files bin)))
+             #t))
+         (delete 'strip))))             ; As the .go files aren't compatible
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+
+       ;; Guile libraries are needed here for cross-compilation.
+       ("guile-json" ,guile-json-3)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guix" ,guix)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-fibers" ,guile-fibers)
+       ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+    (inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-fibers" ,guile-fibers)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-json" ,guile-json-3)
+       ("guile-lzlib" ,guile-lzlib)
+       ("guile-sqlite3" ,guile-sqlite3)
+       ("guix" ,guix)
+       ("sqlite" ,sqlite)
+       ("sqitch" ,sqitch)))
+    (home-page "https://git.cbaines.net/guix/build-coordinator/")
+    (synopsis "Tool to help build derivations")
+    (description
+     "The Guix Build Coordinator helps with performing lots of builds across
+potentially many machines, and with doing something with the results and
+outputs of those builds.")
+    (license license:gpl3+))))
+
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
@@ -1148,7 +1242,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2020.6")
+    (version "2020.7")
     (source
      (origin
        (method url-fetch)
@@ -1156,7 +1250,7 @@ for packaging and deployment of cross-compiled Windows applications.")
              "https://github.com/ostreedev/ostree/releases/download/v"
              (version-major+minor version) "/libostree-" version ".tar.xz"))
        (sha256
-        (base32 "0wk9fgj9jl25ns2hcgcb6j24k5mvfn13b02ka0p8l4hdh8c4hpc6"))))
+        (base32 "0clriq2ypz1fycd6mpjyrhzid44svzpzw0amnank593h69b216ax"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

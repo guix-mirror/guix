@@ -211,6 +211,9 @@ set."
       ("dev/vcs"     ("/hurd/console"))
       ("dev/tty"     ("/hurd/magic"    "tty")               #o666)
 
+      ;; 'fd_to_filename' in libc expects it.
+      ("dev/fd"      ("/hurd/magic"    "--directory" "fd")  #o555)
+
       ("dev/tty1"    ("/hurd/term"     "/dev/tty1" "hurdio" "/dev/vcs/1/console")
                                                             #o666)
       ("dev/tty2"    ("/hurd/term"     "/dev/tty2" "hurdio" "/dev/vcs/2/console")
@@ -240,10 +243,10 @@ set."
   (for-each scope-set-translator devices)
 
   (false-if-EEXIST (symlink "/dev/random" (scope "dev/urandom")))
-  (mkdir* "dev/fd")
   (false-if-EEXIST (symlink "/dev/fd/0" (scope "dev/stdin")))
   (false-if-EEXIST (symlink "/dev/fd/1" (scope "dev/stdout")))
   (false-if-EEXIST (symlink "/dev/fd/2" (scope "dev/stderr")))
+  (false-if-EEXIST (symlink "crash-dump-core" (scope "servers/crash")))
 
   ;; Make sure /etc/mtab is a symlink to /proc/mounts.
   (false-if-exception (delete-file (scope "etc/mtab")))

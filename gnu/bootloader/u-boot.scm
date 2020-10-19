@@ -45,7 +45,7 @@
             u-boot-wandboard-bootloader))
 
 (define install-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (if bootloader
         (error "Failed to install U-Boot"))))
 
@@ -56,74 +56,74 @@
   ;; the MLO and is expected at 0x60000.  Write both first stage ("MLO") and
   ;; second stage ("u-boot.img") images, read in BOOTLOADER directory, to the
   ;; specified DEVICE.
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((mlo (string-append bootloader "/libexec/MLO"))
             (u-boot (string-append bootloader "/libexec/u-boot.img")))
         (write-file-on-device mlo (* 256 512)
-                              device (* 256 512))
+                              image (* 256 512))
         (write-file-on-device u-boot (* 1024 512)
-                              device (* 768 512)))))
+                              image (* 768 512)))))
 
 (define install-allwinner-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((u-boot (string-append bootloader
                                    "/libexec/u-boot-sunxi-with-spl.bin")))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 8 1024)))))
+                              image (* 8 1024)))))
 
 (define install-allwinner64-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((spl (string-append bootloader "/libexec/spl/sunxi-spl.bin"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device spl (stat:size (stat spl))
-                              device (* 8 1024))
+                              image (* 8 1024))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 40 1024)))))
+                              image (* 40 1024)))))
 
 (define install-imx-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((spl (string-append bootloader "/libexec/SPL"))
             (u-boot (string-append bootloader "/libexec/u-boot.img")))
         (write-file-on-device spl (stat:size (stat spl))
-                              device (* 1 1024))
+                              image (* 1 1024))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 69 1024)))))
+                              image (* 69 1024)))))
 
 (define install-puma-rk3399-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((spl (string-append bootloader "/libexec/u-boot-spl.rksd"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device spl (stat:size (stat spl))
-                              device (* 64 512))
+                              image (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 512 512)))))
+                              image (* 512 512)))))
 
 (define install-firefly-rk3399-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((idb (string-append bootloader "/libexec/idbloader.img"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device idb (stat:size (stat idb))
-                              device (* 64 512))
+                              image (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 16384 512)))))
+                              image (* 16384 512)))))
 
 (define install-rock64-rk3328-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((idb (string-append bootloader "/libexec/idbloader.img"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device idb (stat:size (stat idb))
-                              device (* 64 512))
+                              image (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 16384 512)))))
+                              image (* 16384 512)))))
 
 (define install-rockpro64-rk3399-u-boot
-  #~(lambda (bootloader device mount-point)
+  #~(lambda (bootloader root-index image)
       (let ((idb (string-append bootloader "/libexec/idbloader.img"))
             (u-boot (string-append bootloader "/libexec/u-boot.itb")))
         (write-file-on-device idb (stat:size (stat idb))
-                              device (* 64 512))
+                              image (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
-                              device (* 16384 512)))))
+                              image (* 16384 512)))))
 
 (define install-pinebook-pro-rk3399-u-boot install-rockpro64-rk3399-u-boot)
 
@@ -138,28 +138,29 @@
    (inherit extlinux-bootloader)
    (name 'u-boot)
    (package #f)
-   (installer install-u-boot)))
+   (installer #f)
+   (disk-image-installer install-u-boot)))
 
 (define u-boot-beaglebone-black-bootloader
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-am335x-boneblack)
-   (installer install-beaglebone-black-u-boot)))
+   (disk-image-installer install-beaglebone-black-u-boot)))
 
 (define u-boot-allwinner-bootloader
   (bootloader
    (inherit u-boot-bootloader)
-   (installer install-allwinner-u-boot)))
+   (disk-image-installer install-allwinner-u-boot)))
 
 (define u-boot-allwinner64-bootloader
   (bootloader
    (inherit u-boot-bootloader)
-   (installer install-allwinner64-u-boot)))
+   (disk-image-installer install-allwinner64-u-boot)))
 
 (define u-boot-imx-bootloader
   (bootloader
    (inherit u-boot-bootloader)
-   (installer install-imx-u-boot)))
+   (disk-image-installer install-imx-u-boot)))
 
 (define u-boot-nintendo-nes-classic-edition-bootloader
   (bootloader
@@ -196,7 +197,7 @@
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-firefly-rk3399)
-   (installer install-firefly-rk3399-u-boot)))
+   (disk-image-installer install-firefly-rk3399-u-boot)))
 
 (define u-boot-mx6cuboxi-bootloader
   (bootloader
@@ -232,25 +233,25 @@
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-puma-rk3399)
-   (installer install-puma-rk3399-u-boot)))
+   (disk-image-installer install-puma-rk3399-u-boot)))
 
 (define u-boot-rock64-rk3328-bootloader
   ;; SD and eMMC use the same format
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-rock64-rk3328)
-   (installer install-rock64-rk3328-u-boot)))
+   (disk-image-installer install-rock64-rk3328-u-boot)))
 
 (define u-boot-rockpro64-rk3399-bootloader
   ;; SD and eMMC use the same format
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-rockpro64-rk3399)
-   (installer install-rockpro64-rk3399-u-boot)))
+   (disk-image-installer install-rockpro64-rk3399-u-boot)))
 
 (define u-boot-pinebook-pro-rk3399-bootloader
   ;; SD and eMMC use the same format
   (bootloader
    (inherit u-boot-bootloader)
    (package u-boot-pinebook-pro-rk3399)
-   (installer install-pinebook-pro-rk3399-u-boot)))
+   (disk-image-installer install-pinebook-pro-rk3399-u-boot)))

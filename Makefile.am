@@ -47,6 +47,18 @@ scripts/guix: scripts/guix.in Makefile
 	$(AM_V_GEN)$(do_subst) < "$(srcdir)/$@.in" > "$@-t"
 	$(AM_V_at)chmod a+x,a-w "$@-t" && mv -f "$@-t" "$@"
 
+# This is our variant of the 'guile' executable, one that doesn't complain
+# about locales.
+pkglibexec_PROGRAMS = guile
+guile_SOURCES = gnu/packages/aux-files/guile-launcher.c
+guile_LDADD   = $(GUILE_LIBS)
+guile_CFLAGS  = $(GUILE_CFLAGS)
+
+# Have the 'guix' command refer to our 'guile'.
+install-exec-hook:
+	$(SED) -i "$(DESTDIR)$(bindir)/guix"				\
+	       -e 's,^#![[:graph:]]\+,#!$(pkglibexecdir)/guile,g'
+
 nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
@@ -394,6 +406,7 @@ SCM_TESTS =					\
   tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/boot-parameters.scm			\
   tests/bournish.scm				\
   tests/builders.scm				\
   tests/build-utils.scm			\
@@ -570,6 +583,7 @@ EXTRA_DIST +=						\
   build-aux/hydra/guix-modular.scm			\
   build-aux/cuirass/gnu-system.scm			\
   build-aux/cuirass/guix-modular.scm			\
+  build-aux/cuirass/hurd-manifest.scm			\
   build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/check-channel-news.scm			\
@@ -832,9 +846,8 @@ release: dist-with-updated-version
 	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system disk-image							\
-	    --file-system-type=iso9660							\
-	    --label="GUIX_$${system}_$(VERSION)"						\
+	    guix system disk-image -t iso9660                                           \
+	    --label="GUIX_$${system}_$(VERSION)"					\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\

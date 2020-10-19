@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages dav)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -124,12 +126,20 @@ the <tz.h> library for handling time zones and leap seconds.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
+       #:parallel-build? #f             ;may cause GIR generation failure
        #:configure-flags '("-DSHARED_ONLY=true"
                            ;; required by evolution-data-server
                            "-DGOBJECT_INTROSPECTION=true"
                            "-DICAL_GLIB_VAPI=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "doc/reference/libical-glib/libical-glib-docs.sgml.in"
+               (("http://www.oasis-open.org/docbook/xml/4.3/")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/")))
+             #t))
          (add-before 'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              ;; TODO: libical 3.1.0 supports using TZDIR instead of a hard-coded
@@ -144,7 +154,8 @@ the <tz.h> library for handling time zones and leap seconds.")
                  (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -339,3 +350,45 @@ DebConf, FrOSCon, Grazer LinuxTage, and the CCC congresses.
 ConfClerk is targeted at mobile devices but works on any system running Qt.")
     (license (list license:gpl2+
                    license:lgpl3)))) ; or cc-by3.0 for src/icons/*
+
+(define-public ccal
+  (package
+    (name "ccal")
+    (version "2.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ccal.chinesebay.com/ccal/ccal-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15nza1d1lvk3dp0wcl53wsd32yhbgyzznha092mh5kh5z74vsk1x"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("/usr/local/bin")
+                  (string-append out "/bin"))
+                 (("/usr/local/man")
+                  (string-append out "/share/man"))))
+             #t))
+         (add-after 'install 'install-manuals
+           (lambda _
+             (invoke "make" "install-man"))))
+       ;; no tests
+       #:tests? #f))
+    (home-page "http://ccal.chinesebay.com/ccal/ccal.htm")
+    (synopsis "Command line program for Chinese calendar")
+    (description "@command{ccal} is a command line program which writes a
+Gregorian calendar together with Chinese calendar to standard output.  Its
+usage is similar to the @command{cal} program.  In addition to console output,
+it can also generate Encapsulated Postscript and HTML table outputs for use in
+do-it-yourself calendars and web pages.  It supports both simplified and
+traditional Chinese characters.")
+    ;; Both licenses are in use in various source files.  Note that
+    ;; COPYING.LESSER specifies LGPL 3.0, but all source files say
+    ;; 'Lesser GPL version 2 or later'.
+    (license (list license:gpl2+ license:lgpl2.1+))))

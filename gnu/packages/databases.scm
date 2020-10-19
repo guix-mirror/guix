@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +129,7 @@
   #:use-module (guix download)
   #:use-module (guix bzr-download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -716,7 +718,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.45")
+    (version "10.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -724,8 +726,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mfs0x4c0z7d306n128dxdawk3llk25vxif5zwl20fv1z5qhz3wx"))
-              (patches (search-patches "mariadb-client-test-32bit.patch"))
+                "1i257h0zdypdfj5wkg6ck9pxlkph0jvjs92k22pjr6gnx5lxs1gz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -743,8 +744,8 @@ Language.")
                   (for-each (lambda (file)
                               (unless (string-suffix? "CMakeLists.txt" file)
                                 (delete-file file)))
-                            (append (find-files "extra/yassl")
-                                    (find-files "pcre") (find-files "zlib")))
+                            (append (find-files "extra/wolfssl")
+                                    (find-files "zlib")))
                   #t))))
     (build-system cmake-build-system)
     (outputs '("out" "lib" "dev"))
@@ -798,29 +799,20 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
-         ,@(if (string-prefix? "arm" (%current-system))
-               ;; XXX: Because of the GCC 5 input, we need to hide GCC 7 from
-               ;; CPLUS_INCLUDE_PATH so that its headers do not shadow GCC 5.
-               '((add-after 'set-paths 'hide-default-gcc
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((gcc (assoc-ref inputs "gcc")))
-                       (setenv "CPLUS_INCLUDE_PATH"
-                               (string-join
-                                (delete (string-append gcc "/include/c++")
-                                        (string-split (getenv "CPLUS_INCLUDE_PATH")
-                                                      #\:))
-                                ":"))
-                       #t))))
-               '())
-         (add-after 'unpack 'fix-pcre-detection
+         (add-after 'unpack 'adjust-output-references
            (lambda _
-             ;; The bundled PCRE in MariaDB has a patch that was upstreamed
-             ;; in version 8.34.  Unfortunately the upstream patch behaves
-             ;; slightly differently and the build system fails to detect it.
-             ;; See <https://bugs.exim.org/show_bug.cgi?id=2173>.
-             ;; XXX: Consider patching PCRE instead.
-             (substitute* "cmake/pcre.cmake"
-               ((" OR NOT PCRE_STACK_SIZE_OK") ""))
+             ;; The build system invariably prepends $CMAKE_INSTALL_PREFIX
+             ;; to other variables such as $INSTALL_INCLUDEDIR, which does
+             ;; not work when the latter uses an absolute file name.
+             (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
+               (("@CMAKE_INSTALL_PREFIX@/@INSTALL_INCLUDEDIR@")
+                "@INSTALL_INCLUDEDIR@"))
+             (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
+               (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
+                "@INSTALL_INCLUDEDIR@"))
+             (substitute* "include/CMakeLists.txt"
+               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
+                "${INSTALL_INCLUDEDIR}"))
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
@@ -828,6 +820,7 @@ Language.")
                     '(;; These fail because root@hostname == root@localhost in
                       ;; the build environment, causing a user count mismatch.
                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
+                      "funcs_1.is_columns_mysql"
                       "main.join_cache"
                       "main.explain_non_select"
                       "main.stat_tables"
@@ -836,20 +829,7 @@ Language.")
 
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
-                      "main.mysqldump"
-
-                      ;; FIXME: This test fails on i686:
-                      ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
-                      ;; +myisampack: Can't create/write to file (Errcode: 17 "File exists)
-                      ;; When running "myisampack --join=foo/t3 foo/t1 foo/t2"
-                      ;; (all three tables must exist and be identical)
-                      ;; in a loop it produces the same error around 1/240 times.
-                      ;; montywi on #maria suggested removing the real_end check in
-                      ;; "strings/my_vsnprintf.c" on line 503, yet it still does not
-                      ;; reach the ending quote occasionally.  Disable it for now.
-                      "main.myisampack"
-                      ;; FIXME: This test fails on armhf-linux:
-                      "mroonga/storage.index_read_multiple_double"))
+                      "main.mysqldump"))
 
                    ;; This file contains a list of known-flaky tests for this
                    ;; release.  Append our own items.
@@ -860,9 +840,10 @@ Language.")
                          disabled-tests)
                (close-port unstable-tests)
 
-               ;; XXX: This test fails because it expects a latin1 charset and
+               ;; XXX: These fail because they expect a latin1 charset and
                ;; collation.  See <https://jira.mariadb.org/browse/MDEV-21264>.
-               (substitute* "mysql-test/r/gis_notembedded.result"
+               (substitute* '("mysql-test/main/gis_notembedded.result"
+                              "mysql-test/main/system_mysql_db.result")
                  (("latin1_swedish_ci") "utf8_general_ci")
                  (("\tlatin1") "\tutf8"))
 
@@ -895,6 +876,10 @@ Language.")
                            "--testcase-timeout=40"
                            "--suite-timeout=600"
                            "--parallel" (number->string (parallel-job-count))
+                           ;; Skip the replication tests: they are very I/O
+                           ;; intensive and frequently causes indeterministic
+                           ;; failures even on powerful hardware.
+                           "--skip-rpl"
                            "--skip-test-list=unstable-tests"))
                  (format #t "test suite not run~%"))
              #t))
@@ -905,56 +890,57 @@ Language.")
                    (dev     (assoc-ref outputs "dev"))
                    (lib     (assoc-ref outputs "lib"))
                    (openssl (assoc-ref inputs "openssl")))
-              (substitute* (string-append out "/bin/mysql_install_db")
+              (substitute* (list (string-append out "/bin/mariadb-install-db")
+                                 (string-append out "/bin/mysql_install_db"))
                 (("basedir=\"\"")
-                 (string-append "basedir=\"" out "\"")))
+                 (string-append "basedir=\"" out "\""))
+                (("\\$basedir/share/mysql")
+                 (string-append lib "/share/mysql")))
+
               ;; Remove unneeded files for testing.
               (with-directory-excursion lib
                 (for-each delete-file-recursively
-                          '("data" "mysql-test" "sql-bench"))
+                          '("mysql-test" "sql-bench"))
                 ;; And static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
               (with-directory-excursion out
                 (delete-file "share/man/man1/mysql-test-run.pl.1")
                 ;; Delete huge and unnecessary executables.
-                (for-each delete-file (find-files "bin" "(test|embedded)")))
+                (for-each delete-file (find-files "bin" "test$")))
               (mkdir-p (string-append dev "/share"))
               (mkdir-p (string-append dev "/bin"))
+              (rename-file (string-append lib "/bin/mariadbd")
+                           (string-append out "/bin/mariadbd"))
               (rename-file (string-append lib "/bin/mysqld")
                            (string-append out "/bin/mysqld"))
-              (rename-file (string-append lib "/share/pkgconfig")
-                           (string-append dev "/share/pkgconfig"))
+              (mkdir-p (string-append dev "/lib"))
+              (rename-file (string-append lib "/lib/pkgconfig")
+                           (string-append dev "/lib/pkgconfig"))
+              (rename-file (string-append lib "/bin/mariadb_config")
+                           (string-append dev "/bin/mariadb_config"))
               (rename-file (string-append out "/bin/mysql_config")
                            (string-append dev "/bin/mysql_config"))
 
-
-              (substitute*  (string-append out "/bin/mysql_install_db")
-                (("\\$basedir/share/mysql")
-                 (string-append lib "/share/mysql")))
-
               ;; Embed an absolute reference to OpenSSL in mysql_config
               ;; and the pkg-config file to avoid propagation.
+              ;; XXX: how to do this for mariadb_config.c.in?
               (substitute* (list (string-append dev "/bin/mysql_config")
-                                 (string-append dev "/share/pkgconfig/mariadb.pc"))
+                                 (string-append dev "/lib/pkgconfig/mariadb.pc"))
                 (("-lssl -lcrypto" all)
                  (string-append "-L" openssl "/lib " all)))
 
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
-       ,@(if (string-prefix? "armhf" (%current-system))
-             `(("gcc@5", gcc-5))
-             '())
        ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("openssl" ,openssl-1.0)
+       ("openssl" ,openssl)
        ("pam" ,linux-pam)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("xz" ,xz)
        ("zlib" ,zlib)))
     ;; The test suite is very resource intensive and can take more than three
@@ -970,7 +956,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.9")
+    (version "3.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -979,7 +965,7 @@ as a drop-in replacement of MySQL.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "1izjzf7yzjqzlk8dkp327fa9lawsv2hnnlnr7g5lshyx5azrk38h"))))
+                "13v5z4w1cl890lnr2fbwbziw638lqw2aga45vdq1z0cyrc9mcgmg"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
@@ -1139,7 +1125,7 @@ organized in a hash table or B+ tree.")
 
     (native-inputs `(("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("check" ,check)
+                     ("check" ,check-0.14)
                      ("libuuid" ,util-linux)
                      ("pkg-config" ,pkg-config)))
 
@@ -1343,7 +1329,7 @@ for example from a shell script.")
 (define-public sqitch
   (package
     (name "sqitch")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1351,7 +1337,7 @@ for example from a shell script.")
              "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-v"
              version ".tar.gz"))
        (sha256
-        (base32 "0p4wraqiscvwmmsvfqfy65blgsilwpvd9zj4d2zvm2xdx70ncr7l"))))
+        (base32 "1ayiwg9kh3w0nbacbcln7h944z94vq5vnnd5diz86033bpbnq57f"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -1383,6 +1369,7 @@ for example from a shell script.")
        ("perl-test-file" ,perl-test-file)
        ("perl-test-file-contents" ,perl-test-file-contents)
        ("perl-test-mockmodule" ,perl-test-mockmodule)
+       ("perl-test-mockobject" ,perl-test-mockobject)
        ("perl-test-nowarnings" ,perl-test-nowarnings)
        ("perl-test-warn" ,perl-test-warn)))
     (inputs
@@ -1391,7 +1378,9 @@ for example from a shell script.")
        ("perl-config-gitlike" ,perl-config-gitlike)
        ("perl-datetime" ,perl-datetime)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-dbd-mysql" ,perl-dbd-mysql)
        ("perl-dbd-pg" ,perl-dbd-pg)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
        ("perl-dbi" ,perl-dbi)
        ("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-encode-locale" ,perl-encode-locale)
@@ -1738,7 +1727,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.64")
+    (version "1.66")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1746,7 +1735,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "00gz5aw3xrr92lf9nfk0dhmy7a8jzmxhznddd9b0a8w4a1xqzbpl"))))
+                "1zljln5nh61gj3k22a1fv2vhx5l83waizmarwkh77hk6kzzmvrw9"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1777,7 +1766,7 @@ module, and nothing else.")
     (synopsis "Parse and utilize MySQL's /etc/my.cnf and ~/.my.cnf files")
     (description
      "@code{MySQL::Config} emulates the @code{load_defaults} function from
-libmysqlclient.  It will fill an aray with long options, ready to be parsed by
+libmysqlclient.  It will fill an array with long options, ready to be parsed by
 @code{Getopt::Long}.")
     (license license:perl-license)))
 
@@ -1898,7 +1887,7 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.7")
+   (version "2.3.9")
    (source (origin
             (method url-fetch)
             (uri
@@ -1906,7 +1895,7 @@ valid SQL query.")
               "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
               version ".tar.gz"))
             (sha256
-             (base32 "0xry3sg497wly8f7715a7gwkn2k36bcap0mvzjw74jj53yx6kwa5"))))
+             (base32 "01xj65d02i3yjy7p9z08y9jakcs5szmz4rask868n7387nn3x0sj"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access
@@ -2120,14 +2109,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.853")
+  (version "1.855")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
                           version ".tar.gz"))
       (sha256
-        (base32 "1y967si45vj0skip1hnhicbv9da29fv6qcfwnsbnvj06n36mkj6h"))))
+        (base32 "0q599h7g4jkzks5dxf1zifx9k7l9vif26r2dlgkzxkg6bfif5zyr"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -2140,8 +2129,7 @@ database.")
                        (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
                      #t)))))
   (home-page "https://metacpan.org/release/DB_File")
-  (synopsis
-    "Perl5 access to Berkeley DB version 1.x")
+  (synopsis "Perl5 access to Berkeley DB version 1.x")
   (description
     "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
   (license license:perl-license)))
@@ -2450,13 +2438,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.99")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "12fwlzfd82471ss9xzbqwcqc6f5miy51y72y2yya9j5cm9589szr"))
+                "1di1gj2agbxwqqwrpk4w58dpfah0kl10ha20s63dlqdd1bgzydj1"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.
@@ -2475,6 +2463,7 @@ etc., and an SQL engine for performing simple SQL queries.")
          (add-before 'build 'use-system-lmdb
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((lmdb (assoc-ref inputs "lmdb")))
+               (setenv "LMDB_PURE" "set") ; don't apply env-copy-txn.patch
                (setenv "LMDB_FORCE_SYSTEM" "set")
                (setenv "LMDB_INCLUDEDIR" (string-append lmdb "/include"))
                (setenv "LMDB_LIBDIR" (string-append lmdb "/lib"))
@@ -2632,13 +2621,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.18")
+    (version "1.3.20")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "1rwc6ss1cnz3kxx0p9p6xw0w79r8qw03lcc29k31yb3rcigvfbys"))))
+       (base32 "18b9am7bsqc4nj3d2h5r93i002apczxfvpfpcqbd6f0385zmrwnj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2712,16 +2701,57 @@ You might also want to install the following optional dependencies:
 (define-public python2-sqlalchemy-utils
   (package-with-python2 python-sqlalchemy-utils))
 
+(define-public python-alchemy-mock
+  (package
+    (name "python-alchemy-mock")
+    (version "0.4.3")
+    (home-page "https://github.com/miki725/alchemy-mock")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "alchemy-mock" version))
+              (sha256
+               (base32
+                "0ylxygl3bcdapzz529n8wgk7vx9gjwb3ism564ypkpd7dbsw653r"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Create pytest.ini that adds doctest options to
+                      ;; prevent test failure.  Taken from tox.ini.
+                      (call-with-output-file "pytest.ini"
+                        (lambda (port)
+                          (format port "[pytest]
+doctest_optionflags=IGNORE_EXCEPTION_DETAIL
+")))
+                      (invoke "pytest" "-vv" "--doctest-modules"
+                              "alchemy_mock/"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (synopsis "Mock helpers for SQLAlchemy")
+    (description
+     "This package provides mock helpers for SQLAlchemy that makes it easy
+to mock an SQLAlchemy session while preserving the ability to do asserts.
+
+Normally Normally SQLAlchemy's expressions cannot be easily compared as
+comparison on binary expression produces yet another binary expression, but
+this library provides functions to facilitate such comparisons.")
+    (license license:expat)))
+
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
-        (base32 "1gsdrzx9h7wfva200qvvsc9sn4w79mk2vs0bbnzjhxi1jw2b0nh3"))))
+        (base32 "0if2dgb088clk738p26bwk50735h6jpd2kacdgc5capv2hiz6d2k"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2897,13 +2927,13 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.8.5")
+    (version "2.8.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32 "06081jk9srkd4ra9j8b93x9ld3a2yxsbsf5bbbcivbm1yx065m7p"))))
+        (base32 "0hzmk6b1hb5riqkljr5xics6p4zbvmis6knbczb7zhq7273zc8zv"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -2948,27 +2978,51 @@ database).")
 (define-public python2-sadisplay
   (package-with-python2 python-sadisplay))
 
+(define-public yoyo-migrations
+  (package
+    (name "yoyo-migrations")
+    (version "7.2.0")
+    (source
+     (origin
+       ;; We use the upstream repository, as the tests are not included in the
+       ;; PyPI releases.
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://hg.sr.ht/~olly/yoyo")
+             (changeset (string-append "v" version "-release"))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0q2z9bgdj3wyix7yvqsayfs21grp5av8ilh411lgmjhigszkvhcq"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests require a connection to some pgsql database and psycopg
+     ;; fails to connect to it.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-sqlparse" ,python-sqlparse)
+       ("python-tabulate" ,python-tabulate)))
+    (home-page "https://ollycope.com/software/yoyo/latest/")
+    (synopsis "Database migrations with SQL")
+    (description
+     "Yoyo is a database schema migration tool.  Migrations are written as SQL
+files or Python scripts that define a list of migration steps.")
+    (license license:asl2.0)))
+
 (define-public python-mysqlclient
   (package
     (name "python-mysqlclient")
-    (version "1.3.13")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mysqlclient" version))
        (sha256
         (base32
-         "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
+         "1rf5l8hazs3v18hmcrm90z3hi9wxv553ipwd5l6kj8j7l6p7abzv"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("nose" ,python-nose)
-       ("mock" ,python-mock)
-       ("py.test" ,python-pytest)))
+    (arguments '(#:tests? #f))          ;XXX: requires a live database
     (inputs
-     `(("mysql" ,mariadb "lib")
-       ("mysql-dev" ,mariadb "dev")
-       ("libz" ,zlib)
-       ("openssl" ,openssl)))
+     `(("mysql-dev" ,mariadb "dev")))
     (home-page "https://github.com/PyMySQL/mysqlclient-python")
     (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
     (description "MySQLdb is an interface to the popular MySQL database server
@@ -2979,9 +3033,6 @@ for Python.  The design goals are:
 @item Thread-friendliness (threads will not block each other).
 @end enumerate")
     (license license:gpl2)))
-
-(define-public python2-mysqlclient
-  (package-with-python2 python-mysqlclient))
 
 (define-public python-hiredis
   (package
@@ -3042,13 +3093,13 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "3.3.8")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "0fyxzqax7lcwzwhvnz0i0q6v62hxyv1mv52ywx3bpff9a2vjz8lq"))))
+        (base32 "18h5b87g15x3j6pb1h2q27ri37p2qpvc9n2wgn5yl3b6m3y0qzhf"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server.
     (arguments '(#:tests? #f))
@@ -3067,14 +3118,35 @@ reasonable substitute.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.13.0")
+    (version "1.5.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "rq" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rq/rq")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0xvapd2bxnyq480i48bdkddzlqmv2axbsq85rlfy8k3al8zxxxrf"))))
+        (base32 "0ikqmpq0g1qiqwd7ar1286l4hqjb6aj2wr844gihhb8ijzwhp8va"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'start-redis
+                    (lambda _
+                      (invoke "redis-server" "--daemonize" "yes")))
+                  (replace 'check
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; Drop test that needs the SDK for Sentry.io.
+                        (delete-file "tests/test_sentry.py")
+                        ;; Ensure 'rq' and 'rqworker' ends up on PATH.
+                        (setenv "PATH" (string-append out "/bin:"
+                                                      (getenv "PATH")))
+                        (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("redis" ,redis)))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-redis" ,python-redis)))
@@ -3088,6 +3160,44 @@ is designed to have a low barrier to entry.")
 
 (define-public python2-rq
   (package-with-python2 python-rq))
+
+(define-public python-rq-scheduler
+  (package
+    (name "python-rq-scheduler")
+    (version "0.10.0")
+    (home-page "https://github.com/rq/rq-scheduler")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xg6yazqs5kbr2ayvhvljs1h5vgx5k5dds613fmhswln7gglf9hk"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'start-redis
+                    (lambda _
+                      (invoke "redis-server" "--daemonize" "yes")))
+                  (replace 'check
+                    (lambda _
+                      (substitute* "run_tests.py"
+                        (("/usr/bin/env")
+                         (which "env")))
+                      (invoke "./run_tests.py"))))))
+    (native-inputs
+     `(("redis" ,redis)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("python-croniter" ,python-croniter)
+       ("python-rq" ,python-rq)))
+    (synopsis "Job scheduling capabilities for RQ (Redis Queue)")
+    (description
+     "This package provides job scheduling capabilities to @code{python-rq}
+(Redis Queue).")
+    (license license:expat)))
 
 (define-public python-trollius-redis
   (package
@@ -3593,8 +3703,7 @@ The drivers officially supported by @code{libdbi} are:
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
-       ("mariadb:dev" ,mariadb "dev")
-       ("mariadb:lib" ,mariadb "lib")))
+       ("mariadb:dev" ,mariadb "dev")))
     (arguments
      `(#:tests? #f ; Tests may require running database management systems.
        #:phases

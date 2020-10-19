@@ -233,7 +233,7 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.86")
+    (version "1.88")
     (source
      (origin
        (method git-fetch)
@@ -242,7 +242,7 @@ COCOMO model or user-provided parameters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "082gj2b3x11bilz8c572dd60vn6n0fhld5zhi7wk7g1wy9wlgm9w"))))
+        (base32 "1ixgswzbzv63bl50gb2kgaqr0jcicjz6w610hi9fal1i7744zraw"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
@@ -470,60 +470,53 @@ stack traces.")
     (license license:gpl3+)))
 
 (define-public lcov
-  ;; Use a recent commit from upstream since the latest official release
-  ;; (1.14) doesn't support GCC 9 (see:
-  ;; https://github.com/linux-test-project/lcov/issues/58).
-  (let* ((commit "40580cd65909bc8324ae09b36bca2e178652ff3f")
-         (revision "0")
-         (version (git-version "1.14" revision commit)))
-    (package
-      (name "lcov")
-      (version "1.14")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/linux-test-project/lcov")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0shgmh6fzhnj1qfdl90jgjmlbb1ih1qh879dca8hc58yggy3hqgb"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:test-target "test"
-         #:make-flags (list (string-append "PREFIX="
-                                           (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-pwd
-             ;; Lift the requirement of having a shell in PATH.
-             (lambda _
-               (substitute* "bin/geninfo"
-                 (("qw/abs_path/")
-                  "qw/abs_path getcwd/"))
-               (substitute* '("bin/lcov" "bin/geninfo")
-                 (("`pwd`")
-                  "getcwd()"))
-               #t))
-           (delete 'configure)          ;no configure script
-           (add-after 'install 'wrap
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/geninfo")
-                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
-               #t)))))
-      (inputs `(("perl" ,perl)
-                ("perl-json" ,perl-json)
-                ("perl-perlio-gzip" ,perl-perlio-gzip)))
-      (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
-      (synopsis "Code coverage tool that enhances GNU gcov")
-      (description "LCOV is an extension of @command{gcov}, a tool part of the
+  (package
+    (name "lcov")
+    (version "1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linux-test-project/lcov"
+                           "/releases/download/v" version
+                           "/lcov-" version ".tar.gz"))
+       (sha256
+        (base32 "0fh5z0q5wg2jxr2nn5w7321y0zg9rwk75j3k5hnamjdy6gxa5kf1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pwd
+           ;; Lift the requirement of having a shell in PATH.
+           (lambda _
+             (substitute* "bin/geninfo"
+               (("qw/abs_path/")
+                "qw/abs_path getcwd/"))
+             (substitute* '("bin/lcov" "bin/geninfo")
+               (("`pwd`")
+                "getcwd()"))
+             #t))
+         (delete 'configure)            ;no configure script
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/geninfo")
+                 `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
+             #t)))))
+    (inputs `(("perl" ,perl)
+              ("perl-io-compress" ,perl-io-compress)
+              ("perl-json" ,perl-json)))
+    (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
+    (synopsis "Code coverage tool that enhances GNU gcov")
+    (description "LCOV is an extension of @command{gcov}, a tool part of the
 GNU@tie{}Binutils, which provides information about what parts of a program
 are actually executed (i.e., \"covered\") while running a particular test
 case.  The extension consists of a set of Perl scripts which build on the
 textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public kcov
   (package

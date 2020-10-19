@@ -9,6 +9,8 @@
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +35,9 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (ice-9 match))
 
@@ -457,3 +461,50 @@ under permissive licensing terms.  See the 'Copyright' file."))))
 (define-word-list-dictionary hunspell-dict-en-us
   "en_US"
   (synopsis "Hunspell dictionary for United States English"))
+
+(define-public ispell
+  (package
+    (name "ispell")
+    (version "3.4.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.cs.hmc.edu/~geoff/tars/ispell-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1hmfnz55qzfpz7lz0r3m4kkv31smir92ks9s5l1iiwimhr2jxi2x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Based on local.h.linux
+             (let* ((grep (assoc-ref inputs "grep"))
+                    (out (assoc-ref outputs "out")))
+               (call-with-output-file "local.h"
+                 (lambda (port)
+                   (format port "#define MINIMENU~%")
+                   (format port "#define USG~%")
+                   (format port "#define HAS_RENAME~%")
+                   (format port "#define CC \"gcc\"~%")
+                   (format port "#define POUNDBANG \"#!~a\"~%" (which "sh"))
+                   (format port "#define EGREPCMD \"~a/bin/grep -Ei\"~%" grep)
+                   (format port "#define BINDIR \"~a/bin\"~%" out)
+                   (format port "#define LIBDIR \"~a/lib/ispell\"~%" out)
+                   (format port "#define MAN1DIR \"~a/share/man/man1\"~%" out)
+                   (format port "#define MAN45DIR \"~a/share/man/man5\"~%" out))))
+             #t)))))
+    (inputs
+     `(("grep" ,grep)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("bison" ,bison)))
+    (synopsis "Interactive spell-checking tool for Unix")
+    (description "Ispell is an interactive spell-checking tool supporting many
+European languages.")
+    (home-page "https://www.cs.hmc.edu/~geoff/ispell.html")
+    (license bsd-3)))

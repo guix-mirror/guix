@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,8 +19,11 @@
 (define-module (test-scripts-build)
   #:use-module (guix tests)
   #:use-module (guix store)
+  #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system gnu)
   #:use-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix utils)
@@ -29,6 +32,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
 
@@ -163,11 +168,16 @@
                ((("foo" dep1) ("bar" dep2))
                 (and (string=? (package-full-name dep1)
                                (package-full-name grep))
-                     (eq? (package-replacement dep1) findutils)
+                     (string=? (package-full-name (package-replacement dep1))
+                               (package-full-name findutils))
                      (string=? (package-name dep2) "chbouib")
                      (match (package-native-inputs dep2)
                        ((("x" dep))
-                        (eq? (package-replacement dep) findutils)))))))))))
+                        (with-store store
+                          (string=? (derivation-file-name
+                                     (package-derivation store findutils))
+                                    (derivation-file-name
+                                     (package-derivation store dep))))))))))))))
 
 (test-equal "options->transformation, with-branch"
   (git-checkout (url "https://example.org")
@@ -264,5 +274,97 @@
                        ((("x" dep3))
                         (map package-source (list dep1 dep3))))))))))))
 
+(define* (depends-on-toolchain? p #:optional (toolchain "gcc-toolchain"))
+  "Return true if P depends on TOOLCHAIN instead of the default tool chain."
+  (define toolchain-packages
+    '("gcc" "binutils" "glibc" "ld-wrapper"))
+
+  (define (package-name* obj)
+    (and (package? obj) (package-name obj)))
+
+  (match (bag-build-inputs (package->bag p))
+    (((_ (= package-name* packages) . _) ...)
+     (and (not (any (cut member <> packages) toolchain-packages))
+          (member toolchain packages)))))
+
+(test-assert "options->transformation, with-c-toolchain"
+  (let* ((dep0 (dummy-package "chbouib"
+                 (build-system gnu-build-system)
+                 (native-inputs `(("y" ,grep)))))
+         (dep1 (dummy-package "stuff"
+                 (native-inputs `(("x" ,dep0)))))
+         (p    (dummy-package "thingie"
+                 (build-system gnu-build-system)
+                 (inputs `(("foo" ,grep)
+                           ("bar" ,dep1)))))
+         (t    (options->transformation
+                '((with-c-toolchain . "chbouib=gcc-toolchain")))))
+    ;; Here we check that the transformation applies to DEP0 and all its
+    ;; dependents: DEP0 must use GCC-TOOLCHAIN, DEP1 must use GCC-TOOLCHAIN
+    ;; and the DEP0 that uses GCC-TOOLCHAIN, and so on.
+    (with-store store
+      (let ((new (t store p)))
+        (and (depends-on-toolchain? new "gcc-toolchain")
+             (match (bag-build-inputs (package->bag new))
+               ((("foo" dep0) ("bar" dep1) _ ...)
+                (and (depends-on-toolchain? dep1 "gcc-toolchain")
+                     (not (depends-on-toolchain? dep0 "gcc-toolchain"))
+                     (string=? (package-full-name dep0)
+                               (package-full-name grep))
+                     (match (bag-build-inputs (package->bag dep1))
+                       ((("x" dep) _ ...)
+                        (and (depends-on-toolchain? dep "gcc-toolchain")
+                             (match (bag-build-inputs (package->bag dep))
+                               ((("y" dep) _ ...) ;this one is unchanged
+                                (eq? dep grep))))))))))))))
+
+(test-equal "options->transformation, with-c-toolchain twice"
+  (package-full-name grep)
+  (let* ((dep0 (dummy-package "chbouib"))
+         (dep1 (dummy-package "stuff"))
+         (p    (dummy-package "thingie"
+                 (build-system gnu-build-system)
+                 (inputs `(("foo" ,dep0)
+                           ("bar" ,dep1)
+                           ("baz" ,grep)))))
+         (t    (options->transformation
+                '((with-c-toolchain . "chbouib=clang-toolchain")
+                  (with-c-toolchain . "stuff=clang-toolchain")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (depends-on-toolchain? new "clang-toolchain")
+             (match (bag-build-inputs (package->bag new))
+               ((("foo" dep0) ("bar" dep1) ("baz" dep2) _ ...)
+                (and (depends-on-toolchain? dep0 "clang-toolchain")
+                     (depends-on-toolchain? dep1 "clang-toolchain")
+                     (not (depends-on-toolchain? dep2 "clang-toolchain"))
+                     (package-full-name dep2)))))))))
+
+(test-assert "options->transformation, with-c-toolchain, no effect"
+  (let ((p (dummy-package "thingie"))
+        (t (options->transformation
+            '((with-c-toolchain . "does-not-exist=gcc-toolchain")))))
+    ;; When it has no effect, '--with-c-toolchain' returns P.
+    (with-store store
+      (eq? (t store p) p))))
+
+(test-assert "options->transformation, without-tests"
+  (let* ((dep (dummy-package "dep"))
+         (p   (dummy-package "foo"
+                (inputs `(("dep" ,dep)))))
+         (t   (options->transformation '((without-tests . "dep")
+                                         (without-tests . "tar")))))
+    (with-store store
+      (let ((new (t store p)))
+        (match (bag-direct-inputs (package->bag new))
+          ((("dep" dep) ("tar" tar) _ ...)
+           ;; TODO: Check whether TAR has #:tests? #f when transformations
+           ;; apply to implicit inputs.
+           (equal? (package-arguments dep)
+                   '(#:tests? #f))))))))
 
 (test-end)
+
+;;; Local Variables:
+;;; eval: (put 'dummy-package 'scheme-indent-function 1)
+;;; End:

@@ -227,7 +227,7 @@ bindings and many of the powerful features of GNU Emacs.")
 (define-public jucipp
   (package
     (name "jucipp")
-    (version "1.6.0")
+    (version "1.6.1")
     (home-page "https://gitlab.com/cppit/jucipp")
     (source (origin
               (method git-fetch)
@@ -239,7 +239,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "177myy6qvjlb6j3f3i3xmfml5r3p9in8xzpvm0n59dn56s81gpnr"))))
+               (base32 "0lb477acqrm3fy3j6i7j9l68j48cnkrzi80588npwwjssqicy4g6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
@@ -802,14 +802,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.4.4")
+    (version "4.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "1zjsb6iiqi4cw9r9md3xv8qyy86ssz11p680xn7vmllrxshxvs8y"))))
+        (base32 "1v1kyxj7rv5rxadbg8gl8wh1jafpy7zj0wr6dcyxq9209dl6h8ag"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")

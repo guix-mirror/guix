@@ -1,5 +1,5 @@
-;; This is the list of OpenPGP keys currently authorized to sign commits in
-;; this repository.
+;; This file, which is best viewed as -*- Scheme -*-, lists the OpenPGP keys
+;; currently authorized to sign commits in this repository.
 
 (authorizations
  (version 0)
@@ -84,6 +84,8 @@
    (name "lfam"))
   ("2AE3 1395 932B E642 FC0E  D99C 9BED 6EDA 32E5 B0BC"
    (name "lsl88"))
+  ("8887 84C4 1459 ACCB 83E7  E84C 634C 6E89 79FA BEC2"
+   (name "m1gu3l"))
   ("CBF5 9755 CBE7 E7EF EF18  3FB1 DD40 9A15 D822 469D"
    (name "marusich"))
   ("BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"

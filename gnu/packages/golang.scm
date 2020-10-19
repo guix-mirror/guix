@@ -12,13 +12,16 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright @ 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
-;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
-;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019 Giovanni Biscuolo <g@xelera.eu>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +148,11 @@
                   ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
                   ("os/os_test.go" "(.+)(TestHostname.+)")
                   ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+
+                  ;; XXX: This test fails with tzdata 2020b and newer.  Later
+                  ;; Go releases work fine, so just disable this for the
+                  ;; bootstrap Go.
+                  ("time/example_test.go" "(.+)(ExampleParseInLocation.+)")
 
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
@@ -559,6 +567,30 @@ per-goroutine.")
     (home-page "https://github.com/jtolds/gls")
     (license license:expat)))
 
+(define-public go-github-com-saracen-walker
+  (package
+    (name "go-github-com-saracen-walker")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/saracen/walker")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rq1lrp99lx7k1ysbfznn4c1iagnxdhb4lnnklsadnnzi3gvygqz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/saracen/walker"))
+    (inputs
+     `(("go-golang-org-x-sync" ,go-golang-org-x-sync)))
+    (home-page "https://github.com/saracen/walker")
+    (synopsis "Faster, parallel version of Go's filepath.Walk")
+    (license license:expat)
+    (description "The @code{walker} function is a faster, parallel version, of
+@code{filepath.Walk}")))
+
 (define-public go-github-com-tj-docopt
   (package
     (name "go-github-com-tj-docopt")
@@ -741,9 +773,39 @@ for the Go language.")
 processing.")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-sync
+  (let ((commit "6e8e738ad208923de99951fe0b48239bfd864f28")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-sync")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/sync")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1avk27pszd5l5df6ff7j78wgla46ir1hhy2jwfl9a3c0ys602yx9"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/sync"
+         #:tests? #f
+         ;; Source-only package
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+      (synopsis "Additional Go concurrency primitives")
+      (description "This package provides Go concurrency primitives in addition
+to the ones provided by the language and “sync” and “sync/atomic”
+packages.")
+      (home-page "https://go.googlesource.com/sync/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-sys
-  (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
-        (revision "6"))
+  (let ((commit "05986578812163b26672dabd9b425240ae2bb0ad")
+        (revision "7"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -755,7 +817,7 @@ processing.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15nq53a6kcqchng4j0d1pjw0m6hny6126nhjdwqw5n9dzh6a226d"))))
+                  "1q2rxb6z5l6pmlckjsz2l0b8lw7bqgk6frhzbmi1dv0y5irb2ka7"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
@@ -2822,7 +2884,7 @@ cross-compilation.")
     (synopsis "Walk a value in Go using reflection")
     (description "reflectwalk is a Go library for \"walking\" a value in Go
 using reflection, in the same way a directory tree can be \"walked\" on the
-filesystem.  Walking a complex structure can allow you to do manipulations on
+file system.  Walking a complex structure can allow you to do manipulations on
 unknown structures such as those decoded from JSON.")
     (license license:expat)))
 
@@ -3294,6 +3356,32 @@ format in Go.")
     (description "This package provides a pretty printer for Go values.")
     (home-page "https://github.com/kr/pretty")
     (license license:expat)))
+
+(define-public go-github-com-kylelemons-godebug
+  (package
+    (name "go-github-com-kylelemons-godebug")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kylelemons/godebug")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dkk3friykg8p6wgqryx6745ahhb9z1j740k7px9dac6v5xjp78c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kylelemons/godebug/diff"
+       #:unpack-path "github.com/kylelemons/godebug"))
+    (home-page "https://github.com/kylelemons/godebug")
+    (synopsis "Pretty printer for Go values.")
+    (description
+     "This package will pretty print a compact representation of a Go data
+structure.  It can also produce a much more verbose, one-item-per-line
+representation suitable for computing diffs.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-kr-text
   (package
@@ -5237,11 +5325,11 @@ errors (warnings).")
     (native-inputs
      `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
     (home-page "https://github.com/go-git/go-billy/")
-    (synopsis "Filesystem abstraction for Go")
-    (description "Billy implements an interface based on the os standard
-library, allowing to develop applications without dependency on the underlying
-storage.  Makes it virtually free to implement mocks and testing over
-filesystem operations.")
+    (synopsis "File system abstraction for Go")
+    (description "Billy implements an interface based on the OS's standard
+library to develop applications without depending on the underlying storage.
+This makes it virtually free to implement mocks and testing over
+file system operations.")
     (license license:asl2.0)))
 
 (define-public go-github-com-jbenet-go-context
@@ -5656,3 +5744,86 @@ Included are the following:
 except that it adds convenience functions that use the fmt package to format
 error messages.")
     (license license:bsd-3)))
+
+(define-public go-github-com-arceliar-phony
+  (let ((commit "d0c68492aca0bd4b5c5c8e0452c9b4c8af923eaf")
+        (revision "0"))
+    (package
+      (name "go-github-com-arceliar-phony")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Arceliar/phony")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0876y0hlb1zh8hn0pxrb5zfdadvaqmqwlr66p19yl2a76galz992"))))
+      (arguments
+       '(#:import-path "github.com/Arceliar/phony"))
+      (build-system go-build-system)
+      (home-page "https://github.com/Arceliar/phony")
+      (synopsis "Very minimal actor model library")
+      (description "Phony is a very minimal actor model library for Go,
+inspired by the causal messaging system in the Pony programming language.")
+      (license license:expat))))
+
+(define-public go-github-com-cheggaaa-pb
+  (package
+    (name "go-github-com-cheggaaa-pb")
+    (version "3.0.4")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cheggaaa/pb/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xhsv9yf3fz918ay6w0d87jnb3hk9vxvi16jk172kqq26x7jixd0"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cheggaaa/pb/"))
+    (propagated-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (native-inputs
+     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+    (home-page "https://github.com/cheggaaa/pb/")
+    (synopsis "Console progress bar for Go")
+    (description "This package is a Go library that draws progress bars on
+the terminal.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-gologme-log
+  ;; this is the same as v1.2.0, only the LICENSE file changed
+  (let ((commit "720ba0b3ccf0a91bc6018c9967a2479f93f56a55"))
+    (package
+      (name "go-github-com-gologme-log")
+      (version "1.2.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gologme/log")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z3gs5ngv2jszp42ypp3ai0pn410v3b2m674g73ma7vsbn2yjk1n"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gologme/log"))
+      (home-page "https://github.com/gologme/log/")
+      (synopsis
+       "Fork of the golang built in log package to add support for levels")
+      (description "This package is a drop in replacement for the built-in Go
+log package.  All the functionality of the built-in package still exists and
+is unchanged.  This package contains a series of small enhancements and
+additions.")
+      (license license:bsd-3))))

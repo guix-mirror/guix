@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.35")
+    (version "4.0.43")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f203g2hp96cp8w4x1myhqdj5j09z9s23kylwkrxr69fjhn0vhnb"))))
+                "0ppzr7vsl6iw8x82c4g60mx1vz06nzwcy8byablhg0n0g6qa3pb0"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -514,7 +514,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method git-fetch)
@@ -522,7 +522,7 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "0kjlphdvwwbj91kk91s4ksc954d3c2bznddzx2223jmb1bn9rcsa"))
+        (base32 "1qmqhbnc5yw4brd24yrp85k09770c1c00nl03mkv5pdz2bvqivk7"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -834,7 +834,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.217-1")
+    (version "1.217-2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -843,12 +843,12 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kcvi3pav2fdx5c22psjv5dggk4cmrqiaq2cklhqngsk4a7vrjan"))))
+                "19sr52ix14w344pv13ppb0c1wyg5dxhic1fw2q0s3qfmx57b9hhp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
        #:make-flags
-       (list "CC=gcc")
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -1404,7 +1404,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.2")
+    (version "1.9.3p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1414,24 +1414,18 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "05432672iilb7s52j9l9xzrlambb1wg3k7qvf5973i41y40x563w"))
+                "17mldsg5d08s23cskmjxfa81ibnqw3slgf3l4023j72ywi9xxffw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
-    (outputs (list "out" "python"))
+    (outputs (list "out"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version)
-
-             ;; XXX: Disable Python support when cross-compiling because
-             ;; 'configure' tries to run 'python', which fails.
-             ,(if (%current-target-system)
-                  "--disable-python"
-                  "--enable-python")              ; for plug-ins written in ~
 
              "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
@@ -1479,34 +1473,19 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t))
-         (add-after 'install 'separate-python-output
-           (lambda* (#:key target outputs #:allow-other-keys)
-             (let ((out        (assoc-ref outputs "out"))
-                   (out:python (assoc-ref outputs "python")))
-               (if target
-                   (mkdir-p (string-append out:python "/empty"))
-                   (for-each
-                    (lambda (file)
-                      (let ((old (string-append out "/" file))
-                            (new (string-append out:python "/" file)))
-                        (mkdir-p (dirname new))
-                        (rename-file old new)))
-                    (list "libexec/sudo/python_plugin.so"
-                          "libexec/sudo/python_plugin.la")))
-               #t))))
+             #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
        #:tests? #f))
     (native-inputs
-     `(("groff" ,groff)))
+     ;; XXX TODO: Remove on next rebuild cycle.
+     (if (hurd-target?)
+         '()
+         `(("groff" ,groff))))
     (inputs
      `(("coreutils" ,coreutils)
        ("linux-pam" ,linux-pam)
-       ,@(if (%current-target-system)
-             '()
-             `(("python" ,python)))
        ("zlib" ,zlib)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
@@ -1837,21 +1816,24 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah/dmidecode/dmidecode-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "1pcfhcgs2ifdjwp7amnsr3lq95pgxpr150bjhdinvl505px0cw07"))))
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/dmidecode/dmidecode-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "0m8lzg9rf1qssasiix672bxk5qwms90561g8hfkkhk31h2kkgiw2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f                                ; no 'check' target
-       #:make-flags (list (string-append "prefix="
-                                         (assoc-ref %outputs "out")))))
+     `(#:tests? #f                                ; no 'check' target
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix="
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))                   ; no configure script
     (home-page "https://www.nongnu.org/dmidecode/")
     (synopsis "Read hardware information from the BIOS")
     (description
@@ -2613,14 +2595,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.80")
+    (version "7.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
+                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2698,7 +2680,7 @@ advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
-    (license (list license:nmap license:bsd-3))))
+    (license (list license:npsl license:bsd-3))))
 
 (define-public dstat
   (package
@@ -2718,9 +2700,8 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "DESTDIR=" out)
-                            "prefix=/"))
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-python3-DeprecationWarning
@@ -2952,6 +2933,8 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
              (commit (string-append "v" version))))
        (sha256
         (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
+       (patches
+        (search-patches "sunxi-tools-remove-sys-io.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
@@ -3595,7 +3578,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.06-1")
+      (version "3.1.07-1")
       (source
        (origin
          (method git-fetch)
@@ -3604,7 +3587,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0h65n03q9kdsv0i1q5f88i11iv79ca7fqq97rdkzkmiqb4whhnm2"))))
+          (base32 "0hs4m2vmfc6srscaz72r6zpkn6n7msgzlps376ks38gj1l103xfn"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4105,3 +4088,44 @@ the system configuration; hosts only works when using the Guix package manager
 on a foreign distro.  @command{hosts} works with existing hosts files and
 entries, providing commands to add, remove, comment, and search.")
     (license license:expat)))
+
+(define-public nmrpflash
+  (package
+    (name "nmrpflash")
+    (version "0.9.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jclehner/nmrpflash.git")
+         (commit (string-append "v" version))))
+       (sha256
+        (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libnl" ,libnl)
+       ("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f ; None exist
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'prepare-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/jclehner/nmrpflash")
+    (synopsis "Netgear unbrick utility")
+    (description "This package provides a utility to flash a new firmware
+image to a Netgear device.  It has been tested on Netgear EX2700, EX6120,
+EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6400, R6800,
+R8000, R8500, WNDR3800, but is likely to be compatible with many other
+Netgear devices.")
+    (license license:gpl3+)))

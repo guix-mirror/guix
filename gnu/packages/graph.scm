@@ -121,34 +121,6 @@ more.")
     (home-page "https://pypi.org/project/python-igraph/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
-(define-public r-rgraphviz
-  (package
-    (name "r-rgraphviz")
-    (version "2.32.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "Rgraphviz" version))
-       (sha256
-        (base32
-         "1calpvzgcz6v7s4x6bf35kj83sga95zjp7x87p5d3qnbv7q2wz5y"))))
-    (properties `((upstream-name . "Rgraphviz")))
-    (build-system r-build-system)
-    ;; FIXME: Rgraphviz bundles the sources of an older variant of
-    ;; graphviz.  It does not build with the latest version of graphviz, so
-    ;; we do not add graphviz to the inputs.
-    (inputs `(("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-graph" ,r-graph)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://bioconductor.org/packages/Rgraphviz")
-    (synopsis "Plotting capabilities for R graph objects")
-    (description
-     "This package interfaces R with the graphviz library for plotting R graph
-objects from the @code{graph} package.")
-    (license license:epl1.0)))
-
 (define-public r-rbiofabric
   (let ((commit "666c2ae8b0a537c006592d067fac6285f71890ac")
         (revision "1"))

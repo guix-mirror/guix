@@ -181,8 +181,8 @@ living in the same process.")
                "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? ,(not (hurd-target?))
-
+     `(#:tests? ,(not (or (%current-target-system)
+                          (hurd-target?)))
        ;; Ensure we don't keep a reference to the tools used for testing.
        #:disallowed-references ,(if (hurd-target?)
                                     '()
@@ -519,14 +519,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "3.0.2")
+    (version "3.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   "libressl-" version ".tar.gz"))
               (sha256
                (base32
-                "13ir2lpxz8y1m151k7lrx306498nzfhwlvgkgv97v5cvywmifyyz"))))
+                "1dnbbnr43jashxivnafmh9gnn57c7ayva788ba03z633k6f18k21"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it

@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
+;; Note - when changing Docker versions it is important to update the versions
+;; of several associated packages (docker-libnetwork and go-sctp).
 (define %docker-version "19.03.12")
 
 (define-public python-docker
@@ -190,41 +193,40 @@ Python without keeping their credentials in a Docker configuration file.")
      `(#:import-path "github.com/containerd/containerd"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'chdir
-           (lambda _
-             (chdir "src/github.com/containerd/containerd")
-             #t))
          (add-after 'chdir 'patch-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs import-path outputs #:allow-other-keys)
              ;; TODO: Patch "socat", "unpigz".
-             (substitute* "./runtime/v1/linux/runtime.go"
-              (("defaultRuntime[ \t]*=.*")
-               (string-append "defaultRuntime = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n"))
-              (("defaultShim[ \t]*=.*")
-               (string-append "defaultShim = \""
-                              (assoc-ref outputs "out")
-                              "/bin/containerd-shim\"\n")))
-            (substitute* "./vendor/github.com/containerd/go-runc/runc.go"
-              (("DefaultCommand[ \t]*=.*")
-               (string-append "DefaultCommand = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n")))
-            (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
-             (("exec\\.Command\\(\"losetup\"") ; )
-              (string-append "exec.Command(\""
-                             (assoc-ref inputs "util-linux")
-                             "/sbin/losetup\""))) ;)
-             #t))
+             (with-directory-excursion (string-append "src/" import-path)
+               (substitute* "./runtime/v1/linux/runtime.go"
+                 (("defaultRuntime[ \t]*=.*")
+                  (string-append "defaultRuntime = \""
+                                 (assoc-ref inputs "runc")
+                                 "/sbin/runc\"\n"))
+                 (("defaultShim[ \t]*=.*")
+                  (string-append "defaultShim = \""
+                                 (assoc-ref outputs "out")
+                                 "/bin/containerd-shim\"\n")))
+               (substitute* "./vendor/github.com/containerd/go-runc/runc.go"
+                 (("DefaultCommand[ \t]*=.*")
+                  (string-append "DefaultCommand = \""
+                                 (assoc-ref inputs "runc")
+                                 "/sbin/runc\"\n")))
+               (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
+                 (("exec\\.Command\\(\"losetup\"") ; )
+                  (string-append "exec.Command(\""
+                                 (assoc-ref inputs "util-linux")
+                                 "/sbin/losetup\""))) ;)
+               #t)))
          (replace 'build
-           (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (apply invoke "make" make-flags)))
+           (lambda* (#:key import-path (make-flags '()) #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (apply invoke "make" make-flags))))
          (replace 'install
-           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (apply invoke "make" (string-append "DESTDIR=" out) "install"
-                      make-flags)))))))
+           (lambda* (#:key import-path outputs (make-flags '()) #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (let* ((out (assoc-ref outputs "out")))
+                 (apply invoke "make" (string-append "DESTDIR=" out) "install"
+                        make-flags))))))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("libseccomp" ,libseccomp)
@@ -246,22 +248,25 @@ network attachments.")
 (define docker-libnetwork
   ;; There are no recent release for libnetwork, so choose the last commit of
   ;; the branch that Docker uses, as can be seen in the Docker source file
-  ;; 'hack/dockerfile/install/proxy.installer'.
-  (let ((commit "4725f2163fb214a6312f3beae5991f838ec36326")
-        (version "18.09")
+  ;; 'hack/dockerfile/install/proxy.installer'. NOTE - It is important that
+  ;; this version is kept in sync with the version of Docker being used.
+  ;; This commit is the "bump_19.03" branch, as mentioned in Docker's vendor.conf.
+  (let ((commit "026aabaa659832804b01754aaadd2c0f420c68b6")
+        (version (version-major+minor %docker-version))
         (revision "1"))
     (package
       (name "docker-libnetwork")
-      (version (git-version version "1" commit))
+      (version (git-version version revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/docker/libnetwork")
+                      ;; Redirected from github.com/docker/libnetwork.
+                      (url "https://github.com/moby/libnetwork")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1zpnxki8qfzha6ljahpwd3vkzmjhsvkmf73w6crm4ilxxw5vnpfb"))
+                  "0bli21vn5v7bssw3ydym4jfdjsldhb47fld88kng7d138wl70lkw"))
                 ;; Delete bundled ("vendored") free software source code.
                 (modules '((guix build utils)))
                 (snippet '(begin
@@ -269,8 +274,8 @@ network attachments.")
                             #t))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/docker/libnetwork/"))
-      (home-page "https://github.com/docker/libnetwork/")
+       `(#:import-path "github.com/moby/libnetwork/"))
+      (home-page "https://github.com/moby/libnetwork/")
       (synopsis "Networking for containers")
       (description "Libnetwork provides a native Go implementation for
 connecting containers.  The goal of @code{libnetwork} is to deliver a robust
@@ -514,6 +519,7 @@ built-in registry server of Docker.")
              #t))
          (replace 'configure
            (lambda _
+             (setenv "DOCKER_BUILDTAGS" "seccomp")
              (setenv "DOCKER_GITCOMMIT" (string-append "v" ,%docker-version))
              (setenv "VERSION" (string-append ,%docker-version "-ce"))
              ;; Automatically use bundled dependencies.
@@ -651,8 +657,7 @@ provisioning etc.")
                                (string-append etc "/fish/completions"))
                  (install-file "zsh/_docker"
                                (string-append etc "/zsh/site-functions")))
-               (chdir "build")
-               (install-file "docker" out-bin)
+               (install-file "build/docker" out-bin)
                #t))))))
     (native-inputs
      `(("go" ,go)

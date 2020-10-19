@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1432,7 +1433,7 @@ SAX2 APIs.")
 (define-public xlsxio
   (package
     (name "xlsxio")
-    (version "0.2.26")
+    (version "0.2.29")
     (source
      (origin
        (method git-fetch)
@@ -1441,7 +1442,7 @@ SAX2 APIs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j8jral3yc2aib2ykp527lyb62a1d9p7qmfbszy7iy3s65pkma9b"))))
+        (base32 "0jr6ggzhd8aakdvppcl8scy9j9jafg82zbzr4ih996sz8lrj90fn"))))
     (native-inputs
      `(("expat" ,expat)
        ("make" ,gnu-make)

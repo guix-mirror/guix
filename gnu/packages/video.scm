@@ -96,6 +96,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages dns)
@@ -134,6 +135,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
@@ -524,7 +526,7 @@ applications by providing high-level classes for commonly required tasks.")
 (define-public libde265
   (package
     (name "libde265")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method git-fetch)
@@ -534,7 +536,7 @@ applications by providing high-level classes for commonly required tasks.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ipccyavlgf7hfzx1g8bvzg62xq10vcxvwgq70r3z3j6mdvmrzjp"))))
+        (base32 "0x7g9771457z49qvzpk4iswfhq018i0mzsflv9gg8if5hjqhfdp0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -697,14 +699,15 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.19")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
-                           "/download/v" version "/celluloid-" version ".tar.xz"))
+       (uri (string-append "https://github.com/celluloid-player/celluloid"
+                           "/releases/download/v" version
+                           "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "1s3qkism96gi44incvsb6rqg255qcvjvw61ya7nw30md0sapj4sl"))))
+        (base32 "0kjjv2pcdvwcn4yi8kbpsca7pnx6cx6xdznv7ppqm0fssx68qyb3"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -878,14 +881,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "37.0.0")
+    (version "50.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "0r4d9318ymb9a0mkc0shi9p4kjy3m70s49v4f8dmjhvj63silhix"))
+        (base32 "09485qfbdirr9g536shglzdm271yipb1669r3dm3hxp46k0x59aq"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -911,6 +914,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
        ("lzo" ,lzo)
+       ("pcre2" ,pcre2)
        ("pugixml" ,pugixml)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
@@ -1318,7 +1322,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.7.1")
+    (version "2.9.0")
     (source
      (origin
        (method url-fetch)
@@ -1330,7 +1334,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "014av7ayyc624xfmr63xhbgg7nw8fynsswj1g2wmk4lnkyfz23x0"))))
+        (base32 "0jsq6ia3fzyzvq7lxsrn4a8kn2kx4z3v777xkxn6k4ny5lww2i73"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1451,6 +1455,8 @@ operate properly.")
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
+       ;; FFmpeg is not yet compatible with SRT > 1.4.1.
+       ("srt" ,srt-1.4.1)
        ("twolame" ,twolame)
        ("vidstab" ,vidstab)
        ("x265" ,x265)
@@ -1535,6 +1541,7 @@ operate properly.")
                '())
          "--enable-libsoxr"
          "--enable-libspeex"
+         "--enable-libsrt"
          "--enable-libtheora"
          "--enable-libtwolame"
          "--enable-libvidstab"
@@ -1826,6 +1833,8 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
        ("speexdsp" ,speexdsp)
+       ;; VLC is not yet compatible with SRT > 1.4.1.
+       ("srt" ,srt-1.4.1)
        ("taglib" ,taglib)
        ("twolame" ,twolame)
        ("unzip" ,unzip)
@@ -2125,9 +2134,8 @@ To load this plugin, specify the following option when starting mpv:
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.8.2")
+    (version "1.9.0")
     (source (origin
-              ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
               (uri (git-reference
                     (url "https://chromium.googlesource.com/webm/libvpx")
@@ -2135,7 +2143,7 @@ To load this plugin, specify the following option when starting mpv:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gyq4fkbd2fv7m1mm9xrvn6rk6f4jsmbv8bnlhingmnrvyncnmnr"))
+                "16xv6ambc82g14h1y0q1vyy57wp6j9fbp0nk0wd5csnrw407rhry"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -2153,7 +2161,11 @@ To load this plugin, specify the following option when starting mpv:
                       ;; The configure script does not understand some of the GNU
                       ;; options, so we only add the flags specified above.
                       (apply invoke  "./configure" configure-flags))))
-       #:tests? #f)) ; no check target
+
+       ;; XXX: The test suite wants to download 871 files from a cloud storage
+       ;; service (see test/test-data.sha1).  It is possible to specify a
+       ;; custom directory, but there seems to be no tarball with all files.
+       #:tests? #f))
     (native-inputs
      `(("perl" ,perl)
        ("yasm" ,yasm)))
@@ -2165,7 +2177,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.09.14")
+    (version "2020.09.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -2173,7 +2185,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18wfhprbaszpxgqkac3hb050ngvdsaibbcifg88rkv5vc6bc2mq6"))))
+                "1pkw3hnkddk1kqv0in152q1k4jjgbmf2xvc9j3r5nd38z6f7j6mc"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2184,6 +2196,16 @@ To load this plugin, specify the following option when starting mpv:
      ;; 'youtube-dl.bash-completion'.
      `(#:tests? #f ; Many tests fail. The test suite can be run with pytest.
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'default-to-the-ffmpeg-input
+                    (lambda _
+                      ;; See <https://issues.guix.gnu.org/43418#5>.
+                      ;; ffmpeg is big but required to request free formats
+                      ;; from, e.g., YouTube so pull it in unconditionally.
+                      ;; Continue respecting the --ffmpeg-location argument.
+                      (substitute* "youtube_dl/postprocessor/ffmpeg.py"
+                        (("\\.get\\('ffmpeg_location'\\)" match)
+                         (format #f "~a or '~a'" match (which "ffmpeg"))))
+                      #t))
                   (add-before 'install 'fix-the-data-directories
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -2207,6 +2229,8 @@ To load this plugin, specify the following option when starting mpv:
                         (copy-file "youtube-dl.zsh"
                                    (string-append zsh "/_youtube-dl"))
                         #t))))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
@@ -2352,7 +2376,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.8")
+    (version "3.7.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2361,7 +2385,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ckzzf35nbwlx5prvzjr52n28chyd479vhdk5w7vb2343az80mzi"))))
+                "16p0sa91h0zpqdpqmy348g6b9qj5f6qrbzrljn157vk00cg6mx18"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2374,6 +2398,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
        ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
+       ("perl-memoize" ,perl-memoize)
        ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-term-readline-gnu" ,perl-term-readline-gnu)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
@@ -2980,7 +3005,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "25.0.8")
+    (version "26.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2989,14 +3014,24 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j2k65q3wfyfxhvkl6icz4qy0s3kfqhksizy2i3ah7yml266axbj"))))
+                "1d502f80whh686mvq0yn6zpa5nvmnlzxwp5sjz43vpbbvhpbrdqj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no test suite
-       #:configure-flags
-       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version))))
+     `(#:configure-flags
+       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version)
+             "-DENABLE_UNIT_TESTS=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (plugin-path (getenv "QT_PLUGIN_PATH")))
+               (wrap-program (string-append out "/bin/obs")
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
@@ -3014,7 +3049,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
-       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
@@ -3023,13 +3058,12 @@ video recording and live streaming.  OBS supports capturing audio and video
 from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
-    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public libvdpau
   (package
     (name "libvdpau")
-    (version "1.3")
+    (version "1.4")
     (source
       (origin
         (method git-fetch)
@@ -3039,7 +3073,7 @@ and JACK.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fb1nh5apr9kzx9bm2lysjwpyva1s60b2l2p230nqgvb11q25hd2"))))
+          "1hc4mcrbr1yhfiy4zfd8wc2iiqbp90z6jswap0jia20vmyk5lqld"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3585,7 +3619,7 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "20.08")
+    (version "20.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
@@ -3593,7 +3627,7 @@ practically any type of media.")
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "19n8h9jq42b6r3dbag77fzwfksfywszmzpi636w87fvc1nqldlqj"))))
+                "15ni9pnch6688m72swwax109a7mg4a08yx75qknrx7qa6dbyhz6h"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3643,7 +3677,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "20.08")
+    (version "20.09")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3654,7 +3688,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1baf2dj5s3g1x4ssqli1b2r1203syk42m09zhp36qcinmfixv11l"))))
+                "0rqg9z7s5bk7vlvjrs4gackzg7ib05a0dffi2ihsjf5a7kw7wcir"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -4524,7 +4558,7 @@ result in several formats:
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
-        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-byteorder" ,rust-byteorder-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.11)
@@ -4548,7 +4582,7 @@ result in several formats:
         ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
-        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-y4m" ,rust-y4m-0.5)
         ("rust-cc" ,rust-cc-1)

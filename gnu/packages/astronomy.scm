@@ -159,7 +159,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.20.2")
+    (version "0.20.3")
     (source
      (origin
        (method url-fetch)
@@ -167,7 +167,7 @@ programs for the manipulation and analysis of astronomical data.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "16symz212vjvhfabh39a68qf7d0rm574c6djlibj2qd1q9jgj3j0"))))
+        (base32 "0z5r7b1ac43l330xphxnw54xg7jm87ajix8yl4hkq82cs5ja7097"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -328,7 +328,7 @@ Mechanics, Astrometry and Astrodynamics library.")
        ("freetype" ,freetype)
        ("pango" ,pango)
        ("giflib" ,giflib)
-       ("libjpeg", libjpeg-turbo)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("netpbm" ,netpbm)

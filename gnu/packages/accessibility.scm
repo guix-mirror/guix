@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,7 +273,7 @@ available to help to click.")
        `(("hidapi" ,hidapi)))
       (arguments
        `(#:tests? #f ; no tests
-         #:make-flags (list "CC=gcc")
+         #:make-flags (list (string-append "CC=" ,(cc-for-target)))
          #:phases (modify-phases %standard-phases
                     (delete 'configure)
                     ;; Install target in the Makefile does not work for Guix
@@ -308,7 +309,7 @@ devices have vendorId:productId = 0c45:7403 or 0c45:7404.")
     (arguments
      `(#:tests? #f ; none included
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases

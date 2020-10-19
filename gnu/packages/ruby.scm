@@ -650,8 +650,8 @@ outcomes of a code example.")
     (synopsis "Ripper-style abstract syntax tree to Ruby source generator")
     (description "Sorcerer generates Ruby code from a Ripper-like abstract
 syntax tree (i.e. S-Expressions).  Sorcerer is targeted mainly at small
-snippets of Ruby code, expressable in a single line.  Longer examples may be
-re-sourced, but they will be rendered in a single line format.")
+snippets of Ruby code, expressible in a single line.  Longer examples may be
+re-sourced, but they will be rendered in a single-line format.")
     (home-page "https://github.com/rspec-given/sorcerer")
     (license license:expat)))
 
@@ -3753,8 +3753,7 @@ specs for Ruby implementations in ruby/spec.")
                (invoke "rspec"))
              #t)))))
     (inputs
-     `(("mariadb" ,mariadb "lib")
-       ("mariadb-dev" ,mariadb "dev")
+     `(("mariadb-dev" ,mariadb "dev")
        ("zlib" ,zlib)))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
@@ -7750,7 +7749,7 @@ master/html-formatter/ruby")
     (native-inputs
      `(;; Use a untested version of aruba, to avoid a circular dependency, as
        ;; ruby-aruba depends on ruby-cucumber.
-       ("ruby-aruba", ruby-aruba-without-tests)
+       ("ruby-aruba" ,ruby-aruba-without-tests)
        ("ruby-rspec" ,ruby-rspec)
        ("ruby-pry" ,ruby-pry)
        ("ruby-nokogiri" ,ruby-nokogiri)
@@ -8809,7 +8808,7 @@ display width of strings in Ruby.")
     (native-inputs
      `(("ruby-rdoc" ,ruby-rdoc)
        ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubygems-tasks", ruby-rubygems-tasks)))
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
     (synopsis "Ruby library to help check the Ruby version")
     (description "@code{ruby_version} provides a @code{RubyVersion} module to simplify
 checking for the right Ruby version in software.")
@@ -9921,7 +9920,7 @@ all known public suffixes.")
        ("bundler" ,bundler)
        ("ruby-idn-ruby" ,ruby-idn-ruby)
        ("ruby-sporkmonger-rack-mount" ,ruby-sporkmonger-rack-mount)
-       ("ruby-rspec-its", ruby-rspec-its-minimal)
+       ("ruby-rspec-its" ,ruby-rspec-its-minimal)
        ("ruby-yard" ,ruby-yard)
        ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs

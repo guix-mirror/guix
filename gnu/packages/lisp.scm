@@ -51,10 +51,8 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -78,21 +76,10 @@
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
 
-(define (asdf-substitutions lisp)
-  ;; Prepend XDG_DATA_DIRS/LISP-bundle-systems to ASDF's
-  ;; 'default-system-source-registry'.
-  `((("\\(,dir \"systems/\"\\)\\)")
-     (format #f
-             "(,dir \"~a-bundle-systems\")))
-
-      ,@(loop :for dir :in (xdg-data-dirs \"common-lisp/\")
-              :collect `(:directory (,dir \"systems\"))"
-             ,lisp))))
-
 (define-public cl-asdf
   (package
     (name "cl-asdf")
-    (version "3.3.3")
+    (version "3.3.4")
     (source
      (origin
        (method url-fetch)
@@ -100,7 +87,7 @@
         (string-append "https://common-lisp.net/project/asdf/archives/asdf-"
                        version ".lisp"))
        (sha256
-        (base32 "18lr6kxvzhr79c9rx3sdricz30aby866fj0m24w27zxsqlyvn3rd"))))
+        (base32 "1hpx30f6yrak15nw992k7x3pn75ahvjs04n4f134k68mhgs62km2"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -112,9 +99,29 @@
          (let* ((out (string-append (assoc-ref %outputs "out")))
                 (asdf-install (string-append out %source-install-prefix
                                              "/source/asdf/"))
-                (asdf (string-append (assoc-ref %build-inputs "source"))))
+                (src-asdf (string-append (assoc-ref %build-inputs "source")))
+                (dst-asdf (string-append asdf-install "asdf.lisp")))
            (mkdir-p asdf-install)
-           (copy-file asdf (string-append asdf-install "asdf.lisp"))))))
+           (copy-file src-asdf dst-asdf)
+           ;; Patch ASDF to make it read the configuration files in all
+           ;; the direcories listed in '$XDG_CONFIG_DIRS' instead of just
+           ;; the first.
+           (substitute* dst-asdf
+             (("\\(xdg-config-pathname \\*source-registry-directory\\* direction\\)")
+              "`(:source-registry
+                 ,@(loop
+                      for dir in (xdg-config-dirs
+                                  \"common-lisp/source-registry.conf.d/\")
+                      collect `(:include ,dir))
+                 :inherit-configuration)")
+             (("\\(xdg-config-pathname \\*output-translations-directory\\* direction\\)")
+              "`(:output-translations
+                 ,@(loop
+                      for dir in (xdg-config-dirs
+                                  \"common-lisp/asdf-output-translations.conf.d/\")
+                      collect `(:include ,dir))
+                 :inherit-configuration)")))
+         #t)))
     (home-page "https://common-lisp.net/project/asdf/")
     (synopsis "Another System Definition Facility")
     (description
@@ -261,10 +268,7 @@ interface to the Tk widget system.")
                                 "/share/common-lisp/source/asdf/asdf.lisp"))
                     (out (string-append (assoc-ref outputs "out")))
                     (contrib-asdf "contrib/asdf/asdf.lisp"))
-               (copy-file guix-asdf contrib-asdf)
-               ;; Add ecl-bundle-systems to 'default-system-source-registry'.
-               (substitute* contrib-asdf
-                 ,@(asdf-substitutions name)))
+               (copy-file guix-asdf contrib-asdf))
              #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -298,7 +302,10 @@ interface to the Tk widget system.")
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")
-            (files '("share")))))
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
@@ -437,9 +444,7 @@ an interpreter, a compiler, a debugger, and much more.")
                                 "/share/common-lisp/source/asdf/asdf.lisp"))
                     (out (string-append (assoc-ref outputs "out")))
                     (contrib-asdf "contrib/asdf/asdf.lisp"))
-               (copy-file guix-asdf contrib-asdf)
-               (substitute* contrib-asdf
-                 ,@(asdf-substitutions name)))
+               (copy-file guix-asdf contrib-asdf))
              #t))
          (add-before 'build 'patch-unix-tool-paths
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -546,7 +551,10 @@ an interpreter, a compiler, a debugger, and much more.")
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")
-            (files '("share")))))
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (home-page "http://www.sbcl.org/")
     (synopsis "Common Lisp implementation")
     (description "Steel Bank Common Lisp (SBCL) is a high performance Common
@@ -801,7 +809,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "243")
+    (version "244")
     (source
      (origin
        (method git-fetch)
@@ -810,7 +818,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08rrl7ac6jnx0zfchzbpvs3qidrbjrl9c7p8s1wms90lp10i18ak"))))
+        (base32 "1bzhb1pms6gjzphbsimhwdyq46ik1m7sgldigg5l1q7bppg9r3i0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -832,9 +840,6 @@ enough to play the original mainframe Zork all the way through.")
                                 "tests/017/realpath.expected")
                (("/usr/bin") "/"))
              #t)))))
-    (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
     (inputs
      `(("libffi" ,libffi)))
     (synopsis "General-purpose, multi-paradigm programming language")

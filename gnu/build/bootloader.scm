@@ -22,6 +22,8 @@
   #:use-module (guix utils)
   #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 format)
+  #:use-module (rnrs io ports)
+  #:use-module (rnrs io simple)
   #:export (write-file-on-device
             install-efi-loader))
 
@@ -35,11 +37,14 @@
   (call-with-input-file file
     (lambda (input)
       (let ((bv (get-bytevector-n input size)))
-        (call-with-output-file device
-          (lambda (output)
-            (seek output offset SEEK_SET)
-            (put-bytevector output bv))
-          #:binary #t)))))
+        (call-with-port
+         (open-file-output-port device
+                                (file-options no-truncate no-create)
+                                (buffer-mode block)
+                                (native-transcoder))
+         (lambda (output)
+           (seek output offset SEEK_SET)
+           (put-bytevector output bv)))))))
 
 
 ;;;

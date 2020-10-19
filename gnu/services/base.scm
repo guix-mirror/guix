@@ -1570,6 +1570,9 @@ proxy of 'guix-daemon'...~%")
                     ;; the 'set-http-proxy' action.
                     (or (getenv "http_proxy") #$http-proxy))
 
+                  ;; Start the guix-daemon from a container, when supported,
+                  ;; to solve an installation issue. See the comment below for
+                  ;; more details.
                   (fork+exec-command/container
                    (cons* #$(file-append guix "/bin/guix-daemon")
                           "--build-users-group" #$build-group
@@ -1600,6 +1603,8 @@ proxy of 'guix-daemon'...~%")
                    ;; operate from within the same MNT namespace as the
                    ;; installation container. In that case only, enter the
                    ;; namespace of the process PID passed as start argument.
+                   ;; Otherwise, for symmetry purposes enter the caller
+                   ;; namespaces which is a no-op.
                    #:pid (match args
                            ((pid) (string->number pid))
                            (else (getpid)))
@@ -1648,10 +1653,15 @@ proxy of 'guix-daemon'...~%")
      ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Optionally authorize substitute server keys.
-     (if authorize-key?
-         (substitute-key-authorization keys guix)
-         #~#f))))
+     ;; Generate a key pair and optionally authorize substitute server keys.
+     #~(begin
+         (unless (file-exists? "/etc/guix/signing-key.pub")
+           (system* #$(file-append guix "/bin/guix") "archive"
+                    "--generate-key"))
+
+         #$(if authorize-key?
+               (substitute-key-authorization keys guix)
+               #~#f)))))
 
 (define* (references-file item #:optional (name "references"))
   "Return a file that contains the list of references of ITEM."

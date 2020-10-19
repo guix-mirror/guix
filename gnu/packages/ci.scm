@@ -39,6 +39,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
@@ -46,9 +47,29 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu))
 
+;; Guile-Sqlite3 package adding SQL query logging support.
+;; Remove it when next Guile-Sqlite3 release is out.
+(define-public guile-sqlite3-dev
+  (let ((commit "22ef45d268de7707cbbb943c404f9b0c1668e2e1")
+        (revision "1"))
+    (package
+      (inherit guile-sqlite3)
+      (name "guile-sqlite3")
+      (version (git-version "0.1.2" revision commit))
+      (home-page "https://notabug.org/mothacehe/guile-sqlite3.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1q90f8zhw9n1c39szd2ba7aj5fi92m09pnlv0z7jbhnnjam5jwcd"))
+                (file-name (string-append name "-" version "-checkout")))))))
+
 (define-public cuirass
-  (let ((commit "cf11b73db00678b45b70108768138d0fb74d9506")
-        (revision "45"))
+  (let ((commit "df2d13621f4b2ace33a460746e704115b7b1541e")
+        (revision "53"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -60,7 +81,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1f7jqnscy8vjqrpgl4cyynrvbx6zp3slsd82fykap6qvvwwn7xj8"))))
+                  "1vgb1wl1rkijm1vv5chqllf4i5w1j7g02xqlaf2xmqjh2phy5dxa"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -122,11 +143,11 @@
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       `(("guile" ,guile-3.0/libgc-7)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
-         ("guile-sqlite3" ,guile-sqlite3)
+         ("guile-sqlite3" ,guile-sqlite3-dev)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among

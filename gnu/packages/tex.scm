@@ -7376,3 +7376,158 @@ subdivided bibliographies, such as bibliographies per chapter or
 section.
 @end enumerate\n")
       (license license:lppl1.3c))))
+
+(define-public texlive-todonotes
+  (let ((template (simple-texlive-package
+                   "texlive-todonotes"
+                   (list "/doc/latex/todonotes/"
+                         "/tex/latex/todonotes/")
+                   (base32
+                    "0lvxsskz4bdfxhd59hf77kiq8k4nh2spb66vc6hifdgi21z8r8wm")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+      (home-page "http://www.ctan.org/pkg/todonotes")
+      (synopsis "Marking things to do in a LaTeX document")
+      (description "The @code{todonotes} package lets the user mark
+things to do later, in a simple and visually appealing way.  The
+package takes several options to enable customization and finetuning
+of the visual appearance.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-units
+  (let ((template (simple-texlive-package
+                   "texlive-units"
+                   (list "/doc/latex/units/"
+                         "/tex/latex/units/")
+                   (base32
+                    "1ia1vzy8dp7pdvmawwnmh9lmkajmpnnh62dixrjpb6mnxq118bfd")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/units")
+      (synopsis "Typeset physical units and fractions")
+      (description "@code{units} is a package for typesetting physical
+units in a standard-looking way.  The package is based upon
+@code{nicefrac}, a package for typing fractions.  @code{nicefrac} is
+included in the @code{units} bundle.")
+      (license license:gpl3+))))
+
+(define-public texlive-microtype
+  (let ((template (simple-texlive-package
+                   "texlive-microtype"
+                   (list "/doc/latex/microtype/"
+                         "/tex/latex/microtype/")
+                   (base32
+                    "0xmjpzbj4nqmnl5m7xx1bshdk2c8n57rmbvn0j479ypj4wdlq9iy")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/microtype")
+      (synopsis "Subliminal refinements towards typographical perfection")
+      (description "@code{microtype} provides a LaTeX interface to the
+micro-typographic extensions that were introduced by pdfTeX and have
+since propagated to XeTeX and LuaTeX: most prominently character
+protrusion and font expansion, the adjustment of kerning and interword
+spacing, hyphenatable letterspacing and the possibility to disable all
+or selected ligatures.  These features may be applied to customisable
+sets of fonts.  All micro-typographic aspects of the fonts can be
+configured in a straight-forward and flexible way.  Settings for
+various fonts are provided.  An alternative package
+@code{letterspace}, which also works with plain TeX, is included in
+the bundle.")
+      (license license:lppl1.3c))))
+
+(define-public texlive-caption
+  (let ((template (simple-texlive-package
+                   "texlive-caption"
+                   (list "/doc/latex/caption/"
+                         "/tex/latex/caption/")
+                   (base32
+                    "09gmh8yjj9f5zak8r18g87w9p5jn7flnvmlhxmvdq6992mbdc6hg")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/caption")
+      (synopsis "Customising captions in floating environments")
+      (description "The @code{caption} package provides many ways to
+customise the captions in floating environments like figure and table.
+Facilities include rotating captions, sideways captions and continued
+captions (for tables or figures that come in several parts).  A list
+of compatibility notes, for other packages, is provided in the
+documentation.  The package also provides the \"caption outside
+float\" facility, in the same way that simpler packages like
+@code{capt-ofcapt-of} do.  The package supersedes @code{caption2}.
+Packages @code{bicaption}, @code{ltcaption}, @code{newfloat},
+@code{subcaption} and @code{totalcount} are included in the bundle.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-symbol
+  (package
+    (inherit (simple-texlive-package
+              "texlive-symbol"
+              (list "/dvips/symbol/"
+                    "/fonts/afm/adobe/symbol/"
+                    "/fonts/afm/urw/symbol/"
+                    "/fonts/tfm/adobe/symbol/"
+                    "/fonts/tfm/urw35vf/symbol/"
+                    "/fonts/type1/urw/symbol/"
+                    "/fonts/map/dvips/symbol/"
+                    "/tex/latex/symbol/")
+              (base32
+               "01xiygb88xwi7rfvh1zrlxzi5pqb5fvylws5zzszg379iz4pyzwj")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description "This package provides a drop-in replacement for the
+Symbol font from Adobe's basic set.")
+    (license license:gpl2)))
+
+(define-public texlive-mathpazo
+  (package
+    (inherit (simple-texlive-package
+              "texlive-mathpazo"
+              (list "/doc/latex/mathpazo/"
+                    "/fonts/afm/public/mathpazo/"
+                    "/fonts/tfm/public/mathpazo/"
+                    "/fonts/type1/public/mathpazo/"
+                    "/fonts/vf/public/mathpazo/")
+              (base32
+               "02in6hdnbnkz216mpy8g6fk3wmlls8nh5982vmg37vhbj77lk0rh")
+              #:trivial? #t))
+    (home-page "http://www.ctan.org/pkg/mathpazo")
+    (synopsis "Fonts to typeset mathematics to match Palatino")
+    (description "The Pazo Math fonts are a family of PostScript fonts
+suitable for typesetting mathematics in combination with the Palatino
+family of text fonts.  The Pazo Math family is made up of five fonts
+provided in Adobe Type 1 format.  These contain glyphs that are
+usually not available in Palatino and for which Computer Modern looks
+odd when combined with Palatino.  These glyphs include the uppercase
+Greek alphabet in upright and slanted shapes, the lowercase Greek
+alphabet in slanted shape, several mathematical glyphs and the
+uppercase letters commonly used to represent various number sets.
+LaTeX macro support is provided in package @code{psnfss}.")
+    (license license:gpl3+)))
+
+(define-public texlive-fpl
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fpl"
+              (list "/doc/fonts/fpl/"
+                    "/source/fonts/fpl/"
+                    "/fonts/afm/public/fpl/"
+                    "/fonts/type1/public/fpl/")
+              (base32
+               "02gkl516z9kn8xqs269pdkqn37sxm8ib0pcs43s4rs2rhyyl5z68")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/fpl")
+    (synopsis "SC and OsF fonts for URW Palladio L")
+    (description "The FPL Fonts provide a set of SC/OsF fonts for URW
+Palladio L which are compatible with the Palatino SC/OsF fonts from
+Adobe.  LaTeX use is enabled by the mathpazo package, which is part of
+the @code{psnfss} distribution.")
+    ;; Either LPPL version 1.0 or later, or GPL version 2
+    (license (list license:lppl1.0+ license:gpl2))))

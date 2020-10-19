@@ -38,6 +38,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix memoization)
   #:use-module (guix profiles)
   #:use-module (guix scripts package)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
@@ -184,6 +186,29 @@
             (and (string=? (manifest-pattern-name pattern) "foo")
                  (string=? (manifest-pattern-version pattern) "1")
                  (string=? (manifest-pattern-output pattern) "out")))))))
+
+(test-equal "transaction-upgrade-entry, transformation options preserved"
+  (derivation-file-name (package-derivation %store grep))
+
+  (let* ((old   (dummy-package "emacs" (version "1")))
+         (props '((transformations . ((with-input . "emacs=grep")))))
+         (tx    (transaction-upgrade-entry
+                 %store
+                 (manifest-entry
+                   (inherit (package->manifest-entry old))
+                   (properties props)
+                   (item (string-append (%store-prefix) "/"
+                                        (make-string 32 #\e) "-foo-1")))
+                 (manifest-transaction))))
+    (match (manifest-transaction-install tx)
+      (((? manifest-entry? entry))
+       (and (string=? (manifest-entry-version entry)
+                      (package-version grep))
+            (string=? (manifest-entry-name entry)
+                      (package-name grep))
+            (equal? (manifest-entry-properties entry) props)
+            (derivation-file-name
+             (package-derivation %store (manifest-entry-item entry))))))))
 
 (test-assert "transaction-upgrade-entry, grafts"
   ;; Ensure that, when grafts are enabled, 'transaction-upgrade-entry' doesn't
@@ -1185,15 +1210,24 @@
   (let* ((dep       (dummy-package "chbouib"
                       (native-inputs `(("x" ,grep)))))
          (p0        (dummy-package "example"
+                      (source 77)
                       (inputs `(("foo" ,coreutils)
                                 ("bar" ,grep)
                                 ("baz" ,dep)))))
          (transform (lambda (p)
                       (package (inherit p) (source 42))))
          (rewrite   (package-mapping transform))
-         (p1        (rewrite p0)))
+         (p1        (rewrite p0))
+         (bag0      (package->bag p0))
+         (bag1      (package->bag p1)))
     (and (eq? p1 (rewrite p0))
          (eqv? 42 (package-source p1))
+
+         ;; Implicit inputs should be left unchanged (skip "source", "foo",
+         ;; "bar", and "baz" in this comparison).
+         (equal? (drop (bag-direct-inputs bag0) 4)
+                 (drop (bag-direct-inputs bag1) 4))
+
          (match (package-inputs p1)
            ((("foo" dep1) ("bar" dep2) ("baz" dep3))
             (and (eq? dep1 (rewrite coreutils))   ;memoization
@@ -1207,6 +1241,31 @@
                     (and (eq? dep (rewrite grep))
                          (package-source dep))))))))))
 
+(test-equal "package-mapping, deep"
+  '(42)
+  (let* ((p0        (dummy-package "example"
+                      (inputs `(("foo" ,coreutils)
+                                ("bar" ,grep)))))
+         (transform (lambda (p)
+                      (package (inherit p) (source 42))))
+         (rewrite   (package-mapping transform #:deep? #t))
+         (p1        (rewrite p0))
+         (bag       (package->bag p1)))
+    (and (eq? p1 (rewrite p0))
+         (match (bag-direct-inputs bag)
+           ((("source" 42) ("foo" dep1) ("bar" dep2) rest ..1)
+            (and (eq? dep1 (rewrite coreutils))   ;memoization
+                 (eq? dep2 (rewrite grep))
+                 (= 42 (package-source dep1))
+                 (= 42 (package-source dep2))
+
+                 ;; Check that implicit inputs of P0 also got rewritten.
+                 (delete-duplicates
+                  (map (match-lambda
+                         ((_ package . _)
+                          (package-source package)))
+                       rest))))))))
+
 (test-assert "package-input-rewriting"
   (let* ((dep     (dummy-package "chbouib"
                     (native-inputs `(("x" ,grep)))))
@@ -1216,7 +1275,8 @@
                               ("baz" ,dep)))))
          (rewrite (package-input-rewriting `((,coreutils . ,sed)
                                              (,grep . ,findutils))
-                                           (cut string-append "r-" <>)))
+                                           (cut string-append "r-" <>)
+                                           #:deep? #f))
          (p1      (rewrite p0))
          (p2      (rewrite p0)))
     (and (not (eq? p1 p0))
@@ -1230,7 +1290,22 @@
                  (eq? dep3 (rewrite dep))         ;memoization
                  (match (package-native-inputs dep3)
                    ((("x" dep))
-                    (eq? dep findutils)))))))))
+                    (eq? dep findutils))))))
+
+         ;; Make sure implicit inputs were left unchanged.
+         (equal? (drop (bag-direct-inputs (package->bag p1)) 3)
+                 (drop (bag-direct-inputs (package->bag p0)) 3)))))
+
+(test-eq "package-input-rewriting, deep"
+  (derivation-file-name (package-derivation %store sed))
+  (let* ((p0      (dummy-package "chbouib"
+                    (build-system python-build-system)
+                    (arguments `(#:python ,python))))
+         (rewrite (package-input-rewriting `((,python . ,sed))))
+         (p1      (rewrite p0)))
+    (match (bag-direct-inputs (package->bag p1))
+      ((("python" python) _ ...)
+       (derivation-file-name (package-derivation %store python))))))
 
 (test-assert "package-input-rewriting/spec"
   (let* ((dep     (dummy-package "chbouib"
@@ -1241,7 +1316,8 @@
                               ("baz" ,dep)))))
          (rewrite (package-input-rewriting/spec
                    `(("coreutils" . ,(const sed))
-                     ("grep" . ,(const findutils)))))
+                     ("grep" . ,(const findutils)))
+                   #:deep? #f))
          (p1      (rewrite p0))
          (p2      (rewrite p0)))
     (and (not (eq? p1 p0))
@@ -1258,7 +1334,11 @@
                  (match (package-native-inputs dep3)
                    ((("x" dep))
                     (string=? (package-full-name dep)
-                              (package-full-name findutils))))))))))
+                              (package-full-name findutils)))))))
+
+         ;; Make sure implicit inputs were left unchanged.
+         (equal? (drop (bag-direct-inputs (package->bag p1)) 3)
+                 (drop (bag-direct-inputs (package->bag p0)) 3)))))
 
 (test-assert "package-input-rewriting/spec, partial match"
   (let* ((dep     (dummy-package "chbouib"
@@ -1269,7 +1349,8 @@
                               ("bar" ,dep)))))
          (rewrite (package-input-rewriting/spec
                    `(("chbouib@123" . ,(const sed)) ;not matched
-                     ("grep" . ,(const findutils)))))
+                     ("grep" . ,(const findutils)))
+                   #:deep? #f))
          (p1      (rewrite p0)))
     (and (not (eq? p1 p0))
          (string=? "example" (package-name p1))
@@ -1282,6 +1363,105 @@
                    ((("x" dep))
                     (string=? (package-full-name dep)
                               (package-full-name findutils))))))))))
+
+(test-assert "package-input-rewriting/spec, deep"
+  (let* ((dep     (dummy-package "chbouib"))
+         (p0      (dummy-package "example"
+                    (build-system gnu-build-system)
+                    (inputs `(("dep" ,dep)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("tar"  . ,(const sed))
+                     ("gzip" . ,(const findutils)))))
+         (p1      (rewrite p0))
+         (p2      (rewrite p0)))
+    (and (not (eq? p1 p0))
+         (eq? p1 p2)                              ;memoization
+         (string=? "example" (package-name p1))
+         (match (package-inputs p1)
+           ((("dep" dep1))
+            (and (string=? (package-full-name dep1)
+                           (package-full-name dep))
+                 (eq? dep1 (rewrite dep)))))      ;memoization
+
+         ;; Make sure implicit inputs were replaced.
+         (match (bag-direct-inputs (package->bag p1))
+           ((("dep" dep1) ("tar" tar) ("gzip" gzip) _ ...)
+            (and (eq? dep1 (rewrite dep))
+                 (string=? (package-full-name tar)
+                           (package-full-name sed))
+                 (string=? (package-full-name gzip)
+                           (package-full-name findutils))))))))
+
+(test-assert "package-input-rewriting/spec, no duplicates"
+  ;; Ensure that deep input rewriting does not forget implicit inputs.  Doing
+  ;; so could lead to duplicates in a package's inputs: in the example below,
+  ;; P0's transitive inputs would contain one rewritten "python" and one
+  ;; original "python".  These two "python" packages are thus not 'eq?' but
+  ;; they lower to the same derivation.  See <https://bugs.gnu.org/42156>,
+  ;; which can be reproduced by passing #:deep? #f.
+  (let* ((dep0    (dummy-package "dep0"
+                    (build-system trivial-build-system)
+                    (propagated-inputs `(("python" ,python)))))
+         (p0      (dummy-package "chbouib"
+                    (build-system python-build-system)
+                    (arguments `(#:python ,python))
+                    (inputs `(("dep0" ,dep0)))))
+         (rewrite (package-input-rewriting/spec '() #:deep? #t))
+         (p1      (rewrite p0))
+         (bag1    (package->bag p1))
+         (pythons (filter-map (match-lambda
+                                (("python" python) python)
+                                (_ #f))
+                              (bag-transitive-inputs bag1))))
+    (match (delete-duplicates pythons eq?)
+      ((p) (eq? p (rewrite python))))))
+
+(test-equal "package-input-rewriting/spec, graft"
+  (derivation-file-name (package-derivation %store sed))
+
+  ;; Make sure replacements are rewritten.
+  (let* ((dep0 (dummy-package "dep"
+                 (version "1")
+                 (build-system trivial-build-system)
+                 (inputs `(("coreutils" ,coreutils)))))
+         (dep1 (dummy-package "dep"
+                 (version "0")
+                 (build-system trivial-build-system)
+                 (replacement dep0)))
+         (p0   (dummy-package "p"
+                 (build-system trivial-build-system)
+                 (inputs `(("dep" ,dep1)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("coreutils" . ,(const sed)))))
+         (p1      (rewrite p0)))
+    (match (package-inputs p1)
+      ((("dep" dep))
+       (match (package-inputs (package-replacement dep))
+         ((("coreutils" coreutils))
+          ;; COREUTILS is not 'eq?' to SED, so the most reliable way to check
+          ;; for equality is to lower to a derivation.
+          (derivation-file-name
+           (package-derivation %store coreutils))))))))
+
+(test-assert "package-with-c-toolchain"
+  (let* ((dep (dummy-package "chbouib"
+                (build-system gnu-build-system)
+                (native-inputs `(("x" ,grep)))))
+         (p0  (dummy-package "thingie"
+                (build-system gnu-build-system)
+                (inputs `(("foo" ,grep)
+                          ("bar" ,dep)))))
+         (tc  (dummy-package "my-toolchain"))
+         (p1  (package-with-c-toolchain p0 `(("toolchain" ,tc)))))
+    (define toolchain-packages
+      '("gcc" "binutils" "glibc" "ld-wrapper"))
+
+    (match (bag-build-inputs (package->bag p1))
+      ((("foo" foo) ("bar" bar) (_ (= package-name packages) . _) ...)
+       (and (not (any (cut member <> packages) toolchain-packages))
+            (member "my-toolchain" packages)
+            (eq? foo grep)
+            (eq? bar dep))))))
 
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")

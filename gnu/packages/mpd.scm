@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
@@ -92,7 +94,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.25")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,10 +103,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "00f2cm3sg0vi9gxb1yk35lyyh3fbabwim3mfnsz2syrjpw0sv810"))))
+                "0xlhwdbnww7gjw474j54j94iwrzbzlqvnv6chlkga6yh4pcl5rvx"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
+     `(#:configure-flags '("-Ddocumentation=enabled")))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -183,7 +185,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.39")
+    (version "0.41")
     (source (origin
               (method url-fetch)
               (uri
@@ -192,7 +194,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1a0i1wm9287kd4nqii28dp84260063kyl726yjzxzr7vq8hf7sv4"))))
+                "1b0kxidz3h3anc006cjrrbb281zl75f1qaip4m3672pczdc2lwwa"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -249,18 +251,19 @@ sort playlists, and a local file system browser.")
 (define-public mpdscribble
   (package
     (name "mpdscribble")
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musicpd.org/download/mpdscribble/"
-                                  version "/mpdscribble-" version ".tar.gz"))
+                                  version "/mpdscribble-" version ".tar.xz"))
               (sha256
                (base32
-                "0f0ybx380x2z2g1qvdndpvcrhkrgsfqckhz3ryydq2w3pl12v27z"))))
-    (build-system gnu-build-system)
-    (inputs `(("libmpdclient" ,libmpdclient)
+                "0s66zqscb44p88cl3kcv5jkjcqsskcnrv7xgrjhzrchf2kcpwf53"))))
+    (build-system meson-build-system)
+    (inputs `(("boost" ,boost)
               ("curl" ,curl)
-              ("glib" ,glib)))
+              ("libgcrypt" ,libgcrypt)
+              ("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "MPD client for track scrobbling")
     (description "mpdscribble is a Music Player Daemon client which submits

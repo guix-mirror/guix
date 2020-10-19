@@ -111,8 +111,8 @@ generate such a compilation database.")
     (license license:gpl3+)))
 
 (define-public gn
-  (let ((commit "eb997b5ab9c3f1ba6a2c52072785884864a84eae")
-        (revision "1794"))            ;as returned by `git describe`, used below
+  (let ((commit "e327ffdc503815916db2543ec000226a8df45163")
+        (revision "1819"))            ;as returned by `git describe`, used below
     (package
       (name "gn")
       (version (git-version "0.0" revision commit))
@@ -122,7 +122,7 @@ generate such a compilation database.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "1vfkcy34wqhg7wsk7jdzhgnnzwim10wgbxv5bnavxzjcs871i2xa"))
+                  "0kvlfj3www84zp1vmxh76x8fdjm9hyk8lkh2vdsidafpmm75fphr"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments

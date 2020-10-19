@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,23 +21,26 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages entr)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages ncurses)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 (define-public entr
   (package
     (name "entr")
-    (version "4.2")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0w2xkf77jikcjh15fp9g7661ss30pz3jbnh261vqpaqavwah4c17"))))
+                "0vcflgagna2gdlpjsd6748c73j2829xlhm276mi838zl1n121phn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -47,20 +50,24 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (setenv "CC" (which "gcc"))
-               (setenv "DESTDIR" (string-append out "/"))
-               (setenv "PREFIX" "")
-               (setenv "MANPREFIX" "man")
+               (setenv "CC" ,(cc-for-target))
+               (setenv "PREFIX" out)
+               (setenv "MANPREFIX" (string-append out "/man"))
                (invoke "./configure"))))
          (add-before 'build 'remove-fhs-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "entr.c"
-               (("/bin/sh") (which "sh"))
-               (("/bin/cat") (which "cat"))
-               (("/usr/bin/clear") (which "clear")))
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash") command))
+               (("/bin/cat" command)
+                (string-append (assoc-ref inputs "coreutils") command))
+               (("/usr(/bin/clear)" _ command)
+                (string-append (assoc-ref inputs "ncurses") command)))
              #t)))))
-    ;; ncurses provides the `clear' binary
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("ncurses" ,ncurses)))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description

@@ -39,7 +39,7 @@
 (define-public drbd-utils
   (package
     (name "drbd-utils")
-    (version "9.13.1")
+    (version "9.15.0")
     (source (origin
               (method url-fetch)
               ;; Older releases are moved to /archive.  List it first because in
@@ -51,7 +51,7 @@
                                         "/utils/drbd-utils-" version ".tar.gz")))
               (sha256
                (base32
-                "0di55y0vzaw8jhcgz0fakww03h1gpg4a5q1zklxhjw3dwzjvysnk"))
+                "0jh7zdxpbjkq53pmrn0jfn33abi4vs8axp55h5256czwc2gfb6z8"))
               (modules '((guix build utils)))
               (snippet
                '(begin

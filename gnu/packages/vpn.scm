@@ -338,10 +338,11 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests in repo
     (native-inputs
-     `(("docopt" ,python-docopt)))
+     `(("python-docopt" ,python-docopt)))
     (inputs
-     `(("pythondialog" ,python-pythondialog)
-       ("requests" ,python-requests)))
+     `(("python-jinja2" ,python-jinja2)
+       ("python-pythondialog" ,python-pythondialog)
+       ("python-requests" ,python-requests)))
     (propagated-inputs
      `(("openvpn" ,openvpn)
        ("dialog" ,dialog)))
@@ -405,7 +406,7 @@ private network between hosts on the internet.")
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ;; For tests only.
-       ("python-flake8", python-flake8)
+       ("python-flake8" ,python-flake8)
        ("python-mock" ,python-mock)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))

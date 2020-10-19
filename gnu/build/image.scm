@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (make-partition-image
+            convert-disk-image
             genimage
             initialize-efi-partition
             initialize-root-partition
@@ -120,13 +121,22 @@ ROOT directory to populate the image."
       (format (current-error-port)
               "Unsupported partition type~%.")))))
 
-(define* (genimage config target)
+(define (convert-disk-image image format output)
+  "Convert IMAGE to OUTPUT according to the given FORMAT."
+  (case format
+    ((compressed-qcow2)
+     (begin
+       (invoke "qemu-img" "convert" "-c" "-f" "raw"
+               "-O" "qcow2" image output)))
+    (else
+     (copy-file image output))))
+
+(define* (genimage config)
   "Use genimage to generate in TARGET directory, the image described in the
 given CONFIG file."
   ;; genimage needs a 'root' directory.
   (mkdir "root")
-  (invoke "genimage" "--config" config
-          "--outputpath" target))
+  (invoke "genimage" "--config" config))
 
 (define* (register-closure prefix closure
                            #:key

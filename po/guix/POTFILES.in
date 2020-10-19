@@ -76,6 +76,7 @@ guix/scripts/weather.scm
 guix/scripts/describe.scm
 guix/scripts/processes.scm
 guix/scripts/deploy.scm
+guix/gexp.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm

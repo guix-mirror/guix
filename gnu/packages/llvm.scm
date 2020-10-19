@@ -80,7 +80,7 @@ as \"x86_64-linux\"."
              ("i686"        => "X86")
              ("i586"        => "X86"))))
 
-(define (llvm-download-uri component version)
+(define (llvm-uri component version)
   (if (version>=? version "9.0.1")
       (string-append "https://github.com/llvm/llvm-project/releases/download"
                      "/llvmorg-" version "/" component "-" version ".src.tar.xz")
@@ -94,7 +94,7 @@ as \"x86_64-linux\"."
     (source
      (origin
       (method url-fetch)
-      (uri (llvm-download-uri "llvm" version))
+      (uri (llvm-uri "llvm" version))
       (sha256
        (base32
         "1wydhbp9kyjp5y0rc627imxgkgqiv3dfirbqil9dgpnbaw5y7n65"))))
@@ -157,7 +157,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "compiler-rt" version))
+       (uri (llvm-uri "compiler-rt" version))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
     (build-system cmake-build-system)
@@ -213,7 +213,7 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri (if (version>=? version "9.0.1")
+       (uri (llvm-uri (if (version>=? version "9.0.1")
                                    "clang"
                                    "cfe")
                                version))
@@ -476,6 +476,12 @@ code analysis tools.")
                        (((names . directories) ...)
                         (union-build out directories)))
 
+                     ;; Create 'cc' and 'c++' so that one can use it as a
+                     ;; drop-in replacement for the default tool chain and
+                     ;; have configure scripts find the compiler.
+                     (symlink "clang" (string-append out "/bin/cc"))
+                     (symlink "clang++" (string-append out "/bin/c++"))
+
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs
                                                    "libc-debug")))
@@ -484,7 +490,11 @@ code analysis tools.")
                                                    "libc-static")))
                      #t))))
 
-    (native-search-paths (package-native-search-paths clang))
+    (native-search-paths
+     (append (package-native-search-paths clang)
+             (list (search-path-specification     ;copied from glibc
+                    (variable "GUIX_LOCPATH")
+                    (files '("lib/locale"))))))
     (search-paths (package-search-paths clang))
 
     (license (package-license clang))
@@ -502,6 +512,101 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
+(define-public llvm-11
+  (package
+    (name "llvm")
+    (version "11.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (llvm-uri "llvm" version))
+      (sha256
+       (base32
+        "0s94lwil98w7zb7cjrbnxli0z7gklb312pkw74xs1d6zk346hgwi"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "opt-viewer"))
+    (native-inputs
+     `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
+       ("perl"   ,perl)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))                 ;to use output from llvm-config
+    (arguments
+     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
+                           "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
+
+       ;; Don't use '-g' during the build, to save space.
+       #:build-type "Release"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'shared-lib-workaround
+           ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
+           ;; doesn't seem to get the correct rpath to be able to run
+           ;; from the build directory.  Set LD_LIBRARY_PATH as a
+           ;; workaround.
+           (lambda _
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (getcwd) "/lib"))
+             #t))
+         (add-after 'install 'install-opt-viewer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (opt-viewer-out (assoc-ref outputs "opt-viewer"))
+                    (opt-viewer-share-dir (string-append opt-viewer-out "/share"))
+                    (opt-viewer-dir (string-append opt-viewer-share-dir "/opt-viewer")))
+               (mkdir-p opt-viewer-share-dir)
+               (rename-file (string-append out "/share/opt-viewer")
+                            opt-viewer-dir))
+             #t)))))
+    (home-page "https://www.llvm.org")
+    (synopsis "Optimizing compiler infrastructure")
+    (description
+     "LLVM is a compiler infrastructure designed for compile-time, link-time,
+runtime, and idle-time optimization of programs from arbitrary programming
+languages.  It currently supports compilation of C and C++ programs, using
+front-ends derived from GCC 4.0.1.  A new front-end for the C family of
+languages is in development.  The compiler infrastructure includes mirror sets
+of programming tools as well as libraries with equivalent functionality.")
+    (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
+
+(define-public clang-runtime-11
+  (clang-runtime-from-llvm
+   llvm-11
+   "0d5j5l8phwqjjscmk8rmqn0i2i0abl537gdbkagl8fjpzy1gyjip"))
+
+(define-public clang-11
+  (clang-from-llvm llvm-11 clang-runtime-11
+                   "02ajkij85966vd150iy246mv16dsaph1kfi0y8wnncp8w6nar5hg"
+                   #:patches '("clang-11.0-libc-search-path.patch")
+                   #:tools-extra
+                   (origin
+                     (method url-fetch)
+                     (uri (llvm-uri "clang-tools-extra"
+                                    (package-version llvm-11)))
+                     (sha256
+                      (base32
+                       "02bcwwn54661madhq4nxc069s7p7pj5gpqi8ww50w3anbpviilzy")))))
+
+(define-public clang-toolchain-11
+  (make-clang-toolchain clang-11))
+
+(define-public llvm-10
+  (package
+    (inherit llvm-11)
+    (version "10.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (llvm-uri "llvm" version))
+      (sha256
+       (base32
+        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))))
+
 (define-public clang-runtime-10
   (clang-runtime-from-llvm
    llvm-10
@@ -514,7 +619,7 @@ output), and Binutils.")
                    #:tools-extra
                    (origin
                      (method url-fetch)
-                     (uri (llvm-download-uri "clang-tools-extra"
+                     (uri (llvm-uri "clang-tools-extra"
                                              (package-version llvm-10)))
                      (sha256
                       (base32
@@ -530,7 +635,7 @@ output), and Binutils.")
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "llvm" version))
+       (uri (llvm-uri "llvm" version))
        (sha256
         (base32
          "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))
@@ -566,7 +671,7 @@ output), and Binutils.")
     (version (package-version llvm-10))
     (source (origin
               (method url-fetch)
-              (uri (llvm-download-uri "lld" version))
+              (uri (llvm-uri "lld" version))
               (sha256
                (base32
                 "0ynzi35r4fckvp6842alpd43qr810j3728yfslc66fk2mbh4j52r"))))
@@ -586,11 +691,11 @@ components which highly leverage existing libraries in the larger LLVM Project."
 
 (define-public llvm-8
   (package
-    (inherit llvm)
+    (inherit llvm-9)
     (version "8.0.0")
     (source (origin
               (method url-fetch)
-              (uri (llvm-download-uri "llvm" version))
+              (uri (llvm-uri "llvm" version))
               (sha256
                (base32
                 "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
@@ -616,7 +721,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (version "7.0.1")
     (source (origin
               (method url-fetch)
-              (uri (llvm-download-uri "llvm" version))
+              (uri (llvm-uri "llvm" version))
               (sha256
                (base32
                 "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
@@ -641,7 +746,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (version "6.0.1")
     (source (origin
               (method url-fetch)
-              (uri (llvm-download-uri "llvm" version))
+              (uri (llvm-uri "llvm" version))
               (sha256
                (base32
                 "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))))
@@ -667,7 +772,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
       (method url-fetch)
-      (uri (llvm-download-uri "llvm" version))
+      (uri (llvm-uri "llvm" version))
       (sha256
        (base32
         "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))
@@ -699,7 +804,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
       (method url-fetch)
-      (uri (llvm-download-uri "llvm" version))
+      (uri (llvm-uri "llvm" version))
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
@@ -723,7 +828,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "llvm" version))
+       (uri (llvm-uri "llvm" version))
        (sha256
         (base32
          "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))))
@@ -747,7 +852,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "llvm" version))
+       (uri (llvm-uri "llvm" version))
        (sha256
         (base32
          "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
@@ -769,7 +874,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "llvm" version))
+       (uri (llvm-uri "llvm" version))
        (patches
         (search-patches "llvm-3.5-fix-clang-build-with-gcc5.patch"))
        (sha256
@@ -811,19 +916,35 @@ components which highly leverage existing libraries in the larger LLVM Project."
                    "0846h8vn3zlc00jkmvrmy88gc6ql6014c02l4jv78fpvfigmgssg"
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
-(define-public llvm-for-extempore
-  (package (inherit llvm-3.8)
-    (name "llvm-for-extempore")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://extempore.moso.com.au/extras/"
-                           "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
-       (sha256
-        (base32
-         "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))
-    ;; Extempore refuses to build on architectures other than x86_64
-    (supported-systems '("x86_64-linux"))))
+;; Default LLVM and Clang version.
+(define-public llvm llvm-9)
+(define-public clang-runtime clang-runtime-9)
+(define-public clang clang-9)
+(define-public clang-toolchain clang-toolchain-9)
+
+(define-public lld
+  (package
+    (name "lld")
+    (version "11.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "lld" version))
+              (sha256
+               (base32
+                "077xyh7sij6mhp4dc4kdcmp9whrpz332fa12rwxnzp3wgd5bxrzg"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("llvm" ,llvm-11)))
+    (arguments
+     `(#:build-type "Release"
+       ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
+       ;; package.
+       #:tests? #f))
+    (home-page "https://lld.llvm.org/")
+    (synopsis "Linker from the LLVM project")
+    (description "LLD is a high-performance linker, built as a set of reusable
+components which highly leverage existing libraries in the larger LLVM Project.")
+    (license license:asl2.0))) ; With LLVM exception
 
 (define-public libcxx
   (package
@@ -832,7 +953,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
     (source
      (origin
        (method url-fetch)
-       (uri (llvm-download-uri "libcxx" version))
+       (uri (llvm-uri "libcxx" version))
        (sha256
         (base32
          "0d2bj5i6mk4caq7skd5nsdmz8c2m5w5anximl5wz3x32p08zz089"))))
@@ -872,7 +993,7 @@ use with Clang, targeting C++11, C++14 and above.")
     (source
      (origin
        (inherit (package-source libcxx))
-       (uri (llvm-download-uri "libcxx" version))
+       (uri (llvm-uri "libcxx" version))
        (sha256
         (base32
          "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
@@ -925,7 +1046,7 @@ requirements according to version 1.1 of the OpenCL specification.")
     (version "9.0.1")
     (source (origin
               (method url-fetch)
-              (uri (llvm-download-uri "openmp" version))
+              (uri (llvm-uri "openmp" version))
               (sha256
                (base32
                 "1knafnpp0f7hylx8q20lkd6g1sf0flly572dayc5d5kghh7hd52w"))

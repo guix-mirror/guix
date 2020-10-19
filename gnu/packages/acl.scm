@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
@@ -49,6 +51,7 @@
      `(#:modules ((ice-9 ftw)
                   ,@%gnu-build-system-modules)
        #:configure-flags '("--disable-static")
+       #:tests? ,(not (hurd-target?))
        #:phases
        (modify-phases %standard-phases
          ;; XXX After repacking the sources the timestamps are reset to the

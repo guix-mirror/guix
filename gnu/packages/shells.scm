@@ -513,13 +513,13 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.9.21")
+    (version "0.9.23")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
-          (base32 "1mih5w73wp57fnf1vcxnfmm5d31vm7pz8fq5a9vw1ch3dv0yczl5"))
+          (base32 "165lx37kibsm56srg9rj7s950b0p7g4g8qhs2iikbcyinp303g35"))
         (modules '((guix build utils)))
         (snippet
          `(begin
@@ -701,8 +701,9 @@ Its features include:
       (home-page "https://github.com/rain-1/s")
       (synopsis "Extremely minimal shell with the simplest syntax possible")
       (description
-       "S is a new shell that aims to be extremely simple.
-S does not implemnt the POSIX shell standard.
+       "S is a new shell that aims to be extremely simple.  It does not
+implement the POSIX shell standard.
+
 There are no globs or \"splatting\" where a variable $FOO turns into multiple
 command line arguments.  One token stays one token forever.
 This is a \"no surprises\" straightforward approach.
@@ -813,15 +814,14 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    ;; https://www.oilshell.org/blog/2020/04/release-0.8.pre4.html#comment-on-version-numbering
-    (version "0.8.pre6")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.oilshell.org/download/oil-"
                            version ".tar.gz"))
        (sha256
-        (base32 "11nfwn5b1w74hv78065jg2zm45mqzi59381b0f649j7n3g7yp3iq"))))
+        (base32 "1m49darrs38x60zqi3sy1mh4a47qvwcyf7djrkzqwzwxsczxybgr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f             ; strip breaks the binary
@@ -830,7 +830,7 @@ Shell (pdksh).")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (setenv "CC" "gcc")
+               (setenv "CC" ,(cc-for-target))
                (substitute* "configure"
                  ((" cc ") " $CC "))
                (invoke "./configure" (string-append "--prefix=" out)
@@ -838,7 +838,7 @@ Shell (pdksh).")
          (replace 'check
            ;; The tests are not distributed in the tarballs but upstream
            ;; recommends running this smoke test.
-           ;; https://github.com/oilshell/oil/blob/release/0.8.pre6/INSTALL.txt#L38-L48
+           ;; https://github.com/oilshell/oil/blob/release/0.8.0/INSTALL.txt#L38-L48
            (lambda _
              (let* ((oil "_bin/oil.ovm"))
                (invoke/quiet oil "osh" "-c" "echo hi")

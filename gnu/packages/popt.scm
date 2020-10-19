@@ -59,27 +59,23 @@ line syntax.")
 (define-public popt
   (package
     (name "popt")
-    (version "1.16")
+    (version "1.18")
     (source (origin
              (method url-fetch)
-             ;; The original rpm5.org domain is not accessible since
-             ;; 2019-06-13, so use Debians copy of the tarball.
-             (uri (string-append "https://deb.debian.org/debian/pool/main"
-                                 "/p/popt/popt_" version ".orig.tar.gz"))
-             ;; Ensure the file name stays the same to prevent rebuilds.
-             (file-name (string-append "popt-" version ".tar.gz"))
+             (uri (string-append "http://ftp.rpm.org/popt/releases"
+                                 "/popt-1.x/popt-" version ".tar.gz"))
              (sha256
               (base32
-               "1j2c61nn2n351nhj4d25mnf3vpiddcykq005w2h6kw79dwlysa77"))))
+               "1lf5zlj5rbg6s4bww7hbhpca97prgprnarx978vcwa0bl81vqnai"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-test
            (lambda _
-             (substitute* "test-poptrc.in"
+             (substitute* "tests/test-poptrc.in"
                (("/bin/echo") (which "echo")))
-             (substitute* "testit.sh"   ; don't expect old libtool names
+             (substitute* "tests/testit.sh"   ;don't expect old libtool names
                (("lt-test1") "test1"))
              #t)))))
     (home-page "http://rpm5.org/files/popt/")

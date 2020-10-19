@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,25 +71,41 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.0.28")
+    (version "1.0.30")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
-                                 version ".tar.gz"))
-             (patches (search-patches "libsndfile-armhf-type-checks.patch"
-                                      "libsndfile-CVE-2017-8361-8363-8365.patch"
-                                      "libsndfile-CVE-2017-8362.patch"
-                                      "libsndfile-CVE-2017-12562.patch"))
+             (uri (string-append "https://github.com/erikd/libsndfile"
+                                 "/releases/download/v" version
+                                 "/libsndfile-" version ".tar.bz2"))
              (sha256
               (base32
-               "1afzm7jx34jhqn32clc5xghyjglccam2728yxlx37yj2y0lkkwqz"))))
+               "06k1wj3lwm7vf21s8yqy51k6nrkn9z610bj1gxb618ag5hq77wlx"))
+             (modules '((ice-9 textual-ports) (guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove carriage returns (CRLF) to prevent bogus
+                 ;; errors from bash like "$'\r': command not found".
+                 (let ((data (call-with-input-file
+                                 "tests/pedantic-header-test.sh.in"
+                               (lambda (port)
+                                 (string-join
+                                  (string-split (get-string-all port)
+                                                #\return))))))
+                   (call-with-output-file "tests/pedantic-header-test.sh.in"
+                     (lambda (port) (format port data))))
+
+                 ;; While at it, fix hard coded executable name.
+                 (substitute* "tests/test_wrapper.sh.in"
+                   (("^/usr/bin/env") "env"))
+                 #t))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
        ("libogg" ,libogg)
        ("flac" ,flac)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (home-page "http://www.mega-nerd.com/libsndfile/")
     (synopsis "Reading and writing files containing sampled sound")
     (description
@@ -224,7 +241,7 @@ rates.")
 
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("m4" ,m4)

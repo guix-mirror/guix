@@ -23,6 +23,8 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu image)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages gdb)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu services base)
@@ -840,8 +842,12 @@ can only be accessed by their host.")))
 that will be listening to receive secret keys on port 1004, TCP."
   (operating-system
     (inherit os)
-    (services (cons (service secret-service-type 1004)
-                    (operating-system-user-services os)))))
+    ;; Arrange so that the secret service activation snippet shows up before
+    ;; the OpenSSH and Guix activation snippets.  That way, we receive OpenSSH
+    ;; and Guix keys before the activation snippets try to generate fresh keys
+    ;; for nothing.
+    (services (append (operating-system-user-services os)
+                      (list (service secret-service-type 1004))))))
 
 
 ;;;
@@ -857,6 +863,9 @@ that will be listening to receive secret keys on port 1004, TCP."
                  (bootloader grub-minimal-bootloader)
                  (target "/dev/vda")
                  (timeout 0)))
+    (packages (cons* gdb-minimal
+                     (operating-system-packages
+                      %hurd-default-operating-system)))
     (services (cons*
                (service openssh-service-type
                         (openssh-configuration
@@ -900,6 +909,7 @@ is added to the OS specified in CONFIG."
     (system-image
      (image
       (inherit hurd-disk-image)
+      (format 'compressed-qcow2)
       (size disk-size)
       (operating-system os)))))
 
@@ -937,13 +947,19 @@ is added to the OS specified in CONFIG."
         (provisions  '(hurd-vm childhurd)))
 
     (define vm-command
-      #~(list
-         (string-append #$qemu "/bin/qemu-system-i386")
-         #$@(if (file-exists? "/dev/kvm") '("--enable-kvm") '())
-         "-m" (number->string #$memory-size)
-         #$@net-options
-         #$@options
-         "--hda" #+image))
+      #~(append (list #$(file-append qemu "/bin/qemu-system-i386")
+                      "-m" (number->string #$memory-size)
+                      #$@net-options
+                      #$@options
+                      "--hda" #+image
+
+                      ;; Cause the service to be respawned if the guest
+                      ;; reboots (it can reboot for instance if it did not
+                      ;; receive valid secrets, or if it crashed.)
+                      "--no-reboot")
+                (if (file-exists? "/dev/kvm")
+                    '("--enable-kvm")
+                    '())))
 
     (list
      (shepherd-service
@@ -959,28 +975,120 @@ is added to the OS specified in CONFIG."
        (with-imported-modules
            (source-module-closure '((gnu build secret-service)
                                     (guix build utils)))
-         #~(let ((spawn (make-forkexec-constructor #$vm-command)))
-             (lambda _
-               (let ((pid (spawn))
-                     (port #$(hurd-vm-port config %hurd-vm-secrets-port))
-                     (root #$(hurd-vm-configuration-secret-root config)))
-                 (catch #t
-                   (lambda _
-                     (secret-service-send-secrets port root))
-                   (lambda (key . args)
-                     (kill (- pid) SIGTERM)
-                     (apply throw key args)))
-                 pid)))))
+         #~(lambda ()
+             (let ((pid  (fork+exec-command #$vm-command
+                                            #:user "childhurd"
+                                            ;; XXX TODO: use "childhurd" after
+                                            ;; updating Shepherd
+                                            #:group "kvm"
+                                            #:environment-variables
+                                            ;; QEMU tries to write to /var/tmp
+                                            ;; by default.
+                                            '("TMPDIR=/tmp")))
+                   (port #$(hurd-vm-port config %hurd-vm-secrets-port))
+                   (root #$(hurd-vm-configuration-secret-root config)))
+               (catch #t
+                 (lambda _
+                   ;; XXX: 'secret-service-send-secrets' won't complete until
+                   ;; the guest has booted and its secret service server is
+                   ;; running, which could take 20+ seconds during which PID 1
+                   ;; is stuck waiting.
+                   (if (secret-service-send-secrets port root)
+                       pid
+                       (begin
+                         (kill (- pid) SIGTERM)
+                         #f)))
+                 (lambda (key . args)
+                   (kill (- pid) SIGTERM)
+                   (apply throw key args)))))))
       (modules `((gnu build secret-service)
                  (guix build utils)
                  ,@%default-modules))
       (stop  #~(make-kill-destructor))))))
 
+(define %hurd-vm-accounts
+  (list (user-group (name "childhurd") (system? #t))
+        (user-account
+         (name "childhurd")
+         (group "childhurd")
+         (supplementary-groups '("kvm"))
+         (comment "Privilege separation user for the childhurd")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin"))
+         (system? #t))))
+
+(define (initialize-hurd-vm-substitutes)
+  "Initialize the Hurd VM's key pair and ACL and store it on the host."
+  (define run
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 match))
+
+          (define host-key
+            "/etc/guix/signing-key.pub")
+
+          (define host-acl
+            "/etc/guix/acl")
+
+          (match (command-line)
+            ((_ guest-config-directory)
+             (setenv "GUIX_CONFIGURATION_DIRECTORY"
+                     guest-config-directory)
+             (invoke #+(file-append guix "/bin/guix") "archive"
+                     "--generate-key")
+
+             (when (file-exists? host-acl)
+               ;; Copy the host ACL.
+               (copy-file host-acl
+                          (string-append guest-config-directory
+                                         "/acl")))
+
+             (when (file-exists? host-key)
+               ;; Add the host key to the childhurd's ACL.
+               (let ((key (open-fdes host-key O_RDONLY)))
+                 (close-fdes 0)
+                 (dup2 key 0)
+                 (execl #+(file-append guix "/bin/guix")
+                        "guix" "archive" "--authorize"))))))))
+
+  (program-file "initialize-hurd-vm-substitutes" run))
+
+(define (hurd-vm-activation config)
+  "Return a gexp to activate the Hurd VM according to CONFIG."
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (define secret-directory
+          #$(hurd-vm-configuration-secret-root config))
+
+        (define ssh-directory
+          (string-append secret-directory "/etc/ssh"))
+
+        (define guix-directory
+          (string-append secret-directory "/etc/guix"))
+
+        (unless (file-exists? ssh-directory)
+          ;; Generate SSH host keys under SSH-DIRECTORY.
+          (mkdir-p ssh-directory)
+          (invoke #$(file-append openssh "/bin/ssh-keygen")
+                  "-A" "-f" secret-directory))
+
+        (unless (file-exists? guix-directory)
+          (invoke #$(initialize-hurd-vm-substitutes)
+                  guix-directory)))))
+
 (define hurd-vm-service-type
   (service-type
    (name 'hurd-vm)
    (extensions (list (service-extension shepherd-root-service-type
-                                        hurd-vm-shepherd-service)))
+                                        hurd-vm-shepherd-service)
+                     (service-extension account-service-type
+                                        (const %hurd-vm-accounts))
+                     (service-extension activation-service-type
+                                        hurd-vm-activation)))
    (default-value (hurd-vm-configuration))
    (description
-    "Provide a Virtual Machine running the GNU/Hurd.")))
+    "Provide a virtual machine (VM) running GNU/Hurd, also known as a
+@dfn{childhurd}.")))

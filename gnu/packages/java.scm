@@ -37,6 +37,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -290,7 +291,8 @@ language.")
               (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
                                   "JamVM%20" version "/jamvm-"
                                   version ".tar.gz"))
-              (patches (search-patches "jamvm-arm.patch"))
+              (patches (search-patches "jamvm-1.5.1-aarch64-support.patch"
+                                       "jamvm-1.5.1-armv7-support.patch"))
               (sha256
                (base32
                 "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
@@ -306,13 +308,30 @@ language.")
                             (assoc-ref %build-inputs "classpath"))
              "--disable-int-caching"
              "--enable-runtime-reloc-checks"
-             "--enable-ffi")))
+             "--enable-ffi")
+       #:phases
+       ,(if (string-prefix? "aarch64" (or (%current-system)
+                                          (%current-target-system)))
+            ;; Makefiles and the configure script need to be regenerated to
+            ;; incorporate support for AArch64.
+            '(modify-phases %standard-phases
+               (replace 'bootstrap
+                 (lambda _ (invoke "autoreconf" "-vif"))))
+            '%standard-phases)))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("libffi" ,libffi)
        ("zip" ,zip)
        ("zlib" ,zlib)))
+    (native-inputs
+     (if (string-prefix? "aarch64" (or (%current-system)
+                                       (%current-target-system)))
+         ;; Additional packages needed for autoreconf.
+         `(("autoconf" ,autoconf)
+           ("automake" ,automake)
+           ("libtool" ,libtool))
+         '()))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
@@ -697,7 +716,8 @@ machine.")))
                 (file-name (string-append "classpath-" version "-checkout"))
                 (sha256
                  (base32
-                  "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))))
+                  "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))
+                (patches (search-patches "classpath-aarch64-support.patch"))))
       (arguments
        `(#:make-flags
          ;; Ensure that the initial heap size is smaller than the maximum
@@ -763,7 +783,9 @@ machine.")))
                (base32
                 "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))
               (patches
-               (search-patches "jamvm-2.0.0-disable-branch-patching.patch"))
+               (search-patches "jamvm-2.0.0-disable-branch-patching.patch"
+                               "jamvm-2.0.0-opcode-guard.patch"
+                               "jamvm-2.0.0-aarch64-support.patch"))
               (snippet
                '(begin
                   ;; Remove precompiled software.
@@ -771,9 +793,10 @@ machine.")))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
+     (substitute-keyword-arguments (package-arguments jamvm-1-bootstrap)
+       ((#:configure-flags _)
+        '(list (string-append "--with-classpath-install-dir="
+                              (assoc-ref %build-inputs "classpath"))))))
     (inputs
      `(("classpath" ,classpath-devel)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
@@ -2409,14 +2432,14 @@ new Date();"))
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
-    (version "1.10.1")
+    (version "1.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "10p3dh77lkzzzcy32dk9azljixzadp46fggjfbvgkl8mmb8cxxv8"))
+                "066k2isig5xm70cihj9p73hkp5w7h5zbfqz5kxb6cwr9cb86xl2k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2444,7 +2467,7 @@ new Date();"))
                ;; "check" phase, because the dependency on "test-jar" would always
                ;; result in the tests to be run.
                (substitute* "build.xml"
-                 (("depends=\"jars,test-jar\"") "depends=\"jars\""))
+                 (("depends=\"jars,test-jar") "depends=\"jars"))
                (invoke "bash" "bootstrap.sh"
                        (string-append "-Ddist.dir="
                                       (assoc-ref outputs "out")))))))))
@@ -2457,14 +2480,14 @@ new Date();"))
 ;; requires Java 8.
 (define-public ant
   (package (inherit ant/java8)
-    (version "1.9.9")
+    (version "1.9.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
+                "1xy30f1w5gaqk6g3f0vw7ygix4rb6032qkcw42y4z8wd9jihgygd"))))
     (native-inputs
      `(("jdk" ,icedtea-7 "jdk")
        ("zip" ,zip)
@@ -5117,6 +5140,72 @@ including java-asm.")
      (substitute-keyword-arguments (package-arguments java-asm)
        ((#:tests? _) #f)))
     (native-inputs `())))
+
+(define-public java-asm-8
+  (package
+    (inherit java-asm)
+    (version "8.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.ow2.org/asm/asm")
+                     (commit (string-append
+                               "ASM_" (string-join (string-split version #\.)
+                                                   "_")))))
+              (file-name (git-file-name "java-asm" version))
+              (sha256
+               (base32
+                "1s6j27zc1i76gh891w2g48b1c3abp9w8zp5j54yb1vm5h8djkd69"))))
+    (arguments
+     `(#:jar-name "asm8.jar"
+       #:source-dir "asm/src/main/java"
+       #:test-dir "asm/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (propagated-inputs '())
+    (native-inputs '())))
+
+(define-public java-asm-tree-8
+  (package
+    (inherit java-asm-8)
+    (name "java-asm-tree")
+    (arguments
+     `(#:jar-name "asm-tree.jar"
+       #:source-dir "asm-tree/src/main/java"
+       #:test-dir "asm-tree/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (inputs
+     `(("java-asm" ,java-asm-8)))))
+
+(define-public java-asm-analysis-8
+  (package
+    (inherit java-asm-8)
+    (name "java-asm-analysis")
+    (arguments
+     `(#:jar-name "asm-analysis.jar"
+       #:source-dir "asm-analysis/src/main/java"
+       #:test-dir "asm-analysis/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (inputs
+     `(("java-asm" ,java-asm-8)
+       ("java-asm-tree" ,java-asm-tree-8)))))
+
+(define-public java-asm-util-8
+  (package
+    (inherit java-asm-8)
+    (name "java-asm-util")
+    (arguments
+     `(#:jar-name "asm-util8.jar"
+       #:source-dir "asm-util/src/main/java"
+       #:test-dir "asm-util/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (inputs
+     `(("java-asm" ,java-asm-8)
+       ("java-asm-analysis" ,java-asm-analysis-8)
+       ("java-asm-tree" ,java-asm-tree-8)))))
 
 (define-public java-cglib
   (package
@@ -8146,6 +8235,410 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)))))
 
+(define-public java-treelayout
+  (package
+    (name "java-treelayout")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/abego/treelayout")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18my8ql9b1y0n0zrvkih7xfhf3dpgfhyfifvkcfhmwcvw3divxak"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "org.abego.treelayout/src/main/java"
+       #:test-dir "org.abego.treelayout/src/test"))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://treelayout.sourceforge.net")
+    (synopsis "Tree Layout Algorithm in Java")
+    (description "TreeLayout creates tree layouts for arbitrary trees.  It is
+not restricted to a specific output or format, but can be used for any kind of
+two dimensional diagram.  Examples are Swing based components, SVG files, etc.
+This is possible because TreeLayout separates the layout of a tree from the
+actual rendering.")
+    (license license:bsd-3)))
+
+(define-public java-antlr4-runtime
+  (package
+    (name "java-antlr4-runtime")
+    (version "4.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr4")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qal3add26qxskm85nk7r758arladn5rcyjinmhlhznmpbbv9j8m"))
+              (patches
+                (search-patches "java-antlr4-Add-standalone-generator.patch"
+                                "java-antlr4-fix-code-too-large.java"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-antlr4-runtime.jar"
+       #:source-dir "runtime/Java/src/org"
+       #:tests? #f; tests depend on java-antlr4 itself
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/Java/src/main/dot"
+                               "build/classes")
+             #t)))))
+    (home-page "https://antlr.org")
+    (synopsis "ANTLR runtime library")
+    (description "This package contains the runtime library used with generated
+sources by ANTLR.")
+    (license license:bsd-3)))
+
+(define-public antlr4
+  (package
+    (inherit java-antlr4-runtime)
+    (name "antlr4")
+    (arguments
+     `(#:jar-name "antlr4.jar"
+       #:source-dir "tool/src"
+       #:test-dir "tool-testsuite/test:runtime-testsuite/test:runtime-testsuite/annotations/src"
+       #:test-include (list "**/Test*.java")
+       #:test-exclude (list
+                        ;; no runnable method
+                        "**/TestOutputReading.java"
+                        ;; no @Test methods
+                        "**/TestParserErrors.java"
+                        "**/TestSemPredEvalParser.java"
+                        "**/TestSets.java"
+                        "**/TestListeners.java"
+                        "**/TestParseTrees.java"
+                        "**/TestParserExec.java"
+                        "**/TestLexerErrors.java"
+                        "**/TestPerformance.java"
+                        "**/TestCompositeParsers.java"
+                        "**/TestLexerExec.java"
+                        "**/TestSemPredEvalLexer.java"
+                        "**/TestLeftRecursion.java"
+                        "**/TestFullContextParsing.java"
+                        "**/TestCompositeLexers.java"
+                        ;; Null pointer exception
+                        "**/TestCompositeGrammars.java"
+                        ;; Wrong assumption on emoji
+                        "**/TestUnicodeData.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-build.xml
+           (lambda _
+             ;; tests are not in a java subdirectory
+             (substitute* "build.xml"
+               (("\\$\\{test.home\\}/java") "${test.home}"))
+             #t))
+         ;; tests require to have a working antlr4 binary
+         (delete 'check)
+         (add-after 'bin-install 'check
+           (lambda _
+             (invoke "ant" "compile-tests")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/annotations/src")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/test")
+             (invoke "ant" "check" "-Dtest.home=tool-testsuite/test")
+             #t))
+         (add-before 'check 'remove-unrelated-languages
+           (lambda _
+             ;; There are tests for other languages that ANTLR can generate, but
+             ;; we don't have the infrastructure for that yet.  Let's test Java
+             ;; generation only.
+             (for-each
+               (lambda (language)
+                 (delete-file-recursively
+                   (string-append "runtime-testsuite/test/org/antlr/v4/test/runtime/"
+                                  language)))
+               '("cpp" "csharp" "go" "javascript" "php" "python" "python2"
+                 "python3" "swift"))
+             #t))
+         (add-before 'check 'generate-test-parsers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (run-antlr dir filename package)
+               (invoke "antlr4" "-lib" dir "-visitor" "-no-listener"
+                       "-package" package (string-append dir "/" filename)
+                       "-Xlog"))
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (assoc-ref outputs "out") "/bin"))
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "Java.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorBasic.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorCalc.g4" "org.antlr.v4.test.runtime.java.api")
+             #t))
+         (add-before 'check 'remove-graphemes
+           (lambda _
+             ;; When running antlr on grahemes.g4, we get a runtime exception:
+             ;; set is empty.  So delete the file that depends on it.
+             (delete-file
+               "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api/perf/TimeLexerSpeed.java")
+             #t))
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr4")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr4.jar:"
+                                    (string-join
+                                      (apply
+                                        append
+                                        (map
+                                          (lambda (input)
+                                            (find-files (assoc-ref inputs input)
+                                                  ".*\\.jar"))
+                                          '("antlr3" "java-stringtemplate"
+                                            "java-antlr4-runtime" "java-treelayout"
+                                            "java-jsonp-api" "java-icu4j")))
+                                      ":")
+                                    " org.antlr.v4.Tool $*"))))
+               (chmod (string-append bin "/antlr4") #o755)
+               #t)))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "tool/resources/" "build/classes")
+             #t))
+         (add-before 'build 'generate-unicode
+           (lambda _
+             ;; First: build the generator
+             (invoke "javac" "-cp" (getenv "CLASSPATH")
+                     "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java"
+                     "tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java")
+             ;; Then use it
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":tool/src:runtime/Java")
+                     "org.antlr.v4.unicode.UnicodeRenderer"
+                     "tool/resources/org/antlr/v4/tool/templates"
+                     "unicodedata"
+                     "tool/src/org/antlr/v4/unicode/UnicodeData.java")
+             ;; It seems there is a bug with our ST4
+             (substitute* "tool/src/org/antlr/v4/unicode/UnicodeData.java"
+               (("\\\\>") ">"))
+             ;; Remove the additional file
+             (delete-file "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java")
+             #t))
+         (add-before 'build 'generate-grammar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "tool/src/org/antlr/v4/parse"
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (invoke "antlr3" file))
+                         '("ANTLRLexer.g" "ANTLRParser.g" "BlockSetTransformer.g"
+                           "GrammarTreeVisitor.g" "ATNBuilder.g"
+                           "ActionSplitter.g" "LeftRecursiveRuleWalker.g")))
+             (with-directory-excursion "tool/src/org/antlr/v4/codegen"
+               (install-file "../parse/ANTLRParser.tokens" ".")
+               (display "SourceGenTriggers.g\n")
+               (invoke "antlr3" "SourceGenTriggers.g"))
+             #t)))))
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-antlr4-runtime" ,java-antlr4-runtime)
+       ("java-icu4j" ,java-icu4j)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-stringtemplate" ,java-stringtemplate)
+       ("java-treelayout" ,java-treelayout)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (synopsis "Parser and lexer generator in Java")
+    (description "ANTLR (ANother Tool for Language Recognition) is a powerful
+parser generator for reading, processing, executing, or translating structured
+text or binary files.  It's widely used to build languages, tools, and
+frameworks.  From a grammar, ANTLR generates a parser that can build and walk
+parse trees.")))
+
+(define-public java-antlr4-runtime-4.1
+  (package
+    (inherit java-antlr4-runtime)
+    (version "4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr4")
+                     (commit version)))
+              (file-name (git-file-name "antlr4" version))
+              (sha256
+               (base32
+                "1i8hmx5an58cjyvhji0xgpvd6lq00z1k1mjys025q2wqc25wv4c1"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-antlr4-runtime)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'chmod
+             (lambda _
+               (chmod "build.xml" #o644)
+               #t))))))
+    (inputs
+     `(("java-treelayout" ,java-treelayout)))))
+
+(define-public antlr4-4.1
+  (package
+    (inherit antlr4)
+    (version (package-version java-antlr4-runtime-4.1))
+    (source (package-source java-antlr4-runtime-4.1))
+    (arguments
+      (substitute-keyword-arguments (package-arguments antlr4)
+        ((#:test-dir _)
+         "tool/test")
+        ((#:test-exclude excludes)
+         `(list "**/TestParseErrors.java"
+                "**/TestTopologicalSort.java"
+                ,@excludes))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (delete 'generate-unicode)
+            (replace 'check
+              (lambda _
+                (invoke "ant" "check")
+                #t))
+            (add-before 'configure 'chmod
+              (lambda _
+                (chmod "build.xml" #o644)
+                #t))
+            (delete 'remove-graphemes)
+            (delete 'remove-unrelated-languages)
+            (delete 'generate-test-parsers)))))
+    (inputs
+      (alist-replace
+        "java-antlr4-runtime" (list java-antlr4-runtime-4.1)
+        (package-inputs antlr4)))))
+
+(define-public java-tunnelvisionlabs-antlr4-runtime-annotations
+  (package
+    (inherit java-antlr4-runtime)
+    (name "java-tunnelvisionlabs-antlr4-runtime-annotations")
+    (version "4.7.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tunnelvisionlabs/antlr4")
+                     (commit (string-append version "-opt"))))
+              (file-name (git-file-name "java-tunnelvisionlabs-antlr4" version))
+              (sha256
+               (base32
+                "1mf2lvvsszpialsk23ma83pwp50nd32lrbjpa847zlm5gmranbr8"))
+              (patches
+                (search-patches "java-antlr4-Add-standalone-generator.patch"
+                                "java-tunnelvisionlabs-antlr-code-too-large.patch"))))
+    (arguments
+     `(#:jar-name "java-antlr4-runtime-annotations.jar"
+       #:source-dir "runtime/JavaAnnotations/src"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/JavaAnnotations/resources"
+                               "build/classes")
+             #t))
+         (add-after 'copy-resources 'rebuild-jar
+           (lambda _
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Annotations for ANTLR's runtime library")
+    (description "This package contains annotations used during the build of
+the runtime library of ANTLR.")))
+
+;; the runtime of this library requires a lexer that is generated by antlr4.
+;; However, antlr4 itself requires this library at build and run-time.  We
+;; use antlr4@4.1, the closest version of antlr that doesn't need this
+;; bootstrap process, to generate the lexer.  The generated lexer is built
+;; for the 4.1 runtime, which is slightly different from this runtime.
+;; So, we build the runtime with antlr 4.1, with a broken xml lexer, that we
+;; use to build antlr4.  We then re-use this antlr4 to build the runtime, and
+;; the proper, working, runtime to build antlr4 again.
+(define java-tunnelvisionlabs-antlr4-runtime-bootstrap
+  (package
+    (inherit java-antlr4-runtime)
+    (name "java-tunnelvisionlabs-antlr4-runtime")
+    (version (package-version java-tunnelvisionlabs-antlr4-runtime-annotations))
+    (source (package-source java-tunnelvisionlabs-antlr4-runtime-annotations))
+    (arguments
+     `(#:jar-name "java-antlr4-runtime.jar"
+       #:source-dir "runtime/Java/src"
+       #:tests? #f; tests require antlr4, but antlr4 depends on this package
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-xpath-lexer
+           (lambda _
+             (invoke "antlr4" "-lib" "runtime/Java/src/org/antlr/v4/runtime/tree/xpath"
+                     "-visitor" "-no-listener"
+                     "-package" "org.antlr.v4.runtime.tree.xpath"
+                     "runtime/Java/src/org/antlr/v4/runtime/tree/xpath/XPathLexer.g4")
+             ;; Generated code is for an incompatible version of the runtime
+             (substitute* "runtime/Java/src/org/antlr/v4/runtime/tree/xpath/XPathLexer.java"
+               (("LexerATNSimulator\\(this,_ATN,_decisionToDFA,_sharedContextCache\\)")
+                "LexerATNSimulator(this,_ATN)"))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/Java/src/main/dot"
+                               "build/classes")
+             #t)))))
+    (native-inputs
+     `(("antlr4" ,antlr4-4.1)
+       ("java-tunnelvisionlabs-antlr4-runtime-annotations"
+        ,java-tunnelvisionlabs-antlr4-runtime-annotations)))))
+
+(define java-tunnelvisionlabs-antlr4-bootstrap
+  (package
+    (inherit antlr4)
+    (name "java-tunnelvisionlabs-antlr4")
+    (version (package-version java-tunnelvisionlabs-antlr4-runtime-annotations))
+    (source (package-source java-tunnelvisionlabs-antlr4-runtime-annotations))
+    (arguments
+     (substitute-keyword-arguments (package-arguments antlr4)
+       ((#:test-dir _)
+        "tool/test:runtime-testsuite/src")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'remove-unrelated-languages)
+           (delete 'remove-graphemes)
+           (delete 'generate-test-parsers)
+           (delete 'check)))))
+    (native-inputs '())
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-antlr4-runtime" ,java-tunnelvisionlabs-antlr4-runtime-bootstrap)
+       ("java-tunnelvisionlabs-antlr4-runtime-annotations"
+        ,java-tunnelvisionlabs-antlr4-runtime-annotations)
+       ("java-icu4j" ,java-icu4j)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-stringtemplate" ,java-stringtemplate)
+       ("java-treelayout" ,java-treelayout)))))
+
+(define-public java-tunnelvisionlabs-antlr4-runtime
+  (package
+    (inherit java-tunnelvisionlabs-antlr4-runtime-bootstrap)
+    (native-inputs
+      (alist-replace
+        "antlr4" (list java-tunnelvisionlabs-antlr4-bootstrap)
+        (package-native-inputs java-tunnelvisionlabs-antlr4-runtime-bootstrap)))))
+
+(define-public java-tunnelvisionlabs-antlr4
+  (package
+    (inherit java-tunnelvisionlabs-antlr4-bootstrap)
+    (inputs
+      (alist-replace
+        "java-antlr4-runtime" (list java-tunnelvisionlabs-antlr4-runtime)
+        (package-inputs java-tunnelvisionlabs-antlr4-bootstrap)))))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
@@ -9538,18 +10031,24 @@ make data-binding work.")
     (name "java-hdrhistogram")
     (version "2.1.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/HdrHistogram/HdrHistogram/"
-                                  "archive/HdrHistogram-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/HdrHistogram/HdrHistogram")
+                     (commit (string-append "HdrHistogram-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sicbmc3sr42nw93qbkb26q9rn33ag33k6k77phjc3j5h5gjffqv"))))
+                "1cw8aa1vk258k42xs6wpy72m4gbai540jq032qsa7c5586iawx2d"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-hdrhistogram.jar"
        #:source-dir "src/main/java"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'set-version
            (lambda _
              (let* ((version-java "src/main/java/org/HdrHistogram/Version.java")
@@ -10717,7 +11216,7 @@ application components to create, send, receive, and read messages.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://javaee.github.io/javamail/")
-    (synopsis "Mail-related functionnalities in Java")
+    (synopsis "Mail-related functionality in Java")
     (description "The JavaMail API provides a platform-independent and
 protocol-independent framework to build mail and messaging applications.")
     ;; General Public License Version 2 only ("GPL") or the Common Development
@@ -11994,7 +12493,7 @@ Java method invocation.")
     (inputs
      `(("java-native-access" ,java-native-access)))
     (synopsis "Cross-platform mappings for jna")
-    (description "java-native-access-platfrom has cross-platform mappings
+    (description "java-native-access-platform has cross-platform mappings
 and mappings for a number of commonly used platform functions, including a
 large number of Win32 mappings as well as a set of utility classes that
 simplify native access.")))
@@ -12945,3 +13444,98 @@ in Java, usable from Groovy, Kotlin, Scala, etc.")
 used in JVM-based languages.  They serve as an additional documentation and
 can be interpreted by IDEs and static analysis tools to improve code analysis.")
     (license license:expat)))
+
+(define-public java-javaparser
+  (package
+    (name "java-javaparser")
+    (version "3.16.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/javaparser/javaparser")
+                     (commit (string-append "javaparser-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1a4jk12ffa31fa0y8vda0739vpfj1206p0nha842b7bixbvwamv9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; tests require jbehave and junit5
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fill-template
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main"
+               (copy-file "java-templates/com/github/javaparser/JavaParserBuild.java"
+                          "java/com/github/javaparser/JavaParserBuild.java")
+               (substitute* "java/com/github/javaparser/JavaParserBuild.java"
+                 (("\\$\\{project.version\\}") ,version)
+                 (("\\$\\{project.name\\}") "javaparser")
+                 (("\\$\\{project.build.finalName\\}") "javaparser")
+                 (("\\$\\{maven.version\\}") "fake")
+                 (("\\$\\{maven.build.version\\}") "fake")
+                 (("\\$\\{build.timestamp\\}") "0")
+                 (("\\$\\{java.vendor\\}") "Guix")
+                 (("\\$\\{java.vendor.url\\}") "https://gnu.org/software/guix")
+                 (("\\$\\{java.version\\}") "1.8")
+                 (("\\$\\{os.arch\\}") "any")
+                 (("\\$\\{os.name\\}") "GuixSD")
+                 (("\\$\\{os.version\\}") "not available")))
+             #t))
+         (add-before 'build 'generate-javacc
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main/java"
+               (invoke "java" "javacc" "../javacc/java.jj"))
+             #t))
+         (add-before 'build 'copy-javacc-support
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main"
+               (copy-recursively "javacc-support" "java"))
+             #t))
+         (replace 'build
+           (lambda _
+             (define (build name)
+               (format #t "Building ~a~%" name)
+               (delete-file-recursively "build/classes")
+               (mkdir-p "build/classes")
+               (apply invoke "javac"
+                      "-cp" (string-append (getenv "CLASSPATH") ":"
+                                           (string-join (find-files "build/jar" ".")
+                                                        ":"))
+                      "-d" "build/classes"
+                      (find-files (string-append name "/src/main/java")
+                                  ".*.java"))
+               (invoke "jar" "-cf" (string-append "build/jar/" name ".jar")
+                       "-C" "build/classes" "."))
+             (mkdir-p "build/classes")
+             (mkdir-p "build/test-classes")
+             (mkdir-p "build/jar")
+             (build "javaparser-core")
+             (build "javaparser-core-serialization")
+             (build "javaparser-core-generators")
+             (build "javaparser-core-metamodel-generator")
+             (build "javaparser-symbol-solver-core")
+             #t))
+         (replace 'install
+           (install-jars "build/jar")))))
+    (inputs
+     `(("java-guava" ,java-guava)
+       ("java-jboss-javassist" ,java-jboss-javassist)
+       ("java-jsonp-api" ,java-jsonp-api)))
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (home-page "http://javaparser.org/")
+    (synopsis "Parser for Java")
+    (description
+     "This project contains a set of libraries implementing a Java 1.0 - Java
+11 Parser with advanced analysis functionalities.")
+    (license (list
+               ;; either lgpl or asl
+               license:lgpl3+
+               license:asl2.0))))

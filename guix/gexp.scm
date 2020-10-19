@@ -26,6 +26,8 @@
   #:use-module (guix derivations)
   #:use-module (guix grafts)
   #:use-module (guix utils)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -46,6 +48,7 @@
             gexp-input-output
             gexp-input-native?
 
+            assume-valid-file-name
             local-file
             local-file?
             local-file-file
@@ -401,9 +404,15 @@ Here TARGET is bound to the cross-compilation triplet or #f."
 (define (true file stat) #t)
 
 (define* (%local-file file promise #:optional (name (basename file))
-                      #:key recursive? (select? true))
+                      #:key
+                      (literal? #t) location
+                      recursive? (select? true))
   ;; This intermediate procedure is part of our ABI, but the underlying
   ;; %%LOCAL-FILE is not.
+  (when (and (not literal?) (not (string-prefix? "/" file)))
+    (warning (and=> location source-properties->location)
+             (G_ "resolving '~a' relative to current directory~%")
+             file))
   (%%local-file file promise name recursive? select?))
 
 (define (absolute-file-name file directory)
@@ -415,6 +424,12 @@ vicinity of DIRECTORY."
          ((string-prefix? "/" directory)
           (string-append directory "/" file))
          (else file))))
+
+(define-syntax-rule (assume-valid-file-name file)
+  "This is a syntactic keyword to tell 'local-file' that it can assume that
+the given file name is valid, even if it's not a string literal, and thus not
+warn about it."
+  file)
 
 (define-syntax local-file
   (lambda (s)
@@ -434,18 +449,28 @@ where FILE is the entry's absolute file name and STAT is the result of
 This is the declarative counterpart of the 'interned-file' monadic procedure.
 It is implemented as a macro to capture the current source directory where it
 appears."
-    (syntax-case s ()
+    (syntax-case s (assume-valid-file-name)
       ((_ file rest ...)
        (string? (syntax->datum #'file))
        ;; FILE is a literal, so resolve it relative to the source directory.
        #'(%local-file file
                       (delay (absolute-file-name file (current-source-directory)))
                       rest ...))
-      ((_ file rest ...)
-       ;; Resolve FILE relative to the current directory.
+      ((_ (assume-valid-file-name file) rest ...)
+       ;; FILE is not a literal, so resolve it relative to the current
+       ;; directory.  Since the user declared FILE is valid, do not pass
+       ;; #:literal? #f so that we do not warn about it later on.
        #'(%local-file file
                       (delay (absolute-file-name file (getcwd)))
                       rest ...))
+      ((_ file rest ...)
+       ;; Resolve FILE relative to the current directory.
+       (with-syntax ((location (datum->syntax s (syntax-source s))))
+        #`(%local-file file
+                       (delay (absolute-file-name file (getcwd)))
+                       rest ...
+                       #:location 'location
+                       #:literal? #f)))           ;warn if FILE is relative
       ((_)
        #'(syntax-error "missing file name"))
       (id

@@ -18,6 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system image)
+  #:use-module (guix diagnostics)
+  #:use-module (guix discovery)
   #:use-module (guix gexp)
   #:use-module (guix modules)
   #:use-module (guix monads)
@@ -47,11 +49,14 @@
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mtools)
+  #:use-module (gnu packages virtualization)
   #:use-module ((srfi srfi-1) #:prefix srfi-1:)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:export (root-offset
             root-label
@@ -61,10 +66,20 @@
 
             efi-disk-image
             iso9660-image
+            arm64-disk-image
 
-            find-image
+            image-with-os
+            raw-image-type
+            qcow2-image-type
+            iso-image-type
+            uncompressed-iso-image-type
+            arm64-image-type
+
+            image-with-label
             system-image
-            image-with-label))
+
+            %image-types
+            lookup-image-type-by-name))
 
 
 ;;;
@@ -111,6 +126,64 @@
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
 
+(define arm64-disk-image
+  (image
+   (format 'disk-image)
+   (target "aarch64-linux-gnu")
+   (partitions
+    (list (partition
+           (inherit root-partition)
+           (offset root-offset))))
+   ;; FIXME: Deleting and creating "/var/run" and "/tmp" on the overlayfs
+   ;; fails.
+   (volatile-root? #f)))
+
+
+;;;
+;;; Images types.
+;;;
+
+(define-syntax-rule (image-with-os base-image os)
+  "Return an image inheriting from BASE-IMAGE, with the operating-system field
+set to the given OS."
+  (image
+   (inherit base-image)
+   (operating-system os)))
+
+(define raw-image-type
+  (image-type
+   (name 'raw)
+   (constructor (cut image-with-os efi-disk-image <>))))
+
+(define qcow2-image-type
+  (image-type
+   (name 'qcow2)
+   (constructor (cut image-with-os
+                 (image
+                  (inherit efi-disk-image)
+                  (name 'image.qcow2)
+                  (format 'compressed-qcow2))
+                 <>))))
+
+(define iso-image-type
+  (image-type
+   (name 'iso9660)
+   (constructor (cut image-with-os iso9660-image <>))))
+
+(define uncompressed-iso-image-type
+  (image-type
+   (name 'uncompressed-iso9660)
+   (constructor (cut image-with-os
+                 (image
+                  (inherit iso9660-image)
+                  (compression? #f))
+                 <>))))
+
+(define arm64-image-type
+  (image-type
+   (name 'arm)
+   (constructor (cut image-with-os arm64-disk-image <>))))
+
 
 ;;
 ;; Helpers.
@@ -149,6 +222,7 @@
     (with-imported-modules `(,@(source-module-closure
                                 '((gnu build vm)
                                   (gnu build image)
+                                  (gnu build bootloader)
                                   (gnu build hurd-boot)
                                   (gnu build linux-boot)
                                   (guix store database))
@@ -157,6 +231,7 @@
       #~(begin
           (use-modules (gnu build vm)
                        (gnu build image)
+                       (gnu build bootloader)
                        (gnu build hurd-boot)
                        (gnu build linux-boot)
                        (guix store database)
@@ -207,8 +282,8 @@ used in the image."
     (define (format->image-type format)
       ;; Return the genimage format corresponding to FORMAT.  For now, only
       ;; the hdimage format (raw disk-image) is supported.
-      (case format
-        ((disk-image) "hdimage")
+      (cond
+       ((memq format '(disk-image compressed-qcow2)) "hdimage")
         (else
          (raise (condition
                  (&message
@@ -306,25 +381,24 @@ image ~a {
          (name (if image-name
                    (symbol->string image-name)
                    name))
+         (format (image-format image))
          (substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
-           (let ((inputs '#+(list genimage coreutils findutils))
+           (let ((inputs '#+(list genimage coreutils findutils qemu-minimal))
                  (bootloader-installer
-                  #+(bootloader-disk-image-installer bootloader)))
+                  #+(bootloader-disk-image-installer bootloader))
+                 (out-image (string-append "images/" #$genimage-name)))
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (genimage #$(image->genimage-cfg image) #$output)
+             (genimage #$(image->genimage-cfg image))
              ;; Install the bootloader directly on the disk-image.
              (when bootloader-installer
                (bootloader-installer
                 #+(bootloader-package bootloader)
                 #$(root-partition-index image)
-                (string-append #$output "/" #$genimage-name))))))
-         (image-dir (computed-file "image-dir" builder)))
-    (computed-file name
-                   #~(symlink
-                      (string-append #$image-dir "/" #$genimage-name)
-                      #$output)
+                out-image))
+             (convert-disk-image out-image '#$format #$output)))))
+    (computed-file name builder
                    #:options `(#:substitutable? ,substitutable?))))
 
 
@@ -340,7 +414,7 @@ image ~a {
 
 (define* (system-iso9660-image image
                                #:key
-                               (name "iso9660-image")
+                               (name "image.iso")
                                bootcfg
                                bootloader
                                register-closures?
@@ -441,7 +515,7 @@ returns an image record where the first partition's label is set to <label>."
       image-size)
      (else root-size))))
 
-(define* (image-with-os base-image os)
+(define* (image-with-os* base-image os)
   "Return an image based on BASE-IMAGE but with the operating-system field set
 to OS.  Also set the UUID and the size of the root partition."
   (define root-file-system
@@ -522,20 +596,21 @@ image, depending on IMAGE format."
 
   (with-parameters ((%current-target-system target))
     (let* ((os (operating-system-for-image image))
-           (image* (image-with-os image os))
+           (image* (image-with-os* image os))
+           (image-format (image-format image))
            (register-closures? (has-guix-service-type? os))
            (bootcfg (operating-system-bootcfg os))
            (bootloader (bootloader-configuration-bootloader
                         (operating-system-bootloader os))))
-      (case (image-format image)
-        ((disk-image)
+      (cond
+       ((memq image-format '(disk-image compressed-qcow2))
          (system-disk-image image*
                             #:bootcfg bootcfg
                             #:bootloader bootloader
                             #:register-closures? register-closures?
                             #:inputs `(("system" ,os)
                                        ("bootcfg" ,bootcfg))))
-        ((iso9660)
+       ((memq image-format '(iso9660))
          (system-iso9660-image
           image*
           #:bootcfg bootcfg
@@ -554,18 +629,34 @@ image, depending on IMAGE format."
           #:grub-mkrescue-environment
           '(("MKRESCUE_SED_MODE" . "mbr_only"))))))))
 
-(define (find-image file-system-type target)
-  "Find and return an image built that could match the given FILE-SYSTEM-TYPE,
-built for TARGET.  This is useful to adapt to interfaces written before the
-addition of the <image> record."
-  (match file-system-type
-    ("iso9660" iso9660-image)
-    (_ (cond
-        ((and target
-              (hurd-triplet? target))
-         (module-ref (resolve-interface '(gnu system images hurd))
-                     'hurd-disk-image))
-        (else
-         efi-disk-image)))))
+
+;;
+;; Image detection.
+;;
+
+(define (image-modules)
+  "Return the list of image modules."
+  (cons (resolve-interface '(gnu system image))
+        (all-modules (map (lambda (entry)
+                            `(,entry . "gnu/system/images/"))
+                          %load-path)
+                     #:warn warn-about-load-error)))
+
+(define %image-types
+  ;; The list of publically-known image types.
+  (delay (fold-module-public-variables (lambda (obj result)
+                                         (if (image-type? obj)
+                                             (cons obj result)
+                                             result))
+                                       '()
+                                       (image-modules))))
+
+(define (lookup-image-type-by-name name)
+  "Return the image type called NAME."
+  (or (srfi-1:find (lambda (image-type)
+                     (eq? name (image-type-name image-type)))
+                   (force %image-types))
+      (raise
+       (formatted-message (G_ "~a: no such image type") name))))
 
 ;;; image.scm ends here

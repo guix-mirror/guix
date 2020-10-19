@@ -26,8 +26,10 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
@@ -42,7 +44,8 @@
   #:export (%base-packages/hurd
             %base-services/hurd
             %hurd-default-operating-system
-            %hurd-default-operating-system-kernel))
+            %hurd-default-operating-system-kernel
+            %setuid-programs/hurd))
 
 ;;; Commentary:
 ;;;
@@ -61,8 +64,9 @@
 
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed
-        guile-3.0 guile-colorized guile-readline
-        net-base inetutils less shepherd which))
+        diffutils patch gawk tar gzip bzip2 xz lzip
+        guile-3.0-latest guile-colorized guile-readline
+        net-base inetutils less shadow shepherd sudo which))
 
 (define %base-services/hurd
   (list (service hurd-console-service-type
@@ -86,6 +90,17 @@
                  `(("/bin/sh" ,(file-append bash "/bin/sh"))
                    ("/usr/bin/env" ,(file-append coreutils "/bin/env"))))))
 
+(define %setuid-programs/hurd
+  ;; Default set of setuid-root programs.
+  (list (file-append shadow "/bin/passwd")
+        (file-append shadow "/bin/sg")
+        (file-append shadow "/bin/su")
+        (file-append shadow "/bin/newgrp")
+        (file-append shadow "/bin/newuidmap")
+        (file-append shadow "/bin/newgidmap")
+        (file-append sudo "/bin/sudo")
+        (file-append sudo "/bin/sudoedit")))
+
 (define %hurd-default-operating-system
   (operating-system
     (kernel %hurd-default-operating-system-kernel)
@@ -103,6 +118,4 @@
     (timezone "GNUrope")
     (name-service-switch #f)
     (essential-services (hurd-default-essential-services this-operating-system))
-    (pam-services '())
-    (setuid-programs '())
-    (sudoers-file #f)))
+    (setuid-programs %setuid-programs/hurd)))

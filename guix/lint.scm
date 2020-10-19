@@ -1084,7 +1084,7 @@ or HTTP errors.  This allows network-less operation and makes problems with
 the NIST server non-fatal."
   (with-networking-fail-safe (G_ "while retrieving CVE vulnerabilities")
                              '()
-                             (current-vulnerabilities)))
+                             (current-vulnerabilities #:timeout 4)))
 
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
