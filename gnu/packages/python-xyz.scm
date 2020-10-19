@@ -17357,6 +17357,47 @@ style guide, even if the original code didn't violate the style guide.")
 (define-public python2-yapf
   (package-with-python2 python-yapf))
 
+(define-public python-yq
+  (package
+    (name "python-yq")
+    (version "2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yq" version))
+       (sha256
+        (base32
+         "1q4rky0a6n4izmq7slb91a54g8swry1xrbfqxwc8lkd3hhvlxxkl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "yq/__init__.py"
+               (("Popen\\(\\[\"jq")
+                (string-append
+                 "Popen([\""
+                 (assoc-ref inputs "jq")
+                 "/bin/jq")))
+             #t)))))
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-xmltodict" ,python-xmltodict)
+       ("jq" ,jq)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/kislyuk/yq")
+    (synopsis "Command-line YAML/XML processor")
+    (description
+     "This package provides @command{yq} and @command{xq} for processing YAML
+and XML respectively.  The processing is done through @{jq}, @command{jq}
+filters can be used to process the data as it passes through.")
+    (license license:asl2.0)))
+
 (define-public python-gyp
   (let ((commit "5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f")
         (revision "0"))
