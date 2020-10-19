@@ -10393,14 +10393,15 @@ tables.")
 (define-public python-atomicwrites
   (package
     (name "python-atomicwrites")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "atomicwrites" version))
              (sha256
               (base32
-               "19ngcscdf3jsqmpcxn6zl5b6anmsajb6izp1smcd1n02midl9abm"))))
+               "0yla2svfhfqrcj8qbyqzx7wi4jy0dwcxvlkg0k3zjd54s5m3jw5f"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f))          ;avoid circular dependency with pytest
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
 for atomic file system operations.")
