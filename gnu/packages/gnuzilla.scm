@@ -791,7 +791,7 @@ from forcing GEXP-PROMISE."
        ("llvm" ,llvm)
        ("clang" ,clang)
        ("perl" ,perl)
-       ("node" ,node-10.22)
+       ("node" ,node)
        ("python" ,python)
        ("python-2" ,python-2)
        ("python2-pysqlite" ,python2-pysqlite)
