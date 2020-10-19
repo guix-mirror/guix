@@ -252,6 +252,7 @@ Programming Interface
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
 * Build Systems::               Specifying how packages are built.
+* Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
@@ -6086,6 +6087,7 @@ package definitions.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
 * Build Systems::               Specifying how packages are built.
+* Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
@@ -6877,16 +6879,8 @@ The build-side module @code{(guix build gnu-build-system)} defines
 @code{%standard-phases} is a list of symbol/procedure pairs, where the
 procedure implements the actual phase.
 
-The list of phases used for a particular package can be changed with the
-@code{#:phases} parameter.  For instance, passing:
-
-@example
-#:phases (modify-phases %standard-phases (delete 'configure))
-@end example
-
-means that all the phases described above will be used, except the
-@code{configure} phase.  @xref{Build Utilities}, for more info on
-@code{modify-phases} and build phases in general.
+@xref{Build Phases}, for more info on build phases and ways to customize
+them.
 
 In addition, this build system ensures that the ``standard'' environment
 for GNU packages is available.  This includes tools such as GCC, libc,
@@ -7716,6 +7710,162 @@ with @code{build-expression->derivation} (@pxref{Derivations,
 @code{build-expression->derivation}}).
 @end defvr
 
+@node Build Phases
+@section Build Phases
+
+@cindex build phases, for packages
+Almost all package build systems implement a notion @dfn{build phases}:
+a sequence of actions that the build system executes, when you build the
+package, leading to the installed byproducts in the store.  A notable
+exception is the ``bare-bones'' @code{trivial-build-system}
+(@pxref{Build Systems}).
+
+As discussed in the previous section, those build systems provide a
+standard list of phases.  For @code{gnu-build-system}, the standard
+phases include an @code{unpack} phase to unpack the source code tarball,
+a @command{configure} phase to run @code{./configure}, a @code{build}
+phase to run @command{make}, and (among others) an @code{install} phase
+to run @command{make install}; @pxref{Build Systems}, for a more
+detailed view of these phases.  Likewise, @code{cmake-build-system}
+inherits these phases, but its @code{configure} phase runs
+@command{cmake} instead of @command{./configure}.  Other build systems,
+such as @code{python-build-system}, have a wholly different list of
+standard phases.  All this code runs on the @dfn{build side}: it is
+evaluated when you actually build the package, in a dedicated build
+process spawned by the build daemon (@pxref{Invoking guix-daemon}).
+
+Build phases are represented as association lists or ``alists''
+(@pxref{Association Lists,,, guile, GNU Guile Reference Manual}) where
+each key is a symbol for the name of the phase and the associated value
+is a procedure that accepts an arbitrary number of arguments.  By
+convention, those procedures receive information about the build in the
+form of @dfn{keyword parameters}, which they can use or ignore.
+
+For example, here is how @code{(guix build gnu-build-system)} defines
+@code{%standard-phases}, the variable holding its alist of build
+phases@footnote{We present a simplified view of those build phases, but
+do take a look at @code{(guix build gnu-build-system)} to see all the
+details!}:
+
+@lisp
+;; The build phases of 'gnu-build-system'.
+
+(define* (unpack #:key source #:allow-other-keys)
+  ;; Extract the source tarball.
+  (invoke "tar" "xvf" source))
+
+(define* (configure #:key outputs #:allow-other-keys)
+  ;; Run the 'configure' script.  Install to output "out".
+  (let ((out (assoc-ref outputs "out")))
+    (invoke "./configure"
+            (string-append "--prefix=" out))))
+
+(define* (build #:allow-other-keys)
+  ;; Compile.
+  (invoke "make"))
+
+(define* (check #:key (test-target "check") (tests? #true)
+                #:allow-other-keys)
+  ;; Run the test suite.
+  (if tests?
+      (invoke "make" test-target)
+      (display "test suite not run\n")))
+
+(define* (install #:allow-other-keys)
+  ;; Install files to the prefix 'configure' specified.
+  (invoke "make" "install"))
+
+(define %standard-phases
+  ;; The list of standard phases (quite a few are omitted
+  ;; for brevity).  Each element is a symbol/procedure pair.
+  (list (cons 'unpack unpack)
+        (cons 'configure configure)
+        (cons 'build build)
+        (cons 'check check)
+        (cons 'install install)))
+@end lisp
+
+This shows how @code{%standard-phases} is defined as a list of
+symbol/procedure pairs (@pxref{Pairs,,, guile, GNU Guile Reference
+Manual}).  The first pair associates the @code{unpack} procedure with
+the @code{unpack} symbol---a name; the second pair defines the
+@code{configure} phase similarly, and so on.  When building a package
+that uses @code{gnu-build-system} with its default list of phases, those
+phases are executed sequentially.  You can see the name of each phase
+started and completed in the build log of packages that you build.
+
+Let's now look at the procedures themselves.  Each one is defined with
+@code{define*}: @code{#:key} lists keyword parameters the procedure
+accepts, possibly with a default value, and @code{#:allow-other-keys}
+specifies that other keyword parameters are ignored (@pxref{Optional
+Arguments,,, guile, GNU Guile Reference Manual}).
+
+The @code{unpack} procedure honors the @code{source} parameter, which
+the build system uses to pass the file name of the source tarball (or
+version control checkout), and it ignores other parameters.  The
+@code{configure} phase only cares about the @code{outputs} parameter, an
+alist mapping package output names to their store file name
+(@pxref{Packages with Multiple Outputs}).  It extracts the file name of
+for @code{out}, the default output, and passes it to
+@command{./configure} as the installation prefix, meaning that
+@command{make install} will eventually copy all the files in that
+directory (@pxref{Configuration, configuration and makefile
+conventions,, standards, GNU Coding Standards}).  @code{build} and
+@code{install} ignore all their arguments.  @code{check} honors the
+@code{test-target} argument, which specifies the name of the Makefile
+target to run tests; it prints a message and skips tests when
+@code{tests?} is false.
+
+@cindex build phases, customizing
+The list of phases used for a particular package can be changed with the
+@code{#:phases} parameter of the build system.  Changing the set of
+build phases boils down to building a new alist of phases based on the
+@code{%standard-phases} alist described above.  This can be done with
+standard alist procedures such as @code{alist-delete} (@pxref{SRFI-1
+Association Lists,,, guile, GNU Guile Reference Manual}); however, it is
+more convenient to do so with @code{modify-phases} (@pxref{Build
+Utilities, @code{modify-phases}}).
+
+Here is an example of a package definition that removes the
+@code{configure} phase of @code{%standard-phases} and inserts a new
+phase before the @code{build} phase, called
+@code{set-prefix-in-makefile}:
+
+@example
+(define-public example
+  (package
+    (name "example")
+    ;; other fields omitted
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'set-prefix-in-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Modify the makefile so that its
+                      ;; 'PREFIX' variable points to "out".
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("PREFIX =.*")
+                           (string-append "PREFIX = "
+                                          out "\n")))
+                        #true))))))))
+@end example
+
+The new phase that is inserted is written as an anonymous procedure,
+introduced with @code{lambda*}; it honors the @code{outputs} parameter
+we have seen before.  @xref{Build Utilities}, for more about the helpers
+used by this phase, and for more examples of @code{modify-phases}.
+
+@cindex code staging
+@cindex staging, of code
+Keep in mind that build phases are code evaluated at the time the
+package is actually built.  This explains why the whole
+@code{modify-phases} expression above is quoted (it comes after the
+@code{'} or apostrophe): it is @dfn{staged} for later execution.
+@xref{G-Expressions}, for an explanation of code staging and the
+@dfn{code strata} involved.
+
 @node Build Utilities
 @section Build Utilities
 
@@ -7929,13 +8079,12 @@ Return the complete file name for @var{program} as found in
 @subsection Build Phases
 
 @cindex build phases
-The @code{(guix build utils)} also contains tools to manipulate
-@dfn{build phases} as found in @code{gnu-build-system} and in fact most
-build systems (@pxref{Build Systems}).  Build phases are represented as
-association lists or ``alists'' (@pxref{Association Lists,,, guile, GNU
-Guile Reference Manual}) where each key is a symbol for the name of the
-phase, and the associated value is a procedure that accepts an arbitrary
-number of arguments.
+The @code{(guix build utils)} also contains tools to manipulate build
+phases as used by build systems (@pxref{Build Systems}).  Build phases
+are represented as association lists or ``alists'' (@pxref{Association
+Lists,,, guile, GNU Guile Reference Manual}) where each key is a symbol
+naming the phase and the associated value is a procedure (@pxref{Build
+Phases}).
 
 Guile core and the @code{(srfi srfi-1)} module both provide tools to
 manipulate alists.  The @code{(guix build utils)} module complements
@@ -8681,6 +8830,8 @@ These build actions are performed when asking the daemon to actually
 build the derivations; they are run by the daemon in a container
 (@pxref{Invoking guix-daemon}).
 
+@cindex code staging
+@cindex staging, of code
 @cindex strata of code
 It should come as no surprise that we like to write these build actions
 in Scheme.  When we do that, we end up with two @dfn{strata} of Scheme
@@ -8692,7 +8843,7 @@ on this topic}, refers to this kind of code generation as
 @dfn{staging}.}: the ``host code''---code that defines packages, talks
 to the daemon, etc.---and the ``build code''---code that actually
 performs build actions, such as making directories, invoking
-@command{make}, etc.
+@command{make}, and so on (@pxref{Build Phases}).
 
 To describe a derivation and its build actions, one typically needs to
 embed build code inside host code.  It boils down to manipulating build
