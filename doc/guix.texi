@@ -17606,27 +17606,27 @@ field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
 Additionally, the @code{gnome-desktop-service-type},
-@code{xfce-desktop-service}, @code{mate-desktop-service-type} and
-@code{enlightenment-desktop-service-type} procedures can add GNOME, Xfce, MATE
-and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
-services like the backlight adjustment helpers and the power management
-utilities are added to the system, extending @code{polkit} and @code{dbus}
-appropriately, allowing GNOME to operate with elevated privileges on a
-limited number of special-purpose system interfaces.  Additionally,
-adding a service made by @code{gnome-desktop-service-type} adds the GNOME
-metapackage to the system profile.  Likewise, adding the Xfce service
-not only adds the @code{xfce} metapackage to the system profile, but it
-also gives the Thunar file manager the ability to open a ``root-mode''
-file management window, if the user authenticates using the
-administrator's password via the standard polkit graphical interface.
-To ``add MATE'' means that @code{polkit} and @code{dbus} are extended
-appropriately, allowing MATE to operate with elevated privileges on a
-limited number of special-purpose system interfaces.  Additionally,
-adding a service of type @code{mate-desktop-service-type} adds the MATE
-metapackage to the system profile.  ``Adding Enlightenment'' means that
-@code{dbus} is extended appropriately, and several of Enlightenment's binaries
-are set as setuid, allowing Enlightenment's screen locker and other
-functionality to work as expected.
+@code{xfce-desktop-service}, @code{mate-desktop-service-type},
+@code{lxqt-desktop-service-type} and @code{enlightenment-desktop-service-type}
+procedures can add GNOME, Xfce, MATE and/or Enlightenment to a system.  To
+``add GNOME'' means that system-level services like the backlight adjustment
+helpers and the power management utilities are added to the system, extending
+@code{polkit} and @code{dbus} appropriately, allowing GNOME to operate with
+elevated privileges on a limited number of special-purpose system interfaces.
+Additionally, adding a service made by @code{gnome-desktop-service-type} adds
+the GNOME metapackage to the system profile.  Likewise, adding the Xfce
+service not only adds the @code{xfce} metapackage to the system profile, but
+it also gives the Thunar file manager the ability to open a ``root-mode'' file
+management window, if the user authenticates using the administrator's
+password via the standard polkit graphical interface.  To ``add MATE'' means
+that @code{polkit} and @code{dbus} are extended appropriately, allowing MATE
+to operate with elevated privileges on a limited number of special-purpose
+system interfaces.  Additionally, adding a service of type
+@code{mate-desktop-service-type} adds the MATE metapackage to the system
+profile.  ``Adding Enlightenment'' means that @code{dbus} is extended
+appropriately, and several of Enlightenment's binaries are set as setuid,
+allowing Enlightenment's screen locker and other functionality to work as
+expected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
@@ -17691,6 +17691,24 @@ Configuration record for the MATE desktop environment.
 @table @asis
 @item @code{mate} (default: @code{mate})
 The MATE package to use.
+@end table
+@end deftp
+
+@deffn {Scheme Variable} lxqt-desktop-service-type
+This is the type of the service that runs the @uref{https://lxqt.github.io,
+LXQt desktop environment}.  Its value is a @code{lxqt-desktop-configuration}
+object (see below).
+
+This service adds the @code{lxqt} package to the system
+profile.
+@end deffn
+
+@deftp {Data Type} lxqt-desktop-configuration
+Configuration record for the LXQt desktop environment.
+
+@table @asis
+@item @code{lxqt} (default: @code{lxqt})
+The LXQT package to use.
 @end table
 @end deftp
 
