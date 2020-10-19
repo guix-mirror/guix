@@ -815,14 +815,14 @@ linked with a SCM executable.")
 (define-public tinyscheme
   (package
     (name "tinyscheme")
-    (version "1.41")
+    (version "1.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version "/" name "-" version ".zip"))
               (sha256
                (base32
-                "0yqma4jrjgj95f3hf30h542x97n8ah234n19yklbqq0phfsa08wf"))))
+                "0rik3qnxqd8wjlazx8rw996pfzkjjg60v6hcbpcqzi7rgml8q4n8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
