@@ -131,7 +131,6 @@
 
             lxqt-desktop-configuration
             lxqt-desktop-configuration?
-            lxqt-desktop-service
             lxqt-desktop-service-type
 
             xfce-desktop-configuration
