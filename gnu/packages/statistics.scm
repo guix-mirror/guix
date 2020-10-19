@@ -269,6 +269,15 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                (substitute* "tools/help2man.pl"
                  (("my \\$date = strftime \"%B %Y\", localtime" line)
                   (string-append line " 1"))))
+
+             ;; The "References" section of this file when converted to
+             ;; package.rds is sometimes stored with a newline, sometimes with
+             ;; a space.  We avoid this problem by adding characters to break
+             ;; up the series of line break and spaces that is suspected to be
+             ;; the culprit.
+             (substitute* "src/library/methods/DESCRIPTION.in"
+               (("  ``Software")
+                "  -- ``Software"))
              #t))
          (add-before 'build 'set-locales
            (lambda _
