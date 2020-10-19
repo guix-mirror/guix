@@ -2258,7 +2258,7 @@ libxml2 and libxslt.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "1.1.2")
+    (version "1.2.5")
     (source (origin
               ;; Unit tests are not distributed with the PyPI archive.
               (method git-fetch)
@@ -2268,7 +2268,7 @@ libxml2 and libxslt.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03bz5mp45y4shmlc1gxq1h69vjx60z1acg9cy4kq7fczgx8qg9jw"))))
+                "0rsa75x86gdjalvy4riq7613szb616hff80crx006chyppzdkxmq"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2280,7 +2280,11 @@ libxml2 and libxslt.")
                    (setenv "PYTHONPATH"
                            (string-append "./build/lib:"
                                           (getenv "PYTHONPATH")))
-                   (invoke "python" "-m" "unittest" "-v"))
+                   ;; Disable test_export_remote__issue_187, which is known to
+                   ;; fail (see:
+                   ;; https://github.com/sissaschool/xmlschema/issues/206).
+                   (invoke "python" "-m" "unittest" "-v"
+                           "-k" "not test_export_remote__issue_187"))
                  (format #t "test suite not run~%"))
              #t)))))
     (native-inputs
