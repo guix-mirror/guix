@@ -6207,7 +6207,7 @@ With luck, you may be able to import part or all of the definition of
 the package you are interested in from another repository, using the
 @code{guix import} command (@pxref{Invoking guix import}).
 
-In the example above, @var{hello} is defined in a module of its own,
+In the example above, @code{hello} is defined in a module of its own,
 @code{(gnu packages hello)}.  Technically, this is not strictly
 necessary, but it is convenient to do so: all the packages defined in
 modules under @code{(gnu packages @dots{})} are automatically known to
@@ -6240,7 +6240,7 @@ Scheme expression to modify the source code.
 @item
 @cindex GNU Build System
 The @code{build-system} field specifies the procedure to build the
-package (@pxref{Build Systems}).  Here, @var{gnu-build-system}
+package (@pxref{Build Systems}).  Here, @code{gnu-build-system}
 represents the familiar GNU Build System, where packages may be
 configured, built, and installed with the usual @code{./configure &&
 make && make check && make install} command sequence.
@@ -6252,7 +6252,7 @@ Utilities}, for more on this.
 @item
 The @code{arguments} field specifies options for the build system
 (@pxref{Build Systems}).  Here it is interpreted by
-@var{gnu-build-system} as a request run @file{configure} with the
+@code{gnu-build-system} as a request run @file{configure} with the
 @option{--enable-silent-rules} flag.
 
 @cindex quote
@@ -6276,8 +6276,8 @@ Reference Manual}).
 @item
 The @code{inputs} field specifies inputs to the build process---i.e.,
 build-time or run-time dependencies of the package.  Here, we define an
-input called @code{"gawk"} whose value is that of the @var{gawk}
-variable; @var{gawk} is itself bound to a @code{<package>} object.
+input called @code{"gawk"} whose value is that of the @code{gawk}
+variable; @code{gawk} is itself bound to a @code{<package>} object.
 
 @cindex backquote (quasiquote)
 @findex `
@@ -6294,7 +6294,7 @@ value in that list (@pxref{Expression Syntax, unquote,, guile, GNU Guile
 Reference Manual}).
 
 Note that GCC, Coreutils, Bash, and other essential tools do not need to
-be specified as inputs here.  Instead, @var{gnu-build-system} takes care
+be specified as inputs here.  Instead, @code{gnu-build-system} takes care
 of ensuring that they are present (@pxref{Build Systems}).
 
 However, any other dependencies need to be specified in the
