@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,6 +77,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -116,6 +118,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -142,6 +145,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
@@ -3917,3 +3921,42 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 based on asyncio.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public rspamd
+  (package
+    (name "rspamd")
+    (version "2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rspamd/rspamd")
+             (commit version)))
+       (sha256
+        (base32 "0vwa7k2s2bkfb8w78z5izkd6ywjbzqysb0grls898y549hm8ii70"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DENABLE_LUAJIT=ON")))
+    (inputs
+     `(("openssl" ,openssl)
+       ("glib" ,glib)
+       ("ragel" ,ragel)
+       ("luajit" ,luajit)
+       ("sqlite" ,sqlite)
+       ("file" ,file)
+       ("icu4c" ,icu4c)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)
+       ("perl" ,perl)
+       ("libsodium" ,libsodium)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Spam filtering system")
+    (description "Rspamd is an advanced spam filtering system that
+allows evaluation of messages by a number of rules including regular
+expressions, statistical analysis and custom services such as URL
+black lists.  Each message is analysed by Rspamd and given a spam
+score.")
+    (home-page "https://www.rspamd.com/")
+    (license license:asl2.0)))
