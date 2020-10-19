@@ -6607,8 +6607,12 @@ for more on build systems.
 @node origin Reference
 @subsection @code{origin} Reference
 
-This section summarizes all the options available in @code{origin}
-declarations (@pxref{Defining Packages}).
+This section documents @dfn{origins}.  An @code{origin} declaration
+specifies data that must be ``produced''---downloaded, usually---and
+whose content hash is known in advance.  Origins are primarily used to
+represent the source code of packages (@pxref{Defining Packages}).  For
+that reason, the @code{origin} form allows you to declare patches to
+apply to the original source code as well as code snippets to modify it.
 
 @deftp {Data Type} origin
 This is the data type representing a source code origin.
@@ -6620,28 +6624,18 @@ the @code{method} (see below).  For example, when using the
 @var{url-fetch} method of @code{(guix download)}, the valid @code{uri}
 values are: a URL represented as a string, or a list thereof.
 
+@cindex fixed-output derivations, for download
 @item @code{method}
-A procedure that handles the URI.
+A monadic procedure that handles the given URI.  The procedure must
+accept at least three arguments: the value of the @code{uri} field and
+the hash algorithm and hash value specified by the @code{hash} field.
+It must return a store item or a derivation in the store monad
+(@pxref{The Store Monad}); most methods return a fixed-output derivation
+(@pxref{Derivations}).
 
-Examples include:
-
-@table @asis
-@item @var{url-fetch} from @code{(guix download)}
-download a file from the HTTP, HTTPS, or FTP URL specified in the
-@code{uri} field;
-
-@vindex git-fetch
-@item @var{git-fetch} from @code{(guix git-download)}
-clone the Git version control repository, and check out the revision
-specified in the @code{uri} field as a @code{git-reference} object; a
-@code{git-reference} looks like this:
-
-@lisp
-(git-reference
-  (url "https://git.savannah.gnu.org/git/hello.git")
-  (commit "v2.10"))
-@end lisp
-@end table
+Commonly used methods include @code{url-fetch}, which fetches data from
+a URL, and @code{git-fetch}, which fetches data from a Git repository
+(see below).
 
 @item @code{sha256}
 A bytevector containing the SHA-256 hash of the source.  This is
@@ -6718,6 +6712,75 @@ The following forms are all equivalent:
 Technically, @code{content-hash} is currently implemented as a macro.
 It performs sanity checks at macro-expansion time, when possible, such
 as ensuring that @var{value} has the right size for @var{algorithm}.
+@end deftp
+
+As we have seen above, how exactly the data an origin refers to is
+retrieved is determined by its @code{method} field.  The @code{(guix
+download)} module provides the most common method, @code{url-fetch},
+described below.
+
+@deffn {Scheme Procedure} url-fetch @var{url} @var{hash-algo} @var{hash} @
+           [name] [#:executable? #f]
+Return a fixed-output derivation that fetches data from @var{url} (a
+string, or a list of strings denoting alternate URLs), which is expected
+to have hash @var{hash} of type @var{hash-algo} (a symbol).  By default,
+the file name is the base name of URL; optionally, @var{name} can
+specify a different file name.  When @var{executable?} is true, make the
+downloaded file executable.
+
+When one of the URL starts with @code{mirror://}, then its host part is
+interpreted as the name of a mirror scheme, taken from @file{%mirror-file}.
+
+Alternatively, when URL starts with @code{file://}, return the
+corresponding file name in the store.
+@end deffn
+
+Likewise, the @code{(guix git-download)} module defines the
+@code{git-download} origin method, which fetches data from a Git version
+control repository, and the @code{git-reference} data type to describe
+the repository and revision to fetch.
+
+@deffn {Scheme Procedure} git-fetch @var{ref} @var{hash-algo} @var{hash}
+Return a fixed-output derivation that fetches @var{ref}, a
+@code{<git-reference>} object.  The output is expected to have recursive
+hash @var{hash} of type @var{hash-algo} (a symbol).  Use @var{name} as
+the file name, or a generic name if @code{#f}.
+@end deffn
+
+@deftp {Data Type} git-reference
+This data type represents a Git reference for @code{git-fetch} to
+retrieve.
+
+@table @asis
+@item @code{url}
+The URL of the Git repository to clone.
+
+@item @code{commit}
+This string denotes either the commit to fetch (a hexadecimal string,
+either the full SHA1 commit or a ``short'' commit string; the latter is
+not recommended) or the tag to fetch.
+
+@item @code{recursive?} (default: @code{#f})
+This Boolean indicates whether to recursively fetch Git sub-modules.
+@end table
+
+The example below denotes the @code{v2.10} tag of the GNU@tie{}Hello
+repository:
+
+@lisp
+(git-reference
+  (url "https://git.savannah.gnu.org/git/hello.git")
+  (commit "v2.10"))
+@end lisp
+
+This is equivalent to the reference below, which explicitly names the
+commit:
+
+@lisp
+(git-reference
+  (url "https://git.savannah.gnu.org/git/hello.git")
+  (commit "dc7dc56a00e48fe6f231a58f6537139fe2908fb9"))
+@end lisp
 @end deftp
 
 @node Build Systems
