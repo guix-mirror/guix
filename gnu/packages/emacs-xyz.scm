@@ -25049,3 +25049,34 @@ built-in generator package.  It provides @code{iter2-defun} and
 @code{iter-next}) are intentionally not duplicated: just use the ones from the
 original package.")
     (license license:gpl3+)))
+
+(define-public emacs-promise
+  (package
+    (name "emacs-promise")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chuntaro/emacs-promise")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xb34zdbwjvahfhycjphdkm925kgd22dr298c57hwxza4ljc2hxj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/chuntaro/emacs-promise")
+    (synopsis "Promises/A+ for Emacs")
+    (description "This is a simple implementation of Promises/A+.
+
+This implementation ports the following Promises/A+ features
+faithfully.  See @url{https://github.com/then/promise}.
+
+@itemize
+@item The same API as the JavaScript version of Promise can be used.
+@item It has all the @code{then}, @code{catch}, @code{resolve}, @code{reject},
+@code{all}, @code{race}, etc.
+@item It supports \"thenable\".
+@item It supports \"Inheritance of Promise\".
+@item It supports \"rejection-tracking\".
+@end itemize\n")
+    (license license:gpl3+)))
