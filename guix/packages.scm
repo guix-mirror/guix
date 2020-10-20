@@ -1015,8 +1015,7 @@ applied to implicit inputs as well."
   (define (rewrite input)
     (match input
       ((label (? package? package) outputs ...)
-       (let ((proc (if (cut? package) proc replace)))
-         (cons* label (proc package) outputs)))
+       (cons* label (replace package) outputs))
       (_
        input)))
 
@@ -1027,28 +1026,44 @@ applied to implicit inputs as well."
   (define replace
     (mlambdaq (p)
       ;; If P is the result of a previous call, return it.
-      (if (assq-ref (package-properties p) mapping-property)
-          p
+      (cond ((assq-ref (package-properties p) mapping-property)
+             p)
 
-          ;; Return a variant of P with PROC applied to P and its explicit
-          ;; dependencies, recursively.  Memoize the transformations.  Failing
-          ;; to do that, we would build a huge object graph with lots of
-          ;; duplicates, which in turns prevents us from benefiting from
-          ;; memoization in 'package-derivation'.
-          (let ((p (proc p)))
-            (package
-              (inherit p)
-              (location (package-location p))
-              (build-system (if deep?
-                                (build-system-with-package-mapping
-                                 (package-build-system p) rewrite)
-                                (package-build-system p)))
-              (inputs (map rewrite (package-inputs p)))
-              (native-inputs (map rewrite (package-native-inputs p)))
-              (propagated-inputs (map rewrite (package-propagated-inputs p)))
-              (replacement (and=> (package-replacement p) replace))
-              (properties `((,mapping-property . #t)
-                            ,@(package-properties p))))))))
+            ((cut? p)
+             ;; Since P's propagated inputs are really inputs of its dependents,
+             ;; rewrite them as well, unless we're doing a "shallow" rewrite.
+             (let ((p (proc p)))
+               (if (or (not deep?)
+                       (null? (package-propagated-inputs p)))
+                   p
+                   (package
+                     (inherit p)
+                     (location (package-location p))
+                     (replacement (package-replacement p))
+                     (propagated-inputs (map rewrite (package-propagated-inputs p)))
+                     (properties `((,mapping-property . #t)
+                                   ,@(package-properties p)))))))
+
+            (else
+             ;; Return a variant of P with PROC applied to P and its explicit
+             ;; dependencies, recursively.  Memoize the transformations.  Failing
+             ;; to do that, we would build a huge object graph with lots of
+             ;; duplicates, which in turns prevents us from benefiting from
+             ;; memoization in 'package-derivation'.
+             (let ((p (proc p)))
+               (package
+                 (inherit p)
+                 (location (package-location p))
+                 (build-system (if deep?
+                                   (build-system-with-package-mapping
+                                    (package-build-system p) rewrite)
+                                   (package-build-system p)))
+                 (inputs (map rewrite (package-inputs p)))
+                 (native-inputs (map rewrite (package-native-inputs p)))
+                 (propagated-inputs (map rewrite (package-propagated-inputs p)))
+                 (replacement (and=> (package-replacement p) replace))
+                 (properties `((,mapping-property . #t)
+                               ,@(package-properties p)))))))))
 
   replace)
 
