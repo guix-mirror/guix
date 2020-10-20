@@ -990,8 +990,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "86e446c027b15e95bb4cadb6aeea09e90814c15e")
-        (revision "2"))
+  (let ((commit "5f11c6009fba7ad635987a839d5769c4d9ca8f29")
+        (revision "3"))
     (package
     (name "guix-build-coordinator")
     (version (git-version "0" revision commit))
@@ -1002,7 +1002,7 @@ environments.")
                     (commit commit)))
               (sha256
                (base32
-                "0cpnzdl8q0mf00rgdlvh9kfz0x2alk2jds6h9kwiqahs10lkw4dc"))
+                "1r4y03blnh4vw3wgwh409wa4w3dbr20rzvfqiksm9g0ljic3r8zv"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
@@ -1063,6 +1063,7 @@ environments.")
        ("guile-gcrypt" ,guile-gcrypt)
        ("guile-json" ,guile-json-3)
        ("guile-lzlib" ,guile-lzlib)
+       ("guile-zlib" ,guile-zlib)
        ("guile-sqlite3" ,guile-sqlite3)
        ("guix" ,guix)
        ("sqlite" ,sqlite)
