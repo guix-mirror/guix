@@ -6743,7 +6743,7 @@ corresponding file name in the store.
 @end deffn
 
 Likewise, the @code{(guix git-download)} module defines the
-@code{git-download} origin method, which fetches data from a Git version
+@code{git-fetch} origin method, which fetches data from a Git version
 control repository, and the @code{git-reference} data type to describe
 the repository and revision to fetch.
 
