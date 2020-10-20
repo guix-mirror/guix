@@ -1198,7 +1198,8 @@ by 'html-identifier-indexes'."
                              #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
-                                            (cut string-append "/manual/" <>))
+                                            (cut string-append
+                                              "/manual/devel/" <>))
                              #:languages %languages))
 
   (define guix-split-node-indexes
@@ -1207,8 +1208,9 @@ by 'html-identifier-indexes'."
                              #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
-                                            (cut string-append "/manual/" <>
-                                                 "/html_node"))
+                                            (cut string-append
+                                              "/manual/devel/" <>
+                                              "/html_node"))
                              #:languages %languages))
 
   (define mono-node-indexes
