@@ -35,7 +35,7 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019, 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
@@ -7526,7 +7526,7 @@ It is recommended to use @code{clojure-mode} with Paredit or Smartparens.")
 (define-public emacs-epl
   (package
     (name "emacs-epl")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method git-fetch)
@@ -7535,7 +7535,7 @@ It is recommended to use @code{clojure-mode} with Paredit or Smartparens.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sjxd5y5hxhrbgfkpwx6m724r3841b53hgc61a0g5zwispw5pmrr"))))
+        (base32 "0d3z5z90ln8ipk1yds1n1p8fj9yyh2kpspqjs7agl38indra3nb4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cask/epl")
     (synopsis "Emacs Package Library")
