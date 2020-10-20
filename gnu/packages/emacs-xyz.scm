@@ -25080,3 +25080,26 @@ faithfully.  See @url{https://github.com/then/promise}.
 @item It supports \"rejection-tracking\".
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-async-await
+  (package
+    (name "emacs-async-await")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chuntaro/emacs-async-await")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0aav9qdswnw7ynqlzn0sm34as5fj2d85syxgg8zjabzp6646ay29"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("promise" ,emacs-promise)
+       ("iter2" ,emacs-iter2)))
+    (home-page "https://github.com/chuntaro/emacs-async-await")
+    (synopsis "Async/Await for Emacs")
+    (description "This is a simple implementation of Async/Await inspired by
+the TypeScript implementation.")
+    (license license:gpl3+)))
