@@ -191,9 +191,7 @@ please install the @code{flyer-composer-gui} package.")))
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
-             ("cairo" ,(package (inherit cairo)
-                         (inputs (alist-delete "poppler"
-                                               (package-inputs cairo)))))))
+             ("cairo" ,cairo-sans-poppler)))
    (propagated-inputs
     ;; As per poppler-cairo and poppler-glib.pc.
     ;; XXX: Ideally we'd propagate Cairo too, but that would require a

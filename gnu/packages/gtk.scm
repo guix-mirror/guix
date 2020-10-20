@@ -173,6 +173,12 @@ affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "https://cairographics.org/")))
 
+(define-public cairo-sans-poppler
+  ;; Variant used to break the dependency cycle between Poppler and Cairo.
+  (package/inherit cairo
+    (inputs (alist-delete "poppler" (package-inputs cairo)))
+    (properties `((hidden? . #t)))))
+
 (define-public cairo-xcb
   (package
     (inherit cairo)
