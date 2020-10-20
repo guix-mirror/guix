@@ -461,7 +461,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-2")
+    (version "2-pre-release-3")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +472,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0wqq8ppn0n7js3pxzzb36h0lf3r3gqhs2hi8h85c3n8a54hnbp8q"))
+         "16crhc89hpvzkms5fypq9vdrf7glidqwh7yvy5cdmjdq4v7fkmy4"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -482,7 +482,8 @@ driven and does not detract you from your daily work.")
        #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-version ; Version is guessed from .git which Guix does not have.
+         ;; Version is guessed from .git which Guix does not have.
+         (add-after 'unpack 'patch-version
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((version (format #f "~a" ,version))
                    (file "source/global.lisp"))
@@ -515,7 +516,8 @@ driven and does not detract you from your daily work.")
                            ":"))
                     (gi-path (string-join
                               (map (lambda (lib)
-                                     (string-append (assoc-ref inputs lib) "/lib/girepository-1.0"))
+                                     (string-append (assoc-ref inputs lib)
+                                                    "/lib/girepository-1.0"))
                                    libs)
                               ":"))
                     (xdg-path (string-join
@@ -540,6 +542,7 @@ driven and does not detract you from your daily work.")
      ;; See https://github.com/atlas-engineer/nyxt/issues/680.
      `(("alexandria" ,cl-alexandria)
        ("bordeaux-threads" ,cl-bordeaux-threads)
+       ("cl-chanl" ,cl-chanl)
        ("cl-containers" ,cl-containers)
        ("cl-css" ,cl-css)
        ("cl-json" ,cl-json)
@@ -555,7 +558,6 @@ driven and does not detract you from your daily work.")
        ("iolib" ,cl-iolib)
        ("local-time" ,cl-local-time)
        ("log4cl" ,cl-log4cl)
-       ("lparallel" ,cl-lparallel)
        ("mk-string-metrics" ,cl-mk-string-metrics)
        ("moptilities" ,cl-moptilities)
        ("osicat" ,sbcl-osicat)         ; SBCL version needed for libosicat.so.
@@ -571,6 +573,7 @@ driven and does not detract you from your daily work.")
        ("trivial-package-local-nicknames" ,cl-trivial-package-local-nicknames)
        ("trivial-types" ,cl-trivial-types)
        ("unix-opts" ,cl-unix-opts)
+       ("usocket" ,cl-usocket)
        ;; WebKitGTK deps
        ("cl-cffi-gtk" ,cl-cffi-gtk)
        ("cl-webkit" ,cl-webkit)
