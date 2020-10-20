@@ -25025,3 +25025,27 @@ web development.")
       ;; file and the header of the main elisp file which indicates
       ;; that it is licensed under the GPL version 3 or later.
       (license (list license:mpl2.0 license:gpl3+)))))
+
+(define-public emacs-iter2
+  (package
+    (name "emacs-iter2")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/iter2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gaq3z2v1q4r9mkyq71dzmqakhi0p8g7ph4z0n3a11rvyc3z9ykx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/doublep/iter2")
+    (synopsis "Reimplementation of Elisp generators")
+    (description "@code{iter2} is a fully compatible reimplementation of
+built-in generator package.  It provides @code{iter2-defun} and
+@code{iter2-lambda} forms that can be used in place of @code{iter-defun} and
+@code{iter-lambda}.  All other functions and macros (e.g. @code{iter-yield},
+@code{iter-next}) are intentionally not duplicated: just use the ones from the
+original package.")
+    (license license:gpl3+)))
