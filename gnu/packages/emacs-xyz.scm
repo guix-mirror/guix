@@ -18788,8 +18788,7 @@ can be queued at any time.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1xv93ny942gha1ipic5r6z4icjsb7src7ssdck9983kks3zacjk7"))))
+        (base32 "1xv93ny942gha1ipic5r6z4icjsb7src7ssdck9983kks3zacjk7"))))
     (build-system emacs-build-system)
     (inputs
      `(("youtube-dl" ,youtube-dl)))
@@ -18803,20 +18802,20 @@ can be queued at any time.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((youtube-dl (assoc-ref inputs "youtube-dl")))
                ;; .el is read-only in git.
-               (chmod "ytdl.el" #o644)
-               ;; Specify the absolute file names of the various
-               ;; programs so that everything works out-of-the-box.
-               (emacs-substitute-variables
-                   "ytdl.el"
-                 ("ytdl-command"
-                  (string-append youtube-dl "/bin/youtube-dl")))))))))
+               (make-file-writable "ytdl.el")
+               ;; Specify the absolute file names of the various programs so
+               ;; that everything works out-of-the-box.
+               (emacs-substitute-variables "ytdl.el"
+                 ("ytdl-command" (string-append youtube-dl "/bin/youtube-dl")))
+               #t))))))
     (home-page "https://gitlab.com/tuedachu/ytdl")
     (synopsis "Emacs interface for youtube-dl")
-    (description "This package manages a video download queue for
-@command{youtube-dl}, which serves as the back end.  New videos can be queued
-at any time.  All youtube-dl backends are supported.  It's possible to create
-download profiles depending on the downloaded URL.")
-    (license license:gpl3)))
+    (description
+     "This package manages a video download queue for @command{youtube-dl},
+which serves as the back end.  New videos can be queued at any time.  All
+youtube-dl backends are supported.  It is possible to create download profiles
+depending on the downloaded URL.")
+    (license license:gpl3+)))
 
 (define-public emacs-org-web-tools
   (package
