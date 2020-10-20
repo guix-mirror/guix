@@ -5653,3 +5653,24 @@ over IMAP:
 @item Work with mailbox folders (list, set, get, create, exists, rename, delete, status)
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-hstspreload
+  (package
+    (name "python-hstspreload")
+    (version "2020.10.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hstspreload" version))
+       (sha256
+        (base32
+         "1qah80p2xlib1rhivvdj9v5y3girxrj7dwp1mnh8mwaj5wy32y8a"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sethmlarson/hstspreload")
+    (synopsis
+     "Chromium HSTS Preload list as a Python package")
+    (description
+     "@code{python-hstspreload} contains Chromium HSTS Preload list
+as a Python package.")
+    (license license:bsd-3)))
