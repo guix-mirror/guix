@@ -25103,3 +25103,28 @@ faithfully.  See @url{https://github.com/then/promise}.
     (description "This is a simple implementation of Async/Await inspired by
 the TypeScript implementation.")
     (license license:gpl3+)))
+
+(define-public emacs-rocket-chat
+  ;; No release.
+  (let ((commit "96fe27a8678de5ae4061f635108a7192eee13f98"))
+    (package
+      (name "emacs-rocket-chat")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/4hiziri/rocket-chat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "02a4j0yy7330kfr3rd3k2agdj01ii6989nki598anbamq6xvj5ql"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("async-await" ,emacs-async-await)
+         ("request" ,emacs-request)))
+      (home-page "https://github.com/4hiziri/rocket-chat")
+      (synopsis "Emacs Rocket.chat client")
+      (description "This package provides an Emacs client for the Rocket.chat
+service.")
+      (license license:expat))))
