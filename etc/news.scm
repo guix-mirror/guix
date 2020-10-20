@@ -20,6 +20,7 @@
 
  (entry (commit "6aeda81602555fbeac0c0a209e74f5262093b513")
         (title (en "New @option{--with-debug-info} package transformation option")
+               (es "Nueva opción de transformación @option{--with-debug-info}")
                (fr "Nouvelle option de transformation @option{--with-debug-info}"))
         (body
          (en "The new @option{--with-debug-info} option builds a variant of a
@@ -36,6 +37,22 @@ guix build --with-debug-info=glib inkscape
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (es "La nueva opción @option{--with-debug-info} construye una
+variante del paquete que incluye la información de depuración y la injerta
+en la aplicación que desee depurar.  Por tanto, únicamente el paquete del
+que desee información de depuración debe construirse de nuevo.  Es útil
+para paquetes que no tienen ya una salida @code{debug}.
+
+El siguiente ejemplo muestra como obtener información de depuración
+para la biblioteca @code{glib} de modo que pueda inspeccionarla mientras
+depura Inkscape:
+
+@example
+guix build --with-debug-info=glib inkscape
+@end example
+
+Ejecute @command{info \"(guix.es) Opciones de transformación de paquetes\"}
+para obtener más información.")
          (fr "La nouvelle option de transformation de paquets
 @option{--with-debug-info} compile une variante d'un paquet avec les
 informations de déboguage et la greffe sur l'application que l'on veut
@@ -57,6 +74,7 @@ plus de détails.")))
  (entry (commit "abd7a474615353149a44f4504f0b4b248dcc0716")
         (title (en "New @option{--with-c-toolchain} package transformation option")
                (de "Neue Paketumwandlungsoption @option{--with-c-toolchain}")
+               (es "Nueva opción de transformación @option{--with-c-toolchain}")
                (fr "Nouvelle option de transformation @option{--with-c-toolchain}"))
         (body
          (en "The new @option{--with-c-toolchain} package transformation
@@ -93,6 +111,24 @@ guix build octave-cli \\
 
 Führen Sie für mehr Informationen @command{info \"(guix.de)
 Paketumwandlungsoptionen\"} aus.")
+         (es "La nueva opción de transformación de paquetes
+@option{--with-c-toolchain} proporciona a las desarrolladoras una manera
+fácil de reconstruir sus paquetes favoritos con la cadena de herramientas
+de compilación de C/C++ que elijan en vez de la predeterminada.
+
+Por ejemplo, la siguiente orden reconstruye los paquetes @code{fftw} y
+@code{fftwf} así como todos los paquetes que dependen de ellos hasta
+@code{octave-cli}, usando la versión 10 de GCC (el compilador
+predeterminado en estos momentos es GCC 7.5):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Ejecute @command{info \"(guix.es) Opciones de transformación de paquetes\"}
+para obtener más información.")
          (fr "La nouvelle option de transformation de paquets
 @option{--with-c-toolchain} permet aux développeur·euses de recompiler leurs
 paquets préférés avec la chaîne d'outils C/C++ de leur choix à la place de
