@@ -7831,7 +7831,7 @@ Here is an example of a package definition that removes the
 phase before the @code{build} phase, called
 @code{set-prefix-in-makefile}:
 
-@example
+@lisp
 (define-public example
   (package
     (name "example")
@@ -7850,7 +7850,7 @@ phase before the @code{build} phase, called
                            (string-append "PREFIX = "
                                           out "\n")))
                         #true))))))))
-@end example
+@end lisp
 
 The new phase that is inserted is written as an anonymous procedure,
 introduced with @code{lambda*}; it honors the @code{outputs} parameter
