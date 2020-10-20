@@ -55,6 +55,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6433,7 +6434,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.6")
+    (version "3.38.1")
     (source
      (origin
        (method url-fetch)
@@ -6441,7 +6442,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0x9hzqnji5l966yy2k5gppl8hqasn3sd5an4sr8srjmncxcs80ys"))))
+        (base32 "0grscz96bwj79ka4qvxh8h75avdx6824k8k38ylmaj6xbl6gi0hy"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
