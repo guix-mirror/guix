@@ -990,8 +990,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "e701d4d7f24a11d94cf504e7efbcee4e1091b092")
-        (revision "1"))
+  (let ((commit "86e446c027b15e95bb4cadb6aeea09e90814c15e")
+        (revision "2"))
     (package
     (name "guix-build-coordinator")
     (version (git-version "0" revision commit))
@@ -1002,7 +1002,7 @@ environments.")
                     (commit commit)))
               (sha256
                (base32
-                "16f09sl527b6bgyxs2ybyjfncli60dwzg4v1c58h4hcl2zm8qx70"))
+                "0cpnzdl8q0mf00rgdlvh9kfz0x2alk2jds6h9kwiqahs10lkw4dc"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
