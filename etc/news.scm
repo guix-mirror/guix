@@ -18,6 +18,42 @@
 (channel-news
  (version 0)
 
+ (entry (commit "6aeda81602555fbeac0c0a209e74f5262093b513")
+        (title (en "New @option{--with-debug-info} package transformation option")
+               (fr "Nouvelle option de transformation @option{--with-debug-info}"))
+        (body
+         (en "The new @option{--with-debug-info} option builds a variant of a
+package that includes debug info and grafts it onto the application you want
+to debug.  Thus, only the package for which you want debug info needs to be
+recompiled.  This is useful for packages that do not already have a
+@code{debug} output.
+
+For example, here is how you would obtain debug info for the @code{glib}
+library so you can inspect it while debugging Inkscape:
+
+@example
+guix build --with-debug-info=glib inkscape
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-debug-info} compile une variante d'un paquet avec les
+informations de déboguage et la greffe sur l'application que l'on veut
+déboguer.  Ainsi seul le paquet pour lequel on demande des informations de
+déboguage a besoin d'être recompilé.  C'est utile pour les paquets n'ayant pas
+déjà un résultat @code{debug}.
+
+Voici par exemple comment obtenir des informations de déboguage pour la
+bibliothèque @code{glib} de manière à pouvoir l'inspecter quand on débuggue
+Inkscape :
+
+@example
+guix build --with-debug-info=glib inkscape
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "abd7a474615353149a44f4504f0b4b248dcc0716")
         (title (en "New @option{--with-c-toolchain} package transformation option")
                (de "Neue Paketumwandlungsoption @option{--with-c-toolchain}")
