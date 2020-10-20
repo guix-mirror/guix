@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -612,6 +613,10 @@ References: ~%"
   404
   (let ((uri (publish-uri "/log/does-not-exist")))
     (response-code (http-get uri))))
+
+(test-equal "/signing-key.pub"
+  200
+  (response-code (http-get (publish-uri "/signing-key.pub"))))
 
 (test-equal "non-GET query"
   '(200 404)

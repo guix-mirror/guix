@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -686,6 +687,13 @@ to compress or decompress the log file; just return it as-is."
         (values (response-headers log) log)
         (not-found request))))
 
+(define (render-signing-key)
+  "Render signing key."
+  (let ((file %public-key-file))
+    (values `((content-type . (text/plain (charset . "UTF-8")))
+              (x-raw-file . ,file))
+            file)))
+
 (define (render-home-page request)
   "Render the home page."
   (values `((content-type . (text/html (charset . "UTF-8"))))
@@ -699,7 +707,12 @@ to compress or decompress the log file; just return it as-is."
                                (a (@ (href
                                       "https://guix.gnu.org/manual/en/html_node/Invoking-guix-publish.html"))
                                   (tt "guix publish"))
-                               " speaking.  Welcome!")))
+                               " speaking.  Welcome!")
+                            (p "Here is the "
+                               (a (@ (href
+                                      "signing-key.pub"))
+                                  (tt "signing key"))
+                               " for this server. Knock yourselves out!")))
                          port)))))
 
 (define (extract-narinfo-hash str)
@@ -918,6 +931,9 @@ methods, return the applicable compression."
           ;; /
           ((or () ("index.html"))
            (render-home-page request))
+          ;; guix signing-key
+          (("signing-key.pub")
+           (render-signing-key))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
            (if cache
