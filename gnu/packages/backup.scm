@@ -1072,7 +1072,7 @@ interactive mode.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.34")
+    (version "2.3.36")
     (source
      (origin
        (method git-fetch)
@@ -1080,7 +1080,7 @@ interactive mode.")
              (url "https://github.com/grke/burp")
              (commit version)))
        (sha256
-        (base32 "0ri62xshcjrk5vgyx8s11vsllab132mk1pcy4xxl9kzijdsjhdpy"))
+        (base32 "18gj1sv1naql0xais01yniyzs8dxc8xk5sk8y9hsc0cd93mxgk17"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
