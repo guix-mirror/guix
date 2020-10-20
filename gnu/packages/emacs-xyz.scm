@@ -131,6 +131,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
@@ -9842,6 +9843,39 @@ the default effects include entering fullscreen, deleting other windows of the
 current frame, disabling the mode line, and adding margins to the buffer that
 restrict the text width to 80 characters.")
     (license license:bsd-3)))
+
+(define-public emacs-wucuo
+  (package
+    (name "emacs-wucuo")
+    (version "0.2.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/wucuo")
+             (commit "89b99166768afb811c48a7db7c93c02d51a32b09")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03a6jlbv9axrd9yr0xscq3ni7fipm20ppc51kxy0sn241rplv0pg"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #tn
+       #:test-command '("make" "test")
+       #:phases (modify-phases %standard-phases
+                  ;; Set HOME, otherwise tests fail on loading aspell dict.
+                  (add-before 'check 'set-home
+                    (lambda _ (setenv "HOME" (getcwd)))))))
+    (native-inputs
+     ;; For tests.
+     `(("aspell" ,aspell)
+       ("aspell-dict-en" ,aspell-dict-en)))
+    (home-page "https://github.com/redguardtoo/wucuo")
+    (synopsis "Fast spell checker for camel case code or plain text")
+    (description
+     "Wucuo provides a spell checker on top of either Aspell or Hunspell, and
+relies on Flyspell internally.  It operates on the current region or buffer,
+a file, or a complete directory.")
+    (license license:gpl3+)))
 
 (define-public emacs-ido-completing-read+
   (package
