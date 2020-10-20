@@ -363,6 +363,8 @@
   #~(begin
       (use-modules (guix build utils))
 
+      (define %user (getpw "guix-build-coordinator-agent"))
+
       (mkdir-p "/var/log/guix-build-coordinator")
 
       ;; Allow writing the PID file
