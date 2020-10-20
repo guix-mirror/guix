@@ -18776,6 +18776,48 @@ News homepage.")
 can be queued at any time.")
       (license license:unlicense))))
 
+(define-public emacs-ytdl
+  (package
+    (name "emacs-ytdl")
+    (version "1.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/tuedachu/ytdl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xv93ny942gha1ipic5r6z4icjsb7src7ssdck9983kks3zacjk7"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("youtube-dl" ,youtube-dl)))
+    (propagated-inputs
+     `(("async" ,emacs-async)
+       ("transient" ,emacs-transient)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((youtube-dl (assoc-ref inputs "youtube-dl")))
+               ;; .el is read-only in git.
+               (chmod "ytdl.el" #o644)
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables
+                   "ytdl.el"
+                 ("ytdl-command"
+                  (string-append youtube-dl "/bin/youtube-dl")))))))))
+    (home-page "https://gitlab.com/tuedachu/ytdl")
+    (synopsis "Emacs interface for youtube-dl")
+    (description "This package manages a video download queue for
+@command{youtube-dl}, which serves as the back end.  New videos can be queued
+at any time.  All youtube-dl backends are supported.  It's possible to create
+download profiles depending on the downloaded URL.")
+    (license license:gpl3)))
+
 (define-public emacs-org-web-tools
   (package
     (name "emacs-org-web-tools")
