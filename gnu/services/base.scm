@@ -1476,10 +1476,18 @@ archive' public keys, with GUIX."
     #~(begin
         (use-modules (guix build utils))
 
-        (unless (file-exists? "/etc/guix/acl")
-          (mkdir-p "/etc/guix")
-          (copy-file #+default-acl "/etc/guix/acl")
-          (chmod "/etc/guix/acl" #o600)))))
+        ;; If the ACL already exists, move it out of the way.  Create a backup
+        ;; if it's a regular file: it's likely that the user manually updated
+        ;; it with 'guix archive --authorize'.
+        (if (file-exists? "/etc/guix/acl")
+            (if (and (symbolic-link? "/etc/guix/acl")
+                     (store-file-name? (readlink "/etc/guix/acl")))
+                (delete-file "/etc/guix/acl")
+                (rename-file "/etc/guix/acl" "/etc/guix/acl.bak"))
+            (mkdir-p "/etc/guix"))
+
+        ;; Installed the declared ACL.
+        (symlink #+default-acl "/etc/guix/acl"))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.

@@ -14582,17 +14582,53 @@ Whether to authorize the substitute keys listed in
 @code{authorized-keys}---by default that of @code{@value{SUBSTITUTE-SERVER}}
 (@pxref{Substitutes}).
 
+When @code{authorize-key?} is true, @file{/etc/guix/acl} cannot be
+changed by invoking @command{guix archive --authorize}.  You must
+instead adjust @code{guix-configuration} as you wish and reconfigure the
+system.  This ensures that your operating system configuration file is
+self-contained.
+
+@quotation Note
+When booting or reconfiguring to a system where @code{authorize-key?}
+is true, the existing @file{/etc/guix/acl} file is backed up as
+@file{/etc/guix/acl.bak} if it was determined to be a manually modified
+file.  This is to facilitate migration from earlier versions, which
+allowed for in-place modifications to @file{/etc/guix/acl}.
+@end quotation
+
 @vindex %default-authorized-guix-keys
 @item @code{authorized-keys} (default: @code{%default-authorized-guix-keys})
 The list of authorized key files for archive imports, as a list of
 string-valued gexps (@pxref{Invoking guix archive}).  By default, it
 contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes}).
+See @code{substitute-urls} below for an example on how to change it.
 
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
 
 @item @code{substitute-urls} (default: @code{%default-substitute-urls})
 The list of URLs where to look for substitutes by default.
+
+Suppose you would like to fetch substitutes from @code{guix.example.org}
+in addition to @code{@value{SUBSTITUTE-SERVER}}.  You will need to do
+two things: (1) add @code{guix.example.org} to @code{substitute-urls},
+and (2) authorize its signing key, having done appropriate checks
+(@pxref{Substitute Server Authorization}).  The configuration below does
+exactly that:
+
+@lisp
+(guix-configuration
+  (substitute-urls
+   (append (list "https://guix.example.org")
+           %default-substitute-urls))
+  (authorized-keys
+   (append (list (local-file "./guix.example.org-key.pub"))
+           %default-authorized-guix-keys)))
+@end lisp
+
+This example assumes that the file @file{./guix.example.org-key.pub}
+contains the public key that @code{guix.example.org} uses to sign
+substitutes.
 
 @item @code{max-silent-time} (default: @code{0})
 @itemx @code{timeout} (default: @code{0})
