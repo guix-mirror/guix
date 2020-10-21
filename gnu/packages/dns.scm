@@ -760,16 +760,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.11")
+    (version "2.4.0")
     (source
-     (let ((build "9779"))
+     (let ((build "9809"))
        (origin
          (method url-fetch)
          (uri
           (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "10zj0dp99n15mjpdydpvhj29vif6s31plkpkyflh0wjmcn2536jg")))))
+          (base32 "114a1y4pzzzq0s9hyn65nd4fg19xijsqpfhsd0wkvjndsazg63ky")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -786,15 +786,8 @@ served by AS112.  Stub and forward zones are supported.")
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
-             "--disable-build-timestamp" ; build reproducibly
-             "--enable-shared"
-             "--disable-static"
-             "--enable-acl"
-             "--enable-caching"
-             "--enable-ctrl"            ; enable remote control
-             "--enable-nsec"
-             "--enable-nsec3"
-             "--enable-tsig")))
+             "--enable-shared" "--disable-static"
+             "--disable-build-timestamp"))) ; build reproducibly
     (home-page "https://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain
