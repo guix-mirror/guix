@@ -229,14 +229,12 @@
                             "--with-system-ffi"
                             ""))))
              #t))
-         (add-before
-             'check 'pre-check
+         (add-before 'check 'pre-check
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
              #t))
-         (add-after
-             'unpack 'set-source-file-times-to-1980
+         (add-after 'unpack 'set-source-file-times-to-1980
            ;; XXX One of the tests uses a ZIP library to pack up some of the
            ;; source tree, and fails with "ZIP does not support timestamps
            ;; before 1980".  Work around this by setting the file times in the
@@ -280,19 +278,20 @@
                 (lambda (opt)
                   (format #t "Compiling with optimization level: ~a\n"
                           (if (null? opt) "none" (car opt)))
-                  (for-each (lambda (file)
-                              (apply invoke
-                                     `(,,(if (%current-target-system)
-                                             "python2"
-                                             '(string-append out "/bin/python"))
-                                       ,@opt
-                                       "-m" "compileall"
-                                       "-f" ; force rebuild
-                                       ;; Don't build lib2to3, because it contains Python 3 code.
-                                       "-x" "lib2to3/.*"
-                                       ,file)))
-                            (find-files out "\\.py$")))
-                (list '() '("-O") '("-OO")))
+                  (apply invoke
+                         `(,,(if (%current-target-system)
+                                 "python2"
+                                 '(string-append out "/bin/python"))
+                           ,@opt
+                           "-m" "compileall"
+                           "-f"         ; force rebuild
+                           ;; Don't build lib2to3, because it contains Python 3 code.
+                           "-x" "lib2to3/.*"
+                           ,out)))
+                ;; Python 2 has a single file extension (.pyo) for the chosen
+                ;; level of optimization, so it doesn't make sense to byte
+                ;; compile with more than one level.
+                (list '() '("-OO")))
                #t)))
          (add-after 'install 'move-tk-inter
            (lambda* (#:key outputs #:allow-other-keys)
