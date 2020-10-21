@@ -3848,6 +3848,10 @@ as a base class when writing classes that depend upon
         (base32
          "1r19ifc4skyl2gxnifrxa5jvbbay9fb2in79ppgv02b6n4bhsw90"))))
     (build-system ruby-build-system)
+    (arguments
+     ;; The test suite fails (see:
+     ;; https://github.com/cldwalker/bond/issues/46).
+     `(#:tests? #f))
     (native-inputs
      `(("ruby-bacon" ,ruby-bacon)
        ("ruby-bacon-bits" ,ruby-bacon-bits)
