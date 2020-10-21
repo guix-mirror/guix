@@ -14869,7 +14869,7 @@ and @code{erc-send-modify-hook} to download and show images.")
 (define-public emacs-list-utils
   (package
     (name "emacs-list-utils")
-    (version "0.4.4")
+    (version "0.4.6")
     (source
      (origin
        (method git-fetch)
@@ -14878,7 +14878,7 @@ and @code{erc-send-modify-hook} to download and show images.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ql159v7sxs33yh2l080kchrj52vk34knz50cvqi3ykpb7djg3sz"))))
+        (base32 "07hbz2md52ccy95gv4d5n6szrfmpfqf3w4kwqdg2cf54c7kgf7hw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rolandwalker/list-utils")
     (synopsis "List-manipulation utility functions")
