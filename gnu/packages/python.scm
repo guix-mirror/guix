@@ -110,51 +110,51 @@
     (version "2.7.17")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://www.python.org/ftp/python/"
-                          version "/Python-" version ".tar.xz"))
-      (sha256
-       (base32
-        "0hds28cg226m8j8sr394nm9yc4gxhvlv109w0avsf2mxrlrz0hsd"))
-      (patches (search-patches "python-2.7-search-paths.patch"
-                               "python-2-deterministic-build-info.patch"
-                               "python-2.7-site-prefixes.patch"
-                               "python-2.7-source-date-epoch.patch"
-                               "python-2.7-adjust-tests.patch"
-                               "python-cross-compile.patch"))
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          ;; Ensure the bundled copies of these libraries are not used.
-          (for-each delete-file-recursively
-                    '("Modules/_ctypes/libffi" "Modules/expat" "Modules/zlib"))
+       (method url-fetch)
+       (uri (string-append "https://www.python.org/ftp/python/"
+                           version "/Python-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hds28cg226m8j8sr394nm9yc4gxhvlv109w0avsf2mxrlrz0hsd"))
+       (patches (search-patches "python-2.7-search-paths.patch"
+                                "python-2-deterministic-build-info.patch"
+                                "python-2.7-site-prefixes.patch"
+                                "python-2.7-source-date-epoch.patch"
+                                "python-2.7-adjust-tests.patch"
+                                "python-cross-compile.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Ensure the bundled copies of these libraries are not used.
+           (for-each delete-file-recursively
+                     '("Modules/_ctypes/libffi" "Modules/expat" "Modules/zlib"))
 
-          (substitute* "Modules/Setup.dist"
-            ;; Link Expat instead of embedding the bundled one.
-            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+           (substitute* "Modules/Setup.dist"
+             ;; Link Expat instead of embedding the bundled one.
+             (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
 
-          ;; Suboptimal to delete failing tests here, but if we delete them in
-          ;; the arguments then we need to make sure to strip out that phase
-          ;; when it gets inherited by python and python-minimal.
-          (for-each delete-file
-                    '("Lib/test/test_compileall.py"
-                      "Lib/test/test_ctypes.py" ; fails on mips64el
-                      "Lib/test/test_distutils.py"
-                      "Lib/test/test_import.py"
-                      "Lib/test/test_shutil.py"
-                      "Lib/test/test_socket.py"
-                      "Lib/test/test_subprocess.py"))
-          #t))))
+           ;; Suboptimal to delete failing tests here, but if we delete them in
+           ;; the arguments then we need to make sure to strip out that phase
+           ;; when it gets inherited by python and python-minimal.
+           (for-each delete-file
+                     '("Lib/test/test_compileall.py"
+                       "Lib/test/test_ctypes.py" ; fails on mips64el
+                       "Lib/test/test_distutils.py"
+                       "Lib/test/test_import.py"
+                       "Lib/test/test_shutil.py"
+                       "Lib/test/test_socket.py"
+                       "Lib/test/test_subprocess.py"))
+           #t))))
     (outputs '("out"
-               "tk"))                     ;tkinter; adds 50 MiB to the closure
+               "tk"))                   ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:configure-flags
-       (list "--enable-shared"                    ;allow embedding
-             "--with-system-expat"                ;for XML support
-             "--with-system-ffi"                  ;build ctypes
-             "--with-ensurepip=install"           ;install pip and setuptools
+       (list "--enable-shared"          ;allow embedding
+             "--with-system-expat"      ;for XML support
+             "--with-system-ffi"        ;build ctypes
+             "--with-ensurepip=install" ;install pip and setuptools
              "--enable-unicode=ucs4"
 
              ;; Prevent the installed _sysconfigdata.py from retaining a reference
@@ -182,12 +182,12 @@
               ;; https://github.com/python/cpython/commit/529525fb5a8fd9b96ab4021311a598c77588b918.
               " --exclude test_urllib2_localnet test_httplib"))
 
-        #:modules ((ice-9 ftw) (ice-9 match)
-                   (guix build utils) (guix build gnu-build-system))
-        #:phases
-        (modify-phases %standard-phases
-          (add-before
-           'configure 'patch-lib-shells
+       #:modules ((ice-9 ftw) (ice-9 match)
+                  (guix build utils) (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+             'configure 'patch-lib-shells
            (lambda _
              ;; This variable is used in setup.py to enable cross compilation
              ;; specific switches. As it is not set properly by configure
@@ -205,38 +205,38 @@
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
              #t))
-          ,@(if (hurd-system?)
-                `((add-before 'build 'patch-regen-for-hurd
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((libc (assoc-ref inputs "libc")))
-                        (substitute* "Lib/plat-generic/regen"
-                          (("/usr/include/") (string-append libc "/include/")))
-                        #t))))
-                '())
-          (add-before 'configure 'do-not-record-configure-flags
-            (lambda* (#:key configure-flags #:allow-other-keys)
-              ;; Remove configure flags from the installed '_sysconfigdata.py'
-              ;; and 'Makefile' so we don't end up keeping references to the
-              ;; build tools.
-              ;;
-              ;; Preserve at least '--with-system-ffi' since otherwise the
-              ;; thing tries to build libffi, fails, and we end up with a
-              ;; Python that lacks ctypes.
-              (substitute* "configure"
-                (("^CONFIG_ARGS=.*$")
-                 (format #f "CONFIG_ARGS='~a'\n"
-                         (if (member "--with-system-ffi" configure-flags)
-                             "--with-system-ffi"
-                             ""))))
-              #t))
-          (add-before
-           'check 'pre-check
+         ,@(if (hurd-system?)
+               `((add-before 'build 'patch-regen-for-hurd
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((libc (assoc-ref inputs "libc")))
+                       (substitute* "Lib/plat-generic/regen"
+                         (("/usr/include/") (string-append libc "/include/")))
+                       #t))))
+               '())
+         (add-before 'configure 'do-not-record-configure-flags
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             ;; Remove configure flags from the installed '_sysconfigdata.py'
+             ;; and 'Makefile' so we don't end up keeping references to the
+             ;; build tools.
+             ;;
+             ;; Preserve at least '--with-system-ffi' since otherwise the
+             ;; thing tries to build libffi, fails, and we end up with a
+             ;; Python that lacks ctypes.
+             (substitute* "configure"
+               (("^CONFIG_ARGS=.*$")
+                (format #f "CONFIG_ARGS='~a'\n"
+                        (if (member "--with-system-ffi" configure-flags)
+                            "--with-system-ffi"
+                            ""))))
+             #t))
+         (add-before
+             'check 'pre-check
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
              #t))
-          (add-after
-           'unpack 'set-source-file-times-to-1980
+         (add-after
+             'unpack 'set-source-file-times-to-1980
            ;; XXX One of the tests uses a ZIP library to pack up some of the
            ;; source tree, and fails with "ZIP does not support timestamps
            ;; before 1980".  Work around this by setting the file times in the
@@ -247,85 +247,85 @@
                           (utime file circa-1980 circa-1980)
                           #t))
                #t)))
-          (add-after 'install 'remove-tests
-            ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
-            ;; because these files are used by some libraries out there.
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (match (scandir (string-append out "/lib")
-                                (lambda (name)
-                                  (string-prefix? "python" name)))
-                  ((pythonX.Y)
-                   (let ((testdir (string-append out "/lib/" pythonX.Y
-                                                 "/test")))
-                     (with-directory-excursion testdir
-                       (for-each delete-file-recursively
-                                 (scandir testdir
-                                          (match-lambda
-                                            ((or "." "..") #f)
-                                            ("support" #f)
-                                            (file
-                                             (not
-                                              (string-prefix? "test_support."
-                                                              file))))))
-                       (call-with-output-file "__init__.py" (const #t))
-                       #t)))))))
-          (add-after 'remove-tests 'rebuild-bytecode
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                ;; Disable hash randomization to ensure the generated .pycs
-                ;; are reproducible.
-                (setenv "PYTHONHASHSEED" "0")
-                (for-each
-                 (lambda (opt)
-                   (format #t "Compiling with optimization level: ~a\n"
-                           (if (null? opt) "none" (car opt)))
-                   (for-each (lambda (file)
-                               (apply invoke
-                                      `(,,(if (%current-target-system)
-                                              "python2"
-                                              '(string-append out "/bin/python"))
-                                        ,@opt
-                                        "-m" "compileall"
-                                        "-f" ; force rebuild
-                                        ;; Don't build lib2to3, because it contains Python 3 code.
-                                        "-x" "lib2to3/.*"
-                                        ,file)))
-                             (find-files out "\\.py$")))
-                 (list '() '("-O") '("-OO")))
-                #t)))
-          (add-after 'install 'move-tk-inter
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; When Tkinter support is built move it to a separate output so
-              ;; that the main output doesn't contain a reference to Tcl/Tk.
-              (let ((out (assoc-ref outputs "out"))
-                    (tk  (assoc-ref outputs "tk")))
-                (when tk
-                  (match (find-files out "tkinter.*\\.so")
-                    ((tkinter.so)
-                     ;; The .so is in OUT/lib/pythonX.Y/lib-dynload, but we
-                     ;; want it under TK/lib/pythonX.Y/site-packages.
-                     (let* ((len    (string-length out))
-                            (target (string-append
-                                     tk "/"
-                                     (string-drop
-                                      (dirname (dirname tkinter.so))
-                                      len)
-                                     "/site-packages")))
-                       (install-file tkinter.so target)
-                       (delete-file tkinter.so)))))
-                #t))))))
+         (add-after 'install 'remove-tests
+           ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
+           ;; because these files are used by some libraries out there.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (match (scandir (string-append out "/lib")
+                               (lambda (name)
+                                 (string-prefix? "python" name)))
+                 ((pythonX.Y)
+                  (let ((testdir (string-append out "/lib/" pythonX.Y
+                                                "/test")))
+                    (with-directory-excursion testdir
+                      (for-each delete-file-recursively
+                                (scandir testdir
+                                         (match-lambda
+                                           ((or "." "..") #f)
+                                           ("support" #f)
+                                           (file
+                                            (not
+                                             (string-prefix? "test_support."
+                                                             file))))))
+                      (call-with-output-file "__init__.py" (const #t))
+                      #t)))))))
+         (add-after 'remove-tests 'rebuild-bytecode
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Disable hash randomization to ensure the generated .pycs
+               ;; are reproducible.
+               (setenv "PYTHONHASHSEED" "0")
+               (for-each
+                (lambda (opt)
+                  (format #t "Compiling with optimization level: ~a\n"
+                          (if (null? opt) "none" (car opt)))
+                  (for-each (lambda (file)
+                              (apply invoke
+                                     `(,,(if (%current-target-system)
+                                             "python2"
+                                             '(string-append out "/bin/python"))
+                                       ,@opt
+                                       "-m" "compileall"
+                                       "-f" ; force rebuild
+                                       ;; Don't build lib2to3, because it contains Python 3 code.
+                                       "-x" "lib2to3/.*"
+                                       ,file)))
+                            (find-files out "\\.py$")))
+                (list '() '("-O") '("-OO")))
+               #t)))
+         (add-after 'install 'move-tk-inter
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; When Tkinter support is built move it to a separate output so
+             ;; that the main output doesn't contain a reference to Tcl/Tk.
+             (let ((out (assoc-ref outputs "out"))
+                   (tk  (assoc-ref outputs "tk")))
+               (when tk
+                 (match (find-files out "tkinter.*\\.so")
+                   ((tkinter.so)
+                    ;; The .so is in OUT/lib/pythonX.Y/lib-dynload, but we
+                    ;; want it under TK/lib/pythonX.Y/site-packages.
+                    (let* ((len    (string-length out))
+                           (target (string-append
+                                    tk "/"
+                                    (string-drop
+                                     (dirname (dirname tkinter.so))
+                                     len)
+                                    "/site-packages")))
+                      (install-file tkinter.so target)
+                      (delete-file tkinter.so)))))
+               #t))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("expat" ,expat)
        ("gdbm" ,gdbm)
-       ("libffi" ,libffi)                         ; for ctypes
-       ("sqlite" ,sqlite)                         ; for sqlite extension
+       ("libffi" ,libffi)               ; for ctypes
+       ("sqlite" ,sqlite)               ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)
        ("tcl" ,tcl)
-       ("tk" ,tk)))                               ; for tkinter
+       ("tk" ,tk)))                     ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ;; When cross-compiling, a native version of Python itself is needed.
