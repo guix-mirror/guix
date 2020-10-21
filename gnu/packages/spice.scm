@@ -324,9 +324,7 @@ resolution scaling on graphical console window resize.")
                 "0vyvkk4b6xjwq1ccggql13c1x7g4y90clpkqw28257azgn2a1c8n"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; TODO Tests require gnutls built with
-                                        ; p11-kit
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
            (lambda* (#:key inputs #:allow-other-keys)
