@@ -622,7 +622,6 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                              (pixdir (string-append sharedir "/pixmaps")))
                         (with-directory-excursion builddir
                           (install-file "bombadillo.desktop" appdir)
-                          (install-file "LICENSE" docdir)
                           (install-file "bombadillo.1" mandir)
                           (install-file "bombadillo-icon.png" pixdir)
                           #t)))))))
