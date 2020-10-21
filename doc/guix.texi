@@ -16354,7 +16354,7 @@ The @code{(gnu services avahi)} provides the following definition.
 This is the service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
 ``zero-configuration'' host name lookups (see @uref{https://avahi.org/}).
-Its value must be a @code{zero-configuration} record---see below.
+Its value must be an @code{avahi-configuration} record---see below.
 
 This service extends the name service cache daemon (nscd) so that it can
 resolve @code{.local} host names using
