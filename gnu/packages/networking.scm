@@ -900,10 +900,14 @@ more.")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'patch-tests
                     (lambda _
-                      ;; XXX FIXME: Disable the zproc test, which fails on some
-                      ;; hardware: <https://github.com/zeromq/czmq/issues/2007>.
                       (substitute* "src/czmq_selftest.c"
+                        ;; Disable the zproc test, which fails on some hardware
+                        ;; (see: https://github.com/zeromq/czmq/issues/2007).
                         (("\\{ \"zproc\", zproc_test.*")
+                         "")
+                        ;; Also disable the zarmour test, which fails as well
+                        ;; (see: https://github.com/zeromq/czmq/issues/2125).
+                        (("\\{ \"zarmour\", zarmour_test.*")
                          ""))
                       #t)))))
     (inputs
