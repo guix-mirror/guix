@@ -88,6 +88,7 @@
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1793,6 +1794,32 @@ human-friendly syntax.")
 
 (define-public python2-schedule
   (package-with-python2 python-schedule))
+
+(define-public python-scour
+  (package
+    (name "python-scour")
+    (version "038.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/scour-project/scour")
+         (commit
+          (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rgiypb9ig8x4rl3hfzpy7kwnx1q3064nvlrv4fk0dnp84girn0v"))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (build-system python-build-system)
+    (home-page "https://github.com/scour-project/scour")
+    (synopsis "Scour is an SVG optimizer/cleaner written in Python")
+    (description "The goal of Scour is to output a file that renderes
+identically at a fraction of the size by removing a lot of redundant
+information created by most SVG editors.  Optimization options are typically
+lossless but can be tweaked for more agressive cleaning.")
+    (license license:asl2.0)))
 
 (define-public python-mechanize
   (package
