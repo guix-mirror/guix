@@ -12857,7 +12857,7 @@ available when building a virtual machine disk image.}.
 
 @cindex hurd
 @item @code{hurd} (default: @code{#f})
-The package object of the hurd to be started by the kernel.  When this
+The package object of the Hurd to be started by the kernel.  When this
 field is set, produce a GNU/Hurd operating system.  In that case,
 @code{kernel} must also be set to the @code{gnumach} package---the
 microkernel the Hurd runs on.
