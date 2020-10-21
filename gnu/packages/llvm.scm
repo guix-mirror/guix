@@ -48,12 +48,16 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages xml)
   #:export (system->llvm-target))
 
@@ -874,6 +878,40 @@ of programming tools as well as libraries with equivalent functionality.")
     (description "LLD is a high-performance linker, built as a set of reusable
 components which highly leverage existing libraries in the larger LLVM Project.")
     (license license:asl2.0))) ; With LLVM exception
+
+(define-public lldb
+  (package
+    (name "lldb")
+    (version "11.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "lldb" version))
+              (sha256
+               (base32
+                "0wic9lyb2la9bkzdc13szkm4f793w1mddp50xvh237iraygw0w45"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DCMAKE_CXX_COMPILER=clang++")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("clang" ,clang-11)
+       ("llvm" ,llvm-11)
+
+       ;; Optional (but recommended) inputs.
+       ("curses" ,ncurses)
+       ("editline" ,libedit)
+       ("liblzma" ,xz)
+       ("libxml2" ,libxml2)
+       ("lua" ,lua)
+       ("python" ,python)))
+    (home-page "https://lldb.llvm.org/")
+    (synopsis "Low level debugger")
+    (description
+     "LLDB is a high performance debugger built as a set of reusable components
+which highly leverage existing libraries in the larger LLVM project.")
+    (license license:asl2.0))) ;with LLVM exceptions
 
 (define-public libcxx
   (package
