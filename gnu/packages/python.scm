@@ -107,7 +107,7 @@
 (define-public python-2.7
   (package
     (name "python2")
-    (version "2.7.17")
+    (version "2.7.18")
     (source
      (origin
        (method url-fetch)
@@ -115,7 +115,7 @@
                            version "/Python-" version ".tar.xz"))
        (sha256
         (base32
-         "0hds28cg226m8j8sr394nm9yc4gxhvlv109w0avsf2mxrlrz0hsd"))
+         "0hzgxl94hnflis0d6m4szjx0b52gah7wpmcg5g00q7am6xwhwb5n"))
        (patches (search-patches "python-2.7-search-paths.patch"
                                 "python-2-deterministic-build-info.patch"
                                 "python-2.7-site-prefixes.patch"
