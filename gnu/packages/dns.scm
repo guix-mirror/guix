@@ -782,6 +782,13 @@ served by AS112.  Stub and forward zones are supported.")
            (lambda _
              (substitute* "Makefile.in"
                ((" (etc|var)") ""))
+             #t))
+         (add-after 'configure 'omit-spurious-references
+           (lambda _
+             ;; The many Makefile.in grep this(!) to #define BUILD_OPTIONS.
+             (substitute* "config.log"
+               (("(=/gnu/store/)[^-]*" _ match)
+                (string-append match "...")))
              #t)))
        #:configure-flags
        (list "--sysconfdir=/etc"
