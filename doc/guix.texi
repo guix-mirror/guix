@@ -222,6 +222,7 @@ Substitutes
 
 * Official Substitute Server::  One particular source of substitutes.
 * Substitute Server Authorization::  How to enable or disable substitutes.
+* Getting Substitutes from Other Servers::  Substitute diversity.
 * Substitute Authentication::   How Guix verifies substitutes.
 * Proxy Settings::              How to get substitutes via proxy.
 * Substitution Failure::        What happens when substitution fails.
@@ -1467,14 +1468,17 @@ When the daemon runs with @option{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
 
-@item --substitute-urls=@var{urls}
 @anchor{daemon-substitute-urls}
+@item --substitute-urls=@var{urls}
 Consider @var{urls} the default whitespace-separated list of substitute
 source URLs.  When this option is omitted,
 @indicateurl{https://@value{SUBSTITUTE-SERVER}} is used.
 
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
+
+@xref{Getting Substitutes from Other Servers}, for more information on
+how to configure the daemon to get substitutes from other servers.
 
 @cindex offloading
 @item --no-offload
@@ -3554,6 +3558,7 @@ also result from derivation builds, can be available as substitutes.
 @menu
 * Official Substitute Server::  One particular source of substitutes.
 * Substitute Server Authorization::  How to enable or disable substitutes.
+* Getting Substitutes from Other Servers::  Substitute diversity.
 * Substitute Authentication::   How Guix verifies substitutes.
 * Proxy Settings::              How to get substitutes via proxy.
 * Substitution Failure::        What happens when substitution fails.
@@ -3602,6 +3607,11 @@ must add its public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust @code{@value{SUBSTITUTE-SERVER}} to not
 be compromised and to serve genuine substitutes.
+
+@quotation Note
+If you are using Guix System, you can skip this section: Guix System
+authorizes substitutes from @code{@value{SUBSTITUTE-SERVER}} by default.
+@end quotation
 
 The public key for @code{@value{SUBSTITUTE-SERVER}} is installed along with Guix, in
 @code{@var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub}, where @var{prefix} is
@@ -3652,6 +3662,108 @@ The substitute mechanism can be disabled globally by running
 guix-daemon}).  It can also be disabled temporarily by passing the
 @option{--no-substitutes} option to @command{guix package},
 @command{guix build}, and other command-line tools.
+
+@node Getting Substitutes from Other Servers
+@subsection Getting Substitutes from Other Servers
+
+@cindex substitute servers, adding more
+Guix can look up and fetch substitutes from several servers.  This is
+useful when you are using packages from additional channels for which
+the official server does not have substitutes but another server
+provides them.  Another situation where this is useful is when you would
+prefer to download from your organization's substitute server, resorting
+to the official server only as a fallback or dismissing it altogether.
+
+You can give Guix a list of substitute server URLs and it will check
+them in the specified order.  You also need to explicitly authorize the
+public keys of substitute servers to instruct Guix to accept the
+substitutes they sign.
+
+On Guix System, this is achieved by modifying the configuration of the
+@code{guix} service.  Since the @code{guix} service is part of the
+default lists of services, @code{%base-services} and
+@code{%desktop-services}, you can use @code{modify-services} to change
+its configuration and add the URLs and substitute keys that you want
+(@pxref{Service Reference, @code{modify-services}}).
+
+As an example, suppose you want to fetch substitutes from
+@code{guix.example.org} and to authorize the signing key of that server,
+in addition to the default @code{@value{SUBSTITUTE-SERVER}}.  The
+resulting operating system configuration will look something like:
+
+@lisp
+(operating-system
+  ;; @dots{}
+  (services
+    ;; Assume we're starting from '%desktop-services'.  Replace it
+    ;; with the list of services you're actually using.
+    (modify-services %desktop-services
+      (guix-service-type config =>
+                        (guix-configuration
+                          (inherit config)
+                          (substitute-urls
+                            (append (list "https://guix.example.org")
+                                    %default-substitute-urls))
+                          (authorized-keys
+                            (append (list (local-file "./key.pub"))
+                                    %default-authorized-guix-keys)))))))
+@end lisp
+
+This assumes that the file @file{key.pub} contains the signing key of
+@code{guix.example.org}.  With this change in place in your operating
+system configuration file (say @file{/etc/config.scm}), you can
+reconfigure and restart the @code{guix-daemon} service or reboot so the
+changes take effect:
+
+@example
+$ sudo guix system reconfigure /etc/config.scm
+$ sudo herd restart guix-daemon
+@end example
+
+If you're running Guix on a ``foreign distro'', you would instead take
+the following steps to get substitutes from additional servers:
+
+@enumerate
+@item
+Edit the service configuration file for @code{guix-daemon}; when using
+systemd, this is normally
+@file{/etc/systemd/system/guix-daemon.service}.  Add the
+@option{--substitute-urls} option on the @command{guix-daemon} command
+line and list the URLs of interest (@pxref{daemon-substitute-urls,
+@code{guix-daemon --substitute-urls}}):
+
+@example
+@dots{} --substitute-urls='https://guix.example.org https://@value{SUBSTITUTE-SERVER}'
+@end example
+
+@item
+Restart the daemon.  For systemd, it goes like this:
+
+@example
+systemctl daemon-reload
+systemctl restart guix-daemon.service
+@end example
+
+@item
+Authorize the key of the new server (@pxref{Invoking guix archive}):
+
+@example
+guix archive --authorize < key.pub
+@end example
+
+Again this assumes @file{key.pub} contains the public key that
+@code{guix.example.org} uses to sign substitutes.
+@end enumerate
+
+Now you're all set!  Substitutes will be preferably taken from
+@code{https://guix.example.org}, using @code{@value{SUBSTITUTE-SERVER}}
+as a fallback.  Of course you can list as many substitute servers as you
+like, with the caveat that substitute lookup can be slowed down if too
+many servers need to be contacted.
+
+Note that there are also situations where one may want to add the URL of
+a substitute server @emph{without} authorizing its key.
+@xref{Substitute Authentication}, to understand this fine point.
 
 @node Substitute Authentication
 @subsection Substitute Authentication
@@ -11873,12 +11985,8 @@ spawn an HTTP server on port 8080:
 guix publish
 @end example
 
-Once a publishing server has been authorized (@pxref{Invoking guix
-archive}), the daemon may download substitutes from it:
-
-@example
-guix-daemon --substitute-urls=http://example.org:8080
-@end example
+Once a publishing server has been authorized, the daemon may download
+substitutes from it.  @xref{Getting Substitutes from Other Servers}.
 
 By default, @command{guix publish} compresses archives on the fly as it
 serves them.  This ``on-the-fly'' mode is convenient in that it requires
