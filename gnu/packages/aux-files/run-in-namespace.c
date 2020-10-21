@@ -620,7 +620,7 @@ main (int argc, char *argv[])
   /* SELF is something like "/home/ludo/.local/gnu/store/…-foo/bin/ls" and we
      want to extract "/home/ludo/.local/gnu/store".  */
   size_t index = strlen (self)
-    - strlen ("@WRAPPED_PROGRAM@") + strlen (original_store);
+    - strlen (WRAPPER_PROGRAM) + strlen (original_store);
   char *store = strdup (self);
   store[index] = '\0';
 

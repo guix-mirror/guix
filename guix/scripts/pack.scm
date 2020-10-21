@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -847,7 +848,7 @@ last resort for relocation."
               (("@STORE_DIRECTORY@") (%store-directory)))
 
             (let* ((base   (strip-store-prefix program))
-                   (result (string-append target "/" base))
+                   (result (string-append target base))
                    (proot  #$(and proot?
                                   #~(string-drop
                                      #$(file-append (proot) "/bin/proot")
@@ -856,6 +857,9 @@ last resort for relocation."
               (mkdir-p (dirname result))
               (apply invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
                      "run.c" "-o" result
+                     (string-append "-DWRAPPER_PROGRAM=\""
+                                    (canonicalize-path (dirname result)) "/"
+                                    (basename result) "\"")
                      (append (if proot
                                  (list (string-append "-DPROOT_PROGRAM=\""
                                                       proot "\""))
