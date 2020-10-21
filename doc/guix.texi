@@ -29258,6 +29258,18 @@ Enable or disable the addition of iptables rules.
 @end table
 @end deftp
 
+@cindex Singularity, container service
+@defvr {Scheme Variable} singularity-service-type
+This is the type of the service that allows you to run
+@url{https://www.sylabs.io/singularity/, Singularity}, a Docker-style tool to
+create and run application bundles (aka. ``containers'').  The value for this
+service is the Singularity package to use.
+
+The service does not install a daemon; instead, it installs helper programs as
+setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
+@command{singularity run} and similar commands.
+@end defvr
+
 @cindex Audit
 @subsubheading Auditd Service
 
@@ -29313,17 +29325,6 @@ instantiate on startup.
 
 @end table
 @end deftp
-
-@defvr {Scheme Variable} singularity-service-type
-This is the type of the service that allows you to run
-@url{https://www.sylabs.io/singularity/, Singularity}, a Docker-style tool to
-create and run application bundles (aka. ``containers'').  The value for this
-service is the Singularity package to use.
-
-The service does not install a daemon; instead, it installs helper programs as
-setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
-@command{singularity run} and similar commands.
-@end defvr
 
 @cindex rshiny
 @subsubheading R-Shiny service
