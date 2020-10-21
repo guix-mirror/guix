@@ -38,10 +38,13 @@
     (lambda (input)
       (let ((bv (get-bytevector-n input size)))
         (call-with-port
+         ;; Do not use "call-with-output-file" that would truncate the file.
          (open-file-output-port device
-                                (file-options no-truncate no-create)
+                                (file-options no-truncate no-fail)
                                 (buffer-mode block)
-                                (native-transcoder))
+                                ;; Use the binary-friendly ISO-8859-1
+                                ;; encoding.
+                                (make-transcoder (latin-1-codec)))
          (lambda (output)
            (seek output offset SEEK_SET)
            (put-bytevector output bv)))))))

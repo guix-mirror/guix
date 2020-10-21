@@ -204,7 +204,8 @@ services as defined by OS."
 ;;; Bootloader configuration.
 ;;;
 
-(define (install-bootloader-program installer bootloader-package bootcfg
+(define (install-bootloader-program installer disk-installer
+                                    bootloader-package bootcfg
                                     bootcfg-file device target)
   "Return an executable store item that, upon being evaluated, will install
 BOOTCFG to BOOTCFG-FILE, a target file name, on DEVICE, a file system device,
@@ -246,10 +247,17 @@ BOOTLOADER-PACKAGE."
              ;; a broken installation.
              (switch-symlinks new-gc-root #$bootcfg)
              (install-boot-config #$bootcfg #$bootcfg-file #$target)
-             (when #$installer
+             (when (or #$installer #$disk-installer)
                (catch #t
                  (lambda ()
-                   (#$installer #$bootloader-package #$device #$target))
+                   ;; The bootloader might not support installation on a
+                   ;; mounted directory using the BOOTLOADER-INSTALLER
+                   ;; procedure. In that case, fallback to installing the
+                   ;; bootloader directly on DEVICE using the
+                   ;; BOOTLOADER-DISK-IMAGE-INSTALLER procedure.
+                   (if #$installer
+                       (#$installer #$bootloader-package #$device #$target)
+                       (#$disk-installer #$bootloader-package 0 #$device)))
                  (lambda args
                    (delete-file new-gc-root)
                    (match args
@@ -272,11 +280,14 @@ additional configurations specified by MENU-ENTRIES can be selected."
   (let* ((bootloader (bootloader-configuration-bootloader configuration))
          (installer (and run-installer?
                          (bootloader-installer bootloader)))
+         (disk-installer (and run-installer?
+                              (bootloader-disk-image-installer bootloader)))
          (package (bootloader-package bootloader))
          (device (bootloader-configuration-target configuration))
          (bootcfg-file (bootloader-configuration-file bootloader)))
     (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
               (primitive-load #$(install-bootloader-program installer
+                                                            disk-installer
                                                             package
                                                             bootcfg
                                                             bootcfg-file
