@@ -367,7 +367,9 @@ features that are not supported by the standard @code{stdio} implementation.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(;; Don't use the build-time TMPDIR (/tmp/guix-build-...) at runtime.
+       #:configure-flags '("--enable-tmpdir=/tmp")
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'make-files-writable
                     (lambda _
                       (for-each make-file-writable (find-files "."))
