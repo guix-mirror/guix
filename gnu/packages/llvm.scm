@@ -326,6 +326,27 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 (("@GLIBC_LIBDIR@")
                                  (string-append libc "/lib"))))))
                         #t)))
+                  ,@(if (version>=? version "10")
+                        `((add-after 'install 'adjust-cmake-file
+                            (lambda* (#:key outputs #:allow-other-keys)
+                              (let ((out (assoc-ref outputs "out")))
+                                ;; Clang generates a CMake file with "targets"
+                                ;; for each installed library file.  Downstream
+                                ;; consumers of the CMake interface can use this
+                                ;; to get absolute library locations.  Including
+                                ;; this file will needlessly assert that _all_
+                                ;; libraries are available, which causes problems
+                                ;; in Guix because some are removed (see the
+                                ;; move-extra-tools phase).  Thus, remove the
+                                ;; asserts so that the main functionality works.
+                                (substitute*
+                                    (string-append
+                                     out
+                                     "/lib/cmake/clang/ClangTargets-release.cmake")
+                                  (("list\\(APPEND _IMPORT_CHECK_TARGETS.*" all)
+                                   (string-append "# Disabled by Guix.\n#" all)))
+                                #t))))
+                        '())
                   ,@(if (version>? version "3.8")
                         `((add-after 'install 'symlink-cfi_blacklist
                             (lambda* (#:key inputs outputs #:allow-other-keys)
