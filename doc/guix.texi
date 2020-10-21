@@ -13726,7 +13726,18 @@ the X Keyboard extension (XKB), each layout has four attributes: a name (often
 a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an
 optional variant name, an optional keyboard model name, and a possibly empty
 list of additional options.  In most cases the layout name is all you care
-about.  Here are a few example:
+about.
+
+@deffn {Scheme Procedure} keyboard-layout @var{name} [@var{variant}] @
+                [#:model] [#:options '()]
+Return a new keyboard layout with the given @var{name} and @var{variant}.
+
+@var{name} must be a string such as @code{"fr"}; @var{variant} must be a
+string such as @code{"bepo"} or @code{"nodeadkeys"}.  See the
+@code{xkeyboard-config} package for valid options.
+@end deffn
+
+Here are a few examples:
 
 @lisp
 ;; The German QWERTZ layout.  Here we assume a standard
