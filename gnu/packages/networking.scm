@@ -332,8 +332,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
         (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
                        (assoc-ref %outputs "out") "/include")
         "-DENABLE_STATIC=OFF"
-        "-DENABLE_UNITTESTS=ON"
-        "-DENABLE_CODE_COVERAGE=ON")))
+        "-DENABLE_UNITTESTS=ON")))
     (native-inputs
      `(("gtest" ,googletest)
        ("pkg-config" ,pkg-config)
