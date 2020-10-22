@@ -250,7 +250,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.20")
+    (version "2.10.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -258,7 +258,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0g3vzh1bjffqx94mfghmwvkhncv71cgah2mnfx17q00s9f3rybz1"))))
+                "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
@@ -310,6 +310,7 @@ buffers.")
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
+       ("libxcursor" ,libxcursor)       ; optional, Mouse Cursor support
        ("poppler" ,poppler)             ; optional, PDF support
        ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support
