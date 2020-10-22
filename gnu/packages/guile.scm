@@ -737,16 +737,16 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.3.0")
+    (version "0.4.0")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
-                                  "4c563d8e7e1ff84396abe8ca7011bcaf/guile-git-"
+                                  "2600bb0dfdfb00bfbe46811dccad51d8/guile-git-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c5i3d16hp7gp9rd78vk9zc45js8bphf92m4lbb5gyi4l1yl7kkm"))))
+                "1kxyg9x2aa1pg69cl48wysq0pbxvwfahy1xpl5ab6p8babhf7kic"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
