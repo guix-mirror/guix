@@ -362,7 +362,8 @@ data types.")
     (properties `((superseded . ,python-2)))))
 
 (define-public python-3.8
-  (package (inherit python-2)
+  (package
+    (inherit python-2)
     (name "python")
     (version "3.8.5")
     (source (origin
@@ -430,24 +431,24 @@ data types.")
                         " test_write_pty")
                       '()))))
        ((#:phases phases)
-       `(modify-phases ,phases
-          ,@(if (hurd-system?)
-                `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
-                '())
-          (add-before 'check 'set-TZDIR
-            (lambda* (#:key inputs native-inputs #:allow-other-keys)
-              ;; test_email requires the Olson time zone database.
-              (setenv "TZDIR"
-                      (string-append (assoc-ref
-                                      (or native-inputs inputs) "tzdata")
-                                     "/share/zoneinfo"))
-              #t))
-          ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
-          ;; again afterwards.  See <https://bugs.python.org/issue34022>.
-          (add-before 'check 'unset-SOURCE_DATE_EPOCH
-            (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
-          (add-after 'check 'reset-SOURCE_DATE_EPOCH
-            (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
+        `(modify-phases ,phases
+           ,@(if (hurd-system?)
+                 `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
+                 '())
+           (add-before 'check 'set-TZDIR
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               ;; test_email requires the Olson time zone database.
+               (setenv "TZDIR"
+                       (string-append (assoc-ref
+                                       (or native-inputs inputs) "tzdata")
+                                      "/share/zoneinfo"))
+               #t))
+           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
+           ;; again afterwards.  See <https://bugs.python.org/issue34022>.
+           (add-before 'check 'unset-SOURCE_DATE_EPOCH
+             (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
+           (add-after 'check 'reset-SOURCE_DATE_EPOCH
+             (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
            (replace 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -464,12 +465,12 @@ data types.")
                                                "python3"
                                                '(string-append out
                                                                "/bin/python3"))
-                                          ,@opt
-                                          "-m" "compileall"
-                                          "-f" ; force rebuild
-                                          ;; Don't build lib2to3, because it's Python 2 code.
-                                          "-x" "lib2to3/.*"
-                                          ,file)))
+                                         ,@opt
+                                         "-m" "compileall"
+                                         "-f" ; force rebuild
+                                         ;; Don't build lib2to3, because it's Python 2 code.
+                                         "-x" "lib2to3/.*"
+                                         ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
                  #t)))
@@ -481,9 +482,9 @@ data types.")
                         '("arm" "aarch64"))
                    '((add-after 'unpack 'apply-alignment-patch
                        (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                        (invoke "patch" "-p1" "--force" "--input"
-                                (assoc-ref (or native-inputs inputs)
-                                           "arm-alignment.patch")))))
+                         (invoke "patch" "-p1" "--force" "--input"
+                                 (assoc-ref (or native-inputs inputs)
+                                            "arm-alignment.patch")))))
                    '()))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
