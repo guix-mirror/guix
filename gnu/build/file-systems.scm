@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -178,6 +178,46 @@ if DEVICE does not contain an ext2 file system."
     (1 'errors-corrected)
     (2 'reboot-required)
     (_ 'fatal-error)))
+
+
+;;;
+;;; Linux swap.
+;;;
+
+;; Linux "swap space" is not a file system but it has a UUID and volume name,
+;; like actual file systems, and we want to be able to look up swap partitions
+;; by UUID and by label.
+
+(define %linux-swap-magic
+  (string->utf8 "SWAPSPACE2"))
+
+;; Like 'PAGE_SIZE' in Linux, arch/x86/include/asm/page.h.
+;; XXX: This is always 4K on x86_64, i386, and ARMv7.  However, on AArch64,
+;; this is determined by 'CONFIG_ARM64_PAGE_SHIFT' in the kernel, which is 12
+;; by default (4K) but can be 14 or 16.
+(define %page-size 4096)
+
+(define (linux-swap-superblock? sblock)
+  "Return #t when SBLOCK is an linux-swap superblock."
+  (and (= (bytevector-length sblock) %page-size)
+       (bytevector=? (sub-bytevector sblock (- %page-size 10) 10)
+                     %linux-swap-magic)))
+
+(define (read-linux-swap-superblock device)
+  "Return the raw contents of DEVICE's linux-swap superblock as a bytevector, or #f
+if DEVICE does not contain an linux-swap file system."
+  (read-superblock device 0 %page-size linux-swap-superblock?))
+
+;; See 'union swap_header' in 'include/linux/swap.h'.
+
+(define (linux-swap-superblock-uuid sblock)
+  "Return the UUID of Linux-swap superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock (+ 1024 4 4 4) 16))
+
+(define (linux-swap-superblock-volume-name sblock)
+  "Return the label of Linux-swap superblock SBLOCK as a string."
+  (null-terminated-latin1->string
+   (sub-bytevector sblock (+ 1024 4 4 4 16) 16)))
 
 
 ;;;
@@ -596,6 +636,8 @@ partition field reader that returned a value."
                                 iso9660-superblock-volume-name)
         (partition-field-reader read-ext2-superblock
                                 ext2-superblock-volume-name)
+        (partition-field-reader read-linux-swap-superblock
+                                linux-swap-superblock-volume-name)
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-volume-name)
         (partition-field-reader read-fat32-superblock
@@ -612,6 +654,8 @@ partition field reader that returned a value."
                                 iso9660-superblock-uuid)
         (partition-field-reader read-ext2-superblock
                                 ext2-superblock-uuid)
+        (partition-field-reader read-linux-swap-superblock
+                                linux-swap-superblock-uuid)
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-uuid)
         (partition-field-reader read-fat32-superblock
