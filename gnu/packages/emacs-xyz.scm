@@ -738,6 +738,30 @@ then only the color of the mode line changes when a window becomes in-/active.")
 clojure.walk and clojure.zip respectively.")
     (license license:gpl3+)))
 
+(define-public emacs-typing
+  (let ((commit "a2ef25dde2d8eb91bd9c0c6164cb5208208647fa")
+        (revision "0"))
+    (package
+      (name "emacs-typing")
+      (version (git-version "1.1.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kensanata/typing")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1dbh0srbf54lgd60ia79y9cfnq3kxlgw01qzdjs9mk3nfazzpgnv"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kensanata/typing/")
+      (synopsis "Emacs game where you have to type fast")
+      (description "The Typing of Emacs is a game for Emacs that
+forces you to type words correctly as fast as possible, otherwise
+you will die.  The game builds the list of words from the active buffer.")
+      (license license:gpl2+))))
+
 (define-public emacs-graphql
   (package
     (name "emacs-graphql")
