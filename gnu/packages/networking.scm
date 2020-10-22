@@ -334,8 +334,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
         "-DENABLE_UNITTESTS=ON"
         "-DENABLE_CODE_COVERAGE=ON")))
     (native-inputs
-     `(("git" ,git-minimal)
-       ("gtest" ,googletest)
+     `(("gtest" ,googletest)
        ("pkg-config" ,pkg-config)
        ("tclsh" ,tcl)))
     (propagated-inputs
