@@ -617,6 +617,16 @@
                (substitute* "device/udev_linux/udev1_loader.cc"
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
+
+               (substitute* '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                              "ui/ozone/common/egl_util.cc"
+                              "ui/gl/init/gl_initializer_linux_x11.cc")
+                 (("libGL\\.so\\.1")
+                  (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL\\.so\\.1")
+                  (string-append mesa "/lib/libEGL.so.1"))
+                 (("libGLESv2\\.so\\.2")
+                  (string-append mesa "/lib/libGLESv2.so.2")))
                #t)))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
