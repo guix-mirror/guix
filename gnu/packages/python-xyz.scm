@@ -4053,14 +4053,14 @@ matching of file paths.")
 (define-public python-black
   (package
     (name "python-black")
-    (version "19.10b0")
+    (version "20.8b1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "black" version))
        (sha256
         (base32
-         "0f8mr0yzj78q1dx7v6ggbgfir2wv0n5z2shfbbvfdq7910xbgvf2"))))
+         "1spv6sldp3mcxr740dh3ywp25lly9s8qlvs946fin44rl1x5a0hw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4078,7 +4078,11 @@ matching of file paths.")
                                                   "")))))
              #t))
          (add-after 'unpack 'disable-broken-tests
-           (lambda _
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
+
              ;; These tests are supposed to be skipped when the blackd
              ;; dependencies are missing, but this doesn't quite work.
              (substitute* "tests/test_black.py"
@@ -4092,15 +4096,21 @@ matching of file paths.")
              (substitute* "tests/test_black.py"
                (("( *)def test_self" match indent)
                 (string-append indent "@unittest.skip(\"guix\")\n" match)))
+
+             (substitute* "tests/test_black.py"
+               (("( *)def test_python38" match indent)
+                (string-append indent "@unittest.skip(\"guix\")\n" match)))
              #t)))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-attrs" ,python-attrs)
        ("python-appdirs" ,python-appdirs)
        ("python-pathspec" ,python-pathspec)
+       ("python-mypy-extensions" ,python-mypy-extensions)
        ("python-regex" ,python-regex)
        ("python-toml" ,python-toml)
-       ("python-typed-ast" ,python-typed-ast)))
+       ("python-typed-ast" ,python-typed-ast)
+       ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/ambv/black")
