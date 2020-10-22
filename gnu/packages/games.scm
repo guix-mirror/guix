@@ -9345,7 +9345,7 @@ angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
      `(("bash" ,bash)
        ("scummvm" ,scummvm)))
     (home-page "https://www.scummvm.org/")
-    (synopsis "Classic 2D point an click science-fiction adventure game")
+    (synopsis "Classic 2D point and click science-fiction adventure game")
     (description
      "Beneath a Steel Sky is a science-fiction thriller set in a bleak
 post-apocalyptic vision of the future.  It revolves around Union City,
