@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -204,7 +205,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.24")
+    (version "0.4.26")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -218,7 +219,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "0ji57s7cba94vzy49agn7x47ca61rccm6rif0cb0s6rl4ygljrbp"))))
+                "097427icgpgvcx40019b3dm8m84cchz79pixzpz648drs8p1wdqg"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
