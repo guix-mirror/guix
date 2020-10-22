@@ -200,6 +200,8 @@
                       (guix-build-coordinator build-allocator)
                       (guix-build-coordinator coordinator))
 
+         (simple-format #t "starting the guix-build-coordinator:\n  ~A\n"
+                        (current-filename))
          (let* ((metrics-registry (make-metrics-registry
                                    #:namespace
                                    "guixbuildcoordinator_"))
