@@ -1005,7 +1005,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.0.7")
+    (version "0.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1014,7 +1014,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11ywip9ck2rgyj8s1pyr6za3si0bnx8rl2f3cv84xgcq36ac3rv4"))))
+        (base32 "0786bppk8dhp5p2284qp7pm3b9vwh1cm4n03hiqwd2vvgv41aypy"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
