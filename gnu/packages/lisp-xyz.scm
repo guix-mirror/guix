@@ -6420,40 +6420,39 @@ various string metrics in Common Lisp:
   (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
 (define-public sbcl-cl-str
-  (let ((commit "eb480f283e28802d67b35bf916506701152f9a2a"))
-    (package
-      (name "sbcl-cl-str")
-      (version (git-version "0.17" "1" commit))
-      (home-page "https://github.com/vindarel/cl-str")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32 "1hpq5m8zjjnzns370zy27z2vcm1p8n2ka5ij2x67gyc9amz9vla0"))
-                (file-name (git-file-name name version))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       `(("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
-         ("cl-change-case" ,sbcl-cl-change-case)))
-      (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
-      (arguments
-       `(#:asd-file "str.asd"
-         #:asd-system-name "str"
-         #:test-asd-file "str.test.asd"))
-      (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
-      (description "A modern and consistent Common Lisp string manipulation
+  (package
+    (name "sbcl-cl-str")
+    (version "0.19")
+    (home-page "https://github.com/vindarel/cl-str")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32 "1jyza2jhn7w6fl4w87pv0m87z5ia48m6dqw12k0mdh7l3mgjq839"))
+              (file-name (git-file-name name version))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("cl-ppcre" ,sbcl-cl-ppcre)
+       ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+       ("cl-change-case" ,sbcl-cl-change-case)))
+    (native-inputs
+     `(("prove" ,sbcl-prove)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (arguments
+     `(#:asd-file "str.asd"
+       #:asd-system-name "str"
+       #:test-asd-file "str.test.asd"))
+    (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
+    (description "A modern and consistent Common Lisp string manipulation
 library that focuses on modernity, simplicity and discoverability:
 @code{(str:trim s)} instead of @code{(string-trim '(#\\Space ...) s)}), or
 @code{str:concat strings} instead of an unusual format construct; one
 discoverable library instead of many; consistency and composability, where
 @code{s} is always the last argument, which makes it easier to feed pipes and
 arrows.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public cl-str
   (sbcl-package->cl-source-package sbcl-cl-str))
