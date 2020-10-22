@@ -267,7 +267,8 @@
                 #:environment-variables
                 `(,(string-append
                     "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
-                  "LC_ALL=en_US.utf8")
+                  "LC_ALL=en_US.utf8"
+                  "PATH=/run/current-system/profile/bin") ; for hooks
                 #:log-file "/var/log/guix-build-coordinator/coordinator.log"))
       (stop #~(make-kill-destructor))))))
 
