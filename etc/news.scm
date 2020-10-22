@@ -20,6 +20,7 @@
 
  (entry (commit "6aeda81602555fbeac0c0a209e74f5262093b513")
         (title (en "New @option{--with-debug-info} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-debug-info}")
                (es "Nueva opción de transformación @option{--with-debug-info}")
                (fr "Nouvelle option de transformation @option{--with-debug-info}"))
         (body
@@ -37,6 +38,23 @@ guix build --with-debug-info=glib inkscape
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Die neue Paketumwandlungsoption @option{--with-debug-info} lässt
+eine Variante eines Pakets erstellen, die auch Informationen zur Fehlersuche
+enthält. Damit wird die Anwendung veredelt, wo Sie Fehler nachvollziehen
+möchten. Somit muss nur das Paket, für das Sie die Informationen brauchen, neu
+kompiliert werden. Das ist hilfreich bei Paketen, die noch nicht über eine
+@code{debug}-Ausgabe verfügen.
+
+Zum Beispiel würden Sie so Informationen zur Fehlersuche für die
+@code{glib}-Bibliothek bekommen, um sie inspizieren zu können, wenn Sie Fehler
+in Inkscape nachvollziehen möchten:
+
+@example
+guix build --with-debug-info=glib inkscape
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (es "La nueva opción @option{--with-debug-info} construye una
 variante del paquete que incluye la información de depuración y la injerta
 en la aplicación que desee depurar.  Por tanto, únicamente el paquete del
