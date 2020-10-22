@@ -5164,3 +5164,30 @@ Encoding for HTTP.")
      "This module acts as a webbrowser solving Cloudflare's Javascript
 challenges.")
     (license license:expat)))
+
+(define-public python-imap-tools
+  (package
+    (name "python-imap-tools")
+    (version "0.27.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "imap_tools" version))
+        (sha256
+          (base32
+            "0zd3dkahjc3np9b9zs9cqgmif1gd64ykl1ydw60k5l5zli4ydlk8"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; tests require internet access
+    (home-page "https://github.com/ikvk/imap_tools")
+    (synopsis "Work with email and mailbox by IMAP")
+    (description
+      "This Python library provides tools to deal with email and mailboxes
+over IMAP:
+
+@itemize
+@item Parsed email message attributes
+@item Query builder for searching emails
+@item Work with emails in folders (copy, delete, flag, move, seen)
+@item Work with mailbox folders (list, set, get, create, exists, rename, delete, status)
+@end itemize")
+    (license license:asl2.0)))
