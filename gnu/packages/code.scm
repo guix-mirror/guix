@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -39,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autogen)
@@ -517,6 +518,28 @@ case.  The extension consists of a set of Perl scripts which build on the
 textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
     (license license:gpl2+)))
+
+(define-public lcov-cobertura
+  (package
+    (name "python-lcov-cobertura")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lcov_cobertura" version))
+       (sha256
+        (base32
+         "02ar6yjazlxq4p64cz9gag08bvakmzjrp147jara9wlnlbc96j8g"))))
+    (build-system python-build-system)
+    (home-page "https://eriwen.github.io/lcov-to-cobertura-xml/")
+    (synopsis "LCOV to Cobertura XML converter")
+    (description
+     "The lcov-to-cobertura Python module converts code coverage report files
+in the lcov format to the XML format of
+@uref{http://cobertura.github.io/cobertura/, Cobertura}, a Java code coverage
+tool.  It allows continuous integration servers like Jenkins to aggregate
+results and determine build stability.")
+    (license license:asl2.0)))
 
 (define-public kcov
   (package
