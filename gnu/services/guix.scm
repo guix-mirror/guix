@@ -209,7 +209,7 @@
                 (hooks
                  (list #$@(map (match-lambda
                                  ((name . hook-gexp)
-                                  #~(cons name #$hook-gexp)))
+                                  #~(cons '#$name #$hook-gexp)))
                                hooks)))
                 (hooks-with-defaults
                  `(,@hooks
