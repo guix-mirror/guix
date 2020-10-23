@@ -1799,26 +1799,17 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.9.4")
+    (version "5.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))
-             (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
+               "1if5pa4iip2p70gljm54nggfdnsfjxa4cqz8fpj07lvsijary39s"))
+             (patches (search-patches "rcs-5.10.0-no-stdin.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-t810
-                    ;; See https://savannah.gnu.org/bugs/index.php?52288
-                    ;; Back-porting the fix is non-trivial, so disable for now.
-                    (lambda _
-                      (substitute* "tests/Makefile"
-                        ((" t810 \\\\\n") ""))
-                     #t)))))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
