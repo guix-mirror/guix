@@ -825,7 +825,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/behave-skip-a-couple-of-tests.patch	\
   %D%/packages/patches/beignet-correct-file-names.patch		\
-  %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/biber-sortinithash.patch			\
   %D%/packages/patches/bidiv-update-fribidi.patch		\
