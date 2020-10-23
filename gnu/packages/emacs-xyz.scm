@@ -18129,7 +18129,8 @@ server with @code{M-x pinentry-start}.")
       (home-page "https://www.emacswiki.org/emacs/SoLong")
       (synopsis "Improve performance in files with long lines")
       (description "This package improves the performance of Emacs when
-viewing files with long lines.")
+viewing files with long lines.  It is included as standard with Emacs 27 or
+later.")
       (license license:gpl3+))))
 
 (define-public emacs-github-review
