@@ -334,6 +334,10 @@
      (base32
       "18p9a7qffmy8m03nqva7maalgil13lj2mn0s56v3crbs4wk4lalj"))))
 
+(define %guix-patches
+  (list (local-file (search-patch "ungoogled-chromium-system-nspr.patch"))
+        (local-file (search-patch "ungoogled-chromium-extension-search-path.patch"))))
+
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
 ;; *) Runs the ungoogled patch-, domain substitution-, and scrubbing scripts.
@@ -356,9 +360,7 @@
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
                     (append '#+%debian-patches '#+%arch-patches
-                            '#+(list (local-file
-                                      (search-patch
-                                       "ungoogled-chromium-system-nspr.patch")))))
+                            '#+%guix-patches))
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
@@ -570,11 +572,6 @@
                             "#include \"opus/opus_types.h\"")))
                        (find-files (string-append "third_party/webrtc/modules"
                                                   "/audio_coding/codecs/opus")))
-
-             (substitute* "chrome/common/chrome_paths.cc"
-               (("/usr/share/chromium/extensions")
-                ;; TODO: Add ~/.guix-profile.
-                "/run/current-system/profile/share/chromium/extensions"))
 
              ;; Many files try to include ICU headers from "third_party/icu/...".
              ;; Remove the "third_party/" prefix to use system headers instead.
@@ -840,6 +837,11 @@
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CHROMIUM_EXTENSION_DIRECTORY")
+            (separator #f)              ;single entry
+            (files '("share/chromium/extensions")))))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.

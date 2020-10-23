@@ -1653,6 +1653,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
+  %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\
   %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
   %D%/packages/patches/unison-fix-ocaml-4.08.patch		\
   %D%/packages/patches/unknown-horizons-python-3.8-distro.patch	\
