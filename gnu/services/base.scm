@@ -2104,22 +2104,52 @@ instance."
    'swap
    (lambda (device)
      (define requirement
-       (if (string-prefix? "/dev/mapper/" device)
+       (if (and (string? device)
+                (string-prefix? "/dev/mapper/" device))
            (list (symbol-append 'device-mapping-
                                 (string->symbol (basename device))))
            '()))
 
-     (shepherd-service
-      (provision (list (symbol-append 'swap- (string->symbol device))))
-      (requirement `(udev ,@requirement))
-      (documentation "Enable the given swap device.")
-      (start #~(lambda ()
-                 (restart-on-EINTR (swapon #$device))
-                 #t))
-      (stop #~(lambda _
-                (restart-on-EINTR (swapoff #$device))
-                #f))
-      (respawn? #f)))))
+     (define (device-lookup device)
+       ;; The generic 'find-partition' procedures could return a partition
+       ;; that's not swap space, but that's unlikely.
+       (cond ((uuid? device)
+              #~(find-partition-by-uuid #$(uuid-bytevector device)))
+             ((file-system-label? device)
+              #~(find-partition-by-label
+                 #$(file-system-label->string device)))
+             (else
+              device)))
+
+     (define service-name
+       (symbol-append 'swap-
+                      (string->symbol
+                       (cond ((uuid? device)
+                              (string-take (uuid->string device) 6))
+                             ((file-system-label? device)
+                              (file-system-label->string device))
+                             (else
+                              device)))))
+
+     (with-imported-modules (source-module-closure '((gnu build file-systems)))
+       (shepherd-service
+        (provision (list service-name))
+        (requirement `(udev ,@requirement))
+        (documentation "Enable the given swap device.")
+        (modules `((gnu build file-systems)
+                   ,@%default-modules))
+        (start #~(lambda ()
+                   (let ((device #$(device-lookup device)))
+                     (and device
+                          (begin
+                            (restart-on-EINTR (swapon device))
+                            #t)))))
+        (stop #~(lambda _
+                  (let ((device #$(device-lookup device)))
+                    (when device
+                      (restart-on-EINTR (swapoff device)))
+                    #f)))
+        (respawn? #f))))))
 
 (define (swap-service device)
   "Return a service that uses @var{device} as a swap device."

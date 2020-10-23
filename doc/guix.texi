@@ -13075,14 +13075,38 @@ A list of mapped devices.  @xref{Mapped Devices}.
 @item @code{file-systems}
 A list of file systems.  @xref{File Systems}.
 
-@item @code{swap-devices} (default: @code{'()})
 @cindex swap devices
-A list of strings identifying devices or files to be used for ``swap
+@cindex swap space
+@item @code{swap-devices} (default: @code{'()})
+A list of UUIDs, file system labels, or strings identifying devices or
+files to be used for ``swap
 space'' (@pxref{Memory Concepts,,, libc, The GNU C Library Reference
-Manual}).  For example, @code{'("/dev/sda3")} or @code{'("/swapfile")}.
+Manual}).  Here are some examples:
+
+@table @code
+@item (list (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))
+Use the swap partition with the given UUID.  You can learn the UUID of a
+Linux swap partition by running @command{swaplabel @var{device}}, where
+@var{device} is the @file{/dev} file name of that partition.
+
+@item (list (file-system-label "swap"))
+Use the partition with label @code{swap}.  Again, the
+@command{swaplabel} command allows you to view and change the label of a
+Linux swap partition.
+
+@item (list "/swapfile")
+Use the file @file{/swapfile} as swap space.
+
+@item (list "/dev/sda3" "/dev/sdb2")
+Use the @file{/dev/sda3} and @file{/dev/sdb2} partitions as swap space.
+We recommend referring to swap devices by UUIDs or labels as shown above
+instead.
+@end table
+
 It is possible to specify a swap file in a file system on a mapped
-device, provided that the necessary device mapping and file system are
-also specified.  @xref{Mapped Devices} and @ref{File Systems}.
+device (under @file{/dev/mapper}), provided that the necessary device
+mapping and file system are also specified.  @xref{Mapped Devices} and
+@ref{File Systems}.
 
 @item @code{users} (default: @code{%base-user-accounts})
 @itemx @code{groups} (default: @code{%base-groups})
