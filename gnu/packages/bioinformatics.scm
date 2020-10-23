@@ -10954,7 +10954,7 @@ programs for inferring phylogenies (evolutionary trees).")
 (define-public imp
   (package
     (name "imp")
-    (version "2.6.2")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
@@ -10962,7 +10962,7 @@ programs for inferring phylogenies (evolutionary trees).")
                            version "/download/imp-" version ".tar.gz"))
        (sha256
         (base32
-         "0lxqx7vh79d771svr611dkilp6sn30qrbw8zvscbrm37v38d2j6h"))))
+         "1z1vcpwbylixk0zywngg5iw0jv083jj1bqphi817jpg3fb9fx2jj"))))
     (build-system cmake-build-system)
     (arguments
      `(;; FIXME: Some tests fail because they produce warnings, others fail
@@ -10974,6 +10974,7 @@ programs for inferring phylogenies (evolutionary trees).")
        ("swig" ,swig)
        ("hdf5" ,hdf5)
        ("fftw" ,fftw)
+       ("eigen" ,eigen)
        ("python" ,python-2)))
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
