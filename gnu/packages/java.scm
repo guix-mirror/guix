@@ -3296,7 +3296,7 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
          ("java-cisd-args4j" ,java-cisd-args4j)
          ("java-commons-lang" ,java-commons-lang)
          ("java-commons-io" ,java-commons-io)
-         ("hdf5" ,hdf5)
+         ("hdf5" ,hdf5-1.8)
          ("zlib" ,zlib)))
       (native-inputs
        `(("jdk" ,icedtea-8)

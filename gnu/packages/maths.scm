@@ -1203,7 +1203,7 @@ extremely large and complex data collections.")
 
 (define-public hdf5
   ;; Default version of HDF5.
-  hdf5-1.8)
+  hdf5-1.10)
 
 (define-public hdf-java
   (package
@@ -1235,7 +1235,7 @@ extremely large and complex data collections.")
        ("slf4j-simple" ,java-slf4j-simple)))
     (inputs
      `(("hdf4" ,hdf4)
-       ("hdf5" ,hdf5)
+       ("hdf5" ,hdf5-1.8)
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-turbo)
        ("slf4j-api" ,java-slf4j-api)))
@@ -1395,7 +1395,7 @@ System (Grid, Point and Swath).")
      `(("gfortran" ,gfortran)))
     (build-system gnu-build-system)
     (inputs
-     `(("hdf5" ,hdf5)
+     `(("hdf5" ,hdf5-1.8)
        ("zlib" ,zlib)
        ("gctp" ,gctp)))
     (arguments
@@ -1496,7 +1496,7 @@ Blosc-compressed datasets.")
         (base32
          "1gm76jbwhz9adbxgn14zx8cj33dmjdr2g5xcy0m9c2gakp8w59kj"))))
     (build-system gnu-build-system)
-    (inputs `(("hdf5" ,hdf5)))                 ;h5cc for tests
+    (inputs `(("hdf5" ,hdf5-1.8)))                ;h5cc for tests
     (home-page "https://www.hdfgroup.org/products/hdf5_tools/h5check.html")
     (synopsis "HDF5 format checker")
     (description "@code{h5check} is a validation tool for verifying that an
@@ -1556,7 +1556,10 @@ similar to MATLAB, GNU Octave or SciPy.")
        ("graphviz" ,graphviz)))
     (inputs
      `(("hdf4" ,hdf4-alt)
-       ("hdf5" ,hdf5)
+
+       ;; XXX: The 'tst_nccopy4.sh' test fails when using hdf5-1.10.
+       ("hdf5" ,hdf5-1.8)
+
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-turbo)))
     (arguments
@@ -4537,7 +4540,7 @@ structured and unstructured grid problems.")))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
-       ("hdf5" ,hdf5)))
+       ("hdf5" ,hdf5-1.8)))
     (home-page "http://matio.sourceforge.net/")
     (synopsis "Library for reading and writing MAT files")
     (description "Matio is a library for reading and writing MAT files.  It
