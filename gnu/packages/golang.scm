@@ -5955,3 +5955,27 @@ tests.")
     (synopsis "Golang syslog wrapper, cross-compile friendly")
     (description "This package is a very simple wrapper around log/syslog")
     (license license:expat)))
+
+(define-public go-github-com-hjson-hjson-go
+  (package
+    (name "go-github-com-hjson-hjson-go")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hjson/hjson-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dfdiahimg6z9idg8jiqxwnlwjnmasbjccx8gnag49cz4yfqskaz"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/hjson/hjson-go"))
+    (home-page "https://hjson.org/")
+    (synopsis "Human JSON implementation for Go")
+    (description "Hjson is a syntax extension to JSON.  It is intended to be
+used like a user interface for humans, to read and edit before passing the
+JSON data to the machine.")
+    (license license:expat)))
