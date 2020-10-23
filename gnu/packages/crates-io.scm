@@ -24099,7 +24099,7 @@ comparison.")
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.116")
+    (version "1.0.117")
     (source
       (origin
         (method url-fetch)
@@ -24107,7 +24107,7 @@ comparison.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "19bhld1qyjs4qr3rd6dmzmy13imb6a1qbinb2fjqd0yjh6pmgzln"))))
+          "06nwyyma9hch1abjqj0y9cb09m1y6lbzbsc7jff6483pvs1sk3xq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -24369,7 +24369,7 @@ for the serde framework.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.116")
+    (version "1.0.117")
     (source
       (origin
         (method url-fetch)
@@ -24377,7 +24377,7 @@ for the serde framework.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1s4sbl32lk1afxryfax73clvq22lwzdgzljb7f3mgr6q1wvscc7n"))))
+          "0kn7ais3zv9ajbyc216qm14r61zwlm229815yd4anjmlmmraxlfb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
