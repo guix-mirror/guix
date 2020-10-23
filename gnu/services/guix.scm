@@ -207,7 +207,7 @@
                         (current-filename))
          (let* ((metrics-registry (make-metrics-registry
                                    #:namespace
-                                   "guixbuildcoordinator_"))
+                                   "guixbuildcoordinator"))
                 (datastore (database-uri->datastore
                             #$database-uri-string
                             #:metrics-registry metrics-registry))
