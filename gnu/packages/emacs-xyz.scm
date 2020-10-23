@@ -14054,31 +14054,6 @@ match and total match information in the mode-line in various search modes.")
        "This package provides an Emacs Lisp interface for PostgreSQL.")
       (license license:gpl3+))))
 
-(define-public emacs-cl-generic
-  (package
-    (name "emacs-cl-generic")
-    (version "0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/cl-generic-"
-                           version ".el"))
-       (sha256
-        (base32
-         "0vb338bhjpsnrf60qgxny4z5rjrnifahnrv9axd4shay89d894zq"))))
-    (build-system emacs-build-system)
-    ;; Byte compilation of the autoload file fails.
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'enable-autoloads-compilation))))
-    (home-page "https://elpa.gnu.org/packages/seq.html")
-    (synopsis
-     "Forward @code{cl-generic} compatibility for Emacs before version 25")
-    (description "This package provides a subset of the features of the
-@code{cl-generic} package introduced in Emacs-25, for use on previous
-@code{emacsen}.")
-    (license license:gpl3+)))
-
 (define-public emacs-finalize
   (package
   (name "emacs-finalize")
@@ -14093,8 +14068,6 @@ match and total match information in the mode-line in various search modes.")
       (sha256
         (base32 "1gvlm4i62af5jscwz0jccc8ra0grprxpg2rlq91d5nn8dn5lpy79"))))
   (build-system emacs-build-system)
-  (propagated-inputs
-    `(("emacs-cl-generic" ,emacs-cl-generic)))
   (home-page "https://github.com/skeeto/elisp-finalize")
   (synopsis "Finalizers for Emacs Lisp")
   (description
