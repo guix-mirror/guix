@@ -821,7 +821,7 @@ using a stylus.")
 (define-public xournalpp
   (package
     (name "xournalpp")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
      (origin
        (method git-fetch)
@@ -830,7 +830,7 @@ using a stylus.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0a9ygbmd4dwgck3k8wsrm2grynqa0adb12wwspzmzvpisbadffjy"))))
+        (base32 "05nx4cmrka6hwdn7r91yy4h46qpa9k7iy9dkgaq3hrkh9z3fxlkq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DENABLE_CPPUNIT=ON") ;enable tests
