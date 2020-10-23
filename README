@@ -33,17 +33,14 @@ See the manual for the installation instructions, either by running
 
 or by checking the [[https://guix.gnu.org/manual/en/html_node/Installation.html][web copy of the manual]].
 
-For information on installation from a Git checkout, please see the section
-"Building from Git" in the manual, either by running
+* Building from Git
+
+For information on building Guix from a Git checkout, please see the relevant
+section in the manual, either by running
 
   info -f doc/guix.info "Building from Git"
 
-or by checking the [[https://guix.gnu.org/manual/en/html_node/Running-Guix-Before-It-Is-Installed.html][web
-copy of the manual]].
-
-Following building Guix from Git, it can be installed by using:
-
-  ./pre-inst-env guix pull
+or by checking the [[https://guix.gnu.org/manual/en/html_node/Building-from-Git.html][web_copy of the manual]].
 
 * How It Works
 
