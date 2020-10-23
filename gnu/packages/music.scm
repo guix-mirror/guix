@@ -4194,7 +4194,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.5.1")
+    (version "3.5.2")
     (source
      (origin
        (method git-fetch)
@@ -4203,16 +4203,16 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01jj6rbvbjxvmv6q13a22vfqp3id52a5mf2a1vzph2giz7pr313x"))
+        (base32 "0yzps5xxa50cr2i5iv2ycjdywd0mcrdd6hx93l4p8lfljag3w3al"))
        (modules '((guix build utils)))
        (snippet
-        ;; Un-bundle OpenSSL and remove unused libraries.
+        ;; Remove unused libraries.
         '(begin
            (for-each delete-file-recursively
                      '("thirdparty/freetype"
-                       "thirdparty/google_analytics"
                        "thirdparty/openssl"
-                       "thirdparty/portmidi"))
+                       "thirdparty/portmidi"
+                       "thirdparty/qt-google-analytics"))
            #t))))
     (build-system cmake-build-system)
     (arguments
