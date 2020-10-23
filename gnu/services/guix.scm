@@ -188,8 +188,11 @@
                           ;; libraries, but it means that the Guile libraries
                           ;; needed for the Guix Build Coordinator don't need
                           ;; to be individually specified here.
-                          (map second (package-inputs
-                                       guix-build-coordinator-package)))
+                          (append
+                           (map second (package-inputs
+                                        guix-build-coordinator-package))
+                           (map second (package-propagated-inputs
+                                        guix-build-coordinator-package))))
      #~(begin
          (use-modules (srfi srfi-1)
                       (ice-9 match)
