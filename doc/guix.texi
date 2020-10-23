@@ -863,6 +863,10 @@ substitutes (@pxref{Invoking guix publish}).
 the @code{crate} importer (@pxref{Invoking guix import}).
 
 @item
+@uref{https://www.nongnu.org/guile-lib/doc/ref/htmlprag/, Guile-Lib} for
+the @code{go} importer (@pxref{Invoking guix import}).
+
+@item
 When @url{http://www.bzip.org, libbz2} is available,
 @command{guix-daemon} can use it to compress build logs.
 @end itemize
@@ -11493,6 +11497,28 @@ Select the given repository (a repository name).  Possible values include:
 @item @code{coq-extra-dev}, the repository that contains development versions
       of coq packages.
 @end itemize
+@end table
+
+@item go
+@cindex go
+Import metadata for a Go module using
+@uref{https://proxy.golang.org, proxy.golang.org}.
+
+This importer is highly experimental. See the source code for more info
+about the current state.
+
+@example
+guix import go gopkg.in/yaml.v2
+@end example
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 @end table
 

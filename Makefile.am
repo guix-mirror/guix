@@ -251,6 +251,7 @@ MODULES =					\
   guix/import/github.scm   			\
   guix/import/gnome.scm				\
   guix/import/gnu.scm				\
+  guix/import/go.scm				\
   guix/import/hackage.scm			\
   guix/import/json.scm				\
   guix/import/kde.scm				\
@@ -294,6 +295,7 @@ MODULES =					\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/gnu.scm			\
+  guix/scripts/import/go.scm			\
   guix/scripts/import/hackage.scm		\
   guix/scripts/import/json.scm  		\
   guix/scripts/import/nix.scm			\
@@ -455,6 +457,7 @@ SCM_TESTS =					\
   tests/git-authenticate.scm			\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
+  tests/go.scm					\
   tests/grafts.scm				\
   tests/graph.scm				\
   tests/gremlin.scm				\
