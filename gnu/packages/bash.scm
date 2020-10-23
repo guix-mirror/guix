@@ -23,7 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages bash)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -215,7 +215,7 @@ from the Korn Shell and the C Shell and new improvements of its own.  It
 allows command-line editing, unlimited command history, shell functions and
 aliases, and job control while still allowing most sh scripts to be run
 without modification.")
-     (license gpl3+)
+     (license license:gpl3+)
      (home-page "https://www.gnu.org/software/bash/"))))
 
 (define-public bash-minimal
@@ -325,7 +325,7 @@ without modification.")
      "This package provides extensions that allow Bash to provide adapted
 completion for many common commands.")
     (home-page "https://github.com/scop/bash-completion")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public bash-tap
   (package
@@ -369,7 +369,7 @@ test library")
 for Bash shell scripts and functions.  Along with the Test::More-style testing
 helpers it provides helper functions for mocking commands and in-process output
 capturing.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public bats
   (package
@@ -419,7 +419,7 @@ capturing.")
 framework for Bash.  It provides a simple way to verify that the UNIX programs
 you write behave as expected.  Bats is most useful when testing software written
 in Bash, but you can use it to test any UNIX program.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public bash-ctypes
   (package
@@ -447,4 +447,4 @@ in Bash, but you can use it to test any UNIX program.")
     (description "Bash-ctypes is a Bash plugin that provides a foreign
 function interface (FFI) directly in your shell.  In other words, it allows
 you to call routines in shared libraries from within Bash.")
-    (license expat)))
+    (license license:expat)))
