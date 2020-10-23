@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
+  #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (newt)
   #:export (run-final-page))
 
@@ -107,6 +108,19 @@ a specific step, or restart the installer."))
     install-ok?))
 
 (define (run-final-page result prev-steps)
+  (define (wait-for-clients)
+    (unless (null? (current-clients))
+      (syslog "waiting with clients before starting final step~%")
+      (send-to-clients '(starting-final-step))
+      (match (select (current-clients) '() '())
+        (((port _ ...) _ _)
+         (read-line port)))))
+
+  ;; Before generating the configuration file, give clients a chance to do
+  ;; things such as changing the swap partition label.
+  (wait-for-clients)
+
+  (syslog "proceeding with final step~%")
   (let* ((configuration   (format-configuration prev-steps result))
          (user-partitions (result-step result 'partition))
          (locale          (result-step result 'locale))
