@@ -53,7 +53,22 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
   #:export (build-machine
+            build-machine?
+            build-machine-name
+            build-machine-port
+            build-machine-systems
+            build-machine-user
+            build-machine-private-key
+            build-machine-host-key
+            build-machine-compression
+            build-machine-daemon-socket
+            build-machine-overload-threshold
+            build-machine-systems
+            build-machine-features
+
             build-requirements
+            build-requirements?
+
             guix-offload))
 
 ;;; Commentary:
