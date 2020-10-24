@@ -225,7 +225,7 @@ install.")
 (define-public reprotest
   (package
     (name "reprotest")
-    (version "0.7.14")
+    (version "0.7.15")
     (source
      (origin
        (method git-fetch)
@@ -235,7 +235,7 @@ install.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12d07xq5zx5dfbsgakm6zcn7hgf0h9f5kvfjqkiyak4ix5aa6xkf"))))
+         "12lc1pb9d5h3blrzzx9nbqqj5bi9x23yj31fxafmk37803rl8a0m"))))
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)
@@ -247,6 +247,7 @@ install.")
        ("libfaketime" ,libfaketime)
        ("python-coverage" ,python-coverage)
        ("python-docutils" ,python-docutils)
+       ("python-magic " ,python-magic)
        ("python-pytest " ,python-pytest)
        ("python-tlsh" ,python-tlsh)
        ("python-tox" ,python-tox)
