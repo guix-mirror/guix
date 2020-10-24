@@ -595,7 +595,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public bombadillo
   (package
     (name "bombadillo")
-    (version "2.2.0")
+    (version "2.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -603,7 +603,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                     (commit version)))
               (sha256
                (base32
-                "1m52b1wk48gkqmjy8l0x3jaksrx2v8w6w59lhr7zaw2i0n4f5k0z"))
+                "0n0gza9qfx1hxigicyvf6wg1ccc2irvh17yhzpw9gx75ls5ybrjn"))
               (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
