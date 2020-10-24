@@ -12011,9 +12011,10 @@ your data.")
      `(("gtksourceview" ,gtksourceview))) ; required for source view
     (arguments
      `(#:build-type "release"
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
-       (add-after 'unpack 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              (substitute* "build-aux/meson/meson_post_install.py"
                (("gtk-update-icon-cache") (which "true")))
