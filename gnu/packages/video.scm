@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3720,6 +3721,47 @@ MPEG-2, MPEG-4, DVD (VOB)...
 information and other metadata about audio or video files.  It supports the
 many codecs and formats supported by libmediainfo.")
     (license license:bsd-2)))
+
+(define-public atomicparsley
+  (package
+    (name "atomicparsley")
+    (version "20200701.154658.b0d6223")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wez/atomicparsley")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-cmake-version
+           (lambda* _
+             (substitute* "CMakeLists.txt"
+               ;; At the time of writing, Guix has CMake at 3.16, but
+               ;; AtomicParsley uses 3.17.  This brings the required CMake
+               ;; version down to what Guix can afford.
+               (("VERSION 3.17") "VERSION 3.16"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "AtomicParsley" bin))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Metadata editor for MPEG-4 files")
+    (description "AtomicParsley is a lightweight command line program for
+reading, parsing and setting metadata into MPEG-4 files, in particular,
+iTunes-style metadata.")
+    (home-page "https://github.com/wez/atomicparsley")
+    (license license:gpl2+)))
 
 (define-public livemedia-utils
   (package
