@@ -3732,11 +3732,12 @@ process automation (RPA).")
   ;; to the 0.9 stable release available from PyPI.  The tests are not
   ;; included in the PyPI archive, so we fetch the sources from the upstream
   ;; Git repo.
-  (let ((commit "e851879bab1f63e4e53b34a4dc8a67ed95102830")
-        (revision "1"))
+  (let ((commit "b0619ac58a8b1be125f9c98856a664594614570f")
+        (revision "0"))
     (package
       (name "python-robotframework-lint")
-      (version (git-version "0.9.0" revision commit))
+      (version (git-version "1.1"      ;version taken from 'rflint/version.py'
+                            revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3746,7 +3747,7 @@ process automation (RPA).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1p6fknqg5sb9qz5857ji4a877657vgfjm5v3zn45994parx6ml1m"))))
+           "180npmvzqync25b2scs878gv8q4y17dsinxyjcc10bw22msfap6b"))))
       (build-system python-build-system)
       (arguments
        `(#:phases
