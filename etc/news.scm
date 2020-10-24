@@ -18,6 +18,41 @@
 (channel-news
  (version 0)
 
+ (entry (commit "3b6e4e5fd05e72b8a32ff1a2d5e21464260e21e6")
+        (title (en "List of substitute keys is now declarative on Guix System")
+               (fr "Liste des clefs de substituts désormais déclarative sur Guix System"))
+        (body
+         (en "The list of authorized substitute keys, available in
+@file{/etc/guix/acl}, is now built by default in a purely declarative fashion
+on Guix System based on the @code{authorized-keys} field of the configuration
+of @code{guix-service-type}.  This means that manual changes to
+@file{/etc/guix/acl} are now @emph{discarded} upon reconfiguration or
+reboot (a backup is made as @file{/etc/guix/acl.bak} in that case).
+
+We recommend updating your operating system configuration to explicitly list
+all the authorized substitute keys.  See @command{info \"(guix) Base
+Services\"}, for more info about @code{guix-configuration} and
+@code{authorized-keys}.
+
+Alternatively, you can set the @code{authorize-key?} field of
+@code{guix-configuration} to @code{#f} to restore previous behavior.")
+         (fr "La liste des clefs de substituts autorisées, stockée dans
+@file{/guix/guix/acl}, est dorénavant construite par défaut de manière
+déclarative sur Guix System, en se basant sur le champs @code{authorized-keys}
+de la configuration de @code{guix-service-type}.  Cela signifie que les
+modifications apportées manuellement à @file{/etc/guix/acl} seront désormais
+@emph{perdues} lors d'une reconfiguration ou d'un redémarrage (dans ce cas une
+sauvegarde est faite dans @file{/etc/guix/acl.bak}).
+
+Nous recommandons de mettre à jour sa configuration de système d'exploitation
+pour y lister explicitement les clefs autorisées.  Lancez @command{info
+\"(guix.fr) Services de base\"} pour plus d'informations sur
+@code{guix-configuration} et @code{authorized-keys}.
+
+Il est également possible de mettre le champs @code{authorize-key?} de
+@code{guix-configuration} à @code{#f} pour restaurer le comportement qui
+prévalait jusqu'à maintenant.")))
+
  (entry (commit "6aeda81602555fbeac0c0a209e74f5262093b513")
         (title (en "New @option{--with-debug-info} package transformation option")
                (de "Neue Paketumwandlungsoption @option{--with-debug-info}")
