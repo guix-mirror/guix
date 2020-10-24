@@ -140,6 +140,16 @@ make authenticate
 
 The first run takes a couple of minutes, but subsequent runs are faster.
 
+Or, when your configuration for your local Git repository doesn't match
+the default one, you can provide the reference for the @code{keyring}
+branch through the variable @code{GUIX_GIT_KEYRING}.  The following
+example assumes that you have a Git remote called @samp{myremote}
+pointing to the official repository:
+
+@example
+make authenticate GUIX_GIT_KEYRING=myremote/keyring
+@end example
+
 @quotation Note
 You are advised to run @command{make authenticate} after every
 @command{git pull} invocation.  This ensures you keep receiving valid

@@ -666,9 +666,11 @@ channel_intro_commit = 9edb3f66fd807b096b48283debdcddccfea34bad
 channel_intro_signer = BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA
 
 # Authenticate the current Git checkout by checking signatures on every commit.
+GUIX_GIT_KEYRING = origin/keyring
 authenticate:
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
 	guix git authenticate					\
+	    --keyring=$(GUIX_GIT_KEYRING)			\
 	    --cache-key=channels/guix --stats			\
 	    "$(channel_intro_commit)" "$(channel_intro_signer)"
 
