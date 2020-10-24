@@ -482,7 +482,7 @@ also initializes the boards (RAM etc).")
        ,@(package-native-inputs u-boot)))
     (arguments
      `(#:make-flags '("HOSTCC=gcc")
-       #:test-target "tests"
+       #:test-target "tcheck"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
@@ -493,11 +493,8 @@ also initializes the boards (RAM etc).")
              (substitute* "tools/dtoc/fdt_util.py"
               (("'cc'") "'gcc'"))
              (substitute* "tools/patman/test_util.py"
-              ;; python*-coverage is simply called coverage in guix.
-              (("%s-coverage") "coverage")
-              ;; XXX Allow for only 99% test coverage.
-              ;; TODO: Find out why that is needed.
-              (("if coverage != '100%':") "if not int(coverage.rstrip('%')) >= 99:"))
+              ;; python3-coverage is simply called coverage in guix.
+              (("python3-coverage") "coverage"))
              (substitute* "test/run"
               ;; Make it easier to find test failures.
               (("#!/bin/bash") "#!/bin/bash -x")
@@ -507,8 +504,6 @@ also initializes the boards (RAM etc).")
               (("run_test \"binman\"") ": run_test \"binman\"")
               ;; FIXME: code coverage not working
               (("run_test \"binman code coverage\"") ": run_test \"binman code coverage\"")
-              (("run_test \"dtoc code coverage\"") ": run_test \"dtoc code coverage\"")
-              (("run_test \"fdt code coverage\"") ": run_test \"fdt code coverage\"")
               ;; This test would require internet access.
               (("\\./tools/buildman/buildman") (which "true")))
              (substitute* "test/py/tests/test_sandbox_exit.py"
@@ -521,10 +516,12 @@ def test_ctrl_c"))
                (("BASEDIR=sandbox") "BASEDIR=."))
              (for-each (lambda (file)
                               (substitute* file
-                                  ;; Disable signatures, due to GPL/Openssl
-                                  ;; license incompatibilities.  See
-                                  ;; https://bugs.gnu.org/34717 for details.
-                                  (("CONFIG_FIT_SIGNATURE=y") "CONFIG_FIT_SIGNATURE=n")
+                                  ;; Disable features that require OpenSSL due
+                                  ;; to GPL/Openssl license incompatibilities.
+                                  ;; See https://bugs.gnu.org/34717 for
+                                  ;; details.
+                                  (("CONFIG_FIT_SIGNATURE=y")
+                                   "CONFIG_FIT_SIGNATURE=n\nCONFIG_UT_LIB_ASN1=n")
                                   ;; This test requires a sound system, which is un-used
                                   ;; in u-boot-tools.
                                   (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))
