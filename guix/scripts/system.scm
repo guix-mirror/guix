@@ -385,6 +385,8 @@ STORE is an open connection to the store."
          (params (first (profile-boot-parameters %system-profile
                                                  (list number))))
          (locale (boot-parameters-locale params))
+         (store-directory-prefix
+          (boot-parameters-store-directory-prefix params))
          (old-generations
           (delv number (reverse (generation-numbers %system-profile))))
          (old-params (profile-boot-parameters
@@ -398,6 +400,7 @@ STORE is an open connection to the store."
                      ((bootloader-configuration-file-generator bootloader)
                       bootloader-config entries
                       #:locale locale
+                      #:store-directory-prefix store-directory-prefix
                       #:old-entries old-entries)))
            (drvs -> (list bootcfg)))
         (mbegin %store-monad
