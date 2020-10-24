@@ -12086,12 +12086,19 @@ in advance, so @command{guix publish} does not add a
 prevents clients from knowing the amount of data being downloaded.
 
 Conversely, when @option{--cache} is used, the first request for a store
-item (@i{via} a @code{.narinfo} URL) returns 404 and triggers a
+item (@i{via} a @code{.narinfo} URL) triggers a
 background process to @dfn{bake} the archive---computing its
 @code{.narinfo} and compressing the archive, if needed.  Once the
 archive is cached in @var{directory}, subsequent requests succeed and
 are served directly from the cache, which guarantees that clients get
 the best possible bandwidth.
+
+That first @code{.narinfo} request nonetheless returns 200, provided the
+requested store item is ``small enough'', below the cache bypass
+threshold---see @option{--cache-bypass-threshold} below.  That way,
+clients do not have to wait until the archive is baked.  For larger
+store items, the first @code{.narinfo} request returns 404, meaning that
+clients have to wait until the archive is baked.
 
 The ``baking'' process is performed by worker threads.  By default, one
 thread per CPU core is created, but this can be customized.  See
@@ -12117,6 +12124,21 @@ for as long as @var{ttl}.
 Additionally, when @option{--cache} is used, cached entries that have
 not been accessed for @var{ttl} and that no longer have a corresponding
 item in the store, may be deleted.
+
+@item --cache-bypass-threshold=@var{size}
+When used in conjunction with @option{--cache}, store items smaller than
+@var{size} are immediately available, even when they are not yet in
+cache.  @var{size} is a size in bytes, or it can be prefixed by @code{M}
+for megabytes and so on.  The default is @code{10M}.
+
+``Cache bypass'' allows you to reduce the publication delay for clients
+at the expense of possibly additional I/O and CPU use on the server
+side: depending on the client access patterns, those store items can end
+up being baked several times until a copy is available in cache.
+
+Increasing the threshold may be useful for sites that have few users, or
+to guarantee that users get substitutes even for store items that are
+not popular.
 
 @item --nar-path=@var{path}
 Use @var{path} as the prefix for the URLs of ``nar'' files

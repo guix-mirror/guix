@@ -413,7 +413,8 @@ References: ~%"
                     (call-with-new-thread
                      (lambda ()
                        (guix-publish "--port=6797" "-C2"
-                                     (string-append "--cache=" cache)))))))
+                                     (string-append "--cache=" cache)
+                                     "--cache-bypass-threshold=0"))))))
        (wait-until-ready 6797)
        (let* ((base     "http://localhost:6797/")
               (part     (store-path-hash-part %item))
@@ -462,7 +463,8 @@ References: ~%"
                     (call-with-new-thread
                      (lambda ()
                        (guix-publish "--port=6794" "-Cgzip:2" "-Clzip:2"
-                                     (string-append "--cache=" cache)))))))
+                                     (string-append "--cache=" cache)
+                                     "--cache-bypass-threshold=0"))))))
        (wait-until-ready 6794)
        (let* ((base     "http://localhost:6794/")
               (part     (store-path-hash-part %item))
@@ -517,7 +519,8 @@ References: ~%"
                       (call-with-new-thread
                        (lambda ()
                          (guix-publish "--port=6796" "-C2" "--ttl=42h"
-                                       (string-append "--cache=" cache)))))))
+                                       (string-append "--cache=" cache)
+                                       "--cache-bypass-threshold=0"))))))
          (wait-until-ready 6796)
          (let* ((base     "http://localhost:6796/")
                 (part     (store-path-hash-part item))
@@ -581,11 +584,43 @@ References: ~%"
                                        (basename item)
                                        ".narinfo"))
               (response (http-get url)))
-         (and (= 404 (response-code response))
+         (and (= 200 (response-code response))    ;we're below the threshold
               (wait-for-file cached)
               (begin
                 (delete-paths %store (list item))
                 (response-code (pk 'response (http-get url))))))))))
+
+(test-equal "with cache, cache bypass"
+  200
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6788" "-C" "gzip"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6788)
+
+       (let* ((base     "http://localhost:6788/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (narinfo  (string-append base part ".narinfo"))
+              (nar      (string-append base "nar/gzip/" (basename item)))
+              (cached   (string-append cache "/gzip/" (basename item)
+                                       ".narinfo")))
+         ;; We're below the default cache bypass threshold, so NAR and NARINFO
+         ;; should immediately return 200.  The NARINFO request should trigger
+         ;; caching, and the next request to NAR should return 200 as well.
+         (and (let ((response (pk 'r1 (http-get nar))))
+                (and (= 200 (response-code response))
+                     (not (response-content-length response)))) ;not known
+              (= 200 (response-code (http-get narinfo)))
+              (begin
+                (wait-for-file cached)
+                (let ((response (pk 'r2 (http-get nar))))
+                  (and (> (response-content-length response)
+                          (stat:size (stat item)))
+                       (response-code response))))))))))
 
 (test-equal "/log/NAME"
   `(200 #t application/x-bzip2)
