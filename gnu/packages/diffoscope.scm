@@ -72,7 +72,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "151")
+    (version "161")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -81,39 +81,15 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lv44ngqij9dp3xk9jj95w7an7h03iac6b2ifpq33j5fffswa1sm"))))
+                "1c9afc0s8p2wh7pw7xclr8j06ma3fjk6r1dnfaf1gdfk05hdxi78"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  ;; setup.py mistakenly requires python-magic from PyPi, even
-                  ;; though the Python bindings of `file` are sufficient.
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                  (add-after 'unpack 'dependency-on-python-magic
-                    (lambda _
-                      (substitute* "setup.py"
-                        (("'python-magic',") ""))))
                   ;; This test is broken because our `file` package has a
                   ;; bug in berkeley-db file type detection.
                   (add-after 'unpack 'remove-berkeley-test
                     (lambda _
                       (delete-file "tests/comparators/test_berkeley_db.py")
-                      #t))
-                  ;; Test is dynamically generated and may have false
-                  ;; negatives with different ocaml versions.  Further
-                  ;; background in: https://bugs.debian.org/939386
-                  (add-after 'unpack 'remove-ocaml-test
-                    (lambda _
-                      (substitute* "tests/comparators/test_ocaml.py"
-                        (("def test_diff.differences.:")
-                         "def skip_test_diff(differences):"))
-                      #t))
-                  (add-after 'unpack 'skip-elf-tests
-                    ;; FIXME: libmix_differences test added in 125, and is
-                    ;; failing, need to explore why...
-                    (lambda _
-                      (substitute* "tests/comparators/test_elf.py"
-                        (("def test_libmix_differences.libmix_differences.:")
-                         "def skip_test_libmix_differences(libmix_differences):"))
                       #t))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -145,6 +121,13 @@
                       ;; This requires /sbin to be in $PATH.
                       (delete-file "tests/test_tools.py")
                       #t))
+                  (add-before 'check 'skip-dex-test-with-missing-procyon
+                    (lambda _
+                      ;; This test actually requires procyon decompiler
+                      (substitute* "tests/comparators/test_dex.py"
+                        (("skip_unless_tools_exist.\"enjarify\", \"zipinfo\", \"javap\"")
+                         "skip_unless_tools_exist(\"enjarify\", \"zipinfo\", \"javap\", \"procyon\""))
+                     #t))
                   (add-after 'install 'install-man-page
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -155,6 +138,7 @@
               ("python-file" ,python-file)
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)
+              ("python-magic" ,python-magic)
               ("python-tlsh" ,python-tlsh)
               ("acl" ,acl)              ;for getfacl
               ("colordiff" ,colordiff)
@@ -164,6 +148,7 @@
                      ("python-pytest" ,python-pytest)
                      ("python-chardet" ,python-chardet)
                      ("python-binwalk" ,python-binwalk)
+                     ("python-black" ,python-black)
                      ("python-h5py" ,python-h5py)
                      ("python-pypdf2" ,python-pypdf2)
                      ("python-progressbar33" ,python-progressbar33)
