@@ -197,8 +197,10 @@ can interpret meaningfully."
 private key from '~a': ~a")
                                 file str)))))
 
-(define* (open-ssh-session machine #:optional (max-silent-time -1))
-  "Open an SSH session for MACHINE and return it.  Throw an error on failure."
+(define* (open-ssh-session machine #:optional max-silent-time)
+  "Open an SSH session for MACHINE and return it.  Throw an error on failure.
+When MAX-SILENT-TIME is true, it must be a positive integer denoting the
+number of seconds after which the connection times out."
   (let ((private (private-key-from-file* (build-machine-private-key machine)))
         (public  (public-key-from-file
                   (string-append (build-machine-private-key machine)
@@ -235,9 +237,10 @@ private key from '~a': ~a")
            (leave (G_ "SSH public key authentication failed for '~a': ~a~%")
                   (build-machine-name machine) (get-error session))))
 
-       ;; From then on use MAX-SILENT-TIME as the absolute timeout when
-       ;; reading from or write to a channel for this session.
-       (session-set! session 'timeout max-silent-time)
+       (when max-silent-time
+         ;; From then on use MAX-SILENT-TIME as the absolute timeout when
+         ;; reading from or write to a channel for this session.
+         (session-set! session 'timeout max-silent-time))
 
        session)
       (x
