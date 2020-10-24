@@ -1467,7 +1467,6 @@ operate properly.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("python" ,python-2) ; scripts use interpreter python2
        ("speex" ,speex)
        ("yasm" ,yasm)))
     (arguments
