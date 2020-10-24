@@ -4220,6 +4220,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
          "-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
+         "-DMUSESCORE_BUILD_CONFIG=release"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
        ;; run them is:
@@ -4252,8 +4253,9 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (synopsis "Music composition and notation software")
-    (description "MuseScore is a music score typesetter.  Its main purpose is
-the creation of high-quality engraved musical scores in a WYSIWYG environment.
+    (description
+     "MuseScore is a music score typesetter.  Its main purpose is the creation
+of high-quality engraved musical scores in a WYSIWYG environment.
 
 It supports unlimited staves, linked parts and part extraction, tablature,
 MIDI input, percussion notation, cross-staff beaming, automatic transposition,
