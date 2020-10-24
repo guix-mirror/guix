@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
@@ -53,6 +56,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
@@ -369,3 +373,46 @@ MPD library in a similar way to many other music players' 'shuffle library'
 feature. ashuffle works like any other MPD client, and can be used alongside
 other MPD frontends.")
     (license license:expat)))
+
+(define-public mpdris2
+  (package
+    (name "mpdris2")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eonpatapon/mpDris2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "048b8acsd1b8kcxzd9fsh5p9g2an9c4rznicfcpyrsjz5syv894h"))))
+    (build-system gnu-build-system)
+    ;; Manually wrap the binary, because we’re not using python-build-system.
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out         (assoc-ref outputs "out"))
+                   (python-path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/mpDris2")
+                 `("PYTHONPATH" ":" prefix (,python-path)))
+               #t))))))
+    (inputs
+     `(("python-mpd2" ,python-mpd2)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python" ,python)))             ; Sets PYTHONPATH.
+    ;; For bootstrapping.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("which" ,which)
+       ("intltool" ,intltool)))
+    (synopsis "MPRIS V2.1 support for MPD")
+    (description "Client for the Music Player Daemon providing MPRIS 2
+support")
+    (home-page "https://github.com/eonpatapon/mpDris2")
+    (license license:gpl3+)))
