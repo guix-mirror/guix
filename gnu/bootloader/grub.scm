@@ -421,11 +421,12 @@ set lang=~a~%" locale))))
                     (bootloader-configuration-bootloader config)))
            (keymap* (and layout
                          (keyboard-layout-file layout #:grub grub)))
+           (entry (first all-entries))
+           (device (menu-entry-device entry))
+           (mount-point (menu-entry-device-mount-point entry))
            (keymap (and keymap*
-                        (if store-directory-prefix
-                            #~(string-append #$store-directory-prefix
-                                             #$keymap*)
-                            keymap*))))
+                        (normalize-file keymap* mount-point
+                                        store-directory-prefix))))
       #~(when #$keymap
           (format port "\
 insmod keylayouts
