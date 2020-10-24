@@ -325,12 +325,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
        (list
         (string-append "-DCMAKE_INSTALL_BINDIR="
                        (assoc-ref %outputs "out") "/bin")
-        (string-append "-DCMAKE_INSTALL_LIBDIR="
-                       (assoc-ref %outputs "out") "/lib")
-        (string-append "-DINSTALL_SHARED_DIR="
-                       (assoc-ref %outputs "out") "/lib")
-        (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
-                       (assoc-ref %outputs "out") "/include")
+        "-DCMAKE_INSTALL_INCLUDEDIR=include"
         "-DENABLE_STATIC=OFF"
         "-DENABLE_UNITTESTS=ON")))
     (native-inputs
