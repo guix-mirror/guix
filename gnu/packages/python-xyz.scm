@@ -3675,7 +3675,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.1.2")
+    (version "3.2.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -3685,7 +3685,7 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16gnxy0qinh8fhs0qvhff5z2xh49c3cqgm0d7bfjw120df6x7fym"))
+        (base32 "0if0h3myb9m3hgmn1phrhq8pfp89kfqsaq32vmfdjkyjdj7y59ds"))
        (patches (search-patches
                  "python-robotframework-honor-source-date-epoch.patch"))))
     (build-system python-build-system)
@@ -3702,12 +3702,23 @@ ecosystem, but can naturally be used also by other projects.")
                                           (string-append doc "/libraries"))
                         #t)))
                   (replace 'check
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Some tests require timezone data.  Otherwise, they
+                      ;; look up /etc/localtime, which doesn't exist, and fail
+                      ;; with:
+                      ;;
+                      ;; OverflowError: mktime argument out of range
+                      (setenv "TZDIR"
+                              (string-append (assoc-ref inputs "tzdata")
+                                             "/share/zoneinfo"))
+                      (setenv "TZ" "Europe/Paris")
+
                       (invoke "python" "utest/run.py"))))))
     (native-inputs
      `(("python-invoke" ,python-invoke)
        ("python-rellu" ,python-rellu)
-       ("python:tk" ,python "tk")))     ;used when building the HTML doc
+       ("python:tk" ,python "tk")             ;used when building the HTML doc
+       ("tzdata" ,tzdata-for-tests)))
     (outputs '("out" "doc"))
     (home-page "https://robotframework.org")
     (synopsis "Generic automation framework")
