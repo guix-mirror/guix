@@ -24939,7 +24939,7 @@ picked up when copy-pasting text from buffer to buffer.")
 (define-public emacs-org-webring
   (package
     (name "emacs-org-webring")
-    (version "1.9.6-rc2")
+    (version "1.9.7-rc3")
     (source
      (origin
        (method git-fetch)
@@ -24949,7 +24949,7 @@ picked up when copy-pasting text from buffer to buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ap4d9j4y1bnpkpw775h30pfvvymrmi63s2v4mgkhamyh8w82krd"))))
+         "0p6s7cjq8mgbxjp002hv3gaallv2k4ssnfxkqggaqpqnzpc08hxj"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
