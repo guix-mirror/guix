@@ -35,6 +35,7 @@
              (gnu packages package-management)
              (ice-9 match)
              (ice-9 popen)
+             (ice-9 regex)
              (ice-9 textual-ports)
              (srfi srfi-1)
              (srfi srfi-2)
@@ -126,8 +127,8 @@ COMMIT."
        (lambda ()
          (invoke "git" "worktree" "remove" "--force" tmp-directory))))))
 
-(define %savannah-guix-git-repo-push-url
-  "git.savannah.gnu.org/srv/git/guix.git")
+(define %savannah-guix-git-repo-push-url-regexp
+  "git.(savannah|sv).gnu.org/srv/git/guix.git \\(push\\)")
 
 (define-syntax-rule (with-input-pipe-to-string prog arg ...)
   (let* ((input-pipe (open-pipe* OPEN_READ prog arg ...))
@@ -143,10 +144,9 @@ COMMIT."
   (and-let* ((remotes (string-split (with-input-pipe-to-string
                                      "git" "remote" "-v")
                                     #\newline))
-             (origin-entry (find (cut string-contains <>
-                                      (string-append
-                                       %savannah-guix-git-repo-push-url
-                                       " (push)"))
+             (origin-entry (find (cut string-match
+                                      %savannah-guix-git-repo-push-url-regexp
+                                      <>)
                                  remotes)))
     (first (string-split origin-entry #\tab))))
 
