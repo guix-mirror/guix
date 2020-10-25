@@ -2471,7 +2471,10 @@ formats.")
                    (make-file-writable "web2c/fmtutil.cnf")
                    (substitute* "web2c/fmtutil.cnf"
                      (((string-append "^(" (string-join disabled-formats "|") ")") m)
-                      (string-append "#! " m))))
+                      (string-append "#! " m))
+                     (("translate-file=cp227")
+                      (format #f "translate-file=~a/share/texmf-dist/web2c/cp227"
+                              (assoc-ref inputs "texlive-kpathsea")))))
                  (invoke "fmtutil-sys" "--all"
                          "--fmtdir=web2c"
                          (string-append "--cnffile=web2c/fmtutil.cnf"))
