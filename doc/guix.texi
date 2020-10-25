@@ -18697,6 +18697,54 @@ required to add extensions provided by other packages.
 @end table
 @end deftp
 
+@deftp {Data Type} postgresql-config-file
+Data type representing the PostgreSQL configuration file.  As shown in
+the following example, this can be used to customize the configuration
+of PostgreSQL.  Note that you can use any G-expression or filename in
+place of this record, if you already have a configuration file you'd
+like to use for example.
+
+@lisp
+(service postgresql-service-type
+         (postgresql-configuration
+          (config-file
+           (postgresql-config-file
+            (log-destination "stderr")
+            (hba-file
+             (plain-file "pg_hba.conf"
+                         "
+local	all	all			trust
+host	all	all	127.0.0.1/32 	md5
+host	all	all	::1/128 	md5"))
+            (extra-config
+             '(("session_preload_libraries"     "'auto_explain'")
+               ("random_page_cost"              "2")
+               ("auto_explain.log_min_duration" "'100ms'")
+               ("work_mem"                      "'500MB'")
+               ("logging_collector"             "on")
+               ("log_directory"                 "'/var/log/postgresql'")))))))
+@end lisp
+
+@table @asis
+@item @code{log-destination} (default: @code{"syslog"})
+The logging method to use for PostgreSQL.  Multiple values are accepted,
+separated by commas.
+
+@item @code{hba-file} (default: @code{%default-postgres-hba})
+Filename or G-expression for the host-based authentication
+configuration.
+
+@item @code{ident-file} (default: @code{%default-postgres-ident})
+Filename or G-expression for the user name mapping configuration.
+
+@item @code{extra-config} (default: @code{'()})
+List of additional keys and values to include in the PostgreSQL config
+file.  Each entry in the list should be a list where the first element
+is the key, and the remaining elements are the values.
+
+@end table
+@end deftp
+
 @subsubheading MariaDB/MySQL
 
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
