@@ -1619,7 +1619,7 @@ sharing of scientific data.")
 (define-public netcdf-fortran
   (package
     (name "netcdf-fortran")
-    (version "4.4.4")
+    (version "4.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1627,7 +1627,7 @@ sharing of scientific data.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0xaxdcg1p83zmypwml3swsnr3ccn38inwldyr1l3wa4dbwbrblxj"))))
+                "0x4acvfhbsx1q79dkkwrwbgfhm0w5ngnp4zj5kk92s1khihmqfhj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))
