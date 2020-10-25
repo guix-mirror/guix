@@ -3054,6 +3054,53 @@ the NFSS in LaTeX running on XeTeX or LuaTeX engines.  The package requires
 the l3kernel and xparse bundles from the LaTeX 3 development team.")
     (license license:lppl1.3+)))
 
+(define-public texlive-l3build
+  (let ((template (simple-texlive-package
+                   "texlive-l3build"
+                   (list "/doc/latex/l3build/"
+                         "/doc/man/man1/l3build.1"
+                         "/scripts/l3build/"
+                         "/tex/latex/l3build/"
+                         ;; TODO: The dtx file builds only the documentation.
+                         ;; We avoid this for a simpler package definition,
+                         ;; but it may be possible to exclude
+                         ;; /doc/latex/l3build and the man page in the future.
+                         "/source/latex/l3build/")
+                   (base32
+                    "009dccv5lq7bq13431l4ihmagxvb3j1pb5bhidsbiyxi3wvi8y97")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'install 'patch-shebangs-again
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 ;; XXX: Since the 'patch-shebangs' phase cannot change the
+                 ;; original source files patch the shebangs again here.
+                 (let* ((coreutils (assoc-ref inputs "coreutils"))
+                        (texlive-bin (assoc-ref inputs "texlive-bin"))
+                        (path (list (string-append coreutils "/bin")
+                                    (string-append texlive-bin "/bin"))))
+                   (for-each (lambda (file)
+                               (format #t "~a~%" file)
+                               (patch-shebang file path))
+                             (find-files (assoc-ref outputs "out")))
+                   #t)))))))
+      (inputs
+       `(("coreutils" ,coreutils)
+         ("texlive-bin" ,texlive-bin)))
+      (home-page "https://github.com/latex3/luaotfload")
+      (synopsis "Testing and building system for LaTeX")
+      (description
+       "The l3build module is designed to support the development of
+high-quality LaTeX code by providing: a unit testing system, automated
+typesetting of code sources, and a reliable packaging system for CTAN
+releases.  The bundle consists of a Lua script to run the tasks and a
+@code{.tex} file which provides the testing environment.")
+      (license license:lppl1.3c+))))
+
 ;; The SVN directory contains little more than a dtx file that generates three
 ;; of the many lua files that should be installed as part of this package.
 ;; This is why we take the release from GitHub instead.
