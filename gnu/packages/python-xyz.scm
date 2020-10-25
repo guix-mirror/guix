@@ -958,9 +958,6 @@ to users of that module.")
     ;; by the Expat license.
     (license (list license:isc license:expat))))
 
-(define-public python2-netcdf4
-  (package-with-python2 python-netcdf4))
-
 (define-public python-license-expression
   (package
     (name "python-license-expression")
