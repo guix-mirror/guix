@@ -1,0 +1,25 @@
+From 668010ebc9fd84d9dc60f90b9a4ebf3c7054977f Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Sun, 25 Oct 2020 20:11:13 +0000
+Subject: [PATCH] Fix build errors if PREFIX is different from ECM's PREFIX.
+
+See <https://bugs.kde.org/424483> for details.
+---
+ KF5PackageMacros.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/KF5PackageMacros.cmake b/KF5PackageMacros.cmake
+index f4c1d1d..acd3798 100644
+--- a/KF5PackageMacros.cmake
++++ b/KF5PackageMacros.cmake
+@@ -1,6 +1,5 @@
+ 
+-find_package(ECM 1.6.0 CONFIG REQUIRED)
+-include(${ECM_KDE_MODULE_DIR}/KDEInstallDirs.cmake)
++include(KDEInstallDirs)
+ 
+ set(KPACKAGE_RELATIVE_DATA_INSTALL_DIR "kpackage")
+ 
+-- 
+GitLab
+

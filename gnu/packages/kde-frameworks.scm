@@ -1963,7 +1963,8 @@ covers feedback and persistent events.")
                 "03rp7p7i8ihz5wg58gjs638jk7xbszknfiy2j3r979snc57g95mv"))
               ;; Default to: external paths/symlinks can be followed by a
               ;; package
-              (patches (search-patches "kpackage-allow-external-paths.patch"))))
+              (patches (search-patches "kpackage-allow-external-paths.patch"
+                                       "kpackage-fix-KF5PackageMacros.cmake.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
