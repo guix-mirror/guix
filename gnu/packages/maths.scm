@@ -1538,17 +1538,17 @@ similar to MATLAB, GNU Octave or SciPy.")
 (define-public netcdf
   (package
     (name "netcdf")
-    (version "4.4.1.1")
+    (version "4.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/netcdf/"
-                           "netcdf-" version ".tar.gz"))
+       (uri (string-append
+             "https://www.unidata.ucar.edu/downloads/netcdf/ftp/"
+             "netcdf-c-" version ".tar.gz"))
        (sha256
         (base32
-         "1blc7ik5yin7i0ls2kag0a9xjk12m0dzx6v1x88az3ras3scci2d"))
-       (patches (search-patches "netcdf-date-time.patch"
-                                "netcdf-tst_h_par.patch"))))
+         "1a2fpp15a2rl1m50gcvvzd9y6bavl6vjf9zzf63sz5gdmq06yiqf"))
+       (patches (search-patches "netcdf-date-time.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
@@ -1556,10 +1556,8 @@ similar to MATLAB, GNU Octave or SciPy.")
        ("graphviz" ,graphviz)))
     (inputs
      `(("hdf4" ,hdf4-alt)
-
-       ;; XXX: The 'tst_nccopy4.sh' test fails when using hdf5-1.10.
-       ("hdf5" ,hdf5-1.8)
-
+       ("hdf5" ,hdf5)
+       ("curl" ,curl)
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-turbo)))
     (arguments
