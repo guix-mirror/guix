@@ -5049,7 +5049,7 @@ complete without obstructing your daily work.")
 (define-public playerctl
   (package
     (name "playerctl")
-    (version "2.0.2")
+    (version "2.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5058,7 +5058,7 @@ complete without obstructing your daily work.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f3njnpd52djx3dmhh9a8p5a67f0jmr1gbk98icflr2q91149gjz"))))
+                "17hi33sw3663qz5v54bqqil31sgkrlxkb2l5bgqk87pac6x2wnbz"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dintrospection=false" "-Dgtk-doc=false")))
