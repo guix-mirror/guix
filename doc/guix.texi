@@ -260,7 +260,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Programming Guix in Guile
+* Invoking guix repl::          Programming Guix in Guile.
 
 Defining Packages
 
@@ -4423,7 +4423,7 @@ Scheme code that evaluates to a list of channel objects.
 @end table
 
 As for @command{guix pull}, the absence of any options means that the
-the latest commit on the master branch will be used. The command
+latest commit on the master branch will be used. The command
 
 @example
 guix time-machine -- build hello
@@ -5499,7 +5499,7 @@ Another typical use case for containers is to run security-sensitive
 applications such as a web browser.  To run Eolie, we must expose and
 share some files and directories; we include @code{nss-certs} and expose
 @file{/etc/ssl/certs/} for HTTPS authentication; finally we preserve the
-the @env{DISPLAY} environment variable since containerized graphical
+@env{DISPLAY} environment variable since containerized graphical
 applications won't display without it.
 
 @example
@@ -28733,8 +28733,8 @@ The configuration rules that will be used to generate
 @file{/etc/security/pam_mount.conf.xml}.
 
 The configuration rules are SXML elements (@pxref{SXML,,, guile, GNU
-Guile Reference Manual}), and the the default ones don't mount anything
-for anyone at login:
+Guile Reference Manual}), and the default ones don't mount anything for
+anyone at login:
 
 @lisp
 `((debug (@@ (enable "0")))
@@ -31158,7 +31158,7 @@ decompress with @command{xz -d}, and then you can pass it to an emulator such
 as QEMU (see below for details).
 
 This image boots the Xfce graphical environment and it contains some
-commonly-used tools.  You can install more software in the image by running
+commonly used tools.  You can install more software in the image by running
 @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
 also reconfigure the system based on its initial configuration file available
 as @file{/run/current-system/configuration.scm} (@pxref{Using the
@@ -31218,8 +31218,8 @@ better performance than if it were emulating a complete disk drive.  See the
 QEMU and KVM documentation for more info.
 
 @item -drive if=none,file=/tmp/qemu-image,id=myhd
-Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing store the
-the ``myhd'' drive.
+Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing
+store of the ``myhd'' drive.
 @end table
 
 The default @command{run-vm.sh} script that is returned by an invocation of
