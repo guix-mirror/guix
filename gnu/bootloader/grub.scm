@@ -171,9 +171,11 @@ fi~%"
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (normalize-file (file-append grub "/share/grub/unicode.pf2")
-                    store-mount-point
-                    store-directory-prefix))
+    (let* ((bootloader (bootloader-configuration-bootloader config))
+           (grub (bootloader-package bootloader)))
+      (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                      store-mount-point
+                      store-directory-prefix)))
 
   (define image
     (normalize-file (grub-background-image config)
