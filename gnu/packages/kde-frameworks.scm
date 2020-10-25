@@ -3449,7 +3449,8 @@ setUrl, setUserAgent and call.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "06cxajsxj62g3c37ssrrcaxb9a12zbyp2kvrjqym329k5vd89272"))))
+                "06cxajsxj62g3c37ssrrcaxb9a12zbyp2kvrjqym329k5vd89272"))
+              (patches (search-patches "plasma-framework-fix-KF5PlasmaMacros.cmake.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kpackage" ,kpackage)
