@@ -3387,26 +3387,129 @@ T2* and X2 encodings. These encodings cover (between them) pretty much every
 language that is written in a Cyrillic alphabet.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-psnfss
+(define-public texlive-psnfss
   (let ((template (simple-texlive-package
-                   "texlive-latex-psnfss"
+                   "texlive-psnfss"
                    (list "/doc/latex/psnfss/"
-                         "/tex/latex/psnfss/")
+                         "/source/latex/psnfss/"
+                         "/fonts/map/dvips/psnfss/"
+
+                         ;; Only the .sty files are generated from the sources.
+                         "/tex/latex/psnfss/8rbch.fd"
+                         "/tex/latex/psnfss/8rpag.fd"
+                         "/tex/latex/psnfss/8rpbk.fd"
+                         "/tex/latex/psnfss/8rpcr.fd"
+                         "/tex/latex/psnfss/8rphv.fd"
+                         "/tex/latex/psnfss/8rpnc.fd"
+                         "/tex/latex/psnfss/8rppl.fd"
+                         "/tex/latex/psnfss/8rptm.fd"
+                         "/tex/latex/psnfss/8rput.fd"
+                         "/tex/latex/psnfss/8rpzc.fd"
+                         "/tex/latex/psnfss/omlbch.fd"
+                         "/tex/latex/psnfss/omlpag.fd"
+                         "/tex/latex/psnfss/omlpbk.fd"
+                         "/tex/latex/psnfss/omlpcr.fd"
+                         "/tex/latex/psnfss/omlphv.fd"
+                         "/tex/latex/psnfss/omlpnc.fd"
+                         "/tex/latex/psnfss/omlppl.fd"
+                         "/tex/latex/psnfss/omlptm.fd"
+                         "/tex/latex/psnfss/omlptmcm.fd"
+                         "/tex/latex/psnfss/omlput.fd"
+                         "/tex/latex/psnfss/omlpzc.fd"
+                         "/tex/latex/psnfss/omlzplm.fd"
+                         "/tex/latex/psnfss/omlzpple.fd"
+                         "/tex/latex/psnfss/omlztmcm.fd"
+                         "/tex/latex/psnfss/omsbch.fd"
+                         "/tex/latex/psnfss/omspag.fd"
+                         "/tex/latex/psnfss/omspbk.fd"
+                         "/tex/latex/psnfss/omspcr.fd"
+                         "/tex/latex/psnfss/omsphv.fd"
+                         "/tex/latex/psnfss/omspnc.fd"
+                         "/tex/latex/psnfss/omsppl.fd"
+                         "/tex/latex/psnfss/omsptm.fd"
+                         "/tex/latex/psnfss/omsput.fd"
+                         "/tex/latex/psnfss/omspzc.fd"
+                         "/tex/latex/psnfss/omspzccm.fd"
+                         "/tex/latex/psnfss/omszplm.fd"
+                         "/tex/latex/psnfss/omszpple.fd"
+                         "/tex/latex/psnfss/omsztmcm.fd"
+                         "/tex/latex/psnfss/omxpsycm.fd"
+                         "/tex/latex/psnfss/omxzplm.fd"
+                         "/tex/latex/psnfss/omxzpple.fd"
+                         "/tex/latex/psnfss/omxztmcm.fd"
+                         "/tex/latex/psnfss/ot1bch.fd"
+                         "/tex/latex/psnfss/ot1pag.fd"
+                         "/tex/latex/psnfss/ot1pbk.fd"
+                         "/tex/latex/psnfss/ot1pcr.fd"
+                         "/tex/latex/psnfss/ot1phv.fd"
+                         "/tex/latex/psnfss/ot1pnc.fd"
+                         "/tex/latex/psnfss/ot1ppl.fd"
+                         "/tex/latex/psnfss/ot1pplj.fd"
+                         "/tex/latex/psnfss/ot1pplx.fd"
+                         "/tex/latex/psnfss/ot1ptm.fd"
+                         "/tex/latex/psnfss/ot1ptmcm.fd"
+                         "/tex/latex/psnfss/ot1put.fd"
+                         "/tex/latex/psnfss/ot1pzc.fd"
+                         "/tex/latex/psnfss/ot1zplm.fd"
+                         "/tex/latex/psnfss/ot1zpple.fd"
+                         "/tex/latex/psnfss/ot1ztmcm.fd"
+                         "/tex/latex/psnfss/t1bch.fd"
+                         "/tex/latex/psnfss/t1pag.fd"
+                         "/tex/latex/psnfss/t1pbk.fd"
+                         "/tex/latex/psnfss/t1pcr.fd"
+                         "/tex/latex/psnfss/t1phv.fd"
+                         "/tex/latex/psnfss/t1pnc.fd"
+                         "/tex/latex/psnfss/t1ppl.fd"
+                         "/tex/latex/psnfss/t1pplj.fd"
+                         "/tex/latex/psnfss/t1pplx.fd"
+                         "/tex/latex/psnfss/t1ptm.fd"
+                         "/tex/latex/psnfss/t1put.fd"
+                         "/tex/latex/psnfss/t1pzc.fd"
+                         "/tex/latex/psnfss/ts1bch.fd"
+                         "/tex/latex/psnfss/ts1pag.fd"
+                         "/tex/latex/psnfss/ts1pbk.fd"
+                         "/tex/latex/psnfss/ts1pcr.fd"
+                         "/tex/latex/psnfss/ts1phv.fd"
+                         "/tex/latex/psnfss/ts1pnc.fd"
+                         "/tex/latex/psnfss/ts1ppl.fd"
+                         "/tex/latex/psnfss/ts1pplj.fd"
+                         "/tex/latex/psnfss/ts1pplx.fd"
+                         "/tex/latex/psnfss/ts1ptm.fd"
+                         "/tex/latex/psnfss/ts1put.fd"
+                         "/tex/latex/psnfss/ts1pzc.fd"
+                         "/tex/latex/psnfss/ufplm.fd"
+                         "/tex/latex/psnfss/ufplmbb.fd"
+                         "/tex/latex/psnfss/upsy.fd"
+                         "/tex/latex/psnfss/upzd.fd")
                    (base32
-                    "12p23in2nz1n08hw3m6kf5mcbn9zbhjsvdx0nsb7zcvywbljb9i2")
-                   #:trivial? #t)))
+                    "1ql4gidwf5m5gwcwwmx7vj60lj4xygw02pm5mzin49nlwsa1vbnv"))))
     (package
       (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/psnfss")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "source/latex/psnfss") #t))))))
+      (native-inputs
+       `(("texlive-cm" ,texlive-cm)))
       (home-page "https://www.ctan.org/pkg/psnfss")
       (synopsis "Font support for common PostScript fonts")
-      (description "The PSNFSS collection includes a set of files that
-provide a complete working setup of the LaTeX font selection
-scheme (NFSS2) for use with common PostScript fonts.  It covers the
-so-called \"Base\" fonts (which are built into any Level 2 PostScript
-printing device and the Ghostscript interpreter) and a number of free
-fonts.  It provides font definition files, macros and font metrics.
-The bundle as a whole is part of the LaTeX required set of packages.")
+      (description
+       "The PSNFSS collection includes a set of files that provide a complete
+working setup of the LaTeX font selection scheme (NFSS2) for use with common
+PostScript fonts.  It covers the so-called \"Base\" fonts (which are built
+into any Level 2 PostScript printing device and the Ghostscript interpreter)
+and a number of free fonts.  It provides font definition files, macros and
+font metrics.  The bundle as a whole is part of the LaTeX required set of
+packages.")
       (license license:lppl1.2+))))
+
+(define-public texlive-latex-psnfss
+  (deprecated-package "texlive-latex-psnfss" texlive-psnfss))
 
 ;; For user profiles
 (define-public texlive-base
