@@ -6939,6 +6939,52 @@ supports advanced interactive documents.  See the ConTeXt garden for a wealth
 of support information.")
     (license license:gpl2+)))
 
+(define-public texlive-context
+  (package
+    (inherit (simple-texlive-package
+              "texlive-context"
+              (list "/doc/context/"
+                    ;; XXX Omitting /doc/man/man1/*.pdf
+                    "/bibtex/bst/context/mkii/"
+                    "/context/data/"
+
+                    "/fonts/afm/hoekwater/context/contnav.afm"
+                    "/fonts/cid/fontforge/Adobe-CNS1-4.cidmap"
+                    "/fonts/cid/fontforge/Adobe-GB1-4.cidmap"
+                    "/fonts/cid/fontforge/Adobe-Identity-0.cidmap"
+                    "/fonts/cid/fontforge/Adobe-Japan1-5.cidmap"
+                    "/fonts/cid/fontforge/Adobe-Japan1-6.cidmap"
+                    "/fonts/cid/fontforge/Adobe-Japan2-0.cidmap"
+                    "/fonts/cid/fontforge/Adobe-Korea1-2.cidmap"
+                    "/fonts/enc/dvips/context/"
+                    "/fonts/map/dvips/context/"
+                    "/fonts/map/luatex/context/"
+                    "/fonts/map/pdftex/context/"
+                    "/fonts/misc/xetex/fontmapping/context/"
+                    "/fonts/tfm/hoekwater/context/contnav.tfm"
+                    "/fonts/type1/hoekwater/context/"
+
+                    "/metapost/context/"
+                    "/scripts/context/"
+                    "/tex/context/"
+
+                    "/tex/generic/context/luatex/"
+                    "/tex/generic/context/ppchtex/"
+                    "/tex/latex/context/")
+              (base32
+               "0cc8509hrc25ri4a8hshgasip5z4qlipx3nxdm97f1sr0l6ncxdr")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/context")
+    (synopsis "ConTeXt macro package")
+    (description "ConTeXt is a full featured, parameter driven macro package,
+which fully supports advanced interactive documents.  See the ConTeXt garden
+for a wealth of support information.")
+    ;; The GPL applies to all code; alternatively, the LaTeX license may be used.
+    ;; The CC-BY-SA license applies to all documentation.
+    (license (list license:lppl1.3c+
+                   license:gpl2+
+                   license:cc-by-sa4.0))))
+
 (define-public texlive-beamer
   (package
     (inherit (simple-texlive-package
