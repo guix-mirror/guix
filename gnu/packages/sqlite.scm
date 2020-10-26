@@ -62,16 +62,12 @@
                                            6 #\0))))))
                    (string-append "https://sqlite.org/2020/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
+            (patches (search-patches "sqlite-hurd.patch"))
             (sha256
              (base32
               "1bj936svd8i5g25xd1bj52hj4zca01fgl3sqkj86z9q5pkz4wa32"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
-   (native-inputs (if (hurd-target?)
-                      ;; TODO move into origin on the next rebuild cycle.
-                      `(("hurd-locking-mode.patch"
-                         ,@(search-patches "sqlite-hurd.patch")))
-                      '()))
    (outputs '("out" "static"))
    (arguments
     `(#:configure-flags
@@ -86,18 +82,6 @@
                            ;; Column metadata is required by GNU Jami and Qt, et.al.
                            "-DSQLITE_ENABLE_COLUMN_METADATA"))
       #:phases (modify-phases %standard-phases
-                 ;; TODO: remove in the next rebuild cycle
-                 ,@(if (hurd-target?)
-                       `((add-after 'unpack 'patch-sqlite/hurd
-                           (lambda* (#:key inputs native-inputs
-                                     #:allow-other-keys)
-                             (let ((patch (assoc-ref
-                                           (if ,(%current-target-system)
-                                               native-inputs
-                                               inputs)
-                                           "hurd-locking-mode.patch")))
-                               (invoke "patch" "-p1" "--force" "-i" patch)))))
-                       '())
                  (add-after 'install 'move-static-library
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let* ((out    (assoc-ref outputs "out"))
