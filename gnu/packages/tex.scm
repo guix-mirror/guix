@@ -1116,7 +1116,7 @@ Taco Hoekwater.")
                  ;; convert the afm files instead.
                  (let ((build (string-append (getcwd) "/build-fonts/euler")))
                    (mkdir build)
-                   (with-directory-excursion "fonts/afm/public/amsfonts/"
+                   (with-directory-excursion "fonts/afm/public/amsfonts/euler"
                      (for-each (lambda (font)
                                  (format #t "converting afm font ~a\n" (basename font ".afm"))
                                  (invoke "afm2tfm" font
