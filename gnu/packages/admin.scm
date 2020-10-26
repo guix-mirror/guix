@@ -1480,10 +1480,7 @@ system administrator.")
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
        #:tests? #f))
     (native-inputs
-     ;; XXX TODO: Remove on next rebuild cycle.
-     (if (hurd-target?)
-         '()
-         `(("groff" ,groff))))
+     `(("groff" ,groff)))
     (inputs
      `(("coreutils" ,coreutils)
        ("linux-pam" ,linux-pam)
