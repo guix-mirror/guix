@@ -4465,12 +4465,6 @@ set.")
                            "--with-blas")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'set-HOME
-           (lambda _
-             ;; FIXME: texlive-union does not find the built
-             ;; metafonts, so it tries to generate them in HOME.
-             (setenv "HOME" "/tmp")
-             #t))
          (add-before 'configure 'chdir-src
            (lambda _ (chdir "src")))
          (replace 'configure
