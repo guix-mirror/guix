@@ -152,22 +152,24 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
   ;; enough to avoid massive rebuilds.
   gdb-9.1)
 
-(define-public gdb-9.2
+(define-public gdb-10
   (package
     (inherit gdb)
-    (version "9.2")
+    (version "10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
-              (patches (search-patches "gdb-hurd.patch"))
               (sha256
                (base32
-                "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))))
+                "1h32dckz1y8fnyxh22iyw8h3hnhxr79v1ng85px3ljn1xv71wbzq"))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs gdb))))))
 
 (define-public gdb-minimal
   (package/inherit
-   gdb-9.2
+   gdb-10
    (name "gdb-minimal")
    (inputs (fold alist-delete (package-inputs gdb)
                  '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
