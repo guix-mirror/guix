@@ -1343,7 +1343,7 @@ and auto-mapping slices to MIDI note numbers.")
        ("netpbm" ,netpbm)               ;for pngtopnm
        ("texlive" ,(texlive-union (list texlive-metapost
                                         texlive-generic-epsf
-                                        texlive-latex-lh
+                                        texlive-lh
                                         texlive-latex-cyrillic)))
        ("texinfo" ,texinfo)
        ("texi2html" ,texi2html-1.82)
