@@ -134,13 +134,9 @@
                      '())
 
                ;; Change an #ifdef __MACH__ that really targets macOS.
-               ;; TODO: Inline this on the next rebuild cycle.
-               ,@(if (hurd-target?)
-                     '((substitute* "boost/test/utils/timer.hpp"
-                         (("defined\\(__MACH__\\)")
-                          "(defined __MACH__ && !defined __GNU__)"))
-                       #t)
-                     '())
+               (substitute* "boost/test/utils/timer.hpp"
+                 (("defined\\(__MACH__\\)")
+                  "(defined __MACH__ && !defined __GNU__)"))
 
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
