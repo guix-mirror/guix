@@ -1694,12 +1694,6 @@ information.")
              (substitute* "tests/Makefile.in"
               (("empty.sh sanity.sh") "empty.sh"))
              #t))
-         (add-before 'build 'set-HOME
-           (lambda _
-             ;; FIXME: dblatex with texlive-union does not find the built
-             ;; metafonts, so it tries to generate them in HOME.
-             (setenv "HOME" "/tmp")
-             #t))
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "configure"
