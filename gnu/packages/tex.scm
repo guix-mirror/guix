@@ -5575,23 +5575,32 @@ now contains a package @code{fix-cm},f which performs the task of
 @code{ec} fonts.")
     (license license:lppl)))
 
-(define-public texlive-latex-lh
-  (package
-    (name "texlive-latex-lh")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "lh"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/lh"))
-    (home-page "https://www.ctan.org/pkg/lh")
-    (synopsis "Cyrillic fonts that support LaTeX standard encodings")
-    (description
-     "The LH fonts address the problem of the wide variety of alphabets that
+(define-public texlive-lh
+  (let ((template (simple-texlive-package
+                   "texlive-lh"
+                   (list "/doc/fonts/lh/"
+                         "/source/fonts/lh/"
+                         "/source/latex/lh/"
+                         "/fonts/source/lh/"
+                         "/tex/plain/lh/")
+                   (base32
+                    "0vw75i52asi5sssp8k9r8dy4ihvqbvmbsl3dini3ls8cky15lz37"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/lh")
+         ((#:build-targets _ '())
+          ''("nfssfox.ins" "lcyfonts.ins" "ot2fonts.ins" "t2ccfonts.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/lh") #t))))))
+      (home-page "https://www.ctan.org/pkg/lh")
+      (synopsis "Cyrillic fonts that support LaTeX standard encodings")
+      (description
+       "The LH fonts address the problem of the wide variety of alphabets that
 are written with Cyrillic-style characters.  The fonts are the original basis
 of the set of T2* and X2 encodings that are now used when LaTeX users need to
 write in Cyrillic languages.  Macro support in standard LaTeX encodings is
@@ -5600,7 +5609,10 @@ offers support for other (more traditional) encodings.  The fonts, in the
 standard T2* and X2 encodings are available in Adobe Type 1 format, in the
 CM-Super family of fonts.  The package also offers its own LaTeX support for
 OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
-    (license license:lppl)))
+      (license license:lppl))))
+
+(define-public texlive-latex-lh
+  (deprecated-package "texlive-latex-lh" texlive-lh))
 
 (define-public texlive-metapost
   (package
