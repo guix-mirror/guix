@@ -2898,12 +2898,7 @@ data and settings.")
              (substitute* "src/plasma/fasta.hpp"
                (("#define FASTA_HPP" line)
                 (string-append line "\n#include <random>")))
-             #t))
-         ;; FIXME: this is needed because we're using texlive-union, which
-         ;; doesn't handle fonts correctly.  It expects to be able to generate
-         ;; fonts in the home directory.
-         (add-before 'build 'setenv-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)
