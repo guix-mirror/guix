@@ -27350,6 +27350,25 @@ macOS and iOS.")
        (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
         ("rust-libc" ,rust-libc-0.2))))))
 
+(define-public rust-security-framework-sys-0.1
+  (package
+    (inherit rust-security-framework-sys-0.2)
+    (name "rust-security-framework-sys")
+    (version "0.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bdy87gvmahiiyfzghsdg2dkhznww3p3d3r676qs0y32hcg648al"))))
+    (arguments
+     `(#:skip-build? #t ; MacOS specific
+       #:cargo-inputs
+       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2))))))
+
 (define-public rust-selectors-0.22
   (package
     (name "rust-selectors")
