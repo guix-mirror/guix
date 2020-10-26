@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -493,10 +493,6 @@ an interpreter, a compiler, a debugger, and much more.")
                  (("\\(deftest grent\\.[12]" all)
                   (string-append "#+nil ;disabled by Guix\n" all))))
              #t))
-         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-         ;; them in HOME, so it needs to be writeable.
-         (add-before 'build 'set-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
