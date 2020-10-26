@@ -1064,20 +1064,19 @@ allows users to interact with the Guile REPL through Jupyter.")
 (define-public guile-sparql
   (package
    (name "guile-sparql")
-   (version "0.0.7")
+   (version "0.0.8")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/roelj/guile-sparql/releases/download/"
                   version "/guile-sparql-" version ".tar.gz"))
             (sha256
-             (base32 "1drnvhsgl0gc5crmb16yyw1j98nkhwwcgssv9vgm36ng43nnzffd"))))
+             (base32 "1jf4972f9fpm0rd865xpnc9mzl3xv6vhfnp0iygadydy905z9nln"))))
    (build-system gnu-build-system)
-   (arguments `(#:tests? #f)) ; There are no tests.
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (inputs
-    `(("guile" ,guile-2.2)))
+    `(("guile" ,guile-3.0)))
    (home-page "https://github.com/roelj/guile-sparql")
    (synopsis "SPARQL module for Guile")
    (description "This package provides the functionality to query a SPARQL
