@@ -3459,6 +3459,7 @@ packages.")
                 texlive-dvips
                 texlive-fontname
                 texlive-cm
+                texlive-cm-super ; to avoid bitmap fonts
                 texlive-fonts-latex
                 texlive-metafont-base
                 texlive-latex-base
