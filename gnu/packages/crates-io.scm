@@ -27274,6 +27274,31 @@ macOS and iOS.")
        (("rust-hex" ,rust-hex-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-security-framework-0.1
+  (package
+    (inherit rust-security-framework-0.2)
+    (name "rust-security-framework")
+    (version "0.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ci39ax08h2ngrl1yf1ra9smivhjs6xarmg7kp6fxracqpllx96z"))))
+    (arguments
+     `(#:skip-build? #t ; MacOS specific
+       #:cargo-inputs
+       (("rust-core-foundation" ,rust-core-foundation-0.2)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-security-framework-sys" ,rust-security-framework-sys-0.1))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.2)
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
+
 (define-public rust-security-framework-sys-2
   (package
     (name "rust-security-framework-sys")
