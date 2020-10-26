@@ -1297,15 +1297,6 @@ and auto-mapping slices to MIDI note numbers.")
                             "/share/fonts/opentype/"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'use-texlive-union
-           (lambda _
-             ;; FIXME: fonts are not found and have to be generated in HOME.
-             (setenv "HOME" "/tmp")
-             ;; The test for the "lh" package fails, even though it is among
-             ;; the inputs.
-             (substitute* "configure"
-               (("TEX_FIKPARM=.*") "TEX_FIKPARM=found\n"))
-             #t))
          (add-after 'unpack 'fix-path-references
            (lambda _
              (substitute* "scm/backend-library.scm"
