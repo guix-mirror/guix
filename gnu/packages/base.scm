@@ -702,7 +702,9 @@ the store.")
                                      "glibc-supported-locales.patch"
                                      "glibc-hurd-clock_t_centiseconds.patch"
                                      "glibc-hurd-clock_gettime_monotonic.patch"
-                                     "glibc-hurd-signal-sa-siginfo.patch"))))
+                                     "glibc-hurd-signal-sa-siginfo.patch"
+                                     "glibc-hurd-mach-print.patch"
+                                     "glibc-hurd-gettyent.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
