@@ -5295,6 +5295,24 @@ intrinsics.")
         (base32
          "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))))
 
+(define-public rust-core-foundation-sys-0.2
+  (package
+    (inherit rust-core-foundation-sys-0.6)
+    (name "rust-core-foundation-sys")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13f7f3kblyj6yxcxm74yg84vj9ahaprlc1vgblagmj6bzmzmsnh6"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))))
+
 (define-public rust-core-text-13
   (package
     (name "rust-core-text")
