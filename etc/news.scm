@@ -20,6 +20,7 @@
 
  (entry (commit "3b6e4e5fd05e72b8a32ff1a2d5e21464260e21e6")
         (title (en "List of substitute keys is now declarative on Guix System")
+               (de "Liste der Substitutschlüssel auf Guix System ist jetzt deklarativ")
                (es "Claves para sustituciones del sistema Guix en formato declarativo")
                (fr "Liste des clefs de substituts désormais déclarative sur Guix System"))
         (body
@@ -37,6 +38,22 @@ Services\"}, for more info about @code{guix-configuration} and
 
 Alternatively, you can set the @code{authorize-key?} field of
 @code{guix-configuration} to @code{#f} to restore previous behavior.")
+         (de "Die Liste von autorisierten Substitutschlüsseln, die in
+@file{/etc/guix/acl} steht, wird auf Guix System nach Vorgabe jetzt auf rein
+deklarative Weise erstellt, je nach Inhalt des @code{authorized-keys}-Feldes
+der Konfiguration des @code{guix-service-type}. Das hat zur Folge, dass
+manuelle Änderungen an @file{/etc/guix/acl} von jetzt an nach jedem
+Rekonfigurieren oder Neustarten @emph{verworfen} werden (in diesem Fall wird
+eine Sicherheitskopie namens @file{/etc/guix/acl.bak} angelegt).
+
+Wir empfehlen, dass Sie Ihre Betriebssystemkonfiguration aktualisieren, damit
+dort alle autorisierten Substitutschlüssel ausdrücklich aufgeführt
+werden. Siehe @command{info \"(guix.de) Basisdienste\"} für mehr Informationen
+zur @code{guix-configuration} und @code{authorized-keys}.
+
+Alternativ können Sie das @code{authorize-key?}-Feld der
+@code{guix-configuration} auf @code{#f} setzen, um zum alten Verhalten
+zurückzugehen.")
          (es "El listado de claves autorizadas para la obtención de
 sustituciones, disponible en @file{/etc/guix/acl}, ahora se genera de manera
 predeterminada en el sistema Guix de forma completamente declarativa en base
