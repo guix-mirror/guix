@@ -3684,7 +3684,7 @@ ecosystem, but can naturally be used also by other projects.")
        (sha256
         (base32 "0if0h3myb9m3hgmn1phrhq8pfp89kfqsaq32vmfdjkyjdj7y59ds"))
        (patches (search-patches
-                 "python-robotframework-honor-source-date-epoch.patch"))))
+                 "python-robotframework-source-date-epoch.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
