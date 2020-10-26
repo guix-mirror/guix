@@ -401,6 +401,15 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
          (sha256
           (base32 "01ysb9pnscpmingay6njdywkqgj4hn5l5d9igsg3x7p7061jwwix"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'make-info
+             (lambda _
+               (invoke "makeinfo" "--no-split"
+                       "-o" "with-editor.info" "with-editor.texi"))))))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
       (home-page "https://github.com/magit/with-editor")
