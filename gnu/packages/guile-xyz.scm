@@ -53,6 +53,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
@@ -4006,3 +4007,40 @@ features not found in the standard read procedure such as a compatible mode
 with support for other RnRS standards and a tolerant mode that continues on
 errors.")
     (license license:expat)))
+
+(define-public guile-avahi
+  (package
+    (name "guile-avahi")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.sv.gnu.org/guile-avahi.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1m286ggy3qs4fkhk5c01p21ghkslgksjsncaky0z037m9qqn06fn"))
+              (modules '((guix build utils)))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("avahi" ,avahi)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (synopsis "Guile bindings to Avahi")
+    (description
+     "This package provides bindings for Avahi.  It allows programmers to use
+functionalities of the Avahi client library from Guile Scheme programs.  Avahi
+itself is an implementation of multicast DNS (mDNS) and DNS Service
+Discovery (DNS-SD).")
+    (home-page "https://www.nongnu.org/guile-avahi/")
+    (license license:lgpl3+)))
