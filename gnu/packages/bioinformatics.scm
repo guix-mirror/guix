@@ -2904,8 +2904,8 @@ data and settings.")
        ("cairo" ,cairo)
        ("rmath-standalone" ,rmath-standalone)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-fonts-cm
-                                        texlive-fonts-amsfonts
+     `(("texlive" ,(texlive-union (list texlive-cm
+                                        texlive-amsfonts
 
                                         texlive-latex-doi
                                         texlive-latex-examplep
