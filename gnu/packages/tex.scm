@@ -551,9 +551,9 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
 (define-public texlive-generic-tex-ini-files
   (deprecated-package "texlive-generic-tex-ini-files" texlive-tex-ini-files))
 
-(define-public texlive-metafont-base
+(define-public texlive-metafont
   (package
-    (name "texlive-metafont-base")
+    (name "texlive-metafont")
     (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
@@ -604,6 +604,9 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
     (description "This package provides the Metafont base files needed to
 build fonts using the Metafont system.")
     (license license:knuth)))
+
+(define-public texlive-metafont-base
+  (deprecated-package "texlive-metafont-base" texlive-metafont))
 
 (define-public texlive-fontinst
   (let ((template (simple-texlive-package
@@ -736,7 +739,7 @@ documents.")
           `(modify-phases ,phases
              (replace 'build
                (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+                 (let ((mf (assoc-ref inputs "texlive-metafont")))
                    ;; Tell mf where to find mf.base
                    (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                    ;; Tell mf where to look for source files
@@ -780,7 +783,7 @@ documents.")
                    #t)))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont-base" ,texlive-metafont-base)))
+         ("texlive-metafont" ,texlive-metafont)))
       (home-page "https://www.ctan.org/pkg/cm")
       (synopsis "Computer Modern fonts for TeX")
       (description "This package provides the Computer Modern fonts by Donald
@@ -882,7 +885,7 @@ Computers & Typesetting series.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+             (let ((mf (assoc-ref inputs "texlive-metafont")))
                ;; Tell mf where to find mf.base
                (setenv "MFBASES"
                        (string-append mf "/share/texmf-dist/web2c"))
@@ -916,7 +919,7 @@ Computers & Typesetting series.")
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)))
+       ("texlive-metafont" ,texlive-metafont)))
     (home-page "https://www.ctan.org/pkg/knuth-lib")
     (synopsis "Small library of METAFONT sources")
     (description "This is a collection of core TeX and METAFONT macro files
@@ -951,7 +954,7 @@ fonts.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+             (let ((mf (assoc-ref inputs "texlive-metafont")))
                ;; Tell mf where to find mf.base
                (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                ;; Tell mf where to look for source files
@@ -990,7 +993,7 @@ fonts.")
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-metafont" ,texlive-metafont)
        ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/latex-fonts")
     (synopsis "Collection of fonts used in LaTeX distributions")
@@ -1176,7 +1179,7 @@ Taco Hoekwater.")
       (native-inputs
        `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
                                                 texlive-cm
-                                                texlive-metafont-base)))))
+                                                texlive-metafont)))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
       (synopsis "TeX fonts from the American Mathematical Society")
       (description
@@ -1240,7 +1243,7 @@ output encodings, and features generation of clean UTF-8 patterns.")
              ;; Build tfm font.
              (replace 'build
                (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+                 (let ((mf (assoc-ref inputs "texlive-metafont")))
                    ;; Tell mf where to find mf.base
                    (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                    ;; Tell mf where to look for source files
@@ -1266,7 +1269,7 @@ output encodings, and features generation of clean UTF-8 patterns.")
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont-base" ,texlive-metafont-base)
+         ("texlive-metafont" ,texlive-metafont)
          ("texlive-cm" ,texlive-cm)))
       (home-page "https://www.ctan.org/pkg/etex")
       (synopsis "Extended version of TeX")
@@ -3463,7 +3466,7 @@ packages.")
                 texlive-cm
                 texlive-cm-super ; to avoid bitmap fonts
                 texlive-fonts-latex
-                texlive-metafont-base
+                texlive-metafont
                 texlive-latex-base
                 ;; LaTeX packages from the "required" set.
                 texlive-latex-amsmath
@@ -4773,7 +4776,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+             (let ((mf (assoc-ref inputs "texlive-metafont")))
                ;; Tell mf where to find mf.base
                (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                ;; Tell mf where to look for source files
@@ -4808,7 +4811,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-metafont" ,texlive-metafont)
        ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/ec")
     (synopsis "Computer modern fonts in T1 and TS1 encodings")
@@ -4990,7 +4993,7 @@ Adobe's basic set.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+             (let ((mf (assoc-ref inputs "texlive-metafont")))
                ;; Tell mf where to find mf.base
                (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                ;; Tell mf where to look for source files
@@ -5025,7 +5028,7 @@ Adobe's basic set.")
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("texlive-metafont" ,texlive-metafont)
        ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/rsfs")
     (synopsis "Ralph Smith's Formal Script font")
