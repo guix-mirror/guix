@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -195,17 +195,11 @@
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
              ;; twice.  This also fixes a minor issue, where WMs would not be
-             ;; able to track emacs back to emacs.desktop.  The version is
-             ;; accessed using using THIS-PACKAGE so it "just works" for
-             ;; inherited Emacs packages of different versions.
+             ;; able to track emacs back to emacs.desktop.
              (with-directory-excursion (assoc-ref outputs "out")
-               (copy-file (string-append
-                           "bin/emacs-"
-                           ,(let ((this-version (package-version this-package)))
-                              (or (false-if-exception
-                                   (version-major+minor+point this-version))
-                                  (version-major+minor this-version))))
-                          "bin/emacs")
+               (copy-file
+                (car (find-files "bin" "^emacs-([0-9]+\\.)+[0-9]+$"))
+                "bin/emacs")
                #t)))
          (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
            ;; The 'reset-gzip-timestamps phase will throw a permission error
