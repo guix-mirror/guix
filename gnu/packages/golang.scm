@@ -5674,27 +5674,25 @@ deleting secrets from the system keyring.")
     (license license:expat)))
 
 (define-public go-etcd-io-bbolt
-  (let ((commit "f6be82302843a215152f5a1daf652c1ee5503f85")
-        (revision "1"))
-    (package
-      (name "go-etcd-io-bbolt")
-      (version (git-version "1.3.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/etcd-io/bbolt")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "01l39kbsm9hl8djnwq3d7vg5hylkm75fvwsh8d4jk8pyda2q6iqg"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "go.etcd.io/bbolt"))
-      (home-page "https://pkg.go.dev/go.etcd.io/bbolt/")
-      (synopsis "Low-level key/value store in Go")
-      (description "This package implements a low-level key/value store in Go.")
-      (license license:expat))))
+  (package
+    (name "go-etcd-io-bbolt")
+    (version "1.3.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/etcd-io/bbolt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h64gipvcg7060byv5wjlf524kqwj12p3v08kfh4ygv46vpm8p2r"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "go.etcd.io/bbolt"))
+    (home-page "https://pkg.go.dev/go.etcd.io/bbolt/")
+    (synopsis "Low-level key/value store in Go")
+    (description "This package implements a low-level key/value store in Go.")
+    (license license:expat)))
 
 (define-public go-github-com-rogpeppe-go-internal
   (package
