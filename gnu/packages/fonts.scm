@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1429,6 +1430,30 @@ emphasis while still being readable.")
 
 (define-public font-open-dyslexic
   (deprecated-package "font-open-dyslexic" font-opendyslexic))
+
+(define-public font-openmoji
+  (package
+    (name "font-openmoji")
+    (version "12.4.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append "https://github.com/hfg-gmuend/openmoji/"
+                       "releases/download/" version
+                       "/openmoji-font.zip"))
+       (sha256
+        (base32
+         "0wvvg5vnc950h8v23wfgjyi7rv89mgm5hqq6viqv0bxcc3azglxb"))))
+    (build-system font-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://openmoji.org")
+    (synopsis "Font for rendering emoji characters")
+    (description
+     "This package provides the OpenMoji font in both color and black
+variants.")
+    (license license:cc-by-sa4.0)))
 
 (define-public font-dosis
   (package
