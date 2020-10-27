@@ -6261,7 +6261,7 @@ develop documents with LaTeX, in a single application.")
                                         texlive-fonts-adobe-zapfding
                                         texlive-fonts-knuth-lib
                                         texlive-fonts-mflogo-font
-                                        texlive-generic-pdftex)))
+                                        texlive-pdftex)))
        ("automake" ,automake)))
     (home-page "https://www.gnu.org/software/teximpatient/")
     (synopsis "Book on TeX, plain TeX and Eplain")
