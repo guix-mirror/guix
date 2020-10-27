@@ -22843,8 +22843,6 @@ By default it uses the open Python vulnerability database Safety DB.")
              (substitute* "tests.py"
                (("test_basic_conversion_from_http_url")
                 "skip_test_basic_conversion_from_http_url"))
-             ;; Needed by texlive-union to generate fonts
-             (setenv "HOME" "/tmp")
              #t)))))
     (home-page "https://github.com/bebraw/pypandoc")
     (synopsis "Python wrapper for pandoc")
