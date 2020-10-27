@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -619,6 +620,45 @@ is not available for Guile 2.0.")
 
 (define-public guile3.0-fibers
   (deprecated-package "guile3.0-fibers" guile-fibers))
+
+(define-public guile-filesystem
+  (package
+    (name "guile-filesystem")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/leoprikler/guile-filesystem.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1shmkc0y9r2sj3kw7hrsnamnp7y8xifkhf3m3rnfxczqg63k67vy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/leoprikler/guile-filesystem")
+    (synopsis "Complementary library to Guile's built-in file system procedures")
+    (description "@code{guile-filesystem} provides a set of utility functions,
+that augment Guile's support for handling files and their names.")
+    (license license:lgpl3+)))
+
+(define-public guile2.0-filesystem
+  (package
+    (inherit guile-filesystem)
+    (name "guile2.0-filesystem")
+    (inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile2.2-filesystem
+  (package
+    (inherit guile-filesystem)
+    (name "guile2.2-filesystem")
+    (inputs `(("guile" ,guile-2.2)))))
 
 (define-public guile-syntax-highlight
   (package
