@@ -177,7 +177,8 @@ data units.")
                 "11qhrga44knlnp88py9p547d4nr5kn041d2nszwa3dqw7mf22ks9"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:tests? #f ; The test suite is unreliable. See <https://bugs.gnu.org/44197>
+       #:phases (modify-phases %standard-phases
         ;; Building the manpage requires khal to be installed.
         (add-after 'install 'manpage
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -187,23 +188,9 @@ data units.")
             (install-file
              "doc/build/man/khal.1"
              (string-append (assoc-ref outputs "out") "/share/man/man1"))
-            #t))
-        (replace 'check
-          (lambda* (#:key inputs tests? #:allow-other-keys)
-            (if tests?
-                (begin
-                  ;; The tests require us to choose a timezone.
-                  (setenv "TZ" "UTC")
-                  ;; The disabled test expects /dev/tty.
-                  (invoke "pytest" "tests" "-k" "not test_import_from_stdin"))))))))
+            #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ;; Required for tests
-       ("python-freezegun" ,python-freezegun)
-       ("tzdata" ,tzdata-for-tests)
-       ("vdirsyncer" ,vdirsyncer)
+     `(("python-setuptools-scm" ,python-setuptools-scm)
        ;; Required to build manpage
        ("python-sphinxcontrib-newsfeed" ,python-sphinxcontrib-newsfeed)
        ("python-sphinx" ,python-sphinx)))
