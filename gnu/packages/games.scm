@@ -1222,7 +1222,7 @@ does not include game data.")
   (package
     (inherit julius)
     (name "augustus")
-    (version (package-version julius))
+    (version "1.4.1a")
     (source
      (origin
        (method git-fetch)
@@ -1231,7 +1231,7 @@ does not include game data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ii0w0iwa9zv5bbqfcps5mxifd796m6fw4gvjf09pkm3yjgqc0ag"))
+        (base32 "1xqv8j8jh3f13fjhyf7hk1anrn799cwwsvsd75kpl9n5yh5s1j5y"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
