@@ -561,7 +561,7 @@ dist_zshcompletion_DATA = etc/completion/zsh/_guix
 dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 
 # SELinux policy
-dist_selinux_policy_DATA = etc/guix-daemon.cil
+nodist_selinux_policy_DATA = etc/guix-daemon.cil.in
 
 EXTRA_DIST +=						\
   HACKING						\
