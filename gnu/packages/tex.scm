@@ -999,27 +999,81 @@ class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
 
-(define-public texlive-latex-mflogo
-  (package
-    (name "texlive-latex-mflogo")
-    (version (number->string %texlive-revision))
-    (source
-     (origin
-       (method svn-fetch)
-       (uri (texlive-ref "latex" "mflogo"))
-       (file-name (string-append name "-" version "-checkout"))
-       (sha256
-        (base32
-         "15i2ib6nvhf31g1b92c6njf7n0g29znlq7hbfp9ii7qabhcwwvrj"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/mflogo"))
-    (home-page "http://www.ctan.org/pkg/mflogo")
-    (synopsis "LaTeX support for Metafont logo fonts")
-    (description
-     "This package provides LaTeX and font definition files to access the
+(define-public texlive-mflogo
+  (let ((template (simple-texlive-package
+                   "texlive-mflogo"
+                   (list "/doc/latex/mflogo/"
+                         "/source/latex/mflogo/"
+                         "/fonts/source/public/mflogo/logosl8.mf")
+                   (base32
+                    "1vb4mg7fh4k54g7nqwiw3qm4iir8whpfnspis76l4sddzar1amh7"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:modules _ '())
+          '((guix build texlive-build-system)
+            (guix build utils)
+            (srfi srfi-1)
+            (srfi srfi-26)))
+         ((#:tex-directory _ #t)
+          "latex/mflogo")
+         ((#:phases phases '())
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "source/latex/mflogo") #t))
+             (add-after 'build 'build-font-metrics
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((root "../../..")
+                       (mf (assoc-ref inputs "texlive-metafont"))
+                       (kl (assoc-ref inputs "texlive-knuth-lib")))
+                   ;; Tell mf where to find mf.base
+                   (setenv "MFBASES"
+                           (string-append mf "/share/texmf-dist/web2c"))
+                   ;; Tell mf where to look for source files
+                   (setenv "MFINPUTS"
+                           (string-append root ":"
+                                          mf "/share/texmf-dist/metafont/base:"
+                                          kl "/share/texmf-dist/fonts/source/public/knuth-lib:"
+                                          root "/fonts/source/public/mflogo/"))
+                   (for-each (lambda (font)
+                               (format #t "building font ~a\n" font)
+                               (invoke "mf" "-progname=mf"
+                                       "-output-directory=build"
+                                       (string-append "\\"
+                                                      "mode:=ljfour; "
+                                                      "mag:=1; "
+                                                      "scrollmode; "
+                                                      "input " (basename font))))
+                             (find-files (string-append root
+                                                        "/fonts/source/public/mflogo/")
+                                         "\\.mf$")))
+                 #t))
+             (add-before 'install 'install-fonts
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (tfm (string-append
+                              out "/share/texmf-dist/fonts/tfm/public/mflogo")))
+                   (for-each (lambda (file)
+                               (install-file file tfm)
+                               (delete-file file))
+                             (find-files "build" "\\.tfm"))
+                   #t)))))))
+      (native-inputs
+       `(("texlive-bin" ,texlive-bin)
+         ("texlive-metafont" ,texlive-metafont)
+         ("texlive-knuth-lib" ,texlive-knuth-lib)))
+      (home-page "http://www.ctan.org/pkg/mflogo")
+      (synopsis "LaTeX support for Metafont logo fonts")
+      (description
+       "This package provides LaTeX and font definition files to access the
 Knuthian mflogo fonts described in The Metafontbook and to typeset Metafont
 logos in LaTeX documents.")
-    (license license:lppl)))
+      (license license:lppl))))
+
+(define-public texlive-latex-mflogo
+  (deprecated-package "texlive-latex-mflogo" texlive-mflogo))
 
 (define-public texlive-mflogo-font
   (package
