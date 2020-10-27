@@ -700,7 +700,7 @@ cache.size = 100 * MB
        (documentation "Run the Knot Resolver daemon.")
        (start #~(make-forkexec-constructor
                  '(#$(file-append package "/sbin/kresd")
-                   "-c" #$kresd-config-file "-f" "1"
+                   "-c" #$kresd-config-file "-n"
                    "/var/cache/knot-resolver")))
        (stop #~(make-kill-destructor)))
       (shepherd-service
