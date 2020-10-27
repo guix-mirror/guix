@@ -19,12 +19,14 @@
 
 (define-module (gnu packages nvi)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (guix utils))
 
 (define-public nvi
   (package
