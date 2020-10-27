@@ -7278,7 +7278,7 @@ computing.")
        ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
-                                        texlive-generic-pdftex
+                                        texlive-pdftex
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
