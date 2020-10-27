@@ -2149,7 +2149,7 @@ T1/EC and UTF-8 encodings.")
              (setenv "TFMFONTS"
                      (string-append (assoc-ref inputs "texlive-cm")
                                     "/share/texmf-dist/fonts/tfm/public/cm:"
-                                    (assoc-ref inputs "texlive-fonts-knuth-lib")
+                                    (assoc-ref inputs "texlive-knuth-lib")
                                     "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
              ;; ...and find all tex files in this environment.
              (setenv "TEXINPUTS"
@@ -2203,7 +2203,7 @@ T1/EC and UTF-8 encodings.")
        ;; for a working "tex".
        ("texlive-tex-plain" ,texlive-tex-plain)
        ("texlive-cm" ,texlive-cm)
-       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+       ("texlive-knuth-lib" ,texlive-knuth-lib)
        ("texlive-hyphen-base" ,texlive-hyphen-base)))
     (home-page "https://ctan.org/pkg/hyph-utf8")
     (synopsis "Hyphenation patterns expressed in UTF-8")
@@ -2429,7 +2429,7 @@ formats.")
                                '(("texlive-etex" . "/etex")
                                  ("texlive-cm" . "/cm")
                                  ("texlive-fonts-latex" . "/latex-fonts")
-                                 ("texlive-fonts-knuth-lib" . "/knuth-lib")))
+                                 ("texlive-knuth-lib" . "/knuth-lib")))
                           ":"))
                  (let ((cwd (getcwd)))
                    (setenv "TEXINPUTS"
@@ -2511,7 +2511,7 @@ formats.")
          ("texlive-kpathsea" ,texlive-kpathsea)
          ("texlive-cm" ,texlive-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
-         ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+         ("texlive-knuth-lib" ,texlive-knuth-lib)
          ("texlive-luatexconfig"
           ,(texlive-origin
             "texlive-luatexconfig" (number->string %texlive-revision)
@@ -6255,7 +6255,7 @@ develop documents with LaTeX, in a single application.")
      `(("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-fonts-adobe-palatino
                                         texlive-fonts-adobe-zapfding
-                                        texlive-fonts-knuth-lib
+                                        texlive-knuth-lib
                                         texlive-fonts-mflogo-font
                                         texlive-pdftex)))
        ("automake" ,automake)))
