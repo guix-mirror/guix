@@ -57,6 +57,7 @@
   #:use-module (gnu system install)
   #:use-module (gnu system images hurd)
   #:use-module (gnu system images pine64)
+  #:use-module (gnu system images pinebook-pro)
   #:use-module (gnu tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -205,7 +206,8 @@ SYSTEM."
 
 (define %guix-system-images
   (list hurd-barebones-qcow2-image
-        pine64-barebones-raw-image))
+        pine64-barebones-raw-image
+        pinebook-pro-barebones-raw-image))
 
 (define (image-jobs store system)
   "Return a list of jobs that build images for SYSTEM."
