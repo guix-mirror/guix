@@ -18565,20 +18565,20 @@ without a @code{pulseaudio} package, consider enabling it through the
 Data type representing the configuration for @code{pulseaudio-service}.
 
 @table @asis
-@item @var{client-conf} (default: @code{'()})
+@item @code{client-conf} (default: @code{'()})
 List of settings to set in @file{client.conf}.
 Accepts a list of strings or a symbol-value pairs.  A string will be
 inserted as-is with a newline added.  A pair will be formatted as
 ``key = value'', again with a newline added.
 
-@item @var{daemon-conf} (default: @code{'((flat-volumes . no))})
+@item @code{daemon-conf} (default: @code{'((flat-volumes . no))})
 List of settings to set in @file{daemon.conf}, formatted just like
 @var{client-conf}.
 
-@item @var{script-file} (default: @code{(file-append pulseaudio "/etc/pulse/default.pa")})
+@item @code{script-file} (default: @code{(file-append pulseaudio "/etc/pulse/default.pa")})
 Script file to use as @file{default.pa}.
 
-@item @var{system-script-file} (default: @code{(file-append pulseaudio "/etc/pulse/system.pa")})
+@item @code{system-script-file} (default: @code{(file-append pulseaudio "/etc/pulse/system.pa")})
 Script file to use as @file{system.pa}.
 @end table
 @end deftp
@@ -18641,24 +18641,24 @@ Data type representing the configuration for the
 @code{postgresql-service-type}.
 
 @table @asis
-@item @var{postgresql}
+@item @code{postgresql}
 PostgreSQL package to use for the service.
 
-@item @var{port} (default: @code{5432})
+@item @code{port} (default: @code{5432})
 Port on which PostgreSQL should listen.
 
-@item @var{locale} (default: @code{"en_US.utf8"})
+@item @code{locale} (default: @code{"en_US.utf8"})
 Locale to use as the default when creating the database cluster.
 
-@item @var{config-file} (default: @code{(postgresql-config-file)})
+@item @code{config-file} (default: @code{(postgresql-config-file)})
 The configuration file to use when running PostgreSQL.  The default
 behaviour uses the postgresql-config-file record with the default values
 for the fields.
 
-@item @var{data-directory} (default: @code{"/var/lib/postgresql/data"})
+@item @code{data-directory} (default: @code{"/var/lib/postgresql/data"})
 Directory in which to store the data.
 
-@item @var{extension-packages} (default: @code{'()})
+@item @code{extension-packages} (default: @code{'()})
 @cindex postgresql extension-packages
 Additional extensions are loaded from packages listed in
 @var{extension-packages}.  Extensions are available at runtime.  For instance,
