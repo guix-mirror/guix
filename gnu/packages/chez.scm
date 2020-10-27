@@ -331,7 +331,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,(texlive-union (list texlive-generic-pdftex)))))
+         ("texlive" ,(texlive-union (list texlive-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases
