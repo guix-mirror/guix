@@ -1559,7 +1559,11 @@ TCP connection, TLS handshake and so on) in the terminal.")
         (base32 "1q1ywpic6s7dfjj3cwzcfgscc4zq0aih462gyas7j1z683ss14b8"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       ;; disable -march=native in build for reproducibility; see
+       ;; https://wiki.squid-cache.org/KnowledgeBase/IllegalInstructionError
+       (list "--disable-arch-native")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-true-path
            (lambda* (#:key inputs #:allow-other-keys)
