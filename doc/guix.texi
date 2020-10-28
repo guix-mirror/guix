@@ -18676,7 +18676,10 @@ configure the postgresql-service as in this example:
   (packages (cons* postgresql %base-packages))
   (services
     (cons*
-      (postgresql-service #:extension-packages (list postgis))
+      (service postgresql-service-type
+               (postgresql-configuration
+                (postgresql postgresql-10)
+                (extension-packages (list postgis))))
       %base-services)))
 @end lisp
 
