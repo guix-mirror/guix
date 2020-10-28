@@ -202,11 +202,7 @@ the new package's version number from URI."
                             (package-version p)))
 
                ;; Use #:recursive? #t to allow for directories.
-               (source (downloaded-file uri #t))
-
-               ;; Override the replacement, otherwise '--with-source' would
-               ;; have no effect.
-               (replacement #f)))))
+               (source (downloaded-file uri #t))))))
 
 
 ;;;
