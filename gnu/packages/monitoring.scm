@@ -158,7 +158,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "5.0.3")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "1dc3fb9pa2cr6mfwgfyy1hpx26pbrws7989wj2kiiilmvimvrz1l"))))
+        (base32 "168yi9igwkb4jcdw38kvp85n8mxnlg2n7lkrgaycp8b0dlgjnidl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
