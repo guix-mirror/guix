@@ -3256,29 +3256,36 @@ mathematics, and @code{ntheoremntheorem}, for specifying theorem (and similar)
 definitions.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-amscls
-  (package
-    (name "texlive-latex-amscls")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "amscls"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0c2j9xh4qpi0x1vvcxdjxq6say0zhyr569fryi5cmhp8bclh4kca"))))
-    (build-system texlive-build-system)
-    (arguments
-     `(#:tex-directory "latex/amscls"))
-    (home-page "https://www.ctan.org/pkg/amscls")
-    (synopsis "AMS document classes for LaTeX")
-    (description
-     "This bundle contains three AMS classes: @code{amsartamsart} (for writing
+(define-public texlive-amscls
+  (let ((template (simple-texlive-package
+                   "texlive-amscls"
+                   (list "/doc/latex/amscls/"
+                         "/source/latex/amscls/"
+                         "/bibtex/bst/amscls/")
+                   (base32
+                    "1mv96i5372257zaciv06n1wwa7v09q0fa9pbq9kck826a0syidvs"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/amscls")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/amscls/") #t))))))
+      (home-page "https://www.ctan.org/pkg/amscls")
+      (synopsis "AMS document classes for LaTeX")
+      (description
+       "This bundle contains three AMS classes: @code{amsartamsart} (for writing
 articles for the AMS), @code{amsbookamsbook} (for books) and
 @code{amsprocamsproc} (for proceedings), together with some supporting
 material.  The material is made available as part of the AMS-LaTeX
 distribution.")
-    (license license:lppl1.3c+)))
+      (license license:lppl1.3c+))))
+
+(define-public texlive-latex-amscls
+  (deprecated-package "texlive-latex-amscls" texlive-amscls))
 
 (define-public texlive-latex-babel
   (package
