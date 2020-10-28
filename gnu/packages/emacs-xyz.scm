@@ -12047,7 +12047,7 @@ running tests easier.")
 (define-public emacs-disable-mouse
   (package
     (name "emacs-disable-mouse")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method git-fetch)
@@ -12056,7 +12056,7 @@ running tests easier.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1v1y5hf6k6ng7xsvgb27nh740d14m6l4krr0paccda8zgm4mw357"))))
+        (base32 "0l6mai68ns3qw3rlvjvzsnqwdy7bxqiy0vdwflq0l1plxb1vazyc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/disable-mouse")
     (synopsis "Disable mouse commands globally")
