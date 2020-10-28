@@ -18536,7 +18536,7 @@ docstring of the thing at point.")
 (define-public emacs-rust-mode
   (package
     (name "emacs-rust-mode")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18545,7 +18545,7 @@ docstring of the thing at point.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bcrklyicxh032rrp585rl5mxd26nb61dp6r5bl935rlcmxzsczh"))))
+                "1f3nnl0d7p9b5cv1bpm0hj898qmr2psxfvmqr61bh684z7fgc045"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
