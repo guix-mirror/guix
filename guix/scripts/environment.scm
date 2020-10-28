@@ -320,7 +320,7 @@ for the corresponding packages."
                    (manifest-entry-output e2))))
 
   (define transform
-    (cut (options->transformation opts) store <>))
+    (options->transformation opts))
 
   (define* (package->manifest-entry* package #:optional (output "out"))
     (package->manifest-entry (transform package) output))

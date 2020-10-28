@@ -582,11 +582,11 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
                                       (('argument . (? store-path? item))
                                        item)
                                       (('argument . spec)
-                                       (transform store
-                                                  (specification->package spec)))
+                                       (transform
+                                        (specification->package spec)))
                                       (('expression . exp)
-                                       (transform store
-                                                  (read/eval-package-expression exp)))
+                                       (transform
+                                        (read/eval-package-expression exp)))
                                       (_ #f))
                                     opts)))
         (run-with-store store

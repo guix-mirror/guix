@@ -233,7 +233,7 @@ matching URIs given in SOURCES."
                         (string-drop uri (+ 1 index))))))))
          sources))
 
-  (lambda (store obj)
+  (lambda (obj)
     (let loop ((sources  new-sources)
                (result   '()))
       (match obj
@@ -276,7 +276,7 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
                                                    (lambda (old new)
                                                      new)))
          (rewrite      (package-input-rewriting/spec replacements)))
-    (lambda (store obj)
+    (lambda (obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
@@ -292,7 +292,7 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
   (let* ((replacements (evaluate-replacement-specs replacement-specs
                                                    set-replacement))
          (rewrite      (package-input-rewriting/spec replacements)))
-    (lambda (store obj)
+    (lambda (obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
@@ -349,7 +349,7 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))
          (rewrite      (package-input-rewriting/spec replacements)))
-    (lambda (store obj)
+    (lambda (obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
@@ -377,7 +377,7 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))
          (rewrite      (package-input-rewriting/spec replacements)))
-    (lambda (store obj)
+    (lambda (obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
@@ -405,7 +405,7 @@ a checkout of the Git repository at the given URL."
   (define rewrite
     (package-input-rewriting/spec replacements))
 
-  (lambda (store obj)
+  (lambda (obj)
     (if (package? obj)
         (rewrite obj)
         obj)))
@@ -478,7 +478,7 @@ the equal sign."
                      spec))))
          replacement-specs))
 
-  (lambda (store obj)
+  (lambda (obj)
     (if (package? obj)
         (or (any (match-lambda
                    ((bottom . toolchain)
@@ -516,7 +516,7 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
                                          (cons spec package-with-debug-info))
                                        specs)))
 
-  (lambda (store obj)
+  (lambda (obj)
     (if (package? obj)
         (rewrite obj)
         obj)))
@@ -535,7 +535,7 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
                                          (cons spec package-without-tests))
                                        specs)))
 
-  (lambda (store obj)
+  (lambda (obj)
     (if (package? obj)
         (rewrite obj)
         obj)))
@@ -646,7 +646,7 @@ derivation, etc.), applies the transformations specified by OPTS."
                              applicable))
                     ,@(package-properties p)))))
 
-  (lambda (store obj)
+  (lambda (obj)
     (define (tagged-object new)
       (if (and (not (eq? obj new))
                (package? new) (not (null? applicable)))
@@ -656,7 +656,7 @@ derivation, etc.), applies the transformations specified by OPTS."
     (tagged-object
      (fold (match-lambda*
              (((name value transform) obj)
-              (let ((new (transform store obj)))
+              (let ((new (transform obj)))
                 (when (eq? new obj)
                   (warning (G_ "transformation '~a' had no effect on ~a~%")
                            name
@@ -1113,8 +1113,7 @@ build."
       (systems systems)))
 
   (define things-to-build
-    (map (cut transform store <>)
-         (options->things-to-build opts)))
+    (map transform (options->things-to-build opts)))
 
   (define (compute-derivation obj system)
     ;; Compute the derivation of OBJ for SYSTEM.

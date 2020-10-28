@@ -1132,9 +1132,9 @@ Create a bundle of PACKAGE.\n"))
     (let* ((transform     (options->transformation opts))
            (packages      (map (match-lambda
                                  (((? package? package) output)
-                                  (list (transform store package) output))
+                                  (list (transform package) output))
                                  ((? package? package)
-                                  (list (transform store package) "out")))
+                                  (list (transform package) "out")))
                                (reverse
                                 (filter-map maybe-package-argument opts))))
            (manifests     (filter-map (match-lambda
