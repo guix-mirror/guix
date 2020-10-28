@@ -656,7 +656,7 @@ print a warning and return #f."
                 (get-bytevector-n port len)
                 (read-to-eof port))
             (cache-narinfo! url (hash-part->path hash-part) #f
-                            (if (= 404 code)
+                            (if (or (= 404 code) (= 202 code))
                                 ttl
                                 %narinfo-transient-error-ttl))
             result))))
