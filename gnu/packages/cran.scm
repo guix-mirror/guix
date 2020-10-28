@@ -24615,7 +24615,7 @@ absolute GSEA.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
-    (home-page "https://github.com/guidotti/calculus")
+    (home-page "https://github.com/eguidotti/calculus")
     (synopsis "High dimensional numerical and symbolic calculus")
     (description
      "Efficient C++ optimized functions for numerical and symbolic calculus.
