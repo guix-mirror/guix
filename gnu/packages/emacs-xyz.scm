@@ -4949,8 +4949,8 @@ This package is not compatible with a TTY.")
 
 (define-public emacs-company-posframe
   (let ((version "0.1.0")
-        (revision "1")
-        (commit "67d899502384fb9ab2870aba0af41523dea7b64f"))
+        (revision "2")
+        (commit "4bfb8bccef4b64479f4147de6bf6fbd05df2a67e"))
     (package
       (name "emacs-company-posframe")
       (version (git-version version revision commit))
@@ -4962,7 +4962,7 @@ This package is not compatible with a TTY.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "051smlvz1siwglsd9k9l0m20mygrx4niflmyshha0064287aysxr"))))
+                  "0k19gkh8xbap4j1jjqw6lnkp1v2q76fz3ryrns7kvbzmca3y5599"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-company" ,emacs-company)
