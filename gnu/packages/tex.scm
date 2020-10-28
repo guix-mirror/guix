@@ -3287,40 +3287,55 @@ distribution.")
 (define-public texlive-latex-amscls
   (deprecated-package "texlive-latex-amscls" texlive-amscls))
 
-(define-public texlive-latex-babel
-  (package
-    (name "texlive-latex-babel")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "babel"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1rwqq841i1rxywymzwkw0cw2yhgvxwjx5mgygfasvypwrwll6f6s"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:tex-directory "generic/babel"
-       #:phases
-       (modify-phases %standard-phases
-         ;; This package tries to produce babel.aux twice but refuses to
-         ;; overwrite the first one.
-         (add-before 'build 'fix-ins
-           (lambda _
-             (substitute* "babel.ins"
-               (("askonceonly") "askforoverwritefalse"))
-             #t)))))
-    (home-page "https://www.ctan.org/pkg/babel")
-    (synopsis "Multilingual support for Plain TeX or LaTeX")
-    (description
-     "The package manages culturally-determined typographical (and other)
+(define-public texlive-babel
+  (let ((template (simple-texlive-package
+                   "texlive-babel"
+                   (list "/doc/latex/babel/"
+                         "/source/latex/babel/"
+                         "/makeindex/babel/")
+                   (base32
+                    "07k9igpwa8sjxlmyxmcbffl8833qhrs34h70kgmakiix5jycznsd"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "generic/babel")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/babel/") #t))
+             ;; This package tries to produce babel.aux twice but refuses to
+             ;; overwrite the first one.
+             (add-before 'build 'fix-ins
+               (lambda _
+                 (substitute* "babel.ins"
+                   (("askonceonly") "askforoverwritefalse"))
+                 #t))
+             (add-after 'install 'install-locales
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((locale-directory
+                        (string-append (assoc-ref outputs "out")
+                                       "/share/texmf-dist/tex/generic/babel/locale/")))
+                   (mkdir-p locale-directory)
+                   (invoke "unzip" "locale.zip" "-d"
+                           locale-directory))))))))
+      (native-inputs
+       `(("unzip" ,unzip)))
+      (home-page "https://www.ctan.org/pkg/babel")
+      (synopsis "Multilingual support for Plain TeX or LaTeX")
+      (description
+       "The package manages culturally-determined typographical (and other)
 rules, and hyphenation patterns for a wide range of languages.  A document may
 select a single language to be supported, or it may select several, in which
 case the document may switch from one language to another in a variety of
 ways.  Babel uses contributed configuration files that provide the detail of
 what has to be done for each language.  Users of XeTeX are advised to use the
 polyglossia package rather than Babel.")
-    (license license:lppl1.3+)))
+      (license license:lppl1.3+))))
+
+(define-public texlive-latex-babel
+  (deprecated-package "texlive-latex-babel" texlive-babel))
 
 (define-public texlive-generic-babel-english
   (package
