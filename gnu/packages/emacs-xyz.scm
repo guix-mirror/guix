@@ -1585,14 +1585,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "5.42")
+    (version "6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "1khx1fvllrs6w9kxk12mp1hj309c90mc7lkq1vvlqlr7vd6zmnpj"))))
+        (base32 "1zxiic91zhgdkxyfgyh1vkv4lzg90vq362y9k739n28ci6z4xzwm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -1630,7 +1630,7 @@ light user interface.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-external-programs
            ;; Specify the absolute file names of the various programs
-           ;; so that everything works out-of-the-box.
+           ;; so that everything works out-of-the-box. (tinytag missing)
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
                    (emms-print-metadata (assoc-ref inputs "emms-print-metadata"))
@@ -1640,6 +1640,7 @@ light user interface.")
                    (mpg321  (assoc-ref inputs "mpg321"))
                    (mp3info (assoc-ref inputs "mp3info"))
                    (mutagen (assoc-ref inputs "mutagen"))
+                   (exiftool (assoc-ref inputs "perl-image-exiftool"))
                    (opus    (assoc-ref inputs "opus-tools")))
                (emacs-substitute-variables "emms-player-mpg321-remote.el"
                  ("emms-player-mpg321-remote-command"
@@ -1673,6 +1674,9 @@ light user interface.")
                (substitute* "emms-tag-editor.el"
                  (("\"mid3v2\"")
                   (string-append "\"" mutagen "/bin/mid3v2\"")))
+               (substitute* "emms-info-exiftool.el"
+                 (("\"exiftool\"")
+                  (string-append "\"" exiftool "/bin/exiftool\"")))
                #t))))))
     (inputs
      `(("emms-print-metadata" ,emacs-emms-print-metadata)
@@ -1682,6 +1686,7 @@ light user interface.")
        ("mpg321" ,mpg321)
        ("mp3info" ,mp3info)
        ("mutagen" ,python-mutagen)
+       ("perl-image-exiftool" ,perl-image-exiftool)
        ("opus-tools" ,opus-tools)))))
 
 (define-public emacs-emms-mode-line-cycle
