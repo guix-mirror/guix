@@ -3543,7 +3543,7 @@ packages.")
                 ;; LaTeX packages from the "required" set.
                 texlive-latex-amsmath
                 texlive-amscls
-                texlive-latex-babel
+                texlive-babel
                 texlive-generic-babel-english
                 texlive-latex-cyrillic
                 texlive-latex-graphics
