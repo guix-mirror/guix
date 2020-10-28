@@ -4907,6 +4907,41 @@ front-ends.  Company comes with many back-ends, e.g., @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 
+(define-public emacs-company-box
+  ;; There is no release yet.  Version is extracted from the main
+  ;; file.
+  (let ((version "0.0.1")
+        (revision "0")
+        (commit "be37a9a30dc112ab172af21af694e2cb04a74f85"))
+    (package
+      (name "emacs-company-box")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sebastiencs/company-box")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "13fgmdy51gqdwijqfvb784pirx4lgva0y7ysi0c3fcx8f82cdj59"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-frame-local" ,emacs-frame-local)))
+      (home-page "https://github.com/sebastiencs/company-box")
+      (synopsis "Company front-end with icons")
+      (description
+       "Company box is a Company front-end.  It supports different
+colors for different backends, associates icons to functions,
+variables... and their backends, and displays candidate's
+documentation.  It is not limited by the current window size or
+buffer's text properties.
+
+This package is not compatible with a TTY.")
+      (license license:gpl3+))))
+
 (define-public emacs-company-posframe
   (let ((version "0.1.0")
         (revision "1")
