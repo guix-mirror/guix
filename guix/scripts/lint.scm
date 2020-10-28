@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2019, 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +99,9 @@ run the checkers on all packages.\n"))
   -c, --checkers=CHECKER1,CHECKER2...
                          only run the specified checkers"))
   (display (G_ "
+  -n, --no-network       only run checkers that do not access the network"))
+
+  (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
   (display (G_ "
@@ -132,10 +135,7 @@ run the checkers on all packages.\n"))
                                 result))))
         (option '(#\n "no-network") #f #f
                 (lambda (opt name arg result)
-                  (alist-cons 'checkers
-                              %local-checkers
-                              (alist-delete 'checkers
-                                            result))))
+                  (alist-cons 'no-network? #t result)))
         (find (lambda (option)
                 (member "load-path" (option-names option)))
               %standard-build-options)
@@ -172,7 +172,13 @@ run the checkers on all packages.\n"))
                               value)
                              (_ #f))
                            (reverse opts)))
-         (checkers (or (assoc-ref opts 'checkers) %all-checkers)))
+         (the-checkers (or (assoc-ref opts 'checkers) %all-checkers))
+         (checkers
+          (if (assoc-ref opts 'no-network?)
+              (filter (lambda (checker)
+                        (member checker %local-checkers))
+                      the-checkers)
+              the-checkers)))
 
     (when (assoc-ref opts 'list?)
       (list-checkers-and-exit checkers))
