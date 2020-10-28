@@ -13238,6 +13238,30 @@ literate programming tools for exporting, weaving and tangling.")
        "Edit YAML files for Ansible containing embedded Jinja2 templating.")
       (license license:gpl3+))))
 
+(define-public emacs-powershell
+  ;; Tagged branch 0.1 is outdated (2015).
+  (let ((revision "0")
+        (commit "d1b3f95669343399f199f291ef76c09a0ede5e60"))
+    (package
+      (name "emacs-powershell")
+      (build-system emacs-build-system)
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+	       (url "https://github.com/jschaf/powershell.el")
+	       (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cxhzaaig88zhylyycvb3849r85j1ijqklnh9zbqsfl2zhpb0g5c"))))
+      (home-page "https://github.com/jschaf/powershell.el")
+      (synopsis "Emacs mode for editing PowerShell scripts")
+      (description
+       "Powershell is an Emacs major mode for editing and running
+Microsoft PowerShell files.")
+      (license license:gpl3+))))
+
 (define-public emacs-polymode-org
   (package
     (name "emacs-polymode-org")
