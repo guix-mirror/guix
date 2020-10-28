@@ -19437,6 +19437,34 @@ functions to ensure they are called with the right arguments during testing.")
 too ambiguous and navigation in the result buffer.")
       (license license:gpl3+))))
 
+(define-public emacs-frame-local
+  ;; There is no release yet.  Version is extracted from the main
+  ;; file.
+  (let ((version "0.0.1")
+        (revision "0")
+        (commit "7ee1106c3bcd4022f48421f8cb1ef4f995da816e"))
+    (package
+      (name "emacs-frame-local")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sebastiencs/frame-local")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zfxsxdh3bd3fd566zl0byp13p5b8f4cgkwl637imvarvahczigp"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/sebastiencs/frame-local")
+      (synopsis "Access variables local to an Emacs frame")
+      (description
+       "This packages allows setting and accessing variables local to
+an Emacs frame.  Note that the variables created with this package do
+not have any relation with variables defined by @code{defvar},
+@code{defconst}, etc.")
+      (license license:gpl3+))))
+
 (define-public emacs-frame-purpose
   (package
     (name "emacs-frame-purpose")
