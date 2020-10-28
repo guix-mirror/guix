@@ -1843,6 +1843,30 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python2-mechanize
   (package-with-python2 python-mechanize))
 
+(define-public python-simpleaudio
+  (package
+    (name "python-simpleaudio")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "simpleaudio" version))
+       (sha256
+        (base32
+         "07glihg0fpca0gvbbvqs9q815w8xhflzdvg72yvlsm23j9j8h739"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+      `(("alsa-lib" ,alsa-lib)))
+    (home-page
+     "https://github.com/hamiltron/py-simple-audio")
+    (synopsis "Simple, asynchronous audio playback for Python 3")
+    (description
+     "The @code{simplaudio} package provides cross-platform, dependency-free
+audio playback capability for Python 3 on OSX, Windows, and Linux.")
+    (license license:expat))) ; MIT license
+
 (define-public python-simplejson
   (package
     (name "python-simplejson")
