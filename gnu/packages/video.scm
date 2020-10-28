@@ -2188,9 +2188,8 @@ To load this plugin, specify the following option when starting mpv:
     (version "2020.09.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
-                                  "releases/download/" version "/youtube-dl-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://youtube-dl.org/downloads/latest/"
+                                  "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
                 "1pkw3hnkddk1kqv0in152q1k4jjgbmf2xvc9j3r5nd38z6f7j6mc"))))
