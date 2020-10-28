@@ -20408,26 +20408,25 @@ Projectile.")
     (license license:gpl3+)))
 
 (define-public emacs-pfuture
-  (let ((commit "368254ee30692c709400db413c347e18e76a8a55"))
-    (package
-      (name "emacs-pfuture")
-      (version (git-version "1.6" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Alexander-Miller/pfuture")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "096raqpjx84njws85r7pqq1wi9w9bjwkr0ga1mbbhlna1mfn3mg4"))))
-      (build-system emacs-build-system)
-      (home-page
-       "https://github.com/Alexander-Miller/pfuture")
-      (synopsis "Simple wrapper around asynchronous processes for Emacs")
-      (description "This package provides a simple wrapper around asynchronous
+  (package
+    (name "emacs-pfuture")
+    (version "1.9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Alexander-Miller/pfuture")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1chpin5277vbl2xvsl04pzzk7a9dbcvclibm2496gz6yvd19pwsf"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/Alexander-Miller/pfuture")
+    (synopsis "Simple wrapper around asynchronous processes for Emacs")
+    (description "This package provides a simple wrapper around asynchronous
 processes for Emacs")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-treemacs
   (package
