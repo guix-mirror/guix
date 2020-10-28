@@ -3527,7 +3527,7 @@ packages.")
                 texlive-latex-base
                 ;; LaTeX packages from the "required" set.
                 texlive-latex-amsmath
-                texlive-latex-amscls
+                texlive-amscls
                 texlive-latex-babel
                 texlive-generic-babel-english
                 texlive-latex-cyrillic
