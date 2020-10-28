@@ -20352,30 +20352,28 @@ constant expressions.")
     (license license:gpl3+)))
 
 (define-public emacs-dockerfile-mode
-  ;; Latest upstream release is too old.
-  (let ((commit "ed73e82dcc636dad00d1a8c3b32a49136d25ee60"))
-    (package
-      (name "emacs-dockerfile-mode")
-      (version (git-version "1.2" "2" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/spotify/dockerfile-mode")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0lri2rnx4lr23vqfphkpq39cd4xfgzkvz1xsz7ccdvl4qj0k7fdl"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/spotify/dockerfile-mode")
-      (synopsis "Major mode for editing Dockerfile")
-      (description
-       "This package provides a major mode @code{dockerfile-mode} for use with
+  (package
+    (name "emacs-dockerfile-mode")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spotify/dockerfile-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1br73dsls42fn4rwagljkpa3l4wwj6f7jxfn3gmgl6c54z81av3v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/spotify/dockerfile-mode")
+    (synopsis "Major mode for editing Dockerfile")
+    (description
+     "This package provides a major mode @code{dockerfile-mode} for use with
 the standard @code{Dockerfile} file format.")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public emacs-lsp-mode
   (package
