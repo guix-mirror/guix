@@ -159,7 +159,12 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "1iw7d0lfjhvp7lnyj0lxy62zpa2d05gfra3fq4sz8nyjwss0gmqh"))))
+          "1iw7d0lfjhvp7lnyj0lxy62zpa2d05gfra3fq4sz8nyjwss0gmqh"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file-recursively "lib/expat")
+            #t))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
     (native-inputs
