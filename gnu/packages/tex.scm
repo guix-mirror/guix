@@ -3056,58 +3056,37 @@ programming tools and kernel sup­port.  Packages provided in this release are:
 @end enumerate\n")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-fontspec
-  (package
-    (name "texlive-latex-fontspec")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "fontspec"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1223cw029n6zff7pqpwbsq1x8v3w63smczkmnybqxkw5h2za8gbz"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:tex-directory "latex/fontspec"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-default-fontspec.cfg
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-output-to-file
-                 (string-append (assoc-ref outputs "out")
-                                "/share/texmf-dist/tex/latex/fontspec/fontspec.cfg")
-               (lambda _
-                 (display "\
-%%% FONTSPEC.CFG %%%
-%
-% This configuration file sets up TeX Ligatures by default for all fonts loaded
-% with `\\setmainfont` and `\\setsansfont`.
-%
-% In addition, `\\setmonofont` has default features to enforce \"monospace\"
-% settings with regard to space stretchability and shrinkability.
-
-\\defaultfontfeatures
- [\\rmfamily,\\sffamily]
- {Ligatures=TeX}
-
-\\defaultfontfeatures
- [\\ttfamily]
- {WordSpace={1,0,0},
-  HyphenChar=None,
-  PunctuationSpace=WordSpace}
-")))
-             #t)))))
-    (propagated-inputs
-     `(("texlive-latex-l3packages" ,texlive-latex-l3packages)))
-    (home-page "https://www.ctan.org/pkg/fontspec")
-    (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
-    (description
-     "Fontspec is a package for XeLaTeX and LuaLaTeX.  It provides an
+(define-public texlive-fontspec
+  (let ((template (simple-texlive-package
+                   "texlive-fontspec"
+                   (list "/doc/latex/fontspec/"
+                         "/source/latex/fontspec/"
+                         "/tex/latex/fontspec/fontspec.cfg")
+                   (base32
+                    "1ksqhxlnqia4v85hbx0bw58cw77wfdhs33n1a1qmczd4b3zg4wp9"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/fontspec")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/fontspec/") #t))))))
+      (propagated-inputs
+       `(("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+      (home-page "https://www.ctan.org/pkg/fontspec")
+      (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
+      (description
+       "Fontspec is a package for XeLaTeX and LuaLaTeX.  It provides an
 automatic and unified interface to feature-rich AAT and OpenType fonts through
 the NFSS in LaTeX running on XeTeX or LuaTeX engines.  The package requires
 the l3kernel and xparse bundles from the LaTeX 3 development team.")
-    (license license:lppl1.3+)))
+      (license license:lppl1.3+))))
+
+(define-public texlive-latex-fontspec
+  (deprecated-package "texlive-latex-fontspec" texlive-fontspec))
 
 (define-public texlive-l3build
   (let ((template (simple-texlive-package
