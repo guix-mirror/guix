@@ -777,5 +777,8 @@ by pressing the Exit button.~%~%")))
     ;; Make sure the disks are not in use before proceeding to formatting.
     (free-parted non-install-devices)
     (format-user-partitions user-partitions-with-pass)
+    (syslog "formatted ~a user partitions~%"
+            (length user-partitions-with-pass))
+
     (destroy-form-and-pop form)
     user-partitions))
