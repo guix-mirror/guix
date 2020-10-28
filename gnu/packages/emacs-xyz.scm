@@ -3626,7 +3626,7 @@ result.")
 (define-public emacs-rg
   (package
     (name "emacs-rg")
-    (version "1.8.1")
+    (version "2.0.2")
     (source
      (origin
        (method git-fetch)
@@ -3635,7 +3635,7 @@ result.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k7x5z7mh9flwih35cqy8chs54rack3nswdcpw5wcpgv6xim227y"))))
+        (base32 "15qcnsnbni0aincm9pxpfhff3c5ivd5zs2s2qchjzhcn4kdm6kxr"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -3649,6 +3649,7 @@ result.")
                  ("(defcustom rg-executable" (which "rg")))))))))
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
+       ("emacs-transient" ,emacs-transient)
        ("emacs-wgrep" ,emacs-wgrep)))
     (inputs
      `(("ripgrep" ,ripgrep)))
