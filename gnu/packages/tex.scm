@@ -3532,7 +3532,7 @@ packages.")
                 texlive-generic-babel-english
                 texlive-latex-cyrillic
                 texlive-latex-graphics
-                texlive-latex-psnfss
+                texlive-psnfss
                 texlive-latex-tools
                 texlive-tetex)))
     (package
