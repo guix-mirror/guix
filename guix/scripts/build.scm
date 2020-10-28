@@ -45,6 +45,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -172,7 +173,25 @@ extensions."
         (else
          file-name)))
 
-(define* (package-with-source store p uri #:optional version)
+
+;; Files to be downloaded.
+(define-record-type <downloaded-file>
+  (downloaded-file uri recursive?)
+  downloaded-file?
+  (uri        downloaded-file-uri)
+  (recursive? downloaded-file-recursive?))
+
+(define download-to-store*
+  (store-lift download-to-store))
+
+(define-gexp-compiler (compile-downloaded-file (file <downloaded-file>)
+                                               system target)
+  "Download FILE and return the result as a store item."
+  (match file
+    (($ <downloaded-file> uri recursive?)
+     (download-to-store* uri #:recursive? recursive?))))
+
+(define* (package-with-source p uri #:optional version)
   "Return a package based on P but with its source taken from URI.  Extract
 the new package's version number from URI."
   (let ((base (tarball-base-name (basename uri))))
@@ -183,8 +202,7 @@ the new package's version number from URI."
                             (package-version p)))
 
                ;; Use #:recursive? #t to allow for directories.
-               (source (download-to-store store uri
-                                          #:recursive? #t))
+               (source (downloaded-file uri #t))
 
                ;; Override the replacement, otherwise '--with-source' would
                ;; have no effect.
@@ -226,7 +244,7 @@ matching URIs given in SOURCES."
         ((? package? p)
          (match (assoc-ref sources (package-name p))
            ((version source)
-            (package-with-source store p source version))
+            (package-with-source p source version))
            (#f
             p)))
         (_
