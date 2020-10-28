@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -4122,3 +4122,61 @@ EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6400, R6800,
 R8000, R8500, WNDR3800, but is likely to be compatible with many other
 Netgear devices.")
     (license license:gpl3+)))
+
+(define-public atop
+  (package
+    (name "atop")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.atoptool.nl/download/atop-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0crzz4i2nabyh7d6xg7fvl65qls87nbca5ihidp3nijhrrbi14ab"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; The installer requires a choice between systemd or SysV.
+             "systemdinstall"
+             (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "BINPATH=/bin")
+             (string-append "SBINPATH=/sbin")
+             (string-append "SYSDPATH=/etc/systemd/system")
+             (string-append "PMPATHD=/etc/systemd/system-sleep")
+             (string-append "MAN1PATH=/share/man/man1")
+             (string-append "MAN5PATH=/share/man/man5")
+             (string-append "MAN8PATH=/share/man/man8")
+             ;; Or else it tries to create /var/log/atop...
+             (string-append "LOGPATH="))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No ./configure script
+         (add-before 'build 'patch-build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               ;; We don't need to chown things in the build environment.
+               (("chown.*$") "")
+               ;; We can't toggle the setuid bit in the build environment.
+               (("chmod 04711") "chmod 0711")
+               ;; Otherwise, it creates a blank configuration file as a "default".
+               (("touch.*DEFPATH)/atop") "")
+               (("chmod.*DEFPATH)/atop") ""))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("python" ,python-wrapper) ; for `atopgpud`
+       ("zlib" ,zlib)))
+    (home-page "https://www.atoptool.nl/")
+    (synopsis "Linux performance monitoring console")
+    (description "Atop is an ASCII full-screen performance monitor for Linux
+that is capable of reporting the activity of all processes (even processes have
+finished during the monitoring interval), daily logging of system and process
+activity for long-term analysis, highlighting overloaded system resources by
+using colors, etc.  At regular intervals, it shows system-level activity related
+to the CPU, memory, swap, disks (including LVM) and network layers, and for
+every process (and thread) it shows e.g. the CPU utilization, memory growth,
+disk utilization, priority, username, state, and exit code.")
+    (license license:gpl2+)))
