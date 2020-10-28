@@ -11528,6 +11528,11 @@ and exit.
 Only enable the checkers specified in a comma-separated list using the
 names returned by @option{--list-checkers}.
 
+@item --exclude
+@itemx -x
+Only disable the checkers specified in a comma-separated list using the
+names returned by @option{--list-checkers}.
+
 @item --no-network
 @itemx -n
 Only enable the checkers that do not depend on Internet access.

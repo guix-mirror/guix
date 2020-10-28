@@ -98,6 +98,9 @@ run the checkers on all packages.\n"))
   (display (G_ "
   -c, --checkers=CHECKER1,CHECKER2...
                          only run the specified checkers"))
+   (display (G_ "
+  -x, --exclude=CHECKER1,CHECKER2...
+                         exclude the specified checkers"))
   (display (G_ "
   -n, --no-network       only run checkers that do not access the network"))
 
@@ -113,26 +116,34 @@ run the checkers on all packages.\n"))
   (newline)
   (show-bug-report-information))
 
+(define (option-checker short-long)
+  ;; Factorize the creation of the two options -c/--checkers and -x/--exclude,
+  ;; see %options.  The parameter SHORT-LONG is the list containing the short
+  ;; and long name.  The alist uses the long name as symbol.
+  (option short-long #t #f
+          (lambda (opt name arg result)
+            (let ((names (map string->symbol (string-split arg #\,)))
+                  (checker-names (map lint-checker-name %all-checkers))
+                  (option-name (string->symbol (match short-long
+                                                 ((short long) long)))))
+              (for-each (lambda (c)
+                          (unless (memq c checker-names)
+                            (leave (G_ "~a: invalid checker~%") c)))
+                        names)
+              (alist-cons option-name
+                          (filter (lambda (checker)
+                                    (member (lint-checker-name checker)
+                                            names))
+                                  %all-checkers)
+                          result)))))
 
 (define %options
   ;; Specification of the command-line options.
   ;; TODO: add some options:
   ;; * --certainty=[low,medium,high]: only run checkers that have at least this
   ;;                                  'certainty'.
-  (list (option '(#\c "checkers") #t #f
-                (lambda (opt name arg result)
-                  (let ((names (map string->symbol (string-split arg #\,)))
-                        (checker-names (map lint-checker-name %all-checkers)))
-                    (for-each (lambda (c)
-                                (unless (memq c checker-names)
-                                  (leave (G_ "~a: invalid checker~%") c)))
-                              names)
-                    (alist-cons 'checkers
-                                (filter (lambda (checker)
-                                          (member (lint-checker-name checker)
-                                                  names))
-                                        %all-checkers)
-                                result))))
+  (list (option-checker '(#\c "checkers"))
+        (option-checker '(#\x "exclude"))
         (option '(#\n "no-network") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'no-network? #t result)))
@@ -172,7 +183,10 @@ run the checkers on all packages.\n"))
                               value)
                              (_ #f))
                            (reverse opts)))
-         (the-checkers (or (assoc-ref opts 'checkers) %all-checkers))
+         (no-checkers (or (assoc-ref opts 'exclude) '()))
+         (the-checkers (filter (lambda (checker)
+                                 (not (member checker no-checkers)))
+                               (or (assoc-ref opts 'checkers) %all-checkers)))
          (checkers
           (if (assoc-ref opts 'no-network?)
               (filter (lambda (checker)
