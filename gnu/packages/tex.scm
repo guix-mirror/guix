@@ -2842,30 +2842,35 @@ tables.")
 (define-public texlive-latex-xcolor
   (deprecated-package "texlive-latex-xcolor" texlive-xcolor))
 
-(define-public texlive-latex-hyperref
-  (package
-    (name "texlive-latex-hyperref")
-    (version "6.84a2")
-    ;; The sources in the TeX Live SVN repository do not contain hluatex.dtx,
-    ;; so we fetch the release from GitHub.
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/ho-tex/hyperref")
-                    (commit (string-append "release-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "186x6qmzyr51sfi9zkpgf5js8mn0qfryqdvwbfg58pyilw1l3vkm"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/hyperref"))
-    (propagated-inputs
-     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek) ; for ltxcmds.sty
-       ("texlive-latex-url" ,texlive-latex-url)))
-    (home-page "https://www.ctan.org/pkg/hyperref")
-    (synopsis "Extensive support for hypertext in LaTeX")
-    (description
-     "The @code{hyperref} package is used to handle cross-referencing commands
+(define-public texlive-hyperref
+  (let ((template (simple-texlive-package
+                   "texlive-hyperref"
+                   (list "/doc/latex/hyperref/"
+                         "/source/latex/hyperref/"
+                         ;; These files are not generated from the sources
+                         "/tex/latex/hyperref/hylatex.ltx"
+                         "/tex/latex/hyperref/minitoc-hyper.sty"
+                         "/tex/latex/hyperref/ntheorem-hyper.sty"
+                         "/tex/latex/hyperref/xr-hyper.sty")
+                   (base32
+                    "1074rnymyf7xj2ggajnijmy1p7avfjl216qyi86p38wg0qdf48zd"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/hyperref")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/hyperref") #t))))))
+      (propagated-inputs
+       `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek) ; for ltxcmds.sty
+         ("texlive-latex-url" ,texlive-latex-url)))
+      (home-page "https://www.ctan.org/pkg/hyperref")
+      (synopsis "Extensive support for hypertext in LaTeX")
+      (description
+       "The @code{hyperref} package is used to handle cross-referencing commands
 in LaTeX to produce hypertext links in the document.  The package provides
 backends for the @code{\\special} set defined for HyperTeX DVI processors; for
 embedded @code{pdfmark} commands for processing by Acrobat
@@ -2873,7 +2878,10 @@ Distiller (@code{dvips} and Y&Y's @code{dvipsone}); for Y&Y's @code{dviwindo};
 for PDF control within pdfTeX and @code{dvipdfm}; for TeX4ht; and for VTeX's
 pdf and HTML backends.  The package is distributed with the @code{backref} and
 @code{nameref} packages, which make use of the facilities of @code{hyperref}.")
-    (license license:lppl1.3+)))
+      (license license:lppl1.3+))))
+
+(define-public texlive-latex-hyperref
+  (deprecated-package "texlive-latex-hyperref" texlive-hyperref))
 
 (define-public texlive-latex-oberdiek
   (package
