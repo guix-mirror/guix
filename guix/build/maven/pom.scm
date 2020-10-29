@@ -262,7 +262,7 @@ not found in @var{inputs}, information from this list is used instead to determi
 the latest version of the package.  This is an association list of group IDs
 to another association list of artifact IDs to a version number.
 
-Returns nothing, but overides the @var{pom-file} as a side-effect."
+Returns nothing, but overrides the @var{pom-file} as a side-effect."
   (define pom (get-pom pom-file))
 
   (define (ls dir)
