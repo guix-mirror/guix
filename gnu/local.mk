@@ -466,6 +466,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/radio.scm			\
   %D%/packages/ragel.scm			\
   %D%/packages/rails.scm			\
+  %D%/packages/raspberry-pi.scm			\
   %D%/packages/ratpoison.scm			\
   %D%/packages/rcm.scm				\
   %D%/packages/rdesktop.scm			\
