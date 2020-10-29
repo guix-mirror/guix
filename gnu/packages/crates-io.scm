@@ -31831,7 +31831,7 @@ attribute that is not in the shared backend crate.")
        (("rust-base64" ,rust-base64-0.9))))
     (home-page "https://github.com/briansmith/webpki")
     (synopsis "Web PKI X.509 Certificate Verification")
-    (description "This packge provides Web PKI X.509 Certificate
+    (description "This package provides Web PKI X.509 Certificate
 Verification.")
     (license license:isc)))
 
