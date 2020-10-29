@@ -82,6 +82,7 @@
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
