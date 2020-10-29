@@ -6456,7 +6456,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.7")
+    (version "1.7.0")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6464,7 +6464,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0283hvms5hr29zr0grd6gq059k0hg8hcz3fsmwjmysiih8790i68"))
+        (base32 "1fs0320n3ndd5kd6j9y22jsd1hbn356d4dr11kl3iy5ssix7832s"))
        (modules '((guix build utils)))
        (snippet
         '(begin
