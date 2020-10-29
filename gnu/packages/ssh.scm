@@ -520,7 +520,7 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2020.80")
+    (version "2020.81")
     (source
      (origin
        (method url-fetch)
@@ -528,7 +528,7 @@ TCP, not the SSH protocol.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "0jbrbpdzyv11x5rkljdimzq9p6a7da5siw9k405ibnpjj4dr89yr"))))
+        (base32 "0fy5ma4cfc2pk25mcccc67b2mf1rnb2c06ilb7ddnxbpnc85s8s8"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
     ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least
