@@ -829,7 +829,7 @@ or Bonjour by other projects).")
     (synopsis "Framework for collecting feedback from application users via
 telemetry and targeted surveys")
     (description "This framework consists of the following components:
-@itermize
+@itemize
 @item Libraries for use in applications.
 @item QML bindings for the above.
 @item A server application.
