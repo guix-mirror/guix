@@ -4215,7 +4215,7 @@ performance.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.9")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4223,7 +4223,7 @@ performance.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))
+                "1mrq4mihzx37yqhj3sfz6da6mw49niia808bzsw2gkkgmadxvyng"))))
     (build-system gnu-build-system)
     ;; Let htslib translate "gs://" and "s3://" to regular https links with
     ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
