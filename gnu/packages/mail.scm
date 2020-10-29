@@ -688,7 +688,7 @@ mailpack.  What can alterMIME do?
 
 @enumerate
 @item Insert disclaimers,
-@item insert arbitary X-headers,
+@item insert arbitrary X-headers,
 @item modify existing headers,
 @item remove attachments based on filename or content-type,
 @item replace attachments based on filename.
