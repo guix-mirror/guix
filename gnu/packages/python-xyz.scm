@@ -21996,7 +21996,7 @@ allows you, from Python code, to “fix” invalid (X)HTML markup.")
     (build-system python-build-system)
     (home-page "https://github.com/mattgiles/mujson")
     (synopsis "Use the fastest JSON functions available at import time")
-    (description "This packages selects the fastest JSON functions available
+    (description "This package selects the fastest JSON functions available
 at import time.")
     (license license:expat)))
 
