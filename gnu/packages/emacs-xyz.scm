@@ -16427,7 +16427,7 @@ yasnippet fields and mirrors to be.")
     (description "@code{highlight-numbers-mode} provides a minor mode for
 syntax highlighting of numeric literals in source code.
 
-It s customizable: it's easy to add or redefine what exactly consitutes a
+It s customizable: it's easy to add or redefine what exactly constitutes a
 \"number\" in given major mode.  See @code{highlight-numbers-modelist}.")
     (license license:gpl3+)))
 
