@@ -21,6 +21,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages embedded)
   #:use-module (guix build-system gnu)
@@ -87,3 +88,76 @@ used in the Raspberry Pi")
       (home-page "https://github.com/RPi-Distro/raspi-gpio")
       (supported-systems '("armhf-linux" "aarch64-linux"))
       (license license:bsd-3))))
+
+(define %rpi-open-firmware-version "0.1")
+(define %rpi-open-firmware-origin
+  (origin
+   (method git-fetch)
+   (uri (git-reference
+         (url "https://github.com/librerpi/rpi-open-firmware.git")
+         (commit "6be45466e0be437a1b0b3512a86f3d9627217006")))
+   (file-name "rpi-open-firmware-checkout")
+   (sha256
+    (base32 "1wyxvv62i3rjicg4hd94pzbgpadinnrgs27sk39md706mm0qixbh"))))
+
+(define-public raspi-arm-chainloader
+  (package
+    (name "raspi-arm-chainloader")
+    (version %rpi-open-firmware-version)
+    (source %rpi-open-firmware-origin)
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                   ; No tests exist
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setenv
+           (lambda _
+             (setenv "CC" "arm-none-eabi-gcc")
+             (setenv "CXX" "arm-none-eabi-g++")
+             (setenv "AS" "arm-none-eabi-as")
+             (setenv "BAREMETAL" "1")
+             #t))
+         (add-after 'setenv 'build-tlsf
+           (lambda _
+             (with-directory-excursion "tlsf"
+               ;; Note: Adding "-I../common".
+               (invoke "make"
+                       "CFLAGS=-mtune=arm1176jzf-s -march=armv6zk -mfpu=vfp -mfloat-abi=softfp -I../common"))))
+         (add-after 'build-tlsf 'build-common
+           (lambda _
+             (with-directory-excursion "common"
+               (invoke "make"
+                       ;; Note: Adding "-I..".
+                       "ARMCFLAGS=-mtune=arm1176jzf-s -march=armv6zk -marm -I.."))))
+         (add-after 'build-common 'build-notc
+           (lambda _
+             (with-directory-excursion "notc"
+               (invoke "make"))))
+         (add-after 'build-notc 'chdir
+           (lambda _
+             (chdir "arm_chainloader")
+             (substitute* "Makefile"
+              (("-I[.][.]/")
+               "-I../common -I../common/include -I../notc/include -I../")
+              (("-ltlsf")
+               "-L../common -L../notc -L../tlsf -ltlsf"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec")))
+               (mkdir-p libexec)
+               (install-file "build/arm_chainloader.elf" libexec)
+               (install-file "build/arm_chainloader.map" libexec)
+               #t))))))
+    (native-inputs
+     `(("binutils" ,(cross-binutils "arm-none-eabi"))
+       ("gcc" ,gcc-arm-none-eabi-6)))
+    (inputs
+     `())
+    (synopsis "Raspberry Pi ARM bootloader")
+    (description "This package provides a bootloader for the ARM part of a
+Raspberry Pi.  Note: It does not work on Raspberry Pi 1.")
+    (home-page "https://github.com/librerpi/rpi-open-firmware/")
+    (license license:gpl2+)))
