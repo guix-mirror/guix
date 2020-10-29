@@ -7139,9 +7139,9 @@ the metadata is stored in an XML file, and this XML stream is then embedded in
 the file to which it applies.")
     (license license:gpl3+)))
 
-(define-public texlive-latex-pdfx
+(define-public texlive-pdfx
   (let ((template (simple-texlive-package
-                   "texlive-latex-pdfx"
+                   "texlive-pdfx"
                    (list "/doc/latex/pdfx/"
                          "/source/latex/pdfx/"
                          "/tex/latex/pdfx/")
@@ -7176,6 +7176,8 @@ the file to which it applies.")
 standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
       (license license:lppl1.2+))))
 
+(define-public texlive-latex-pdfx
+  (deprecated-package "texlive-latex-pdfx" texlive-pdfx))
 
 (define-public texlive-ydoc
   (let ((template (simple-texlive-package
