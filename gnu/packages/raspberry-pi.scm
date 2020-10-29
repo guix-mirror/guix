@@ -21,8 +21,12 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages commencement)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages embedded)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -161,3 +165,69 @@ used in the Raspberry Pi")
 Raspberry Pi.  Note: It does not work on Raspberry Pi 1.")
     (home-page "https://github.com/librerpi/rpi-open-firmware/")
     (license license:gpl2+)))
+
+(define-public raspi-arm64-chainloader
+  (package
+    (inherit raspi-arm-chainloader)
+    (name "raspi-arm64-chainloader")
+    ;; These native-inputs especially don't contain a libc.
+    (native-inputs
+     `(("bash" ,bash)
+       ("binutils" ,binutils)
+       ("coreutils" ,coreutils)
+       ("file" ,file)
+       ("ld-wrapper" ,ld-wrapper)
+       ("make" ,gnu-make)
+       ("gcc" ,gcc-6)
+       ("locales" ,glibc-utf8-locales)))
+    (inputs
+     `())
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(substitute-keyword-arguments (package-arguments raspi-arm-chainloader)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'setenv
+               (lambda _
+                 (setenv "AS" "as") ; TODO: as-for-target
+                 (setenv "CC" ,(cc-for-target))
+                 (setenv "CXX" ,(cc-for-target))
+                 (setenv "BAREMETAL" "1")
+                 #t))
+             (add-after 'setenv 'build-tlsf
+               (lambda _
+                 (with-directory-excursion "tlsf"
+                   (invoke "make"
+                           "CFLAGS=-I../common -I../notc/include"))))
+             (replace 'build-common
+               (lambda _
+                 (with-directory-excursion "common"
+                   ;; Autodetection uses the CC filename for detecting the architecture.
+                   ;; Since we are not using a cross-compiler, we side-step that.
+                   (invoke "make"
+                           "CFLAGS=-Ilib -I. -Iinclude -ffunction-sections -Wall -g -nostdlib -nostartfiles -ffreestanding -DBAREMETAL"))))
+             (replace 'build-notc
+               (lambda _
+                 (with-directory-excursion "notc"
+                   ;; Autodetection uses the CC filename for detecting the architecture.
+                   ;; Since we are not using a cross-compiler, we side-step that.
+                   (invoke "make"
+                           "CFLAGS=-Iinclude -g"))))
+             (replace 'chdir
+               (lambda _
+                 (chdir "arm64")
+                 (substitute* "Makefile"
+                  (("CFLAGS =")
+                   "CFLAGS = -I../common -I../common/include -I../notc/include -I.. -DBAREMETAL")
+                  (("-lcommon")
+                   "-L../common -L../notc -lcommon"))
+                 (copy-file "../common/hardware.h" "hardware.h")
+                 #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec")))
+               (mkdir-p libexec)
+               (install-file "arm64.elf" libexec)
+               (install-file "arm64.map" libexec)))))))))
+    (supported-systems '("aarch64-linux"))))
