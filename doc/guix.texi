@@ -253,6 +253,7 @@ Programming Interface
 
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
+* Defining Package Variants::   Customizing packages.
 * Build Systems::               Specifying how packages are built.
 * Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
@@ -260,7 +261,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Programming Guix in Guile.
+* Invoking guix repl::          Programming Guix in Guile
 
 Defining Packages
 
@@ -6204,6 +6205,7 @@ package definitions.
 @menu
 * Package Modules::             Packages from the programmer's viewpoint.
 * Defining Packages::           Defining new packages.
+* Defining Package Variants::   Customizing packages.
 * Build Systems::               Specifying how packages are built.
 * Build Phases::                Phases of the build process of a package.
 * Build Utilities::             Helpers for your package definitions and more.
@@ -6473,79 +6475,8 @@ and operating system, such as @code{"aarch64-linux-gnu"}
 (@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
-@cindex package transformations
-@cindex input rewriting
-@cindex dependency tree rewriting
-Packages can be manipulated in arbitrary ways.  An example of a useful
-transformation is @dfn{input rewriting}, whereby the dependency tree of
-a package is rewritten by replacing specific inputs by others:
-
-@deffn {Scheme Procedure} package-input-rewriting @var{replacements} @
-           [@var{rewrite-name}] [#:deep? #t]
-Return a procedure that, when passed a package, replaces its direct and
-indirect dependencies, including implicit inputs when @var{deep?} is
-true, according to @var{replacements}.  @var{replacements} is a list of
-package pairs; the first element of each pair is the package to replace,
-and the second one is the replacement.
-
-Optionally, @var{rewrite-name} is a one-argument procedure that takes
-the name of a package and returns its new name after rewrite.
-@end deffn
-
-@noindent
-Consider this example:
-
-@lisp
-(define libressl-instead-of-openssl
-  ;; This is a procedure to replace OPENSSL by LIBRESSL,
-  ;; recursively.
-  (package-input-rewriting `((,openssl . ,libressl))))
-
-(define git-with-libressl
-  (libressl-instead-of-openssl git))
-@end lisp
-
-@noindent
-Here we first define a rewriting procedure that replaces @var{openssl}
-with @var{libressl}.  Then we use it to define a @dfn{variant} of the
-@var{git} package that uses @var{libressl} instead of @var{openssl}.
-This is exactly what the @option{--with-input} command-line option does
-(@pxref{Package Transformation Options, @option{--with-input}}).
-
-The following variant of @code{package-input-rewriting} can match packages to
-be replaced by name rather than by identity.
-
-@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements} [#:deep? #t]
-Return a procedure that, given a package, applies the given
-@var{replacements} to all the package graph, including implicit inputs
-unless @var{deep?} is false.  @var{replacements} is a list of
-spec/procedures pair; each spec is a package specification such as
-@code{"gcc"} or @code{"guile@@2"}, and each procedure takes a matching
-package and returns a replacement for that package.
-@end deffn
-
-The example above could be rewritten this way:
-
-@lisp
-(define libressl-instead-of-openssl
-  ;; Replace all the packages called "openssl" with LibreSSL.
-  (package-input-rewriting/spec `(("openssl" . ,(const libressl)))))
-@end lisp
-
-The key difference here is that, this time, packages are matched by spec and
-not by identity.  In other words, any package in the graph that is called
-@code{openssl} will be replaced.
-
-A more generic procedure to rewrite a package dependency graph is
-@code{package-mapping}: it supports arbitrary changes to nodes in the
-graph.
-
-@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}] [#:deep? #f]
-Return a procedure that, given a package, applies @var{proc} to all the packages
-depended on and returns the resulting package.  The procedure stops recursion
-when @var{cut?} returns true for a given package.  When @var{deep?} is true, @var{proc} is
-applied to implicit inputs as well.
-@end deffn
+Once you have package definitions, you can easily define @emph{variants}
+of those packages.  @xref{Defining Package Variants}, for more on that.
 
 @menu
 * package Reference::           The package data type.
@@ -6902,6 +6833,205 @@ commit:
   (commit "dc7dc56a00e48fe6f231a58f6537139fe2908fb9"))
 @end lisp
 @end deftp
+
+@node Defining Package Variants
+@section Defining Package Variants
+
+@cindex customizing packages
+@cindex variants, of packages
+One of the nice things with Guix is that, given a package definition,
+you can easily @emph{derive} variants of that package---for a different
+upstream version, with different dependencies, different compilation
+options, and so on.  Some of these custom packages can be defined
+straight from the command line (@pxref{Package Transformation Options}).
+This section describes how to define package variants in code.  This can
+be useful in ``manifests'' (@pxref{profile-manifest,
+@option{--manifest}}) and in your own package collection
+(@pxref{Creating a Channel}), among others!
+
+@cindex inherit, for package definitions
+As discussed earlier, packages are first-class objects in the Scheme
+language.  The @code{(guix packages)} module provides the @code{package}
+construct to define new package objects (@pxref{package Reference}).
+The easiest way to define a package variant is using the @code{inherit}
+keyword together with @code{package}.  This allows you to inherit from a
+package definition while overriding the fields you want.
+
+For example, given the @code{hello} variable, which contains a
+definition for the current version of GNU@tie{}Hello, here's how you
+would define a variant for version 2.2 (released in 2006, it's
+vintage!):
+
+@lisp
+(use-modules (gnu packages base))    ;for 'hello'
+
+(define hello-2.2
+  (package
+    (inherit hello)
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hello/hello-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0lappv4slgb5spyqbh6yl5r013zv72yqg2pcl30mginf3wdqd8k9"))))))
+@end lisp
+
+The example above corresponds to what the @option{--with-source} package
+transformation option does.  Essentially @code{hello-2.2} preserves all
+the fields of @code{hello}, except @code{version} and @code{source},
+which it overrides.  Note that the original @code{hello} variable is
+still there, in the @code{(gnu packages base)} module, unchanged.  When
+you define a custom package like this, you are really @emph{adding} a
+new package definition; the original one remains available.
+
+You can just as well define variants with a different set of
+dependencies than the original package.  For example, the default
+@code{gdb} package depends on @code{guile}, but since that is an
+optional dependency, you can define a variant that removes that
+dependency like so:
+
+@lisp
+(use-modules (gnu packages gdb)    ;for 'gdb'
+             (srfi srfi-1))        ;for 'alist-delete'
+
+(define gdb-sans-guile
+  (package
+    (inherit gdb)
+    (inputs (alist-delete "guile"
+                          (package-inputs gdb)))))
+@end lisp
+
+The @code{alist-delete} call above removes the tuple from the
+@code{inputs} field that has @code{"guile"} as its first element
+(@pxref{SRFI-1 Association Lists,,, guile, GNU Guile Reference
+Manual}).
+
+@cindex package transformations
+These are pretty simple package variants.  As a convenience, the
+@code{(guix transformations)} module provides a high-level interface
+that directly maps to package transformation options (@pxref{Package
+Transformation Options}):
+
+@deffn {Scheme Procedure} options->transformation @var{opts}
+Return a procedure that, when passed an object to build (package,
+derivation, etc.), applies the transformations specified by @var{opts} and returns
+the resulting objects.  @var{opts} must be a list of symbol/string pairs such as:
+
+@example
+((with-branch . "guile-gcrypt=master")
+ (without-tests . "libgcrypt"))
+@end example
+
+Each symbol names a transformation and the corresponding string is an argument
+to that transformation.
+@end deffn
+
+For instance, a manifest equivalent to this command:
+
+@example
+guix build guix \
+  --with-branch=guile-gcrypt=master \
+  --with-debug-info=zlib
+@end example
+
+@noindent
+... would look like this:
+
+@lisp
+(use-modules (guix transformations))
+
+(define transform
+  ;; The package transformation procedure.
+  (options->transformation
+   '((with-branch . "guile-gcrypt=master")
+     (with-debug-info . "zlib"))))
+
+(packages->manifest
+ (list (transform (specification->package "guix"))))
+@end lisp
+
+@cindex input rewriting
+@cindex dependency graph rewriting
+The @code{options->transformation} procedure is convenient, but it's
+perhaps also not as flexible as you may like.  How is it implemented?
+The astute reader probably noticed that most package transformation
+options go beyond the superficial changes shown in the first examples of
+this section: they involve @dfn{input rewriting}, whereby the dependency
+graph of a package is rewritten by replacing specific inputs by others.
+
+Dependency graph rewriting, for the purposes of swapping packages in the
+graph, is what the @code{package-input-rewriting} procedure in
+@code{(guix packages)} implements.
+
+@deffn {Scheme Procedure} package-input-rewriting @var{replacements} @
+           [@var{rewrite-name}] [#:deep? #t]
+Return a procedure that, when passed a package, replaces its direct and
+indirect dependencies, including implicit inputs when @var{deep?} is
+true, according to @var{replacements}.  @var{replacements} is a list of
+package pairs; the first element of each pair is the package to replace,
+and the second one is the replacement.
+
+Optionally, @var{rewrite-name} is a one-argument procedure that takes
+the name of a package and returns its new name after rewrite.
+@end deffn
+
+@noindent
+Consider this example:
+
+@lisp
+(define libressl-instead-of-openssl
+  ;; This is a procedure to replace OPENSSL by LIBRESSL,
+  ;; recursively.
+  (package-input-rewriting `((,openssl . ,libressl))))
+
+(define git-with-libressl
+  (libressl-instead-of-openssl git))
+@end lisp
+
+@noindent
+Here we first define a rewriting procedure that replaces @var{openssl}
+with @var{libressl}.  Then we use it to define a @dfn{variant} of the
+@var{git} package that uses @var{libressl} instead of @var{openssl}.
+This is exactly what the @option{--with-input} command-line option does
+(@pxref{Package Transformation Options, @option{--with-input}}).
+
+The following variant of @code{package-input-rewriting} can match packages to
+be replaced by name rather than by identity.
+
+@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements} [#:deep? #t]
+Return a procedure that, given a package, applies the given
+@var{replacements} to all the package graph, including implicit inputs
+unless @var{deep?} is false.  @var{replacements} is a list of
+spec/procedures pair; each spec is a package specification such as
+@code{"gcc"} or @code{"guile@@2"}, and each procedure takes a matching
+package and returns a replacement for that package.
+@end deffn
+
+The example above could be rewritten this way:
+
+@lisp
+(define libressl-instead-of-openssl
+  ;; Replace all the packages called "openssl" with LibreSSL.
+  (package-input-rewriting/spec `(("openssl" . ,(const libressl)))))
+@end lisp
+
+The key difference here is that, this time, packages are matched by spec and
+not by identity.  In other words, any package in the graph that is called
+@code{openssl} will be replaced.
+
+A more generic procedure to rewrite a package dependency graph is
+@code{package-mapping}: it supports arbitrary changes to nodes in the
+graph.
+
+@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}] [#:deep? #f]
+Return a procedure that, given a package, applies @var{proc} to all the packages
+depended on and returns the resulting package.  The procedure stops recursion
+when @var{cut?} returns true for a given package.  When @var{deep?} is true, @var{proc} is
+applied to implicit inputs as well.
+@end deffn
+
 
 @node Build Systems
 @section Build Systems
@@ -10154,6 +10284,11 @@ that does not respect a @code{#:tests? #f} setting.  Therefore,
 @option{--without-tests} has no effect on these packages.
 
 @end table
+
+Wondering how to achieve the same effect using Scheme code, for example
+in your manifest, or how to write your own package transformation?
+@xref{Defining Package Variants}, for an overview of the programming
+interfaces available.
 
 @node Additional Build Options
 @subsection Additional Build Options
