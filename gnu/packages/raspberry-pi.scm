@@ -224,7 +224,6 @@ Raspberry Pi.  Note: It does not work on Raspberry Pi 1.")
                    "CFLAGS = -I../common -I../common/include -I../notc/include -I.. -DBAREMETAL")
                   (("-lcommon")
                    "-L../common -L../notc -lcommon"))
-                 (copy-file "../common/hardware.h" "hardware.h")
                  #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
