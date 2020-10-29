@@ -62,3 +62,28 @@ used in the Raspberry Pi")
     (supported-systems '("armhf-linux" "aarch64-linux"))
     (license license:gpl3)))
 
+(define raspi-gpio
+  (let ((commit "6d0769ac04760b6e9f33b4aa1f11c682237bf368")
+        (revision "1"))
+    (package
+      (name "raspi-gpio")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/RPi-Distro/raspi-gpio.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1fia1ma586hwhpda0jz86j6i55andq0wncbhzhzvhf7yc773cpi4"))))
+      (build-system gnu-build-system)
+      (synopsis "State dumper for BCM270x GPIOs")
+      (description "Tool to help debug / hack at the BCM283x GPIO. You can dump
+  the state of a GPIO or (all GPIOs). You can change a GPIO mode and pulls (and
+  level if set as an output).  Beware this tool writes directly to the BCM283x
+  GPIO reisters, ignoring anything else that may be using them (like Linux
+  drivers).")
+      (home-page "https://github.com/RPi-Distro/raspi-gpio")
+      (supported-systems '("armhf-linux" "aarch64-linux"))
+      (license license:bsd-3))))
