@@ -1857,7 +1857,7 @@ after Andy Lester’s Perl module WWW::Mechanize.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))
-    (native-inputs
+    (inputs
       `(("alsa-lib" ,alsa-lib)))
     (home-page
      "https://github.com/hamiltron/py-simple-audio")
