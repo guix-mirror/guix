@@ -105,6 +105,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/repl.scm					\
+  guix/transformations.scm			\
   guix/inferior.scm				\
   guix/describe.scm				\
   guix/quirks.scm				\
@@ -456,7 +457,6 @@ SCM_TESTS =					\
   tests/pypi.scm				\
   tests/records.scm				\
   tests/scripts.scm				\
-  tests/scripts-build.scm			\
   tests/search-paths.scm			\
   tests/services.scm				\
   tests/services/linux.scm			\
@@ -473,6 +473,7 @@ SCM_TESTS =					\
   tests/syscalls.scm				\
   tests/system.scm				\
   tests/texlive.scm				\
+  tests/transformations.scm			\
   tests/ui.scm					\
   tests/union.scm				\
   tests/upstream.scm				\

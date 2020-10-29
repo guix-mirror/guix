@@ -41,6 +41,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (guix describe)
   #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)

@@ -43,6 +43,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix build-system gnu)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)

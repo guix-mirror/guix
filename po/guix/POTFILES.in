@@ -80,6 +80,7 @@ guix/gexp.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm
+guix/transformations.scm
 guix/upstream.scm
 guix/ui.scm
 guix/status.scm

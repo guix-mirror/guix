@@ -32,6 +32,7 @@
   #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (gnu build linux-container)
   #:use-module (gnu build accounts)
   #:use-module ((guix build syscalls) #:select (set-network-interface-up))

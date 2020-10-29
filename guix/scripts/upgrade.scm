@@ -21,6 +21,7 @@
   #:use-module (guix ui)
   #:use-module (guix scripts package)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (guix scripts)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)

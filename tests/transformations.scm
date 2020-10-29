@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-scripts-build)
+(define-module (test-transformations)
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module ((guix gexp) #:select (lower-object))
@@ -25,7 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
-  #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix git)
@@ -38,7 +38,7 @@
   #:use-module (srfi srfi-64))
 
 
-(test-begin "scripts-build")
+(test-begin "transformations")
 
 (test-assert "options->transformation, no transformations"
   (let ((p (dummy-package "foo"))

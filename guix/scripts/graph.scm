@@ -34,10 +34,11 @@
   #:use-module (guix sets)
   #:use-module ((guix diagnostics)
                 #:select (location-file formatted-message))
-  #:use-module ((guix scripts build)
+  #:use-module ((guix transformations)
                 #:select (options->transformation
-                          %standard-build-options
                           %transformation-options))
+  #:use-module ((guix scripts build)
+                #:select (%standard-build-options))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
