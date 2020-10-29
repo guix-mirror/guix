@@ -1052,7 +1052,7 @@ provides features like a Web-browsable API and authentication policies.")
        ("python-six" ,python-six)))
     (home-page "https://github.com/divio/django-sekizai")
     (synopsis "Template blocks for Django projects")
-    (description "Sekizai means blocks in Japanese, and thats what this app
+    (description "Sekizai means blocks in Japanese, and that is what this app
 provides.  A fresh look at blocks.  With @code{django-sekizai} you can define
 placeholders where your blocks get rendered and at different places in your
 templates append to those blocks.  This is especially useful for css and
