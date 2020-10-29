@@ -190,6 +190,7 @@ Raspberry Pi.  Note: It does not work on Raspberry Pi 1.")
              (replace 'setenv
                (lambda _
                  (setenv "AS" "as") ; TODO: as-for-target
+                 (setenv "OBJCOPY" "objcopy")
                  (setenv "CC" ,(cc-for-target))
                  (setenv "CXX" ,(cc-for-target))
                  (setenv "BAREMETAL" "1")
@@ -229,5 +230,6 @@ Raspberry Pi.  Note: It does not work on Raspberry Pi 1.")
                     (libexec (string-append out "/libexec")))
                (mkdir-p libexec)
                (install-file "arm64.elf" libexec)
-               (install-file "arm64.map" libexec)))))))))
+               (install-file "arm64.map" libexec)
+               (install-file "arm64.bin" libexec)))))))))
     (supported-systems '("aarch64-linux"))))
