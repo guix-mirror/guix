@@ -23623,7 +23623,7 @@ interface.")
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ivy-posframe-" version ".el"))
        (sha256
-        (base32 "1y75avbgk143xs82yqiia7yhh6jjjm22lpmwaq0ysw5mdpazjxfa"))))
+        (base32 "01zc2yj7g4lfz7qblx7k6sg54v0h4w0frnnmsf92lwypfijd2lsj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)
