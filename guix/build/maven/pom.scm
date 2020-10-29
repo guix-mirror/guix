@@ -59,7 +59,7 @@ represents a @file{.pom} file content, or parts of it."
   (pom-ref content "parent"))
 
 (define* (find-parent content inputs #:optional local-packages)
-  "Find the parent pom for the pom file whith @var{content} in a package's
+  "Find the parent pom for the pom file with @var{content} in a package's
 @var{inputs}.  When the parent pom cannot be found in @var{inputs}, but
 @var{local-packages} is defined, the parent pom is looked up in it.
 
