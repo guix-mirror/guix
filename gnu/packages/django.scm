@@ -1193,7 +1193,7 @@ FileFields during tests.")
     (home-page "https://github.com/django-auth-ldap/django-auth-ldap")
     (synopsis "Django LDAP authentication backend")
     (description
-     "This packages provides a LDAP authentication backend for Django.")
+     "This package provides an LDAP authentication backend for Django.")
     (license license:bsd-2)))
 
 (define-public python-django-logging-json
