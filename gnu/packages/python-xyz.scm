@@ -1815,7 +1815,7 @@ human-friendly syntax.")
     (description "The goal of Scour is to output a file that renderes
 identically at a fraction of the size by removing a lot of redundant
 information created by most SVG editors.  Optimization options are typically
-lossless but can be tweaked for more agressive cleaning.")
+lossless but can be tweaked for more aggressive cleaning.")
     (license license:asl2.0)))
 
 (define-public python-mechanize
