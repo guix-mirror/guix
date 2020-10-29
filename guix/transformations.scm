@@ -38,6 +38,7 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (options->transformation
@@ -169,7 +170,9 @@ package it refers to could not be found."
                     (lambda (old)
                       (proc old new)))))
            (x
-            (leave (G_ "invalid replacement specification: ~s~%") spec))))
+            (raise (formatted-message
+                    (G_ "invalid replacement specification: ~s")
+                    spec)))))
        specs))
 
 (define (transform-package-inputs replacement-specs)
@@ -216,8 +219,9 @@ the source of PACKAGE is not fetched from a Git repository."
           ((git-checkout? source)
            (git-checkout-url source))
           (else
-           (leave (G_ "the source of ~a is not a Git reference~%")
-                  (package-full-name package))))))
+           (raise
+            (formatted-message (G_ "the source of ~a is not a Git reference")
+                               (package-full-name package)))))))
 
 (define (evaluate-git-replacement-specs specs proc)
   "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
@@ -234,7 +238,9 @@ syntax, or if a package it refers to could not be found."
 
             (cons spec replace))
            (_
-            (leave (G_ "invalid replacement specification: ~s~%") spec))))
+            (raise
+             (formatted-message (G_ "invalid replacement specification: ~s")
+                                spec)))))
        specs))
 
 (define (transform-package-source-branch replacement-specs)
@@ -304,8 +310,10 @@ a checkout of the Git repository at the given URL."
                         (source (git-checkout (url url)
                                               (recursive? #t)))))))
              (_
-              (leave (G_ "~a: invalid Git URL replacement specification~%")
-                     spec))))
+              (raise
+               (formatted-message
+                (G_ "~a: invalid Git URL replacement specification")
+                spec)))))
          replacement-specs))
 
   (define rewrite
@@ -380,8 +388,10 @@ the equal sign."
              ((spec (= split-on-commas toolchain))
               (cons spec (map specification->input toolchain)))
              (_
-              (leave (G_ "~a: invalid toolchain replacement specification~%")
-                     spec))))
+              (raise
+               (formatted-message
+                (G_ "~a: invalid toolchain replacement specification")
+                spec)))))
          replacement-specs))
 
   (lambda (obj)
