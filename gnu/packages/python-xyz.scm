@@ -16683,6 +16683,44 @@ ignoring formatting changes.")
 (define-public python2-pydiff
   (package-with-python2 python-pydiff))
 
+(define-public python-pydub
+  (package
+    (name "python-pydub")
+    (version "0.24.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydub" version))
+       (sha256
+        (base32
+         "0sfwfq7yjv4bl3yqbmizszscafvwf4zr40hzbsy7rclvzyznh333"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-ffmpeg-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ffmpeg (assoc-ref inputs "ffmpeg")))
+               (substitute* '("pydub/utils.py")
+                 (("return \"ffmpeg\"")
+                  (string-append "return \"" ffmpeg "/bin/ffmpeg\""))
+                 (("return \"ffplay\"")
+                  (string-append "return \"" ffmpeg "/bin/ffplay\""))
+                 (("return \"ffprobe\"")
+                  (string-append "return \"" ffmpeg "/bin/ffprobe\""))
+                 (("warn\\(\"Couldn't find ff") "# warn\\(\"Couldn't find ff"))
+               #t))))))
+    (home-page "https://pydub.com")
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+     `(("python-scipy" ,python-scipy)))
+    (synopsis "Manipulate audio with a high level interface in Python")
+    (description
+     "@code{pydub} makes it easy to manipulate audio in Python.  It relies on
+@code{ffmpeg} to open various audio formats.")
+    (license license:expat))) ; MIT license
+
 (define-public python-tqdm
   (package
     (name "python-tqdm")
