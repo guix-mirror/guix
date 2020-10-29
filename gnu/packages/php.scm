@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.11")
+    (version "7.4.12")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1knnw9b5hkxmisxclw384ic6bcihihhii51q0fyva8cwkdd6fcax"))
+                "0xkbx7ykjlkv8p1an342am4j0d633dbf5x1ggmmmy985mp72nbg8"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -312,6 +312,10 @@
                          "ext/standard/tests/file/bug43008.phpt"
                          ;; Table data not created in sqlite(?).
                          "ext/pdo_sqlite/tests/bug_42589.phpt"
+                         ;; Expects an Array with 3 preg_matches; gets 0.
+                         "ext/pcre/tests/bug79846.phpt"
+                         ;; Expects an empty Array; gets one with " " in it.
+                         "ext/pcre/tests/bug80118.phpt"
 
                          ;; This tests whether microseconds ‘differ enough’ and
                          ;; fails inconsistently on ‘fast’ machines.
