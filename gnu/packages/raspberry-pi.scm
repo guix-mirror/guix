@@ -121,15 +121,15 @@ used in the Raspberry Pi")
          (add-after 'setenv 'build-tlsf
            (lambda _
              (with-directory-excursion "tlsf"
-               ;; Note: Adding "-I../common".
+               ;; Note: Adding "-I../common -I../notc/include".
                (invoke "make"
-                       "CFLAGS=-mtune=arm1176jzf-s -march=armv6zk -mfpu=vfp -mfloat-abi=softfp -I../common"))))
+                       "CFLAGS=-mtune=arm1176jzf-s -march=armv6zk -mfpu=vfp -mfloat-abi=softfp -I../common -I../notc/include"))))
          (add-after 'build-tlsf 'build-common
            (lambda _
              (with-directory-excursion "common"
                (invoke "make"
-                       ;; Note: Adding "-I..".
-                       "ARMCFLAGS=-mtune=arm1176jzf-s -march=armv6zk -marm -I.."))))
+                       ;; Note: Adding "-I.. -I../notc/include".
+                       "ARMCFLAGS=-mtune=arm1176jzf-s -march=armv6zk -marm -I.. -I../notc/include"))))
          (add-after 'build-common 'build-notc
            (lambda _
              (with-directory-excursion "notc"
