@@ -246,14 +246,14 @@ to re-declare the namespaces in the top-level element."
   "Open @var{pom-file}, and override its content, rewritting its dependencies
 to set their version to the latest version available in the @var{inputs}.
 
-@var{#:with-plugins?} controls whether plugins are also overiden.
+@var{#:with-plugins?} controls whether plugins are also overridden.
 @var{#:with-build-dependencies?} controls whether build dependencies (whose
-scope is not empty) are also overiden.  By default build dependencies and
-plugins are not overiden.
+scope is not empty) are also overridden.  By default build dependencies and
+plugins are not overridden.
 
 @var{#:excludes} is an association list of groupID to a list of artifactIDs.
 When a pair (groupID, artifactID) is present in the list, its entry is
-removed instead of being overiden.  If the entry is ignored because of the
+removed instead of being overridden.  If the entry is ignored because of the
 previous arguments, the entry is not removed.
 
 @var{#:local-packages} is an association list that contains additional version
