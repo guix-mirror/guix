@@ -32771,7 +32771,7 @@ library.")
         ("rust-zstd-sys" ,rust-zstd-sys-1.4.17))))
     (home-page "https://github.com/gyscos/zstd-rs")
     (synopsis "Safe low-level bindings to the zstd compression library")
-    (description "This package provides afe low-level bindings to the zstd
+    (description "This package provides safe low-level bindings to the zstd
 compression library.")
     (license (list license:expat license:asl2.0))))
 
