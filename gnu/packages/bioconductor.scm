@@ -2151,14 +2151,14 @@ assessment, principal component analysis on codon coverage.")
 (define-public r-riboseqr
   (package
     (name "r-riboseqr")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "riboSeqR" version))
        (sha256
         (base32
-         "04a4dkmacd6xy55m84amxa0fspbc4kgg9r9k7bc3wrxswk77ccxk"))))
+         "07i64gch14rsbjlfv17s689wzlqbi7hcqhcw21pp6cw8bvhvd5xr"))))
     (properties `((upstream-name . "riboSeqR")))
     (build-system r-build-system)
     (propagated-inputs
