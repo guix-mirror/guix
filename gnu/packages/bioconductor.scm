@@ -4926,14 +4926,14 @@ decomposition algorithms.")
 (define-public r-yapsa
   (package
     (name "r-yapsa")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "YAPSA" version))
        (sha256
         (base32
-         "06lkf01vl4fyhj82srx8k870fhw76a1han0kp4jglh43b1c19c1k"))))
+         "1vwccrp01p8i42axbaz1bqq173la18ldrzmrjawr5nkjjkvddbpb"))))
     (properties `((upstream-name . "YAPSA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4953,7 +4953,7 @@ decomposition algorithms.")
        ("r-gridextra" ,r-gridextra)
        ("r-gtrellis" ,r-gtrellis)
        ("r-keggrest" ,r-keggrest)
-       ("r-lsei" ,r-lsei)
+       ("r-limsolve" ,r-limsolve)
        ("r-magrittr" ,r-magrittr)
        ("r-pmcmr" ,r-pmcmr)
        ("r-pracma" ,r-pracma)
