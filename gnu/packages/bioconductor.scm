@@ -7168,14 +7168,14 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.18.3")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1jrlhi2c5ibvq8a41g5hwdq4kk4rdd7m464rz5767zaaci7l2ay0"))))
+         "0fisaqd5v8xy9rz9l1zs62k1n2h4k1irzgwj46ci947l52x1qhah"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
