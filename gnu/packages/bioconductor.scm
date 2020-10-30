@@ -5207,14 +5207,14 @@ data for high-throughput, untargeted analyte profiling.")
 (define-public r-wrench
   (package
     (name "r-wrench")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Wrench" version))
        (sha256
         (base32
-         "05dyk3yvbqrzvinv3ig8ad9wffwr14z715cicsbxwxpv5lq84wx6"))))
+         "01z7rd9fn6cpab3dxgwfpfjlq6vsqb8jhbzvhcqn9v2vqc2pridx"))))
     (properties `((upstream-name . "Wrench")))
     (build-system r-build-system)
     (propagated-inputs
