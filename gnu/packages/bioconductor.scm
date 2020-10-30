@@ -7836,14 +7836,14 @@ microarray data.")
 (define-public r-bioccasestudies
   (package
     (name "r-bioccasestudies")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocCaseStudies" version))
        (sha256
         (base32
-         "0fadck1dk1zavpn9yrcwx6zgfi18fw5xfs8svgzipns6bq41j8ix"))))
+         "03n49b6fvyyzmvdy4yif3cl7yv21c09c8xdx4cvvax5zz4v4sab1"))))
     (properties
      `((upstream-name . "BiocCaseStudies")))
     (build-system r-build-system)
