@@ -5840,7 +5840,7 @@ specific S3-method.")
 imputed values are introduced, which can be used for exploring the data and
 the structure of the missing and/or imputed values.  Depending on this
 structure of the missing values, the corresponding methods may help to
-identify the mechanism generating the missing values and allows to explore the
+identify the mechanism generating the missing values and explore the
 data including missing values.  In addition, the quality of imputation can be
 visually explored using various univariate, bivariate, multiple and
 multivariate plot methods.")
