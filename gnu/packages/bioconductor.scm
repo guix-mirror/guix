@@ -8874,17 +8874,16 @@ of other packages.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.16.2")
+    (version "1.18.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "1pa5wvgjb30rw1vsjwbnn07ss3sc5n8ck5d7khdby4r2s9177s33"))))
+                "14f7yw277nykxmcm7wlhlsf3nizpwzz24hax1icx73lavfxmc535"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-beachmat" ,r-beachmat)
-       ("r-biocgenerics" ,r-biocgenerics)
+     `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biocneighbors" ,r-biocneighbors)
        ("r-biocparallel" ,r-biocparallel)
        ("r-biocsingular" ,r-biocsingular)
@@ -8892,10 +8891,11 @@ of other packages.")
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
        ("r-ggbeeswarm" ,r-ggbeeswarm)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
        ("r-matrix" ,r-matrix)
-       ("r-rcpp" ,r-rcpp)
        ("r-rlang" ,r-rlang)
        ("r-s4vectors" ,r-s4vectors)
+       ("r-scuttle" ,r-scuttle)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-viridis" ,r-viridis)))
