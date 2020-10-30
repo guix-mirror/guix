@@ -4238,14 +4238,14 @@ further downstream analysis on its output.")
 (define-public r-bacon
   (package
     (name "r-bacon")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bacon" version))
        (sha256
         (base32
-         "066b9vyp8ivnzm9741mb5z763a7z40ar9m8w31yw84fjiv01v3dl"))))
+         "0cv4zhs075mz8c5gdwhr45v14fb1lyi3rlwjfqyz15dmmnzlxw47"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocparallel" ,r-biocparallel)
