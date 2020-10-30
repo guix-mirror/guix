@@ -1805,13 +1805,13 @@ expressed genes in DNA microarray experiments.")
 (define-public r-graph
   (package
     (name "r-graph")
-    (version "1.66.0")
+    (version "1.68.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "graph" version))
               (sha256
                (base32
-                "15v0nx9gzpszmdn5lil1s1y8qfmsirlznh56wcyqq4sxwjbyjn9g"))))
+                "0wr7j2pasvi3srvg9z3n034ljk8mldcixny6b3kmqbqm8dqy9py4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
