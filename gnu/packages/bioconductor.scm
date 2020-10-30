@@ -1482,14 +1482,14 @@ browser.")
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
-    (version "1.66.0")
+    (version "1.68.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "geneplotter" version))
        (sha256
         (base32
-         "1y494da1llmrvn3qm7akwgwjazvpffabi8llw3fbday14cay1br5"))))
+         "1f8nr60n1nig1gdy85wqdhpzxvp9r4chygxm8xpy882mdvfv6rqx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
