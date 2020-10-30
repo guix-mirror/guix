@@ -7917,14 +7917,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "0qlfnd86999jqv2nd0ikixi2sfd449dyg3ml4nbs8ycs57c2irgh"))))
+         "1nx3gikl8vr54862h6wl0q30arnpynla085219lhh61ziswdffrs"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)
