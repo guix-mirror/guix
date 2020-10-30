@@ -4401,24 +4401,21 @@ Bioconductor.")
 (define-public r-motifstack
   (package
     (name "r-motifstack")
-    (version "1.32.1")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifStack" version))
        (sha256
         (base32
-         "02vmkgn36n5xpmizy33znlzgmi3w5hnhsibgisbnhwwgxpkrwpcd"))))
+         "1psqpdbgbad31bd8hg5bl62qi5s9rl75nzm85igfpxar3zwwxjlb"))))
     (properties `((upstream-name . "motifStack")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
        ("r-biostrings" ,r-biostrings)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-grimport2" ,r-grimport2)
        ("r-htmlwidgets" ,r-htmlwidgets)
-       ("r-motiv" ,r-motiv)
-       ("r-scales" ,r-scales)
        ("r-xml" ,r-xml)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
