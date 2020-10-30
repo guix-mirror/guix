@@ -6233,18 +6233,22 @@ for other R packages to compile and link against.")
 (define-public r-flowworkspace
   (package
     (name "r-flowworkspace")
-    (version "4.0.6")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowWorkspace" version))
        (sha256
         (base32
-         "123ny8n3jjgmsnpghk1dafxkwmcyr513gxi8y4h4qszq4s6ai15v"))))
+         "19svh32jq1dpq3ayhpd5r8bw0iax8d9kdvpvc23gx2pf16g1j5ag"))))
     (properties `((upstream-name . "flowWorkspace")))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-bh" ,r-bh)
+     `(("r-aws-s3" ,r-aws-s3)
+       ("r-aws-signature" ,r-aws-signature)
+       ("r-bh" ,r-bh)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-cytolib" ,r-cytolib)
@@ -6266,7 +6270,6 @@ for other R packages to compile and link against.")
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-rprotobuflib" ,r-rprotobuflib)
        ("r-scales" ,r-scales)
-       ("r-stringr" ,r-stringr)
        ("r-xml" ,r-xml)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
