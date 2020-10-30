@@ -4085,18 +4085,21 @@ Affymetrix arrays.")
 (define-public r-a4preproc
   (package
     (name "r-a4preproc")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Preproc" version))
        (sha256
         (base32
-         "1hy3jvhdjyjzzmw5wkil3cs26hvqnb056r09x0p2bjg5sc9hh8b8"))))
+         "1j8jhal83x1xpmsaw8iwv2r32i1ghzm6n0ipjk06yqa9f6zb7f7i"))))
     (properties `((upstream-name . "a4Preproc")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)))
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/a4Preproc/")
     (synopsis "Automated Affymetrix array analysis preprocessing package")
     (description
