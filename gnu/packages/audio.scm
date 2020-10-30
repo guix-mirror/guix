@@ -2938,7 +2938,7 @@ aimed at audio/musical applications.")
     (description "This package contains the @command{resample} and
 @command{windowfilter} command line utilities.  The @command{resample} command
 allows changing the sampling rate of a sound file, while the
-@command{windowfilter} command allows to design Finite Impulse Response (FIR)
+@command{windowfilter} command allows designing Finite Impulse Response (FIR)
 filters using the so-called @emph{window method}.")
     (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
     (license license:lgpl2.1+)))
