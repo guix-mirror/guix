@@ -7568,14 +7568,14 @@ networks and estimated fluxes can be visualized with hypergraphs.")
 (define-public r-bigmemoryextras
   (package
     (name "r-bigmemoryextras")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigmemoryExtras" version))
        (sha256
         (base32
-         "053bqcd3p4i7agj43ccjxfz40a1sxrymd49vdpfq8ypslkwk7g0g"))))
+         "1k31h746j8r3f92vj62s38fw12qjkv5814ipcqfbswnxgaan17zj"))))
     (properties
      `((upstream-name . "bigmemoryExtras")))
     (build-system r-build-system)
