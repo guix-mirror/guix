@@ -1740,6 +1740,8 @@ proxy of 'guix-daemon'...~%")
                (default "nar"))
   (cache       guix-publish-configuration-cache   ;#f | string
                (default #f))
+  (cache-bypass-threshold guix-publish-configuration-cache-bypass-threshold
+                          (default (* 10 (expt 2 20)))) ;integer
   (workers     guix-publish-configuration-workers ;#f | integer
                (default #f))
   (ttl         guix-publish-configuration-ttl     ;#f | integer
@@ -1774,7 +1776,7 @@ raise a deprecation warning if the 'compression-level' field was used."
                    lst))))
 
   (match-record config <guix-publish-configuration>
-    (guix port host nar-path cache workers ttl)
+    (guix port host nar-path cache workers ttl cache-bypass-threshold)
     (list (shepherd-service
            (provision '(guix-publish))
            (requirement '(guix-daemon))
@@ -1796,7 +1798,11 @@ raise a deprecation warning if the 'compression-level' field was used."
                                                     "s"))
                                   #~())
                            #$@(if cache
-                                  #~((string-append "--cache=" #$cache))
+                                  #~((string-append "--cache=" #$cache)
+                                     #$(string-append
+                                        "--cache-bypass-threshold="
+                                        (number->string
+                                         cache-bypass-threshold)))
                                   #~()))
 
                      ;; Make sure we run in a UTF-8 locale so we can produce

@@ -15041,6 +15041,12 @@ When it is an integer, this is the number of worker threads used for
 caching; when @code{#f}, the number of processors is used.
 @xref{Invoking guix publish, @option{--workers}}, for more information.
 
+@item @code{cache-bypass-threshold} (default: 10 MiB)
+When @code{cache} is true, this is the maximum size in bytes of a store
+item for which @command{guix publish} may bypass its cache in case of a
+cache miss.  @xref{Invoking guix publish,
+@option{--cache-bypass-threshold}}, for more information.
+
 @item @code{ttl} (default: @code{#f})
 When it is an integer, this denotes the @dfn{time-to-live} in seconds
 of the published archives.  @xref{Invoking guix publish, @option{--ttl}},
