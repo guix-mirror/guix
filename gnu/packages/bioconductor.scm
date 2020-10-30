@@ -6492,16 +6492,16 @@ delete entire rows with missing data.")
     (license license:gpl2+)))
 
 (define-public r-depecher
-  (package
+  (package                              ;Source/Weave error
     (name "r-depecher")
-    (version "1.4.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "0dscfl6wxpl5538jzkrwisdwbr873d38rzd19vl6z5br71jvpv3v"))))
+         "0c7yv3a7k22nhhw3601n8jdl61cjmlny9b3nfrzsp78mkxi0h469"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6511,6 +6511,7 @@ delete entire rows with missing data.")
        ("r-fnn" ,r-fnn)
        ("r-foreach" ,r-foreach)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-gmodels" ,r-gmodels)
        ("r-gplots" ,r-gplots)
        ("r-mass" ,r-mass)
        ("r-matrixstats" ,r-matrixstats)
