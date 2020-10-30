@@ -7399,14 +7399,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.46.0")
+    (version "1.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "0l4kdln69y6yhln0xiv2jmpxg05fjcglln406p43a2bqvk2lr03d"))))
+         "0w4m8d3h660mmr2ymp206r1n4aqssxmkv8yxkbr5y1swrahxzfk9"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
@@ -7419,6 +7419,7 @@ testing and other simple calculations.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicranges" ,r-genomicranges)
+       ("r-rhtslib" ,r-rhtslib)
        ("r-hwriter" ,r-hwriter)
        ("r-iranges" ,r-iranges)
        ("r-lattice" ,r-lattice)
