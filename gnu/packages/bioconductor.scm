@@ -5490,14 +5490,14 @@ Gaussian distributions.")
 (define-public r-rbowtie
   (package
     (name "r-rbowtie")
-    (version "1.28.1")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rbowtie" version))
        (sha256
         (base32
-         "0589ggbfx6di42wvqyhnzgrhmb52swr3r5z22w6b8x0z2y7hl8b3"))))
+         "0rgxqc3sbq7phnrn9a6z361725h4zi2mi985i43n7fi3csif7507"))))
     (properties `((upstream-name . "Rbowtie")))
     (build-system r-build-system)
     (inputs
