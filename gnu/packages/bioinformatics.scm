@@ -10044,14 +10044,14 @@ distribution.")
 (define-public r-edaseq
   (package
     (name "r-edaseq")
-    (version "2.22.0")
+    (version "2.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EDASeq" version))
        (sha256
         (base32
-         "12gzxjh73qshlwvsf92lbrf4bi199kxg2snrkprh1z4yqf7bjfm4"))))
+         "0fznj7lsgkss1svv4rq8g87s1gmnbd7hccim41dv1c2w2nl0n2ip"))))
     (properties `((upstream-name . "EDASeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10062,7 +10062,6 @@ distribution.")
        ("r-biocmanager" ,r-biocmanager)
        ("r-biomart" ,r-biomart)
        ("r-biostrings" ,r-biostrings)
-       ("r-deseq" ,r-deseq)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
