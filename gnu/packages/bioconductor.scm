@@ -8948,14 +8948,14 @@ data in the column sparse format.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.10.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "046sam0rz42ph0m7jz7v3bck7d3h2mp45gzywh5dvc1qkjq6fdxx"))))
+         "0xgjamxwf9wwy6dc138mxx5xgjhq5d2z7irliyxbmpaf5kicnwyi"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)
@@ -8966,7 +8966,8 @@ data in the column sparse format.")
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-sparsematrixstats" ,r-sparsematrixstats)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/PeteHaitch/DelayedMatrixStats")
