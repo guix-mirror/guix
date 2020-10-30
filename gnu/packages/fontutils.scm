@@ -966,3 +966,33 @@ It currently provides bidirectional text support (using FriBiDi),
 shaping (using HarfBuzz), and proper script itemization.  As a result, Raqm
 can support most writing systems covered by Unicode.")
     (license license:expat)))
+
+(define-public lcdf-typetools
+  (package
+    (name "lcdf-typetools")
+    (version "2.108")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/kohler/lcdf-typetools")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a6jqaqwq43ldjjjlnsh6mczs2la9363qav7v9fyrfzkfj8kw9ad"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; This is only provided by the monolithic texlive distribution.
+       ;; FIXME: texlive-kpathsea doesn't come with the library and headers
+       (list "--without-kpathsea")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://lcdf.org/type/")
+    (synopsis "Multiple font manipulation tools")
+    (description "LCDF Typetools comprises several programs for manipulating
+PostScript Type 1, Type 1 Multiple Master, OpenType, and TrueType fonts.
+These tools are cfftot1, mmafm, mmpfb, otfinfo, otftotfm, t1dotlessj, t1lint,
+t1rawfm, t1reencode, t1testpage and ttftotype42.")
+    (license license:gpl2+)))
