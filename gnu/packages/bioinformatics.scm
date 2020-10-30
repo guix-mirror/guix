@@ -9986,14 +9986,14 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-aroma-light
   (package
     (name "r-aroma-light")
-    (version "3.18.0")
+    (version "3.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "aroma.light" version))
        (sha256
         (base32
-         "19y5f2minx2pp73zdh43v1qkwpkaxygkl8cwlnwja15i46s0bcyc"))))
+         "0pi37rlfqh24p9wd7l1xb3f7c7938xdscgcc5agp8c9qhajq25a0"))))
     (properties `((upstream-name . "aroma.light")))
     (build-system r-build-system)
     (propagated-inputs
