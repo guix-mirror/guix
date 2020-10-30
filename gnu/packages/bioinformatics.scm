@@ -10341,14 +10341,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.12.1")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "1vvchc04nshxc768fp31rxb603aj3hmq8xlh5qabcwf2c3z9719g"))))
+         "04il99gcrqzakvc0bxchdp9gghkn1sp9lpiian0iz4y7r67z3wpy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
