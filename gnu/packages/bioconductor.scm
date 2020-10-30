@@ -4055,24 +4055,26 @@ arrays.")
 (define-public r-a4classif
   (package
     (name "r-a4classif")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Classif" version))
        (sha256
         (base32
-         "0bj8m4nprw3maahd1qx9jjdxfip9ihbbpydbzwjxn6dlgw2i8mcr"))))
+         "03fln0x1am5fqhj4fpkx1yq58paqha086bhhr8az8j0vsq1r7wcz"))))
     (properties `((upstream-name . "a4Classif")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-a4core" ,r-a4core)
        ("r-a4preproc" ,r-a4preproc)
+       ("r-biobase" ,r-biobase)
        ("r-glmnet" ,r-glmnet)
-       ("r-mlinterfaces" ,r-mlinterfaces)
        ("r-pamr" ,r-pamr)
        ("r-rocr" ,r-rocr)
        ("r-varselrf" ,r-varselrf)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/a4Classif/")
     (synopsis "Automated Affymetrix array analysis classification package")
     (description
