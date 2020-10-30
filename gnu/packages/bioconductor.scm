@@ -7410,14 +7410,14 @@ algorithm which is more efficient for larger data sets.")
 (define-public r-bicare
   (package
     (name "r-bicare")
-    (version "1.46.0")
+    (version "1.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BicARE" version))
        (sha256
         (base32
-         "0llckbl3l26lf6wgjg7rxs8k1yrk043vvdhnkc6ncg33sydj383y"))))
+         "1np3967rjx54hbjsynvya75lcsqa6zic6frw5fjwqybwv2pzzw2k"))))
     (properties `((upstream-name . "BicARE")))
     (build-system r-build-system)
     (propagated-inputs
