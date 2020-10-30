@@ -8076,24 +8076,27 @@ analytics on packages.")
 (define-public r-biocset
   (package
     (name "r-biocset")
-    (version "1.2.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSet" version))
        (sha256
         (base32
-         "041hq3rp0kv7kjwcjjrksk8lw3sj6j1v3wdcr8z611k0g0z6p0cj"))))
+         "16pjg09i0j5qk9s9qzm6fq5q0bgwb4wgqvp6scs06ajgrr07qjqg"))))
     (properties `((upstream-name . "BiocSet")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocio" ,r-biocio)
        ("r-dplyr" ,r-dplyr)
        ("r-keggrest" ,r-keggrest)
+       ("r-ontologyindex" ,r-ontologyindex)
        ("r-plyr" ,r-plyr)
        ("r-rlang" ,r-rlang)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-tibble" ,r-tibble)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page
