@@ -4030,19 +4030,21 @@ It allows searching of biological metadata using various criteria.")
 (define-public r-a4core
   (package
     (name "r-a4core")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Core" version))
        (sha256
         (base32
-         "1hn9lkaib1bx5n52as882f8zwsln8w40sx8hxbrnimjvgfxrbvnp"))))
+         "13mzhn92kqpbn58zmh96f6frkm85sv9137mldfzaljf6snk0spg2"))))
     (properties `((upstream-name . "a4Core")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-glmnet" ,r-glmnet)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/a4Core")
     (synopsis "Automated Affymetrix array analysis core package")
     (description
