@@ -2300,20 +2300,24 @@ defined categories which are over/under represented in RNA-seq data.")
 (define-public r-glimma
   (package
     (name "r-glimma")
-    (version "1.16.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Glimma" version))
        (sha256
         (base32
-         "1bxfgwjqb9p400a5a5q6p17kcnl3ddz090llihkfih9kyxii9n4y"))))
+         "0gy30v30lw27frhmw39pzacqzrv2vwj5rsp6gb3yifllrahdiffv"))))
     (properties `((upstream-name . "Glimma")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-edger" ,r-edger)
+     `(("r-deseq2" ,r-deseq2)
+       ("r-edger" ,r-edger)
+       ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-limma" ,r-limma)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/Shians/Glimma")
