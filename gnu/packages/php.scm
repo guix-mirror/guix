@@ -218,6 +218,9 @@
                          ;; count of a sub-directory to increase compared to
                          ;; its parent.
                          "ext/standard/tests/file/lstat_stat_variation8.phpt"
+                         ;; This tests whether microseconds ‘differ enough’ and
+                         ;; fails inconsistently on ‘fast’ machines.
+                         "ext/date/tests/bug73837.phpt"
 
                          ;; XXX: These gd tests fails.  Likely because our version
                          ;; is different from the (patched) bundled one.
@@ -315,11 +318,7 @@
                          ;; Expects an Array with 3 preg_matches; gets 0.
                          "ext/pcre/tests/bug79846.phpt"
                          ;; Expects an empty Array; gets one with " " in it.
-                         "ext/pcre/tests/bug80118.phpt"
-
-                         ;; This tests whether microseconds ‘differ enough’ and
-                         ;; fails inconsistently on ‘fast’ machines.
-                         "ext/date/tests/bug73837.phpt"))
+                         "ext/pcre/tests/bug80118.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
