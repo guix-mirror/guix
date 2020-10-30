@@ -10152,14 +10152,14 @@ by the user, helping with quick and reproducible access.")
 (define-public r-fastseg
   (package
     (name "r-fastseg")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fastseg" version))
        (sha256
         (base32
-         "1d48n245pzmvcpsz93lxb4frqh222gfhpmlvm0sb74skn16way63"))))
+         "1ln6w93ag4wanp0nrm0pqngbfc88w95zq2kcj583hbxy885dkg4f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
