@@ -1767,14 +1767,14 @@ processing to visualization and annotation.")
 (define-public r-multtest
   (package
     (name "r-multtest")
-    (version "2.44.0")
+    (version "2.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "multtest" version))
        (sha256
         (base32
-         "12li7nzzygm3sjfx472095irqpawixk48d0k591wlnrms6sxchx2"))))
+         "06vixd81nh3nxrc6km73p7c4bwln1zm39fa9gp7gj272vsxkx53q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-survival" ,r-survival)
