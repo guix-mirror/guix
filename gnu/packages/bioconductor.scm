@@ -5094,14 +5094,14 @@ groups.")
 (define-public r-yarn
   (package
     (name "r-yarn")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "yarn" version))
        (sha256
         (base32
-         "1xdjwy1gkfg8lhgq4iwwmbi01903qljjs7yd96cvacmvgn8z6qvx"))))
+         "0p8wz5jn601vxbbxkm73ps3fx0j1y56nr2qf6y8k80vgrk7bv5gp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
