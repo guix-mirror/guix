@@ -8687,16 +8687,18 @@ downloaded from Encode.")
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
-    (version "1.54.3")
+    (version "1.56.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "seqLogo" version))
        (sha256
         (base32
-         "09kkxir305fv8z2yyihvspkrzclxbw1cx5mvhfkrhl10rap6662j"))))
+         "02rpzjjfg5chlwwfbvv72cm78cg2vfmdwzars0cin9hz1hd7rnq1"))))
     (properties `((upstream-name . "seqLogo")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/seqLogo")
     (synopsis "Sequence logos for DNA sequence alignments")
     (description
