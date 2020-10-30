@@ -2132,14 +2132,14 @@ more complex hypotheses) via empirical Bayesian methods.")
 (define-public r-chipcomp
   (package
     (name "r-chipcomp")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPComp" version))
        (sha256
         (base32
-         "0780kj9vbzdhf2jkfb1my8m58pcdwk6jqw6zfng82g46jias98cp"))))
+         "0dbypfgys74snmyf982183ilzg6vamfw1d5y0lp5p8zxbffh2xl7"))))
     (properties `((upstream-name . "ChIPComp")))
     (build-system r-build-system)
     (propagated-inputs
