@@ -9455,14 +9455,14 @@ manipulate and analyze genetic variants.")
 (define-public r-chipseq
   (package
     (name "r-chipseq")
-    (version "1.38.0")
+    (version "1.40.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "chipseq" version))
        (sha256
         (base32
-         "0lh859s0aq73vac1phcgagf6n000qgq2xsk0bmfr61n5swifml2a"))))
+         "12pzq24aarvgxfmhcad0l5g951xqdvvi7bspgbsvlvmfkqd74j2v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
