@@ -4190,19 +4190,18 @@ Affymetrix arrays.")
 (define-public r-abseqr
   (package
     (name "r-abseqr")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "abseqR" version))
        (sha256
         (base32
-         "0pzyfn0jv41rja6l4jbgwgsqy0q1d3kz23m9m6pc67p2a231i9c5"))))
+         "0lh7kcsp3yb3s8s8j6w9k1by8i16q7r2a49z8y1xjmkcb2klsi3f"))))
     (properties `((upstream-name . "abseqR")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,pandoc)
-       ("pandoc-citeproc" ,pandoc-citeproc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-biocparallel" ,r-biocparallel)
        ("r-biocstyle" ,r-biocstyle)
