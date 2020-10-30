@@ -8737,13 +8737,13 @@ throughput genetic sequencing data sets using regression methods.")
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
-    (version "1.34.0")
+    (version "1.36.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "zlibbioc" version))
               (sha256
                (base32
-                "0j1l052jb2cwc1nifxzwknc9csagf4f2d092zs0i95dz0rma89l0"))))
+                "0m36ddss0znvm19dhnxcclxjhgjplw8ajk8v419h20ab8an6khxg"))))
     (properties
      `((upstream-name . "zlibbioc")))
     (build-system r-build-system)
