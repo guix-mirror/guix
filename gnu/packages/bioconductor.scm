@@ -4134,21 +4134,20 @@ provides reporting features.")
 (define-public r-a4base
   (package
     (name "r-a4base")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Base" version))
        (sha256
         (base32
-         "0b7fy1wcydb9z43wb1663skswvhivn7ji15g00gqcshwkkiq4x02"))))
+         "0bqagjmg3yjmdzxv4j7685jjhgb261pq60b5qkfffr1lfnz27lsp"))))
     (properties `((upstream-name . "a4Base")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-a4core" ,r-a4core)
        ("r-a4preproc" ,r-a4preproc)
        ("r-annaffy" ,r-annaffy)
-       ("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-genefilter" ,r-genefilter)
        ("r-glmnet" ,r-glmnet)
