@@ -7832,13 +7832,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "1ddr3ngyczx332zw9ai1a6h7442lgrbfcj8vrhvbkdkzqwj14xmb"))))
+                "0rfn46g2mfda01s75vpcfn5jc7xkp0jrl5v79gyd40jm37p4j1zv"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
