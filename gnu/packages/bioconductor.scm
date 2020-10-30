@@ -5288,14 +5288,14 @@ widgets in R.")
 (define-public r-webbioc
   (package
     (name "r-webbioc")
-    (version "1.60.0")
+    (version "1.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "webbioc" version))
        (sha256
         (base32
-         "16376ya5a5x2hwkl1v9y4r7np1drdwm912knnqg2dn90zmrdwr5f"))))
+         "1nnmr4ddi07x7sy89fgdn7iwz5k4l8n5ca3xjnlbpwxycza793vj"))))
     (build-system r-build-system)
     (inputs
      `(("netpbm" ,netpbm)
