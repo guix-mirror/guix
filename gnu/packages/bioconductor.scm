@@ -1354,21 +1354,21 @@ structure.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.66.0")
+    (version "1.68.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "1ivszqknryq6n5a85z8zj12fvgcs6zz3zlza8q08pl6cs4m5rm4w"))))
+         "1rql591x56532m8n4axdkfkhkbcsz5hfrf7271s0lmkvy84i7z6l"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-dbi" ,r-dbi)
-       ("r-rcurl" ,r-rcurl)
+       ("r-httr" ,r-httr)
        ("r-xml" ,r-xml)
        ("r-xtable" ,r-xtable)))
     (home-page
