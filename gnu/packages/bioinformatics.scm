@@ -10621,14 +10621,14 @@ several related annotation packages.")
 (define-public r-erma
   (package
     (name "r-erma")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "erma" version))
        (sha256
         (base32
-         "1ccfbq0r48sr3h8050w8zv8402h7nx09adr0xdyqlg7kwp9vd2l3"))))
+         "1k2j1xhv0vwn45xmh8ds0gz812px5hnpgzvp37ngsdn4j5ai1l0k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
