@@ -7858,14 +7858,14 @@ monograph.")
 (define-public r-biocgraph
   (package
     (name "r-biocgraph")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biocGraph" version))
        (sha256
         (base32
-         "1372bm4y3czqhpki10pnprxfkfncfcsy59zzvf8wj6q03acaavrj"))))
+         "02y7vizc6jv8y9r8chsda4yysim0ch45i3rasqvv7m85zqsskf75"))))
     (properties `((upstream-name . "biocGraph")))
     (build-system r-build-system)
     (propagated-inputs
