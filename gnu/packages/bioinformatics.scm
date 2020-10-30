@@ -8564,13 +8564,13 @@ genome data packages and support for efficient SNP representation.")
 (define-public r-impute
   (package
     (name "r-impute")
-    (version "1.62.0")
+    (version "1.64.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "impute" version))
               (sha256
                (base32
-                "161p6l1cp3wwdynkxwvg0yhrh6yv20brdlplw5w5mavn4hf1nm0h"))))
+                "1pnjasw9i19nmxwjzrd9jbln31yc5jilfvwk414ya5zbqfsazvxa"))))
     (native-inputs
      `(("gfortran" ,gfortran)))
     (build-system r-build-system)
