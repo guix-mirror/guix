@@ -5075,14 +5075,14 @@ large RNA-seq experiments.")
 (define-public r-roar
   (package
     (name "r-roar")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "roar" version))
        (sha256
         (base32
-         "069g887migvk70n0377dqr0fk7wjbz3w0asgk42bwhp8xpjfym6f"))))
+         "0spidrcjnrcli0whkf6h8pa1i9dg9arjbm7b1skxbs6dn2k4yyqw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
