@@ -4565,14 +4565,14 @@ annotations and ontologies.")
 (define-public r-abaenrichment
   (package
     (name "r-abaenrichment")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ABAEnrichment" version))
        (sha256
         (base32
-         "09ihbgxrhpcz2q7svldhm710a0yrhiqk9p0q0myv11c2w50ymwkw"))))
+         "0i0214ap9f6lnyawdgcdsds6g3g9qqji3wbn6ln6rs698gjs9w9c"))))
     (properties `((upstream-name . "ABAEnrichment")))
     (build-system r-build-system)
     (propagated-inputs
