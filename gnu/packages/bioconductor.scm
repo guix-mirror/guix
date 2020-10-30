@@ -8363,13 +8363,13 @@ with:
 (define-public r-fourcseq
   (package
     (name "r-fourcseq")
-    (version "1.22.1")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "FourCSeq" version))
        (sha256
-        (base32 "14q1ijnqnbd9xs60sfvyqjfiypjrvhacpwp2v85yfhcxw870cx5b"))))
+        (base32 "1rwdphcj26xis47n8j1fiyc3k3qbsgn0bhf5bhgy5vm11yqyvicb"))))
     (properties `((upstream-name . "FourCSeq")))
     (build-system r-build-system)
     (propagated-inputs
