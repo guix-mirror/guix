@@ -6974,14 +6974,14 @@ format.")
 (define-public r-wavcluster
   (package
     (name "r-wavcluster")
-    (version "2.22.0")
+    (version "2.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "wavClusteR" version))
        (sha256
         (base32
-         "0204czqjmkwhd6gznwxzb0vj3dg3aif628g8c30085aa2jljn9bk"))))
+         "18cg0jbr3rjyx31wwyag1n5gams55pbd2rvb99i3g80q9hvswawi"))))
     (properties `((upstream-name . "wavClusteR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6998,8 +6998,7 @@ format.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-seqinr" ,r-seqinr)
-       ("r-stringr" ,r-stringr)
-       ("r-wmtsa" ,r-wmtsa)))
+       ("r-stringr" ,r-stringr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/wavClusteR/")
