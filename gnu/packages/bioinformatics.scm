@@ -8385,13 +8385,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.48.0")
+    (version "1.50.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "1zcgk92sidhy4y7ws9ms4nkkh2hnccfhfh53qgna0kma9jy4v5xf"))))
+                "12zimhpdzjyzd81wrzz5hdbzvlgzcs22x1nnaf2jq4cba3ch5px8"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -8418,7 +8418,8 @@ alignments.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xml" ,r-xml)
-       ("r-xvector" ,r-xvector)))
+       ("r-xvector" ,r-xvector)
+       ("r-zlibbioc" ,r-zlibbioc)))
     (home-page "https://bioconductor.org/packages/rtracklayer")
     (synopsis "R interface to genome browsers and their annotation tracks")
     (description
