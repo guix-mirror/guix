@@ -8270,14 +8270,14 @@ distance measures.")
 (define-public r-pcatools
   (package
     (name "r-pcatools")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "PCAtools" version))
        (sha256
         (base32
-         "0mnwqrhm1hmhzwrpidf6z207w1ycpm572snvpp5swlg6hnxq6bnc"))))
+         "1fz9h99yyn49b5rcnkg2kjdfmczfwnc44fpwbia0izj6gx192phb"))))
     (properties `((upstream-name . "PCAtools")))
     (build-system r-build-system)
     (propagated-inputs
