@@ -1381,14 +1381,14 @@ microarrays.")
 (define-public r-hpar
   (package
     (name "r-hpar")
-    (version "1.30.0")
+    (version "1.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "hpar" version))
        (sha256
         (base32
-         "1jq0qw7wq3426cp004divywjm3ryixkykcmwlhrri13agz6rx3r9"))))
+         "0h10b0fyblpsnxj60rpbk99z7snrkkb5jssmf0v27s6d445jq2zr"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
