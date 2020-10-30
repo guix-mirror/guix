@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: guix 1.2.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-10-20 16:52+0200\n"
-"PO-Revision-Date: 2020-10-20 22:10+0200\n"
+"PO-Revision-Date: 2020-10-30 12:27+0100\n"
 "Last-Translator: Miguel Ángel Arruga Vivas <rosen644835@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -325,12 +325,12 @@ msgstr "ninguna partición LUKS con UUID '~a'"
 #: gnu/system/shadow.scm:233
 #, scheme-format
 msgid "supplementary group '~a' of user '~a' is undeclared"
-msgstr "el grupo suplementario '~a' de la usuaria '~a' no se ha declarado"
+msgstr "el grupo suplementario '~a' de la cuenta '~a' no se ha declarado"
 
 #: gnu/system/shadow.scm:243
 #, scheme-format
 msgid "primary group '~a' of user '~a' is undeclared"
-msgstr "el grupo primario '~a' de la usuaria '~a' no se ha declarado"
+msgstr "el grupo primario '~a' de la cuenta '~a' no se ha declarado"
 
 #: gnu/system/shadow.scm:383
 msgid ""
@@ -372,7 +372,7 @@ msgstr "Selección de red"
 #: gnu/installer.scm:272 gnu/installer/newt/user.scm:68
 #: gnu/installer/newt/user.scm:205
 msgid "User creation"
-msgstr "Creación de usuarias"
+msgstr "Creación de cuentas de usuarias"
 
 #: gnu/installer.scm:280
 msgid "Services"
@@ -964,7 +964,7 @@ msgstr "Nombre real"
 
 #: gnu/installer/newt/user.scm:49
 msgid "Home directory"
-msgstr "Directorio de la usuaria"
+msgstr "Directorio de la cuenta de usuaria"
 
 #: gnu/installer/newt/user.scm:51
 msgid "Password"
@@ -982,7 +982,7 @@ msgstr "Por favor, confirme la contraseña."
 #. system administrator account.
 #: gnu/installer/newt/user.scm:176
 msgid "Please choose a password for the system administrator (\"root\")."
-msgstr "Por favor, seleccione una contraseña para la administradora del sistema (\"root\")."
+msgstr "Por favor, seleccione una contraseña para cuenta de administración del sistema (\"root\")."
 
 #: gnu/installer/newt/user.scm:178
 msgid "System administrator password"
@@ -990,7 +990,7 @@ msgstr "Contraseña de administración del sistema"
 
 #: gnu/installer/newt/user.scm:191
 msgid "Please add at least one user to system using the 'Add' button."
-msgstr "Por favor, añada al menos una usuaria al sistema mediante el botón 'Añadir'."
+msgstr "Por favor, añada al menos una cuenta de usuaria al sistema mediante el botón 'Añadir'."
 
 #: gnu/installer/newt/user.scm:194
 msgid "Add"
@@ -1002,11 +1002,11 @@ msgstr "Borrar"
 
 #: gnu/installer/newt/user.scm:255
 msgid "Please create at least one user."
-msgstr "Por favor, cree al menos una usuaria."
+msgstr "Por favor, cree al menos una cuenta de usuaria."
 
 #: gnu/installer/newt/user.scm:256
 msgid "No user"
-msgstr "Ninguna usuaria"
+msgstr "Ninguna cuenta de usuaria"
 
 #: gnu/installer/newt/welcome.scm:119
 msgid "GNU Guix install"
@@ -2476,7 +2476,7 @@ msgid ""
 msgstr ""
 "\n"
 "  -p, --profile=PERFIL   usa PERFIL en vez del perfil predeterminado de\n"
-"                         la usuaria"
+"                         la cuenta de usuaria"
 
 #: guix/scripts/package.scm:377
 msgid ""
@@ -4034,7 +4034,7 @@ msgid ""
 "  -u, --user=USER        change privileges to USER as soon as possible"
 msgstr ""
 "\n"
-"  -u, --user=USUARIA     cambia los privilegios a los de USUARIA tan pronto\n"
+"  -u, --user=CUENTA      cambia los privilegios a los de CUENTA tan pronto\n"
 "                         como sea posible"
 
 #: guix/scripts/publish.scm:79
@@ -4133,7 +4133,7 @@ msgstr "~a: duración no válida~%"
 #: guix/scripts/publish.scm:1008
 #, scheme-format
 msgid "user '~a' not found: ~a~%"
-msgstr "usuaria '~a' no encontrada: ~a~%"
+msgstr "la cuenta '~a' no se ha encontrado: ~a~%"
 
 #: guix/scripts/publish.scm:1060
 #, scheme-format
@@ -6007,7 +6007,7 @@ msgstr "usted no es la propietaria del directorio «~a»"
 #: guix/profiles.scm:1941
 #, scheme-format
 msgid "Please change the owner of @file{~a} to user ~s."
-msgstr "Por favor, cambie la propiedad de @file{~a} a la usuaria ~s."
+msgstr "Por favor, asigne la propiedad de @file{~a} a la cuenta ~s."
 
 #: guix/git.scm:175
 msgid "long Git object ID is required"
