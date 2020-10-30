@@ -5143,14 +5143,14 @@ genes.")
 (define-public r-massspecwavelet
   (package
     (name "r-massspecwavelet")
-    (version "1.54.0")
+    (version "1.56.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MassSpecWavelet" version))
        (sha256
         (base32
-         "0nv1r68g7f1rps6sqaccd4n4x0i19wklvyabhp4b03cdk22gl3nq"))))
+         "1vvxbxc538raqdsy0x9ln41vjhp2aw1nrh4k35y3s9mhb1jlzzv3"))))
     (properties
      `((upstream-name . "MassSpecWavelet")))
     (build-system r-build-system)
