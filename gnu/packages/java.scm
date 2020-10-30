@@ -9417,8 +9417,11 @@ not included are ones that require dependency to the Databind package.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://github.com/FasterXML/jackson-core")
-    (synopsis "")
-    (description "")
+    (synopsis "Low-level streaming parser and generator abstractions")
+    (description "This package contains core low-level incremental
+(streaming) parser and generator abstractions used by the Jackson Data
+Processor.  It also includes the default implementation of handler types
+(parser, generator) that handle JSON format.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
 (define-public java-fasterxml-jackson-databind
