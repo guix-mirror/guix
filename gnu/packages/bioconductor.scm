@@ -8911,14 +8911,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.16.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "1gm4ys4aq8h1pn45k1rxk384wjyf55izivw8kgxbrflj6j4xvvsv"))))
+         "1zap12rm61z2hg6ykknbif478nr7g468v8mp50bj5hqgi69ywcww"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -8927,17 +8927,17 @@ quality control.")
        ("r-biocneighbors" ,r-biocneighbors)
        ("r-biocparallel" ,r-biocparallel)
        ("r-biocsingular" ,r-biocsingular)
+       ("r-bluster" ,r-bluster)
        ("r-delayedarray" ,r-delayedarray)
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
        ("r-dqrng" ,r-dqrng)
        ("r-edger" ,r-edger)
        ("r-igraph" ,r-igraph)
-       ("r-iranges" ,r-iranges)
        ("r-limma" ,r-limma)
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)
-       ("r-scater" ,r-scater)
+       ("r-scuttle" ,r-scuttle)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-statmod" ,r-statmod)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
