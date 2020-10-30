@@ -1305,8 +1305,17 @@ following a very simple s-expression syntax.")
        #:tests? #f))
     (propagated-inputs
      `(("ocaml-csexp" ,ocaml-csexp)))
-    (synopsis "")
-    (description "")))
+    (synopsis "Dune helper library for gathering system configuration")
+    (description "Dune-configurator is a small library that helps writing
+OCaml scripts that test features available on the system, in order to generate
+config.h files for instance.  Among other things, dune-configurator allows one to:
+
+@itemize
+@item test if a C program compiles
+@item query pkg-config
+@item import #define from OCaml header files
+@item generate config.h file
+@end itemize")))
 
 (define-public dune
   (package
