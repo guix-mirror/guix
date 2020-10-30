@@ -7337,14 +7337,14 @@ cellular organization in health and disease.")
 (define-public r-bgmix
   (package
     (name "r-bgmix")
-    (version "1.48.0")
+    (version "1.50.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BGmix" version))
        (sha256
         (base32
-         "1pfi3hinjn6ymikadgj8dqm59h7mapf01wj86dbbvf8y1xqp8y8n"))))
+         "0r9gjqajarg5mivxhqdzn8m8hmfarmzbplp3zqyyznccri03pv50"))))
     (properties `((upstream-name . "BGmix")))
     (build-system r-build-system)
     (propagated-inputs
