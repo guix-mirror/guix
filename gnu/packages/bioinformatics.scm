@@ -9105,16 +9105,28 @@ HDF5 datasets.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.32.3")
+    (version "2.34.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "0fnx60dpf6s2qwq48lg98g18g8k7wgm66pw0kamlbb7l2hnwycvf"))))
+                "0almr1vscrgj5g4dyrags131wia2pmdbdidlpskbgm44ha6hpmqi"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking
+           (lambda _
+             (substitute* "src/Makevars"
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\(RHDF5_LIBS\\)" match)
+                (string-append match "/libhdf5.a")))
+             #t)))))
     (propagated-inputs
-     `(("r-rhdf5lib" ,r-rhdf5lib)))
+     `(("r-rhdf5filters" ,r-rhdf5filters)
+       ("r-rhdf5lib" ,r-rhdf5lib)))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
