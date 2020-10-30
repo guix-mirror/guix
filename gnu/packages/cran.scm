@@ -19770,7 +19770,7 @@ statistical shape analysis and archetypal analysis.")
      "This package is a collection of several algorithms to obtain
 archetypoids with small and large databases and with both classical
 multivariate data and functional data (univariate and multivariate).  Some of
-these algorithms also allow to detect anomalies (outliers).")
+these algorithms also detect anomalies (outliers).")
     (license license:gpl2+)))
 
 (define-public r-idpmisc
