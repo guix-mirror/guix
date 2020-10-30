@@ -9108,13 +9108,13 @@ the available RAM.")
 (define-public r-annotationfilter
   (package
     (name "r-annotationfilter")
-    (version "1.12.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationFilter" version))
               (sha256
                (base32
-                "18kh1xrhpwb48s1qj4f1v8af3jmw49pnbp5afi2myn9894hxg0cs"))))
+                "0npk0laa2rc93rsh6yikj886zf2fl53a050j07fj9w67j0q0h3s9"))))
     (properties
      `((upstream-name . "AnnotationFilter")))
     (build-system r-build-system)
