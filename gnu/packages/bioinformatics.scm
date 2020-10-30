@@ -7785,13 +7785,13 @@ functionality.")
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
-    (version "1.24.0")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocCheck" version))
               (sha256
                (base32
-                "1p9ys18sn1crxw1iac2jdgqvwpb5hjd9nfxx0qn0ncrv0b550mny"))))
+                "1hyncn9zqj432da95k86rm5b28nbwrvzm52jbhisifkxj1j43cib"))))
     (properties
      `((upstream-name . "BiocCheck")))
     (build-system r-build-system)
