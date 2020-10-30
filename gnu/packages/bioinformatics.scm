@@ -8317,13 +8317,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.18.2")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "1raw5ycigr6gjgzn3kx3jls5hzww10fhnwd8c17c20hmhirf13rw"))))
+                "04x6d4mcsnvz6glkmf6k2cv3fs8zk03i9rvv0ahpl793n8l411ps"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
@@ -8335,6 +8335,7 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
+       ("r-matrixgenerics" ,r-matrixgenerics)
        ("r-s4vectors" ,r-s4vectors)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
