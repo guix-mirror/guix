@@ -5821,14 +5821,14 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "1v760q7hzaybkf2q9230rmr4phi8hglm59qwsjzvncxrhs3dpj06"))))
+         "1rqfmn9lpaajij9p302dfwv57pm4hw7xn2p7lx7hvpb3psa719xm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
