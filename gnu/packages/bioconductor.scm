@@ -3666,14 +3666,14 @@ peak definition in combination with known profile characteristics.")
 (define-public r-varianttools
   (package
     (name "r-varianttools")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "VariantTools" version))
        (sha256
         (base32
-         "0g93rljlmhk1d53z0bgi84i2cn5c3r1dpm8id2pv0nk9ncdh3yxx"))))
+         "1im4g9p419mikkh4v585yf5f23d13chy67znk4g2mii2i1cd1c89"))))
     (properties `((upstream-name . "VariantTools")))
     (build-system r-build-system)
     (propagated-inputs
