@@ -313,7 +313,7 @@ interface and is based on GNU Guile.")
 (define-public cloud-utils
   (package
     (name "cloud-utils")
-    (version "0.31")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
@@ -322,7 +322,7 @@ interface and is based on GNU Guile.")
              version "/+download/cloud-utils-" version ".tar.gz"))
        (sha256
         (base32
-         "07fl3dlqwdzw4xx7mcxhpkks6dnmaxha80zgs9f6wmibgzni8z0r"))))
+         "0xxdi55lzw7j91zfajw7jhd2ilsqj2dy04i9brlk8j3pvb5ma8hk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
