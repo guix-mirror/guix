@@ -8147,13 +8147,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.44.1")
+    (version "2.46.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0np4nh3gj60mgb6312z7x0z9fg5bhrhw872sp3dzgmqc8q8b84iz"))))
+                "1zpdm8nw1d0m31pdmzw1dccbd6iczfhiklhm4d325zkzf3jrkvxf"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -8165,7 +8165,8 @@ annotation data packages using SQLite data storage.")
        ("r-progress" ,r-progress)
        ("r-rappdirs" ,r-rappdirs)
        ("r-stringr" ,r-stringr)
-       ("r-xml" ,r-xml)))
+       ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biomaRt")
