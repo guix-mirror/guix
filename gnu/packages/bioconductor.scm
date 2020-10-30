@@ -4432,20 +4432,22 @@ type and symbol colors.")
 (define-public r-genomicscores
   (package
     (name "r-genomicscores")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicScores" version))
        (sha256
         (base32
-         "0si2lgc37mkah4w990q1q2bf8xmshxj7cbx92bcrp0zaipjr96bb"))))
+         "1492xirsgag2dsr6ys9wm3a65sq826p9hcdg3b4dm1wbxgdfx6jr"))))
     (properties `((upstream-name . "GenomicScores")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationhub" ,r-annotationhub)
        ("r-biobase" ,r-biobase)
+       ("r-biocfilecache" ,r-biocfilecache)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-biostrings" ,r-biostrings)
        ("r-delayedarray" ,r-delayedarray)
        ("r-genomeinfodb" ,r-genomeinfodb)
