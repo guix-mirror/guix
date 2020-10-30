@@ -7883,14 +7883,14 @@ different graph related packages produced by Bioconductor.")
 (define-public r-experimenthub
   (package
     (name "r-experimenthub")
-    (version "1.14.2")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ExperimentHub" version))
        (sha256
         (base32
-         "1kgvprchz1fg8pl1irj62mk2gyb4jcc9iimpypv4c2iccy5bp84x"))))
+         "1zi7vsrhf1hj27rlzrxl4jd81fqh1yhn0svp2d9w71fizsi71akg"))))
     (properties `((upstream-name . "ExperimentHub")))
     (build-system r-build-system)
     (propagated-inputs
