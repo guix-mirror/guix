@@ -7971,13 +7971,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.34.0")
+    (version "1.36.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "09y6ymwky839nb0y7y93w810hk9mvwqn7595q1276c28dkddiqvw"))))
+                "1sl0l6v05lfglj281nszma0h5k234md7rn2pdah8vs2d4iq3kimw"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -7993,6 +7993,7 @@ CAGE.")
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-matrixgenerics" ,r-matrixgenerics)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-rhtslib" ,r-rhtslib)
        ("r-rsamtools" ,r-rsamtools)
