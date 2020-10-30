@@ -5350,14 +5350,14 @@ This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
 (define-public r-rbowtie2
   (package
     (name "r-rbowtie2")
-    (version "1.10.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rbowtie2" version))
        (sha256
         (base32
-         "19v7wfvrd53j618c1xbiqnlsf2kxw697myryx0vb9s2aspknyzz7"))))
+         "1pcdcqn82ray73bajjnx5zgs98m56acviq3adbzga0cfqf6wiqx5"))))
     (properties `((upstream-name . "Rbowtie2")))
     (build-system r-build-system)
     (inputs
