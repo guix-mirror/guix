@@ -4110,19 +4110,20 @@ is used for preprocessing the arrays.")
 (define-public r-a4reporting
   (package
     (name "r-a4reporting")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Reporting" version))
        (sha256
         (base32
-         "1jhlxqwfbgflcyzy9gyxznzcadj9zxchl3lfdlc4ffm0hwz5jl2f"))))
+         "1jx4ym3hyix8gwr8d2r38w1wj7siv6ynzhwanczcjf1naws3dqpy"))))
     (properties `((upstream-name . "a4Reporting")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-annaffy" ,r-annaffy)
-       ("r-xtable" ,r-xtable)))
+     `(("r-xtable" ,r-xtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/a4Reporting/")
     (synopsis "Automated Affymetrix array analysis reporting package")
     (description
