@@ -18108,14 +18108,14 @@ to maximise an approximation to the expectation of the utility function.")
 (define-public r-acet
   (package
     (name "r-acet")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ACEt" version))
        (sha256
         (base32
-         "0626d6kg485xjya164wagrr5z223jvi93ywbwpdns7fkm03c0dlq"))))
+         "0b5lfpnppyk0237phr2aybhx29nhm8ngwk2qa1y4lshrvsw97wg4"))))
     (properties `((upstream-name . "ACEt")))
     (build-system r-build-system)
     (propagated-inputs
