@@ -5148,7 +5148,7 @@ escape sequences and color conversions.")
      `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)))
     (home-page "https://github.com/olekukonko/tablewriter/")
     (synopsis "Generate ASCII table")
-    (description "This package allows to generate ASCII table.  Features:
+    (description "This package generates ASCII tables.  Features:
 @itemize
 @item automatic Padding
 @item support Multiple Lines
