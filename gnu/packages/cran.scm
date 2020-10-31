@@ -10231,19 +10231,19 @@ hypothesis testing.")
 (define-public r-feature
   (package
     (name "r-feature")
-    (version "1.2.13")
+    (version "1.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "feature" version))
        (sha256
         (base32
-         "07hkw0bv38naj2hdsx4xxrm2dngi6w3rbvgr7s50bjic8hlgy1ra"))))
+         "1c12rny9nx8dynzxbcf49h76a7wlmsk1m131wh0jiyqx3c3y41y1"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ks" ,r-ks)
-       ("r-misc3d" ,r-misc3d)
-       ("r-rgl" ,r-rgl)))
+     `(("r-ks" ,r-ks)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://www.mvstat.net/tduong/")
     (synopsis "Inferential feature significance for kernel density estimation")
     (description
