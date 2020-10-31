@@ -14399,14 +14399,14 @@ inbred lines, F2 intercrosses, and association mapping populations.")
 (define-public r-ldheatmap
   (package
     (name "r-ldheatmap")
-    (version "0.99-8")
+    (version "1.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "LDheatmap" version))
        (sha256
         (base32
-         "1x3da3rbhyqb2ddngi48qv7vzb6vc347n9qhryr70qgcc1xvqj4z"))))
+         "1jp578cf29qcgx95w10lpymlwx2pgjsf0nypwkl9b8g635gkisq7"))))
     (properties `((upstream-name . "LDheatmap")))
     (build-system r-build-system)
     (propagated-inputs
