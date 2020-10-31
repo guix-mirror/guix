@@ -3739,13 +3739,13 @@ color labels, layout, etc.")
 (define-public r-stringdist
   (package
     (name "r-stringdist")
-    (version "0.9.6")
+    (version "0.9.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringdist" version))
        (sha256
-        (base32 "0nb3iwpl4f3xxirns1frwvarpyrl4i5f74h8r6h80cg0a4mpdgcb"))))
+        (base32 "06rzbgw43vzg496xca82pydf3g2rz6iw6h50ai0prbp9hbwrhvfd"))))
     (build-system r-build-system)
     (home-page "https://github.com/markvanderloo/stringdist")
     (synopsis "Approximate string matching and string distance functions")
