@@ -7027,24 +7027,19 @@ there are functions for discretizing continuous random variables.")
 (define-public r-abn
   (package
     (name "r-abn")
-    (version "2.2.2")
+    (version "2.3-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abn" version))
        (sha256
         (base32
-         "1wwnzv5yir8cyl0f0arxagbsg9ndgs0799m42wbjkpr8cg9sfdhc"))))
+         "17vdrqm6qp5aijg00ah2imj3pqr6cl5r43hgg8dijbrbhznarci6"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
     (propagated-inputs
-     `(("r-boot" ,r-boot)
-       ("r-brglm" ,r-brglm)
-       ("r-entropy" ,r-entropy)
-       ("r-lme4" ,r-lme4)
-       ("r-mass" ,r-mass)
-       ("r-moments" ,r-moments)
+     `(("r-lme4" ,r-lme4)
        ("r-nnet" ,r-nnet)
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
