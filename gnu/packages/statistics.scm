@@ -3130,14 +3130,14 @@ parallel.")
 (define-public r-doparallel
   (package
     (name "r-doparallel")
-    (version "1.0.15")
+    (version "1.0.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doParallel" version))
        (sha256
         (base32
-         "0vnqbha3gig3awbfvsfx3ni5jir398md1n7xmsb8jihnjsk7xbbi"))))
+         "1cjf0mxrxgls5pl7aj22fv9j488craib1wkc9np4f3gkckwjdfzi"))))
     (properties `((upstream-name . "doParallel")))
     (build-system r-build-system)
     (propagated-inputs
