@@ -15778,14 +15778,14 @@ code edited with @code{RStudio IDE}, @code{Emacs} and @code{Vim}.")
 (define-public r-sctransform
   (package
     (name "r-sctransform")
-    (version "0.3")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sctransform" version))
        (sha256
         (base32
-         "1vyjxzghfvw57pwncvkfg3lbcsqfdsiplh1h4vscxpnd3872nrq3"))))
+         "0b8ni8dzlcikjm2bx5w8yi9vygx0qqxjrmnsy4kf7d1h03n2sxwa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-future" ,r-future)
@@ -15794,8 +15794,9 @@ code edited with @code{RStudio IDE}, @code{Emacs} and @code{Vim}.")
        ("r-gridextra" ,r-gridextra)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-rcpp" ,r-rcpp)
-       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-reshape2" ,r-reshape2)))
     (home-page "https://github.com/ChristophH/sctransform")
     (synopsis "Variance stabilizing transformations for Single Cell UMI Data")
