@@ -22722,14 +22722,14 @@ values.")
 (define-public r-rismed
   (package
     (name "r-rismed")
-    (version "2.1.7")
+    (version "2.2")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "RISmed" version))
         (sha256
           (base32
-            "08dmkkxsmwp9b4h2g1bbx03cijn793fsnzkmbima8x9d42vxnm1l"))))
+            "0nwixhngi4r2f73362salivsmsf7l52bm13jqvhdq8mfiigm80vd"))))
     (properties `((upstream-name . "RISmed")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/RISmed")
