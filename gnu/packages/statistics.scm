@@ -542,14 +542,14 @@ for reading and writing some dBase files.")
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
-    (version "2.23-17")
+    (version "2.23-18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "KernSmooth" version))
        (sha256
         (base32
-         "11g6b0q67vasxag6v9m4px33qqxpmnx47c73yv1dninv2pz76g9b"))))
+         "14640ddvxmczd5xjg1xsd51gll2glfg946vks8wmac6jb8680d43"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
     (native-inputs
