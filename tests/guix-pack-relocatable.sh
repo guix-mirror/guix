@@ -59,6 +59,19 @@ run_without_store ()
     fi
 }
 
+# Wait for the given file to show up.  Error out if it doesn't show up in a
+# timely fashion.
+wait_for_file ()
+{
+    i=0
+    while ! test -f "$1" && test $i -lt 20
+    do
+	sleep 0.3
+	i=`expr $i + 1`
+    done
+    test -f "$1"
+}
+
 test_directory="`mktemp -d`"
 export test_directory
 trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
@@ -130,6 +143,66 @@ case "`uname -m`" in
 	echo "skipping PRoot and Fakechroot tests" >&2
 	;;
 esac
+
+if unshare -r true
+then
+    # Check what happens if the wrapped binary forks and leaves child
+    # processes behind, like a daemon.  The root file system should remain
+    # available to those child processes.  See <https://bugs.gnu.org/44261>.
+    cat > "$test_directory/manifest.scm" <<EOF
+(use-modules (guix))
+
+(define daemon
+  (program-file "daemon"
+                #~(begin
+                    (use-modules (ice-9 match)
+                                 (ice-9 ftw))
+
+                    (call-with-output-file "parent-store"
+                      (lambda (port)
+                        (write (scandir (ungexp (%store-prefix)))
+                               port)))
+
+                    (match (primitive-fork)
+                      (0 (sigaction SIGHUP (const #t))
+                         (call-with-output-file "pid"
+                           (lambda (port)
+                             (display (getpid) port)))
+                         (pause)
+                         (call-with-output-file "child-store"
+                           (lambda (port)
+                             (write (scandir (ungexp (%store-prefix)))
+                                    port))))
+                      (_ #t)))))
+
+(define package
+  (computed-file "package"
+                 #~(let ((out (ungexp output)))
+                     (mkdir out)
+                     (mkdir (string-append out "/bin"))
+                     (symlink (ungexp daemon)
+                              (string-append out "/bin/daemon")))))
+
+(manifest (list (manifest-entry
+                  (name "daemon")
+                  (version "0")
+                  (item package))))
+EOF
+
+    tarball="$(guix pack -S /bin=bin -R -m "$test_directory/manifest.scm")"
+    (cd "$test_directory"; tar xf "$tarball")
+
+    # Run '/bin/daemon', which forks, then wait for the child, send it SIGHUP
+    # so that it dumps its view of the store, and make sure the child and
+    # parent both see the same store contents.
+    (cd "$test_directory"; run_without_store ./bin/daemon)
+    wait_for_file "$test_directory/pid"
+    kill -HUP $(cat "$test_directory/pid")
+    wait_for_file "$test_directory/child-store"
+    diff -u "$test_directory/parent-store" "$test_directory/child-store"
+
+    chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+fi
 
 # Ensure '-R' works with outputs other than "out".
 tarball="`guix pack -R -S /share=share groff:doc`"
