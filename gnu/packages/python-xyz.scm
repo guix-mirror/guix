@@ -21439,13 +21439,13 @@ information for your operating system.")
 (define-public python-canonicaljson
   (package
     (name "python-canonicaljson")
-    (version "1.1.4")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "canonicaljson" version))
        (sha256
-        (base32 "09cpacc8yvcc74i63pdmlfaahh77dnvbyw9zf29wml2zzwqfbg25"))))
+        (base32 "0c86g0vvzdcg3nrcsqnbzlfhpprc2i894p8i14hska56yl27d6w9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
