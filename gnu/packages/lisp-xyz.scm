@@ -14186,7 +14186,8 @@ XML to Lisp structures or s-expressions and back.")
        (uri (string-append "https://common-lisp.net/project/geco/download/"
                            "geco-" version ".tar.gz"))
        (sha256
-        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))))
+        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))
+       (patches (search-patches "sbcl-geco-fix-organism-class.patch"))))
     (build-system asdf-build-system/sbcl)
     (home-page "https://common-lisp.net/project/geco/")
     (synopsis "Genetic algorithm toolkit for Common Lisp")
