@@ -276,7 +276,7 @@ mechanism for serializing structured data.")
     (home-page "https://pypi.org/project/pure-protobuf/")
     (synopsis "Protobuf implementation using dataclasses")
     (description
-     "@code{python-pure-protobuf} allows to take advantage of the standard
+     "@code{python-pure-protobuf} takes advantage of the standard
 dataclasses module to define message types.  Protocol buffers are a
 language-neutral, platform-neutral extensible mechanism for serializing
 structured data.")
