@@ -21272,14 +21272,14 @@ Haberman's interaction model when all items are dichotomously scored.")
 (define-public r-iheatmapr
   (package
     (name "r-iheatmapr")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iheatmapr" version))
        (sha256
         (base32
-         "0s2lc088rq2siy2wzmg1y6nss68rs33mf7w2izqqmg6kbx6d7y9h"))))
+         "1pwkwh7ljlpr6zyz6j8knpz3iw60xzkw8amc98x4pc2mw148jvzx"))))
     (properties `((upstream-name . "iheatmapr")))
     (build-system r-build-system)
     (propagated-inputs
