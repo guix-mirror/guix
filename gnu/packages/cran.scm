@@ -6860,6 +6860,29 @@ Just Another Gibbs Sampler.  It is a program for analysis of Bayesian
 hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
     (license license:gpl2)))
 
+(define-public r-rbibutils
+  (package
+    (name "r-rbibutils")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rbibutils" version))
+       (sha256
+        (base32
+         "1i000czyd059dczd2nn1cb0d4n0bjykrfh51rs85s8r2zlaydn6i"))))
+    (properties `((upstream-name . "rbibutils")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-xml2" ,r-xml2)))
+    (home-page "https://geobosh.github.io/rbibutils/")
+    (synopsis "Convert between bibliography formats")
+    (description
+     "This package converts between a number of bibliography formats,
+including BibTeX, BibLaTeX and Bibentry.  It includes a port of the bibutils
+utilities and supports all bibliography formats and character encodings
+implemented in bibutils.")
+    (license license:gpl2)))
+
 (define-public r-rdpack
   (package
     (name "r-rdpack")
