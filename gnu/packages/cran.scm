@@ -4854,14 +4854,14 @@ detect possible inconsistencies.")
 (define-public r-sna
   (package
     (name "r-sna")
-    (version "2.5")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sna" version))
        (sha256
         (base32
-         "1j3i6300m686qqfmyvadim377cd3mplzgj6mandygw8brg50id8k"))))
+         "0ai0v4538d30m4wks5s3lch1yfmx1ml0nnrz7ihs097lv586a09s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-network" ,r-network)
