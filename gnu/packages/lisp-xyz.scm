@@ -1819,7 +1819,7 @@ writing code that contains string literals that contain code themselves.")
 (define-public cl-slime-swank
   (package
     (name "cl-slime-swank")
-    (version "2.24")
+    (version "2.26")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -1829,7 +1829,7 @@ writing code that contains string literals that contain code themselves.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0js24x42m7b5iymb4rxz501dff19vav5pywnzv50b673rbkaaqvh"))))
+         "0mxb1wnw19v0s72w2wkz5afdlzvpy5nn7pr4vav403qybac0sw5c"))))
     (build-system asdf-build-system/source)
     (home-page "https://github.com/slime/slime")
     (synopsis "Common Lisp Swank server")
