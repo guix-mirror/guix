@@ -15903,14 +15903,14 @@ extends the lme4 package.")
 (define-public r-batchtools
   (package
     (name "r-batchtools")
-    (version "0.9.13")
+    (version "0.9.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "batchtools" version))
        (sha256
         (base32
-         "02bwfinwgn5nl638997javig61jmr0ci0qybmprz13jnvmam1yns"))))
+         "1b78r70gm4a0wzjr367hqx2rfphfkbppp14d0l5zs2fvyz166lsx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
