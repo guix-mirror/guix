@@ -6888,18 +6888,18 @@ implemented in bibutils.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "1.0.0")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "069yh9h57z3gjl5ih1r6wyiwmgmfzkpjxrpxg8mfq7y6zr1mynsw"))))
+         "04gk68y3cxlqhfl1aarjwz2mvx934ka0yxfgzrnw03ykhvb47fpi"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-bibtex" ,r-bibtex)
+     `(("r-rbibutils" ,r-rbibutils)
        ("r-gbrd" ,r-gbrd)))
     (home-page "https://github.com/GeoBosh/Rdpack")
     (synopsis "Update and manipulate Rd documentation objects")
