@@ -657,6 +657,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
+  %D%/build/chromium-extension.scm		\
   %D%/build/cross-toolchain.scm			\
   %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
