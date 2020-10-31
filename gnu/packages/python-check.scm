@@ -868,7 +868,7 @@ variables in the @file{pytest.ini} file.")
      `(#:tests? #f))                  ;the mini test suite fails
     (home-page "https://github.com/farizrahman4u/pyux")
     (synopsis "Utility to check API integrity in Python libraries")
-    (description "The pyux utility allows to detect API changes in Python
+    (description "The pyux utility detects API changes in Python
 libraries.")
     (license license:expat)))
 
