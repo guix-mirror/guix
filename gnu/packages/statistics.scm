@@ -3284,23 +3284,20 @@ path-wise fashion.")
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
-    (version "0.31.1")
+    (version "0.32.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgmaker" version))
        (sha256
         (base32
-         "0r0ga20dy25v9y5gjbds4y6kaa5a7qknh503qdkzllcpzbibh0hp"))))
+         "14ggsd24n5g5rvn0wl4w90ipxzmywqikh28llj89q6kpxwnv4iff"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
-       ("r-bibtex" ,r-bibtex)
        ("r-codetools" ,r-codetools)
        ("r-digest" ,r-digest)
-       ("r-magrittr" ,r-magrittr)
        ("r-registry" ,r-registry)
-       ("r-stringi" ,r-stringi)
        ("r-stringr" ,r-stringr)
        ("r-withr" ,r-withr)
        ("r-xtable" ,r-xtable)))
