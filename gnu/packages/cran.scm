@@ -789,14 +789,14 @@ same time tries to group instances from the same class together.")
 (define-public r-callr
   (package
     (name "r-callr")
-    (version "3.4.4")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "callr" version))
        (sha256
         (base32
-         "1hgc4mfwv83104fh93v8g2srpwzjayq7krgzi9r0apq784r61642"))))
+         "15l6ppsxdadlnl4fk0f8bvf327n8izk96px5d08m1ay9iij8qcyf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-r6" ,r-r6)
