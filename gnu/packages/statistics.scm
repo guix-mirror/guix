@@ -3153,14 +3153,14 @@ using the parallel package.")
 (define-public r-domc
   (package
     (name "r-domc")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doMC" version))
        (sha256
         (base32
-         "1cn9gxavhvjswip8pwvkpi7q6wpzdllcsdjabga8akf55nggqxr9"))))
+         "0kdmfhp5m1wisjbfyl9d040jrmjmhcgjb0vdi536g2i9vixb5yny"))))
     (properties `((upstream-name . "doMC")))
     (build-system r-build-system)
     (propagated-inputs
