@@ -23174,14 +23174,14 @@ semantics and supports interaction with @code{ALTREP} vectors.")
 (define-public r-rcppziggurat
   (package
     (name "r-rcppziggurat")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppZiggurat" version))
        (sha256
         (base32
-         "0zmr3nvm5j0fpwxk3x9kxpwqbr66ldfvd10zy8xlgjbslz9myvfv"))))
+         "0wgd1v2p7zajnbrjf3hfi56p3pk3ld6iwkanbb04bjbnlif2ay4w"))))
     (properties `((upstream-name . "RcppZiggurat")))
     (build-system r-build-system)
     (propagated-inputs
