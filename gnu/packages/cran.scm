@@ -4739,14 +4739,14 @@ automatically.")
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "0dnf1wl3za2lhx2lwd8smhlijl1cfhckgr8zz9piiirrfi2m2kx2"))))
+         "1cgy7vlbinyndl0zkzvnpcmi240wry6iwfb42sz1mj5c9iwkar7b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
