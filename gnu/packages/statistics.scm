@@ -872,13 +872,13 @@ non-estimable cases correctly.")
 (define-public r-labeling
   (package
     (name "r-labeling")
-    (version "0.3")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "labeling" version))
        (sha256
-        (base32 "13sk7zrrrzry6ky1bp8mmnzcl9jhvkig8j4id9nny7z993mnk00d"))))
+        (base32 "0rfikd9gy70b8qz87q9axcwv8nmn9mbxfdwypxi0sghpfs9df8p0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/labeling")
     (synopsis "Axis labeling algorithms")
