@@ -24768,7 +24768,7 @@ personal wiki.")
     (build-system emacs-build-system)
     (home-page "https://github.com/conao3/org-generate.el")
     (synopsis "Generate template files and folders from Org document")
-    (description "This package allows to generate files and folders from Emacs
+    (description "This package generates files and folders from Emacs
 org-mode templates.")
     (license license:gpl3+)))
 
