@@ -16513,20 +16513,22 @@ computed using the L1 (Manhattan, taxicab) metric.")
 (define-public r-leiden
   (package
     (name "r-leiden")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "leiden" version))
        (sha256
         (base32
-         "1hh6bmbz6cpqwl4i94gxylgv9x92zbqdg81r8r4ymfy8c70f3df2"))))
+         "0cj98s1d9771dahn2xwdb1hpkw51jsfmgvzpam34c7i57fj37hn2"))))
     (properties `((upstream-name . "leiden")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
        ("r-matrix" ,r-matrix)
        ("r-reticulate" ,r-reticulate)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/TomKellyGenetics/leiden")
     (synopsis "R implementation of Leiden clustering algorithm")
     (description
