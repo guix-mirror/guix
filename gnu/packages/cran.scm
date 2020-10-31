@@ -13462,14 +13462,14 @@ plotting functions are available for analyzing clustering results.")
 (define-public r-valr
   (package
     (name "r-valr")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "valr" version))
        (sha256
         (base32
-         "1qxw6h63i2vfb2w6q453zzwk0ypma3xdwwpj15i06669vzgyy3bb"))))
+         "1vbp89zfylgih5acvw7lcx3a0dbbd7dhq7yhywr7kq02737qykdx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
