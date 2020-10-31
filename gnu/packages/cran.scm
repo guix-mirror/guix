@@ -14490,13 +14490,13 @@ SELECT or UPDATE queries to an end-point.")
 (define-public r-bookdown
   (package
     (name "r-bookdown")
-    (version "0.20")
+    (version "0.21")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "bookdown" version))
               (sha256
                (base32
-                "0gnshkp1aj7f29sjkhzxn890hz39nwaqdln61x8apmrc658nacdg"))))
+                "0xms1srx9l2mn8xaxnpic0s21y8k56bhwpj45wy7b0yscmxgmh27"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -14504,6 +14504,7 @@ SELECT or UPDATE queries to an end-point.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-tinytex" ,r-tinytex)
        ("r-xfun" ,r-xfun)
+       ("r-yaml" ,r-yaml)
        ("pandoc" ,pandoc)))
     (home-page "https://github.com/rstudio/bookdown")
     (synopsis "Authoring books and technical documents with R markdown")
