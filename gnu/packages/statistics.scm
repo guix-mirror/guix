@@ -1774,14 +1774,14 @@ transformations.")
 (define-public r-formula
   (package
     (name "r-formula")
-    (version "1.2-3")
+    (version "1.2-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Formula" version))
        (sha256
         (base32
-         "0wiqh8rr9d5ciy80wj8f5fnmiiw0ywanvvnhkwd622dx42dk848l"))))
+         "1bsw282i5m8rlirbhz7hqvf25zbxschk7yrp152whbzdnmry6w6b"))))
     (properties `((upstream-name . "Formula")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/Formula")
