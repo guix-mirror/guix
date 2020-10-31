@@ -16124,14 +16124,14 @@ been used in the call to @code{aov}.")
 (define-public r-dalex
   (package
     (name "r-dalex")
-    (version "2.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DALEX" version))
        (sha256
         (base32
-         "1yn61cbqvyycn617pzhd7kgd34xsnmqvj3s10inn2ywycybk7byi"))))
+         "1hiknx55d91abyfj3w4a2xxin7f1q8h5k0041m7w93xjdc4kis98"))))
     (properties `((upstream-name . "DALEX")))
     (build-system r-build-system)
     (propagated-inputs
