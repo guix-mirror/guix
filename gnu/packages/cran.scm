@@ -217,15 +217,17 @@ programming packages such as @code{knitr} and @code{rmarkdown}.")
 (define-public r-clipr
   (package
     (name "r-clipr")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "clipr" version))
        (sha256
         (base32
-         "1qn2p13d0c1bpqss6mv9hk60980rzhznfqpyaf5x0fy65svy9903"))))
+         "1ywa4kipwc2d7na6iiz3wzdah99h6aynnh74yxl3nzl40xxlgbgz"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/mdlincoln/clipr")
     (synopsis "Read and write from the system clipboard")
     (description
