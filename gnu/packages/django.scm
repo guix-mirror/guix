@@ -1291,6 +1291,6 @@ to ElasticSearch.")
     (description
      "The main goal of Django URL Filter is to provide an easy URL interface
 for filtering data.  It allows the user to safely filter by model attributes
-and also allows to specify the lookup type for each filter (very much like
+and also specify the lookup type for each filter (very much like
 Django's filtering system in ORM).")
     (license license:expat)))
