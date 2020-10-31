@@ -1835,13 +1835,13 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.13.0")
+    (version "1.13.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "0wihpg1syjxzsij2fmhwh30vvf2cghw2b2qi79w36qwil2s8w2gn"))))
+                "011qsjfybvlpy2sjn9b6hfkcgwx2xrnpxlaqq3y3baps8n1lgnr7"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
