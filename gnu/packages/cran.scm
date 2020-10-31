@@ -441,13 +441,13 @@ control over dimensions and appearance.")
 (define-public r-ecp
   (package
     (name "r-ecp")
-    (version "3.1.2")
+    (version "3.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ecp" version))
               (sha256
                (base32
-                "11f9p869xr0zg779i46gmflxlq4xclk9wxbab0nj2fan26pn4sfy"))))
+                "0n602jssl6rf596nwm6hbl7s9vdlqi20w8mrhxicj373mw5v22m8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
