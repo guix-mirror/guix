@@ -37,7 +37,7 @@
 (define-public granite
   (package
     (name "granite")
-    (version "5.4.0")
+    (version "5.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -46,7 +46,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0acicv3f9gksb352v88lwap8ailjsxdrfknl2xql7blasbjzl2q0"))))
+                "13qfhq8xndikk6kmybibs6a4ddyp6mhvbsp2yy4qr7aiiyxf7mna"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
