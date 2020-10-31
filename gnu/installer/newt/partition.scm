@@ -25,6 +25,7 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -56,11 +57,17 @@
                   #:button-callback-procedure button-exit-action)))
     (car result)))
 
-(define (draw-formatting-page)
+(define (draw-formatting-page partitions)
   "Draw a page asking for confirmation, and then indicating that partitions
 are being formatted."
-  (run-confirmation-page (G_ "We are about to format your hard disk.  All \
-its data will be lost.  Do you wish to continue?")
+  ;; TRANSLATORS: The ~{ and ~} format specifiers are used to iterate the list
+  ;; of device names of the user partitions that will be formatted.
+  (run-confirmation-page (format #f (G_ "We are about to write the configured \
+partition table to the disk and format the partitions listed below.  Their \
+data will be lost.  Do you wish to continue?~%~{ - ~a~%~}")
+                                 (map user-partition-file-name
+                                      (filter user-partition-need-formatting?
+                                              partitions)))
                          (G_ "Format disk?")
                          #:exit-button-procedure button-exit-action)
   (draw-info-page
@@ -773,7 +780,7 @@ by pressing the Exit button.~%~%")))
          (user-partitions (run-page non-install-devices))
          (user-partitions-with-pass (prompt-luks-passwords
                                      user-partitions))
-         (form (draw-formatting-page)))
+         (form (draw-formatting-page user-partitions)))
     ;; Make sure the disks are not in use before proceeding to formatting.
     (free-parted non-install-devices)
     (format-user-partitions user-partitions-with-pass)
