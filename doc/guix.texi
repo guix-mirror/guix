@@ -24433,7 +24433,7 @@ The list of knot-zone-configuration used by this configuration.
 @subsubheading Knot Resolver Service
 
 @deffn {Scheme Variable} knot-resolver-service-type
-This this the type of the knot resolver service, whose value should be
+This is the type of the knot resolver service, whose value should be
 an @code{knot-resolver-configuration} object as in this example:
 
 @lisp
