@@ -6835,6 +6835,18 @@ commit:
 @end lisp
 @end deftp
 
+For Mercurial repositories, the module @code{(guix hg-download)} defines
+the @code{hg-fetch} origin method and @code{hg-reference} data type for
+support of the Mercurial version control system.
+
+@deffn {Scheme Procedure} hg-fetch @var{ref} @var{hash-algo} @var{hash} @
+           [name]
+Return a fixed-output derivation that fetches @var{ref}, a
+@code{<hg-reference>} object.  The output is expected to have recursive
+hash @var{hash} of type @var{hash-algo} (a symbol).  Use @var{name} as
+the file name, or a generic name if @code{#false}.
+@end deffn
+
 @node Defining Package Variants
 @section Defining Package Variants
 
