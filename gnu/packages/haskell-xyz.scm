@@ -13863,6 +13863,28 @@ processes.  It wraps around the @code{process} library, and intends to improve
 upon it.")
     (license license:expat)))
 
+(define-public ghc-uglymemo
+  (package
+    (name "ghc-uglymemo")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/uglymemo/uglymemo-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ixqg5d0ly1r18jbgaa89i6kjzgi6c5hanw1b1y8c5fbq14yz2gy"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/uglymemo")
+    (synopsis "Simple memoization function for Haskell")
+    (description
+     "This package provides a simple (but internally ugly) memoization
+function.")
+    (license license:public-domain)))
+
 (define-public ghc-unagi-chan
   (package
     (name "ghc-unagi-chan")
