@@ -5891,7 +5891,7 @@ plugin and a standalone JACK application.")
 (define-public wolf-shaper
   (package
     (name "wolf-shaper")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
       (origin
         (method git-fetch)
@@ -5903,7 +5903,7 @@ plugin and a standalone JACK application.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0lllgcbnnh1m95bp29hh17x170hl7170zizjrvy892qfkn36830d"))))
+            "1j9xmh1nkf45ay1c5dz2g165qvrwlanzcq6mvb3nfxar265drd9q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
