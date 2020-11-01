@@ -12798,6 +12798,49 @@ Unlike the filepath package, this package does not simply reuse String,
 increasing type safety.")
     (license license:expat)))
 
+(define-public ghc-tabular
+  (package
+    (name "ghc-tabular")
+    (version "0.2.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tabular/tabular-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0z936gh8n8i8qdkagyxwd9gqq13skd5fv013vdvwsibrxkm0czfb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-csv" ,ghc-csv)
+       ("ghc-html" ,ghc-html)))
+    (home-page "https://github.com/bgamari/tabular")
+    (synopsis "Two-dimensional data tables with rendering functions")
+    (description
+     "Tabular provides a Haskell representation of two-dimensional data
+tables, the kind that you might find in a spreadsheet or or a research report.
+It also comes with some default rendering functions for turning those tables
+into ASCII art, simple text with an arbitrary delimiter, CSV, HTML or LaTeX.
+
+Below is an example of the kind of output this library produces.  The tabular
+package can group rows and columns, each group having one of three
+separators (no line, single line, double line) between its members.
+
+@example
+
+    || memtest 1 | memtest 2 ||  time test  | time test 2
+====++===========+===========++=============+============
+A 1 ||       hog |  terrible ||        slow |      slower
+A 2 ||       pig |   not bad ||        fast |     slowest
+----++-----------+-----------++-------------+------------
+B 1 ||      good |     awful || intolerable |    bearable
+B 2 ||    better | no chance ||    crawling |     amazing
+B 3 ||       meh |   well... ||  worst ever |          ok
+
+@end example")
+    (license license:bsd-3)))
 
 (define-public ghc-tagged
   (package
