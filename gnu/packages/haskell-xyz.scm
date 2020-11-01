@@ -2987,6 +2987,35 @@ to add D-Bus support to Haskell applications, without the awkward
 interfaces common to foreign bindings.")
     (license license:asl2.0)))
 
+(define-public ghc-decimal
+  (package
+    (name "ghc-decimal")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/Decimal/Decimal-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0k7kh05mr2f54w1lpgq1nln0h8k6s6h99dyp5jzsb9cfbb3aap2p"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/PaulJohnson/Haskell-Decimal")
+    (synopsis "Decimal numbers with variable precision")
+    (description
+     "A decimal number has an integer mantissa and a negative exponent.
+The exponent can be interpreted as the number of decimal places in the
+value.")
+    (license license:bsd-3)))
+
 (define-public ghc-deepseq-generics
   (package
     (name "ghc-deepseq-generics")
