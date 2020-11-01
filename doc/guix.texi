@@ -261,7 +261,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Programming Guix in Guile
+* Invoking guix repl::          Programming Guix in Guile.
 
 Defining Packages
 
