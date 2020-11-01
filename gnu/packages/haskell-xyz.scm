@@ -3412,7 +3412,7 @@ Writer monad), where list append quickly becomes too expensive.")
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
-    (version "0.16.2")
+    (version "0.16.3")
     (source
      (origin
        (method url-fetch)
@@ -3422,20 +3422,23 @@ Writer monad), where list append quickly becomes too expensive.")
              ".tar.gz"))
        (sha256
         (base32
-         "0lk4cjfzi5bx2snfzw1zi06li0gvgz3ckfh2kwa98l7nxfdl39ag"))))
+         "1y1l7aa80qkib1z8lsizgg7fpfdmdwhxvi5m255a42jdkjgn5sfg"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
     (inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-paths" ,ghc-paths)
-       ("ghc-base-compat" ,ghc-base-compat)
+     `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-code-page" ,ghc-code-page)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-paths" ,ghc-paths)
+       ("ghc-syb" ,ghc-syb)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-core" ,ghc-hspec-core)
+       ("ghc-mockery" ,ghc-mockery)
+       ("ghc-setenv" ,ghc-setenv)
        ("ghc-silently" ,ghc-silently)
-       ("ghc-setenv" ,ghc-setenv)))
+       ("ghc-stringbuilder" ,ghc-stringbuilder)))
     (home-page
      "https://github.com/sol/doctest#readme")
     (synopsis "Test interactive Haskell examples")
