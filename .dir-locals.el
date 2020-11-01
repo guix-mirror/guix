@@ -25,6 +25,7 @@
                (unless (boundp 'geiser-guile-load-path)
                  (defvar geiser-guile-load-path '()))
                (make-local-variable 'geiser-guile-load-path)
+               (require 'cl-lib)
                (cl-pushnew root-dir* geiser-guile-load-path
                            :test #'string-equal)))))
 
