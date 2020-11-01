@@ -7284,6 +7284,48 @@ Transformers\" available @uref{http://okmij.org/ftp/papers/LogicT.pdf,
 online}.")
     (license license:bsd-3)))
 
+(define-public ghc-lucid
+  (package
+    (name "ghc-lucid")
+    (version "2.9.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/lucid/lucid-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "156wniydd1hlb7rygbm95zln8ky8lai8rn2apkkv0rax9cdw6jrh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-mmorph" ,ghc-mmorph)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-bifunctors" ,ghc-bifunctors)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "1f0whk5ncanxfjjanrf6rqyncig2xgc5mh2j0sqy3nrlyjr9aqq9")))
+    (home-page "https://github.com/chrisdone/lucid")
+    (synopsis "Haskell DSL for rendering HTML")
+    (description "Clear to write, read and edit Haskell DSL for HTML.
+
+@itemize @bullet
+@item
+Names are consistent, and do not conflict with base or are keywords
+(all have suffix @code{-}).
+@item
+Same combinator can be used for attributes and elements
+(e.g. @code{style_}).
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-lzma
   (package
     (name "ghc-lzma")
