@@ -6917,7 +6917,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.7.0")
+    (version "5.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6925,7 +6925,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0bssrfhnw5mhybgaa6d8wp87izi3c9cjpjy7vicm6y76mf7kl8p9"))))
+                "13xkn9jpmwp4fm9r68vhgznkmxhnv83n2b39mhy2qdaph90w2a1l"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
