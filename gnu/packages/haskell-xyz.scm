@@ -14761,6 +14761,48 @@ widths to the Char type.")
 Haskell value or function.")
     (license license:bsd-3)))
 
+(define-public ghc-wizards
+  (package
+    (name "ghc-wizards")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/wizards/wizards-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1clvbd1ckhvy29qrbmpkn7bya7300fq6znnps23nn3nxyrxhsr85"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-control-monad-free" ,ghc-control-monad-free)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "095qd17zrdhqmcvmslbyzfa5sh9glvvsnsvnlz31gzsmi8nnsgim")))
+    (home-page "http://hackage.haskell.org/package/wizards")
+    (synopsis "High level, generic library for interrogative user interfaces")
+    (description
+     "@code{wizards} is a package designed for the quick and painless
+development of @emph{interrogative} programs, which revolve around a dialogue
+with the user, who is asked a series of questions in a sequence much like an
+installation wizard.
+
+Everything from interactive system scripts, to installation wizards, to
+full-blown shells can be implemented with the support of @code{wizards}.
+
+It is developed transparently on top of a free monad, which separates out the
+semantics of the program from any particular interface.  A variety of backends
+exist, including console-based @code{System.Console.Wizard.Haskeline} and
+@code{System.Console.Wizard.BasicIO}, and the pure
+@code{System.Console.Wizard.Pure}.  It is also possible to write your own
+backends, or extend existing back-ends with new features.  While both built-in
+IO backends operate on a console, there is no reason why @code{wizards} cannot
+also be used for making GUI wizard interfaces.")
+    (license license:bsd-3)))
+
 (define-public ghc-wl-pprint
   (package
     (name "ghc-wl-pprint")
