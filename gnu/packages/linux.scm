@@ -1742,14 +1742,14 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "012")
+    (version "013")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
                           "usbutils-" version ".tar.xz"))
       (sha256
-       (base32 "0iiy0q7fzikavmdsjsb0sl9kp3gfh701qwyjjccvqh0qz4jlcqw8"))))
+       (base32 "0f0klk6d3hmbpf6p4dcwa1qjzblmkhbxs1wsw87aidvqri7lj8wy"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -1758,7 +1758,7 @@ slabtop, and skill.")
          (add-before 'bootstrap 'patch-bootstrap-scripts
            (lambda _
              (substitute* "usbhid-dump/bootstrap"
-               (("/bin/bash") (which "bash")))
+               (("/bin/sh") (which "sh")))
 
              ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
              (substitute* "autogen.sh"
