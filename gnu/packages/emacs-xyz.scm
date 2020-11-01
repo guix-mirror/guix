@@ -7366,7 +7366,7 @@ highlighted.  Pressing that character will switch to that window.")
   ;; There is no proper release.  The base version is extracted from the
   ;; "Version" keyword in the main file.
   (let ((revision "1")
-	(commit "62c2846bbe95b0a73e996c75e4a644d05f57aaaa"))
+        (commit "62c2846bbe95b0a73e996c75e4a644d05f57aaaa"))
     (package
       (name "emacs-windsize")
       (version (git-version "0.1" revision commit))
@@ -7376,6 +7376,7 @@ highlighted.  Pressing that character will switch to that window.")
          (uri (git-reference
                (url "https://github.com/grammati/windsize")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "13kfrmv3vmkfanxv9nym5v43hx5p7xkgqmx65zcxh4gcbaham1mi"))))
       (build-system emacs-build-system)
