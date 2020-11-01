@@ -1787,6 +1787,36 @@ Mono’s typeface forms are simple and free from unnecessary details.  Rendered
 in small sizes, the text looks crisper.")
     (license license:asl2.0)))
 
+(define-public font-juliamono
+  (package
+    (name "font-juliamono")
+    (version "0.025")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cormullion/juliamono")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w8mpl9zc1y4j1f26ikbz5g9dqsszhikp4r9p1d3ch3b5ayb5c3m"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-website-folder
+           ;; This folder contains other unrelated fonts.
+           (lambda _
+             (delete-file-recursively "website")
+             #t)))))
+    (home-page "https://github.com/cormullion/juliamono")
+    (synopsis "Monospaced font for programming")
+    (description
+     "JuliaMono is a monospaced font for scientific and technical computing,
+designed to work for programming in the Julia Programming Language and other
+text environments.")
+    (license license:silofl1.1)))
+
 (define-public font-vazir
   (package
     (name "font-vazir")
