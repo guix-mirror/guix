@@ -2192,7 +2192,7 @@ To load this plugin, specify the following option when starting mpv:
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0zpsbl9iicc6y81xfl6kf8farwfsyrl63shc0idp654kgp8421wa"))))
+                "06lhba4b9bm6f5yqrb5xvdr0l5shwd95djf9nlpg86prr5xihqks"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
