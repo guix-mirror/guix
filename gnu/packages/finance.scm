@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
@@ -72,6 +74,9 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
@@ -169,6 +174,63 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public hledger
+  (package
+    (name "hledger")
+    (version "1.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hledger/hledger-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wfsyf2q1kf90mj3lxs0m5ghj153axmpkc8xfy12vkz5imnyphfm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-decimal" ,ghc-decimal)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-hledger-lib" ,ghc-hledger-lib)
+       ("ghc-lucid" ,ghc-lucid)
+       ("ghc-math-functions" ,ghc-math-functions)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-split" ,ghc-split)
+       ("ghc-tabular" ,ghc-tabular)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-timeit" ,ghc-timeit)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-wizards" ,ghc-wizards)))
+    (home-page "https://hledger.org")
+    (synopsis "Command-line interface for the hledger accounting system")
+    (description
+     "The command-line interface for the hledger accounting system.  Its basic
+function is to read a plain text file describing financial transactions and
+produce useful reports.
+
+hledger is a robust, cross-platform set of tools for tracking money, time, or
+any other commodity, using double-entry accounting and a simple, editable file
+format, with command-line, terminal and web interfaces.  It is a Haskell
+rewrite of Ledger, and one of the leading implementations of Plain Text
+Accounting.")
+    (license license:gpl3)))
 
 (define-public homebank
   (package
