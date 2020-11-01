@@ -956,7 +956,7 @@ floating through space.")
 (define-public mdk
   (package
     (name "mdk")
-    (version "1.2.11")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -964,7 +964,7 @@ floating through space.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0rrac91ynya4jrhv14j9vvn21c5z80hi1zmmdxjb0d9zz6i7kjgb"))))
+         "0bhk3c82kyp8167h71vdpbcr852h5blpnwggcswqqwvvykbms7lb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
@@ -979,7 +979,7 @@ floating through space.")
        ("ncurses" ,ncurses)
        ("pango" ,pango)
        ("readline" ,readline)))
-    (home-page "https://www.gnu.org/software/mdk/")
+    (home-page "https://www.gnu.org/software/mdk/manual/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description
      "GNU MDK is the Mix Development Kit, an emulation of the pedagogical
