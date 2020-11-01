@@ -2665,6 +2665,30 @@ pure @code{Either} value.  This means that you need not remember which specific
 function performs the conversion you desire.")
     (license license:bsd-3)))
 
+(define-public ghc-csv
+  (package
+    (name "ghc-csv")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/csv/csv-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "00767ai09wm7f0yzmpqck3cpgxncpr9djnmmz5l17ajz69139x4c"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/csv")
+    (synopsis "CSV loader and dumper")
+    (description
+     "This library parses and dumps documents that are formatted according to
+RFC 4180, @cite{The common Format and MIME Type for Comma-Separated
+Values (CSV) Files}.  This format is used, among many other things, as a
+lingua franca for spreadsheets, and for certain web services.")
+    (license license:expat)))
+
 (define-public ghc-data-accessor
   (package
     (name "ghc-data-accessor")
