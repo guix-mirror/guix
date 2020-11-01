@@ -26,6 +26,7 @@
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2607,6 +2608,36 @@ a vocabulary for working with them.")
     (description "This Haskell package provides extras for the
 @code{ghc-contravariant} package.")
     (license license:expat)))
+
+(define-public ghc-control-monad-free
+  (package
+    (name "ghc-control-monad-free")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/"
+             "package/control-monad-free/control-monad-free-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1habgf7byffqf1rqjkzpihvdhclaafgqsqpfpwp3fgpj5ayk1j33"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/pepeiborra/control-monad-free")
+    (synopsis "Free monads and monad transformers")
+    (description
+     "This package provides datatypes to construct Free monads, Free monad
+transformers, and useful instances.  In addition it provides the constructs to
+avoid quadratic complexity of left associative bind, as explained in:
+
+@itemize @bullet
+@item
+Janis Voigtlander, @cite{Asymptotic Improvement of Computations over
+Free Monads, MPC'08}
+@end itemize")
+    (license license:public-domain)))
 
 (define-public ghc-convertible
   (package
