@@ -14528,6 +14528,9 @@ the name of the log-in program.
 When set to @code{#t} in conjunction with @var{auto-login}, the user
 will have to press a key before the log-in shell is launched.
 
+@item @code{clear-on-logout?} (default: @code{#t})
+When set to @code{#t}, the screen will be cleared after logout.
+
 @item @code{mingetty} (default: @var{mingetty})
 The Mingetty package to use.
 

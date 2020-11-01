@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -1024,20 +1024,22 @@ the tty to run, among other things."
 (define-record-type* <mingetty-configuration>
   mingetty-configuration make-mingetty-configuration
   mingetty-configuration?
-  (mingetty       mingetty-configuration-mingetty ;<package>
-                  (default mingetty))
-  (tty            mingetty-configuration-tty)     ;string
-  (auto-login     mingetty-auto-login             ;string | #f
-                  (default #f))
-  (login-program  mingetty-login-program          ;gexp
-                  (default #f))
-  (login-pause?   mingetty-login-pause?           ;Boolean
-                  (default #f)))
+  (mingetty         mingetty-configuration-mingetty ;<package>
+                    (default mingetty))
+  (tty              mingetty-configuration-tty)     ;string
+  (auto-login       mingetty-auto-login             ;string | #f
+                    (default #f))
+  (login-program    mingetty-login-program          ;gexp
+                    (default #f))
+  (login-pause?     mingetty-login-pause?           ;Boolean
+                    (default #f))
+  (clear-on-logout? mingetty-clear-on-logout?       ;Boolean
+                    (default #t)))
 
 (define mingetty-shepherd-service
   (match-lambda
     (($ <mingetty-configuration> mingetty tty auto-login login-program
-                                 login-pause?)
+                                 login-pause? clear-on-logout?)
      (list
       (shepherd-service
        (documentation "Run mingetty on an tty.")
@@ -1050,7 +1052,6 @@ the tty to run, among other things."
 
        (start  #~(make-forkexec-constructor
                   (list #$(file-append mingetty "/sbin/mingetty")
-                        "--noclear"
 
                         ;; Avoiding 'vhangup' allows us to avoid 'setfont'
                         ;; errors down the path where various ioctls get
@@ -1058,6 +1059,9 @@ the tty to run, among other things."
                         ;; in Linux.
                         "--nohangup" #$tty
 
+                        #$@(if clear-on-logout?
+                               #~()
+                               #~("--noclear"))
                         #$@(if auto-login
                                #~("--autologin" #$auto-login)
                                #~())
