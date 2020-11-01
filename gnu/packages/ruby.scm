@@ -2416,7 +2416,9 @@ extensions.")
     (arguments
      '(#:tests? #f ; test suite hangs for unknown reason
        #:gem-flags
-       (list "--"
+       (list "--no-document"            ; TODO: Re-enable when documentation
+                                        ; generation works
+             "--"
              (string-append "--with-xml2-include="
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2" ))))
