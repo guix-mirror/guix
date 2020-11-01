@@ -36,6 +36,7 @@
   #:use-module (guix utils)
   #:use-module (guix i18n)
   #:use-module (parted)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (rnrs io ports)
@@ -526,56 +527,54 @@ determined by MAX-LENGTH-COLUMN procedure."
          (size (user-partition-size user-partition))
          (mount-point (user-partition-mount-point user-partition)))
     `(,@(if has-name?
-            `((name . ,(string-append "Name: " (or name "None"))))
+            `((name . ,(format #f (G_ "Name: ~a")
+                               (or name (G_ "None")))))
             '())
       ,@(if (and has-extended?
                  (freespace-partition? partition)
                  (not (eq? type 'logical)))
-            `((type . ,(string-append "Type: " type-name)))
+            `((type . ,(format #f (G_ "Type: ~a") type-name)))
             '())
       ,@(if (eq? type 'extended)
             '()
-            `((fs-type . ,(string-append "Filesystem type: " fs-type-name))))
+            `((fs-type . ,(format #f (G_ "File system type: ~a")
+                                  fs-type-name))))
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap)
                 (not has-extended?))
             '()
-            `((bootable . ,(string-append "Bootable flag: "
-                                          (if bootable? "On" "Off")))))
+            `((bootable . ,(format #f (G_ "Bootable flag: ~:[off~;on~]")
+                                   bootable?))))
       ,@(if (and (not has-extended?)
                  (not (eq? fs-type 'swap)))
-            `((esp? . ,(string-append "ESP flag: "
-                                      (if esp? "On" "Off"))))
+            `((esp? . ,(format #f (G_ "ESP flag: ~:[off~;on~]") esp?)))
             '())
       ,@(if (freespace-partition? partition)
             (let ((size-formatted
-                   (or size (unit-format device
+                   (or size (unit-format device   ;XXX: i18n
                                          (partition-length partition)))))
-              `((size . ,(string-append "Size : " size-formatted))))
+              `((size . ,(format #f (G_ "Size: ~a") size-formatted))))
             '())
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap))
             '()
             `((crypt-label
-               . ,(string-append
-                   "Encryption: "
-                   (if crypt-label
-                       (format #f "Yes (label ~a)" crypt-label)
-                       "No")))))
+               . ,(format #f (G_ "Encryption: ~:[No~a~;Yes (label '~a')~]")
+                          crypt-label (or crypt-label "")))))
       ,@(if (or (freespace-partition? partition)
                 (eq? fs-type 'swap))
             '()
             `((need-formatting?
-               . ,(string-append "Format the partition? : "
-                                 (if need-formatting? "Yes" "No")))))
+               . ,(format #f (G_ "Format the partition? ~:[No~;Yes~]")
+                          need-formatting?))))
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap))
             '()
             `((mount-point
-               . ,(string-append "Mount point : "
-                                 (or mount-point
-                                     (and esp? (default-esp-mount-point))
-                                     "None"))))))))
+               . ,(format #f (G_ "Mount point: ~a")
+                          (or mount-point
+                              (and esp? (default-esp-mount-point))
+                              (G_ "None")))))))))
 
 
 ;;
