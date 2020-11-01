@@ -18743,7 +18743,7 @@ via @code{pulseaudio-configuration}, see below.
 
 @quotation Warning
 This service overrides per-user configuration files.  If you want
-PulseAudio to honor configuraton files in @file{~/.config/pulse} you
+PulseAudio to honor configuration files in @file{~/.config/pulse} you
 have to unset the environment variables @env{PULSE_CONFIG} and
 @env{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
 @end quotation
