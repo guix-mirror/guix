@@ -8911,6 +8911,45 @@ require aeson
     (description "Safe conversions between textual types")
     (license license:isc)))
 
+(define-public ghc-text-short
+  (package
+    (name "ghc-text-short")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/text-short/text-short-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xyrxlb602z8bc9sr2y1fag0x56a20yj5qrkvy7iwc6hnznrynxz"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-quickcheck-instances"
+        ,ghc-quickcheck-instances)))
+    (arguments
+     `(#:cabal-revision
+       ("2"
+        "17cb7p0qywf2dsrq3g8qb3ssknd9wl5k0nc2pxz9gc3l8rxpkw51")))
+    (home-page "https://hackage.haskell.org/package/text-short")
+    (synopsis "Memory-efficient representation of Unicode text strings")
+    (description "This package provides the @code{ShortText} type which
+is suitable for keeping many short strings in memory.  This is similiar
+to how @code{ShortByteString} relates to @code{ByteString}.
+
+The main difference between @code{Text} and @code{ShortText} is that
+@code{ShortText} uses UTF-8 instead of UTF-16 internally and also doesn't
+support zero-copy slicing (thereby saving 2 words).  Consequently, the memory
+footprint of a (boxed) @{ShortText} value is 4 words (2 words when unboxed)
+plus the length of the UTF-8 encoded payload.")
+    (license license:bsd-3)))
+
 (define-public ghc-doclayout
   (package
     (name "ghc-doclayout")
