@@ -11465,6 +11465,62 @@ symbol tables, document templates, project management, spell-checking, menus
 and toolbars.")
     (license license:gpl3+)))
 
+(define-public setzer
+  (package
+    (name "setzer")
+    (version "0.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cvfosammmm/Setzer")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qdffi6hws1a104bqzpaxbbjimjcwwmhgb3baiwh0w0b8nhbmhjl"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/setzer"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("pango" ,pango)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)
+       ("webkitgtk" ,webkitgtk)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://www.cvfosammmm.org/setzer/")
+    (synopsis "LaTeX editor written in Python with GTK+")
+    (description
+     "Setzer is a simple yet full-featured LaTeX editor written in Python with
+GTK+.  It integrates well with the GNOME desktop environment.")
+    (license license:gpl3+)))
+
 (define-public libratbag
   (package
     (name "libratbag")
