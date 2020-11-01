@@ -5928,6 +5928,34 @@ are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
 @code{package.yaml}.")
     (license license:expat)))
 
+(define-public ghc-hspec-megaparsec
+  (package
+    (name "ghc-hspec-megaparsec")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/"
+             "package/hspec-megaparsec/hspec-megaparsec-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0w8nn2rh01lkiwsiyqh3gviklhfmy0245rakj94dmliyljw8skfg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("ghc-megaparsec" ,ghc-megaparsec)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/mrkkrp/hspec-megaparsec")
+    (synopsis "Utility functions for testing Megaparsec parsers with Hspec")
+    (description
+     "Provides a small set of helper functions for testing Megaparsec parsers
+with Hspec.")
+    (license license:bsd-3)))
+
 (define-public ghc-hs-bibutils
   (package
     (name "ghc-hs-bibutils")
