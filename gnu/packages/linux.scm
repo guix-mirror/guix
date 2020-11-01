@@ -2182,8 +2182,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    ;; XXX When updating, remove the ‘install-missing-script’ phase.
-    (version "1.8.5")
+    (version "1.8.6")
     (source
      (origin
        (method url-fetch)
@@ -2192,7 +2191,7 @@ external rate conversion.")
                   (string-append "https://www.netfilter.org/projects/iptables/"
                                  "files/iptables-" version ".tar.bz2")))
        (sha256
-        (base32 "02a3575ypdpg6a2x752mhk3f7h1381ymkq1n0gss6fp6292xfmyl"))))
+        (base32 "0rvp0k8a72h2snrdx48cfn75bfa0ycrd2xl3kjysbymq7q6gxx50"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2204,19 +2203,7 @@ external rate conversion.")
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-missing-script
-           ;; A typo prevents installation of /sbin/iptables-apply.  It's been
-           ;; fixed upstream (d4ed0c741fc789bb09d977d74d30875fdd50d08b), but
-           ;; a patch would require bootstrapping and more inputs.  Simply copy
-           ;; the file ourselves.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (sbin (string-append out "/sbin")))
-               (install-file "iptables/iptables-apply" sbin)
-               #t))))))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
