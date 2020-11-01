@@ -502,14 +502,14 @@ systems with no further dependencies.")
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/blueman-project/blueman/releases"
                            "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "1pngqbwapbvywhkmflapqvs0wa0af7d1a87wy56l5hg2r462xl1v"))))
+        (base32 "1nk46s1s8yrlqv37sc7la05nnn7sdgqhkrcdm98qin34llwkv70x"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
