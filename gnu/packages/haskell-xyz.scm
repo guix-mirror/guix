@@ -5837,6 +5837,68 @@ feature, allowing applications to subscribe to notifications when a file is
 accessed or modified.")
     (license license:bsd-3)))
 
+(define-public ghc-hledger-lib
+  (package
+    (name "ghc-hledger-lib")
+    (version "1.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hledger-lib/hledger-lib-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0py11011r358nmnvwwkc8mlx6mpy36jm8sqlr4i8ihx3x0zjdgya"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-decimal" ,ghc-decimal)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-call-stack" ,ghc-call-stack)
+       ("ghc-cassava" ,ghc-cassava)
+       ("ghc-cassava-megaparsec" ,ghc-cassava-megaparsec)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-fgl" ,ghc-fgl)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-hashtables" ,ghc-hashtables)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-parser-combinators" ,ghc-parser-combinators)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-split" ,ghc-split)
+       ("ghc-tabular" ,ghc-tabular)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-timeit" ,ghc-timeit)
+       ("ghc-uglymemo" ,ghc-uglymemo)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)))
+    (home-page "https://hledger.org")
+    (synopsis "Reusable library providing the core functionality of hledger")
+    (description
+     "A reusable library containing hledger's core functionality.
+This is used by most hledger* packages so that they support the same common
+file formats, command line options, reports etc.
+
+hledger is a robust, cross-platform set of tools for tracking money, time, or
+any other commodity, using double-entry accounting and a simple, editable file
+format, with command-line, terminal and web interfaces.  It is a Haskell
+rewrite of Ledger, and one of the leading implementations of Plain Text
+Accounting.")
+    (license license:gpl3)))
+
 (define-public ghc-hmatrix
   (package
     (name "ghc-hmatrix")
