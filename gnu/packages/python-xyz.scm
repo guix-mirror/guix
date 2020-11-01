@@ -22371,8 +22371,6 @@ It adds a simple and readable way to print stuff during development.")
         (base32
          "1ypbyqxlk7n6zibk90js3ybz37xmin3kk0i35g8c51bwqpcfyxg8"))))
     (build-system python-build-system)
-    (inputs
-     `(("tzdata" ,tzdata)))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-pytz" ,python-pytz)
@@ -22381,7 +22379,8 @@ It adds a simple and readable way to print stuff during development.")
        ("python-tzlocal" ,python-tzlocal)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-parameterized" ,python-parameterized)))
+       ("python-parameterized" ,python-parameterized)
+       ("tzdata" ,tzdata-for-tests)))
     (arguments
      `(;; TODO: Of 23320 tests, 6 fail and 53 error.
        #:tests? #f
