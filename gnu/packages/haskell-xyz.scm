@@ -1552,6 +1552,87 @@ constructor which can be parameterised by a string-like type like:
 the resulting type will be insensitive to cases.")
     (license license:bsd-3)))
 
+(define-public ghc-cassava
+  (package
+    (name "ghc-cassava")
+    (version "0.5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/cassava/cassava-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "01h1zrdqb313cjd4rqm1107azzx4czqi018c2djf66a5i7ajl3dk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-only" ,ghc-only)
+       ("ghc-text-short" ,ghc-text-short)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "1ph8rf91z4nf1ryrh9s4gd1kq98jlgk2manwddkpch8k0n9xvfk4")
+       #:configure-flags '("--flags=-bytestring--lt-0_10_4")))
+    (home-page "https://github.com/haskell-hvr/cassava")
+    (synopsis "CSV parsing and encoding library")
+    (description
+     "@code{cassava} is a library for parsing and encoding
+@url{https://tools.ietf.org/html/rfc4180, RFC 4180} compliant @url{https://
+en.wikipedia.org/wiki/Comma-separated_values, comma-separated values (CSV)}
+data, which is a textual line-oriented format commonly used for exchanging
+tabular data.
+
+@code{cassava}'s API includes support for:
+
+@itemize @bullet
+
+@item
+Index-based record-conversion
+@item
+Name-based record-conversion
+@item
+Typeclass directed conversion of fields and records
+@item
+Built-in field-conversion instances for standard types
+@item
+Customizable record-conversion instance derivation via GHC generics
+@item
+Low-level @url{https://hackage.haskell.org/package/bytestring), bytestring}
+builders (see @url{https://hackage.haskell.org/package/cassava-0.5.2.0/docs/
+Data-Csv-Builder.html, Data.Csv.Builder})
+@item
+Incremental decoding and encoding API (see @url{https://hackage.haskell.org/
+package/cassava-0.5.2.0/docs/Data-Csv-Incremental.html, Data.Csv.Incremental})
+@item
+Streaming API for constant-space decoding (see @url{https://hackage.haskell.org/
+package/cassava-0.5.2.0/docs/Data-Csv-Streaming.html, Data.Csv.Streaming})
+@end itemize
+
+Moreover, this library is designed to be easy to use; for instance, here's a
+very simple example of encoding CSV data:
+
+@verbatim
+>>> Data.Csv.encode [(\"John\",27),(\"Jane\",28)]
+\"John,27\r\nJane,28\r\n\"
+@end verbatim
+")
+    (license license:bsd-3)))
+
 (define-public ghc-cborg
   (package
     (name "ghc-cborg")
