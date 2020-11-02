@@ -290,13 +290,13 @@ directly by the user."
   ;; Because we will use the 'store-device' to create the GRUB search command,
   ;; the 'store-device' has slightly different semantics than 'root-device'.
   ;; The 'store-device' can be a file system uuid, a file system label, or #f,
-  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
-  ;; understand that.  The 'root-device', on the other hand, corresponds
+  ;; but it cannot be a device file name such as "/dev/sda3", since GRUB would
+  ;; not understand that.  The 'root-device', on the other hand, corresponds
   ;; exactly to the device field of the <file-system> object representing the
-  ;; OS's root file system, so it might be a device path like "/dev/sda3".
-  ;; The 'store-directory-prefix' field contains #f or the store path inside
-  ;; the 'store-device' as it is seen by GRUB, e.g. it would contain
-  ;; "/storefs" if the store is located in that subvolume of a btrfs
+  ;; OS's root file system, so it might be a device file name like
+  ;; "/dev/sda3".  The 'store-directory-prefix' field contains #f or the store
+  ;; file name inside the 'store-device' as it is seen by GRUB, e.g. it would
+  ;; contain "/storefs" if the store is located in that subvolume of a btrfs
   ;; partition.
   (root-device      boot-parameters-root-device)
   (bootloader-name  boot-parameters-bootloader-name)
