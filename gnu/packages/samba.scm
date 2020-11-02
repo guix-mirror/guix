@@ -45,6 +45,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
@@ -189,7 +190,9 @@ external dependencies.")
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; TODO: also remove the bundled ‘third_party/popt’.
+           ;; XXX: Some bundled libraries (e.g, popt, cmocka) are used from
+           ;; the system, but their bundled sources must be kept as they
+           ;; include the WAF scripts used for detecting them.
            (delete-file-recursively "third_party/pyiso8601")
            #t))))
     (build-system gnu-build-system)
@@ -211,14 +214,12 @@ external dependencies.")
                 (string-append all " $XML_CATALOG_FILES")))
              #t))
          (replace 'configure
-           ;; samba uses a custom configuration script that runs waf.
+           ;; Samba uses a custom configuration script that runs WAF.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
                (invoke "./configure"
                        "--enable-fhs"
-                       ;; XXX: heimdal not packaged.
-                       "--bundled-libraries=com_err"
                        (string-append "--prefix=" out)
                        "--sysconfdir=/etc"
                        "--localstatedir=/var"
@@ -235,13 +236,15 @@ external dependencies.")
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
        ;; So disable tests until there's a workaround.
        #:tests? #f))
-    (inputs                                   ; TODO: Add missing dependencies
+    (inputs
      `(("acl" ,acl)
+       ("cmocka" ,cmocka)
        ("cups" ,cups)
-       ;; ("gamin" ,gamin)
+       ("gamin" ,gamin)
        ("dbus", dbus)
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
+       ("heimdal" ,heimdal)
        ("jansson" ,jansson)
        ("libarchive" ,libarchive)
        ("linux-pam" ,linux-pam)
