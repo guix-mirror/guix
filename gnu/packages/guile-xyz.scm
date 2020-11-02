@@ -1803,8 +1803,8 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
-        (revision "822"))
+  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
+        (revision "839"))
     (package
       (name "g-golf")
       (version (git-version "0.1.0" revision commit))
@@ -1816,7 +1816,7 @@ capabilities.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5"))))
+          (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
