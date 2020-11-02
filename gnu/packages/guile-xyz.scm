@@ -3150,7 +3150,7 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.2.0-alpha-100-g6a565d3")
+    (version "0.2.0-alpha-199-g3e7a475")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3159,7 +3159,7 @@ perform geometrical transforms on JPEG images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0anmprm63a88kii251rl296v1g4iq62r6n4nssx5jbc0hzkknanz"))))
+                "0p0ha6prp7pyadp61clbhc6b55023vxzfwy14j2qygb2mkq7fhic"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3190,6 +3190,7 @@ perform geometrical transforms on JPEG images.")
        ("gtk+:bin" ,gtk+ "bin")
        ("webkitgtk" ,webkitgtk)
        ("gtksourceview" ,gtksourceview)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("vte" ,vte)
        ;; Gstreamer
        ("gstreamer" ,gstreamer)
