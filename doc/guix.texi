@@ -29262,7 +29262,7 @@ disabled by default.
 
 @item @code{ignore-positive-oom-score-adj?} (default: @code{#f})
 A boolean indicating whether the positive adjustments set in
-@file{/proc/*/oom_score_adj}.
+@file{/proc/*/oom_score_adj} should be ignored.
 
 @item @code{show-debug-messages?} (default: @code{#f})
 A boolean indicating whether debug messages should be printed.  The logs
