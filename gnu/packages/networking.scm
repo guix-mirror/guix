@@ -1287,24 +1287,27 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.7")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1nkhglzxj05hwhgzrgan4glv0z67rmasf9djx1dmqicwdnw2z0xy"))))
+        (base32 "1bm8jj2rviis9j9l6nixvhxcfx362y9iphkxssgmiz2kj6yypr37"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-failing-test
-           ;; Test 31/32 fails with errors like "Program reassemble_test is
-           ;; not available".  Skipping it for now.
+           ;; Skip test suite failing with "Program reassemble_test is not
+           ;; available" and alike errors.  Also skip test suite failing with
+           ;; "AssertionError: Program extcap/sdjournal is not available"
+           ;; error.'
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("suite_unittests" all) (string-append "# " all)))
+               (("suite_unittests" all) (string-append "# " all))
+               (("suite_extcaps" all) (string-append "# " all)))
              #t)))
        ;; Build process chokes during `validate-runpath' phase.
        ;;
