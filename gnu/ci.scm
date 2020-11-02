@@ -89,16 +89,7 @@
         (system . ,(derivation-system drv))
         (description . ,(package-synopsis package))
         (long-description . ,(package-description package))
-
-        ;; XXX: Hydra ignores licenses that are not a <license> structure or a
-        ;; list thereof.
-        (license . ,(let loop ((license (package-license package)))
-                      (match license
-                        ((? license?)
-                         (license-name license))
-                        ((lst ...)
-                         (map loop license)))))
-
+        (license . ,(package-license package))
         (home-page . ,(package-home-page package))
         (maintainers . ("bug-guix@gnu.org"))
         (max-silent-time . ,(or (assoc-ref (package-properties package)
