@@ -12272,7 +12272,7 @@ item in the store, may be deleted.
 @item --cache-bypass-threshold=@var{size}
 When used in conjunction with @option{--cache}, store items smaller than
 @var{size} are immediately available, even when they are not yet in
-cache.  @var{size} is a size in bytes, or it can be prefixed by @code{M}
+cache.  @var{size} is a size in bytes, or it can be suffixed by @code{M}
 for megabytes and so on.  The default is @code{10M}.
 
 ``Cache bypass'' allows you to reduce the publication delay for clients
