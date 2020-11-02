@@ -89,7 +89,7 @@
         (system . ,(derivation-system drv))
         (description . ,(package-synopsis package))
         (long-description . ,(package-description package))
-        (license . ,(package-license package))
+        (license . ,(and=> (package-license package) license-name))
         (home-page . ,(package-home-page package))
         (maintainers . ("bug-guix@gnu.org"))
         (max-silent-time . ,(or (assoc-ref (package-properties package)
