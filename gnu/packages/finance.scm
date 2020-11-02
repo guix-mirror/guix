@@ -355,67 +355,67 @@ in ability, and easy to use.")
                     "See src/wcwidth.cc in the distribution.")))))
 
 (define-public emacs-ledger-mode
-  ;; There have been no new releases since 2016.
-  (let ((commit "253a20dc62e137ed0ed8e1dd8614ecba116610ea")
-        (revision "1"))
-    (package
-      (name "emacs-ledger-mode")
-      (version (git-version "3.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ledger/ledger-mode")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "06wrgkqpgvk17vibrk2qikdlqn8y63jg86marp1wgmram92mb3jk"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:modules ((guix build cmake-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%cmake-build-system-modules
-                             (guix build emacs-utils))
-         #:tests? #f ; there are none
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-site-dir
-             (lambda _
-               (substitute* "CMakeLists.txt"
-                 (("DESTINATION share/emacs/site-lisp/ledger-mode")
-                  "DESTINATION share/emacs/site-lisp"))
-               #t))
-           (add-before 'build 'patch-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((ledger (assoc-ref inputs "ledger")))
-                 (make-file-writable "ledger-exec.el")
-                 (emacs-substitute-variables "ledger-exec.el"
-                   ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
-               #t))
-           (add-after 'build 'build-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((target (string-append (assoc-ref outputs "out")
-                                            "/share/info")))
-                 (mkdir-p target)
-                 (invoke "makeinfo" "-o" target
-                         "../source/doc/ledger-mode.texi"))
-               #t))
-           (add-after 'install 'generate-autoload
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                               "/share/emacs/site-lisp")))
-                 (emacs-generate-autoloads ,name site-dir))
-               #t)))))
-      (inputs
-       `(("ledger" ,ledger)))
-      (native-inputs
-       `(("emacs-minimal" ,emacs-minimal)
-         ("texinfo" ,texinfo)))
-      (home-page "https://ledger-cli.org/")
-      (synopsis "Command-line double-entry accounting program")
-      (description
-       "Ledger is a powerful, double-entry accounting system that is
+  (package
+    (name "emacs-ledger-mode")
+    (version "4.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ledger/ledger-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1r5rcyxd6d1rqwamzpvqdbkbdf1zbj75aaciqijrklnm59ps244y"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-site-dir
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION share/emacs/site-lisp/ledger-mode")
+                "DESTINATION share/emacs/site-lisp"))
+             #t))
+         (add-before 'build 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ledger (assoc-ref inputs "ledger")))
+               (make-file-writable "ledger-exec.el")
+               (emacs-substitute-variables "ledger-exec.el"
+                 ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
+             #t))
+         (add-after 'build 'build-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/info")))
+               (mkdir-p target)
+               (invoke "makeinfo" "-o" target
+                       "../source/doc/ledger-mode.texi"))
+             #t))
+         (add-after 'install 'generate-autoload
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((site-dir (string-append (assoc-ref outputs "out")
+                                             "/share/emacs/site-lisp")))
+               (emacs-generate-autoloads ,name site-dir))
+             #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "../source/test"
+               (invoke "make" "test-batch")))))))
+    (inputs
+     `(("ledger" ,ledger)))
+    (native-inputs
+     `(("emacs-minimal" ,emacs-minimal)
+       ("texinfo" ,texinfo)))
+    (home-page "https://ledger-cli.org/")
+    (synopsis "Command-line double-entry accounting program")
+    (description
+     "Ledger is a powerful, double-entry accounting system that is
 accessed from the UNIX command-line.  This may put off some users, since
 there is no flashy UI, but for those who want unparalleled reporting
 access to their data there are few alternatives.
@@ -429,7 +429,7 @@ a graph or html instead.  Ledger is simple in concept, surprisingly rich
 in ability, and easy to use.
 
 This package provides the Emacs mode.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public geierlein
   (package
