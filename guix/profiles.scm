@@ -1301,31 +1301,43 @@ entries.  It's used to query the MIME type of a given file."
   (define shared-mime-info  ; lazy reference
     (module-ref (resolve-interface '(gnu packages gnome)) 'shared-mime-info))
 
-  (mlet %store-monad ((glib
-                       (manifest-lookup-package
-                        manifest "glib")))
+  (mlet %store-monad ((glib (manifest-lookup-package manifest "glib")))
     (define build
       (with-imported-modules  '((guix build utils)
                                 (guix build union))
         #~(begin
-            (use-modules (srfi srfi-26)
-                         (guix build utils)
-                         (guix build union))
+            (use-modules (guix build utils)
+                         (guix build union)
+                         (srfi srfi-26)
+                         (ice-9 match))
+
             (let* ((datadir (string-append #$output "/share"))
                    (destdir (string-append datadir "/mime"))
                    (pkgdirs (filter file-exists?
                                     (map (cut string-append <>
                                               "/share/mime/packages")
                                          (cons #+shared-mime-info
-                                               '#$(manifest-inputs manifest)))))
-                   (update-mime-database (string-append
-                                          #+shared-mime-info
-                                          "/bin/update-mime-database")))
-              (mkdir-p destdir)
-              (union-build (string-append destdir "/packages") pkgdirs
-                           #:log-port (%make-void-port "w"))
-              (setenv "XDG_DATA_HOME" datadir)
-              (exit (zero? (system* update-mime-database destdir)))))))
+                                               '#$(manifest-inputs manifest))))))
+
+              (match pkgdirs
+                ((shared-mime-info)
+                 ;; PKGDIRS contains nothing but 'shared-mime-info', which
+                 ;; already contains its database, so nothing to do.
+                 (mkdir-p datadir)
+                 (symlink #$(file-append shared-mime-info "/share/mime")
+                          destdir))
+                (_
+                 ;; PKGDIRS contains additional packages providing
+                 ;; 'share/mime/packages' (very few packages do so) so rebuild
+                 ;; the database.  TODO: Find a way to avoid reprocessing
+                 ;; 'shared-mime-info', which is the most expensive one.
+                 (mkdir-p destdir)
+                 (union-build (string-append destdir "/packages") pkgdirs
+                              #:log-port (%make-void-port "w"))
+                 (setenv "XDG_DATA_HOME" datadir)
+                 (invoke #+(file-append shared-mime-info
+                                        "/bin/update-mime-database")
+                         destdir)))))))
 
     ;; Don't run the hook when there are no GLib based applications.
     (if glib
