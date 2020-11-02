@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1722,7 +1723,8 @@ productive, customizable lisp based systems.")
     (name "stumpish")
     (inputs
      `(("bash" ,bash)
-       ("rlwrap" ,rlwrap)))
+       ("rlwrap" ,rlwrap)
+       ("xprop" ,xprop)))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -1734,6 +1736,8 @@ productive, customizable lisp based systems.")
          (substitute* "stumpish"
            (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
                                       "/bin/rlwrap"))
+           (("xprop") (string-append (assoc-ref %build-inputs "xprop")
+                                      "/bin/xprop"))
            (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
                                        "/bin/bash")))
          (install-file "stumpish" (string-append %output "/bin")))))
