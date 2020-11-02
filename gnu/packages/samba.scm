@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
@@ -175,14 +177,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.12.7")
+    (version "4.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "1lkgih0vrarf5zy6chspkwarqdylzwr63nxr3qjkpazrs86nlm9h"))
+        (base32 "0pr805jmdl8gkm6g7gd78jrkmfwgybkvn2c949h51gcsbqxj2n14"))
        (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -194,16 +196,19 @@ external dependencies.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'locate-docbook-stylesheets
+         (add-before 'configure 'setup-docbook-stylesheets
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; XXX for some reason XML_CATALOG_FILES is not respected.
-             (substitute* '("buildtools/wafsamba/samba_conftests.py"
-                            "buildtools/wafsamba/wafsamba.py"
-                            "docs-xml/xslt/man.xsl")
-               (("http://docbook.sourceforge.net/release/xsl/current/")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl) "/")))
+             ;; Append Samba's own DTDs to XML_CATALOG_FILES
+             ;; (c.f. docs-xml/build/README).
+             (copy-file "docs-xml/build/catalog.xml.in"
+                        "docs-xml/build/catalog.xml")
+             (substitute* "docs-xml/build/catalog.xml"
+               (("/@abs_top_srcdir@")
+                (string-append (getcwd) "/docs-xml")))
+             ;; Honor XML_CATALOG_FILES.
+             (substitute* "buildtools/wafsamba/wafsamba.py"
+               (("XML_CATALOG_FILES=\"\\$\\{SAMBA_CATALOGS\\}" all)
+                (string-append all " $XML_CATALOG_FILES")))
              #t))
          (replace 'configure
            ;; samba uses a custom configuration script that runs waf.
@@ -234,6 +239,7 @@ external dependencies.")
      `(("acl" ,acl)
        ("cups" ,cups)
        ;; ("gamin" ,gamin)
+       ("dbus", dbus)
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
        ("jansson" ,jansson)
@@ -256,11 +262,11 @@ external dependencies.")
        ("pkg-config" ,pkg-config)
        ("python-iso8601" ,python-iso8601)
        ("rpcsvc-proto" ,rpcsvc-proto)   ; for 'rpcgen'
-
        ;; For generating man pages.
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("libxml2", libxml2)))           ;for XML_CATALOG_FILES
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
