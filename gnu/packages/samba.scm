@@ -221,15 +221,15 @@ external dependencies.")
                        "--bundled-libraries=com_err"
                        (string-append "--prefix=" out)
                        "--sysconfdir=/etc"
+                       "--localstatedir=/var"
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
                        (string-append "--with-privatelibdir=" libdir)))))
-         (add-before 'install 'disable-etc-samba-directory-creation
+         (add-before 'install 'disable-etc,var-samba-directories-setup
            (lambda _
              (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIR\\(\"\\$\\{CONFIGDIR\\}\"\\)")
-                ""))
+               (("bld\\.INSTALL_DIR.*") ""))
              #t)))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
