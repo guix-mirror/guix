@@ -13,6 +13,7 @@ XGETTEXT_OPTIONS =				\
   --keyword=G_ --keyword=N_:1,2			\
   --keyword=message				\
   --keyword=description				\
+  --keyword=synopsis				\
   --keyword=n_
 
 COPYRIGHT_HOLDER = the authors of Guix (msgids)
