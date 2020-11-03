@@ -223,7 +223,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "5.08")
+    (version "5.09")
     (source
      (origin
        (method url-fetch)
@@ -233,7 +233,7 @@ the traditional flat-text whatis databases.")
               (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
                              "man-pages-" version ".tar.xz")))
        (sha256
-        (base32 "1xzp3f6wvw3wplk1a1x09zfv0jp0pdc9wh95czndh3h8z0qwv9yf"))))
+        (base32 "1whbxim4diyan97y9pz9k4ck16rmjalw5i1m0dg6ycv3pxv386nz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
