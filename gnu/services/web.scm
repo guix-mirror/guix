@@ -256,7 +256,14 @@
             mumi-configuration-sender
             mumi-configuration-smtp
 
-            mumi-service-type))
+            mumi-service-type
+
+            gmnisrv-configuration
+            gmnisrv-configuration?
+            gmnisrv-configuration-package
+            gmnisrv-configuration-config-file
+
+            gmnisrv-service-type))
 
 ;;; Commentary:
 ;;;
