@@ -129,6 +129,7 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -7712,10 +7713,11 @@ solution for any project's interface needs:
     (license license:expat)))
 
 (define-public gmnisrv
-  (let ((commit "a22bec51494a50c044416d469cc33e043480e7fd"))
+  (let ((commit "d484ba0ab0020866535a44be5948c9482b8f2b8d")
+        (revision "1"))
     (package
       (name "gmnisrv")
-      (version (git-version "0" "0" commit))
+      (version (git-version "0" revision commit))
       (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
       (source (origin
                 (method git-fetch)
@@ -7724,7 +7726,7 @@ solution for any project's interface needs:
                       (commit commit)))
                 (sha256
                  (base32
-                  "1k1n7cqd37jgbhxyh231bagdxdxqwpr6n5pk3gax2516w6xbzlb9"))
+                  "11phipixsxx1jgm42agp76p5s68l0zj65kgb41vzaymgwcq79ivn"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -7734,19 +7736,14 @@ solution for any project's interface needs:
              (lambda _
                (setenv "CC" "gcc")
                #t))
-           (delete 'check)
-           (add-after 'install 'install-config
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((etc (string-append (assoc-ref outputs "out")
-                                         "/etc")))
-                 (mkdir-p etc)
-                 (copy-file "config.ini" (string-append etc "/gmnisrv.ini"))
-                 #t))))))
+           (delete 'check))))
       (inputs
        `(("openssl" ,openssl)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("scdoc" ,scdoc)))
+      (propagated-inputs
+       `(("mailcap" ,mailcap)))
       (synopsis "Simple Gemini protocol server")
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+
