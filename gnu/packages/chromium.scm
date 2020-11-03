@@ -301,8 +301,8 @@
                         "/svntogit-packages/" revision "/trunk/" name))
     (sha256 (base32 hash))))
 
-(define %chromium-version "86.0.4240.111")
-(define %ungoogled-revision "c34a56db4c121238fface560e21531b6199ce5dd")
+(define %chromium-version "86.0.4240.183")
+(define %ungoogled-revision "b68e17f32e9eff56615a07b44e457835bb9460c6")
 (define %debian-revision "debian/84.0.4147.105-1")
 (define %arch-revision "2cbe439471932d30ff2c8ded6b3dfd51b312bbc9")
 
@@ -332,7 +332,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "18p9a7qffmy8m03nqva7maalgil13lj2mn0s56v3crbs4wk4lalj"))))
+      "0visyhz321ykrmbjndvx31yd8xlmha9gas0xbkavc2i45rpfahjq"))))
 
 (define %guix-patches
   (list (local-file (search-patch "ungoogled-chromium-system-nspr.patch"))
@@ -451,7 +451,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "05y7lwr89awkhvgmwkx3br9j4ap2aypg2wsc0nz8mi7kxc1dnyzj"))
+                "1g39i82js7fm4fqb8i66d6xs0kzqjxzi4vzvvwz5y9rkbikcc4ma"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
