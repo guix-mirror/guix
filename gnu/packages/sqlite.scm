@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -75,7 +75,7 @@
       ;; -DSQLITE_ENABLE_UNLOCK_NOTIFY and -DSQLITE_ENABLE_DBSTAT_VTAB
       ;; to CFLAGS.  GNU Icecat will refuse to use the system SQLite
       ;; unless these options are enabled.
-      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+      (list (string-append "CFLAGS=-O2 -g -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB "
