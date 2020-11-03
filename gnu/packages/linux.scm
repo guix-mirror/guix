@@ -2906,14 +2906,14 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.12")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.cybernoia.de/software/archivemount/"
                            "archivemount-" version ".tar.gz"))
        (sha256
-        (base32 "12fb8fcmd1zwvfgzx4pay47md5cr2kgxcgq82cm6skmq75alfzi4"))))
+        (base32 "1cy5b6qril9c3ry6fv7ir87s8iyy5vxxmbyx90dm86fbra0vjaf5"))))
     (build-system gnu-build-system)
     (inputs `(("fuse" ,fuse)
               ("libarchive" ,libarchive)))
