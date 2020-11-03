@@ -518,8 +518,8 @@ For PDF support, install the @emph{mupdf} package.")
          (add-before 'build 'disable-auto-update
            (lambda _
              (substitute* "src/qvaboutdialog.cpp"
-               (("qvApp->checkUpdates();") "")
-               (("updateText();") ""))
+               (("qvApp->checkUpdates\\(\\);") "")
+               (("updateText\\(\\);") ""))
              #t)))))
     (inputs
      `(("qtbase" ,qtbase)
