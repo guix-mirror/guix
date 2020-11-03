@@ -61,13 +61,13 @@ an LDAP server.")
 (define-public synapse
   (package
     (name "synapse")
-    (version "1.20.1")
+    (version "1.22.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "matrix-synapse" version))
               (sha256
                (base32
-                "1sf36vwvy2f9jy6dldq6gqfmh60384i5j64s7yc131b4dp0n7lcw"))))
+                "1pbxdqpfa7wzdz61p6x58x7841vng1g65qayxgcw73bn1shl50jb"))))
     (build-system python-build-system)
     ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs
@@ -109,6 +109,7 @@ an LDAP server.")
        ("python-txacme" ,python-txacme)
        ("python-pysaml2" ,python-pysaml2)
        ("python-lxml" ,python-lxml)
+       ("python-packaging" ,python-packaging)
        ;; sentry-sdk, jaeger-client, and opentracing could be included, but
        ;; all are monitoring aids and not essential.
        ("python-pyjwt" ,python-pyjwt)))
