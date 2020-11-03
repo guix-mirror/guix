@@ -748,6 +748,44 @@ MIME-encoded email package.")
       (home-page "https://github.com/inflex/ripMIME")
       (license license:bsd-3))))
 
+(define-public mailcap
+  (let* ((version "2.1.49")
+         (tag ;; mailcap tags their releases like this: rMajor-minor-patch
+          (string-append "r" (string-join (string-split version #\.) "-"))))
+    (package
+      (name "mailcap")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://pagure.io/mailcap.git")
+               (commit tag)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ck1fw6gqn51phcfakhfpfq1yziv3gnmgjvswzhj9x0p162n6alj"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'set-dest-dir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (setenv "DESTDIR" out)
+                 (substitute* "Makefile"
+                   (("/usr") ""))       ; This allows the man page to install.
+                 #t))))))
+      (native-inputs
+       `(("python" ,python)))           ; for tests
+      (synopsis "MIME type associations for file types")
+      (description
+       "This package provides MIME type associations for file types.")
+      (home-page "https://pagure.io/mailcap")
+      (license (list license:expat              ; mailcap.5
+                     license:public-domain))))) ; mailcap and mime.types
+
 (define-public bogofilter
   (package
     (name "bogofilter")
