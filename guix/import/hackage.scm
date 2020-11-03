@@ -40,7 +40,8 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
-  #:export (hackage->guix-package
+  #:export (%hackage-url
+            hackage->guix-package
             hackage-recursive-import
             %hackage-updater
 
@@ -92,20 +93,23 @@
 
 (define package-name-prefix "ghc-")
 
+(define %hackage-url
+  (make-parameter "https://hackage.haskell.org"))
+
 (define (hackage-source-url name version)
   "Given a Hackage package NAME and VERSION, return a url to the source
 tarball."
-  (string-append "https://hackage.haskell.org/package/" name
-                 "/" name "-" version ".tar.gz"))
+  (string-append (%hackage-url) "/package/"
+                 name "/" name "-" version ".tar.gz"))
 
 (define* (hackage-cabal-url name #:optional version)
   "Given a Hackage package NAME and VERSION, return a url to the corresponding
 .cabal file on Hackage.  If VERSION is #f or missing, the url for the latest
 version is returned."
   (if version
-      (string-append "https://hackage.haskell.org/package/"
+      (string-append (%hackage-url) "/package/"
                      name "-" version "/" name ".cabal")
-      (string-append "https://hackage.haskell.org/package/"
+      (string-append (%hackage-url) "/package/"
                      name "/" name ".cabal")))
 
 (define (hackage-name->package-name name)

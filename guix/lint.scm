@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module ((guix swh) #:hide (origin?))
   #:autoload   (guix git-download) (git-reference?
                                     git-reference-url git-reference-commit)
+  #:use-module (guix import stackage)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -90,6 +92,7 @@
             check-formatting
             check-archival
             check-profile-collisions
+            check-haskell-stackage
 
             lint-warning
             lint-warning?
@@ -1285,6 +1288,25 @@ Heritage")
               '()
               (apply throw key args))))))))
 
+(define (check-haskell-stackage package)
+  "Check whether PACKAGE is a Haskell package ahead of the current
+Stackage LTS version."
+  (match (with-networking-fail-safe
+          (format #f (G_ "while retrieving upstream info for '~a'")
+                  (package-name package))
+          #f
+          (package-latest-release package (list %stackage-updater)))
+    ((? upstream-source? source)
+     (if (version>? (package-version package)
+                    (upstream-source-version source))
+         (list
+          (make-warning package
+                        (G_ "ahead of Stackage LTS version ~a")
+                        (list (upstream-source-version source))
+                        #:field 'version))
+         '()))
+    (#f '())))
+
 
 ;;;
 ;;; Source code formatting.
@@ -1511,7 +1533,11 @@ or a list thereof")
    (lint-checker
      (name        'archival)
      (description "Ensure source code archival on Software Heritage")
-     (check       check-archival))))
+     (check       check-archival))
+   (lint-checker
+     (name        'haskell-stackage)
+     (description "Ensure Haskell packages use Stackage LTS versions")
+     (check       check-haskell-stackage))))
 
 (define %all-checkers
   (append %local-checkers
