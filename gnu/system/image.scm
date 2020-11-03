@@ -354,6 +354,9 @@ used in the image."
                                        #$output
                                        image-root)))))
         (computed-file "partition.img" image-builder
+                       ;; Allow offloading so that this I/O-intensive process
+                       ;; doesn't run on the build farm's head node.
+                       #:local-build? #f
                        #:options `(#:references-graphs ,inputs))))
 
     (define (partition->config partition)
@@ -488,6 +491,9 @@ used in the image. "
                                  #:volume-id #$root-label
                                  #:volume-uuid #$root-uuid)))))
     (computed-file name builder
+                   ;; Allow offloading so that this I/O-intensive process
+                   ;; doesn't run on the build farm's head node.
+                   #:local-build? #f
                    #:options `(#:references-graphs ,inputs
                                #:substitutable? ,substitutable?))))
 
