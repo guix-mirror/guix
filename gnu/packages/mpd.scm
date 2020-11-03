@@ -408,7 +408,7 @@ other MPD frontends.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("which" ,which)
        ("intltool" ,intltool)))
     (synopsis "MPRIS V2.1 support for MPD")

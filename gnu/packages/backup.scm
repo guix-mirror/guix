@@ -94,7 +94,7 @@
        (base32 "1kg467mxg5a97v1rlv4shk32krgv8ys4nczq4b11av4bp1lgysdc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)         ; for msgfmt
+     `(("gettext" ,gettext-minimal)     ; for msgfmt
        ("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-fasteners" ,python-fasteners)
