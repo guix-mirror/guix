@@ -4049,41 +4049,63 @@ errors.")
     (license license:expat)))
 
 (define-public guile-avahi
-  (package
-    (name "guile-avahi")
-    (version "0.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.sv.gnu.org/guile-avahi.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1m286ggy3qs4fkhk5c01p21ghkslgksjsncaky0z037m9qqn06fn"))
-              (modules '((guix build utils)))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("avahi" ,avahi)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (synopsis "Guile bindings to Avahi")
-    (description
-     "This package provides bindings for Avahi.  It allows programmers to use
-functionalities of the Avahi client library from Guile Scheme programs.  Avahi
-itself is an implementation of multicast DNS (mDNS) and DNS Service
+  (let ((commit "6d43caf64f672a9694bf6c98bbf7a734f17a51e8")
+        (revision "1"))
+    (package
+      (name "guile-avahi")
+      (version (git-version "0.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/guile-avahi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fvrf8x22yvc71180hd3xkhspg9yvadi0pbv8shzlsaxqncwy1m9"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules (((guix build guile-build-system)
+                     #:select (target-guile-effective-version))
+                    ,@%gnu-build-system-modules)
+         #:imported-modules ((guix build guile-build-system)
+                             ,@%gnu-build-system-modules)
+         #:make-flags
+         '("GUILE_AUTO_COMPILE=0")    ;to prevent guild warnings
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-guile-avahi-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "src"
+               (invoke "make" "install"
+                       "-j" (number->string
+                             (parallel-job-count))))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (files (find-files "modules" ".scm")))
+               (substitute* files
+                 (("\"guile-avahi-v-0\"")
+                  (format #f "\"~a/lib/guile/~a/extensions/guile-avahi-v-0\""
+                          out (target-guile-effective-version))))
+               #t))))))
+      (inputs
+       `(("guile" ,guile-3.0)
+         ("avahi" ,avahi)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("gettext" ,gnu-gettext)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (synopsis "Guile bindings to Avahi")
+      (description
+       "This package provides bindings for Avahi.  It allows programmers to
+use functionalities of the Avahi client library from Guile Scheme programs.
+Avahi itself is an implementation of multicast DNS (mDNS) and DNS Service
 Discovery (DNS-SD).")
-    (home-page "https://www.nongnu.org/guile-avahi/")
-    (license license:lgpl3+)))
+      (home-page "https://www.nongnu.org/guile-avahi/")
+      (license license:lgpl3+))))
 
 (define-public guile-mkdir-p
   (package
