@@ -197,7 +197,8 @@ external dependencies.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags '("TEST_OPTIONS=--quick") ;some tests are very long
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setup-docbook-stylesheets
            (lambda* (#:key inputs #:allow-other-keys)
@@ -219,6 +220,7 @@ external dependencies.")
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
                (invoke "./configure"
+                       "--enable-selftest"
                        "--enable-fhs"
                        (string-append "--prefix=" out)
                        "--sysconfdir=/etc"
@@ -232,9 +234,8 @@ external dependencies.")
              (substitute* "dynconfig/wscript"
                (("bld\\.INSTALL_DIR.*") ""))
              #t)))
-       ;; XXX: The test infrastructure attempts to set password with
-       ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
-       ;; So disable tests until there's a workaround.
+       ;; FIXME: The test suite seemingly hangs after failing to provision the
+       ;; test environment.
        #:tests? #f))
     (inputs
      `(("acl" ,acl)
@@ -247,6 +248,7 @@ external dependencies.")
        ("heimdal" ,heimdal)
        ("jansson" ,jansson)
        ("libarchive" ,libarchive)
+       ("libtirpc" ,libtirpc)
        ("linux-pam" ,linux-pam)
        ("lmdb" ,lmdb)
        ("openldap" ,openldap)
