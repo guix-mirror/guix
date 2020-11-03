@@ -2305,7 +2305,7 @@ inspired by the SCSH regular expression system.")
     (description "Haunt is a static site generator written in Guile
 Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
-    (home-page "http://haunt.dthompson.us")
+    (home-page "https://dthompson.us/projects/haunt.html")
     (license license:gpl3+)))
 
 (define-public guile2.2-haunt
