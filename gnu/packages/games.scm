@@ -5083,7 +5083,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.04")
+    (version "2.02.05")
     (source
      (origin
        (method url-fetch)
@@ -5091,7 +5091,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32 "1w1y20vqcikg59gnbxjbhyq2yanwqz1a6wp8vd1qnmil240id4j7"))))
+        (base32 "18fm9ga08mxqmblahmnlzwnl387i8mbkj4n0gffxc91d299019v3"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
