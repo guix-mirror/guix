@@ -123,9 +123,6 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:modules ((guix build glib-or-gtk-build-system)
-                  (guix build utils)
-                  (ice-9 match))
        #:configure-flags (list "--with-modules"
                                "--with-cairo"
                                "--disable-build-details")
@@ -199,12 +196,17 @@
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
              ;; twice.  This also fixes a minor issue, where WMs would not be
-             ;; able to track emacs back to emacs.desktop.
+             ;; able to track emacs back to emacs.desktop.  The version is
+             ;; accessed using using THIS-PACKAGE so it "just works" for
+             ;; inherited Emacs packages of different versions.
              (with-directory-excursion (assoc-ref outputs "out")
-               (copy-file
-                (match (find-files "bin" "^emacs-")
-                  ((executable . _) executable))
-                "bin/emacs")
+               (copy-file (string-append
+                           "bin/emacs-"
+                           ,(let ((this-version (package-version this-package)))
+                              (or (false-if-exception
+                                   (version-major+minor+point this-version))
+                                  (version-major+minor this-version))))
+                          "bin/emacs")
                #t)))
          (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
            ;; The 'reset-gzip-timestamps phase will throw a permission error
