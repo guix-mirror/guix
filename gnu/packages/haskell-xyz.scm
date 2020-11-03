@@ -8588,6 +8588,36 @@ getting a list of all the network interfaces and their respective
 IPv4, IPv6 and MAC addresses.")
     (license license:bsd-3)))
 
+(define-public ghc-network-multicast
+  (package
+    (name "ghc-network-multicast")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/network-multicast/network-multicast-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0whvi0pbwjy6dbwfdf9rv1j3yr3lcmfp3q7a8pwq63g537l4l2l3"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-network-bsd" ,ghc-network-bsd)))
+    (home-page
+     "http://hackage.haskell.org/package/network-multicast")
+    (synopsis "Simple multicast library for Haskell")
+    (description
+     "This package provides the Network.Multicast Haskell module for
+sending UDP datagrams over multicast (class D) addresses.")
+    ;; Note that this is technically under CC0 1.0 and Expat, though it's not
+    ;; totally clear what the breakdown is.  Since CC0 1.0 is effectively
+    ;; "public domain with a minimal fallback license", figuring marking it
+    ;; as effectively Expat is probably correct.
+    (license license:expat)))
+
 (define-public ghc-network-uri
   (package
     (name "ghc-network-uri")
