@@ -6908,11 +6908,44 @@ The @code{alist-delete} call above removes the tuple from the
 (@pxref{SRFI-1 Association Lists,,, guile, GNU Guile Reference
 Manual}).
 
+In some cases, you may find it useful to write functions
+(``procedures'', in Scheme parlance) that return a package based on some
+parameters.  For example, consider the @code{luasocket} library for the
+Lua programming language.  We want to create @code{luasocket} packages
+for major versions of Lua.  One way to do that is to define a procedure
+that takes a Lua package and returns a @code{luasocket} package that
+depends on it:
+
+@lisp
+(define (make-lua-socket name lua)
+  ;; Return a luasocket package built with LUA.
+  (package
+    (name name)
+    (version "3.0")
+    ;; several fields omitted
+    (inputs
+     `(("lua" ,lua)))
+    (synopsis "Socket library for Lua")))
+
+(define-public lua5.1-socket
+  (make-lua-socket "lua5.1-socket" lua-5.1))
+
+(define-public lua5.2-socket
+  (make-lua-socket "lua5.2-socket" lua-5.2))
+@end lisp
+
+Here we have defined packages @code{lua5.1-socket} and
+@code{lua5.2-socket} by calling @code{make-lua-socket} with different
+arguments.  @xref{Procedures,,, guile, GNU Guile Reference Manual}, for
+more info on procedures.  Having top-level public definitions for these
+two packages means that they can be referred to from the command line
+(@pxref{Package Modules}).
+
 @cindex package transformations
 These are pretty simple package variants.  As a convenience, the
 @code{(guix transformations)} module provides a high-level interface
-that directly maps to package transformation options (@pxref{Package
-Transformation Options}):
+that directly maps to the more sophisticated package transformation
+options (@pxref{Package Transformation Options}):
 
 @deffn {Scheme Procedure} options->transformation @var{opts}
 Return a procedure that, when passed an object to build (package,
