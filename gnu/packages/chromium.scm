@@ -615,9 +615,11 @@
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
 
-               (substitute* '("ui/ozone/platform/x11/gl_ozone_glx.cc"
-                              "ui/ozone/common/egl_util.cc"
-                              "ui/gl/init/gl_initializer_linux_x11.cc")
+               (substitute*
+                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                     "ui/ozone/common/egl_util.cc"
+                     "ui/gl/init/gl_initializer_linux_x11.cc"
+                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
                  (("libGL\\.so\\.1")
                   (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL\\.so\\.1")
@@ -712,7 +714,10 @@
                     (libs           '("chrome_100_percent.pak"
                                       "chrome_200_percent.pak"
                                       "resources.pak"
-                                      "v8_context_snapshot.bin"))
+                                      "v8_context_snapshot.bin"
+                                      ;; Chromium ships its own libGL
+                                      ;; implementation called ANGLE.
+                                      "libEGL.so" "libGLESv2.so"))
                     (locales        (string-append lib "/locales"))
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
