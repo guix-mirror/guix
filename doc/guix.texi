@@ -6919,10 +6919,10 @@ Return a procedure that, when passed an object to build (package,
 derivation, etc.), applies the transformations specified by @var{opts} and returns
 the resulting objects.  @var{opts} must be a list of symbol/string pairs such as:
 
-@example
+@lisp
 ((with-branch . "guile-gcrypt=master")
  (without-tests . "libgcrypt"))
-@end example
+@end lisp
 
 Each symbol names a transformation and the corresponding string is an argument
 to that transformation.
