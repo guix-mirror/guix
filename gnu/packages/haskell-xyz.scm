@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
+;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8305,6 +8306,28 @@ definitions and utilities, such as monoid actions, monoid coproducts,
 semi-direct products, \"deletable\" monoids, \"split\" monoids, and
 \"cut\" monoids.")
     (license license:bsd-3)))
+
+(define-public ghc-mountpoints
+  (package
+    (name "ghc-mountpoints")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/mountpoints/mountpoints-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1hnm31pqcffphyc463wf0vbik9fzm5lb2r4wjdc1y4dqzmjdzz37"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/mountpoints")
+    (synopsis "Haskell library for listing mount points")
+    (description "This library provides Haskell bindings for checking
+currently mounted filesystems.")
+    (license license:lgpl2.1+)))
 
 (define-public ghc-mtl-compat
   (package
