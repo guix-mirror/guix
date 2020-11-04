@@ -634,7 +634,7 @@ public keys and can roam across IP addresses.")
 (define-public xl2tpd
   (package
     (name "xl2tpd")
-    (version "1.3.15")
+    (version "1.3.16")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -643,7 +643,7 @@ public keys and can roam across IP addresses.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ppwza8nwm1av1vldw40gin9wrjrs4l9si50jad414js3k8ycaag"))))
+                "0is5ccrvijz0pfm45pfrlbb9y8231yz3c4zqs8mkgakl9rxajy6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
