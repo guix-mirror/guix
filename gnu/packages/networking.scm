@@ -3721,6 +3721,7 @@ thousands of connections is clearly realistic with today's hardware.")
         "--with-privsep-group=nogroup"
         "--localstatedir=/var"
         "--enable-pie"
+        "--disable-static"
         "--without-embedded-libevent"
         (string-append "--with-systemdsystemunitdir="
                        (assoc-ref %outputs "out")
