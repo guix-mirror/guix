@@ -2875,9 +2875,13 @@ shortcut syntax and completion options.")
     (version "4.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://archives.eyrie.org/software/kerberos/"
-                    "pam-krb5-" version ".tar.xz"))
+              (uri
+                (list (string-append
+                        "https://archives.eyrie.org/software/kerberos/"
+                        "pam-krb5-" version ".tar.xz")
+                      (string-append
+                        "https://archives.eyrie.org/software/ARCHIVE/"
+                        "pam-krb5/pam-krb5-" version ".tar.xz")))
               (patches (search-patches "pam-krb5-CVE-2020-10595.patch"))
               (sha256
                (base32
@@ -2911,7 +2915,7 @@ with @code{ChallengeResponseAuthentication} and @code{PrivilegeSeparation}
 enabled, and supports extensive configuration either by PAM options or in
 krb5.conf or both.  PKINIT is supported with recent versions of both MIT
 Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
-    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5")
+    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5/")
     ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
     ;; However, the tarball does not contain a copy of the GPL,  so unless
     ;; we put one in, we cannot distribute it under GPL without violating
