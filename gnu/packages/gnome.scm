@@ -714,7 +714,7 @@ of known objects without needing a central registrar.")
 (define-public zeitgeist
   (package
     (name "zeitgeist")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -726,7 +726,7 @@ of known objects without needing a central registrar.")
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "0ig3d3j1n0ghaxsgfww6g2hhcdwx8cljwwfmp9jk1nrvkxd6rnmv"))))
+        (base32 "0y6fyzxl5np4yskcxibd0p03h619w9ir907nhf40h02y0pk1kgkp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
