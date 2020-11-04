@@ -21190,11 +21190,11 @@ compatible with Emacs' shell modes.")
       (license license:gpl3+))))
 
 (define-public emacs-vdiff
-  (let ((commit "09e15fc932bfd2febe1d4a65780a532394562b07")
-        (revision "1"))
+  ;; There is no proper tag, but the commit below matches the version bump.
+  (let ((commit "007e44be19d068fd6b49874b6e9b8df8b1f552bd"))
     (package
       (name "emacs-vdiff")
-      (version (git-version "0.2.3" revision commit))
+      (version "0.2.4")
       (source
        (origin
          (method git-fetch)
@@ -21203,8 +21203,7 @@ compatible with Emacs' shell modes.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1gvqi5l4zs872nn4pmj603aza09d81qad2rgijzv268lif8z34db"))))
+          (base32 "197xrwph1llrzjgkhlvagiwdgfp68pb45w5afg89ndahpqc2725s"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-hydra" ,emacs-hydra)))
@@ -21215,8 +21214,9 @@ compatible with Emacs' shell modes.")
                           "-f" "ert-run-tests-batch-and-exit")))
       (home-page "https://github.com/justbur/emacs-vdiff/")
       (synopsis "Frontend for diffing based on vimdiff")
-      (description "This package permits comparisons of two or three buffers
-based on diff output.")
+      (description
+       "This package permits comparisons of two or three buffers based on diff
+output.")
       (license license:gpl3+))))
 
 (define-public emacs-vdiff-magit
