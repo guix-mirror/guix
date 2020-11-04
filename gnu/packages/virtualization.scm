@@ -1606,7 +1606,8 @@ Open Container Initiative (OCI) image layout and its tagged images.")
                 "1v7k3ki10i6082r7zswblyirx6zck674y6bw3plssw4p1l2611rd"))))
     (build-system go-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("go-github-com-go-md2man" ,go-github-com-go-md2man)))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("eudev" ,eudev)
@@ -1625,13 +1626,18 @@ Open Container Initiative (OCI) image layout and its tagged images.")
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               ;; TODO: build manpages with 'go-md2man'.
                (invoke "make" "bin/skopeo"))))
+         (add-after 'build 'build-docs
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "make" "docs"))))
          (replace 'install
            (lambda* (#:key import-path outputs #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
                (let ((out (assoc-ref outputs "out")))
-                 (invoke "make" "install-binary" "install-completions"
+                 (install-file "default-policy.json"
+                               (string-append out "/etc/containers"))
+                 (invoke "make" "install-binary" "install-completions" "install-docs"
                          (string-append "PREFIX=" out)))))))))
     (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
