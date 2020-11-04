@@ -578,14 +578,13 @@ to be able to read and render the Doxygen xml output.")
 (define-public python-sphinx-intl
   (package
     (name "python-sphinx-intl")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-intl" version))
        (sha256
-        (base32
-         "0zbf1bh23b3kza8bnjykmv2k21xmmr4gamhi3lnicnr6ypnrphr5"))))
+        (base32 "1d1q0sanjp4nkfvhsxi75zf3xjyyi8nzxvl3v7l0jy9ld70nwnmj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)
