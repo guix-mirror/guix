@@ -698,7 +698,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "0.8.2")
+    (version "0.8.5")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -707,8 +707,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32
-            "1f7aig15q3z832pr2n48j3clafic2yk1vvqlh28vpklfghjqwq27"))))
+           (base32 "0gfdnynmsxbhi97q73smrgmcw1k8zmlr1hgljfn38sk0kimivd6v"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -722,8 +721,7 @@ APFS.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "configure"
-                 (("-/bin/sh") (string-append "-" (which "sh")))
-                 ((" /bin/sh") (string-append " " (which "sh"))))
+                 (("-/bin/sh") (string-append "-" (which "sh"))))
                (invoke "./configure"
                        "--with-config=all"
                        (string-append "--prefix=" out)
@@ -739,6 +737,9 @@ APFS.")
                    (src        (assoc-ref outputs "src"))
                    (util-linux (assoc-ref inputs "util-linux"))
                    (nfs-utils  (assoc-ref inputs "nfs-utils")))
+               (substitute* "contrib/Makefile.in"
+                 ;; This is not configurable nor is its hard-coded /usr prefix.
+                 ((" initramfs") ""))
                (substitute* "module/zfs/zfs_ctldir.c"
                  (("/usr/bin/env\", \"umount")
                   (string-append util-linux "/bin/umount\", \"-n"))
@@ -782,7 +783,6 @@ APFS.")
                        "INSTALL_MOD_STRIP=1")
                (install-file "contrib/bash_completion.d/zfs"
                              (string-append out "/share/bash-completion/completions"))
-               (symlink "../share/pkgconfig/" (string-append out "/lib/pkgconfig"))
                #t))))))
     (native-inputs
      `(("attr" ,attr)
