@@ -1570,8 +1570,10 @@ proxy of 'guix-daemon'...~%")
                       (ice-9 match)
                       (gnu build shepherd)))
            (start
-            (with-imported-modules (source-module-closure
-                                    '((gnu build shepherd)))
+            (with-imported-modules `(((guix config) => ,(make-config.scm))
+                                     ,@(source-module-closure
+                                        '((gnu build shepherd))
+                                        #:select? not-config?))
               #~(lambda args
                   (define proxy
                     ;; HTTP/HTTPS proxy.  The 'http_proxy' variable is set by
