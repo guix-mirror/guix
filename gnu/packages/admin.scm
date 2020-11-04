@@ -3753,7 +3753,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pwr/Solaar")
+                    (url "https://github.com/pwr-Solaar/Solaar")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
