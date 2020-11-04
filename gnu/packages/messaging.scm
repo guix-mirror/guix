@@ -1916,7 +1916,7 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1924,7 +1924,7 @@ building the IRC clients and bots.")
              (url "https://github.com/JFreegman/toxic")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
+        (base32 "0p1cmj1kyp506y5xm04mhlznhf5wcylvgsn6b307ms91vjqs3fg2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
