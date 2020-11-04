@@ -12899,6 +12899,45 @@ ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
 
+Additional options are listed below.
+
+@table @code
+@item --format=@var{format}
+@itemx -f @var{format}
+Produce output in the specified @var{format}, one of:
+
+@table @code
+@item recutils
+The default option. It outputs a set of Session recutils records
+that include each @code{ChildProcess} as a field.
+
+@item normalized
+Normalize the output records into record sets (@pxref{Record Sets,,,
+recutils, GNU recutils manual}).  Normalizing into record sets allows
+joins across record types.  The example below lists the PID of each
+@code{ChildProcess} and the associated PID for @code{Session} that
+spawned the @code{ChildProcess} where the @code{Session} was started
+using @command{guix build}.
+
+@example
+$ guix processes --format=normalized | \
+    recsel \
+    -j Session \
+    -t ChildProcess \
+    -p Session.PID,PID \
+    -e 'Session.ClientCommand ~ "guix build"'
+PID: 4435
+Session_PID: 4278
+
+PID: 4554
+Session_PID: 4278
+
+PID: 4646
+Session_PID: 4278
+@end example
+@end table
+@end table
+
 @node System Configuration
 @chapter System Configuration
 
