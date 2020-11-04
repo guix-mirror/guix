@@ -2683,7 +2683,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dagwieers/dstat")
+             (url "https://github.com/dstat-real/dstat")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
