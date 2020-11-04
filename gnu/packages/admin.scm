@@ -3389,7 +3389,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.9.1")
+    (version "2.2")
     (source
      (origin
       (method git-fetch)
@@ -3398,18 +3398,17 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0iagc3jqpnh6q2fa1gx4wx6r8qg0556j60xr159zqg95djr4dv99"))))
+       (base32 "1nrhv3bypyc48h9smj5cpq63rawm6vqyg3cwkhpz69rgjnf1283m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
-         (list (string-append "--sysconfdir="
-                              out "/etc")
-               (string-append "--with-dbus-sys-dir="
+         (list (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
                "--localstatedir=/var"))))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
