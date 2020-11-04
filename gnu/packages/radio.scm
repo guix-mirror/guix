@@ -1052,7 +1052,7 @@ gain and standing wave ratio.")
 It can be used to decode the ADS-B signals that planes emit to indicate
 their position, altitude, speed, etc.")
     (home-page "https://github.com/flightaware/dump1090")
-    (license license:bsd-3)))
+    (license license:gpl2+)))
 
 (define-public rtl-433
   (package
