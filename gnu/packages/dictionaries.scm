@@ -53,14 +53,14 @@
 (define-public vera
   (package
     (name "vera")
-    (version "1.23")
+    (version "1.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/vera/vera-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1az0v563jja8xb4896jyr8yv7jd9zacqyfkjd7psb73v7clg1mzz"))))
+                "1j5p679vw72bv766acbg6g89k31ynmrzlpg7s3wzy4krlwdf92xc"))))
     (build-system trivial-build-system)
     (arguments
      `(#:builder (begin
@@ -79,6 +79,12 @@
                      (chdir (string-append "vera-" ,version))
                      (mkdir-p info)
                      (mkdir-p html)
+
+                     ;; Change a ‘Malformed UTF-8 character: \xd7\x34 (unexpected
+                     ;; non-continuation byte 0x34, immediately after start byte
+                     ;; 0xd7; need 2 bytes, got 1) in pattern match (m//)’.
+                     (substitute* "vera.h"
+                       (("320.480") "320x480"))
 
                      ;; XXX: Use '--force' because the document is unhappy
                      ;; with Texinfo 5 (yes, documents can be unhappy.)
