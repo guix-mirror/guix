@@ -3749,7 +3749,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "0.9.2")
+    (version "1.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3758,17 +3758,11 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "085mfa13dap3wqik1dqlad0d7kff4rv7j4ljh99c7l8nhczkqgwm"))))
+                "15wzxxr2m5349kkvcs3k5clg1rsmvh6by2066qm4hlgvjwmigggy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-prefix-detection
-           (lambda _
-             (substitute* "setup.py"
-              (("'--prefix' in sys\\.argv")
-               "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
-             #t))
          (add-before 'build 'setenv-PATH
            (lambda _
              (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
