@@ -3394,7 +3394,7 @@ make it a perfect utility on modern distros.")
      (origin
       (method git-fetch)
       (uri (git-reference
-             (url "https://github.com/01org/thermal_daemon")
+             (url "https://github.com/intel/thermal_daemon")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
