@@ -681,7 +681,8 @@ return it; otherwise, return 404.  When TTL is true, use it as the
                   (item (and hash
                              (guard (c ((store-error? c) #f))
                                (hash-part->path store hash)))))
-             (and item (bypass-cache? store item)))
+             (and item (not (string-null? item))
+                  (bypass-cache? store item)))
            ;; Render STORE-ITEM live.  We reach this because STORE-ITEM is
            ;; being baked but clients are already asking for it.  Thus, we're
            ;; duplicating work, but doing so allows us to reduce delays.

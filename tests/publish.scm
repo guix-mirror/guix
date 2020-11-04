@@ -622,6 +622,41 @@ References: ~%"
                           (stat:size (stat item)))
                        (response-code response))))))))))
 
+(test-equal "with cache, cache bypass, unmapped hash part"
+  200
+
+  ;; This test reproduces the bug described in <https://bugs.gnu.org/44442>:
+  ;; the daemon connection would be closed as a side effect of a nar request
+  ;; for a non-existing file name.
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6787" "-C" "gzip"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6787)
+
+       (let* ((base     "http://localhost:6787/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (narinfo  (string-append base part ".narinfo"))
+              (nar      (string-append base "nar/gzip/" (basename item)))
+              (cached   (string-append cache "/gzip/" (basename item)
+                                       ".narinfo")))
+         ;; The first response used to be 500 and to terminate the daemon
+         ;; connection as a side effect.
+         (and (= (response-code
+                  (http-get (string-append base "nar/gzip/"
+                                           (make-string 32 #\e)
+                                           "-does-not-exist")))
+                 404)
+              (= 200 (response-code (http-get nar)))
+              (= 200 (response-code (http-get narinfo)))
+              (begin
+                (wait-for-file cached)
+                (response-code (http-get nar)))))))))
+
 (test-equal "/log/NAME"
   `(200 #t application/x-bzip2)
   (let ((drv (run-with-store %store
