@@ -9710,13 +9710,14 @@ interface and high-performance Typed Access API.")
     (name "java-fasterxml-jackson-dataformat-xml")
     (version "2.9.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/"
-                                  "jackson-dataformat-xml/archive/"
-                                  "jackson-dataformat-xml-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/jackson-dataformat-xml")
+                     (commit (string-append "jackson-dataformat-xml-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "111fkkl90w31jbf30kgj82qdcxlw4sxppki7i198liw0ck1jcavq"))))
+                "0s1wl65mbs57c2hz2v8rnh8i04y5lpyyvnjz562j5j6b83vwwpfx"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"
