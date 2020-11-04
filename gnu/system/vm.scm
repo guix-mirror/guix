@@ -641,7 +641,10 @@ of the GNU system as described by OS."
               (let ((target (file-system-mount-point fs))
                     (source (file-system-device fs)))
                 (or (string=? target "/")
-                    (string-prefix? "/dev/" source))))
+                    (and (string? source)
+                         (string-prefix? "/dev/" source))
+                    (uuid? source)
+                    (file-system-label? source))))
             (operating-system-file-systems os)))
 
   (define root-uuid
