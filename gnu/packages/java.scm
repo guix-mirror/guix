@@ -9668,12 +9668,14 @@ interface and high-performance Typed Access API.")
     (name "java-woodstox-core")
     (version "5.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/woodstox/archive/"
-                                  "woodstox-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/woodstox")
+                     (commit (string-append "woodstox-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i7pdgb8jbw6gdy5kmm0l6rz109n2ns92pqalpyp24vb8vlvdfd4"))))
+                "0bfylk24a967hwxprxqbg6cdvm6n4ldcarp54yg980viwvjiglyp"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "woodstox.jar"
