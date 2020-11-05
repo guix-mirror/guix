@@ -964,6 +964,32 @@ using the Buffers User Interface library.  You can view, copy, and edit secrets
 from within Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-solidity
+  ;; This commit fixes a spacing issue and adds new keywords.
+  (let ((commit "d166a86b83907e0cfd64c191e9dfce4b44a9843e"))
+    (package
+      (name "emacs-solidity")
+      (version "0.1.10")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ethereum/emacs-solidity")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19hgvsrqch2vp49ag6m76bi5qxd20v95z0ib838rib9as15b17wq"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-flycheck" ,emacs-flycheck)))
+      (home-page "https://github.com/ethereum/emacs-solidity")
+      (synopsis "Major mode for writing Solidity code")
+      (description
+       "This is a simple language mode for the Solidity language.  It is
+a constant work in progress as the language itself also progresses.")
+      (license license:gpl3+))))
+
 (define-public emacs-unpackaged-el
   (let ((commit "746801a677ada6cd6fa076e423aa0953779f3fad")
         (revision "3"))
