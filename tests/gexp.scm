@@ -1413,7 +1413,7 @@
 
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
- \"/bin/uname\"\\) [[:xdigit:]]+>$"
+ \"/bin/uname\"\\) [[:graph:]]+tests/gexp\\.scm:[0-9]+:[0-9]+ [[:xdigit:]]+>$"
                 (with-output-to-string
                   (lambda ()
                     (write

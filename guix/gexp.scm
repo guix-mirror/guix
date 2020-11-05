@@ -146,12 +146,17 @@
 
 ;; "G expressions".
 (define-record-type <gexp>
-  (make-gexp references modules extensions proc)
+  (make-gexp references modules extensions proc location)
   gexp?
   (references gexp-references)                    ;list of <gexp-input>
   (modules    gexp-self-modules)                  ;list of module names
   (extensions gexp-self-extensions)               ;list of lowerable things
-  (proc       gexp-proc))                         ;procedure
+  (proc       gexp-proc)                          ;procedure
+  (location   %gexp-location))                    ;location alist
+
+(define (gexp-location gexp)
+  "Return the source code location of GEXP."
+  (and=> (%gexp-location gexp) source-properties->location))
 
 (define (write-gexp gexp port)
   "Write GEXP on PORT."
@@ -164,6 +169,11 @@
    (write (apply (gexp-proc gexp)
                  (gexp-references gexp))
           port))
+
+  (let ((loc (gexp-location gexp)))
+    (when loc
+      (format port " ~a" (location->string loc))))
+
   (format port " ~a>"
           (number->string (object-address gexp) 16)))
 
@@ -1084,7 +1094,8 @@ The other arguments are as for 'derivation'."
         (make-gexp (gexp-references exp)
                    (append modules (gexp-self-modules exp))
                    (gexp-self-extensions exp)
-                   (gexp-proc exp))))
+                   (gexp-proc exp)
+                   (gexp-location exp))))
 
   (mlet* %store-monad ( ;; The following binding forces '%current-system' and
                        ;; '%current-target-system' to be looked up at >>=
@@ -1414,7 +1425,8 @@ execution environment."
                       current-imported-modules
                       current-imported-extensions
                       (lambda #,formals
-                        #,sexp)))))))
+                        #,sexp)
+                      (current-source-location)))))))
 
 
 ;;;
