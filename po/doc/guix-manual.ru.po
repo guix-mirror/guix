@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the guix package.
 # Znavko <znavko@tutanota.com>, 2019.
 # Pavlo Marianov <acid@jack.kiev.ua>, 2019, 2020.
-# Adam <rndd@tuta.io>, 2020.
+# Adam Kandur <rndd@tuta.io>, 2020.
 # Oleg Pykhalov <go.wigust@gmail.com>, 2020.
 #
 msgid ""
@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.2.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-10-20 16:52+0200\n"
-"PO-Revision-Date: 2020-10-28 20:17+0200\n"
+"PO-Revision-Date: 2020-11-04 11:19+0200\n"
 "Last-Translator: Pavlo Marianov <acid@jack.kiev.ua>\n"
 "Language-Team: Russian <gnu@d07.ru>\n"
 "Language: ru\n"
@@ -18275,7 +18275,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:9563
 msgid "This section describes Guix command-line utilities.  Some of them are primarily targeted at developers and users who write new package definitions, while others are more generally useful.  They complement the Scheme programming interface of Guix in a convenient way."
-msgstr ""
+msgstr "В этом разделе описаны утилиты командной строки Guix. Некоторые из них в первую очередь нацелены на разработчиков и пользователей, которые пишут новые определения пакетов, в то время как другие полезны в целом. Они удобно дополняют программный интерфейс Scheme в Guix."
 
 #. type: cindex
 #: doc/guix.texi:9585
@@ -18292,7 +18292,7 @@ msgstr "guix build"
 #. type: Plain text
 #: doc/guix.texi:9592
 msgid "The @command{guix build} command builds packages or derivations and their dependencies, and prints the resulting store paths.  Note that it does not modify the user's profile---this is the job of the @command{guix package} command (@pxref{Invoking guix package}).  Thus, it is mainly useful for distribution developers."
-msgstr ""
+msgstr "Команда @command{guix build} собирает пакеты или производные и их зависимости и выводит полученные пути в хранилище (store paths). Обратите внимание, что она не изменяет профиль пользователя---это задача команды @command{guix package} (@pxref{Invoking guix package}). Таким образом, это в основном полезно для разработчиков дистрибутива."
 
 #. type: example
 #: doc/guix.texi:9597
@@ -18303,7 +18303,7 @@ msgstr "guix build @var{options} @var{package-or-derivation}@dots{}\n"
 #. type: Plain text
 #: doc/guix.texi:9602
 msgid "As an example, the following command builds the latest versions of Emacs and of Guile, displays their build logs, and finally displays the resulting directories:"
-msgstr ""
+msgstr "В качестве примера следующая команда собирает последние версии Emacs и Guile, отображает их логи и, наконец, отображает полученные директории:"
 
 #. type: example
 #: doc/guix.texi:9605
@@ -18314,7 +18314,7 @@ msgstr "guix build emacs guile\n"
 #. type: Plain text
 #: doc/guix.texi:9608
 msgid "Similarly, the following command builds all the available packages:"
-msgstr ""
+msgstr "Аналогичным образом следующая команда собирает все доступные пакеты:"
 
 #. type: example
 #: doc/guix.texi:9612
@@ -18329,28 +18329,28 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:9620
 msgid "@var{package-or-derivation} may be either the name of a package found in the software distribution such as @code{coreutils} or @code{coreutils@@8.20}, or a derivation such as @file{/gnu/store/@dots{}-coreutils-8.19.drv}.  In the former case, a package with the corresponding name (and optionally version) is searched for among the GNU distribution modules (@pxref{Package Modules})."
-msgstr ""
+msgstr "@var{package-or-derivation} может быть именем пакета, найденного в дистрибутиве программного обеспечения, например @code{coreutils} или @code{coreutils@@8.20}, или производным, например @file{/gnu/store/@dots{}-coreutils-8.19.drv}. В первом случае пакет с соответствующим именем (и, возможно, версией) ищется среди модулей дистрибутива GNU (@pxref{Package Modules})."
 
 #. type: Plain text
 #: doc/guix.texi:9625
 msgid "Alternatively, the @option{--expression} option may be used to specify a Scheme expression that evaluates to a package; this is useful when disambiguating among several same-named packages or package variants is needed."
-msgstr ""
+msgstr "В качестве альтернативы можно использовать параметр @option{--expression}, чтобы указать выражение на языке Scheme, оценивающее пакет; это полезно, когда требуется устранение неоднозначности между несколькими пакетами с одинаковыми именами или вариантами пакетов."
 
 #. type: Plain text
 #: doc/guix.texi:9628
 msgid "There may be zero or more @var{options}.  The available options are described in the subsections below."
-msgstr ""
+msgstr "Может быть ноль или больше @var{options}. Доступные параметры описаны в подразделах ниже."
 
 #. type: Plain text
 #: doc/guix.texi:9643
 msgid "A number of options that control the build process are common to @command{guix build} and other commands that can spawn builds, such as @command{guix package} or @command{guix archive}.  These are the following:"
-msgstr ""
+msgstr "Ряд параметров, управляющих процессом сборки, является общим для @command{guix build} и других команд, которые могут порождать сборки, например @command{guix package} или @command{guix archive}. Это следующие:"
 
 #. type: table
 #: doc/guix.texi:9653 doc/guix.texi:11253 doc/guix.texi:11425
 #: doc/guix.texi:11570 doc/guix.texi:11824
 msgid "This allows users to define their own packages and make them visible to the command-line tools."
-msgstr ""
+msgstr "Это позволяет пользователям определять свои собственные пакеты и делать их видимыми для инструментов командной строки."
 
 #. type: item
 #: doc/guix.texi:9654
@@ -18367,12 +18367,12 @@ msgstr "-K"
 #. type: table
 #: doc/guix.texi:9661
 msgid "Keep the build tree of failed builds.  Thus, if a build fails, its build tree is kept under @file{/tmp}, in a directory whose name is shown at the end of the build log.  This is useful when debugging build issues.  @xref{Debugging Build Failures}, for tips and tricks on how to debug build issues."
-msgstr ""
+msgstr "Сохраните дерево сборки неудачных попыток сборки. Таким образом, в случае сбоя сборки ее дерево сборки сохраняется в @file{/tmp}, в каталоге, имя которого отображается в конце журнала сборки. Это полезно при отладке проблем сборки. @xref{Debugging Build Failures}, советы и рекомендации по отладке проблем сборки."
 
 #. type: table
 #: doc/guix.texi:9665
 msgid "This option implies @option{--no-offload}, and it has no effect when connecting to a remote daemon with a @code{guix://} URI (@pxref{The Store, the @env{GUIX_DAEMON_SOCKET} variable})."
-msgstr ""
+msgstr "Этот параметр предполагает @option{--no-offload} и не действует при подключении к удалённому демону с URI @code{guix://} (@pxref{The Store, the @env{GUIX_DAEMON_SOCKET}}."
 
 #. type: item
 #: doc/guix.texi:9666
@@ -18389,17 +18389,17 @@ msgstr "-k"
 #. type: table
 #: doc/guix.texi:9670
 msgid "Keep going when some of the derivations fail to build; return only once all the builds have either completed or failed."
-msgstr ""
+msgstr "Продолжайте, когда некоторые из производных не удается построить; возвращайтесь только после того, как все сборки будут завершены или не пройдены."
 
 #. type: table
 #: doc/guix.texi:9673
 msgid "The default behavior is to stop as soon as one of the specified derivations has failed."
-msgstr ""
+msgstr "Поведение по умолчанию---остановка, как только одна из указанных производных не удалась."
 
 #. type: table
 #: doc/guix.texi:9677
 msgid "Do not build the derivations."
-msgstr ""
+msgstr "Не собирайте производные."
 
 #. type: anchor{#1}
 #: doc/guix.texi:9679
@@ -18415,7 +18415,7 @@ msgstr "--fallback"
 #. type: table
 #: doc/guix.texi:9682
 msgid "When substituting a pre-built binary fails, fall back to building packages locally (@pxref{Substitution Failure})."
-msgstr ""
+msgstr "Если замена предварительно созданного двоичного файла не удалась, процесс возвращается к сборке пакетов локально (@pxref{Substitution Failure})."
 
 #. type: anchor{#1}
 #: doc/guix.texi:9688
@@ -18425,17 +18425,17 @@ msgstr "client-substitute-urls"
 #. type: table
 #: doc/guix.texi:9688
 msgid "Consider @var{urls} the whitespace-separated list of substitute source URLs, overriding the default list of URLs of @command{guix-daemon} (@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs})."
-msgstr ""
+msgstr "Рассмотрим @var{urls} разделенный пробелами список URL-адресов источников замещений, заменяющий список URL-адресов по умолчанию @command{guix-daemon} (@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs}).\""
 
 #. type: table
 #: doc/guix.texi:9692
 msgid "This means that substitutes may be downloaded from @var{urls}, provided they are signed by a key authorized by the system administrator (@pxref{Substitutes})."
-msgstr ""
+msgstr "Это означает, что заменители могут быть загружены с @var{urls}, при условии, что они подписаны ключом, авторизованным системным администратором (@pxref{Substitutes})."
 
 #. type: table
 #: doc/guix.texi:9695
 msgid "When @var{urls} is the empty string, substitutes are effectively disabled."
-msgstr ""
+msgstr "Когда @var{urls} является пустой строкой---замены фактически отключены."
 
 #. type: item
 #: doc/guix.texi:9701
@@ -18446,7 +18446,7 @@ msgstr "--no-grafts"
 #. type: table
 #: doc/guix.texi:9705
 msgid "Do not ``graft'' packages.  In practice, this means that package updates available as grafts are not applied.  @xref{Security Updates}, for more information on grafts."
-msgstr ""
+msgstr "Не ``прививайте'' (graft) пакеты. На практике это означает, что обновления пакетов, доступные в виде прививок, не применяются. Ознакомьтесь с @xref{Security Updates}, чтобы узнать больше о прививках (grafts)."
 
 #. type: item
 #: doc/guix.texi:9706
@@ -18457,12 +18457,12 @@ msgstr "--rounds=@var{n}"
 #. type: table
 #: doc/guix.texi:9709
 msgid "Build each derivation @var{n} times in a row, and raise an error if consecutive build results are not bit-for-bit identical."
-msgstr ""
+msgstr "Соберите каждое производное @var{n} раз подряд и вызовите появление ошибки, если последовательные результаты построения не будут побитно идентичны."
 
 #. type: table
 #: doc/guix.texi:9714
 msgid "This is a useful way to detect non-deterministic builds processes.  Non-deterministic build processes are a problem because they make it practically impossible for users to @emph{verify} whether third-party binaries are genuine.  @xref{Invoking guix challenge}, for more."
-msgstr ""
+msgstr "Это полезный способ обнаружения недетерминированных процессов сборки. Недетерминированные процессы сборки представляют собой проблему, потому что они делают практически невозможным для пользователей @emph{verify} подлинность сторонних двоичных файлов. Обратитесь к @xref{Invoking guix challenge}, чтобы узнать больше."
 
 #. type: table
 #: doc/guix.texi:9730
@@ -18480,13 +18480,13 @@ msgstr "Это ничего не выводит, если демон не был
 #: doc/guix.texi:9740
 #, no-wrap
 msgid "verbosity, of the command-line tools"
-msgstr ""
+msgstr "многословие инструментов командной строки"
 
 #. type: cindex
 #: doc/guix.texi:9741
 #, no-wrap
 msgid "build logs, verbosity"
-msgstr ""
+msgstr "журналы сборки, многословие"
 
 #. type: item
 #: doc/guix.texi:9742
@@ -18503,17 +18503,17 @@ msgstr "--verbosity=@var{level}"
 #. type: table
 #: doc/guix.texi:9747
 msgid "Use the given verbosity @var{level}, an integer.  Choosing 0 means that no output is produced, 1 is for quiet output, and 2 shows all the build log output on standard error."
-msgstr ""
+msgstr "Используйте заданную степень многословия @var{level} (целое число). Выбор 0 означает, что вывод не производится, 1 - для тихого вывода, а 2 показывает весь вывод журнала сборки при стандартной ошибке."
 
 #. type: table
 #: doc/guix.texi:9752
 msgid "Allow the use of up to @var{n} CPU cores for the build.  The special value @code{0} means to use as many CPU cores as available."
-msgstr ""
+msgstr "Разрешить использование до @var{n} ядер ЦП для сборки. Специальное значение @code{0} означает использование максимально доступного количества ядер ЦП."
 
 #. type: table
 #: doc/guix.texi:9758
 msgid "Allow at most @var{n} build jobs in parallel.  @xref{Invoking guix-daemon, @option{--max-jobs}}, for details about this option and the equivalent @command{guix-daemon} option."
-msgstr ""
+msgstr "Разрешить не более @var{n} сборок параллельно. Обратитесь к @xref{Invoking guix-daemon, @option{--max-jobs}} для получения подробной информации об этой опции и аналогичной опции @command{guix-daemon}."
 
 #. type: item
 #: doc/guix.texi:9759
@@ -18524,17 +18524,17 @@ msgstr "--debug=@var{level}"
 #. type: table
 #: doc/guix.texi:9763
 msgid "Produce debugging output coming from the build daemon.  @var{level} must be an integer between 0 and 5; higher means more verbose output.  Setting a level of 4 or more may be helpful when debugging setup issues with the build daemon."
-msgstr ""
+msgstr "Создавать отладочные данные, поступающие от демона сборки. @var{level} должен быть целым числом от 0 до 5; чем выше, тем подробнее вывод. Уровнь 4 или выше может быть полезен при отладке проблемы с установкой демона сборки."
 
 #. type: Plain text
 #: doc/guix.texi:9770
 msgid "Behind the scenes, @command{guix build} is essentially an interface to the @code{package-derivation} procedure of the @code{(guix packages)} module, and to the @code{build-derivations} procedure of the @code{(guix derivations)} module."
-msgstr ""
+msgstr "За кулисами @command{guix build}, по сути, является интерфейсом к процедуре @code{package-diveration} модуля @code{(guix packages)} и к процедуре @code{build-diverations} модуля @code{(guix derivations)} модуль."
 
 #. type: Plain text
 #: doc/guix.texi:9774
 msgid "In addition to options explicitly passed on the command line, @command{guix build} and other @command{guix} commands that support building honor the @env{GUIX_BUILD_OPTIONS} environment variable."
-msgstr ""
+msgstr "Помимо параметров, явно переданных в командной строке, @command{guix build} и другие команды @command{guix}, поддерживающие сборку, учитывают переменную среды @env{GUIX_BUILD_OPTIONS}."
 
 #. type: defvr
 #: doc/guix.texi:9775
@@ -18545,7 +18545,7 @@ msgstr "{Environment Variable} GUIX_BUILD_OPTIONS"
 #. type: defvr
 #: doc/guix.texi:9780
 msgid "Users can define this variable to a list of command line options that will automatically be used by @command{guix build} and other @command{guix} commands that can perform builds, as in the example below:"
-msgstr ""
+msgstr "Пользователи могут определить эту переменную для списка параметров командной строки, которые будут автоматически использоваться @command{guix build} и другими командами @command{guix}, которые могут выполнять сборки, как в примере ниже:"
 
 #. type: example
 #: doc/guix.texi:9783
@@ -18556,7 +18556,7 @@ msgstr "$ export GUIX_BUILD_OPTIONS=\"--no-substitutes -c 2 -L /foo/bar\"\n"
 #. type: defvr
 #: doc/guix.texi:9787
 msgid "These options are parsed independently, and the result is appended to the parsed command-line options."
-msgstr ""
+msgstr "Эти параметры анализируются независимо, а результат добавляется к проанализированным параметрам командной строки."
 
 #. type: cindex
 #: doc/guix.texi:9793
@@ -18567,17 +18567,17 @@ msgstr "варианты пакета"
 #. type: Plain text
 #: doc/guix.texi:9801
 msgid "Another set of command-line options supported by @command{guix build} and also @command{guix package} are @dfn{package transformation options}.  These are options that make it possible to define @dfn{package variants}---for instance, packages built from different source code.  This is a convenient way to create customized packages on the fly without having to type in the definitions of package variants (@pxref{Defining Packages})."
-msgstr ""
+msgstr "Другой набор параметров командной строки, поддерживаемых @command{guix build} и @command{guix package} это @dfn{package transformation options}. Это параметры, которые позволяют определять @dfn{package variants}---например, пакеты, созданные из другого исходного кода. Это удобный способ создавать индивидуальные пакеты на лету без необходимости вводить определения вариантов пакета (@pxref{Defining Packages})."
 
 #. type: Plain text
 #: doc/guix.texi:9805
 msgid "Package transformation options are preserved across upgrades: @command{guix upgrade} attempts to apply transformation options initially used when creating the profile to the upgraded packages."
-msgstr ""
+msgstr "Параметры преобразования пакета сохраняются при обновлении: @command{guix upgrade} пытается применить параметры преобразования, которые изначально использовались при создании профиля, к обновленным пакетам."
 
 #. type: Plain text
 #: doc/guix.texi:9810
 msgid "The available options are listed below.  Most commands support them and also support a @option{--help-transform} option that lists all the available options and a synopsis (these options are not shown in the @option{--help} output for brevity)."
-msgstr ""
+msgstr "Доступные варианты перечислены ниже. Большинство команд поддерживают их, а также поддерживают параметр @option{--help-transform}, в котором перечислены все доступные параметры и их крткое описание (эти параметры не показаны в выводе @option{--help} для краткости)."
 
 #. type: item
 #: doc/guix.texi:9813
@@ -18600,7 +18600,7 @@ msgstr "--with-source=@var{package}@@@var{version}=@var{source}"
 #. type: table
 #: doc/guix.texi:9820
 msgid "Use @var{source} as the source of @var{package}, and @var{version} as its version number.  @var{source} must be a file name or a URL, as for @command{guix download} (@pxref{Invoking guix download})."
-msgstr ""
+msgstr "Используйте @var{source} в качестве источника @var{package} и @var{version} в качестве номера версии. @var{source} должен быть именем файла или URL-адресом, как для @command{guix download} (@pxref{Invoking guix download})."
 
 #. type: table
 #: doc/guix.texi:9826

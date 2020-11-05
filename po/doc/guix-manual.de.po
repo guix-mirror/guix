@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.2.0-pre2\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-10-20 16:52+0200\n"
-"PO-Revision-Date: 2020-10-30 09:42+0100\n"
+"PO-Revision-Date: 2020-11-03 14:34+0100\n"
 "Last-Translator: Florian Pelz <pelzflorian@pelzflorian.de>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -1988,8 +1988,10 @@ msgstr "version-de.texi"
 
 #. type: copying
 #: doc/guix.texi:84
+#, fuzzy
+#| msgid "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Leo Prikler@* Copyright @copyright{} 2019, 2020 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*"
 msgid "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Leo Prikler@* Copyright @copyright{} 2019, 2020 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@*"
-msgstr "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Leo Prikler@* Copyright @copyright{} 2019, 2020 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@*"
+msgstr "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Leo Prikler@* Copyright @copyright{} 2019, 2020 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*"
 
 #. type: copying
 #: doc/guix.texi:91
@@ -3932,26 +3934,24 @@ msgstr "Eine spezielle Art von Dienst."
 #: doc/guix.texi:31742
 #, no-wrap
 msgid "Separate Debug Info"
-msgstr ""
+msgstr "Fehlersuchinformationen abtrennen"
 
 #. type: menuentry
 #: doc/guix.texi:359 doc/guix.texi:31739
-#, fuzzy
-#| msgid "Installing Debugging Files"
 msgid "Installing 'debug' outputs."
-msgstr "Dateien zur Fehlersuche installieren"
+msgstr "‚debug‘-Ausgaben installieren."
 
 #. type: section
 #: doc/guix.texi:359 doc/guix.texi:31739 doc/guix.texi:31800
 #: doc/guix.texi:31801
 #, no-wrap
 msgid "Rebuilding Debug Info"
-msgstr ""
+msgstr "Fehlersuchinformationen erneuern"
 
 #. type: menuentry
 #: doc/guix.texi:359 doc/guix.texi:31739
 msgid "Building missing debug info."
-msgstr ""
+msgstr "Fehlende Informationen zur Fehlersuche erstellen."
 
 #. type: node
 #: doc/guix.texi:364 doc/guix.texi:32012 doc/guix.texi:32014
@@ -4366,8 +4366,10 @@ msgstr "Entpacken Sie den Tarball @emph{nicht} auf einem schon funktionierenden 
 
 #. type: enumerate
 #: doc/guix.texi:674
+#, fuzzy
+#| msgid "The @option{--warning=no-timestamp} option makes sure GNU@tie{}tar does not emit warnings about ``implausibly old time stamps'' (such warnings were triggered by GNU@tie{}tar 1.26 and older; recent versions are fine).  They stem from the fact that all the files in the archive have their modification time set to 1 (which means January 1st, 1970).  This is done on purpose to make sure the archive content is independent of its creation time, thus making it reproducible."
 msgid "The @option{--warning=no-timestamp} option makes sure GNU@tie{}tar does not emit warnings about ``implausibly old time stamps'' (such warnings were triggered by GNU@tie{}tar 1.26 and older; recent versions are fine).  They stem from the fact that all the files in the archive have their modification time set to zero (which means January 1st, 1970).  This is done on purpose to make sure the archive content is independent of its creation time, thus making it reproducible."
-msgstr "Die Befehlszeilenoption @option{--warning=no-timestamp} stellt sicher, dass GNU@tie{}tar nicht vor „unplausibel alten Zeitstempeln“ warnt (solche Warnungen traten bei GNU@tie{}tar 1.26 und älter auf, neue Versionen machen keine Probleme). Sie treten auf, weil alle Dateien im Archiv als Änderungszeitpunkt null eingetragen bekommen haben (das bezeichnet den 1. Januar 1970). Das ist Absicht, damit der Inhalt des Archivs nicht davon abhängt, wann es erstellt wurde, und es somit reproduzierbar wird."
+msgstr "Die Befehlszeilenoption @option{--warning=no-timestamp} stellt sicher, dass GNU@tie{}tar nicht vor „unplausibel alten Zeitstempeln“ warnt (solche Warnungen traten bei GNU@tie{}tar 1.26 und älter auf, neue Versionen machen keine Probleme). Sie treten auf, weil alle Dateien im Archiv als Änderungszeitpunkt 1 eingetragen bekommen haben (das bezeichnet den 1. Januar 1970). Das ist Absicht, damit der Inhalt des Archivs nicht davon abhängt, wann es erstellt wurde, und es somit reproduzierbar wird."
 
 #. type: enumerate
 #: doc/guix.texi:678
@@ -4645,8 +4647,10 @@ msgstr "@uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib},"
 
 #. type: itemize
 #: doc/guix.texi:831
+#, fuzzy
+#| msgid "@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0 or later;"
 msgid "@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August 2017 or later;"
-msgstr "@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, vom August 2017 oder neuer,"
+msgstr "@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, Version 0.3.0 oder neuer,"
 
 #. type: item
 #: doc/guix.texi:831
@@ -9829,6 +9833,8 @@ msgstr "Die Liste der Kanäle aus der angegebenen @var{Datei} auslesen. Die @var
 
 #. type: Plain text
 #: doc/guix.texi:4314
+#, fuzzy
+#| msgid "As for @command{guix pull}, the absence of any options means that the latest commit on the master branch will be used. The command"
 msgid "As for @command{guix pull}, the absence of any options means that the the latest commit on the master branch will be used. The command"
 msgstr "Wie bei @command{guix pull} wird in Ermangelung anderer Optionen der letzte Commit auf dem master-Branch benutzt. Mit dem Befehl"
 
@@ -11433,6 +11439,8 @@ msgstr "Zertifikate"
 
 #. type: Plain text
 #: doc/guix.texi:5391
+#, fuzzy
+#| msgid "Another typical use case for containers is to run security-sensitive applications such as a web browser.  To run Eolie, we must expose and share some files and directories; we include @code{nss-certs} and expose @file{/etc/ssl/certs/} for HTTPS authentication; finally we preserve the @env{DISPLAY} environment variable since containerized graphical applications won't display without it."
 msgid "Another typical use case for containers is to run security-sensitive applications such as a web browser.  To run Eolie, we must expose and share some files and directories; we include @code{nss-certs} and expose @file{/etc/ssl/certs/} for HTTPS authentication; finally we preserve the the @env{DISPLAY} environment variable since containerized graphical applications won't display without it."
 msgstr "Ein weiterer typischer Anwendungsfall für Container ist, gegenüber Sicherheitslücken anfällige Anwendungen auszuführen, z.B.@: Webbrowser. Um Eolie auszuführen, müssen wir den Zugriff auf manche Dateien und Verzeichnisse über @option{--expose} und @option{--share} gewähren. Wir lassen @code{nss-certs} bereitstellen und machen @file{/etc/ssl/certs/} für die HTTPS-Authentifizierung sichtbar. Zu guter Letzt behalten wir die @env{DISPLAY}-Umgebungsvariable bei, weil isolierte grafische Anwendungen ohne sie nicht angezeigt werden können."
 
@@ -12916,9 +12924,10 @@ msgstr "Eingaben umschreiben"
 
 #. type: cindex
 #: doc/guix.texi:6365
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "dependency graph rewriting"
 msgid "dependency tree rewriting"
-msgstr "Abhängigkeitsbaum umschreiben"
+msgstr "Abhängigkeitsgraphen umschreiben"
 
 #. type: Plain text
 #: doc/guix.texi:6369
@@ -13624,8 +13633,10 @@ msgstr "Alternativ wird, wenn die URL mit @code{file://} beginnt, der zugehörig
 
 #. type: Plain text
 #: doc/guix.texi:6749
+#, fuzzy
+#| msgid "Likewise, the @code{(guix git-download)} module defines the @code{git-fetch} origin method, which fetches data from a Git version control repository, and the @code{git-reference} data type to describe the repository and revision to fetch."
 msgid "Likewise, the @code{(guix git-download)} module defines the @code{git-download} origin method, which fetches data from a Git version control repository, and the @code{git-reference} data type to describe the repository and revision to fetch."
-msgstr "Ebenso ist im Modul @code{(guix git-download)} die @code{git-download}-Methode für Paketursprünge definiert. Sie lädt Daten aus einem Repository des Versionskontrollsystems Git. Der Datentyp @code{git-reference} beschreibt dabei das Repository und den daraus zu ladenden Commit."
+msgstr "Ebenso ist im Modul @code{(guix git-download)} die @code{git-fetch}-Methode für Paketursprünge definiert. Sie lädt Daten aus einem Repository des Versionskontrollsystems Git. Der Datentyp @code{git-reference} beschreibt dabei das Repository und den daraus zu ladenden Commit."
 
 #. type: deffn
 #: doc/guix.texi:6750
@@ -18390,10 +18401,9 @@ msgstr "Das hat den Vorteil, dass es viel schneller geht, als alles neu zu erste
 
 #. type: cindex
 #: doc/guix.texi:9897 doc/guix.texi:31803
-#, fuzzy, no-wrap
-#| msgid "debugging files"
+#, no-wrap
 msgid "debugging info, rebuilding"
-msgstr "Dateien zur Fehlersuche"
+msgstr "Dateien zur Fehlersuche, neu erstellen"
 
 #. type: item
 #: doc/guix.texi:9898
@@ -21552,8 +21562,10 @@ msgstr "guix publish\n"
 
 #. type: Plain text
 #: doc/guix.texi:11878
+#, fuzzy
+#| msgid "Once a publishing server has been authorized, the daemon may download substitutes from it.  @xref{Getting Substitutes from Other Servers}."
 msgid "Once a publishing server has been authorized (@pxref{Invoking guix archive}), the daemon may download substitutes from it:"
-msgstr "Sobald ein Server zum Veröffentlichen autorisiert wurde (siehe @ref{Invoking guix archive}), kann der Daemon davon Substitute herunterladen:"
+msgstr "Sobald ein Server zum Veröffentlichen autorisiert wurde, kann der Daemon davon Substitute herunterladen. Siehe @ref{Getting Substitutes from Other Servers}."
 
 #. type: example
 #: doc/guix.texi:11881
@@ -21698,8 +21710,10 @@ msgstr "Wird diese Befehlszeilenoption weggelassen, dann werden Archive und Meta
 
 #. type: table
 #: doc/guix.texi:11986
+#, fuzzy
+#| msgid "Conversely, when @option{--cache} is used, the first request for a store item (@i{via} a @code{.narinfo} URL) triggers a background process to @dfn{bake} the archive---computing its @code{.narinfo} and compressing the archive, if needed.  Once the archive is cached in @var{directory}, subsequent requests succeed and are served directly from the cache, which guarantees that clients get the best possible bandwidth."
 msgid "Conversely, when @option{--cache} is used, the first request for a store item (@i{via} a @code{.narinfo} URL) returns 404 and triggers a background process to @dfn{bake} the archive---computing its @code{.narinfo} and compressing the archive, if needed.  Once the archive is cached in @var{directory}, subsequent requests succeed and are served directly from the cache, which guarantees that clients get the best possible bandwidth."
-msgstr "Im Gegensatz dazu liefert, wenn @option{--cache} benutzt wird, die erste Anfrage nach einem Store-Objekt (über dessen @code{.narinfo}-URL) den Fehlercode 404, und im Hintergrund wird ein Prozess gestartet, der das Archiv in den Zwischenspeicher einlagert (auf Englisch sagen wir „bake the archive“), d.h.@: seine @code{.narinfo} wird berechnet und das Archiv, falls nötig, komprimiert. Sobald das Archiv im @var{Verzeichnis} zwischengespeichert wurde, werden nachfolgende Anfragen erfolgreich sein und direkt aus dem Zwischenspeicher bedient, der garantiert, dass Clients optimale Bandbreite genießen."
+msgstr "Im Gegensatz dazu löst, wenn @option{--cache} benutzt wird, die erste Anfrage nach einem Store-Objekt (über dessen @code{.narinfo}-URL) den Start eines Hintergrundprozesses aus, der das Archiv in den Zwischenspeicher einlagert (auf Englisch sagen wir „bake the archive“), d.h.@: seine @code{.narinfo} wird berechnet und das Archiv, falls nötig, komprimiert. Sobald das Archiv im @var{Verzeichnis} zwischengespeichert wurde, werden nachfolgende Anfragen erfolgreich sein und direkt aus dem Zwischenspeicher bedient, der garantiert, dass Clients optimale Bandbreite genießen."
 
 #. type: table
 #: doc/guix.texi:11990
@@ -23091,6 +23105,8 @@ msgstr "@code{hurd} (Vorgabe: @code{#f})"
 
 #. type: table
 #: doc/guix.texi:12864
+#, fuzzy
+#| msgid "The package object of the hurd to be started by the kernel.  When this field is set, produce a GNU/Hurd operating system.  In that case, @code{kernel} must also be set to the @code{gnumach} package---the microkernel the Hurd runs on."
 msgid "The package object of the hurd to be started by the kernel.  When this field is set, produce a GNU/Hurd operating system.  In that case, @code{kernel} must also be set to the @code{gnumach} package---the microkernel the Hurd runs on."
 msgstr "Das Paketobjekt derjenigen Hurd, die der Kernel starten soll. Wenn dieses Feld gesetzt ist, wird ein GNU/Hurd-Betriebssystem erzeugt. In diesem Fall muss als @code{kernel} das @code{gnumach}-Paket (das ist der Microkernel, auf dem Hurd läuft) ausgewählt sein."
 
@@ -23284,6 +23300,8 @@ msgstr "Swap-Geräte"
 
 #. type: table
 #: doc/guix.texi:12946
+#, fuzzy
+#| msgid "A list of strings identifying devices or files to be used for ``swap space'' (@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).  For example, @code{'(\"/dev/sda3\")} or @code{'(\"/swapfile\")}.  It is possible to specify a swap file in a file system on a mapped device, provided that the necessary device mapping and file system are also specified.  @xref{Mapped Devices} and @ref{File Systems}."
 msgid "A list of strings identifying devices or files to be used for ``swap space'' (@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).  For example, @code{'(\"/dev/sda3\")} or @code{'(\"/swapfile\")}.  It is possible to specify a swap file in a file system on a mapped device, provided that the necessary device mapping and file system are also specified.  @xref{Mapped Devices} and @ref{File Systems}."
 msgstr "Eine Liste von Zeichenketten, die Geräte identifizieren oder als „Swap-Speicher“ genutzte Dateien identifizieren (siehe @ref{Memory Concepts,,, libc, The GNU C Library Reference Manual}). Beispiele wären etwa @code{'(\"/dev/sda3\")} oder @code{'(\"/swapdatei\")}. Es ist möglich, eine Swap-Datei auf dem Dateisystem eines zugeordneten Geräts anzugeben, sofern auch die Gerätezuordnung und das Dateisystem mit angegeben werden. Siehe @ref{Mapped Devices} und @ref{File Systems}."
 
@@ -24655,6 +24673,8 @@ msgstr "XKB, Tastaturbelegungen"
 
 #. type: Plain text
 #: doc/guix.texi:13730
+#, fuzzy
+#| msgid "Keyboard layouts are represented by records created by the @code{keyboard-layout} procedure of @code{(gnu system keyboard)}.  Following the X Keyboard extension (XKB), each layout has four attributes: a name (often a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an optional variant name, an optional keyboard model name, and a possibly empty list of additional options.  In most cases the layout name is all you care about.  Here are a few example:"
 msgid "Keyboard layouts are represented by records created by the @code{keyboard-layout} procedure of @code{(gnu system keyboard)}.  Following the X Keyboard extension (XKB), each layout has four attributes: a name (often a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an optional variant name, an optional keyboard model name, and a possibly empty list of additional options.  In most cases the layout name is all you care about.  Here are a few example:"
 msgstr "Tastaturbelegungen werden durch Verbundsobjekte repräsentiert, die mit der Prozedur @code{keyboard-layout} aus dem Modul @code{(gnu system keyboard)} angelegt werden. Entsprechend der „X-Keyboard“-Erweiterung (XKB) verfügt jede Tastaturbelegung über vier Attribute: einen Namen (oft ist das ein Sprachkürzel wie „fi“ für Finnisch oder „jp“ für Japanisch), ein optionaler Variantenname, ein optionaler Tastaturmodellname und eine möglicherweise leere Liste zusätzlicher Optionen. In den meisten Fällen interessiert Sie nur der Name der Tastaturbelegung. Hier sind ein paar Beispiele:"
 
@@ -26306,6 +26326,8 @@ msgstr "@code{authorized-keys} (Vorgabe: @code{%default-authorized-guix-keys})"
 
 #. type: table
 #: doc/guix.texi:14579
+#, fuzzy
+#| msgid "The list of authorized key files for archive imports, as a list of string-valued gexps (@pxref{Invoking guix archive}).  By default, it contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes})."
 msgid "The list of authorized key files for archive imports, as a list of string-valued gexps (@pxref{Invoking guix archive}).  By default, it contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes})."
 msgstr "Die Liste der Dateien mit autorisierten Schlüsseln, d.h.@: eine Liste von Zeichenketten als G-Ausdrücke (siehe @ref{Invoking guix archive}). Der vorgegebene Inhalt ist der Schlüssel von @code{@value{SUBSTITUTE-SERVER}} (siehe @ref{Substitutes})."
 
@@ -30083,6 +30105,8 @@ msgstr "{Scheme-Variable} avahi-service-type"
 
 #. type: defvr
 #: doc/guix.texi:16358
+#, fuzzy
+#| msgid "This is the service that runs @command{avahi-daemon}, a system-wide mDNS/DNS-SD responder that allows for service discovery and ``zero-configuration'' host name lookups (see @uref{https://avahi.org/}).  Its value must be a @code{zero-configuration} record---see below."
 msgid "This is the service that runs @command{avahi-daemon}, a system-wide mDNS/DNS-SD responder that allows for service discovery and ``zero-configuration'' host name lookups (see @uref{https://avahi.org/}).  Its value must be a @code{zero-configuration} record---see below."
 msgstr "Dieser Dienst führt den @command{avahi-daemon} aus, einen systemweiten mDNS-/DNS-SD-Anbieter, mit dem im lokalen Netzwerk befindliche Geräte erkannt werden können („Service Discovery“) und Rechnernamen selbstständig aufgelöst werden können („Zero-Configuration“) (siehe @uref{https://avahi.org/}). Sein Wert muss ein @code{zero-configuration}-Verbundsobjekt sein — siehe unten."
 
@@ -34228,7 +34252,8 @@ msgstr "Repräsentiert die Konfiguration für den Dienst @code{pulseaudio-servic
 
 #. type: item
 #: doc/guix.texi:18412
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "@var{client-conf} (default: @code{'()})"
 msgid "@var{client-conf} (default: @code{'()})"
 msgstr "@var{client-conf} (Vorgabe: @code{'()})"
 
@@ -34239,7 +34264,8 @@ msgstr "Eine Liste der Einstellungen, die in @file{client.conf} vorgenommen werd
 
 #. type: item
 #: doc/guix.texi:18418
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "@var{daemon-conf} (default: @code{'((flat-volumes . no))})"
 msgid "@var{daemon-conf} (default: @code{'((flat-volumes . no))})"
 msgstr "@var{daemon-conf} (Vorgabe: @code{'((flat-volumes . no))})"
 
@@ -34250,7 +34276,8 @@ msgstr "Eine Liste der Einstellungen, die in @file{daemon.conf} vorgenommen werd
 
 #. type: item
 #: doc/guix.texi:18422
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "@var{script-file} (default: @code{(file-append pulseaudio \"/etc/pulse/default.pa\")})"
 msgid "@var{script-file} (default: @code{(file-append pulseaudio \"/etc/pulse/default.pa\")})"
 msgstr "@var{script-file} (Vorgabe: @code{(file-append pulseaudio \"/etc/pulse/default.pa\")})"
 
@@ -34261,7 +34288,8 @@ msgstr "Welche Skriptdatei als @file{default.pa} verwendet werden soll."
 
 #. type: item
 #: doc/guix.texi:18425
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "@var{system-script-file} (default: @code{(file-append pulseaudio \"/etc/pulse/system.pa\")})"
 msgid "@var{system-script-file} (default: @code{(file-append pulseaudio \"/etc/pulse/system.pa\")})"
 msgstr "@var{system-script-file} (Vorgabe: @code{(file-append pulseaudio \"/etc/pulse/system.pa\")})"
 
@@ -34379,7 +34407,17 @@ msgstr ""
 
 #. type: lisp
 #: doc/guix.texi:18501
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid ""
+#| "(operating-system\n"
+#| "  ...\n"
+#| "  ;; postgresql is required to run `psql' but postgis is not required for\n"
+#| "  ;; proper operation.\n"
+#| "  (packages (cons* postgresql %base-packages))\n"
+#| "  (services\n"
+#| "    (cons*\n"
+#| "      (postgresql-service #:extension-packages (list postgis))\n"
+#| "      %base-services)))\n"
 msgid ""
 "(operating-system\n"
 "  ...\n"
@@ -52727,6 +52765,8 @@ msgstr "Die Konfigurationsregeln, um @file{/etc/security/pam_mount.conf.xml} zu 
 
 #. type: table
 #: doc/guix.texi:28466
+#, fuzzy
+#| msgid "The configuration rules are SXML elements (@pxref{SXML,,, guile, GNU Guile Reference Manual}), and the the default ones don't mount anything for anyone at login:"
 msgid "The configuration rules are SXML elements (@pxref{SXML,,, guile, GNU Guile Reference Manual}), and the the default ones don't mount anything for anyone at login:"
 msgstr "Die Konfigurationsregeln sind SXML-Elemente (siehe @ref{SXML,,, guile, GNU Guile Reference Manual}) und nach Vorgabe wird für niemanden etwas beim Anmelden eingebunden:"
 
@@ -57126,6 +57166,8 @@ msgstr "Um Guix in einer virtuellen Maschine (VM) auszuführen, können Sie das 
 
 #. type: Plain text
 #: doc/guix.texi:30893
+#, fuzzy
+#| msgid "This image boots the Xfce graphical environment and it contains some commonly-used tools.  You can install more software in the image by running @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can also reconfigure the system based on its initial configuration file available as @file{/run/current-system/configuration.scm} (@pxref{Using the Configuration System})."
 msgid "This image boots the Xfce graphical environment and it contains some commonly-used tools.  You can install more software in the image by running @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can also reconfigure the system based on its initial configuration file available as @file{/run/current-system/configuration.scm} (@pxref{Using the Configuration System})."
 msgstr "Dieses Abbild startet eine grafische Xfce-Umgebung und enthält einige oft genutzte Werkzeuge. Sie können im Abbild mehr Software installieren, indem Sie @command{guix package} in einem Terminal ausführen (siehe @ref{Invoking guix package}). Sie können das System im Abbild auch rekonfigurieren, basierend auf seiner anfänglichen Konfigurationsdatei, die als @file{/run/current-system/configuration.scm} verfügbar ist (siehe @ref{Using the Configuration System})."
 
@@ -57229,6 +57271,8 @@ msgstr "-drive if=none,file=/tmp/qemu-image,id=myhd"
 
 #. type: table
 #: doc/guix.texi:30950
+#, fuzzy
+#| msgid "Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing store the the ``myhd'' drive."
 msgid "Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing store the the ``myhd'' drive."
 msgstr "Unser QCOW-Abbild in der Datei @file{/tmp/qemu-image} soll als Inhalt des „myhd“-Laufwerks herhalten."
 
@@ -59115,6 +59159,414 @@ msgstr "Lizenz, GNU-Lizenz für freie Dokumentation"
 #, no-wrap
 msgid "fdl-1.3.texi"
 msgstr "fdl-1.3.texi"
+
+#~ msgid "Or, when your configuration for your local Git repository doesn't match the default one, you can provide the reference for the @code{keyring} branch through the variable @code{GUIX_GIT_KEYRING}.  The following example assumes that you have a Git remote called @samp{myremote} pointing to the official repository:"
+#~ msgstr "Für den Fall, dass die Konfiguration Ihres lokal verfügbaren Git-Repositorys nicht der voreingestellten entspricht, können Sie die Referenz für den @code{keyring}-Branch über die Variable @code{GUIX_GIT_KEYRING} angeben. Im folgenden Beispiel nehmen wir an, Sie haben ein Remote-Repository namens @samp{myremote} eingerichtet, das auf das offizielle Guix-Repository verweist:"
+
+#~ msgid "make authenticate GUIX_GIT_KEYRING=myremote/keyring\n"
+#~ msgstr "make authenticate GUIX_GIT_KEYRING=myremote/keyring\n"
+
+#~ msgid "Getting Substitutes from Other Servers"
+#~ msgstr "Substitute von anderen Servern holen"
+
+#~ msgid "Substitute diversity."
+#~ msgstr "Substitutevielfalt."
+
+#~ msgid "Defining Package Variants"
+#~ msgstr "Paketvarianten definieren"
+
+#~ msgid "Customizing packages."
+#~ msgstr "Pakete anpassen."
+
+#~ msgid "Programming Guix in Guile."
+#~ msgstr "Guix in Guile programmieren."
+
+#~ msgid "substitute servers, adding more"
+#~ msgstr "Substitut-Server, weitere hinzufügen"
+
+#, fuzzy
+#~| msgid ""
+#~| "(define %my-services\n"
+#~| "  ;; My very own list of services.\n"
+#~| "  (modify-services %base-services\n"
+#~| "    (guix-service-type config =>\n"
+#~| "                       (guix-configuration\n"
+#~| "                        (inherit config)\n"
+#~| "                        ;; Fetch substitutes from example.org.\n"
+#~| "                        (substitute-urls\n"
+#~| "                          (list \"https://example.org/guix\"\n"
+#~| "                                \"https://ci.guix.gnu.org\"))))\n"
+#~| "    (mingetty-service-type config =>\n"
+#~| "                           (mingetty-configuration\n"
+#~| "                            (inherit config)\n"
+#~| "                            ;; Automatially log in as \"guest\".\n"
+#~| "                            (auto-login \"guest\")))))\n"
+#~| "\n"
+#~ msgid ""
+#~ "(operating-system\n"
+#~ "  ;; @dots{}\n"
+#~ "  (services\n"
+#~ "    ;; Assume we're starting from '%desktop-services'.  Replace it\n"
+#~ "    ;; with the list of services you're actually using.\n"
+#~ "    (modify-services %desktop-services\n"
+#~ "      (guix-service-type config =>\n"
+#~ "                        (guix-configuration\n"
+#~ "                          (inherit config)\n"
+#~ "                          (substitute-urls\n"
+#~ "                            (append (list \"https://guix.example.org\")\n"
+#~ "                                    %default-substitute-urls))\n"
+#~ "                          (authorized-keys\n"
+#~ "                            (append (list (local-file \"./key.pub\"))\n"
+#~ "                                    %default-authorized-guix-keys)))))))\n"
+#~ msgstr ""
+#~ "(define %my-services\n"
+#~ "  ;; Meine ganz eigene Liste von Diensten.\n"
+#~ "  (modify-services %base-services\n"
+#~ "    (guix-service-type config =>\n"
+#~ "                       (guix-configuration\n"
+#~ "                        (inherit config)\n"
+#~ "                        ;; Substitute von example.org herunterladen.\n"
+#~ "                        (substitute-urls\n"
+#~ "                          (list \"https://example.org/guix\"\n"
+#~ "                                \"https://ci.guix.gnu.org\"))))\n"
+#~ "    (mingetty-service-type config =>\n"
+#~ "                           (mingetty-configuration\n"
+#~ "                            (inherit config)\n"
+#~ "                            ;; Automatisch als \"gast\" anmelden.\n"
+#~ "                            (auto-login \"gast\")))))\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "$ sudo guix system reconfigure /etc/config.scm\n"
+#~ "$ sudo herd restart guix-daemon\n"
+#~ msgstr ""
+#~ "$ sudo guix system reconfigure /etc/config.scm\n"
+#~ "$ sudo herd restart guix-daemon\n"
+
+#, fuzzy
+#~| msgid "If you are instead running Guix on a ``foreign distro'', follow these instructions:"
+#~ msgid "If you're running Guix on a ``foreign distro'', you would instead take the following steps to get substitutes from additional servers:"
+#~ msgstr "Falls Sie Guix aber auf einer „Fremddistribution“ laufen lassen, folgen Sie folgenden Anweisungen:"
+
+#~ msgid "@dots{} --substitute-urls='https://guix.example.org https://@value{SUBSTITUTE-SERVER}'\n"
+#~ msgstr "… --substitute-urls='https://guix.example.org https://@value{SUBSTITUTE-SERVER}'\n"
+
+#~ msgid ""
+#~ "systemctl daemon-reload\n"
+#~ "systemctl restart guix-daemon.service\n"
+#~ msgstr ""
+#~ "systemctl daemon-reload\n"
+#~ "systemctl restart guix-daemon.service\n"
+
+#, fuzzy
+#~| msgid "Alternatively, we can do something along these lines (@pxref{Invoking guix archive}):"
+#~ msgid "Authorize the key of the new server (@pxref{Invoking guix archive}):"
+#~ msgstr "Alternativ können wir so etwas machen (siehe @ref{Invoking guix archive}):"
+
+#, fuzzy
+#~| msgid "# guix archive --authorize < master-public-key.txt\n"
+#~ msgid "guix archive --authorize < key.pub\n"
+#~ msgstr "# guix archive --authorize < öffentlicher-schlüssel-hauptmaschine.txt\n"
+
+#~ msgid "customizing packages"
+#~ msgstr "Pakete anpassen"
+
+#~ msgid "variants, of packages"
+#~ msgstr "Varianten, von Paketen"
+
+#, fuzzy
+#~| msgid "Finding errors in package definitions."
+#~ msgid "inherit, for package definitions"
+#~ msgstr "Fehler in Paketdefinitionen finden."
+
+#~ msgid "For example, given the @code{hello} variable, which contains a definition for the current version of GNU@tie{}Hello, here's how you would define a variant for version 2.2 (released in 2006, it's vintage!):"
+#~ msgstr "Betrachten wir zum Beispiel die Variable @code{hello}, die eine Definition für die aktuelle Version von GNU@tie{}Hello enthält. So können Sie eine Variante für Version 2.2 definieren (welche 2006 veröffentlicht wurde — ein guter Jahrgang!):"
+
+#~ msgid ""
+#~ "(use-modules (gnu packages base))    ;for 'hello'\n"
+#~ "\n"
+#~ msgstr ""
+#~ "(use-modules (gnu packages base))    ;für „hello“\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "(define hello-2.2\n"
+#~ "  (package\n"
+#~ "    (inherit hello)\n"
+#~ "    (version \"2.2\")\n"
+#~ "    (source (origin\n"
+#~ "              (method url-fetch)\n"
+#~ "              (uri (string-append \"mirror://gnu/hello/hello-\" version\n"
+#~ "                                  \".tar.gz\"))\n"
+#~ "              (sha256\n"
+#~ "               (base32\n"
+#~ "                \"0lappv4slgb5spyqbh6yl5r013zv72yqg2pcl30mginf3wdqd8k9\"))))))\n"
+#~ msgstr ""
+#~ "(define hello-2.2\n"
+#~ "  (package\n"
+#~ "    (inherit hello)\n"
+#~ "    (version \"2.2\")\n"
+#~ "    (source (origin\n"
+#~ "              (method url-fetch)\n"
+#~ "              (uri (string-append \"mirror://gnu/hello/hello-\" version\n"
+#~ "                                  \".tar.gz\"))\n"
+#~ "              (sha256\n"
+#~ "               (base32\n"
+#~ "                \"0lappv4slgb5spyqbh6yl5r013zv72yqg2pcl30mginf3wdqd8k9\"))))))\n"
+
+#~ msgid ""
+#~ "(use-modules (gnu packages gdb)    ;for 'gdb'\n"
+#~ "             (srfi srfi-1))        ;for 'alist-delete'\n"
+#~ "\n"
+#~ msgstr ""
+#~ "(use-modules (gnu packages gdb)    ;für 'gdb'\n"
+#~ "             (srfi srfi-1))        ;für 'alist-delete'\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "(define gdb-sans-guile\n"
+#~ "  (package\n"
+#~ "    (inherit gdb)\n"
+#~ "    (inputs (alist-delete \"guile\"\n"
+#~ "                          (package-inputs gdb)))))\n"
+#~ msgstr ""
+#~ "(define gdb-sans-guile\n"
+#~ "  (package\n"
+#~ "    (inherit gdb)\n"
+#~ "    (inputs (alist-delete \"guile\"\n"
+#~ "                          (package-inputs gdb)))))\n"
+
+#, fuzzy
+#~| msgid "@code{mlet*} is to @code{mlet} what @code{let*} is to @code{let} (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual})."
+#~ msgid "The @code{alist-delete} call above removes the tuple from the @code{inputs} field that has @code{\"guile\"} as its first element (@pxref{SRFI-1 Association Lists,,, guile, GNU Guile Reference Manual})."
+#~ msgstr "@code{mlet*} verhält sich gegenüber @code{mlet} wie @code{let*} gegenüber @code{let} (siehe @ref{Local Bindings,,, guile, GNU Guile Reference Manual})."
+
+#, fuzzy
+#~| msgid "For instance, the command:"
+#~ msgid "For instance, a manifest equivalent to this command:"
+#~ msgstr "Zum Beispiel wird mit diesem Befehl:"
+
+#~ msgid ""
+#~ "guix build guix \\\n"
+#~ "  --with-branch=guile-gcrypt=master \\\n"
+#~ "  --with-debug-info=zlib\n"
+#~ msgstr ""
+#~ "guix build guix \\\n"
+#~ "  --with-branch=guile-gcrypt=master \\\n"
+#~ "  --with-debug-info=zlib\n"
+
+#, fuzzy
+#~| msgid "The output looks like this:"
+#~ msgid "... would look like this:"
+#~ msgstr "Die Ausgabe sieht so aus:"
+
+#~ msgid ""
+#~ "(use-modules (guix transformations))\n"
+#~ "\n"
+#~ msgstr ""
+#~ "(use-modules (guix transformations))\n"
+#~ "\n"
+
+#~ msgid "--exclude"
+#~ msgstr "--exclude"
+
+#~ msgid "Only disable the checkers specified in a comma-separated list using the names returned by @option{--list-checkers}."
+#~ msgstr "Nur die Prüfer deaktivieren, die hiernach in einer kommagetrennten Liste aus von @option{--list-checkers} aufgeführten Prüfern vorkommen."
+
+#~ msgid "--no-network"
+#~ msgstr "--no-network"
+
+#~ msgid "Only enable the checkers that do not depend on Internet access."
+#~ msgstr "Nur die Prüfer aktivieren, die keinen Internetzugang benötigen."
+
+#, fuzzy
+#~| msgid "--image-size=@var{size}"
+#~ msgid "--cache-bypass-threshold=@var{size}"
+#~ msgstr "--image-size=@var{Größe}"
+
+#, fuzzy
+#~| msgid "saving space"
+#~ msgid "swap space"
+#~ msgstr "Platz sparen"
+
+#, fuzzy
+#~| msgid ""
+#~| "(uuid \"4dab5feb-d176-45de-b287-9b0a6e4c01cb\")\n"
+#~| "@result{} #<<uuid> type: dce bv: @dots{}>\n"
+#~| "\n"
+#~ msgid "(list (uuid \"4dab5feb-d176-45de-b287-9b0a6e4c01cb\"))"
+#~ msgstr ""
+#~ "(uuid \"4dab5feb-d176-45de-b287-9b0a6e4c01cb\")\n"
+#~ "@result{} #<<uuid> type: dce bv: @dots{}>\n"
+#~ "\n"
+
+#, fuzzy
+#~| msgid "file-system-label"
+#~ msgid "(list (file-system-label \"swap\"))"
+#~ msgstr "file-system-label"
+
+#, fuzzy
+#~| msgid "{Scheme Procedure} program-file @var{name} @var{exp} @"
+#~ msgid "{Scheme Procedure} keyboard-layout @var{name} [@var{variant}] @"
+#~ msgstr "{Scheme-Prozedur} program-file @var{Name} @var{G-Ausdruck} @"
+
+#, fuzzy
+#~| msgid "Here's an example use:"
+#~ msgid "Here are a few examples:"
+#~ msgstr "Hier ist ein Beispiel für seine Verwendung:"
+
+#, fuzzy
+#~| msgid "@code{opus-threshold} (default: @code{100})"
+#~ msgid "@code{cache-bypass-threshold} (default: 10 MiB)"
+#~ msgstr "@code{opus-threshold} (Vorgabe: @code{100})"
+
+#, fuzzy
+#~| msgid "When it is an integer, this is the number of worker threads used for caching; when @code{#f}, the number of processors is used.  @xref{Invoking guix publish, @option{--workers}}, for more information."
+#~ msgid "When @code{cache} is true, this is the maximum size in bytes of a store item for which @command{guix publish} may bypass its cache in case of a cache miss.  @xref{Invoking guix publish, @option{--cache-bypass-threshold}}, for more information."
+#~ msgstr "Ist dies eine ganze Zahl, gibt es die Anzahl der Worker-Threads an, die zum Zwischenspeichern benutzt werden; ist es @code{#f}, werden so viele benutzt, wie es Prozessoren gibt. Siehe @ref{Invoking guix publish, @option{--workers}} für mehr Informationen."
+
+#, fuzzy
+#~| msgid "The following example show instantiates the service with its default configuration:"
+#~ msgid "The following example describes a PostgreSQL service with the default configuration."
+#~ msgstr "Das folgende Beispiel zeigt, wie man den Dienst mit seiner Vorgabekonfiguration instanziiert:"
+
+#, fuzzy
+#~| msgid ""
+#~| "(service pam-mount-service-type\n"
+#~| "         (pam-mount-configuration\n"
+#~| "           (rules pam-mount-rules)))\n"
+#~ msgid ""
+#~ "(service postgresql-service-type\n"
+#~ "         (postgresql-configuration\n"
+#~ "          (postgresql postgresql-10)))\n"
+#~ msgstr ""
+#~ "(service pam-mount-service-type\n"
+#~ "         (pam-mount-configuration\n"
+#~ "           (rules pam-mount-rules)))\n"
+
+#, fuzzy
+#~| msgid "{Data Type} mysql-configuration"
+#~ msgid "{Data Type} postgresql-configuration"
+#~ msgstr "{Datentyp} mysql-configuration"
+
+#, fuzzy
+#~| msgid "Data type representing the configuration for @code{gitolite-service-type}."
+#~ msgid "Data type representing the configuration for the @code{postgresql-service-type}."
+#~ msgstr "Repräsentiert die Konfiguration vom @code{gitolite-service-type}."
+
+#, fuzzy
+#~| msgid "postgis"
+#~ msgid "postgresql"
+#~ msgstr "postgis"
+
+#, fuzzy
+#~| msgid "The @code{ganeti} package to use for this service."
+#~ msgid "PostgreSQL package to use for the service."
+#~ msgstr "Das @code{ganeti}-Paket, was für diesen Dienst benutzt werden soll."
+
+#, fuzzy
+#~| msgid "@code{port} (default: @code{53})"
+#~ msgid "@code{port} (default: @code{5432})"
+#~ msgstr "@code{port} (Vorgabe: @code{53})"
+
+#, fuzzy
+#~| msgid "Port on which the server will listen."
+#~ msgid "Port on which PostgreSQL should listen."
+#~ msgstr "Der Port, auf dem der Server lauschen wird."
+
+#, fuzzy
+#~| msgid "@code{config-file} (default: @code{(tailon-configuration-file)})"
+#~ msgid "@code{config-file} (default: @code{(postgresql-config-file)})"
+#~ msgstr "@code{config-file} (Vorgabe: @code{(tailon-configuration-file)})"
+
+#, fuzzy
+#~| msgid "@code{data-directory} (default: @code{\"/var/lib/mongodb\"})"
+#~ msgid "@code{data-directory} (default: @code{\"/var/lib/postgresql/data\"})"
+#~ msgstr "@code{data-directory} (Vorgabe: @code{\"/var/lib/mongodb\"})"
+
+#, fuzzy
+#~| msgid "Directory in which to store the database and related files."
+#~ msgid "Directory in which to store the data."
+#~ msgstr "Das Verzeichnis, in dem die Datenbank und damit zu tun habende Dateien gespeichert werden."
+
+#, fuzzy
+#~| msgid "@code{settings} (default: @code{'()})"
+#~ msgid "@code{extension-packages} (default: @code{'()})"
+#~ msgstr "@code{settings} (Vorgabe: @code{'()})"
+
+#, fuzzy
+#~| msgid "{Data Type} httpd-config-file"
+#~ msgid "{Data Type} postgresql-config-file"
+#~ msgstr "{Datentyp} httpd-config-file"
+
+#, fuzzy
+#~| msgid "@code{auto-login-session} (default: @code{\"\"})"
+#~ msgid "@code{log-destination} (default: @code{\"syslog\"})"
+#~ msgstr "@code{auto-login-session} (Vorgabe: @code{\"\"})"
+
+#, fuzzy
+#~| msgid "@code{issue} (default: @code{%default-issue})"
+#~ msgid "@code{hba-file} (default: @code{%default-postgres-hba})"
+#~ msgstr "@code{issue} (Vorgabe: @code{%default-issue})"
+
+#, fuzzy
+#~| msgid "@code{config-file} (default: @code{%default-opensmtpd-file})"
+#~ msgid "@code{ident-file} (default: @code{%default-postgres-ident})"
+#~ msgstr "@code{config-file} (Vorgabe: @code{%default-opensmtpd-file})"
+
+#, fuzzy
+#~| msgid "{Scheme Variable} gpm-service-type"
+#~ msgid "{Scheme Variable} gmnisrv-service-type"
+#~ msgstr "{Scheme-Variable} gpm-service-type"
+
+#, fuzzy
+#~| msgid "This is the type of the dnsmasq service, whose value should be an @code{dnsmasq-configuration} object as in this example:"
+#~ msgid "This is the type of the gmnisrv service, whose value should be a @code{gmnisrv-configuration} object, as in this example:"
+#~ msgstr "Dies ist der Diensttyp des dnsmasq-Dienstes, dessen Wert ein @code{dnsmasq-configuration}-Objekt wie in diesem Beispiel sein sollte:"
+
+#, fuzzy
+#~| msgid ""
+#~| "(service exim-service-type\n"
+#~| "         (exim-configuration\n"
+#~| "           (config-file (local-file \"./my-exim.conf\"))))\n"
+#~ msgid ""
+#~ "(service gmnisrv-service-type\n"
+#~ "         (gmnisrv-configuration\n"
+#~ "           (config-file (local-file \"./my-gmnisrv.ini\"))))\n"
+#~ msgstr ""
+#~ "(service exim-service-type\n"
+#~ "         (exim-configuration\n"
+#~ "           (config-file (local-file \"./my-exim.conf\"))))\n"
+
+#, fuzzy
+#~| msgid "{Data Type} gpm-configuration"
+#~ msgid "{Data Type} gmnisrv-configuration"
+#~ msgstr "{Datentyp} gpm-configuration"
+
+#, fuzzy
+#~| msgid "Data type representing the configuration of mcron."
+#~ msgid "Data type representing the configuration of gmnisrv."
+#~ msgstr "Datentyp, der die Konfiguration von mcron repräsentiert."
+
+#, fuzzy
+#~| msgid "@code{package} (default: @var{git})"
+#~ msgid "@code{package} (default: @var{gmnisrv})"
+#~ msgstr "@code{package} (Vorgabe: @var{git})"
+
+#, fuzzy
+#~| msgid "Package object of the Exim server."
+#~ msgid "Package object of the gmnisrv server."
+#~ msgstr "Das Paketobjekt des Exim-Servers."
+
+#, fuzzy
+#~| msgid "@code{config-file} (default: @code{%default-imap4d-config-file})"
+#~ msgid "@code{config-file} (default: @code{%default-gmnisrv-config-file})"
+#~ msgstr "@code{config-file} (Vorgabe: @code{%default-imap4d-config-file})"
+
+#, fuzzy
+#~| msgid "integrity, of the store"
+#~ msgid "Singularity, container service"
+#~ msgstr "Integrität, des Stores"
 
 #~ msgid "This section summarizes all the options available in @code{origin} declarations (@pxref{Defining Packages})."
 #~ msgstr "Dieser Abschnitt fasst alle Optionen zusammen, die in @code{origin}-Deklarationen zur Verfügung stehen (siehe @ref{Defining Packages})."
