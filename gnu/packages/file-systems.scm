@@ -386,6 +386,24 @@ caching system, and lets you assign different roles to each device based on its
 performance and other characteristics.")
       (license license:gpl2+))))
 
+(define-public bcachefs-tools/static
+   (package
+     (inherit bcachefs-tools)
+     (name "bcachefs-tools-static")
+     (arguments
+      (substitute-keyword-arguments (package-arguments bcachefs-tools)
+        ((#:make-flags make-flags)
+         `(append ,make-flags
+                  (list "LDFLAGS=-static")))))
+     (inputs
+      `(("eudev:static" ,eudev "static")
+        ("libscrypt:static" ,libscrypt "static")
+        ("lz4:static" ,lz4 "static")
+        ("util-linux:static" ,util-linux "static") ; lib{blkid,uuid}
+        ("zlib" ,zlib "static")
+        ("zstd:static" ,zstd "static")
+        ,@(package-inputs bcachefs-tools)))))
+
 (define-public exfatprogs
   (package
     (name "exfatprogs")
