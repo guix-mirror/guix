@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,6 +170,13 @@ dictionaries, including personal ones.")
                              version "/aspell6-ca-" version ".tar.bz2"))
          (hash (content-hash sha256))))
       (home-page "https://www.softcatala.org/pub/softcatala/aspell/"))))
+
+(define-public aspell-dict-cs
+  (aspell-dictionary "cs" "Czech"
+                     #:version "20040614-1"
+                     #:sha256
+                     (base32
+                      "0rihj4hsw96pd9casvmpvw3r8040pfa28p1h73x4vyn20zwr3h01")))
 
 (define-public aspell-dict-de
   (aspell-dictionary "de" "German"
