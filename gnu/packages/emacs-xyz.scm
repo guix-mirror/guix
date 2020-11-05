@@ -84,6 +84,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25281,3 +25282,25 @@ the TypeScript implementation.")
       (description "This package provides an Emacs client for the Rocket.chat
 service.")
       (license license:expat))))
+
+(define-public emacs-nord-theme
+  (package
+    (name "emacs-nord-theme")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/arcticicestudio/nord-emacs")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "096f8cik4jz89bvkifwp3gm9iraqrd75ljy2q9js724v7yj88711"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.nordtheme.com/")
+    (synopsis "Low contrast arctic color theme for Emacs")
+    (description
+     "Nord is an arctic, north-bluish color scheme created for a clean and
+uncluttered design pattern to achieve optimal focus and readability for code
+syntax highlighting and UI components.")
+    (license license:expat)))
