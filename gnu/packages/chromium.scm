@@ -335,8 +335,12 @@
       "0visyhz321ykrmbjndvx31yd8xlmha9gas0xbkavc2i45rpfahjq"))))
 
 (define %guix-patches
-  (list (local-file (search-patch "ungoogled-chromium-system-nspr.patch"))
-        (local-file (search-patch "ungoogled-chromium-extension-search-path.patch"))))
+  (list (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-nspr.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-extension-search-path.patch")))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
