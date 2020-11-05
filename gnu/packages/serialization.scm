@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -285,16 +286,15 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public jsoncpp
   (package
     (name "jsoncpp")
-    (version "1.9.2")
+    (version "1.9.4")
     (home-page "https://github.com/open-source-parsers/jsoncpp")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
-              (patches (search-patches "jsoncpp-fix-inverted-case.patch"))
               (sha256
                (base32
-                "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
+                "0qnx5y6c90fphl9mj9d20j2dfgy6s5yr5l0xnzid0vh71zrp6jwv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
