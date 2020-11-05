@@ -1015,7 +1015,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "3.8.1")
+    (version "4.0")
     (source
      (origin
        (method git-fetch)
@@ -1024,7 +1024,7 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xg8rzrxqklx1m9ncxsd96dlkbjcsxfi2mrb859v50f07xysdyd8"))))
+        (base32 "1zacsqaqsiapljhzw31dwc4nld2rp98jm3ivkyznrhzk9n156p42"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
