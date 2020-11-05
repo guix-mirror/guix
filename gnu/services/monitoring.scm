@@ -279,11 +279,11 @@ configuration file."))
 
 (define (zabbix-server-activation config)
   "Return the activation gexp for CONFIG."
-  (with-imported-modules '((guix build utils)
-                           (ice-9 rdelim))
+  (with-imported-modules '((guix build utils))
     #~(begin
         (use-modules (guix build utils)
                      (ice-9 rdelim))
+
         (let ((user (getpw #$(zabbix-server-configuration-user config))))
           (for-each (lambda (file)
                       (let ((directory (dirname file)))
@@ -393,8 +393,7 @@ configuration file."))
 
 (define (zabbix-agent-activation config)
   "Return the activation gexp for CONFIG."
-  (with-imported-modules '((guix build utils)
-                           (ice-9 rdelim))
+  (with-imported-modules '((guix build utils))
     #~(begin
         (use-modules (guix build utils)
                      (ice-9 rdelim))

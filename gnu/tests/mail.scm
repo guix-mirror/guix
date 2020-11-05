@@ -205,8 +205,7 @@ acl_check_data:
      (port-forwardings '((1025 . 25)))))
 
   (define test
-    (with-imported-modules '((gnu build marionette)
-                             (ice-9 ftw))
+    (with-imported-modules '((gnu build marionette))
       #~(begin
           (use-modules (rnrs base)
                        (srfi srfi-64)
