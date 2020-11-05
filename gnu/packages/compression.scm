@@ -798,6 +798,7 @@ decompression of some loosely related file formats used by Microsoft.")
          "0lpaypmk70ag2ks3kf2dl4ac3ba40n5kc1ainkp9wfjawz76mh61"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (outputs (list "out" "static"))
     (native-inputs
      `(;; For tests.
        ("python" ,python)
@@ -806,20 +807,24 @@ decompression of some loosely related file formats used by Microsoft.")
      `(#:test-target "test"
        #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)            ;no configure script
-                  (add-before 'check 'disable-broken-test
-                    (lambda _
-                      ;; XXX: test_install.sh fails when prefix is a subdirectory.
-                      (substitute* "tests/Makefile"
-                        (("^test: (.*) test-install" _ targets)
-                         (string-append "test: " targets)))
-                      #t))
-                  (add-after 'install 'delete-static-library
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (delete-file (string-append out "/lib/liblz4.a"))
-                        #t))))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'disable-broken-test
+           (lambda _
+             (substitute* "tests/Makefile"
+               ;; This fails when $prefix is not a single top-level directory.
+               (("^test: (.*) test-install" _ targets)
+                (string-append "test: " targets)))
+             #t))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (mkdir-p (string-append static "/lib"))
+               (rename-file (string-append out "/lib/liblz4.a")
+                            (string-append static "/lib/liblz4.a"))
+               #t))))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
