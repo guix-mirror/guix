@@ -277,6 +277,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/heads.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
+  %D%/packages/hunspell.scm				\
   %D%/packages/hurd.scm				\
   %D%/packages/hyperledger.scm			\
   %D%/packages/i2p.scm				\
