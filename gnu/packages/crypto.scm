@@ -571,12 +571,19 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
         (base32
          "1d76ys6cp7fi4ng1w3mz2l0p9dbr7ljbk33dcywyimzjz8bahdng"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "static"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'install:static
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (install-file "libscrypt.a" lib)
+               #t))))))
     (home-page "https://lolware.net/libscrypt.html")
     (synopsis "Password hashing library")
     (description "@code{libscrypt} implements @code{scrypt} key derivation
