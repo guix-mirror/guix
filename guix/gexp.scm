@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:export (gexp
             gexp?
@@ -747,22 +748,26 @@ whether this should be considered a \"native\" input or not."
 
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
-(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?))
+(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?)
+                         #:key (validate (const #t)))
   "Recurse on GEXP and the expressions it refers to, summing the items
 returned by SELF-ATTRIBUTE, a procedure that takes a gexp.  Use EQUAL? as the
-second argument to 'delete-duplicates'."
+second argument to 'delete-duplicates'.  Pass VALIDATE every gexp and
+attribute that is traversed."
   (if (gexp? gexp)
       (delete-duplicates
-       (append (self-attribute gexp)
+       (append (let ((attribute (self-attribute gexp)))
+                 (validate gexp attribute)
+                 attribute)
                (append-map (match-lambda
                              (($ <gexp-input> (? gexp? exp))
-                              (gexp-attribute exp self-attribute))
+                              (gexp-attribute exp self-attribute
+                                              #:validate validate))
                              (($ <gexp-input> (lst ...))
                               (append-map (lambda (item)
-                                            (if (gexp? item)
-                                                (gexp-attribute item
-                                                                self-attribute)
-                                                '()))
+                                            (gexp-attribute item self-attribute
+                                                            #:validate
+                                                            validate))
                                           lst))
                              (_
                               '()))
@@ -788,7 +793,25 @@ false, meaning that GEXP is a plain Scheme object, return the empty list."
       (_
        (equal? m1 m2))))
 
-  (gexp-attribute gexp gexp-self-modules module=?))
+  (define (validate-modules gexp modules)
+    ;; Warn if MODULES, imported by GEXP, contains modules that in general
+    ;; should not be imported from the host because they vary from user to
+    ;; user and may thus be a source of non-reproducibility.  This includes
+    ;; (guix config) as well as modules that come with Guile.
+    (match (filter (match-lambda
+                     ((or ('guix 'config) ('ice-9 . _)) #t)
+                     (_ #f))
+                   modules)
+      (() #t)
+      (suspects
+       (warning (gexp-location gexp)
+                (N_ "importing module~{ ~a~} from the host~%"
+                    "importing modules~{ ~a~} from the host~%"
+                    (length suspects))
+                suspects))))
+
+  (gexp-attribute gexp gexp-self-modules module=?
+                  #:validate validate-modules))
 
 (define (gexp-extensions gexp)
   "Return the list of Guile extensions (packages) GEXP relies on.  If (gexp?
