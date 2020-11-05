@@ -2436,17 +2436,19 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "3.9.6")
-      (source
-        (origin
-        (method url-fetch)
-        (uri (pypi-uri "peewee" version))
-        (sha256
-         (base32
-          "1j4sh946k0736m7pd54z0y6i2hjhgg3kdllx1pwq8xkzzcgrx1xw"))))
+    (version "3.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "peewee" version))
+       (sha256
+        (base32
+         "0sc376v6rxga4b7ic9kxw2pmf28rmcx016320pa2nlb5d1rsjs8j"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Fails to import test data
+    (inputs
+     `(("sqlite" ,sqlite)))
     (native-inputs
      `(("python-cython" ,python-cython)))
     (home-page "https://github.com/coleifer/peewee/")
