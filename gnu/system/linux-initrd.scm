@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -260,6 +260,9 @@ FILE-SYSTEMS."
                 file-systems)
           (list fatfsck/static)
           '())
+    ,@(if (find (file-system-type-predicate "bcachefs") file-systems)
+          (list bcachefs-tools/static)
+          '())
     ,@(if (find (file-system-type-predicate "btrfs") file-systems)
           (list btrfs-progs/static)
           '())
@@ -295,6 +298,7 @@ FILE-SYSTEMS."
   ;; Given a file system type, return the list of modules it needs.
   (lookup-procedure ("cifs" => '("md4" "ecb" "cifs"))
                     ("9p" => '("9p" "9pnet_virtio"))
+                    ("bcachefs" => '("bcachefs"))
                     ("btrfs" => '("btrfs"))
                     ("iso9660" => '("isofs"))
                     ("jfs" => '("jfs"))
