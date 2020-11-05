@@ -538,7 +538,7 @@ to the fix block above.
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.12.1")
+    (version "2.13.3")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ to the fix block above.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00alf3q6y313xpx6p7v43vqsphd2x4am4q362lw21bcy9wc4jidw"))))
+        (base32 "0awj5wzq0p677my0065rpqkmfl3jc0bjdrnip8715z8031cd923n"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
