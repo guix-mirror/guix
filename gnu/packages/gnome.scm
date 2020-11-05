@@ -2840,16 +2840,16 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.12")
+    (version "1.5.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/OpenPrinting/system-config-printer/releases/"
-             "download/" version
+             "download/v" version
              "/system-config-printer-" version ".tar.xz"))
        (sha256
-        (base32 "050yrx1vfh9f001qsn06y1jcidxq0ymxr64kxykasr0zzryp25kb"))))
+        (base32 "18dqvi1s971lggkw6pv1sqxixlpg5a8rppzc1pxbanxa91jg18zf"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
