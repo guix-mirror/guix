@@ -254,8 +254,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "ab2f1ec24f5307b0cf1e3c4ad19bf350d9f54d9f")
-        (revision "0"))
+  (let ((commit "742dbbdbb90efb786f05a8576917fcd0e9cbd57e")
+        (revision "1"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -267,7 +267,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "10pafvaxg1lvwnqjv3a4rsi96bghbpcsgh3vhqilndi334k3b0hd"))))
+          (base32 "0kn8y3kqylz6scv47mzfmwrlh21kbb14z5vs65vks8w50i26sxnc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -287,7 +287,8 @@ from a mounted file system.")
          ("python-pytest" ,python-pytest)
          ("valgrind" ,valgrind)))
       (inputs
-       `(("keyutils" ,keyutils)
+       `(("eudev" ,eudev)
+         ("keyutils" ,keyutils)
          ("libaio" ,libaio)
          ("libscrypt" ,libscrypt)
          ("libsodium" ,libsodium)
