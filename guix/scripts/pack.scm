@@ -137,9 +137,11 @@ dependencies are registered."
 
   (define build
     (with-extensions gcrypt-sqlite3&co
-      (with-imported-modules (source-module-closure
-                              '((guix build store-copy)
-                                (guix store database)))
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  '((guix build store-copy)
+                                    (guix store database))
+                                  #:select? not-config?))
         #~(begin
             (use-modules (guix store database)
                          (guix build store-copy)
