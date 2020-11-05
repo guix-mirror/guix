@@ -154,6 +154,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
+  #:use-module (gnu packages re2c)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages samba)
@@ -4926,3 +4927,40 @@ BBC iPlayer output.")
 includes @code{dvdxchap} tool for extracting chapter information from DVD.")
     (license license:gpl2)
     (home-page "https://www.bunkus.org/videotools/ogmtools/")))
+
+(define-public libcaption
+  (package
+    (name "libcaption")
+    (version "0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/szatmary/libcaption")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16mhw8wpl7wdjj4n7rd1c294p1r8r322plj7z91crla5aah726rq"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; Cannot figure out how to run the unit tests
+       #:configure-flags '("-DENABLE_RE2C=ON")))
+    (native-inputs
+     `(("re2c" ,re2c)))
+    (synopsis "CEA608 / CEA708 closed-caption codec")
+    (description "Libcaption creates and parses closed-caption data,
+providing an encoder / decoder for the EIA608 and CEA708 closed-caption
+standards.
+
+608 support is currently limited to encoding and decoding the necessary control
+and preamble codes as well as support for the Basic North American, Special
+North American and Extended Western European character sets.
+
+708 support is limited to encoding the 608 data in NTSC field 1 user data type
+structure.
+
+In addition, utility functions to create h.264 SEI (Supplementary enhancement
+information) NALUs (Network Abstraction Layer Unit) for inclusion into an h.264
+elementary stream are provided.")
+    (home-page "https://github.com/szatmary/libcaption")
+    (license license:expat)))
