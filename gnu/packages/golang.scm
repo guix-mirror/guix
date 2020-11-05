@@ -5979,3 +5979,33 @@ tests.")
 used like a user interface for humans, to read and edit before passing the
 JSON data to the machine.")
     (license license:expat)))
+
+(define-public go-golang-zx2c4-com-wireguard
+  (package
+    (name "go-golang-zx2c4-com-wireguard")
+    (version "0.0.20200320")
+    (source
+     (origin
+       (method git-fetch)
+       ;; NOTE: module URL is a redirect
+       ;; target: git.zx2c4.com/wireguard-go
+       ;; source: golang.zx2c4.com/wireguard
+       (uri (git-reference
+             (url "https://git.zx2c4.com/wireguard-go/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fy4qsss3i3pkq1rpgjds4aipbwlh1dr9hbbf7jn2a1c63kfks0r"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "golang.zx2c4.com/wireguard"))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))
+    (home-page "https://git.zx2c4.com/wireguard")
+    (synopsis "Implementation of WireGuard in Go")
+    (description "This package is a Go Implementation of WireGuard.")
+    (license license:expat)))
