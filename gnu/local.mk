@@ -506,6 +506,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/slang.scm			\
   %D%/packages/smalltalk.scm			\
   %D%/packages/sml.scm				\
+  %D%/packages/solidity.scm			\
   %D%/packages/speech.scm			\
   %D%/packages/sphinx.scm			\
   %D%/packages/spice.scm			\
