@@ -966,10 +966,11 @@ from within Emacs.")
 
 (define-public emacs-solidity
   ;; This commit fixes a spacing issue and adds new keywords.
-  (let ((commit "d166a86b83907e0cfd64c191e9dfce4b44a9843e"))
+  (let ((commit "d166a86b83907e0cfd64c191e9dfce4b44a9843e")
+        (revision "0"))
     (package
       (name "emacs-solidity")
-      (version "0.1.10")
+      (version (git-version "0.1.10" revision commit))
       (source
        (origin
          (method git-fetch)
