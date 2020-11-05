@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 David C. Trudgian <dave@trudgian.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -218,6 +218,58 @@ if DEVICE does not contain an linux-swap file system."
   "Return the label of Linux-swap superblock SBLOCK as a string."
   (null-terminated-latin1->string
    (sub-bytevector sblock (+ 1024 4 4 4 16) 16)))
+
+
+;;;
+;;; Bcachefs file systems.
+;;;
+
+;; <https://evilpiepirate.org/git/bcachefs-tools.git/tree/libbcachefs/bcachefs_format.h>
+
+(define-syntax %bcachefs-endianness
+  ;; Endianness of bcachefs file systems.
+  (identifier-syntax (endianness little)))
+
+(define (bcachefs-superblock? sblock)
+  "Return #t when SBLOCK is an bcachefs superblock."
+  (bytevector=? (sub-bytevector sblock 24 16)
+                #vu8(#xc6 #x85 #x73 #xf6 #x4e #x1a #x45 #xca
+                     #x82 #x65 #xf5 #x7f #x48 #xba #x6d #x81)))
+
+(define (read-bcachefs-superblock device)
+  "Return the raw contents of DEVICE's bcachefs superblock as a bytevector, or #f
+if DEVICE does not contain a bcachefs file system."
+  ;; We completely ignore the back-up superblock & any checksum errors.
+  ;; Superblock field names, with offset & length respectively, in bytes:
+  ;;  0 16 bch_csum
+  ;; 16  8 version
+  ;; 24 16 magic
+  ;; 40 16 uuid ← ‘internal UUID’, you probably don't want this
+  ;; 56 16 user_uuid ← ‘external UUID’, the one by which to mount
+  ;; 72 32 label
+  ;; … there are more & the superblock is extensible, but we don't care yet.
+  (read-superblock device 4096 104 bcachefs-superblock?))
+
+(define (bcachefs-superblock-external-uuid sblock)
+  "Return the external UUID of bcachefs superblock SBLOCK as a 16-byte
+bytevector."
+  (sub-bytevector sblock 56 16))
+
+(define (bcachefs-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 32 characters, or
+#f if SBLOCK has no volume name."
+  (null-terminated-latin1->string (sub-bytevector sblock 72 32)))
+
+(define (check-bcachefs-file-system device)
+  "Return the health of a bcachefs file system on DEVICE."
+  (match (status:exit-val
+          (apply system* "bcachefs" "fsck" "-p" "-v"
+                 ;; Make each multi-device member a separate argument.
+                 (string-split device #\:)))
+    (0 'pass)
+    (1 'errors-corrected)
+    (2 'reboot-required)
+    (_ 'fatal-error)))
 
 
 ;;;
@@ -638,6 +690,8 @@ partition field reader that returned a value."
                                 ext2-superblock-volume-name)
         (partition-field-reader read-linux-swap-superblock
                                 linux-swap-superblock-volume-name)
+        (partition-field-reader read-bcachefs-superblock
+                                bcachefs-superblock-volume-name)
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-volume-name)
         (partition-field-reader read-fat32-superblock
@@ -656,6 +710,8 @@ partition field reader that returned a value."
                                 ext2-superblock-uuid)
         (partition-field-reader read-linux-swap-superblock
                                 linux-swap-superblock-uuid)
+        (partition-field-reader read-bcachefs-superblock
+                                bcachefs-superblock-external-uuid)
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-uuid)
         (partition-field-reader read-fat32-superblock
@@ -763,6 +819,7 @@ containing ':/')."
   (define check-procedure
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
+     ((string-prefix? "bcachefs" type) check-bcachefs-file-system)
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
      ((string-suffix? "fat" type) check-fat-file-system)
      ((string-prefix? "jfs" type) check-jfs-file-system)
