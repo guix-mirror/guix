@@ -681,7 +681,7 @@ by pressing the Exit button.~%~%")))
                       (G_ "Guided partitioning")
                       (G_ "Manual partitioning"))
           #:info-textbox-width 76         ;we need a lot of room for INFO-TEXT
-          #:listbox-height 12
+          #:listbox-height (max 5 (- (screen-rows) 30))
           #:listbox-items (disk-items)
           #:listbox-item->text cdr
           #:sort-listbox-items? #f

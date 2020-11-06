@@ -40,9 +40,8 @@
       file))
 
 (define* (run-config-display-page #:key locale)
-  (let ((width (%configuration-file-width))
-        (height (nearest-exact-integer
-                 (/ (screen-rows) 2))))
+  (let ((width (max 70 (- (screen-columns) 20)))
+        (height (default-listbox-height)))
     (run-file-textbox-page
      #:info-text (format #f (G_ "\
 We're now ready to proceed with the installation! \

@@ -38,6 +38,9 @@
 (define info-textbox-width (make-parameter 70))
 (define options-listbox-height (make-parameter 5))
 
+(define (display-logo?)
+  (> (screen-rows) 35))
+
 (define* (run-menu-page title info-text logo
                         #:key
                         listbox-items
@@ -55,7 +58,10 @@ we want this page to occupy all the screen space available."
          items))
 
   (let* ((logo-textbox
-          (make-textbox -1 -1 (logo-width) (logo-height) 0))
+          (make-textbox -1 -1
+                        (if (display-logo?) (logo-width) 0)
+                        (if (display-logo?) (logo-height) 0)
+                        0))
          (info-textbox
           (make-reflowed-textbox -1 -1
                                  info-text
