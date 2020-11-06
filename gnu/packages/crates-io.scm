@@ -653,6 +653,30 @@ be used with the stdlib.")
     (description "This package provides the glue for the Android JNI.")
     (license license:expat)))
 
+(define-public rust-ansi-parser-0.6
+  (package
+    (name "rust-ansi-parser")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ansi-parser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "152idb8a6gwdxzj6m099h3xgx8vw0sjc6skgw94nm2k3y5swc6kn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heapless" ,rust-heapless-0.5)
+        ("rust-nom" ,rust-nom-4.2))))
+    (home-page "https://gitlab.com/DavidBittner/ansi-parser")
+    (synopsis "Library using nom for parsing ANSI escape codes")
+    (description
+     "This package provides a library using nom for parsing ANSI
+escape codes.")
+    (license license:mpl2.0)))
+
 (define-public rust-antidote-1.0
   (package
     (name "rust-antidote")
