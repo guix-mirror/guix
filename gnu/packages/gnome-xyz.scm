@@ -609,7 +609,7 @@ and a few extra features.")
        ("json-glib" ,json-glib)
        ("jsonrpc-glib" ,jsonrpc-glib)
        ("libgee" ,libgee)
-       ("vala" ,vala-0.48)))
+       ("vala" ,vala-0.50)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/benwaffle/vala-language-server")
