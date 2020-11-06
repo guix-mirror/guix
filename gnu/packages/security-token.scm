@@ -139,7 +139,13 @@ readers and is needed to communicate with such devices through the
              (substitute* "scripts/build-aux/genver.sh"
                (("/bin/sh") (which "sh"))
                (("^(GITDESC=).*" _ match) (string-append match ,version "\n")))
-             (invoke "sh" "./bootstrap.sh"))))))
+             (invoke "sh" "./bootstrap.sh")))
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "scripts/mac/create-vers.sh"
+               (("NOW=.*")
+                "NOW=1970-01-01\n"))
+             #t)))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")
