@@ -137,7 +137,7 @@ This package contains GUI widgets for baloo.")
      (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
-  (let ((version "20.08.2"))
+  (let ((version "20.08.3"))
     (package
       (name "kdenlive")
       (version version)
@@ -149,7 +149,7 @@ This package contains GUI widgets for baloo.")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
-          (base32 "1zcckv4wj12pvxjg85c8l67vi3amz79yv8mf7m4fbxnam3yxhy90"))))
+          (base32 "0x0qfwf6wfnybjyjvmllpf87sm27d1n2akslhp2k8ins838qy55i"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
