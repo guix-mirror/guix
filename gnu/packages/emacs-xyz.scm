@@ -25310,6 +25310,27 @@ the TypeScript implementation.")
 service.")
       (license license:expat))))
 
+(define-public emacs-monokai-theme
+  (package
+    (name "emacs-monokai-theme")
+    (version "3.5.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oneKelvinSmith/monokai-emacs")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dy8c3349j7fmp8052hbgvk0b7ldlv5jqpg0paq1i0hlypivd30i"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/oneKelvinSmith/monokai-emacs")
+    (synopsis "High contrast color theme for Emacs")
+    (description
+     "Monokai theme is a port of the popular TextMate Monokai theme for
+Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-nord-theme
   (package
     (name "emacs-nord-theme")
