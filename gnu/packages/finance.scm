@@ -108,7 +108,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.19.1")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -116,11 +116,13 @@
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))
-              (patches (search-patches "bitcoin-core-python-compat.patch"))))
+                "0y5rad68b398arh0abr2wgiwybdw0i5a4dxz9s3fk9fgdbyn5gab"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
        ("python" ,python)               ; for the tests
        ("util-linux" ,util-linux)       ; provides the hexdump command for tests
        ("qttools" ,qttools)))
@@ -130,7 +132,6 @@
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
-       ("protobuf" ,protobuf)
        ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
@@ -153,6 +154,13 @@
            (lambda _
              ;; Make Qt deterministic.
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-before 'build 'set-no-git-flag
+           (lambda _
+             ;; Make it clear we are not building from within a git repository
+             ;; (and thus no information regarding this build is available
+             ;; from git).
+             (setenv "BITCOIN_GENBUILD_NO_GIT" "1")
              #t))
          (add-before 'check 'set-home
            (lambda _

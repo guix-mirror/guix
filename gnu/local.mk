@@ -846,7 +846,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/binutils-mingw-w64-timestamp.patch	\
   %D%/packages/patches/binutils-mingw-w64-deterministic.patch	\
-  %D%/packages/patches/bitcoin-core-python-compat.patch		\
   %D%/packages/patches/blender-2.79-gcc8.patch			\
   %D%/packages/patches/blender-2.79-gcc9.patch			\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
