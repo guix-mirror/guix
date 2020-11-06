@@ -435,6 +435,7 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
                      (gettext (condition-message obj) %gettext-domain)))
            ((formatted-message? obj)
             (warning (G_ "failed to load '~a': ~a~%")
+                     file
                      (apply format #f
                             (gettext (formatted-message-string obj)
                                      %gettext-domain)
