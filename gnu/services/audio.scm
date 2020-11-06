@@ -138,12 +138,12 @@ audio_output {
 (define (mpd-shepherd-service config)
   (shepherd-service
    (documentation "Run the MPD (Music Player Daemon)")
+   (requirement '(user-processes))
    (provision '(mpd))
    (start #~(make-forkexec-constructor
              (list #$(file-append mpd "/bin/mpd")
                    "--no-daemon"
                    #$(mpd-config->file config))
-             #:pid-file #$(mpd-file-name config "pid")
              #:environment-variables
              ;; Required to detect PulseAudio when run under a user account.
              (list (string-append
@@ -161,7 +161,7 @@ audio_output {
         (define %user
           (getpw #$(mpd-configuration-user config)))
 
-        (let ((directory #$(mpd-file-name config "")))
+        (let ((directory #$(mpd-file-name config ".mpd")))
           (mkdir-p directory)
           (chown directory (passwd:uid %user) (passwd:gid %user))))))
 
