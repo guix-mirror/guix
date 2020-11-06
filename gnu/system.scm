@@ -475,9 +475,9 @@ marked as 'needed-for-boot'."
     (let ((device (file-system-device fs)))
       (if (string? device)                        ;title is 'device
           (filter (lambda (md)
-                    (string=? (string-append "/dev/mapper/"
-                                             (mapped-device-target md))
-                              device))
+                    (any (cut string=? device <>)
+                         (map (cut string-append "/dev/mapper" <>)
+                              (mapped-device-targets md))))
                   (operating-system-mapped-devices os))
           '())))
 
@@ -497,11 +497,12 @@ marked as 'needed-for-boot'."
 
 (define (mapped-device-users device file-systems)
   "Return the subset of FILE-SYSTEMS that use DEVICE."
-  (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
+  (let ((targets (map (cut string-append "/dev/mapper/" <>)
+                      (mapped-device-targets device))))
     (filter (lambda (fs)
               (or (member device (file-system-dependencies fs))
                   (and (string? (file-system-device fs))
-                       (string=? (file-system-device fs) target))))
+                       (any (cut string=? (file-system-device fs) <>) targets))))
             file-systems)))
 
 (define (operating-system-user-mapped-devices os)

@@ -298,7 +298,8 @@ FILE-SYSTEM."
 (define (mapped-device->shepherd-service-name md)
   "Return the symbol that denotes the shepherd service of MD, a <mapped-device>."
   (symbol-append 'device-mapping-
-                 (string->symbol (mapped-device-target md))))
+                 (string->symbol (string-join
+                                  (mapped-device-targets md) "-"))))
 
 (define dependency->shepherd-service-name
   (match-lambda

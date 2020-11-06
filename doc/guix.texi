@@ -13780,6 +13780,9 @@ specifying @code{"my-partition"} leads to the creation of
 the @code{"/dev/mapper/my-partition"} device.
 For RAID devices of type @code{raid-device-mapping}, the full device name
 such as @code{"/dev/md0"} needs to be given.
+@item targets
+This list of strings specifies names of the resulting mapped devices in case
+there are several. The format is identical to @var{target}.
 
 @item type
 This must be a @code{mapped-device-kind} object, which specifies how
