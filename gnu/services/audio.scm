@@ -143,11 +143,11 @@ audio_output {
              #:pid-file #$(mpd-file-name config "pid")
              #:environment-variables
              ;; Required to detect PulseAudio when run under a user account.
-             '(#$(string-append
-                   "XDG_RUNTIME_DIR=/run/user/"
-                   (number->string
+             (list (string-append
+                    "XDG_RUNTIME_DIR=/run/user/"
+                    (number->string
                      (passwd:uid
-                       (getpwnam (mpd-configuration-user config))))))
+                      (getpwnam #$(mpd-configuration-user config))))))
              #:log-file #$(mpd-file-name config "log")))
    (stop  #~(make-kill-destructor))))
 
