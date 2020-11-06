@@ -36,7 +36,7 @@
   #:autoload   (gnu build linux-modules)
                  (missing-modules)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
-  #:autoload   (gnu packages linux) (mdadm-static)
+  #:autoload   (gnu packages linux) (mdadm-static lvm2-static)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -64,7 +64,8 @@
             check-device-initrd-modules           ;XXX: needs a better place
 
             luks-device-mapping
-            raid-device-mapping))
+            raid-device-mapping
+            lvm-device-mapping))
 
 ;;; Commentary:
 ;;;
@@ -303,5 +304,25 @@ TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
   (mapped-device-kind
    (open open-raid-device)
    (close close-raid-device)))
+
+(define (open-lvm-device source targets)
+  #~(and
+     (zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                     "vgchange" "--activate" "ay" #$source))
+     ; /dev/mapper nodes are usually created by udev, but udev may be unavailable at the time we run this. So we create them here.
+     (zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                     "vgscan" "--mknodes"))
+     (every file-exists? (map (lambda (file) (string-append "/dev/mapper/" file))
+                              '#$targets))))
+
+
+(define (close-lvm-device source targets)
+  #~(zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                    "vgchange" "--activate" "n" #$source)))
+
+(define lvm-device-mapping
+  (mapped-device-kind
+   (open open-lvm-device)
+   (close close-lvm-device)))
 
 ;;; mapped-devices.scm ends here

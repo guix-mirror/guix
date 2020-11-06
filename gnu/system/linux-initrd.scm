@@ -217,6 +217,7 @@ upon error."
                       (gnu system file-systems)
                       ((guix build utils) #:hide (delete))
                       (guix build bournish)   ;add the 'bournish' meta-command
+                      (srfi srfi-1)           ;for lvm-device-mapping
                       (srfi srfi-26)
 
                       ;; FIXME: The following modules are for
