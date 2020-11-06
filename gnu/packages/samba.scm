@@ -178,14 +178,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.1")
+    (version "4.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "0pr805jmdl8gkm6g7gd78jrkmfwgybkvn2c949h51gcsbqxj2n14"))
+        (base32 "1d7j79c8aggwiv90y2q1yz63d9p5n4paq0fsbdvqpn05d8wn8r17"))
        (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet
