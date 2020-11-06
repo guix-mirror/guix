@@ -27,8 +27,9 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services docker)
   #:use-module (gnu services desktop)
-  #:use-module (gnu packages docker)
+  #:use-module ((gnu packages base) #:select (glibc))
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages docker)
   #:use-module (guix gexp)
   #:use-module (guix grafts)
   #:use-module (guix monads)
@@ -206,7 +207,7 @@ inside %DOCKER-OS."
      ;; load' must be able to store the whole image into memory, hence the
      ;; huge memory requirements.  We should avoid the volatile-root setup
      ;; instead.
-     (memory-size 3500)
+     (memory-size 4000)
      (port-forwardings '())))
 
   (define test
@@ -298,5 +299,9 @@ inside %DOCKER-OS."
    (description "Run a system image as produced by @command{guix system
 docker-image} inside Docker.")
    (value (with-monad %store-monad
-            (>>= (system-docker-image (simple-operating-system))
+            (>>= (system-docker-image (operating-system
+                                        (inherit (simple-operating-system))
+                                        ;; Use locales for a single libc to
+                                        ;; reduce space requirements.
+                                        (locale-libcs (list glibc))))
                  run-docker-system-test)))))
