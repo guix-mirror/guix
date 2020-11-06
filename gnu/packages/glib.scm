@@ -197,7 +197,8 @@ shared NFS home directories.")
                 #t))))
    (build-system meson-build-system)
    (outputs '("out"           ; everything
-              "bin"))         ; glib-mkenums, gtester, etc.; depends on Python
+              "bin"           ; glib-mkenums, gtester, etc.; depends on Python
+              "debug"))
    (propagated-inputs
     `(("pcre" ,pcre)  ; in the Requires.private field of glib-2.0.pc
       ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
