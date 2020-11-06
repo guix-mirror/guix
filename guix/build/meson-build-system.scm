@@ -100,7 +100,7 @@ for example libraries only needed for the tests."
                                             (find-files dir elf-pred))
                                           existing-elf-dirs))))
          (for-each strip-runpath elf-list)))))
-  (for-each handle-output outputs)
+  (for-each handle-output (alist-delete "debug" outputs))
   #t)
 
 (define %standard-phases
