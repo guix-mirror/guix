@@ -22168,9 +22168,10 @@ Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{zabbix-front-end-configuration} parameter} string db-secret-file
-Secret file which will be appended to @file{zabbix.conf.php} file.  This
-file contains credentials for use by Zabbix front-end.  You are expected
-to create it manually.
+Secret file containing the credentials for the Zabbix front-end.  The value
+must be a local file name, not a G-expression.  You are expected to create
+this file manually.  Its contents will be copied into @file{zabbix.conf.php}
+as the value of @code{$DB['PASSWORD']}.
 
 Defaults to @samp{""}.
 
