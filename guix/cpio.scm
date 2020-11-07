@@ -132,9 +132,10 @@
     (%make-cpio-header MAGIC
                        inode mode uid gid
                        nlink mtime
-                       (if (= C_ISDIR (logand mode C_FMT))
-                           0
-                           size)
+                       (if (or (= C_ISLNK (logand mode C_FMT))
+                               (= C_ISREG (logand mode C_FMT)))
+                           size
+                           0)
                        major minor rmajor rminor
                        (+ name-size 1)              ;include trailing zero
                        0)))                          ;checksum
@@ -146,6 +147,8 @@ denotes, similar to 'stat:type'."
     (cond ((= C_ISREG fmt) 'regular)
           ((= C_ISDIR fmt) 'directory)
           ((= C_ISLNK fmt) 'symlink)
+          ((= C_ISBLK fmt) 'block-special)
+          ((= C_ISCHR fmt) 'char-special)
           (else
            (error "unsupported file type" mode)))))
 
@@ -232,6 +235,10 @@ produces with the '-H newc' option."
          (let ((target (readlink file)))
            (put-string port target)))
         ((directory)
+         #t)
+        ((block-special)
+         #t)
+        ((char-special)
          #t)
         (else
          (error "file type not supported")))
