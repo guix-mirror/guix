@@ -364,6 +364,8 @@
                 #:environment-variables
                 `(,(string-append
                     "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
+                  ;; XDG_CACHE_HOME is used by Guix when caching narinfo files
+                  "XDG_CACHE_HOME=/var/cache/guix-build-coordinator-agent"
                   "LC_ALL=en_US.utf8")
                 #:log-file "/var/log/guix-build-coordinator/agent.log"))
       (stop #~(make-kill-destructor))))))
@@ -375,6 +377,12 @@
       (define %user (getpw "guix-build-coordinator-agent"))
 
       (mkdir-p "/var/log/guix-build-coordinator")
+
+      ;; Create a cache directory for storing narinfo files if downloaded
+      (mkdir-p "/var/cache/guix-build-coordinator-agent")
+      (chown "/var/cache/guix-build-coordinator-agent"
+             (passwd:uid %user)
+             (passwd:gid %user))
 
       ;; Allow writing the PID file
       (mkdir-p "/var/run/guix-build-coordinator-agent")
