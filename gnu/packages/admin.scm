@@ -3393,7 +3393,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
       (method git-fetch)
@@ -3402,23 +3402,40 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1nrhv3bypyc48h9smj5cpq63rawm6vqyg3cwkhpz69rgjnf1283m"))))
+       (base32 "0cisaca2c2z1x9xvxc4lr6nl6yqx5bww6brh73m0p1n643jgq1dl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
-               "--localstatedir=/var"))))
+               "--localstatedir=/var"))
+       #:make-flags
+       (list "V=1")                     ; log build commands
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'no-early-./configure
+           (lambda _
+             (setenv "NO_CONFIGURE" "yet")
+             ;; XXX thd_trip_point.h redefines "__STDC_LIMIT_MACROS" after
+             ;; <xz>/include/lzma.h.  ./configure forcibly appends -Werror
+             ;; to CXXFLAGS, overriding any -Wno-error we'd add.
+             (substitute* "configure.ac"
+               (("-Werror") ""))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
-       ("libxml2" ,libxml2)))
+       ("libevdev" ,libevdev)
+       ("libxml2" ,libxml2)
+       ("upower" ,upower)
+       ("xz" ,xz)))
     (home-page "https://01.org/linux-thermal-daemon/")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
