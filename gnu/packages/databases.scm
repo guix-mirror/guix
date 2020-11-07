@@ -458,9 +458,9 @@ ElasticSearch server")
     (synopsis "Relational database with many ANSI SQL standard features")
     (description
      "Firebird is an SQL @acronym{RDBMS, relational database management system}
-with rich support for ANSI SQL (e.g., @code{INSERT...RETURNING}), PSQL stored
-procedures, cursors, and triggers, @acronym{UDFs, user-defined functions}, and
-more.  Transactions provide full ACID-compliant referential integrity.
+with rich support for ANSI SQL (e.g., @code{INSERT...RETURNING}) including
+@acronym{UDFs, user-defined functions} and PSQL stored procedures, cursors, and
+triggers.  Transactions provide full ACID-compliant referential integrity.
 
 The database requires very little manual maintenance once set up, making it
 ideal for small business or embedded use.
