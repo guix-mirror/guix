@@ -483,7 +483,7 @@ systems.  Output format is completely customizable.")
 (define-public f3
   (package
     (name "f3")
-    (version "7.2")
+    (version "8.0")
     (source
      (origin
       (method git-fetch)
@@ -492,7 +492,7 @@ systems.  Output format is completely customizable.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1iwdg0r4wkgc8rynmw1qcqz62l0ldgc8lrazq33msxnk5a818jgy"))))
+       (base32 "17l5vspfcgfbkqg7bakp3gql29yb05gzawm8n3im30ilzdr53678"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
