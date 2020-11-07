@@ -515,14 +515,14 @@ address of one of the participants.")
 (define-public mumble
   (package
     (name "mumble")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mumble.info/snapshot/stable/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q91vp3bp7xn67g9kgp1pfgxjj1hks3w60vdxcfm3373wy5db5lz"))
+                "101gw1334zmqsbjrba5dq1v4p2nxcs37g2yrzvkcra6s9ri4fw3j"))
               (modules '((guix build utils)))
               (snippet
                `(begin

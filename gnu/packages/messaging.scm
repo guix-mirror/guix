@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -701,23 +703,29 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.10")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "nbxmpp" version))
+       (uri
+        (pypi-uri "nbxmpp" version))
        (sha256
-        (base32
-         "1vq89nhamciblyi5579bppnm4sb0zk5cg5hdipfpz174fxvl2wyd"))))
+        (base32 "0vw5drr077w9ks4crnw6pwa4735ycyjdcm54knc3w4in4x5027wr"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no tests
+    (native-inputs
+     `(("glib:bin" ,glib "bin")))
+    (inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("libsoup" ,libsoup)
+       ("python-idna" ,python-idna)
+       ("python-precis-i18n" ,python-precis-i18n)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Non-blocking XMPP Module")
+    (description "Python-nbxmpp is a Python library that provides a way for
+Python applications to use the XMPP network.  This library was initially a fork
+of xmpppy.")
     (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
-    (synopsis "Non-blocking Jabber/XMPP module")
-    (description
-     "The goal of this python library is to provide a way for Python
-applications to use Jabber/XMPP networks in a non-blocking way.  This library
-was initially a fork of xmpppy, but uses non-blocking sockets.")
     (license license:gpl3+)))
 
 (define-public python2-nbxmpp
@@ -726,18 +734,27 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gajim.org/downloads/"
-                                  (version-major+minor version)
-                                  "/gajim-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0bzxwcpdd4ydh6d6mzpr0gxwhcb0x9ympk55fpvm1hcw9d28a716"))))
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://gajim.org/downloads/"
+                       (version-major+minor version)
+                       "/gajim-" version ".tar.gz"))
+       (sha256
+        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:imported-modules
+       (,@%python-build-system-modules
+        (guix build glib-or-gtk-build-system))
+       #:modules
+       ((guix build python-build-system)
+        ((guix build glib-or-gtk-build-system)
+         #:prefix glib-or-gtk:)
+        (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
@@ -751,107 +768,107 @@ else [])"))
              #t))
          (replace 'check
            (lambda _
-             (invoke "python" "./setup.py" "test" "-s" "test.no_gui")))
-         (add-after 'install 'wrap-gi-typelib-path
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (invoke "dbus-launch" "python" "./setup.py" "test")
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'install 'wrap-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (for-each
                 (lambda (name)
                   (let ((file (string-append out "/bin/" name))
+                        (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
                         (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                     (wrap-program file
-                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                      ;; For translations
-                      `("XDG_DATA_DIRS" ":" prefix
-                        (,(string-append (assoc-ref outputs "out") "/share"))))))
+                      `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
                 '("gajim" "gajim-remote" "gajim-history-manager")))
-             #t))
-         (add-after 'install 'install-icons
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (adwaita (string-append
-                              (assoc-ref inputs "adwaita-icon-theme")
-                              "/share/icons/Adwaita"))
-                    (hicolor (string-append
-                              (assoc-ref inputs "hicolor-icon-theme")
-                              "/share/icons/hicolor"))
-                    (icons (string-append
-                            out "/lib/python"
-                            ,(version-major+minor (package-version python))
-                            "/site-packages/gajim/data/icons")))
-               (with-directory-excursion icons
-                 (symlink adwaita "Adwaita")
-                 (copy-recursively hicolor "hicolor")))
-             #t))
-         (add-after 'install-icons 'wrap-gsettings-schema-dir
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/gajim")
-               ;; For GtkFileChooserDialog.
-               `("GSETTINGS_SCHEMA_DIR" =
-                 (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas"))))
              #t)))))
     (native-search-paths
-     (list (search-path-specification
-            (variable "GAJIM_PLUGIN_PATH")
-            (separator #f)              ;single entry
-            (files '("share/gajim/plugins")))
-           ;; Gajim needs to use the propagated inputs of its plugins.
-           (search-path-specification
-            (variable "PYTHONPATH")
-            (files (list (string-append
-                          "lib/python"
-
-                          ;; FIXME: Cannot use this expression as it would
-                          ;; introduce a circular dependency at the top level.
-                          ;; (version-major+minor (package-version python))
-                          "3.8"
-
-                          "/site-packages"))))))
+     (list
+      (search-path-specification
+       (variable "GAJIM_PLUGIN_PATH")
+       (separator #f)                   ;single entry
+       (files
+        (list
+         "share/gajim/plugins")))
+      ;; Gajim needs to use the propagated inputs of its plugins.
+      (search-path-specification
+       (variable "PYTHONPATH")
+       (files
+        (list
+         (string-append
+          "lib/python"
+          ;; FIXME: Cannot use this expression as it would
+          ;; introduce a circular dependency at the top level.
+          ;; (version-major+minor (package-version python))
+          "3.8"
+          "/site-packages"))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-docutils" ,python-docutils)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("python-distutils-extra" ,python-distutils-extra)
+       ("python-setuptools" ,python-setuptools)
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+     `(("avahi" ,avahi)
+       ("dbus" ,dbus)
+       ("farstream" ,farstream)
+       ("geoclue" ,geoclue)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("gnome-keyring" ,gnome-keyring)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gsound",gsound)
+       ("gspell" ,gspell)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("gtkspell3" ,gtkspell3)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("libsecret" ,libsecret)
-       ("python-cssutils" ,python-cssutils)
-       ("python-dbus" ,python-dbus)
-       ("python-gnupg" ,python-gnupg)
+       ("gupnp-igd" ,gupnp-igd)
+       ("libsoup" ,libsoup)
+       ("libxss" ,libxscrnsaver)
+       ("network-manager" ,network-manager)
+       ("python-css-parser" ,python-css-parser)
        ("python-keyring" ,python-keyring)
        ("python-nbxmpp" ,python-nbxmpp)
+       ("python-packaging" ,python-packaging)
        ("python-pillow" ,python-pillow)
        ("python-precis-i18n" ,python-precis-i18n)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-qrcode" ,python-qrcode)))
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (synopsis "Fully-featured XMPP client")
+    (description "Gajim aims to be an easy to use and fully-featured XMPP chat
+client.  It is extensible via plugins, supports end-to-end encryption (OMEMO
+and OpenPGP) and available in 29 languages.")
     (home-page "https://gajim.org/")
-    (synopsis "Jabber (XMPP) client")
-    (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
-Among its features are: a tabbed chat window and single window modes; support
-for group chat (with Multi-User Chat protocol), invitation, chat to group chat
-transformation; audio and video conferences; file transfer; TLS, GPG and
-end-to-end encryption support; XML console.")
     (license license:gpl3)))
 
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.7.7")
-    (source (origin
-              (method url-fetch/zipbomb)
-              (uri (string-append
-                    "https://ftp.gajim.org/plugins_releases/omemo_"
-                    version ".zip"))
-              (sha256
-               (base32
-                "17jl4blkq04ag3g0har6z1bmk36523d29s51g260wb1pywfb536h"))))
+    (version "2.7.9")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append
+         "https://ftp.gajim.org/plugins_releases/omemo_"
+         version ".zip"))
+       (sha256
+        (base32 "19si2v5yrxpn2m0f684npsg0iiyl2h3r5hbxyrxv4k3acmfmhb3z"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -865,14 +882,50 @@ end-to-end encryption support; XML console.")
            (copy-recursively source share)
            #t))))
     (propagated-inputs
-     `(("python-axolotl" ,python-axolotl)))
+     `(("python-axolotl" ,python-axolotl)
+       ("python-axolotl-curve25519" ,python-axolotl-curve25519)
+       ("python-cryptography" ,python-cryptography)
+       ("python-qrcode" ,python-qrcode)))
+    (synopsis "Gajim OMEMO plugin")
+    (description "Gajim-OMEMO is a plugin that adds support for the OMEMO
+Encryption to Gajim.  OMEMO is an XMPP Extension Protocol (XEP) for secure
+multi-client end-to-end encryption.")
     (home-page
      "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
-    (synopsis "Gajim OMEMO plugin")
-    (description
-     "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP
-Extension Protocol (XEP) for secure multi-client end-to-end encryption based
-on Axolotl and PEP.")
+    (license license:gpl3+)))
+
+(define-public gajim-openpgp
+  (package
+    (name "gajim-openpgp")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append
+         "https://ftp.gajim.org/plugins_releases/openpgp_"
+         version ".zip"))
+       (sha256
+        (base32 "1jvpl2gjl5xxvsgxpmvh3mn2mm142dg2hknakkc32swb7l1fqx5m"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (in-vicinity out "share/gajim/plugins"))
+                (source (assoc-ref %build-inputs "source")))
+           (mkdir-p share)
+           (copy-recursively source share)
+           #t))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-gnupg" ,python-gnupg)))
+    (synopsis "Gajim OpenPGP plugin")
+    (description "Gajim-OpenPGP is a plugin that adds support for the OpenPGP
+Encryption to Gajim.")
+    (home-page "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OpenPGPplugin")
     (license license:gpl3+)))
 
 (define-public dino
@@ -1863,7 +1916,7 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1871,7 +1924,7 @@ building the IRC clients and bots.")
              (url "https://github.com/JFreegman/toxic")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
+        (base32 "0p1cmj1kyp506y5xm04mhlznhf5wcylvgsn6b307ms91vjqs3fg2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

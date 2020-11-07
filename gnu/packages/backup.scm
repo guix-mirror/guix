@@ -94,7 +94,7 @@
        (base32 "1kg467mxg5a97v1rlv4shk32krgv8ys4nczq4b11av4bp1lgysdc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)         ; for msgfmt
+     `(("gettext" ,gettext-minimal)     ; for msgfmt
        ("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-fasteners" ,python-fasteners)
@@ -743,14 +743,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.2")
+    (version "1.13.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0id9ym3hzij4kpdrk0sz3ijxp5r0z1md5jch83pml9hdy1zbx5bj"))))
+                "0zpsbl9iicc6y81xfl6kf8farwfsyrl63shc0idp654kgp8421wa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1072,7 +1072,7 @@ interactive mode.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.34")
+    (version "2.3.36")
     (source
      (origin
        (method git-fetch)
@@ -1080,7 +1080,7 @@ interactive mode.")
              (url "https://github.com/grke/burp")
              (commit version)))
        (sha256
-        (base32 "0ri62xshcjrk5vgyx8s11vsllab132mk1pcy4xxl9kzijdsjhdpy"))
+        (base32 "18gj1sv1naql0xais01yniyzs8dxc8xk5sk8y9hsc0cd93mxgk17"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

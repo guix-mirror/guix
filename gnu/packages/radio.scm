@@ -538,7 +538,7 @@ to the fix block above.
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.12.1")
+    (version "2.13.3")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ to the fix block above.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00alf3q6y313xpx6p7v43vqsphd2x4am4q362lw21bcy9wc4jidw"))))
+        (base32 "0awj5wzq0p677my0065rpqkmfl3jc0bjdrnip8715z8031cd923n"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -577,14 +577,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.14")
+    (version "4.1.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0hr6xbv01xf7z4r2jxxhn8xjdmca2198q4m9glh4877dllvfq6xj"))))
+        (base32 "1fzbcv2dgg6byb2l8m2d6i69yn0a44pq52mpmms756jdf6z622i6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1015,7 +1015,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "3.8.1")
+    (version "4.0")
     (source
      (origin
        (method git-fetch)
@@ -1024,7 +1024,7 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xg8rzrxqklx1m9ncxsd96dlkbjcsxfi2mrb859v50f07xysdyd8"))))
+        (base32 "1zacsqaqsiapljhzw31dwc4nld2rp98jm3ivkyznrhzk9n156p42"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1052,7 +1052,7 @@ gain and standing wave ratio.")
 It can be used to decode the ADS-B signals that planes emit to indicate
 their position, altitude, speed, etc.")
     (home-page "https://github.com/flightaware/dump1090")
-    (license license:bsd-3)))
+    (license license:gpl2+)))
 
 (define-public rtl-433
   (package

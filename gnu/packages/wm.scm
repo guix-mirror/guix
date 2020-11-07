@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,14 +273,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.18.2")
+    (version "4.18.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "030jym6b8b07yf4y6pb806hg8k77zsprv569gy0r72rh5zb1g1mj"))))
+                "03dijnwv2n8ak9jq59fhq0rc80m5wjc9d54fslqaivnnz81pkbjk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -342,7 +343,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.18.2")
+           (version "4.18.3")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -350,7 +351,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "0lz08wf4b0yprzqsmymn94kiyg885dcwmh0p64v2rnf52s165g2g"))))
+                       "1hcakwyz78lgp8mhqv7pw86jlb3m415pfql1q19rkijnhm3fn3ci"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
@@ -1717,7 +1718,8 @@ productive, customizable lisp based systems.")
     (name "stumpish")
     (inputs
      `(("bash" ,bash)
-       ("rlwrap" ,rlwrap)))
+       ("rlwrap" ,rlwrap)
+       ("xprop" ,xprop)))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -1729,6 +1731,8 @@ productive, customizable lisp based systems.")
          (substitute* "stumpish"
            (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
                                       "/bin/rlwrap"))
+           (("xprop") (string-append (assoc-ref %build-inputs "xprop")
+                                      "/bin/xprop"))
            (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
                                        "/bin/bash")))
          (install-file "stumpish" (string-append %output "/bin")))))

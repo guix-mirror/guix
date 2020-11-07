@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
@@ -79,6 +81,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -97,6 +100,90 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
+
+(define-public farstream
+  (package
+    (name "farstream")
+    (version "0.2.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.freedesktop.org/farstream/farstream.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sd8syldyq6bphfdm129s3gq554vfv7vh1vcwzk48gjryf101awk"))
+       (patches
+        (search-patches "farstream-make.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f ; https://gitlab.freedesktop.org/farstream/farstream/-/issues/18
+       #:configure-flags
+       (list
+        "--enable-gtk-doc"
+        "--enable-glib-asserts"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-common
+           (lambda _
+             (delete-file "autogen.sh")
+             (copy-recursively
+              (assoc-ref %build-inputs "common")
+              "common")
+             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* '("libs/farstream-libs-docs.sgml"
+                              "plugins/farstream-plugins-docs.sgml")
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("common"
+        ,(origin
+           (method git-fetch)
+           (uri
+            (git-reference
+             (url "https://gitlab.freedesktop.org/gstreamer/common.git")
+             (commit "88e512ca7197a45c4114f7fa993108f23245bf50")))
+           (file-name
+            (git-file-name "common" "latest.88e512c"))
+           (sha256
+            (base32 "1nk94pnskjyngqcfb9p32g4yvf4nzpjszisw24r9azl0pawqpsn6"))))
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gupnp-igd" ,gupnp-igd)
+       ("libnice" ,libnice)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)))
+    (synopsis "The Farstream VVoIP framework")
+    (description "Farstream is a collection of GStreamer modules and libraries
+for videoconferencing.")
+    (home-page "https://www.freedesktop.org/wiki/Software/Farstream/")
+    (license license:lgpl2.1+)))
 
 (define-public libglib-testing
   (package

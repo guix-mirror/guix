@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2020 Eric Bavier <bavier@posteo.net>
 #
 # This file is part of GNU Guix.
 #
@@ -58,6 +59,19 @@ run_without_store ()
     fi
 }
 
+# Wait for the given file to show up.  Error out if it doesn't show up in a
+# timely fashion.
+wait_for_file ()
+{
+    i=0
+    while ! test -f "$1" && test $i -lt 20
+    do
+	sleep 0.3
+	i=`expr $i + 1`
+    done
+    test -f "$1"
+}
+
 test_directory="`mktemp -d`"
 export test_directory
 trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
@@ -98,6 +112,7 @@ case "`uname -m`" in
 	run_without_store GUIX_EXECUTION_ENGINE="fakechroot" \
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
+	unset GUIX_EXECUTION_ENGINE
 
 	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
@@ -129,12 +144,105 @@ case "`uname -m`" in
 	;;
 esac
 
+if unshare -r true
+then
+    # Check what happens if the wrapped binary forks and leaves child
+    # processes behind, like a daemon.  The root file system should remain
+    # available to those child processes.  See <https://bugs.gnu.org/44261>.
+    cat > "$test_directory/manifest.scm" <<EOF
+(use-modules (guix))
+
+(define daemon
+  (program-file "daemon"
+                #~(begin
+                    (use-modules (ice-9 match)
+                                 (ice-9 ftw))
+
+                    (call-with-output-file "parent-store"
+                      (lambda (port)
+                        (write (scandir (ungexp (%store-prefix)))
+                               port)))
+
+                    (match (primitive-fork)
+                      (0 (sigaction SIGHUP (const #t))
+                         (call-with-output-file "pid"
+                           (lambda (port)
+                             (display (getpid) port)))
+                         (pause)
+                         (call-with-output-file "child-store"
+                           (lambda (port)
+                             (write (scandir (ungexp (%store-prefix)))
+                                    port))))
+                      (_ #t)))))
+
+(define package
+  (computed-file "package"
+                 #~(let ((out (ungexp output)))
+                     (mkdir out)
+                     (mkdir (string-append out "/bin"))
+                     (symlink (ungexp daemon)
+                              (string-append out "/bin/daemon")))))
+
+(manifest (list (manifest-entry
+                  (name "daemon")
+                  (version "0")
+                  (item package))))
+EOF
+
+    tarball="$(guix pack -S /bin=bin -R -m "$test_directory/manifest.scm")"
+    (cd "$test_directory"; tar xf "$tarball")
+
+    # Run '/bin/daemon', which forks, then wait for the child, send it SIGHUP
+    # so that it dumps its view of the store, and make sure the child and
+    # parent both see the same store contents.
+    (cd "$test_directory"; run_without_store ./bin/daemon)
+    wait_for_file "$test_directory/pid"
+    kill -HUP $(cat "$test_directory/pid")
+    wait_for_file "$test_directory/child-store"
+    diff -u "$test_directory/parent-store" "$test_directory/child-store"
+
+    chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+fi
+
 # Ensure '-R' works with outputs other than "out".
 tarball="`guix pack -R -S /share=share groff:doc`"
 (cd "$test_directory"; tar xf "$tarball")
 test -d "$test_directory/share/doc/groff/html"
+chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
 # Ensure '-R' applies to propagated inputs.  Failing to do that, it would fail
 # with a profile collision error in this case because 'python-scipy'
 # propagates 'python-numpy'.  See <https://bugs.gnu.org/42510>.
 guix pack -RR python-numpy python-scipy --no-grafts -n
+
+# Check that packages that mix executable and support files (e.g. git) in the
+# "binary" directories still work after wrapped.
+cat >"$test_directory/manifest.scm" <<'EOF'
+(use-modules (guix) (guix profiles) (guix search-paths)
+             (gnu packages bootstrap))
+(manifest
+ (list (manifest-entry
+        (name "test") (version "0")
+        (item (file-union "test"
+                          `(("bin/hello"
+                             ,(program-file
+                               "hello"
+                               #~(begin
+                                   (add-to-load-path (getenv "HELLO_EXEC_PATH"))
+                                   (display (load-from-path "msg"))(newline))
+                               #:guile %bootstrap-guile))
+                            ("libexec/hello/msg"
+                             ,(plain-file "msg" "42")))))
+        (search-paths
+         (list (search-path-specification
+                (variable "HELLO_EXEC_PATH")
+                (files '("libexec/hello"))
+                (separator #f)))))))
+EOF
+tarball="`guix pack -RR -S /opt= -m $test_directory/manifest.scm`"
+(cd "$test_directory"; tar xvf "$tarball")
+( export GUIX_PROFILE=$test_directory/opt
+  . $GUIX_PROFILE/etc/profile
+  run_without_store "$test_directory/opt/bin/hello" > "$test_directory/output" )
+cat "$test_directory/output"
+test "`cat $test_directory/output`" = "42"

@@ -1203,7 +1203,7 @@ extremely large and complex data collections.")
 
 (define-public hdf5
   ;; Default version of HDF5.
-  hdf5-1.8)
+  hdf5-1.10)
 
 (define-public hdf-java
   (package
@@ -1235,7 +1235,7 @@ extremely large and complex data collections.")
        ("slf4j-simple" ,java-slf4j-simple)))
     (inputs
      `(("hdf4" ,hdf4)
-       ("hdf5" ,hdf5)
+       ("hdf5" ,hdf5-1.8)
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-turbo)
        ("slf4j-api" ,java-slf4j-api)))
@@ -1395,7 +1395,7 @@ System (Grid, Point and Swath).")
      `(("gfortran" ,gfortran)))
     (build-system gnu-build-system)
     (inputs
-     `(("hdf5" ,hdf5)
+     `(("hdf5" ,hdf5-1.8)
        ("zlib" ,zlib)
        ("gctp" ,gctp)))
     (arguments
@@ -1496,7 +1496,7 @@ Blosc-compressed datasets.")
         (base32
          "1gm76jbwhz9adbxgn14zx8cj33dmjdr2g5xcy0m9c2gakp8w59kj"))))
     (build-system gnu-build-system)
-    (inputs `(("hdf5" ,hdf5)))                 ;h5cc for tests
+    (inputs `(("hdf5" ,hdf5-1.8)))                ;h5cc for tests
     (home-page "https://www.hdfgroup.org/products/hdf5_tools/h5check.html")
     (synopsis "HDF5 format checker")
     (description "@code{h5check} is a validation tool for verifying that an
@@ -1538,17 +1538,17 @@ similar to MATLAB, GNU Octave or SciPy.")
 (define-public netcdf
   (package
     (name "netcdf")
-    (version "4.4.1.1")
+    (version "4.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/netcdf/"
-                           "netcdf-" version ".tar.gz"))
+       (uri (string-append
+             "https://www.unidata.ucar.edu/downloads/netcdf/ftp/"
+             "netcdf-c-" version ".tar.gz"))
        (sha256
         (base32
-         "1blc7ik5yin7i0ls2kag0a9xjk12m0dzx6v1x88az3ras3scci2d"))
-       (patches (search-patches "netcdf-date-time.patch"
-                                "netcdf-tst_h_par.patch"))))
+         "1a2fpp15a2rl1m50gcvvzd9y6bavl6vjf9zzf63sz5gdmq06yiqf"))
+       (patches (search-patches "netcdf-date-time.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
@@ -1557,6 +1557,7 @@ similar to MATLAB, GNU Octave or SciPy.")
     (inputs
      `(("hdf4" ,hdf4-alt)
        ("hdf5" ,hdf5)
+       ("curl" ,curl)
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-turbo)))
     (arguments
@@ -1618,7 +1619,7 @@ sharing of scientific data.")
 (define-public netcdf-fortran
   (package
     (name "netcdf-fortran")
-    (version "4.4.4")
+    (version "4.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1626,7 +1627,7 @@ sharing of scientific data.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0xaxdcg1p83zmypwml3swsnr3ccn38inwldyr1l3wa4dbwbrblxj"))))
+                "0x4acvfhbsx1q79dkkwrwbgfhm0w5ngnp4zj5kk92s1khihmqfhj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))
@@ -4537,7 +4538,7 @@ structured and unstructured grid problems.")))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
-       ("hdf5" ,hdf5)))
+       ("hdf5" ,hdf5-1.8)))
     (home-page "http://matio.sourceforge.net/")
     (synopsis "Library for reading and writing MAT files")
     (description "Matio is a library for reading and writing MAT files.  It

@@ -34,11 +34,11 @@
   #:use-module (guix sets)
   #:use-module ((guix diagnostics)
                 #:select (location-file formatted-message))
-  #:use-module ((guix scripts build)
-                #:select (show-transformation-options-help
-                          options->transformation
-                          %standard-build-options
+  #:use-module ((guix transformations)
+                #:select (options->transformation
                           %transformation-options))
+  #:use-module ((guix scripts build)
+                #:select (%standard-build-options))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -546,8 +546,6 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
   (newline)
-  (show-transformation-options-help)
-  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
@@ -585,11 +583,11 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
                                       (('argument . (? store-path? item))
                                        item)
                                       (('argument . spec)
-                                       (transform store
-                                                  (specification->package spec)))
+                                       (transform
+                                        (specification->package spec)))
                                       (('expression . exp)
-                                       (transform store
-                                                  (read/eval-package-expression exp)))
+                                       (transform
+                                        (read/eval-package-expression exp)))
                                       (_ #f))
                                     opts)))
         (run-with-store store

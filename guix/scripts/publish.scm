@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -82,6 +83,9 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (G_ "
   -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
   (display (G_ "
+      --cache-bypass-threshold=SIZE
+                         serve store items below SIZE even when not cached"))
+  (display (G_ "
       --workers=N        use N workers to bake items"))
   (display (G_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
@@ -134,6 +138,12 @@ if ITEM is already compressed."
       (list %no-compression)
       requested))
 
+(define (low-compression c)
+  "Return <compression> of the same type as C, but optimized for low CPU
+usage."
+  (compression (compression-type c)
+               (min (compression-level c) 2)))
+
 (define %options
   (list (option '(#\h "help") #f #f
                 (lambda _
@@ -184,6 +194,10 @@ if ITEM is already compressed."
         (option '(#\c "cache") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'cache arg result)))
+        (option '("cache-bypass-threshold") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'cache-bypass-threshold (size->number arg)
+                              result)))
         (option '("workers") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'workers (string->number* arg)
@@ -434,7 +448,7 @@ items.  Failing that, we could eventually have to recompute them and return
             (expiration-time file))))))
 
 (define (hash-part->path* store hash cache)
-  "Like 'hash-part->path' but cached results under CACHE.  This ensures we can
+  "Like 'hash-part->path' but cache results under CACHE.  This ensures we can
 still map HASH to the corresponding store file name, even if said store item
 vanished from the store in the meantime."
   (let ((cached (hash-part-mapping-cache-file cache hash)))
@@ -453,6 +467,18 @@ vanished from the store in the meantime."
                (rename-file (string-append cached ".tmp") cached)
                result))
             (apply throw args))))))
+
+(define cache-bypass-threshold
+  ;; Maximum size of a store item that may be served by the '/cached' handlers
+  ;; below even when not in cache.
+  (make-parameter (* 10 (expt 2 20))))
+
+(define (bypass-cache? store item)
+  "Return true if we allow ITEM to be downloaded before it is cached.  ITEM is
+interpreted as the basename of a store item."
+  (guard (c ((store-error? c) #f))
+    (< (path-info-nar-size (query-path-info store item))
+       (cache-bypass-threshold))))
 
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compressions (list %no-compression))
@@ -513,9 +539,20 @@ requested using POOL."
                                                      (nar-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
-           (not-found request
-                      #:phrase "We're baking it"
-                      #:ttl 300))              ;should be available within 5m
+
+           ;; If ITEM passes 'bypass-cache?', render a temporary narinfo right
+           ;; away, with a short TTL.  The narinfo is temporary because it
+           ;; lacks 'FileSize', for instance, which the cached narinfo will
+           ;; have.  Chances are that the nar will be baked by the time the
+           ;; client asks for it.
+           (if (bypass-cache? store item)
+               (render-narinfo store request hash
+                               #:ttl 300          ;temporary
+                               #:nar-path nar-path
+                               #:compressions compressions)
+               (not-found request
+                          #:phrase "We're baking it"
+                          #:ttl 300)))          ;should be available within 5m
           (else
            (not-found request #:phrase "")))))
 
@@ -627,19 +664,32 @@ return it; otherwise, return 404.  When TTL is true, use it as the
 'Cache-Control' expiration time."
   (let ((cached (nar-cache-file cache store-item
                                 #:compression compression)))
-    (if (file-exists? cached)
-        (values `((content-type . (application/octet-stream
-                                   (charset . "ISO-8859-1")))
-                  ,@(if ttl
-                        `((cache-control (max-age . ,ttl)))
-                        '())
+    (cond ((file-exists? cached)
+           (values `((content-type . (application/octet-stream
+                                      (charset . "ISO-8859-1")))
+                     ,@(if ttl
+                           `((cache-control (max-age . ,ttl)))
+                           '())
 
-                  ;; XXX: We're not returning the actual contents, deferring
-                  ;; instead to 'http-write'.  This is a hack to work around
-                  ;; <http://bugs.gnu.org/21093>.
-                  (x-raw-file . ,cached))
-                #f)
-        (not-found request))))
+                     ;; XXX: We're not returning the actual contents, deferring
+                     ;; instead to 'http-write'.  This is a hack to work around
+                     ;; <http://bugs.gnu.org/21093>.
+                     (x-raw-file . ,cached))
+                   #f))
+          ((let* ((hash (and=> (string-index store-item #\-)
+                               (cut string-take store-item <>)))
+                  (item (and hash
+                             (guard (c ((store-error? c) #f))
+                               (hash-part->path store hash)))))
+             (and item (not (string-null? item))
+                  (bypass-cache? store item)))
+           ;; Render STORE-ITEM live.  We reach this because STORE-ITEM is
+           ;; being baked but clients are already asking for it.  Thus, we're
+           ;; duplicating work, but doing so allows us to reduce delays.
+           (render-nar store request store-item
+                       #:compression (low-compression compression)))
+          (else
+           (not-found request)))))
 
 (define (render-content-addressed-file store request
                                        name algo hash)
@@ -686,6 +736,13 @@ to compress or decompress the log file; just return it as-is."
         (values (response-headers log) log)
         (not-found request))))
 
+(define (render-signing-key)
+  "Render signing key."
+  (let ((file %public-key-file))
+    (values `((content-type . (text/plain (charset . "UTF-8")))
+              (x-raw-file . ,file))
+            file)))
+
 (define (render-home-page request)
   "Render the home page."
   (values `((content-type . (text/html (charset . "UTF-8"))))
@@ -699,7 +756,12 @@ to compress or decompress the log file; just return it as-is."
                                (a (@ (href
                                       "https://guix.gnu.org/manual/en/html_node/Invoking-guix-publish.html"))
                                   (tt "guix publish"))
-                               " speaking.  Welcome!")))
+                               " speaking.  Welcome!")
+                            (p "Here is the "
+                               (a (@ (href
+                                      "signing-key.pub"))
+                                  (tt "signing key"))
+                               " for this server. Knock yourselves out!")))
                          port)))))
 
 (define (extract-narinfo-hash str)
@@ -918,6 +980,9 @@ methods, return the applicable compression."
           ;; /
           ((or () ("index.html"))
            (render-home-page request))
+          ;; guix signing-key
+          (("signing-key.pub")
+           (render-signing-key))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
            (if cache
@@ -1061,7 +1126,10 @@ methods, return the applicable compression."
 consider using the '--user' option!~%")))
 
       (parameterize ((%public-key public-key)
-                     (%private-key private-key))
+                     (%private-key private-key)
+                     (cache-bypass-threshold
+                      (or (assoc-ref opts 'cache-bypass-threshold)
+                          (cache-bypass-threshold))))
         (info (G_ "publishing ~a on ~a, port ~d~%")
               %store-directory
               (inet-ntop (sockaddr:fam address) (sockaddr:addr address))

@@ -19,12 +19,14 @@
 
 (define-module (gnu packages nvi)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (guix utils))
 
 (define-public nvi
   (package
@@ -64,17 +66,41 @@
     (build-system gnu-build-system)
     (arguments
       `(#:out-of-source? #t
-        #:configure-flags '("--enable-widechar")))
+        #:configure-flags
+        '("--enable-widechar"
+          ,@(if (%current-target-system)
+                '("vi_cv_sprintf_count=yes")
+                '()))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'fix-configure
+            (lambda* (#:key inputs native-inputs #:allow-other-keys)
+              ;; Replace outdated config.sub and config.guess:
+              (with-directory-excursion "dist"
+                (for-each (lambda (file)
+                            (chmod file #o755)
+                            (install-file
+                             (string-append
+                              (assoc-ref
+                               (or native-inputs inputs) "automake")
+                              "/share/automake-"
+                              ,(version-major+minor
+                                (package-version automake))
+                              "/" file) "."))
+                          '("config.sub")))
+              #t)))))
     (inputs
       `(("bdb" ,bdb)
         ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("automake" ,automake))) ;Up to date 'config.guess' and 'config.sub'.
     (synopsis "The Berkeley Vi Editor")
     (description
       "Vi is the original screen based text editor for Unix systems.  It is
 considered the standard text editor, and is available on almost all Unix
-systems.  Nvi is intended as a \"bug-for-bug compatible\" clone of the original
-BSD vi editor.  As such, it doesn't have a lot of snazzy features as do some
-of the other vi clones such as elvis and vim.  However, if all you want is vi,
-this is the one to get.")
+systems.  Nvi is intended as a \"bug-for-bug compatible\" clone of the
+original BSD vi editor.  As such, it doesn't have a lot of snazzy features as
+do some of the other vi clones such as elvis and vim.  However, if all you
+want is vi, this is the one to get.")
     (home-page "https://sites.google.com/a/bostic.com/keithbostic/vi")
     (license bsd-3)))

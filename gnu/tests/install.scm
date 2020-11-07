@@ -1211,6 +1211,16 @@ build (current-guix) and then store a couple of full system images.")
                         #$marionette)
       (screenshot "installer-run.ppm")
 
+      (unless #$encrypted?
+        ;; At this point, user partitions are formatted and the installer is
+        ;; waiting for us to start the final step: generating the
+        ;; configuration file, etc.  Set a fixed UUID on the swap partition
+        ;; that matches what 'installation-target-os-for-gui-tests' expects.
+        (marionette-eval* '(invoke #$(file-append util-linux "/sbin/swaplabel")
+                                   "-U" "11111111-2222-3333-4444-123456789abc"
+                                   "/dev/vda2")
+                          #$marionette))
+
       (marionette-eval* '(conclude-installation installer-socket)
                         #$marionette)
 
@@ -1257,8 +1267,12 @@ build (current-guix) and then store a couple of full system images.")
                            '("wheel" "audio" "video"))))
                    %base-user-accounts))
     ;; The installer does not create a swap device in guided mode with
-    ;; encryption support.
-    (swap-devices (if encrypted? '() '("/dev/vda2")))
+    ;; encryption support.  The installer produces a UUID for the partition;
+    ;; this "UUID" is explicitly set in 'gui-test-program' to the value shown
+    ;; below.
+    (swap-devices (if encrypted?
+                      '()
+                      (list (uuid "11111111-2222-3333-4444-123456789abc"))))
     (services (cons (service dhcp-client-service-type)
                     (operating-system-user-services %minimal-os-on-vda)))))
 

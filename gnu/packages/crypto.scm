@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Hendur Saga <hendursaga@yahoo.com>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -570,12 +571,19 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
         (base32
          "1d76ys6cp7fi4ng1w3mz2l0p9dbr7ljbk33dcywyimzjz8bahdng"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "static"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'install:static
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (install-file "libscrypt.a" lib)
+               #t))))))
     (home-page "https://lolware.net/libscrypt.html")
     (synopsis "Password hashing library")
     (description "@code{libscrypt} implements @code{scrypt} key derivation
@@ -1287,3 +1295,38 @@ length extension attacks supporting MD4, MD5, RIPEMD-160, SHA-0, SHA-1,
 SHA-256, SHA-512, and WHIRLPOOL hashes.")
       (home-page "https://github.com/iagox86/hash_extender")
       (license license:bsd-3))))
+
+(define-public mkp224o
+  (package
+    (name "mkp224o")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cathugger/mkp224o")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0b2cn96wg4l8jkkqqp8l2295xlmm2jc8nrw6rdqb5g0zkpfmrxbb"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin")))
+               (install-file "mkp224o" bindir)
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (synopsis "Tor hidden service v3 name generator")
+    (description "@code{mkp224o} generates valid ed25519 (hidden service
+version 3) onion addresses.  It allows one to produce customized vanity .onion
+addresses using a brute-force method.")
+    (home-page "https://github.com/cathugger/mkp224o")
+    (license license:cc0)))

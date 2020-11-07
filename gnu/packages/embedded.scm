@@ -458,35 +458,31 @@ languages are C and C++.")
      ,@(package-arguments gdb)))))
 
 (define-public libjaylink
-  ;; No release tarballs available.
-  (let ((commit "699b7001d34a79c8e7064503dde1bede786fd7f0")
-        (revision "2"))
-    (package
-      (name "libjaylink")
-      (version (string-append "0.1.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.zapb.de/libjaylink.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "034872d44myycnzn67v5b8ixrgmg8sk32aqalvm5x7108w2byww1"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libusb" ,libusb)))
-      (home-page "https://repo.or.cz/w/libjaylink.git")
-      (synopsis "Library to interface Segger J-Link devices")
-      (description "libjaylink is a shared library written in C to access
+  (package
+    (name "libjaylink")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://repo.or.cz/libjaylink.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ndyfh51hiqyv2yscpj6qd091w7myxxjid3a6rx8f6k233vy826q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)))
+    (home-page "https://repo.or.cz/w/libjaylink.git")
+    (synopsis "Library to interface Segger J-Link devices")
+    (description "libjaylink is a shared library written in C to access
 SEGGER J-Link and compatible devices.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public jimtcl
   (package
@@ -518,67 +514,71 @@ language.")
     (license license:bsd-2)))
 
 (define-public openocd
-  (package
-    (name "openocd")
-    (version "0.10.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/openocd/openocd/"
-                                  version "/openocd-" version ".tar.gz"))
-              (sha256
-               (base32
-                "09p57y3c2spqx4vjjlz1ljm1lcd0j9q8g76ywxqgn3yc34wv18zd"))
-              ;; FIXME: Remove after nrf52 patch is merged.
-              (patches
-               (search-patches "openocd-nrf52.patch"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("hidapi" ,hidapi)
-       ("jimtcl" ,jimtcl)
-       ("libftdi" ,libftdi)
-       ("libjaylink" ,libjaylink)
-       ("libusb-compat" ,libusb-compat)))
-    (arguments
-     '(#:configure-flags
-       (append (list "--disable-werror"
-                     "--enable-sysfsgpio"
-                     "--disable-internal-jimtcl"
-                     "--disable-internal-libjaylink")
-               (map (lambda (programmer)
-                      (string-append "--enable-" programmer))
-                    '("amtjtagaccel" "armjtagew" "buspirate" "ftdi"
-                      "gw16012" "jlink" "opendous" "osbdm"
-                      "parport" "aice" "cmsis-dap" "dummy" "jtag_vpi"
-                      "remote-bitbang" "rlink" "stlink" "ti-icdi" "ulink"
-                      "usbprog" "vsllink" "usb-blaster-2" "usb_blaster"
-                      "presto" "openjtag")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; Required because of patched sources.
-         (add-before 'configure 'autoreconf
-           (lambda _ (invoke "autoreconf" "-vfi") #t))
-         (add-after 'autoreconf 'change-udev-group
-           (lambda _
-             (substitute* "contrib/60-openocd.rules"
-               (("plugdev") "dialout"))
-             #t))
-         (add-after 'install 'install-udev-rules
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "contrib/60-openocd.rules"
-                           (string-append
-                            (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/"))
-             #t)))))
-    (home-page "http://openocd.org")
-    (synopsis "On-Chip Debugger")
-    (description "OpenOCD provides on-chip programming and debugging support
+  (let ((commit "9a877a83a1c8b1f105cdc0de46c5cbc4d9e8799e")
+        (revision "0"))
+    (package
+      (name "openocd")
+      (version (string-append "0.10.0-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.code.sf.net/p/openocd/code")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1q536cp80v2bcy6xwk08f1r2ljyw13jchx3a1z7d3ni3vqql7rc6"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("which" ,base:which)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("hidapi" ,hidapi)
+         ("jimtcl" ,jimtcl)
+         ("libftdi" ,libftdi)
+         ("libjaylink" ,libjaylink)
+         ("libusb-compat" ,libusb-compat)))
+      (arguments
+       '(#:configure-flags
+         (append (list "--disable-werror"
+                       "--enable-sysfsgpio"
+                       "--disable-internal-jimtcl"
+                       "--disable-internal-libjaylink")
+                 (map (lambda (programmer)
+                        (string-append "--enable-" programmer))
+                      '("amtjtagaccel" "armjtagew" "buspirate" "ftdi"
+                        "gw16012" "jlink" "opendous" "osbdm"
+                        "parport" "aice" "cmsis-dap" "dummy" "jtag_vpi"
+                        "remote-bitbang" "rlink" "stlink" "ti-icdi" "ulink"
+                        "usbprog" "vsllink" "usb-blaster-2" "usb_blaster"
+                        "presto" "openjtag")))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               (patch-shebang "bootstrap")
+               (invoke "./bootstrap" "nosubmodule")))
+           (add-after 'autoreconf 'change-udev-group
+             (lambda _
+               (substitute* "contrib/60-openocd.rules"
+                 (("plugdev") "dialout"))
+               #t))
+           (add-after 'install 'install-udev-rules
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "contrib/60-openocd.rules"
+                             (string-append
+                              (assoc-ref outputs "out")
+                              "/lib/udev/rules.d/"))
+               #t)))))
+      (home-page "http://openocd.org")
+      (synopsis "On-Chip Debugger")
+      (description "OpenOCD provides on-chip programming and debugging support
 with a layered architecture of JTAG interface and TAP support.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 ;; The commits for all propeller tools are the stable versions published at
 ;; https://github.com/propellerinc/propgcc in the release_1_0.  According to

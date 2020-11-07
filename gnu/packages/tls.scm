@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -586,13 +586,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.3.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "03fjmg0fgfy7xfn3i8rzn9i0i4amajmijkash84qb8mlphgrxpn0"))))
+                "0b80qmlchf8f071nrrh4ihq64cwicn9rshs34snp73952iyhd3dd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -643,7 +643,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1n5i0k6kwmd6wvivshfl3k4djwcpwx390c39xmr2hhrgpk5r285w"))))
+                "1r2k54d2k2smn4c3lpd0z6gdzfqk4654kwbh1p8wqhv5mwbcads8"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

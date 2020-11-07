@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +129,7 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -232,14 +234,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.3")
+    (version "1.19.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w4dkq7bl5gyix3x0ap3d9lndh7zyvc3mscl693d4ybql57vgrci"))))
+                "03h0hhrbfy3asla9gki2cp97zjn7idxbp5lk9xi0snlh4xlm9pv1"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -323,8 +325,8 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
   (let ((version "1.19.3")
-        (revision 2603)
-        (changeset "94ebfbcd68bb"))
+        (revision 2615)
+        (changeset "3cb2736bb74c"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -336,7 +338,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1yryharm4dkjnj424r7sy0rc28h8ypfyj8as255a42gmllkwl2pg"))))
+                 "0dpn5zl8wld0c1l68wzl76wlii2k8bawq0609gnzkahwnsrqnad9"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -1422,7 +1424,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.7.14")
+    (version "0.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1432,7 +1434,7 @@ used to validate and fix HTML data.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1y5hqymv2r8r29f8vh8kgncj3wlkg4fzi0zlc7mgyss872ajkc7i"))
+         "0aaqyfnl4dncrpw8n2sqkkavx7ki7i2r9pdi82pp9syql3b5495y"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1447,14 +1449,14 @@ used to validate and fix HTML data.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key tests? unpack-path #:allow-other-keys)
-             (if tests?
+             (when tests?
                (with-directory-excursion (string-append "src/" unpack-path)
                  (invoke "make" "test-go")))
              #t)))))
     (inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     `(("golang.org/x/sys" ,go-golang-org-x-sys)))
     (native-inputs
-     `(("go-github-com-kylelemons-godebug" ,go-github-com-kylelemons-godebug)))
+     `(("github.com/kylelemons/godebug" ,go-github-com-kylelemons-godebug)))
     (home-page "https://github.com/evanw/esbuild")
     (synopsis "Bundler and minifier tool for JavaScript and TypeScript")
     (description
@@ -7706,3 +7708,44 @@ solution for any project's interface needs:
 @item Easily integrated and extensible with Python or Lua scripting.
 @end itemize\n")
     (license license:expat)))
+
+(define-public gmnisrv
+  (let ((commit "a22bec51494a50c044416d469cc33e043480e7fd"))
+    (package
+      (name "gmnisrv")
+      (version (git-version "0" "0" commit))
+      (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1k1n7cqd37jgbhxyh231bagdxdxqwpr6n5pk3gax2516w6xbzlb9"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'set-variables
+             (lambda _
+               (setenv "CC" "gcc")
+               #t))
+           (delete 'check)
+           (add-after 'install 'install-config
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((etc (string-append (assoc-ref outputs "out")
+                                         "/etc")))
+                 (mkdir-p etc)
+                 (copy-file "config.ini" (string-append etc "/gmnisrv.ini"))
+                 #t))))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("scdoc" ,scdoc)))
+      (synopsis "Simple Gemini protocol server")
+      (description "gmnisrv is a simple Gemini protocol server written in C.")
+      (license (list license:gpl3+
+                     license:bsd-3))))) ;; for ini.c and ini.h

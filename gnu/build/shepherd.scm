@@ -21,7 +21,6 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu build linux-container)
   #:use-module (guix build utils)
-  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -199,11 +198,24 @@ namespace, in addition to essential bind-mounts such /proc."
   "This is a variant of 'fork+exec-command' procedure, that joins the
 namespaces of process PID beforehand.  If there is no support for containers,
 on Hurd systems for instance, fallback to direct forking."
+  (define (strip-pid args)
+    ;; TODO: Replace with 'strip-keyword-arguments' when that no longer pulls
+    ;; in (guix config).
+    (let loop ((args args)
+               (result '()))
+      (match args
+        (()
+         (reverse result))
+        ((#:pid _ . rest)
+         (loop rest result))
+        ((head . rest)
+         (loop rest (cons head result))))))
+
   (let ((container-support?
          (file-exists? "/proc/self/ns"))
         (fork-proc (lambda ()
                      (apply fork+exec-command command
-                            (strip-keyword-arguments '(#:pid) args)))))
+                            (strip-pid args)))))
     (if container-support?
         (container-excursion* pid fork-proc)
         (fork-proc))))

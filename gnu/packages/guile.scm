@@ -737,16 +737,16 @@ type system, elevating types to first-class status.")
 (define-public guile-git
   (package
     (name "guile-git")
-    (version "0.3.0")
+    (version "0.4.0")
     (home-page "https://gitlab.com/guile-git/guile-git.git")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/guile-git/guile-git/uploads/"
-                                  "4c563d8e7e1ff84396abe8ca7011bcaf/guile-git-"
+                                  "2600bb0dfdfb00bfbe46811dccad51d8/guile-git-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c5i3d16hp7gp9rd78vk9zc45js8bphf92m4lbb5gyi4l1yl7kkm"))))
+                "1kxyg9x2aa1pg69cl48wysq0pbxvwfahy1xpl5ab6p8babhf7kic"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
@@ -769,15 +769,7 @@ manipulate repositories of the Git version control system.")
   (package-for-guile-2.2 guile-git))
 
 (define-public guile2.0-git
-  (let ((base (package-for-guile-2.0 guile-git)))
-    (package
-      (inherit base)
-      ;; Libgit2's Guile test driver requires (ice-9 textual-ports), which is
-      ;; not in Guile 2.0.  Thus, keep LIBGIT2 as-is here (i.e., built against
-      ;; Guile 2.2).
-      (inputs `(("libgit2" ,libgit2)
-                ,@(srfi-1:alist-delete "libgit2"
-                                       (package-inputs base)))))))
+  (package-for-guile-2.0 guile-git))
 
 (define-deprecated-guile3.0-package guile3.0-git)
 

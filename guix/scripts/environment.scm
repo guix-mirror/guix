@@ -32,6 +32,7 @@
   #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (gnu build linux-container)
   #:use-module (gnu build accounts)
   #:use-module ((guix build syscalls) #:select (set-network-interface-up))
@@ -179,8 +180,6 @@ COMMAND or an interactive shell in that environment.\n"))
   (newline)
   (show-build-options-help)
   (newline)
-  (show-transformation-options-help)
-  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
@@ -322,7 +321,7 @@ for the corresponding packages."
                    (manifest-entry-output e2))))
 
   (define transform
-    (cut (options->transformation opts) store <>))
+    (options->transformation opts))
 
   (define* (package->manifest-entry* package #:optional (output "out"))
     (package->manifest-entry (transform package) output))

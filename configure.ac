@@ -144,6 +144,11 @@ if test "x$guix_cv_have_recent_guile_gcrypt" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-Gcrypt could not be found; please install it.])
 fi
 
+GUIX_CHECK_GUILE_GIT
+if test "x$guix_cv_have_recent_guile_git" != "xyes"; then
+  AC_MSG_ERROR([A recent Guile-Git could not be found; please install it.])
+fi
+
 dnl Check for Guile-zlib.
 GUILE_MODULE_AVAILABLE([have_guile_zlib], [(zlib)])
 if test "x$have_guile_zlib" != "xyes"; then

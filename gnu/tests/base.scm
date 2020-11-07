@@ -880,7 +880,7 @@ non-ASCII names from /tmp.")
           (test-equal "avahi-browse"
             0
             (marionette-eval
-             '(system* "avahi-browse" "-avt")
+             '(system* "/run/current-system/profile/bin/avahi-browse" "-avt")
              marionette))
 
           (test-assert "getaddrinfo .local"

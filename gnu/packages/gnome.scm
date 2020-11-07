@@ -55,6 +55,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,6 +215,62 @@
   #:use-module (guix store)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public gupnp-igd
+  (package
+    (name "gupnp-igd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1q9bw12ibih3yxpha3gm1dabyqg9gx6yxacbh4kxsgm1i84j0lab"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
+       #:configure-flags (list "-Dgtk_doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "gupnp-igd-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.1.2")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml-4.1.2" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gssdp" ,gssdp)
+       ("gupnp" ,gupnp)
+       ("libsoup" ,libsoup)))
+    (synopsis "UPnP IGD for GNOME")
+    (description "GUPnP-IGD is a library to handle UPnP IGD port mapping.")
+    (home-page "https://gitlab.gnome.org/GNOME/gupnp-igd")
+    (license license:lgpl2.1+)))
 
 (define-public brasero
   (package
@@ -657,7 +714,7 @@ of known objects without needing a central registrar.")
 (define-public zeitgeist
   (package
     (name "zeitgeist")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -669,7 +726,7 @@ of known objects without needing a central registrar.")
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "0ig3d3j1n0ghaxsgfww6g2hhcdwx8cljwwfmp9jk1nrvkxd6rnmv"))))
+        (base32 "0y6fyzxl5np4yskcxibd0p03h619w9ir907nhf40h02y0pk1kgkp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -2783,16 +2840,16 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.12")
+    (version "1.5.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/OpenPrinting/system-config-printer/releases/"
-             "download/" version
+             "download/v" version
              "/system-config-printer-" version ".tar.xz"))
        (sha256
-        (base32 "050yrx1vfh9f001qsn06y1jcidxq0ymxr64kxykasr0zzryp25kb"))))
+        (base32 "18dqvi1s971lggkw6pv1sqxixlpg5a8rppzc1pxbanxa91jg18zf"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -4222,10 +4279,10 @@ requirements and without using a different ABI compared to applications and
 libraries written in C.")
     (license license:lgpl2.1+)))
 
-(define-public vala-0.48
+(define-public vala-0.50
   (package
     (inherit vala)
-    (version "0.48.9")
+    (version "0.50.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4233,7 +4290,7 @@ libraries written in C.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "1agyrvslv2yh9ikiw7k5nw6j6il1l2zrzfan0pzdpb9xpg9idslw"))))))
+                "0v4g2gvn7x7cl33h8sj1y2xyyskw5ayaj4jm2jrd3my3r439z3cm"))))))
 
 (define-public vte
   (package
@@ -5014,14 +5071,14 @@ keyboard shortcuts.")
 (define-public colord
   (package
     (name "colord")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "19f0938fr7nvvm3jr263dlknaq7md40zrac2npfyz25zc00yh3ws"))))
+        (base32 "05sydi6qqqx1rrqwnga1vbg9srkf89wdcfw5w4p4m7r37m2flx5p"))))
     (build-system meson-build-system)
     (arguments
      '(;; FIXME: One test fails:
@@ -6383,7 +6440,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.6")
+    (version "3.38.1")
     (source
      (origin
        (method url-fetch)
@@ -6391,7 +6448,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0x9hzqnji5l966yy2k5gppl8hqasn3sd5an4sr8srjmncxcs80ys"))))
+        (base32 "0grscz96bwj79ka4qvxh8h75avdx6824k8k38ylmaj6xbl6gi0hy"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -6423,14 +6480,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.99")
+    (version "0.9.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://adishatz.org/eolie/eolie-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0zj5v7wxqj7c20bmil127ah0vnjfzvvf6kzz82b9ip3846h43j02"))))
+                "1vzhfp8j1z3jvd5ndqfyn7nqrx3zdvx9mv1byjl36nnd9g63ji62"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -6784,7 +6841,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.9")
+    (version "0.30.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -6792,7 +6849,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1y556yyzfya0310v5wqjkf17hy5lhf028iminvvgi2pdfva344id"))))
+                "12d26y40kjlv5x8f5g04wff33vh7mdjb8c41ydqbrwdip0jwy2n2"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -11746,6 +11803,13 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                 (string-append (assoc-ref inputs "python-pygobject")
                                "/lib")))
              #t))
+         (add-after 'configure 'fix-ninja
+           (lambda _
+             ;; #43296: meson(?) incorrectly assumes we want to link
+             ;;         this PIE against a static libselinux.
+             (substitute* "build.ninja"
+               (("libselinux\\.a") "libselinux.so"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              (system "Xvfb :1 &")
@@ -11960,9 +12024,10 @@ your data.")
      `(("gtksourceview" ,gtksourceview))) ; required for source view
     (arguments
      `(#:build-type "release"
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
-       (add-after 'unpack 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              (substitute* "build-aux/meson/meson_post_install.py"
                (("gtk-update-icon-cache") (which "true")))

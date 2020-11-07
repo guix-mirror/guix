@@ -298,13 +298,17 @@ actual file name."
                      (loop rest))
                     ((('strong _ ...) _ ...)
                      #t)
-                    (_ #f))))
+                    ((('span ('@ ('class "symbol-definition-category"))
+                             (? string-or-entity?) ...) rest ...)
+                     #t)
+                    (x
+                     #f))))
 
               (let ((shtml (call-with-input-file file html->shtml)))
                 (let loop ((shtml shtml)
                            (anchors anchors))
                   (match shtml
-                    (('dt ('@ ('id id)) rest ...)
+                    (('dt ('@ ('id id) _ ...) rest ...)
                      (if (and (string-prefix? "index-" id)
                               (worthy-entry? rest))
                          (alist-cons (anchor-id->key id)
@@ -479,6 +483,19 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                    (pk 'unsupported-code-snippet something)
                    (primitive-exit 1)))))
 
+            (define (highlight-definition id category symbol args)
+              ;; Produce stylable HTML for the given definition (an @deftp,
+              ;; @deffn, or similar).
+              `(dt (@ (id ,id) (class "symbol-definition"))
+                   (span (@ (class "symbol-definition-category"))
+                         ,@category)
+                   (span (@ (class "symbol-definition-prototype"))
+                         ,symbol " " ,@args)))
+
+            (define (space? obj)
+              (and (string? obj)
+                   (string-every char-set:whitespace obj)))
+
             (define (syntax-highlight sxml anchors)
               ;; Recurse over SXML and syntax-highlight code snippets.
               (let loop ((sxml sxml))
@@ -497,6 +514,15 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                              (highlight lex-scheme
                                         (concatenate-snippets code-snippet)))
                             anchors)))
+
+                  ;; Replace the ugly <strong> used for @deffn etc., which
+                  ;; translate to <dt>, with more stylable markup.
+                  (('dt (@ ('id id)) category ... ('strong thing))
+                   (highlight-definition id category thing '()))
+                  (('dt (@ ('id id)) category ... ('strong thing)
+                        (? space?) ('em args ...))
+                   (highlight-definition id category thing args))
+
                   ((tag ('@ attributes ...) body ...)
                    `(,tag (@ ,@attributes) ,@(map loop body)))
                   ((tag body ...)
@@ -1172,7 +1198,8 @@ by 'html-identifier-indexes'."
                              #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
-                                            (cut string-append "/manual/" <>))
+                                            (cut string-append
+                                              "/manual/devel/" <>))
                              #:languages %languages))
 
   (define guix-split-node-indexes
@@ -1181,8 +1208,9 @@ by 'html-identifier-indexes'."
                              #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
-                                            (cut string-append "/manual/" <>
-                                                 "/html_node"))
+                                            (cut string-append
+                                              "/manual/devel/" <>
+                                              "/html_node"))
                              #:languages %languages))
 
   (define mono-node-indexes

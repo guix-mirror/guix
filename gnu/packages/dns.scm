@@ -317,7 +317,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.7")
+    (version "9.16.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -325,7 +325,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "1l8lhgnkj3fnl1101bs3pzj5gv2x5m9ahvrbyscsc9mxxc91hzcz"))))
+                "0ccdbqmpvnxlbrxjsx2w8ir4xh961svzcw7n87n8dglj6rb9r6wy"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -760,16 +760,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.10")
+    (version "2.4.0")
     (source
-     (let ((build "9729"))
+     (let ((build "9809"))
        (origin
          (method url-fetch)
          (uri
-          (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
+          (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0azaignqmylfdzr4x02s8y3pkn4f0xkpz3d1pkiiz8mwk92zgybn")))))
+          (base32 "114a1y4pzzzq0s9hyn65nd4fg19xijsqpfhsd0wkvjndsazg63ky")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -782,19 +782,19 @@ served by AS112.  Stub and forward zones are supported.")
            (lambda _
              (substitute* "Makefile.in"
                ((" (etc|var)") ""))
+             #t))
+         (add-after 'configure 'omit-spurious-references
+           (lambda _
+             ;; The many Makefile.in grep this(!) to #define BUILD_OPTIONS.
+             (substitute* "config.log"
+               (("(=/gnu/store/)[^-]*" _ match)
+                (string-append match "...")))
              #t)))
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
-             "--disable-build-timestamp" ; build reproducibly
-             "--enable-shared"
-             "--disable-static"
-             "--enable-acl"
-             "--enable-caching"
-             "--enable-ctrl"            ; enable remote control
-             "--enable-nsec"
-             "--enable-nsec3"
-             "--enable-tsig")))
+             "--enable-shared" "--disable-static"
+             "--disable-build-timestamp"))) ; build reproducibly
     (home-page "https://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain

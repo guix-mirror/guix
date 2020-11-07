@@ -593,7 +593,7 @@ and a few extra features.")
     ;; Note to maintainer: VLS must be built with a Vala toolchain the same
     ;; version or newer. Therefore when you update this package you may need
     ;; to update Vala too.
-    (version "0.48")
+    (version "0.48.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -601,7 +601,7 @@ and a few extra features.")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0chgfpci247skrvsiq1l8cas8sj2z6z42dlarka3df3qwxmh0if0"))))
+               (base32 "12k095052jkvbiyz8gzkj6w7r7p16d5m18fyikl48yvh5nln8fw0"))))
     (build-system meson-build-system)
     (arguments '(#:glib-or-gtk? #t))
     (inputs
@@ -609,7 +609,7 @@ and a few extra features.")
        ("json-glib" ,json-glib)
        ("jsonrpc-glib" ,jsonrpc-glib)
        ("libgee" ,libgee)
-       ("vala" ,vala-0.48)))
+       ("vala" ,vala-0.50)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/benwaffle/vala-language-server")

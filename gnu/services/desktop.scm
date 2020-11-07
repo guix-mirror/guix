@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages lxqt)
   #:use-module (gnu packages mate)
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages enlightenment)
@@ -126,6 +128,10 @@
             mate-desktop-configuration?
             mate-desktop-service
             mate-desktop-service-type
+
+            lxqt-desktop-configuration
+            lxqt-desktop-configuration?
+            lxqt-desktop-service-type
 
             xfce-desktop-configuration
             xfce-desktop-configuration?
@@ -1008,6 +1014,36 @@ and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password."
   (service xfce-desktop-service-type config))
+
++
+;;;
+;;; Lxqt desktop service.
+;;;
+
+(define-record-type* <lxqt-desktop-configuration> lxqt-desktop-configuration
+  make-lxqt-desktop-configuration
+  lxqt-desktop-configuration?
+  (lxqt lxqt-package
+        (default lxqt)))
+
+(define (lxqt-polkit-settings config)
+  "Return the list of LXQt dependencies that provide polkit actions and
+rules."
+  (let ((lxqt (lxqt-package config)))
+    (map (lambda (name)
+           ((package-direct-input-selector name) lxqt))
+         '("lxqt-admin"))))
+
+(define lxqt-desktop-service-type
+  (service-type
+   (name 'lxqt-desktop)
+   (extensions
+    (list (service-extension polkit-service-type
+                             lxqt-polkit-settings)
+          (service-extension profile-service-type
+                             (compose list lxqt-package))))
+   (default-value (lxqt-desktop-configuration))
+   (description "Run LXQt desktop environment.")))
 
 
 ;;;

@@ -1765,6 +1765,32 @@ expressed genes in DNA microarray experiments.")
 fitting of some classes of graphical Markov models.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package, r-graph.
+(define-public r-perfmeas
+  (package
+    (name "r-perfmeas")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PerfMeas" version))
+       (sha256
+        (base32
+         "1x7ancmb41zd1js24rx94plgbssyc71z2bvpic6mg34xjkwdjw93"))))
+    (properties `((upstream-name . "PerfMeas")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-limma" ,r-limma)
+       ("r-rbgl" ,r-rbgl)))
+    (home-page "https://cran.r-project.org/web/packages/PerfMeas/")
+    (synopsis "Performance measures for ranking and classification tasks")
+    (description
+     "This package implements different performance measures for
+classification and ranking tasks.  @dfn{Area under curve} (AUC), precision at
+a given recall, F-score for single and multiple classes are available.")
+    (license license:gpl2+)))
+
 ;; This is a CRAN package, but it depends on a Bioconductor package.
 (define-public r-codedepends
   (package

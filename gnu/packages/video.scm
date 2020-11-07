@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -826,8 +827,8 @@ shared library and encoder and decoder command-line executables.")
 (define-public libx264
   ;; There are no tags in the repository, so we take the version number from
   ;; the X264_BUILD variable defined in x264.h.
-  (let ((version "159")
-        (commit "1771b556ee45207f8711744ccbd5d42a3949b14c")
+  (let ((version "161")
+        (commit "4c2aafd864dd201832ec2be0fef4484925146650")
         (revision "0"))
     (package
       (name "libx264")
@@ -840,7 +841,7 @@ shared library and encoder and decoder command-line executables.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kmi78gs5101d4df33il5bmjbns54nvdjsyn44xiw60lwsg11vwz"))))
+                  "1i6v9h3xx9pi0zmlj3anwwjxqa63sbhy9crrif8dphipwfn9hyg5"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("pkg-config" ,pkg-config)
@@ -881,14 +882,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "50.0.0")
+    (version "51.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "09485qfbdirr9g536shglzdm271yipb1669r3dm3hxp46k0x59aq"))
+        (base32 "0w2crz6wnfw18m9m4zrij1yplcq5drzhz8n58w9kp51wl48a0yn1"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -1005,7 +1006,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.0.7")
+    (version "0.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1014,7 +1015,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11ywip9ck2rgyj8s1pyr6za3si0bnx8rl2f3cv84xgcq36ac3rv4"))))
+        (base32 "0786bppk8dhp5p2284qp7pm3b9vwh1cm4n03hiqwd2vvgv41aypy"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1467,7 +1468,6 @@ operate properly.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("python" ,python-2) ; scripts use interpreter python2
        ("speex" ,speex)
        ("yasm" ,yasm)))
     (arguments
@@ -1635,11 +1635,19 @@ audio/video codec library.")
                "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:modules modules %gnu-build-system-modules)
+        `((srfi srfi-1)
+          ,@modules))
        ((#:configure-flags flags)
-        `(delete "--enable-libdav1d" (delete "--enable-libaom" (delete "--enable-librav1e"
-                  ,flags))))))
-    (inputs (alist-delete "dav1d" (alist-delete "libaom" (alist-delete "rav1e"
-                           (package-inputs ffmpeg)))))))
+        `(fold delete
+               ,flags
+               '("--enable-libdav1d"
+                 "--enable-libaom"
+                 "--enable-librav1e"
+                 "--enable-libsrt")))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("dav1d" "libaom" "rav1e" "srt")))))
 
 (define-public ffmpeg-2.8
   (package
@@ -2177,15 +2185,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.09.20")
+    (version "2020.11.01.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
-                                  "releases/download/" version "/youtube-dl-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://youtube-dl.org/downloads/latest/"
+                                  "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1pkw3hnkddk1kqv0in152q1k4jjgbmf2xvc9j3r5nd38z6f7j6mc"))))
+                "06lhba4b9bm6f5yqrb5xvdr0l5shwd95djf9nlpg86prr5xihqks"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -3713,6 +3720,47 @@ MPEG-2, MPEG-4, DVD (VOB)...
 information and other metadata about audio or video files.  It supports the
 many codecs and formats supported by libmediainfo.")
     (license license:bsd-2)))
+
+(define-public atomicparsley
+  (package
+    (name "atomicparsley")
+    (version "20200701.154658.b0d6223")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wez/atomicparsley")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-cmake-version
+           (lambda* _
+             (substitute* "CMakeLists.txt"
+               ;; At the time of writing, Guix has CMake at 3.16, but
+               ;; AtomicParsley uses 3.17.  This brings the required CMake
+               ;; version down to what Guix can afford.
+               (("VERSION 3.17") "VERSION 3.16"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "AtomicParsley" bin))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Metadata editor for MPEG-4 files")
+    (description "AtomicParsley is a lightweight command line program for
+reading, parsing and setting metadata into MPEG-4 files, in particular,
+iTunes-style metadata.")
+    (home-page "https://github.com/wez/atomicparsley")
+    (license license:gpl2+)))
 
 (define-public livemedia-utils
   (package

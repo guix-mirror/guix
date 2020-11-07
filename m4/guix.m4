@@ -204,6 +204,28 @@ AC_DEFUN([GUIX_CHECK_GUILE_GCRYPT], [
      fi])
 ])
 
+dnl GUIX_CHECK_GUILE_GIT
+dnl
+dnl Check whether a recent-enough Guile-Git is available.
+AC_DEFUN([GUIX_CHECK_GUILE_GIT], [
+  dnl Check whether we're using Guile-Git 0.3.0 or later.  0.3.0
+  dnl introduced SSH authentication support and more.
+  AC_CACHE_CHECK([whether Guile-Git is available and recent enough],
+    [guix_cv_have_recent_guile_git],
+    [GUILE_CHECK([retval],
+      [(use-modules (git) (git auth) (git submodule))
+       (let ((auth (%make-auth-ssh-agent)))
+         repository-close!
+	 object-lookup-prefix
+         (make-clone-options
+          #:fetch-options (make-fetch-options auth)))])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_git="yes"
+     else
+       guix_cv_have_recent_guile_git="no"
+     fi])
+])
+
 dnl GUIX_TEST_ROOT_DIRECTORY
 AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
   AC_CACHE_CHECK([for unit test root directory],

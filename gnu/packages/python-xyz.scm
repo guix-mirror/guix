@@ -87,6 +87,8 @@
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -956,9 +958,6 @@ to users of that module.")
     ;; by the Expat license.
     (license (list license:isc license:expat))))
 
-(define-public python2-netcdf4
-  (package-with-python2 python-netcdf4))
-
 (define-public python-license-expression
   (package
     (name "python-license-expression")
@@ -1793,6 +1792,32 @@ human-friendly syntax.")
 (define-public python2-schedule
   (package-with-python2 python-schedule))
 
+(define-public python-scour
+  (package
+    (name "python-scour")
+    (version "038.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/scour-project/scour")
+         (commit
+          (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rgiypb9ig8x4rl3hfzpy7kwnx1q3064nvlrv4fk0dnp84girn0v"))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (build-system python-build-system)
+    (home-page "https://github.com/scour-project/scour")
+    (synopsis "Scour is an SVG optimizer/cleaner written in Python")
+    (description "The goal of Scour is to output a file that renderes
+identically at a fraction of the size by removing a lot of redundant
+information created by most SVG editors.  Optimization options are typically
+lossless but can be tweaked for more aggressive cleaning.")
+    (license license:asl2.0)))
+
 (define-public python-mechanize
   (package
     (name "python-mechanize")
@@ -1817,6 +1842,30 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 
 (define-public python2-mechanize
   (package-with-python2 python-mechanize))
+
+(define-public python-simpleaudio
+  (package
+    (name "python-simpleaudio")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "simpleaudio" version))
+       (sha256
+        (base32
+         "07glihg0fpca0gvbbvqs9q815w8xhflzdvg72yvlsm23j9j8h739"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (inputs
+      `(("alsa-lib" ,alsa-lib)))
+    (home-page
+     "https://github.com/hamiltron/py-simple-audio")
+    (synopsis "Simple, asynchronous audio playback for Python 3")
+    (description
+     "The @code{simplaudio} package provides cross-platform, dependency-free
+audio playback capability for Python 3 on OSX, Windows, and Linux.")
+    (license license:expat))) ; MIT license
 
 (define-public python-simplejson
   (package
@@ -3658,7 +3707,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.1.2")
+    (version "3.2.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -3668,9 +3717,9 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16gnxy0qinh8fhs0qvhff5z2xh49c3cqgm0d7bfjw120df6x7fym"))
+        (base32 "0if0h3myb9m3hgmn1phrhq8pfp89kfqsaq32vmfdjkyjdj7y59ds"))
        (patches (search-patches
-                 "python-robotframework-honor-source-date-epoch.patch"))))
+                 "python-robotframework-source-date-epoch.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -3685,12 +3734,23 @@ ecosystem, but can naturally be used also by other projects.")
                                           (string-append doc "/libraries"))
                         #t)))
                   (replace 'check
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Some tests require timezone data.  Otherwise, they
+                      ;; look up /etc/localtime, which doesn't exist, and fail
+                      ;; with:
+                      ;;
+                      ;; OverflowError: mktime argument out of range
+                      (setenv "TZDIR"
+                              (string-append (assoc-ref inputs "tzdata")
+                                             "/share/zoneinfo"))
+                      (setenv "TZ" "Europe/Paris")
+
                       (invoke "python" "utest/run.py"))))))
     (native-inputs
      `(("python-invoke" ,python-invoke)
        ("python-rellu" ,python-rellu)
-       ("python:tk" ,python "tk")))     ;used when building the HTML doc
+       ("python:tk" ,python "tk")             ;used when building the HTML doc
+       ("tzdata" ,tzdata-for-tests)))
     (outputs '("out" "doc"))
     (home-page "https://robotframework.org")
     (synopsis "Generic automation framework")
@@ -3704,11 +3764,12 @@ process automation (RPA).")
   ;; to the 0.9 stable release available from PyPI.  The tests are not
   ;; included in the PyPI archive, so we fetch the sources from the upstream
   ;; Git repo.
-  (let ((commit "e851879bab1f63e4e53b34a4dc8a67ed95102830")
-        (revision "1"))
+  (let ((commit "b0619ac58a8b1be125f9c98856a664594614570f")
+        (revision "0"))
     (package
       (name "python-robotframework-lint")
-      (version (git-version "0.9.0" revision commit))
+      (version (git-version "1.1"      ;version taken from 'rflint/version.py'
+                            revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3718,7 +3779,7 @@ process automation (RPA).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1p6fknqg5sb9qz5857ji4a877657vgfjm5v3zn45994parx6ml1m"))))
+           "180npmvzqync25b2scs878gv8q4y17dsinxyjcc10bw22msfap6b"))))
       (build-system python-build-system)
       (arguments
        `(#:phases
@@ -4063,14 +4124,14 @@ matching of file paths.")
 (define-public python-black
   (package
     (name "python-black")
-    (version "19.10b0")
+    (version "20.8b1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "black" version))
        (sha256
         (base32
-         "0f8mr0yzj78q1dx7v6ggbgfir2wv0n5z2shfbbvfdq7910xbgvf2"))))
+         "1spv6sldp3mcxr740dh3ywp25lly9s8qlvs946fin44rl1x5a0hw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4088,7 +4149,11 @@ matching of file paths.")
                                                   "")))))
              #t))
          (add-after 'unpack 'disable-broken-tests
-           (lambda _
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
+
              ;; These tests are supposed to be skipped when the blackd
              ;; dependencies are missing, but this doesn't quite work.
              (substitute* "tests/test_black.py"
@@ -4102,15 +4167,21 @@ matching of file paths.")
              (substitute* "tests/test_black.py"
                (("( *)def test_self" match indent)
                 (string-append indent "@unittest.skip(\"guix\")\n" match)))
+
+             (substitute* "tests/test_black.py"
+               (("( *)def test_python38" match indent)
+                (string-append indent "@unittest.skip(\"guix\")\n" match)))
              #t)))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-attrs" ,python-attrs)
        ("python-appdirs" ,python-appdirs)
        ("python-pathspec" ,python-pathspec)
+       ("python-mypy-extensions" ,python-mypy-extensions)
        ("python-regex" ,python-regex)
        ("python-toml" ,python-toml)
-       ("python-typed-ast" ,python-typed-ast)))
+       ("python-typed-ast" ,python-typed-ast)
+       ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/ambv/black")
@@ -14810,13 +14881,13 @@ projects.")
   (package
     (name "python-invoke")
     (home-page "https://www.pyinvoke.org/")
-    (version "1.3.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "invoke" version))
               (sha256
                (base32
-                "1nn7gad0rvy492acpyhkrp01zsk86acf34qhsvq4xmm6x39788n5"))))
+                "0pg1lpl4583z83i12262v72y1a4cxdcxi7vqhl8dpqv9wszj6gyy"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: Requires many dependencies that are not yet in Guix.
@@ -16623,6 +16694,44 @@ ignoring formatting changes.")
 (define-public python2-pydiff
   (package-with-python2 python-pydiff))
 
+(define-public python-pydub
+  (package
+    (name "python-pydub")
+    (version "0.24.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydub" version))
+       (sha256
+        (base32
+         "0sfwfq7yjv4bl3yqbmizszscafvwf4zr40hzbsy7rclvzyznh333"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-ffmpeg-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ffmpeg (assoc-ref inputs "ffmpeg")))
+               (substitute* '("pydub/utils.py")
+                 (("return \"ffmpeg\"")
+                  (string-append "return \"" ffmpeg "/bin/ffmpeg\""))
+                 (("return \"ffplay\"")
+                  (string-append "return \"" ffmpeg "/bin/ffplay\""))
+                 (("return \"ffprobe\"")
+                  (string-append "return \"" ffmpeg "/bin/ffprobe\""))
+                 (("warn\\(\"Couldn't find ff") "# warn\\(\"Couldn't find ff"))
+               #t))))))
+    (home-page "https://pydub.com")
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+     `(("python-scipy" ,python-scipy)))
+    (synopsis "Manipulate audio with a high level interface in Python")
+    (description
+     "@code{pydub} makes it easy to manipulate audio in Python.  It relies on
+@code{ffmpeg} to open various audio formats.")
+    (license license:expat))) ; MIT license
+
 (define-public python-tqdm
   (package
     (name "python-tqdm")
@@ -17356,6 +17465,47 @@ style guide, even if the original code didn't violate the style guide.")
 
 (define-public python2-yapf
   (package-with-python2 python-yapf))
+
+(define-public python-yq
+  (package
+    (name "python-yq")
+    (version "2.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yq" version))
+       (sha256
+        (base32
+         "1q4rky0a6n4izmq7slb91a54g8swry1xrbfqxwc8lkd3hhvlxxkl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "yq/__init__.py"
+               (("Popen\\(\\[\"jq")
+                (string-append
+                 "Popen([\""
+                 (assoc-ref inputs "jq")
+                 "/bin/jq")))
+             #t)))))
+    (inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-xmltodict" ,python-xmltodict)
+       ("jq" ,jq)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/kislyuk/yq")
+    (synopsis "Command-line YAML/XML processor")
+    (description
+     "This package provides @command{yq} and @command{xq} for processing YAML
+and XML respectively.  The processing is done through @{jq}, @command{jq}
+filters can be used to process the data as it passes through.")
+    (license license:asl2.0)))
 
 (define-public python-gyp
   (let ((commit "5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f")
@@ -21895,7 +22045,7 @@ allows you, from Python code, to “fix” invalid (X)HTML markup.")
     (build-system python-build-system)
     (home-page "https://github.com/mattgiles/mujson")
     (synopsis "Use the fastest JSON functions available at import time")
-    (description "This packages selects the fastest JSON functions available
+    (description "This package selects the fastest JSON functions available
 at import time.")
     (license license:expat)))
 
@@ -22232,8 +22382,6 @@ It adds a simple and readable way to print stuff during development.")
         (base32
          "1ypbyqxlk7n6zibk90js3ybz37xmin3kk0i35g8c51bwqpcfyxg8"))))
     (build-system python-build-system)
-    (inputs
-     `(("tzdata" ,tzdata)))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-pytz" ,python-pytz)
@@ -22242,7 +22390,8 @@ It adds a simple and readable way to print stuff during development.")
        ("python-tzlocal" ,python-tzlocal)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-parameterized" ,python-parameterized)))
+       ("python-parameterized" ,python-parameterized)
+       ("tzdata" ,tzdata-for-tests)))
     (arguments
      `(;; TODO: Of 23320 tests, 6 fail and 53 error.
        #:tests? #f
@@ -22504,3 +22653,33 @@ NestedText is both simple and natural.  Only a small number of concepts and rule
 be kept in mind when creating it.  It is easily created, modified, or viewed with
 a text editor and easily understood and used by both programmers and non-programmers.")
     (license license:expat))) ; MIT license
+
+(define-public python-parallel
+  (package
+    (name "python-parallel")
+    (version "1.6.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.parallelpython.com/downloads/pp/pp-"
+             version ".zip"))
+       (sha256
+        (base32
+         "1mzk4yabxj6r149fswhis18hd8dnag5sj8i4wb06450zq3pi8dh7"))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; No test suite.
+    (home-page "https://www.parallelpython.com")
+    (synopsis "Parallel and distributed programming for Python")
+    (description "Parallel Python module (PP) provides an easy and efficient
+way to create parallel-enabled applications for SMP computers and clusters.
+PP module features cross-platform portability and dynamic load balancing.
+Thus applications written with PP will parallelize efficiently even on
+heterogeneous and multi-platform clusters (including clusters running other
+applications with variable CPU loads).")
+    (license license:bsd-3)))
+
+(define-public python2-parallel
+  (package-with-python2 python-parallel))

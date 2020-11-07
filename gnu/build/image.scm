@@ -118,16 +118,16 @@ ROOT directory to populate the image."
      ((string=? type "vfat")
       (make-vfat-image partition target root))
      (else
-      (format (current-error-port)
-              "Unsupported partition type~%.")))))
+      (raise (condition
+              (&message
+               (message "unsupported partition type"))))))))
 
 (define (convert-disk-image image format output)
   "Convert IMAGE to OUTPUT according to the given FORMAT."
   (case format
     ((compressed-qcow2)
-     (begin
-       (invoke "qemu-img" "convert" "-c" "-f" "raw"
-               "-O" "qcow2" image output)))
+     (invoke "qemu-img" "convert" "-c" "-f" "raw"
+             "-O" "qcow2" image output))
     (else
      (copy-file image output))))
 

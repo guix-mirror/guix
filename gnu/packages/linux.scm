@@ -352,23 +352,23 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.8-version "5.8.15")
-(define deblob-scripts-5.8
+(define-public linux-libre-5.9-version "5.9.6")
+(define deblob-scripts-5.9
   (linux-libre-deblob-scripts
-   linux-libre-5.8-version
-   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
-   (base32 "0z28yj4f7hhc253hssslm6xl9sg92agbiw50jxb9y72d8zp6sksq")))
-(define-public linux-libre-5.8-pristine-source
-  (let ((version linux-libre-5.8-version)
-        (hash (base32 "0hfnq4n902pws8sjxd1lsdxxa0v45g988imp73xnqfqv2d71r0bj")))
+   linux-libre-5.9-version
+   (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
+   (base32 "0is78bvpx6mrhibpspz4iqnsa1xplh11q1cnalkkm4hpsiy0fi4g")))
+(define-public linux-libre-5.9-pristine-source
+  (let ((version linux-libre-5.9-version)
+        (hash (base32 "0w2kcng09nzk09dwkx4azdfgnwzbd2mz8lyl4j69bwx837z85hbc")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-5.8)))
+                            deblob-scripts-5.9)))
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.71")
+(define-public linux-libre-5.4-version "5.4.75")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +376,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1h6gbc9cfhb7dqx669iq26a23whka6km5av0ysk61aaz2z57vkrk")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1ivcimngj5h7lxslkrdljpfw9hfvdhrm8wrp7gp4d3gk7kpljw3k")))
+        (hash (base32 "0w0lpiy56zqdm2vpx9ckxakna334n88pnqbv52zyfcslxgb6yinj")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.151")
+(define-public linux-libre-4.19-version "4.19.155")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0vm3nsi9la3azxrsvndbd6fpz79pch7309f2144xyxszsk339cf7")))
+        (hash (base32 "1lj81aadyskmxs3j4s923nhnk69dfj2kiwm0nxabbcjw83sliinb")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.201")
+(define-public linux-libre-4.14-version "4.14.204")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0nr3w5m7dz28v7qfhp99ih4c369qrhq751wfikbz8ga3di0dqa72")))
+        (hash (base32 "1ncacsy2g80zigfx8nmr1f7v50s1y9ys1xy9jgizrnvmxjcji0wy")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.239")
+(define-public linux-libre-4.9-version "4.9.241")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0lfbn5amykvwz1svvxayzhsz1dvm4mgzsnq1g0wqffclxm148hr3")))
+        (hash (base32 "0b5k9cwz7vpaybw4nd03pn2z4d8qbhmhd9mx4j2yd0fqj57x1in4")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.239")
+(define-public linux-libre-4.4-version "4.4.241")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "03myd9ngmjmnddh4iqqsgcfg9rd11vyvwym38yh4m1p08j1zbg0k")))
+        (hash (base32 "054jd6jgymxbkjfmk8wbckihl355gjimjg2xi5yr4v2343qi9zij")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -461,8 +461,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-5.8-source
-  (source-with-patches linux-libre-5.8-pristine-source
+(define-public linux-libre-5.9-source
+  (source-with-patches linux-libre-5.9-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -565,9 +565,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-5.8
-  (make-linux-libre-headers* linux-libre-5.8-version
-                             linux-libre-5.8-source))
+(define-public linux-libre-headers-5.9
+  (make-linux-libre-headers* linux-libre-5.9-version
+                             linux-libre-5.9-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -856,16 +856,16 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-5.8
-  (make-linux-libre* linux-libre-5.8-version
-                     linux-libre-5.8-source
+(define-public linux-libre-5.9
+  (make-linux-libre* linux-libre-5.9-version
+                     linux-libre-5.9-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-5.8-version)
-(define-public linux-libre-pristine-source linux-libre-5.8-pristine-source)
-(define-public linux-libre-source          linux-libre-5.8-source)
-(define-public linux-libre                 linux-libre-5.8)
+(define-public linux-libre-version         linux-libre-5.9-version)
+(define-public linux-libre-pristine-source linux-libre-5.9-pristine-source)
+(define-public linux-libre-source          linux-libre-5.9-source)
+(define-public linux-libre                 linux-libre-5.9)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -979,7 +979,16 @@ It has been modified to remove all non-free binary blobs.")
                      #:extra-options
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
-                        ("CONFIG_RTC_DRV_RK808" . #t))
+                        ("CONFIG_RTC_DRV_RK808" . #t)
+                        ;; Pinebook display, battery, charger and usb
+                        ("CONFIG_DRM_ANALOGIX_ANX6345" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_INPUT_AXP20X_PEK" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_BATTERY_AXP20X" . m)
+                        ("CONFIG_PINCTRL_AXP209" . m)
+                        ("CONFIG_AXP20X_POWER" . m)
+                        ("CONFIG_AXP20X_ADC" . m))
                       %default-extra-linux-options)))
 
 (define-public linux-libre-arm64-generic-5.4
@@ -1003,8 +1012,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.4-version
-          linux-libre-5.4-source
+          linux-libre-5.9-version
+          linux-libre-5.9-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
@@ -1734,14 +1743,14 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "012")
+    (version "013")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
                           "usbutils-" version ".tar.xz"))
       (sha256
-       (base32 "0iiy0q7fzikavmdsjsb0sl9kp3gfh701qwyjjccvqh0qz4jlcqw8"))))
+       (base32 "0f0klk6d3hmbpf6p4dcwa1qjzblmkhbxs1wsw87aidvqri7lj8wy"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -1750,7 +1759,7 @@ slabtop, and skill.")
          (add-before 'bootstrap 'patch-bootstrap-scripts
            (lambda _
              (substitute* "usbhid-dump/bootstrap"
-               (("/bin/bash") (which "bash")))
+               (("/bin/sh") (which "sh")))
 
              ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
              (substitute* "autogen.sh"
@@ -2174,8 +2183,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    ;; XXX When updating, remove the ‘install-missing-script’ phase.
-    (version "1.8.5")
+    (version "1.8.6")
     (source
      (origin
        (method url-fetch)
@@ -2184,7 +2192,7 @@ external rate conversion.")
                   (string-append "https://www.netfilter.org/projects/iptables/"
                                  "files/iptables-" version ".tar.bz2")))
        (sha256
-        (base32 "02a3575ypdpg6a2x752mhk3f7h1381ymkq1n0gss6fp6292xfmyl"))))
+        (base32 "0rvp0k8a72h2snrdx48cfn75bfa0ycrd2xl3kjysbymq7q6gxx50"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2196,19 +2204,7 @@ external rate conversion.")
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-missing-script
-           ;; A typo prevents installation of /sbin/iptables-apply.  It's been
-           ;; fixed upstream (d4ed0c741fc789bb09d977d74d30875fdd50d08b), but
-           ;; a patch would require bootstrapping and more inputs.  Simply copy
-           ;; the file ourselves.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (sbin (string-append out "/sbin")))
-               (install-file "iptables/iptables-apply" sbin)
-               #t))))))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
@@ -2927,14 +2923,14 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.12")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.cybernoia.de/software/archivemount/"
                            "archivemount-" version ".tar.gz"))
        (sha256
-        (base32 "12fb8fcmd1zwvfgzx4pay47md5cr2kgxcgq82cm6skmq75alfzi4"))))
+        (base32 "1cy5b6qril9c3ry6fv7ir87s8iyy5vxxmbyx90dm86fbra0vjaf5"))))
     (build-system gnu-build-system)
     (inputs `(("fuse" ,fuse)
               ("libarchive" ,libarchive)))
@@ -4109,7 +4105,7 @@ Translation (@dfn{SAT}) are also supported.")
 (define-public nvme-cli
   (package
     (name "nvme-cli")
-    (version "1.12")
+    (version "1.13")
     (home-page "https://github.com/linux-nvme/nvme-cli")
     (source (origin
               (method git-fetch)
@@ -4117,7 +4113,7 @@ Translation (@dfn{SAT}) are also supported.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "0ldky34sn0m5c4hgiip0fkzm465nca69bhxicpd5dg8wxhzxqrp3"))
+               (base32 "1d538kp841bjh8h8d9q7inqz56rdcwb3m78zfx8607ddykv7wcqb"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -4805,7 +4801,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.7")
+    (version "5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4813,7 +4809,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0p6ycbr8sw5bq3mj84gh9rvh5sk8sjr2l9hb9dhm4j41ij5h8bsw"))))
+                "14d7hz07kfczfgmy1ixkgccjn393gpkjn7givz5kwxddcnk5i4xq"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -6254,14 +6250,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.7")
+    (version "1.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "13zd90bfrr0q3j0l0cbc8kiizccw6n8gp727kqnfljh024zw3nr0"))))
+        (base32 "04dp797llg3cqzivwrql30wg9mfr0ngnp0v5gs7jcdmp11dzm8q4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -6278,7 +6274,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.6")
+    (version "0.9.7")
     (source
      (origin
        (method url-fetch)
@@ -6287,7 +6283,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "0vmn6xwqa1nq6crfxshh049b199d0aj6hfgin7k068xhibzgvmk8"))))
+        (base32 "1c1c2475nifncv0ng8z77h2dpanlsx0bhqm15k00jb3a6a68lszy"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -6940,7 +6936,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.7.0")
+    (version "5.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6948,7 +6944,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0bssrfhnw5mhybgaa6d8wp87izi3c9cjpjy7vicm6y76mf7kl8p9"))))
+                "13xkn9jpmwp4fm9r68vhgznkmxhnv83n2b39mhy2qdaph90w2a1l"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7580,13 +7576,13 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.6")
+    (version "7.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ipset.netfilter.org/ipset-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ny2spcm6bmpj8vnazssg99k59impr7n84jzkdmdjly1m7548z8f"))))
+                "0ckc678l1431mb0q5ilfgy0ajjwi8n135c72h606imm43dc0v9a5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))

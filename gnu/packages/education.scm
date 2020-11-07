@@ -275,7 +275,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "6.2.1")
+    (version "6.2.4")
     (source
      (origin
        (method git-fetch)
@@ -284,7 +284,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "163pskgrssw0l6c73lrdx613fridnv0162lscl4xqx9sgg7hfaxh"))))
+        (base32 "05ahhwhswnlyg5wiywdj0df4bymcz1l5l4324gjcvpm2lgwxxnl5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -956,7 +956,7 @@ floating through space.")
 (define-public mdk
   (package
     (name "mdk")
-    (version "1.2.11")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -964,7 +964,7 @@ floating through space.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0rrac91ynya4jrhv14j9vvn21c5z80hi1zmmdxjb0d9zz6i7kjgb"))))
+         "0bhk3c82kyp8167h71vdpbcr852h5blpnwggcswqqwvvykbms7lb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
@@ -979,7 +979,7 @@ floating through space.")
        ("ncurses" ,ncurses)
        ("pango" ,pango)
        ("readline" ,readline)))
-    (home-page "https://www.gnu.org/software/mdk/")
+    (home-page "https://www.gnu.org/software/mdk/manual/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description
      "GNU MDK is the Mix Development Kit, an emulation of the pedagogical

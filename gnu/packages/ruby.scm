@@ -147,16 +147,16 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.7
   (package
     (inherit ruby)
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+       (uri (string-append "https://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.gz"))
        (sha256
         (base32
-         "0674x98f542y02r7n2yv2qhmh97blqhi2mvh2dn5f000vlxlh66l"))
+         "1m63461mxi3fg4y3bspbgmb0ckbbb1ldgf9xi0piwkpfsk80cmvf"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -2416,7 +2416,9 @@ extensions.")
     (arguments
      '(#:tests? #f ; test suite hangs for unknown reason
        #:gem-flags
-       (list "--"
+       (list "--no-document"            ; TODO: Re-enable when documentation
+                                        ; generation works
+             "--"
              (string-append "--with-xml2-include="
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2" ))))
@@ -3847,6 +3849,10 @@ as a base class when writing classes that depend upon
         (base32
          "1r19ifc4skyl2gxnifrxa5jvbbay9fb2in79ppgv02b6n4bhsw90"))))
     (build-system ruby-build-system)
+    (arguments
+     ;; The test suite fails (see:
+     ;; https://github.com/cldwalker/bond/issues/46).
+     `(#:tests? #f))
     (native-inputs
      `(("ruby-bacon" ,ruby-bacon)
        ("ruby-bacon-bits" ,ruby-bacon-bits)
@@ -4516,6 +4522,29 @@ reporter.")
     (description
      "@code{minitest-rg} changes the colour of the output from Minitest.")
     (home-page "https://blowmage.com/minitest-rg/")
+    (license license:expat)))
+
+(define-public ruby-minitest-global-expectations
+  (package
+    (name "ruby-minitest-global-expectations")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-global_expectations"
+                          version))
+       (sha256
+        (base32
+         "1pp3k2608spj4kvqy2y16hs18an917g6vwgvphrfhjviac83090x"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Adjust minitest behaviour for calling expectation methods")
+    (description
+     "Minitest-global_expectations allows continued use of expectation methods
+on all objects.  Calling expectation methods on all objects was deprecated in
+minitest 5.12, and is planned to be removed from minitest 6.")
+    (home-page "https://github.com/jeremyevans/minitest-global_expectations")
     (license license:expat)))
 
 (define-public ruby-minitest-hooks

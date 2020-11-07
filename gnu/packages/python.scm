@@ -395,7 +395,39 @@ data types.")
                 " --exclude test_mmap"
                 ;; test_socket may hang and eventually run out of memory
                 ;; on some systems: <https://bugs.python.org/issue34587>.
-                " test_socket")))
+                " test_socket"
+                ,@(if (hurd-target?)
+                      '(" test_posix"      ;multiple errors
+                        " test_time"
+                        " test_pty"
+                        " test_shutil"
+                        " test_tempfile"   ;chflags: invalid argument:
+                                           ;  tbv14c9t/dir0/dir0/dir0/test0.txt
+                        " test_asyncio"    ;runs over 10min
+                        " test_os"         ;stty: 'standard input':
+                                           ;  Inappropriate ioctl for device
+                        " test_openpty"    ;No such file or directory
+                        " test_selectors"  ;assertEqual(NUM_FDS // 2, len(fds))
+                                           ;  32752 != 4
+                        " test_compileall" ;multiple errors
+                        " test_poll"       ;list index out of range
+                        " test_subprocess" ;runs over 10min
+                        " test_asyncore"   ;multiple errors
+                        " test_threadsignals"
+                        " test_eintr"      ;Process return code is -14
+                        " test_io"         ;multiple errors
+                        " test_logging"
+                        " test_signal"
+                        " test_threading"  ;runs over 10min
+                        " test_flags"      ;ERROR
+                        " test_bidirectional_pty"
+                        " test_create_unix_connection"
+                        " test_unix_sock_client_ops"
+                        " test_open_unix_connection"
+                        " test_open_unix_connection_error"
+                        " test_read_pty_output"
+                        " test_write_pty")
+                      '()))))
        ((#:phases phases)
        `(modify-phases ,phases
           ,@(if (hurd-system?)

@@ -215,7 +215,9 @@
 
 (define %postgresql-os
   (simple-operating-system
-   (service postgresql-service-type)))
+   (service postgresql-service-type
+            (postgresql-configuration
+             (postgresql postgresql-10)))))
 
 (define (run-postgresql-test)
   "Run tests in %POSTGRESQL-OS."

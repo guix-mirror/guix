@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -189,6 +189,25 @@ by managing a queue of pending work.")
                   license:lgpl2.1+    ; hilbert.[ch], src/common/slurm_time.h
                   license:zlib        ; src/common/strnatcmp.c
                   license:gpl2+))))   ; the rest, often with OpenSSL exception
+
+;; The SLURM client/daemon protocol and file format changes from time to time
+;; in incompatible ways, as noted in
+;; <https://slurm.schedmd.com/troubleshoot.html#network>.  Thus, keep older
+;; releases here.  See also <https://issues.guix.gnu.org/44387>.
+
+(define-public slurm-19.05
+  (package
+    (inherit slurm)
+    (version "19.05.3-2")
+    (source (origin
+              (inherit (package-source slurm))
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.schedmd.com/slurm/slurm-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
 
 (define-public slurm-drmaa
   (package

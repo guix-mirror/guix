@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -109,6 +110,58 @@ OPTION doesn't appear in ARGUMENTS."
                   (and (string-prefix? opt arg)
                        (substring arg (+ 1 (string-index arg #\=)))))
                 arguments)))
+
+(define (resume-if-hibernated device)
+  "Resume from hibernation if possible.  This is safe ONLY if no on-disk file
+systems have been mounted; calling it later risks severe file system corruption!
+See <Documentation/swsusp.txt> in the kernel source directory.  This is the
+caller's responsibility, as is catching exceptions if resumption was supposed to
+happen but didn't.
+
+Resume only from DEVICE if it's a string.  If it's #f, use the kernel's default
+hibernation device (CONFIG_PM_STD_PARTITION).  Never return if resumption
+succeeds.  Return nothing otherwise.  The kernel logs any details to dmesg."
+
+  (define (string->major:minor string)
+    "Return a string with MAJOR:MINOR numbers of the device specified by STRING"
+
+    ;; The "resume=" kernel command-line option always provides a string, which
+    ;; can represent a device, a UUID, or a label.  Check for all three.
+    (let* ((spec (cond ((string-prefix? "/" string) string)
+                       ((uuid string) => identity)
+                       (else (file-system-label string))))
+           ;; XXX The kernel's swsusp_resume_can_resume() waits if ‘resumewait’
+           ;; is found on the command line; our canonicalize-device-spec gives
+           ;; up after 20 seconds.  We could emulate the former by looping…
+           (device (canonicalize-device-spec spec))
+           (rdev (stat:rdev (stat device)))
+           ;; For backwards compatibility, device numbering is a baroque affair.
+           ;; This is the full 64-bit scheme used by glibc's <sys/sysmacros.h>.
+           (major (logior (ash (logand #x00000000000fff00 rdev) -8)
+                          (ash (logand #xfffff00000000000 rdev) -32)))
+           (minor (logior      (logand #x00000000000000ff rdev)
+                          (ash (logand #x00000ffffff00000 rdev) -12))))
+      (format #f "~a:~a" major minor)))
+
+  ;; Write the resume DEVICE to this magic file, using the MAJOR:MINOR device
+  ;; numbers if possible.  The kernel will immediately try to resume from it.
+  (let ((resume "/sys/power/resume"))
+    (when (file-exists? resume)         ; this kernel supports hibernation
+      ;; Honour the kernel's default device (only) if none other was given.
+      (let ((major:minor (if device
+                             (or (false-if-exception (string->major:minor
+                                                      device))
+                                 ;; We can't parse it.  Maybe the kernel can.
+                                 device)
+                             (let ((default (call-with-input-file resume
+                                              read-line)))
+                               ;; Don't waste time echoing 0:0 to /sys.
+                               (if (string=? "0:0" default)
+                                   #f
+                                   default)))))
+        (when major:minor
+          (call-with-output-file resume ; may throw an ‘Invalid argument’
+            (cut display major:minor <>))))))) ; may never return
 
 (define* (make-disk-device-nodes base major #:optional (minor 0))
   "Make the block device nodes around BASE (something like \"/root/dev/sda\")
@@ -506,6 +559,12 @@ upon error."
         (display "loading kernel modules...\n")
         (load-linux-modules-from-directory linux-modules
                                            linux-module-directory)
+
+        (unless (member "noresume" args)
+          ;; Try to resume immediately after loading (storage) modules
+          ;; but before any on-disk file systems have been mounted.
+          (false-if-exception           ; failure is not fatal
+           (resume-if-hibernated (find-long-option "resume" args))))
 
         (when keymap-file
           (let ((status (system* "loadkeys" keymap-file)))

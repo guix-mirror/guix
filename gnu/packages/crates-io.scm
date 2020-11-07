@@ -653,6 +653,30 @@ be used with the stdlib.")
     (description "This package provides the glue for the Android JNI.")
     (license license:expat)))
 
+(define-public rust-ansi-parser-0.6
+  (package
+    (name "rust-ansi-parser")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ansi-parser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "152idb8a6gwdxzj6m099h3xgx8vw0sjc6skgw94nm2k3y5swc6kn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heapless" ,rust-heapless-0.5)
+        ("rust-nom" ,rust-nom-4.2))))
+    (home-page "https://gitlab.com/DavidBittner/ansi-parser")
+    (synopsis "Library using nom for parsing ANSI escape codes")
+    (description
+     "This package provides a library using nom for parsing ANSI
+escape codes.")
+    (license license:mpl2.0)))
+
 (define-public rust-antidote-1.0
   (package
     (name "rust-antidote")
@@ -13159,7 +13183,7 @@ requires non-const function calls to be computed.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.71")
+    (version "0.2.79")
     (source
      (origin
        (method url-fetch)
@@ -13167,7 +13191,7 @@ requires non-const function calls to be computed.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "0jbgi25rhglhvpxv62alyzyral6601kldmlhbxim4w6j15jv0mwl"))))
+         "0hw7qnlymw5gi5c3xd7mirpgrc5l0pvqpjg9jb3vzqw0dq3gcj14"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -19591,7 +19615,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro2-1
   (package
     (name "rust-proc-macro2")
-    (version "1.0.21")
+    (version "1.0.24")
     (source
       (origin
         (method url-fetch)
@@ -19599,10 +19623,11 @@ formatted tables in terminal.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0b1azz1c2a3rap1kfz2sjinv7narfhssazaq39axvwwlvwb8bqin"))))
+          "0wcabxzrddcjmryndw8fpyxcq6rw63m701vx86xxf03y3bp081qy"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:cargo-test-flags '("--lib")
+       #:cargo-inputs
        (("rust-unicode-xid" ,rust-unicode-xid-0.2))
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-1))))
@@ -24098,7 +24123,7 @@ comparison.")
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.116")
+    (version "1.0.117")
     (source
       (origin
         (method url-fetch)
@@ -24106,7 +24131,7 @@ comparison.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "19bhld1qyjs4qr3rd6dmzmy13imb6a1qbinb2fjqd0yjh6pmgzln"))))
+          "06nwyyma9hch1abjqj0y9cb09m1y6lbzbsc7jff6483pvs1sk3xq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -24368,7 +24393,7 @@ for the serde framework.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.116")
+    (version "1.0.117")
     (source
       (origin
         (method url-fetch)
@@ -24376,7 +24401,7 @@ for the serde framework.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1s4sbl32lk1afxryfax73clvq22lwzdgzljb7f3mgr6q1wvscc7n"))))
+          "0kn7ais3zv9ajbyc216qm14r61zwlm229815yd4anjmlmmraxlfb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -25829,20 +25854,20 @@ initializers are available.")
 (define-public rust-stable-deref-trait-1
   (package
     (name "rust-stable-deref-trait")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "stable_deref_trait" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1j2lkgakksmz4vc5hfawcch2ipiskrhjs1sih0f3br7s7rys58fv"))))
+          "1lxjr8q2n534b2lhkxd6l6wcddzjvnksi58zv11f9y0jjmr15wd8"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/storyyeller/stable_deref_trait0")
     (synopsis "Defines an unsafe marker trait, StableDeref")
     (description
-      "This crate defines an unsafe marker trait, StableDeref, for container
+     "This crate defines an unsafe marker trait, StableDeref, for container
 types which deref to a fixed address which is valid even when the containing
 type is moved.  For example, Box, Vec, Rc, Arc and String implement this trait.
 Additionally, it defines CloneStableDeref for types like Rc where clones deref
@@ -27668,7 +27693,7 @@ grid layout.")
   (package
     (inherit rust-term-size-1.0)
     (name "rust-term-size")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -27677,14 +27702,11 @@ grid layout.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09wk3173ngmb710qs9rwgibq4w250q8lgnwjvb9cypc1vdk9lnwy"))))
+         "1n885cykajsppx86xl7d0dqkgmgsp8v914lvs12qzvd0dij2jh8y"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-clippy" ,rust-clippy-0.0)
-        ("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-winapi" ,rust-winapi-0.2))))))
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-termcolor-1
   (package
@@ -31059,6 +31081,26 @@ If that fails, no determination is made, and calls return None.")
          (base32
           "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
 
+(define-public rust-version-compare-0.0
+  (package
+    (name "rust-version-compare")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "version-compare" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06v688jg6gd00zvm3cp7qh2h3mz8cs2ngr09bnwxhyddxrcwh60w"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/timvisee/version-compare")
+    (synopsis "Rust library to easily compare version numbers")
+    (description
+     "This package provides a Rust library to easily compare version
+numbers, and test them against various comparison operators.")
+    (license license:expat)))
+
 (define-public rust-version-sync-0.8
   (package
     (name "rust-version-sync")
@@ -31833,7 +31875,7 @@ attribute that is not in the shared backend crate.")
        (("rust-base64" ,rust-base64-0.9))))
     (home-page "https://github.com/briansmith/webpki")
     (synopsis "Web PKI X.509 Certificate Verification")
-    (description "This packge provides Web PKI X.509 Certificate
+    (description "This package provides Web PKI X.509 Certificate
 Verification.")
     (license license:isc)))
 
@@ -32773,7 +32815,7 @@ library.")
         ("rust-zstd-sys" ,rust-zstd-sys-1.4.17))))
     (home-page "https://github.com/gyscos/zstd-rs")
     (synopsis "Safe low-level bindings to the zstd compression library")
-    (description "This package provides afe low-level bindings to the zstd
+    (description "This package provides safe low-level bindings to the zstd
 compression library.")
     (license (list license:expat license:asl2.0))))
 

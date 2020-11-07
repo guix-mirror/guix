@@ -1,0 +1,13 @@
+Fix the ORGANISM class so that SBCL >= 2.0.9 can compile it without error.
+
+--- a/classes.lisp	2020-10-28 12:11:10.725659464 +0100
++++ b/classes.lisp	2020-10-31 17:34:36.822752447 +0100
+@@ -148,7 +148,7 @@
+     :accessor score
+     :initarg :score
+     :initform 'nil
+-    :type number)
++    :type (or number null))
+    (NORMALIZED-SCORE
+     :accessor normalized-score
+     :initarg :normalized-score

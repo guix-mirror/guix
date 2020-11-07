@@ -300,7 +300,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +308,7 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "1cwpc4j90dpxa2siia68rg9qwwm2xk6bhxnslfjj364507jy6s4l"))))
+        (base32 "1f155yf5v57dwhzb7z0kh67lckr3yq4x8040dm54qgbxw582la77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -874,6 +874,18 @@ tools.")
          "audiofile-division-by-zero-BlockCodec-runPull.patch"
          "audiofile-CVE-2018-13440.patch"
          "audiofile-CVE-2018-17095.patch"))))
+    (properties `((lint-hidden-cve . ("CVE-2017-6829"
+
+                                      "CVE-2017-6827" "CVE-2017-6828"
+                                      "CVE-2017-6832" "CVE-2017-6835"
+                                      "CVE-2017-6837"
+
+                                      "CVE-2017-6839"
+
+                                      "CVE-2017-6830" "CVE-2017-6834"
+                                      "CVE-2017-6836" "CVE-2017-6838"
+
+                                      "CVE-2017-6831" "CVE-2017-6833"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)))
@@ -2926,7 +2938,7 @@ aimed at audio/musical applications.")
     (description "This package contains the @command{resample} and
 @command{windowfilter} command line utilities.  The @command{resample} command
 allows changing the sampling rate of a sound file, while the
-@command{windowfilter} command allows to design Finite Impulse Response (FIR)
+@command{windowfilter} command allows designing Finite Impulse Response (FIR)
 filters using the so-called @emph{window method}.")
     (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
     (license license:lgpl2.1+)))
@@ -4068,14 +4080,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.7")
+    (version "20.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1kd422krz8ln4m8g3p14wfplcq8lgpzly9297rpbvyc94dc6sdwj"))))
+                "1hw81innyyiwiyb8jkpq9aj7idmcb41yvgd1blac997023h78sss"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

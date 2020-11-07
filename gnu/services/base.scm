@@ -1476,10 +1476,18 @@ archive' public keys, with GUIX."
     #~(begin
         (use-modules (guix build utils))
 
-        (unless (file-exists? "/etc/guix/acl")
-          (mkdir-p "/etc/guix")
-          (copy-file #+default-acl "/etc/guix/acl")
-          (chmod "/etc/guix/acl" #o600)))))
+        ;; If the ACL already exists, move it out of the way.  Create a backup
+        ;; if it's a regular file: it's likely that the user manually updated
+        ;; it with 'guix archive --authorize'.
+        (if (file-exists? "/etc/guix/acl")
+            (if (and (symbolic-link? "/etc/guix/acl")
+                     (store-file-name? (readlink "/etc/guix/acl")))
+                (delete-file "/etc/guix/acl")
+                (rename-file "/etc/guix/acl" "/etc/guix/acl.bak"))
+            (mkdir-p "/etc/guix"))
+
+        ;; Installed the declared ACL.
+        (symlink #+default-acl "/etc/guix/acl"))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
@@ -1562,8 +1570,10 @@ proxy of 'guix-daemon'...~%")
                       (ice-9 match)
                       (gnu build shepherd)))
            (start
-            (with-imported-modules (source-module-closure
-                                    '((gnu build shepherd)))
+            (with-imported-modules `(((guix config) => ,(make-config.scm))
+                                     ,@(source-module-closure
+                                        '((gnu build shepherd))
+                                        #:select? not-config?))
               #~(lambda args
                   (define proxy
                     ;; HTTP/HTTPS proxy.  The 'http_proxy' variable is set by
@@ -1732,6 +1742,8 @@ proxy of 'guix-daemon'...~%")
                (default "nar"))
   (cache       guix-publish-configuration-cache   ;#f | string
                (default #f))
+  (cache-bypass-threshold guix-publish-configuration-cache-bypass-threshold
+                          (default (* 10 (expt 2 20)))) ;integer
   (workers     guix-publish-configuration-workers ;#f | integer
                (default #f))
   (ttl         guix-publish-configuration-ttl     ;#f | integer
@@ -1766,7 +1778,7 @@ raise a deprecation warning if the 'compression-level' field was used."
                    lst))))
 
   (match-record config <guix-publish-configuration>
-    (guix port host nar-path cache workers ttl)
+    (guix port host nar-path cache workers ttl cache-bypass-threshold)
     (list (shepherd-service
            (provision '(guix-publish))
            (requirement '(guix-daemon))
@@ -1788,7 +1800,11 @@ raise a deprecation warning if the 'compression-level' field was used."
                                                     "s"))
                                   #~())
                            #$@(if cache
-                                  #~((string-append "--cache=" #$cache))
+                                  #~((string-append "--cache=" #$cache)
+                                     #$(string-append
+                                        "--cache-bypass-threshold="
+                                        (number->string
+                                         cache-bypass-threshold)))
                                   #~()))
 
                      ;; Make sure we run in a UTF-8 locale so we can produce
@@ -2096,22 +2112,52 @@ instance."
    'swap
    (lambda (device)
      (define requirement
-       (if (string-prefix? "/dev/mapper/" device)
+       (if (and (string? device)
+                (string-prefix? "/dev/mapper/" device))
            (list (symbol-append 'device-mapping-
                                 (string->symbol (basename device))))
            '()))
 
-     (shepherd-service
-      (provision (list (symbol-append 'swap- (string->symbol device))))
-      (requirement `(udev ,@requirement))
-      (documentation "Enable the given swap device.")
-      (start #~(lambda ()
-                 (restart-on-EINTR (swapon #$device))
-                 #t))
-      (stop #~(lambda _
-                (restart-on-EINTR (swapoff #$device))
-                #f))
-      (respawn? #f)))))
+     (define (device-lookup device)
+       ;; The generic 'find-partition' procedures could return a partition
+       ;; that's not swap space, but that's unlikely.
+       (cond ((uuid? device)
+              #~(find-partition-by-uuid #$(uuid-bytevector device)))
+             ((file-system-label? device)
+              #~(find-partition-by-label
+                 #$(file-system-label->string device)))
+             (else
+              device)))
+
+     (define service-name
+       (symbol-append 'swap-
+                      (string->symbol
+                       (cond ((uuid? device)
+                              (string-take (uuid->string device) 6))
+                             ((file-system-label? device)
+                              (file-system-label->string device))
+                             (else
+                              device)))))
+
+     (with-imported-modules (source-module-closure '((gnu build file-systems)))
+       (shepherd-service
+        (provision (list service-name))
+        (requirement `(udev ,@requirement))
+        (documentation "Enable the given swap device.")
+        (modules `((gnu build file-systems)
+                   ,@%default-modules))
+        (start #~(lambda ()
+                   (let ((device #$(device-lookup device)))
+                     (and device
+                          (begin
+                            (restart-on-EINTR (swapon device))
+                            #t)))))
+        (stop #~(lambda _
+                  (let ((device #$(device-lookup device)))
+                    (when device
+                      (restart-on-EINTR (swapoff device)))
+                    #f)))
+        (respawn? #f))))))
 
 (define (swap-service device)
   "Return a service that uses @var{device} as a swap device."

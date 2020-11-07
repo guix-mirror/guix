@@ -59,7 +59,7 @@ represents a @file{.pom} file content, or parts of it."
   (pom-ref content "parent"))
 
 (define* (find-parent content inputs #:optional local-packages)
-  "Find the parent pom for the pom file whith @var{content} in a package's
+  "Find the parent pom for the pom file with @var{content} in a package's
 @var{inputs}.  When the parent pom cannot be found in @var{inputs}, but
 @var{local-packages} is defined, the parent pom is looked up in it.
 
@@ -246,14 +246,14 @@ to re-declare the namespaces in the top-level element."
   "Open @var{pom-file}, and override its content, rewritting its dependencies
 to set their version to the latest version available in the @var{inputs}.
 
-@var{#:with-plugins?} controls whether plugins are also overiden.
+@var{#:with-plugins?} controls whether plugins are also overridden.
 @var{#:with-build-dependencies?} controls whether build dependencies (whose
-scope is not empty) are also overiden.  By default build dependencies and
-plugins are not overiden.
+scope is not empty) are also overridden.  By default build dependencies and
+plugins are not overridden.
 
 @var{#:excludes} is an association list of groupID to a list of artifactIDs.
 When a pair (groupID, artifactID) is present in the list, its entry is
-removed instead of being overiden.  If the entry is ignored because of the
+removed instead of being overridden.  If the entry is ignored because of the
 previous arguments, the entry is not removed.
 
 @var{#:local-packages} is an association list that contains additional version
@@ -262,7 +262,7 @@ not found in @var{inputs}, information from this list is used instead to determi
 the latest version of the package.  This is an association list of group IDs
 to another association list of artifact IDs to a version number.
 
-Returns nothing, but overides the @var{pom-file} as a side-effect."
+Returns nothing, but overrides the @var{pom-file} as a side-effect."
   (define pom (get-pom pom-file))
 
   (define (ls dir)

@@ -1661,7 +1661,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.17")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -1669,7 +1669,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0jc2drk5dzsaa6vxmk1hyi0zp02zm3mzar3arssfy5vcyc5ig6sk"))))
+                "1sggiaswcdpyxnnbg583ldg0m92fiys6nc5qdiqli7450w416a6c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1693,7 +1693,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.17")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -1701,7 +1701,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "198fyc5dwjn679si86vy139ngym4n3mdy1z4vfjikn7b6mriq1x2"))))
+                "1bzkaz7sqx1pvirja8zm7i2ckzl5ad6xspr4840389ik3l8qpnr5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1726,7 +1726,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.17")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -1734,7 +1734,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1v21r722m027jjy4x6lm5cvzapsnpx36r10ar543ay0hgmygl322"))))
+                "13p5aj1513fwhzi9s4i1a5dbvzmbx9867zb0ddb9s9nbwks4ry3q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1759,7 +1759,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.17")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
               (uri
@@ -1767,7 +1767,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "098fk8fwcgssnfr1gilqg8g17zvch62lrn3rqsswpzbr3an5adb3"))))
+                "1karrprb3ijrbiwpr43rl3nxnzc33lnmwrd1832psgr3flnr9fp5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2443,7 +2443,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
@@ -2451,7 +2451,7 @@ capabilities, custom envelopes, effects, etc.")
                            (version-major+minor version)
                            "/yoshimi-" version ".tar.bz2"))
        (sha256
-        (base32 "1vxrksg199pcgiykq0nsf67ihfk2ny2jmpf6gzdb3nk9iphm7di3"))))
+        (base32 "1ixb2kqmfgm2lfjaj6z3h03c840hcfmca4h6pjnc4aln2mzm7fcw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2703,14 +2703,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.17")
+    (version "0.9.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0mcfli3wffz5a9pkpcxli03ysyrr53ij3569m81ck9h8pr7yng4b"))))
+                "121vmygdzp37p6f93f8dbbg2m2r55j7amyiapzkqgypgn4vfdbwr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -4194,7 +4194,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.5.1")
+    (version "3.5.2")
     (source
      (origin
        (method git-fetch)
@@ -4203,16 +4203,16 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01jj6rbvbjxvmv6q13a22vfqp3id52a5mf2a1vzph2giz7pr313x"))
+        (base32 "0yzps5xxa50cr2i5iv2ycjdywd0mcrdd6hx93l4p8lfljag3w3al"))
        (modules '((guix build utils)))
        (snippet
-        ;; Un-bundle OpenSSL and remove unused libraries.
+        ;; Remove unused libraries.
         '(begin
            (for-each delete-file-recursively
                      '("thirdparty/freetype"
-                       "thirdparty/google_analytics"
                        "thirdparty/openssl"
-                       "thirdparty/portmidi"))
+                       "thirdparty/portmidi"
+                       "thirdparty/qt-google-analytics"))
            #t))))
     (build-system cmake-build-system)
     (arguments
@@ -4220,6 +4220,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        `("-DBUILD_TELEMETRY_MODULE=OFF" ;don't phone home
          "-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
+         "-DMUSESCORE_BUILD_CONFIG=release"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
        ;; run them is:
@@ -4252,8 +4253,9 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (synopsis "Music composition and notation software")
-    (description "MuseScore is a music score typesetter.  Its main purpose is
-the creation of high-quality engraved musical scores in a WYSIWYG environment.
+    (description
+     "MuseScore is a music score typesetter.  Its main purpose is the creation
+of high-quality engraved musical scores in a WYSIWYG environment.
 
 It supports unlimited staves, linked parts and part extraction, tablature,
 MIDI input, percussion notation, cross-staff beaming, automatic transposition,
@@ -5047,7 +5049,7 @@ complete without obstructing your daily work.")
 (define-public playerctl
   (package
     (name "playerctl")
-    (version "2.0.2")
+    (version "2.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5056,7 +5058,7 @@ complete without obstructing your daily work.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f3njnpd52djx3dmhh9a8p5a67f0jmr1gbk98icflr2q91149gjz"))))
+                "17hi33sw3663qz5v54bqqil31sgkrlxkb2l5bgqk87pac6x2wnbz"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dintrospection=false" "-Dgtk-doc=false")))
@@ -5889,7 +5891,7 @@ plugin and a standalone JACK application.")
 (define-public wolf-shaper
   (package
     (name "wolf-shaper")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
       (origin
         (method git-fetch)
@@ -5901,7 +5903,7 @@ plugin and a standalone JACK application.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0lllgcbnnh1m95bp29hh17x170hl7170zizjrvy892qfkn36830d"))))
+            "1j9xmh1nkf45ay1c5dz2g165qvrwlanzcq6mvb3nfxar265drd9q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target

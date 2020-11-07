@@ -1450,6 +1450,49 @@
             (eq? foo grep)
             (eq? bar dep))))))
 
+(test-assert "package-input-rewriting/spec, identity"
+  ;; Make sure that 'package-input-rewriting/spec' doesn't gratuitously
+  ;; introduce variants.  In this case, the LIBFFI propagated input should not
+  ;; be duplicated when passing GOBJECT through REWRITE.
+  ;; See <https://issues.guix.gnu.org/43890>.
+  (let* ((libffi  (dummy-package "libffi"
+                    (build-system trivial-build-system)))
+         (glib    (dummy-package "glib"
+                    (build-system trivial-build-system)
+                    (propagated-inputs `(("libffi" ,libffi)))))
+         (gobject (dummy-package "gobject-introspection"
+                    (build-system trivial-build-system)
+                    (inputs `(("glib" ,glib)))
+                    (propagated-inputs `(("libffi" ,libffi)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("glib" . ,identity)))))
+    (and (= (length (package-transitive-inputs gobject))
+            (length (package-transitive-inputs (rewrite gobject))))
+         (string=? (derivation-file-name
+                    (package-derivation %store (rewrite gobject)))
+                   (derivation-file-name
+                    (package-derivation %store gobject))))))
+
+(test-assert "package-input-rewriting, identity"
+  ;; Similar to the test above, but with 'package-input-rewriting'.
+  ;; See <https://issues.guix.gnu.org/43890>.
+  (let* ((libffi  (dummy-package "libffi"
+                    (build-system trivial-build-system)))
+         (glib    (dummy-package "glib"
+                    (build-system trivial-build-system)
+                    (propagated-inputs `(("libffi" ,libffi)))))
+         (gobject (dummy-package "gobject-introspection"
+                    (build-system trivial-build-system)
+                    (inputs `(("glib" ,glib)))
+                    (propagated-inputs `(("libffi" ,libffi)))))
+         (rewrite (package-input-rewriting `((,glib . ,glib)))))
+    (and (= (length (package-transitive-inputs gobject))
+            (length (package-transitive-inputs (rewrite gobject))))
+         (string=? (derivation-file-name
+                    (package-derivation %store (rewrite gobject)))
+                   (derivation-file-name
+                    (package-derivation %store gobject))))))
+
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")
     ("CVE-2016-1234" "CVE-2018-4567")

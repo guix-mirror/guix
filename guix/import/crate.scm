@@ -167,7 +167,7 @@ and LICENSE."
                                               (maybe-cargo-development-inputs
                                                 cargo-development-inputs)))
                    (home-page ,(match home-page
-                                 (() "")
+                                 ('null "")
                                  (_ home-page)))
                    (synopsis ,synopsis)
                    (description ,(beautify-description description))

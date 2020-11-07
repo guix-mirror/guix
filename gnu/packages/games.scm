@@ -116,6 +116,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
@@ -588,6 +589,139 @@ possible, while battling many vicious aliens.")
                    license:cc-by-sa3.0
                    license:lgpl2.1+
                    license:bsd-2))))
+
+(define-public bsd-games
+  (package
+    (name "bsd-games")
+    (version "2.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://ibiblio.org/pub/linux/games/bsd-games-2.17.tar.gz")
+       (sha256
+        (base32 "0q7zdyyfvn15y0w4g54kq3gza89h61py727m8slmw73cxx594vq6"))
+       (patches
+        (search-patches
+         ;; thanks Arch, and Debian
+         "bsd-games-2.17-64bit.patch"
+         "bsd-games-bad-ntohl-cast.patch"
+         "bsd-games-gamescreen.h.patch"
+         "bsd-games-getline.patch"
+         "bsd-games-null-check.patch"
+         "bsd-games-number.c-and-test.patch"
+         "bsd-games-stdio.h.patch"
+         "bsd-games-prevent-name-collisions.patch"
+         ;; Guix customizations
+         "bsd-games-add-configure-config.patch"
+         "bsd-games-dont-install-empty-files.patch"
+         "bsd-games-add-wrapper.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (inputs
+     `(("curses" ,ncurses)
+       ("pager" ,less)
+       ("miscfiles" ,miscfiles)
+       ("openssl" ,openssl)))           ;used only by 'factor'
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/bsd-games-" ,version))
+                    (man (string-append out "/share/man"))
+                    (word-list (string-append (assoc-ref inputs "miscfiles")
+                                              "/share/web2"))
+                    (static-data (string-append out "/share/games/bsd-games"))
+                    ;; Not a "./" because of substitute* in 'patch-install
+                    ;; below.  The .// allow us not to mess with the games'
+                    ;; code any further: we just use a wrapper script that
+                    ;; cd's to a BSD_GAMES_DIR.  :]
+                    (save-files ".//"))
+               (substitute* "configure"
+                 (("/usr/share/man") man)
+                 (("/usr/share/doc/bsd-games") doc)
+                 (("/usr/share/[^\n/]*") static-data)
+                 (("/var/games") save-files)
+                 (("/usr/bin/less") (which "less"))
+                 (("(/usr/bin|/usr/games)") bin))
+               (substitute* "config.params" (("WORD_LIST") word-list))
+               (substitute* "wrapper" (("STATIC_DATA") static-data))
+               (invoke "./configure"))
+             #t))
+         (add-before 'install 'patch-install
+           ;; Some games need a writable directory containing pre-maded files.
+           ;; The files get installed to the Store.  Then the wrapper kicks in.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (static-data (string-append out "/share/games/bsd-games"))
+                    (save-files ".//"))
+               (substitute* "Makeconfig" ((save-files) static-data)))
+             #t))
+         (add-after 'install 'install-documents
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/bsd-games-" ,version)))
+               (rename-file "phantasia/COPYRIGHT" "phantasia-COPYRIGHT")
+               (for-each
+                (lambda(file) (install-file file doc))
+                '("AUTHORS" "BUGS" "README" "SECURITY" "THANKS"
+                  "phantasia-COPYRIGHT")))
+             #t)))))
+    (home-page "https://github.com/vattam/BSDGames")
+    (synopsis "Collection of the old text-based games and amusements")
+    (description
+     "These are the BSD games.  See the fortune-mod package for fortunes.
+
+Action: atc (keep the airplanes safe), hack (explore the dangerous Dungeon),
+hunt (kill the others for the Pair of Boots, multi-player only), robots (avoid
+the evil robots), sail (game of naval warfare with wooden ships), snake (steal
+the $$ from the cave, anger the snake, and get out alive), tetris (game of
+lining up the falling bricks of different shapes), and worm (eat, grow big,
+and neither bite your tail, nor ram the wall).
+
+Amusements: banner (prints a large banner), bcd & morse & ppt (print a punch
+card, or paper tape, or Morse codes), caesar & rot13 (ciphers and deciphers
+the input), factor (factorizes a number), number (translates numbers into
+text), pig (translates from English to Pig Latin), pom (should print the
+Moon's phase), primes (generates primes), rain & worms (plays an screen-saver
+in terminal), random (prints randomly choosen lines from files, or returns a
+random exit-code), and wtf (explains what do some acronyms mean).
+
+Board: backgammon (lead the men out of board faster than the friend do),
+boggle (find the words in the square of letters), dab (game of dots and
+boxes), gomoku (game of five in a row), hangman (guess a word before man is
+hanged), and monop (game of monopoly, hot-seat only).  Also the card-games:
+canfield, cribbage, fish (juniors game), and mille.
+
+Quests: adventure (search for treasures with the help of wizard),
+battlestar (explore the world around, starting from dying spaceship),
+phantasia (role-play as an rogue), trek (hunt the Klingons, and save the
+Federation), and wump (hunt the big smelly Wumpus in a dark cave).
+
+Quizes: arithmetic, and quiz.")
+    ;; "Auxiliary and data files, distributed with the games in NetBSD, but
+    ;; not bearing copyright notices, probably fall under the terms of the UCB
+    ;; or NetBSD copyrights and licences.  The file "fortune/Notes" contains a
+    ;; warning in regard to the fortune databases."
+    (license (list
+              ;; Most games.  Files: countmail/countmail.6, dab/dab.6,
+              ;; lib/strlcpy.c, wargames/wargames.6
+              license:bsd-3
+              ;; dab and hunt.  Files: adventure/extern.h,
+              ;; backgammon/backgammon/backlocal.h, caesar/rot13.in,
+              ;; countmail/countmail, dm/utmpentry.c, dm/utmpentry.h,
+              ;; hack/extern.h, robots/auto.c, sail/display.h,
+              ;; sail/restart.h, wargames/wargames
+              license:bsd-4
+              ;; wtf (the game)
+              license:public-domain
+              ;; phantasia (all but phantasia/pathnames.h.in, which is bsd-3)
+              (license:fsf-free "file:///phantasia/COPYRIGHT")))))
+
 
 (define-public bzflag
   (package
@@ -1186,7 +1320,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.4.1")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1329,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12hhnhdwgz7hd3hlndbnk15pxggm1375qs0764ija4nl1gbpb110"))
+        (base32 "10d6py1cmkq8lnb5h3w8rdpp4fmpd1wgqkgiabdghqxi7b2s0g4b"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -1222,7 +1356,7 @@ does not include game data.")
   (package
     (inherit julius)
     (name "augustus")
-    (version (package-version julius))
+    (version "1.4.1a")
     (source
      (origin
        (method git-fetch)
@@ -1231,7 +1365,7 @@ does not include game data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ii0w0iwa9zv5bbqfcps5mxifd796m6fw4gvjf09pkm3yjgqc0ag"))
+        (base32 "1xqv8j8jh3f13fjhyf7hk1anrn799cwwsvsd75kpl9n5yh5s1j5y"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -5083,7 +5217,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.04")
+    (version "2.02.05")
     (source
      (origin
        (method url-fetch)
@@ -5091,7 +5225,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32 "1w1y20vqcikg59gnbxjbhyq2yanwqz1a6wp8vd1qnmil240id4j7"))))
+        (base32 "18fm9ga08mxqmblahmnlzwnl387i8mbkj4n0gffxc91d299019v3"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -6456,7 +6590,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.7")
+    (version "1.7.0")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6464,7 +6598,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0283hvms5hr29zr0grd6gq059k0hg8hcz3fsmwjmysiih8790i68"))
+        (base32 "1fs0320n3ndd5kd6j9y22jsd1hbn356d4dr11kl3iy5ssix7832s"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9345,7 +9479,7 @@ angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
      `(("bash" ,bash)
        ("scummvm" ,scummvm)))
     (home-page "https://www.scummvm.org/")
-    (synopsis "Classic 2D point an click science-fiction adventure game")
+    (synopsis "Classic 2D point and click science-fiction adventure game")
     (description
      "Beneath a Steel Sky is a science-fiction thriller set in a bleak
 post-apocalyptic vision of the future.  It revolves around Union City,

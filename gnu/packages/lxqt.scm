@@ -849,12 +849,16 @@ allows for launching applications or shutting down the system.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("autostart/CMakeLists.txt"
                             "config/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
-             #t))
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("xsession/lxqt.desktop.in")
+                 (("Exec=startlxqt") (string-append "Exec=" out "/bin/startlxqt"))
+                 (("TryExec=lxqt-session") (string-append "TryExec=" out "/bin/startlxqt")))
+               #t)))
          ;; add write permission to lxqt-rc.xml file which is stored as read-only in store
          (add-after 'unpack 'patch-openbox-permission
            (lambda _
@@ -872,7 +876,14 @@ allows for launching applications or shutting down the system.")
                (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/startlxqt")
+                 `("XDG_CONFIG_DIRS" ":" suffix ("/run/current-system/profile/share"
+                                                 "/run/current-system/profile/share/pcmanfm-qt")))
+               #t))))))
     (home-page "https://lxqt.github.io")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
@@ -1021,6 +1032,9 @@ components to build desktop file managers which belongs to LXDE.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             (substitute* '("config/pcmanfm-qt/lxqt/settings.conf.in")
+               (("@LXQT_SHARE_DIR@")
+                "/run/current-system/profile/share/lxqt" ))
              #t)))))
     (home-page "https://lxqt.github.io")
     (synopsis "File manager and desktop icon manager")

@@ -50,7 +50,6 @@
 
             %installer-configuration-file
             %installer-target-dir
-            %configuration-file-width
             format-configuration
             configuration->file))
 
@@ -218,7 +217,6 @@ stored in RESULTS. Return #f otherwise."
 
 (define %installer-configuration-file (make-parameter "/mnt/etc/config.scm"))
 (define %installer-target-dir (make-parameter "/mnt"))
-(define %configuration-file-width (make-parameter 79))
 
 (define (format-configuration steps results)
   "Return the list resulting from the application of the procedure defined in

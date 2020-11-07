@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1134,7 +1135,7 @@ a webserver.")
                  #:user "hpcguix-web"
                  #:group "hpcguix-web"
                  #:environment-variables
-                 (list "XDG_CACHE_HOME=/var/cache"
+                 (list "XDG_CACHE_HOME=/var/cache/guix/web"
                        "SSL_CERT_DIR=/etc/ssl/certs")
                  #:log-file #$%hpcguix-web-log-file))
        (stop #~(make-kill-destructor))))))
@@ -1798,3 +1799,75 @@ WSGIPassAuthorization On
     "Run Mumi, a Web interface to the Debbugs bug-tracking server.")
    (default-value
      (mumi-configuration))))
+
+(define %default-gmnisrv-config-file
+  (plain-file "gmnisrv.ini" "
+listen=0.0.0.0:1965 [::]:1965
+
+[:tls]
+store=/var/lib/gemini/certs
+
+organization=gmnisrv on Guix user
+
+[localhost]
+root=/srv/gemini
+"))
+
+(define-record-type* <gmnisrv-configuration>
+  gmnisrv-configuration make-gmnisrv-configuration
+  gmnisrv-configuration?
+  (package     gmnisrv-configuration-package
+               (default gmnisrv))
+  (config-file gmnisrv-configuration-config-file
+               (default %default-gmnisrv-config-file)))
+
+(define gmnisrv-shepherd-service
+  (match-lambda
+    (($ <gmnisrv-configuration> package config-file)
+     (list (shepherd-service
+            (provision '(gmnisrv))
+            (requirement '(networking))
+            (documentation "Run the gmnisrv Gemini server.")
+            (start (let ((gmnisrv (file-append package "/bin/gmnisrv")))
+                     #~(make-forkexec-constructor
+                        (list #$gmnisrv "-C" #$config-file)
+                        #:user "gmnisrv" #:group "gmnisrv"
+                        #:log-file "/var/log/gmnisrv.log")))
+            (stop #~(make-kill-destructor)))))))
+
+(define %gmnisrv-accounts
+  (list (user-group (name "gmnisrv") (system? #t))
+        (user-account
+         (name "gmnisrv")
+         (group "gmnisrv")
+         (system? #t)
+         (comment "gmnisrv Gemini server")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define %gmnisrv-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (mkdir-p "/var/lib/gemini/certs")
+        (let* ((pw  (getpwnam "gmnisrv"))
+               (uid (passwd:uid pw))
+               (gid (passwd:gid pw)))
+          (chown "/var/lib/gemini" uid gid)
+          (chown "/var/lib/gemini/certs" uid gid)))))
+
+(define gmnisrv-service-type
+  (service-type
+   (name 'guix)
+   (extensions
+    (list (service-extension activation-service-type
+                             (const %gmnisrv-activation))
+          (service-extension account-service-type
+                             (const %gmnisrv-accounts))
+          (service-extension shepherd-root-service-type
+                             gmnisrv-shepherd-service)))
+   (description
+    "Run the gmnisrv Gemini server.")
+   (default-value
+     (gmnisrv-configuration))))

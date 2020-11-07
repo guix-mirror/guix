@@ -96,14 +96,16 @@ define xref_command
 cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
         tr -d '\012' | sed 's|\(@p\?x\?ref\)|\n\1|g' | egrep '@p?x?ref' | \
         sed 's|^.*@p\?x\?ref{\([^,}]*\).*$$|\1|g' | sort | uniq | while read e; do \
-  line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
-  ((line++)) ;\
-  if [ "$$line" != "1" ]; then \
-    translation=$$(head -n $$line "$<" | tail -1 | grep msgstr | sed 's|msgstr "\(.*\)"|\1|') ;\
-    if [ "$$translation" != "" ]; then \
-	  sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
-    fi ;\
-  fi ;\
+    if [ -n "$$e" ]; then \
+      line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
+      ((line++)) ;\
+      if [ "$$line" != "1" ]; then \
+	translation=$$(head -n "$$line" "$<" | tail -1 | grep msgstr | sed 's|msgstr "\(.*\)"|\1|') ;\
+	if [ "$$translation" != "" ]; then \
+	      sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
+	fi ;\
+      fi ;\
+   fi ;\
 done
 endef
 

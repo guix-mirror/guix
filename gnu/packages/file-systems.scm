@@ -254,8 +254,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "ab2f1ec24f5307b0cf1e3c4ad19bf350d9f54d9f")
-        (revision "0"))
+  (let ((commit "742dbbdbb90efb786f05a8576917fcd0e9cbd57e")
+        (revision "1"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -267,7 +267,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "10pafvaxg1lvwnqjv3a4rsi96bghbpcsgh3vhqilndi334k3b0hd"))))
+          (base32 "0kn8y3kqylz6scv47mzfmwrlh21kbb14z5vs65vks8w50i26sxnc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -287,7 +287,8 @@ from a mounted file system.")
          ("python-pytest" ,python-pytest)
          ("valgrind" ,valgrind)))
       (inputs
-       `(("keyutils" ,keyutils)
+       `(("eudev" ,eudev)
+         ("keyutils" ,keyutils)
          ("libaio" ,libaio)
          ("libscrypt" ,libscrypt)
          ("libsodium" ,libsodium)
@@ -698,7 +699,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "0.8.2")
+    (version "0.8.5")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -707,8 +708,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32
-            "1f7aig15q3z832pr2n48j3clafic2yk1vvqlh28vpklfghjqwq27"))))
+           (base32 "0gfdnynmsxbhi97q73smrgmcw1k8zmlr1hgljfn38sk0kimivd6v"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
@@ -722,8 +722,7 @@ APFS.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "configure"
-                 (("-/bin/sh") (string-append "-" (which "sh")))
-                 ((" /bin/sh") (string-append " " (which "sh"))))
+                 (("-/bin/sh") (string-append "-" (which "sh"))))
                (invoke "./configure"
                        "--with-config=all"
                        (string-append "--prefix=" out)
@@ -739,6 +738,9 @@ APFS.")
                    (src        (assoc-ref outputs "src"))
                    (util-linux (assoc-ref inputs "util-linux"))
                    (nfs-utils  (assoc-ref inputs "nfs-utils")))
+               (substitute* "contrib/Makefile.in"
+                 ;; This is not configurable nor is its hard-coded /usr prefix.
+                 ((" initramfs") ""))
                (substitute* "module/zfs/zfs_ctldir.c"
                  (("/usr/bin/env\", \"umount")
                   (string-append util-linux "/bin/umount\", \"-n"))
@@ -782,7 +784,6 @@ APFS.")
                        "INSTALL_MOD_STRIP=1")
                (install-file "contrib/bash_completion.d/zfs"
                              (string-append out "/share/bash-completion/completions"))
-               (symlink "../share/pkgconfig/" (string-append out "/lib/pkgconfig"))
                #t))))))
     (native-inputs
      `(("attr" ,attr)

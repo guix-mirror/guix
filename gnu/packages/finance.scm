@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
@@ -72,6 +74,9 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
@@ -169,6 +174,63 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public hledger
+  (package
+    (name "hledger")
+    (version "1.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hledger/hledger-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wfsyf2q1kf90mj3lxs0m5ghj153axmpkc8xfy12vkz5imnyphfm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-decimal" ,ghc-decimal)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-hledger-lib" ,ghc-hledger-lib)
+       ("ghc-lucid" ,ghc-lucid)
+       ("ghc-math-functions" ,ghc-math-functions)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-split" ,ghc-split)
+       ("ghc-tabular" ,ghc-tabular)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-timeit" ,ghc-timeit)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-wizards" ,ghc-wizards)))
+    (home-page "https://hledger.org")
+    (synopsis "Command-line interface for the hledger accounting system")
+    (description
+     "The command-line interface for the hledger accounting system.  Its basic
+function is to read a plain text file describing financial transactions and
+produce useful reports.
+
+hledger is a robust, cross-platform set of tools for tracking money, time, or
+any other commodity, using double-entry accounting and a simple, editable file
+format, with command-line, terminal and web interfaces.  It is a Haskell
+rewrite of Ledger, and one of the leading implementations of Plain Text
+Accounting.")
+    (license license:gpl3)))
 
 (define-public homebank
   (package
@@ -293,67 +355,67 @@ in ability, and easy to use.")
                     "See src/wcwidth.cc in the distribution.")))))
 
 (define-public emacs-ledger-mode
-  ;; There have been no new releases since 2016.
-  (let ((commit "253a20dc62e137ed0ed8e1dd8614ecba116610ea")
-        (revision "1"))
-    (package
-      (name "emacs-ledger-mode")
-      (version (git-version "3.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ledger/ledger-mode")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "06wrgkqpgvk17vibrk2qikdlqn8y63jg86marp1wgmram92mb3jk"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:modules ((guix build cmake-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%cmake-build-system-modules
-                             (guix build emacs-utils))
-         #:tests? #f ; there are none
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-site-dir
-             (lambda _
-               (substitute* "CMakeLists.txt"
-                 (("DESTINATION share/emacs/site-lisp/ledger-mode")
-                  "DESTINATION share/emacs/site-lisp"))
-               #t))
-           (add-before 'build 'patch-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((ledger (assoc-ref inputs "ledger")))
-                 (make-file-writable "ledger-exec.el")
-                 (emacs-substitute-variables "ledger-exec.el"
-                   ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
-               #t))
-           (add-after 'build 'build-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((target (string-append (assoc-ref outputs "out")
-                                            "/share/info")))
-                 (mkdir-p target)
-                 (invoke "makeinfo" "-o" target
-                         "../source/doc/ledger-mode.texi"))
-               #t))
-           (add-after 'install 'generate-autoload
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                               "/share/emacs/site-lisp")))
-                 (emacs-generate-autoloads ,name site-dir))
-               #t)))))
-      (inputs
-       `(("ledger" ,ledger)))
-      (native-inputs
-       `(("emacs-minimal" ,emacs-minimal)
-         ("texinfo" ,texinfo)))
-      (home-page "https://ledger-cli.org/")
-      (synopsis "Command-line double-entry accounting program")
-      (description
-       "Ledger is a powerful, double-entry accounting system that is
+  (package
+    (name "emacs-ledger-mode")
+    (version "4.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ledger/ledger-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1r5rcyxd6d1rqwamzpvqdbkbdf1zbj75aaciqijrklnm59ps244y"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-site-dir
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION share/emacs/site-lisp/ledger-mode")
+                "DESTINATION share/emacs/site-lisp"))
+             #t))
+         (add-before 'build 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ledger (assoc-ref inputs "ledger")))
+               (make-file-writable "ledger-exec.el")
+               (emacs-substitute-variables "ledger-exec.el"
+                 ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
+             #t))
+         (add-after 'build 'build-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/info")))
+               (mkdir-p target)
+               (invoke "makeinfo" "-o" target
+                       "../source/doc/ledger-mode.texi"))
+             #t))
+         (add-after 'install 'generate-autoload
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((site-dir (string-append (assoc-ref outputs "out")
+                                             "/share/emacs/site-lisp")))
+               (emacs-generate-autoloads ,name site-dir))
+             #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "../source/test"
+               (invoke "make" "test-batch")))))))
+    (inputs
+     `(("ledger" ,ledger)))
+    (native-inputs
+     `(("emacs-minimal" ,emacs-minimal)
+       ("texinfo" ,texinfo)))
+    (home-page "https://ledger-cli.org/")
+    (synopsis "Command-line double-entry accounting program")
+    (description
+     "Ledger is a powerful, double-entry accounting system that is
 accessed from the UNIX command-line.  This may put off some users, since
 there is no flashy UI, but for those who want unparalleled reporting
 access to their data there are few alternatives.
@@ -367,7 +429,7 @@ a graph or html instead.  Ledger is simple in concept, surprisingly rich
 in ability, and easy to use.
 
 This package provides the Emacs mode.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public geierlein
   (package
@@ -555,7 +617,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.0")
+    (version "0.17.1.1")
     (source
      (origin
        (method git-fetch)
@@ -575,7 +637,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "1cngniv7sndy8r0fcfgk737640k53q3kwd36g891p5igcb985qdw"))))
+        (base32 "18x27dm24k04vx0yz57zi02rk0wrmbn4wr8alqf48dq6z9wr0fhp"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -665,7 +727,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.0")
+    (version "0.17.1.1")
     (source
      (origin
        (method git-fetch)
@@ -674,7 +736,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07r78ipv4g3i6z822kq380vi3qwlb958rccsy6lyybkhj9y0rx84"))))
+        (base32 "0aqhp4rmqsgwjb875kgh6qwz0wyyiag1fksyic9cnhgg5j5y95nx"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)

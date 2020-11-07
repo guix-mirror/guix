@@ -538,7 +538,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rwlfjdr0rzbq4kaplvwsgyb8xq6nrzxss2c8xrgw9hqw3ymx4s3"))
+        (base32 "0nqj4bnn5c2z1bq4bnbw1wznc0wpmq4sy3w8pipd6n6620b9m4qq"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
@@ -1385,7 +1385,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.225")
+    (version "0.226")
     (source
      (origin
        (method git-fetch)
@@ -1394,7 +1394,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n61v1yqmc69399khcm8gdabqaz8rwwj822m8vm5mbyxnw92icqg"))
+        (base32 "1yfns42rk1l0qprj5ksj9fqsgqpa23xnzxf29r4434p4n18bb77v"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

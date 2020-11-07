@@ -46,6 +46,7 @@
   (newt-init)
   (clear-screen)
   (set-screen-size!)
+  (syslog "Display is ~ax~a.~%" (screen-columns) (screen-rows))
   (push-help-line
    (format #f (G_ "Press <F1> for installation parameters."))))
 

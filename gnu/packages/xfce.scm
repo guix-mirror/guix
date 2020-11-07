@@ -662,7 +662,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.15")
+    (version "1.8.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -670,7 +670,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "14vw4yaf9fff24zmj4dp8r8hf8mb19hl4w4l0jc8c4qzy865c93n"))))
+                "0k1w2zwa8z6sc8vi3frva74npks79x79n7q9p7ibwk7irfqkh4r2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -898,7 +898,7 @@ system resources, while still being visually appealing and user friendly.")
 (define-public xfce4-power-manager
   (package
     (name "xfce4-power-manager")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -906,7 +906,7 @@ system resources, while still being visually appealing and user friendly.")
                                   "xfce4-power-manager-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jqjwy341dxyijjm9k77a12iih6b5r3f4cmpr2lppa7mf37qqdj5"))))
+                "1ki088iyr266cfyq9bmmhhd27wrsrmbhsblyf4yqby03hlvqif3k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1034,7 +1034,7 @@ several different time zones.")
 (define-public xfce4-notifyd
   (package
     (name "xfce4-notifyd")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1042,7 +1042,7 @@ several different time zones.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1d49l2vdz4hb2c14ai5p81wz7vikh9g3ffz0gmm2kgw9kjcp8llv"))))
+                "0ib5s7kjbr9sy8nh89nfcc4w6qplacnk4s92iycijy2wcv389aqr"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)

@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,8 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
@@ -175,69 +178,77 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.12.7")
+    (version "4.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "1lkgih0vrarf5zy6chspkwarqdylzwr63nxr3qjkpazrs86nlm9h"))
+        (base32 "1d7j79c8aggwiv90y2q1yz63d9p5n4paq0fsbdvqpn05d8wn8r17"))
        (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; TODO: also remove the bundled ‘third_party/popt’.
+           ;; XXX: Some bundled libraries (e.g, popt, cmocka) are used from
+           ;; the system, but their bundled sources must be kept as they
+           ;; include the WAF scripts used for detecting them.
            (delete-file-recursively "third_party/pyiso8601")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags '("TEST_OPTIONS=--quick") ;some tests are very long
+       #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'locate-docbook-stylesheets
+         (add-before 'configure 'setup-docbook-stylesheets
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; XXX for some reason XML_CATALOG_FILES is not respected.
-             (substitute* '("buildtools/wafsamba/samba_conftests.py"
-                            "buildtools/wafsamba/wafsamba.py"
-                            "docs-xml/xslt/man.xsl")
-               (("http://docbook.sourceforge.net/release/xsl/current/")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl) "/")))
+             ;; Append Samba's own DTDs to XML_CATALOG_FILES
+             ;; (c.f. docs-xml/build/README).
+             (copy-file "docs-xml/build/catalog.xml.in"
+                        "docs-xml/build/catalog.xml")
+             (substitute* "docs-xml/build/catalog.xml"
+               (("/@abs_top_srcdir@")
+                (string-append (getcwd) "/docs-xml")))
+             ;; Honor XML_CATALOG_FILES.
+             (substitute* "buildtools/wafsamba/wafsamba.py"
+               (("XML_CATALOG_FILES=\"\\$\\{SAMBA_CATALOGS\\}" all)
+                (string-append all " $XML_CATALOG_FILES")))
              #t))
          (replace 'configure
-           ;; samba uses a custom configuration script that runs waf.
+           ;; Samba uses a custom configuration script that runs WAF.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
                (invoke "./configure"
+                       "--enable-selftest"
                        "--enable-fhs"
-                       ;; XXX: heimdal not packaged.
-                       "--bundled-libraries=com_err"
                        (string-append "--prefix=" out)
                        "--sysconfdir=/etc"
+                       "--localstatedir=/var"
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
                        (string-append "--with-privatelibdir=" libdir)))))
-         (add-before 'install 'disable-etc-samba-directory-creation
+         (add-before 'install 'disable-etc,var-samba-directories-setup
            (lambda _
              (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIR\\(\"\\$\\{CONFIGDIR\\}\"\\)")
-                ""))
+               (("bld\\.INSTALL_DIR.*") ""))
              #t)))
-       ;; XXX: The test infrastructure attempts to set password with
-       ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
-       ;; So disable tests until there's a workaround.
+       ;; FIXME: The test suite seemingly hangs after failing to provision the
+       ;; test environment.
        #:tests? #f))
-    (inputs                                   ; TODO: Add missing dependencies
+    (inputs
      `(("acl" ,acl)
+       ("cmocka" ,cmocka)
        ("cups" ,cups)
-       ;; ("gamin" ,gamin)
+       ("gamin" ,gamin)
+       ("dbus", dbus)
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
+       ("heimdal" ,heimdal)
        ("jansson" ,jansson)
        ("libarchive" ,libarchive)
+       ("libtirpc" ,libtirpc)
        ("linux-pam" ,linux-pam)
        ("lmdb" ,lmdb)
        ("openldap" ,openldap)
@@ -256,11 +267,11 @@ external dependencies.")
        ("pkg-config" ,pkg-config)
        ("python-iso8601" ,python-iso8601)
        ("rpcsvc-proto" ,rpcsvc-proto)   ; for 'rpcgen'
-
        ;; For generating man pages.
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("libxml2", libxml2)))           ;for XML_CATALOG_FILES
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")

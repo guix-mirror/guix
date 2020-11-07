@@ -66,6 +66,7 @@
 
             efi-disk-image
             iso9660-image
+            arm32-disk-image
             arm64-disk-image
 
             image-with-os
@@ -73,6 +74,7 @@
             qcow2-image-type
             iso-image-type
             uncompressed-iso-image-type
+            arm32-image-type
             arm64-image-type
 
             image-with-label
@@ -126,10 +128,10 @@
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
 
-(define arm64-disk-image
+(define arm32-disk-image
   (image
    (format 'disk-image)
-   (target "aarch64-linux-gnu")
+   (target "arm-linux-gnueabihf")
    (partitions
     (list (partition
            (inherit root-partition)
@@ -137,6 +139,11 @@
    ;; FIXME: Deleting and creating "/var/run" and "/tmp" on the overlayfs
    ;; fails.
    (volatile-root? #f)))
+
+(define arm64-disk-image
+  (image
+   (inherit arm32-disk-image)
+   (target "aarch64-linux-gnu")))
 
 
 ;;;
@@ -179,9 +186,14 @@ set to the given OS."
                   (compression? #f))
                  <>))))
 
+(define arm32-image-type
+  (image-type
+   (name 'arm32-raw)
+   (constructor (cut image-with-os arm32-disk-image <>))))
+
 (define arm64-image-type
   (image-type
-   (name 'arm)
+   (name 'arm64-raw)
    (constructor (cut image-with-os arm64-disk-image <>))))
 
 
@@ -342,6 +354,9 @@ used in the image."
                                        #$output
                                        image-root)))))
         (computed-file "partition.img" image-builder
+                       ;; Allow offloading so that this I/O-intensive process
+                       ;; doesn't run on the build farm's head node.
+                       #:local-build? #f
                        #:options `(#:references-graphs ,inputs))))
 
     (define (partition->config partition)
@@ -476,6 +491,9 @@ used in the image. "
                                  #:volume-id #$root-label
                                  #:volume-uuid #$root-uuid)))))
     (computed-file name builder
+                   ;; Allow offloading so that this I/O-intensive process
+                   ;; doesn't run on the build farm's head node.
+                   #:local-build? #f
                    #:options `(#:references-graphs ,inputs
                                #:substitutable? ,substitutable?))))
 

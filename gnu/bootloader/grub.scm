@@ -142,6 +142,24 @@ file with the resolution provided in CONFIG."
             (image->png image #:width width #:height height))
            (_ #f)))))
 
+(define (grub-locale-directory grub)
+  "Generate a directory with the locales from GRUB."
+  (define builder
+    #~(begin
+        (use-modules (ice-9 ftw))
+        (let ((locale (string-append #$grub "/share/locale"))
+              (out    #$output))
+          (mkdir out)
+          (chdir out)
+          (for-each (lambda (lang)
+                      (let ((file (string-append locale "/" lang
+                                                 "/LC_MESSAGES/grub.mo"))
+                            (dest (string-append lang ".mo")))
+                        (when (file-exists? file)
+                          (copy-file file dest))))
+                    (scandir locale)))))
+  (computed-file "grub-locales" builder))
+
 (define* (eye-candy config store-device store-mount-point
                     #:key store-directory-prefix port)
   "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
@@ -171,9 +189,11 @@ fi~%"
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (normalize-file (file-append grub "/share/grub/unicode.pf2")
-                    store-mount-point
-                    store-directory-prefix))
+    (let* ((bootloader (bootloader-configuration-bootloader config))
+           (grub (bootloader-package bootloader)))
+      (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                      store-mount-point
+                      store-directory-prefix)))
 
   (define image
     (normalize-file (grub-background-image config)
@@ -402,18 +422,33 @@ menuentry ~s {
                  #:port #~port)))
 
   (define locale-config
-    #~(let ((locale #$(and locale
-                           (locale-definition-source
-                            (locale-name->definition locale)))))
-        (when locale
-          (format port "\
+    (let* ((entry (first all-entries))
+           (device (menu-entry-device entry))
+           (mount-point (menu-entry-device-mount-point entry))
+           (bootloader (bootloader-configuration-bootloader config))
+           (grub (bootloader-package bootloader)))
+      #~(let ((locale #$(and locale
+                             (locale-definition-source
+                              (locale-name->definition locale))))
+              (locales #$(and locale
+                              (normalize-file (grub-locale-directory grub)
+                                              mount-point
+                                              store-directory-prefix))))
+          (when locale
+            (format port "\
 # Localization configuration.
-if search --file --set boot_partition /grub/grub.cfg; then
-    set locale_dir=(${boot_partition})/grub/locale
-else
-    set locale_dir=/boot/grub/locale
-fi
-set lang=~a~%" locale))))
+~asearch --file --set ~a/en@quot.mo
+set locale_dir=~a
+set lang=~a~%"
+                    ;; Skip the search if there is an image, as it has already
+                    ;; been performed by eye-candy and traversing the store is
+                    ;; an expensive operation.
+                    #$(if (grub-theme-image (bootloader-theme config))
+                          "# "
+                          "")
+                    locales
+                    locales
+                    locale)))))
 
   (define keyboard-layout-config
     (let* ((layout (bootloader-configuration-keyboard-layout config))
@@ -421,11 +456,12 @@ set lang=~a~%" locale))))
                     (bootloader-configuration-bootloader config)))
            (keymap* (and layout
                          (keyboard-layout-file layout #:grub grub)))
+           (entry (first all-entries))
+           (device (menu-entry-device entry))
+           (mount-point (menu-entry-device-mount-point entry))
            (keymap (and keymap*
-                        (if store-directory-prefix
-                            #~(string-append #$store-directory-prefix
-                                             #$keymap*)
-                            keymap*))))
+                        (normalize-file keymap* mount-point
+                                        store-directory-prefix))))
       #~(when #$keymap
           (format port "\
 insmod keylayouts

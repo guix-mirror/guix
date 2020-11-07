@@ -20,7 +20,7 @@
 # Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-# Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+# Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
@@ -37,6 +37,7 @@
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+# Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -465,6 +466,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/radio.scm			\
   %D%/packages/ragel.scm			\
   %D%/packages/rails.scm			\
+  %D%/packages/raspberry-pi.scm			\
   %D%/packages/ratpoison.scm			\
   %D%/packages/rcm.scm				\
   %D%/packages/rdesktop.scm			\
@@ -820,11 +822,21 @@ dist_patch_DATA =						\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
+  %D%/packages/patches/bsd-games-2.17-64bit.patch		\
+  %D%/packages/patches/bsd-games-add-configure-config.patch	\
+  %D%/packages/patches/bsd-games-add-wrapper.patch		\
+  %D%/packages/patches/bsd-games-bad-ntohl-cast.patch		\
+  %D%/packages/patches/bsd-games-dont-install-empty-files.patch	\
+  %D%/packages/patches/bsd-games-gamescreen.h.patch		\
+  %D%/packages/patches/bsd-games-getline.patch			\
+  %D%/packages/patches/bsd-games-null-check.patch		\
+  %D%/packages/patches/bsd-games-number.c-and-test.patch	\
+  %D%/packages/patches/bsd-games-prevent-name-collisions.patch	\
+  %D%/packages/patches/bsd-games-stdio.h.patch			\
   %D%/packages/patches/beancount-disable-googleapis-fonts.patch	\
   %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/behave-skip-a-couple-of-tests.patch	\
   %D%/packages/patches/beignet-correct-file-names.patch		\
-  %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/biber-sortinithash.patch			\
   %D%/packages/patches/bidiv-update-fribidi.patch		\
@@ -952,6 +964,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
   %D%/packages/patches/extempore-unbundle-external-dependencies.patch	\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
+  %D%/packages/patches/farstream-make.patch                          \
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
@@ -1021,7 +1034,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-9-strmov-store-file-names.patch	\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
-  %D%/packages/patches/gdb-hurd.patch				\
   %D%/packages/patches/gdm-default-session.patch		\
   %D%/packages/patches/genimage-signedness.patch		\
   %D%/packages/patches/geoclue-config.patch			\
@@ -1200,6 +1212,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
+  %D%/packages/patches/kpackage-fix-KF5PackageMacros.cmake.patch \
   %D%/packages/patches/kmplayer-aarch64.patch			\
   %D%/packages/patches/kmplayer-upstream_Fix-build-with-Qt-5.9.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
@@ -1351,7 +1364,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/m4-gnulib-libio.patch			\
   %D%/packages/patches/ncompress-fix-softlinks.patch		\
   %D%/packages/patches/netcdf-date-time.patch			\
-  %D%/packages/patches/netcdf-tst_h_par.patch			\
   %D%/packages/patches/netpbm-CVE-2017-2586.patch		\
   %D%/packages/patches/netpbm-CVE-2017-2587.patch		\
   %D%/packages/patches/netsurf-message-timestamp.patch		\
@@ -1371,7 +1383,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/nyacc-binary-literals.patch		\
   %D%/packages/patches/oath-toolkit-glibc-compat.patch		\
-  %D%/packages/patches/ocaml-bisect-fix-camlp4-in-another-directory.patch	\
   %D%/packages/patches/ocaml-bitstring-fix-configure.patch \
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
@@ -1389,7 +1400,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
-  %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
   %D%/packages/patches/openscad-parser-boost-1.72.patch	\
@@ -1410,6 +1420,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
+  %D%/packages/patches/plasma-framework-fix-KF5PlasmaMacros.cmake.patch \
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
   %D%/packages/patches/samba-fix-fcntl-hint-detection.patch		\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
@@ -1510,7 +1521,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pycrypto-time-clock.patch		\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
-  %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
+  %D%/packages/patches/python-robotframework-source-date-epoch.patch \
   %D%/packages/patches/python-shouldbe-0.1.2-cpy3.8.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-tinycss2-flake8-compat.patch	\
@@ -1537,7 +1548,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
   %D%/packages/patches/ratpoints-sturm_and_rp_private.patch	\
   %D%/packages/patches/ratpoison-shell.patch			\
-  %D%/packages/patches/rcs-5.9.4-noreturn.patch			\
+  %D%/packages/patches/rcs-5.10.0-no-stdin.patch		\
   %D%/packages/patches/rct-add-missing-headers.patch		\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
@@ -1568,6 +1579,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
+  %D%/packages/patches/sbcl-geco-fix-organism-class.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
@@ -1636,6 +1648,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
+  %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\
   %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
   %D%/packages/patches/unison-fix-ocaml-4.08.patch		\
   %D%/packages/patches/unknown-horizons-python-3.8-distro.patch	\
@@ -1707,6 +1720,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\
   %D%/packages/patches/xsane-support-ipv6.patch			\
   %D%/packages/patches/xsane-tighten-default-umask.patch	\
+  %D%/packages/patches/yggdrasil-extra-config.patch	\
   %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
 MISC_DISTRO_FILES =				\

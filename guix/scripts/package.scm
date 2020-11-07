@@ -41,6 +41,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (guix describe)
   #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
@@ -223,7 +224,7 @@ non-zero relevance score."
       (($ <manifest-entry> name version output (? string? path))
        (match (find-best-packages-by-name name #f)
          ((pkg . rest)
-          (let* ((pkg               (transform store pkg))
+          (let* ((pkg               (transform pkg))
                  (candidate-version (package-version pkg)))
             (match (package-superseded pkg)
               ((? package? new)
@@ -396,8 +397,6 @@ Install, remove, or upgrade packages in a single transaction.\n"))
       --show=PACKAGE     show details about PACKAGE"))
   (newline)
   (show-build-options-help)
-  (newline)
-  (show-transformation-options-help)
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -873,7 +872,7 @@ processed, #f otherwise."
   (define transform (options->transformation opts))
 
   (define (transform-entry entry)
-    (let ((item (transform store (manifest-entry-item entry))))
+    (let ((item (transform (manifest-entry-item entry))))
       (manifest-entry-with-transformations
        (manifest-entry
          (inherit entry)

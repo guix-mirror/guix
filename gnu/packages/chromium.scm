@@ -301,8 +301,8 @@
                         "/svntogit-packages/" revision "/trunk/" name))
     (sha256 (base32 hash))))
 
-(define %chromium-version "86.0.4240.75")
-(define %ungoogled-revision "c34a56db4c121238fface560e21531b6199ce5dd")
+(define %chromium-version "86.0.4240.183")
+(define %ungoogled-revision "b68e17f32e9eff56615a07b44e457835bb9460c6")
 (define %debian-revision "debian/84.0.4147.105-1")
 (define %arch-revision "2cbe439471932d30ff2c8ded6b3dfd51b312bbc9")
 
@@ -332,7 +332,15 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "18p9a7qffmy8m03nqva7maalgil13lj2mn0s56v3crbs4wk4lalj"))))
+      "0visyhz321ykrmbjndvx31yd8xlmha9gas0xbkavc2i45rpfahjq"))))
+
+(define %guix-patches
+  (list (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-nspr.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-extension-search-path.patch")))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -356,9 +364,7 @@
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
                     (append '#+%debian-patches '#+%arch-patches
-                            '#+(list (local-file
-                                      (search-patch
-                                       "ungoogled-chromium-system-nspr.patch")))))
+                            '#+%guix-patches))
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
@@ -446,10 +452,10 @@
               (method url-fetch)
               (uri (string-append "https://commondatastorage.googleapis.com"
                                   "/chromium-browser-official/chromium-"
-                                  (car (string-split version #\-)) ".tar.xz"))
+                                  %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1ddw4p9zfdzhi5hrd8x14k4w326znljzprnpfi2f917rlpnl2ynx"))
+                "1g39i82js7fm4fqb8i66d6xs0kzqjxzi4vzvvwz5y9rkbikcc4ma"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -571,11 +577,6 @@
                        (find-files (string-append "third_party/webrtc/modules"
                                                   "/audio_coding/codecs/opus")))
 
-             (substitute* "chrome/common/chrome_paths.cc"
-               (("/usr/share/chromium/extensions")
-                ;; TODO: Add ~/.guix-profile.
-                "/run/current-system/profile/share/chromium/extensions"))
-
              ;; Many files try to include ICU headers from "third_party/icu/...".
              ;; Remove the "third_party/" prefix to use system headers instead.
              (substitute* (find-files "chrome" "\\.cc$")
@@ -617,6 +618,18 @@
                (substitute* "device/udev_linux/udev1_loader.cc"
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
+
+               (substitute*
+                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                     "ui/ozone/common/egl_util.cc"
+                     "ui/gl/init/gl_initializer_linux_x11.cc"
+                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
+                 (("libGL\\.so\\.1")
+                  (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL\\.so\\.1")
+                  (string-append mesa "/lib/libEGL.so.1"))
+                 (("libGLESv2\\.so\\.2")
+                  (string-append mesa "/lib/libGLESv2.so.2")))
                #t)))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
@@ -705,7 +718,10 @@
                     (libs           '("chrome_100_percent.pak"
                                       "chrome_200_percent.pak"
                                       "resources.pak"
-                                      "v8_context_snapshot.bin"))
+                                      "v8_context_snapshot.bin"
+                                      ;; Chromium ships its own libGL
+                                      ;; implementation called ANGLE.
+                                      "libEGL.so" "libGLESv2.so"))
                     (locales        (string-append lib "/locales"))
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
@@ -830,6 +846,11 @@
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CHROMIUM_EXTENSION_DIRECTORY")
+            (separator #f)              ;single entry
+            (files '("share/chromium/extensions")))))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.

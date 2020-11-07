@@ -30,6 +30,7 @@
   #:use-module (gnu packages databases)
   #:use-module (guix build-system trivial)
   #:use-module (guix build union)
+  #:use-module (guix deprecation)
   #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix records)
@@ -146,8 +147,7 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-configuration>
   postgresql-configuration make-postgresql-configuration
   postgresql-configuration?
-  (postgresql         postgresql-configuration-postgresql ;<package>
-                      (default postgresql))
+  (postgresql         postgresql-configuration-postgresql) ;<package>
   (port               postgresql-configuration-port
                       (default 5432))
   (locale             postgresql-configuration-locale
@@ -278,15 +278,15 @@ host	all	all	::1/128 	md5"))
                        (service-extension account-service-type
                                           (const %postgresql-accounts))
                        (service-extension profile-service-type
-                                          (compose list postgresql-configuration-postgresql))))
-                (default-value (postgresql-configuration))))
+                                          (compose list postgresql-configuration-postgresql))))))
 
-(define* (postgresql-service #:key (postgresql postgresql)
-                             (port 5432)
-                             (locale "en_US.utf8")
-                             (config-file (postgresql-config-file))
-                             (data-directory "/var/lib/postgresql/data")
-                             (extension-packages '()))
+(define-deprecated (postgresql-service #:key (postgresql postgresql)
+                                       (port 5432)
+                                       (locale "en_US.utf8")
+                                       (config-file (postgresql-config-file))
+                                       (data-directory "/var/lib/postgresql/data")
+                                       (extension-packages '()))
+  postgresql-service-type
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}

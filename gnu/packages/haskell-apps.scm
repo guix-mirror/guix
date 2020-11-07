@@ -350,7 +350,7 @@ to @code{cabal repl}).")
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -Webapp")
+       '("--flags=-Android -Webapp")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-shell-for-tests
@@ -457,6 +457,7 @@ to @code{cabal repl}).")
        ("ghc-feed" ,ghc-feed)
        ("ghc-filepath-bytestring" ,ghc-filepath-bytestring)
        ("ghc-free" ,ghc-free)
+       ("ghc-hinotify" ,ghc-hinotify)
        ("ghc-hslogger" ,ghc-hslogger)
        ("ghc-http-client" ,ghc-http-client)
        ("ghc-http-conduit" ,ghc-http-conduit)
@@ -466,7 +467,10 @@ to @code{cabal repl}).")
        ("ghc-memory" ,ghc-memory)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-mountpoints" ,ghc-mountpoints)
        ("ghc-network" ,ghc-network)
+       ("ghc-network-info" ,ghc-network-info)
+       ("ghc-network-multicast" ,ghc-network-multicast)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-persistent" ,ghc-persistent)

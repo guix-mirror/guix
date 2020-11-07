@@ -159,14 +159,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.28.0")
+   (version "2.29.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "17a311vzimqn1glc9d7x82rhb1mb81m5rr4g8xji8idaafid39fz"))))
+              "1h87yv117ypnc0yi86941089c14n91gixk8b6shj2y35prp47z7j"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -183,7 +183,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1dvwq0py8a2ywmgc5pzdlsj3608s7r9wyba292728fcs3yj7ynk6"))))
+            "14npkg9rnp2yclsx5p622qpm6byzfy5k5wb209vkmm5r60m4mm72"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -518,11 +518,6 @@ everything from small to very large projects with speed and efficiency.")
            (delete 'install-man-pages)
            (delete 'install-subtree)
            (delete 'install-credential-netrc)
-           (add-before 'check 'delete-svn-test
-             (lambda _
-               ;; This test cannot run since we are not building 'git-svn'.
-               (delete-file "t/t9020-remote-svn.sh")
-               #t))
            (add-after 'install 'remove-unusable-perl-commands
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
@@ -1799,26 +1794,17 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.9.4")
+    (version "5.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))
-             (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
+               "1if5pa4iip2p70gljm54nggfdnsfjxa4cqz8fpj07lvsijary39s"))
+             (patches (search-patches "rcs-5.10.0-no-stdin.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-t810
-                    ;; See https://savannah.gnu.org/bugs/index.php?52288
-                    ;; Back-porting the fix is non-trivial, so disable for now.
-                    (lambda _
-                      (substitute* "tests/Makefile"
-                        ((" t810 \\\\\n") ""))
-                     #t)))))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description

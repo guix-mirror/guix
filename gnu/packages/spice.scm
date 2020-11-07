@@ -369,6 +369,7 @@ share smart cards from client system to local or remote virtual machines.")
     (build-system gnu-build-system)
     (inputs
       `(("gtk+" ,gtk+)
+        ("gtk-vnc" ,gtk-vnc)
         ("libcap" ,libcap)
         ("libxml2" ,libxml2)
         ("spice-gtk" ,spice-gtk)))

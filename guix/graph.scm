@@ -142,7 +142,7 @@ typically returned by 'node-edges' or 'node-back-edges'."
                         nodes node-edges))
 
 (define (shortest-path node1 node2 type)
-  "Return as a monadic value the shorted path, represented as a list, from
+  "Return as a monadic value the shortest path, represented as a list, from
 NODE1 to NODE2 of the given TYPE.  Return #f when there is no path."
   (define node-edges
     (node-type-edges type))
@@ -238,7 +238,7 @@ NODE1 to NODE2 of the given TYPE.  Return #f when there is no path."
 (define (emit-epilogue port)
   (display "\n}\n" port))
 (define (emit-node id label port)
-  (format port "  \"~a\" [label = \"~a\", shape = box, fontname = Helvetica];~%"
+  (format port "  \"~a\" [label = \"~a\", shape = box, fontname = sans];~%"
           id label))
 (define (emit-edge id1 id2 port)
   (format port "  \"~a\" -> \"~a\" [color = ~a];~%"

@@ -5353,6 +5353,65 @@ alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
 
+(define-public texlive-libertine
+  (package
+    (inherit (simple-texlive-package
+              "texlive-libertine"
+              (list "/doc/fonts/libertine/"
+
+                    "/fonts/enc/dvips/libertine/"
+                    "/fonts/map/dvips/libertine/"
+                    "/fonts/opentype/public/libertine/"
+                    "/fonts/tfm/public/libertine/"
+                    "/fonts/type1/public/libertine/"
+                    "/fonts/vf/public/libertine/"
+
+                    "/tex/latex/libertine/")
+              (base32
+               "1v2vimpfi0b08sd79dadrck7wkpa0bphiakwyvhjc3ygq9k5bp8k")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/libertine")
+    (synopsis "Use Linux Libertine and Biolinum fonts with LaTeX")
+    (description
+     "The package provides the Libertine and Biolinum fonts in both Type 1 and
+OTF styles, together with support macros for their use.  Monospaced and
+display fonts, and the \"keyboard\" set are also included, in OTF style, only.
+The @code{mweights} package is used to manage the selection of font weights.
+The package supersedes both the @code{libertineotf} and the
+@code{libertine-legacy} packages.")
+    (license (list license:gpl2+        ; with font exception
+                   license:silofl1.1
+                   license:lppl))))
+
+(define-public texlive-dejavu
+  (package
+    (inherit (simple-texlive-package
+              "texlive-dejavu"
+              (list "/doc/fonts/dejavu/"
+
+                    "/fonts/enc/dvips/dejavu/"
+                    "/fonts/map/dvips/dejavu/"
+
+                    "/fonts/afm/public/dejavu/"
+                    "/fonts/tfm/public/dejavu/"
+                    "/fonts/truetype/public/dejavu/"
+                    "/fonts/type1/public/dejavu/"
+                    "/fonts/vf/public/dejavu/"
+
+                    "/tex/latex/dejavu/")
+              (base32
+               "0y4qf5jl0xncah9nkcaalmy69wwq02n3j895zp71n2p0nfi24aka")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/libertine")
+    (synopsis "LaTeX support for the DejaVu fonts")
+    (description
+     "The package contains LaTeX support for the DejaVu fonts, which are
+derived from the Vera fonts but contain more characters and styles.  The fonts
+are included in the original TrueType format, and in converted Type 1 format.
+The (currently) supported encodings are: OT1, T1, IL2, TS1, T2*, X2, QX, and
+LGR.  The package doesn't (currently) support mathematics.")
+    (license license:lppl)))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")

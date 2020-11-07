@@ -8,7 +8,27 @@
      ;; For use with 'bug-reference-prog-mode'.
      (bug-reference-url-format . "http://bugs.gnu.org/%s")
      (bug-reference-bug-regexp
-      . "<https?://\\(debbugs\\|bugs\\)\\.gnu\\.org/\\([0-9]+\\)>")))
+      . "<https?://\\(debbugs\\|bugs\\)\\.gnu\\.org/\\([0-9]+\\)>")
+
+     ;; Emacs-Guix
+     (eval . (setq guix-directory
+                   (locate-dominating-file default-directory ".dir-locals.el")))
+
+     ;; Geiser
+     ;; This allows automatically setting the `geiser-guile-load-path'
+     ;; variable when using various Guix checkouts (e.g., via git worktrees).
+     (eval . (let* ((root-dir (expand-file-name
+                               (locate-dominating-file
+                                default-directory ".dir-locals.el")))
+                    ;; Workaround for bug https://issues.guix.gnu.org/43818.
+                    (root-dir* (directory-file-name root-dir)))
+               (unless (boundp 'geiser-guile-load-path)
+                 (defvar geiser-guile-load-path '()))
+               (make-local-variable 'geiser-guile-load-path)
+               (require 'cl-lib)
+               (cl-pushnew root-dir* geiser-guile-load-path
+                           :test #'string-equal)))))
+
  (c-mode          . ((c-file-style . "gnu")))
  (scheme-mode
   .
@@ -103,6 +123,7 @@
    (eval . (put 'call-with-progress-reporter 'scheme-indent-function 1))
    (eval . (put 'with-repository 'scheme-indent-function 2))
    (eval . (put 'with-temporary-git-repository 'scheme-indent-function 2))
+   (eval . (put 'with-temporary-git-worktree 'scheme-indent-function 2))
    (eval . (put 'with-environment-variables 'scheme-indent-function 1))
    (eval . (put 'with-fresh-gnupg-setup 'scheme-indent-function 1))
 

@@ -87,13 +87,16 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages time)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
@@ -307,6 +310,183 @@ ElasticSearch index to a compressed file and restoring the dumpfile back to an
 ElasticSearch server")
     (home-page "https://github.com/patientslikeme/es_dump_restore")
     (license license:expat)))
+
+(define-public firebird
+  (package
+    (name "firebird")
+    (version "3.0.7")
+    (source
+     (let ((revision "33374-0"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/FirebirdSQL/"
+                             "firebird/releases/download/R"
+                             (string-replace-substring version "." "_") "/"
+                             "Firebird-" version "." revision ".tar.bz2"))
+         (sha256
+          (base32 "0xpy1bncz36c6n28y7kllm1dkrdkn4vb4gw2n43f2351mznmrf5c"))
+         (modules '((guix build utils)))
+         (snippet
+          `(begin
+             (for-each
+              delete-file-recursively
+              (list "extern/btyacc/test" ; TODO: package and remove entirely
+                    "extern/editline"
+                    "extern/icu"
+                    "extern/libtommath"
+                    "extern/zlib"
+                    "src/include/firebird/impl/boost"
+
+                    ;; Missing licence.
+                    "builds/install/arch-specific/solaris"
+                    "extern/SfIO"
+                    "src/msgs/templates.sql"
+
+                    ;; Generated files missing sources.
+                    "doc/Firebird-3-QuickStart.pdf"
+                    (string-append "doc/Firebird-" ,version
+                                   "-ReleaseNotes.pdf")
+                    "doc/README.SecureRemotePassword.html"))
+             #t)))))
+    (build-system gnu-build-system)
+    (outputs (list "debug" "out"))
+    (arguments
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-fbsbin=" out "/sbin")
+               (string-append "--with-fbdoc=" out "/share/doc/"
+                              ,name "-" ,version)
+               (string-append "--with-fbconf=" out "/lib/firebird")
+               (string-append "--with-fbintl=" out "/lib/firebird/intl")
+               (string-append "--with-fbmisc=" out "/lib/firebird/misc")
+               (string-append "--with-fbmsg=" out "/lib/firebird")
+               (string-append "--with-fbplugins=" out "/lib/firebird/plugins")
+               (string-append "--with-fbudf=" out "/lib/firebird/UDF")
+               "--with-fbglock=/run/firebird"
+               "--with-fblog=/var/log/firebird"
+               "--with-fbhelp=/var/lib/firebird/system"
+               "--with-fbsecure-db=/var/lib/firebird/secure"
+               "--without-fbsample"
+               "--without-fbsample-db"
+               "--with-system-editline"))
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; The plugins/ can't find libfbclient otherwise.
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:tests? #f                      ; no test suite
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-boost
+           (lambda _
+             (substitute* "src/include/firebird/Message.h"
+               (("\"\\./impl/boost/preprocessor/seq/for_each_i\\.hpp\"")
+                "<boost/preprocessor/seq/for_each_i.hpp>")
+               (("FB_BOOST_") "BOOST_"))
+             #t))
+         (add-after 'unpack 'patch-installation
+           (lambda _
+             (substitute*
+                 "builds/install/arch-specific/linux/makeInstallImage.sh.in"
+               (("/bin/sh") (which "bash"))
+               ;; Remove shell script helpers from $PATH.
+               (("(addLibs|cp) .*\\.sh .*@FB_SBINDIR@") ":")
+               ;; Put files where Guix users expect them.
+               (("(License\\.txt.*)@FB_CONFDIR" match)
+                (string-append match "@FB_DOCDIR@"))
+               (("@FB_CONFDIR@(.*License\\.txt.*)" match)
+                (string-append "@FB_DOCDIR@" match))
+               (("(cp .*/doc/.*)@FB_CONFDIR@(.*)" _ head tail)
+                (string-append head "@FB_DOCDIR@" tail "\n")))
+             (substitute*
+                 (list "builds/install/posix-common/changeServerMode.sh.in"
+                       "builds/install/posix-common/install.sh.in")
+               ;; Skip phases that (could) cause problems in Guix.
+               (("check(InstallUser|IfServerRunning|Libraries)|addFirebirdUser")
+                ":")
+               ;; Skip phases that are merely pointless on Guix.
+               (("buildUninstallFile|installInitdScript|startFirebird") ":")
+               ;; Omit randomly generated password with bonus timestamp.
+               (("setDBAPassword") ":"))
+
+             ;; These promote proprietary workflows not relevant on Guix.
+             (for-each delete-file-recursively
+                       (find-files "doc" "README\\.(build\\.msvc|NT|Win)"))
+             #t))
+         (add-after 'configure 'delete-init-scripts
+           (lambda _
+             (delete-file-recursively "gen/install/misc")
+             #t))
+         (add-before 'build 'set-build-environment-variables
+           (lambda _
+             ;; ‘isql’ needs to run & find libfbclient.so during the build.
+             ;; This doubles as a rudimentary test in lieu of a test suite.
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (assoc-ref %build-inputs "icu4c") "/lib"))
+             #t))
+         (add-before 'install 'keep-embedded-debug-symbols
+           (lambda _
+             ;; Let the gnu-build-system separate & deal with them later.
+             ;; XXX Upstream would use ‘--strip-unneeded’, shaving a whole
+             ;; megabyte off Guix's 7.7M libEngine12.so, for example.
+             (substitute* "gen/Makefile.install"
+               (("readelf") "false"))
+             #t))
+         (add-after 'install 'prune-undesirable-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion out
+                 ;; Remove example binaries.
+                 (for-each delete-file-recursively
+                           (find-files "." "example"))
+                 ;; Delete (now-)empty directories.
+                 (for-each rmdir
+                           (list "include/firebird/impl"
+                                 "lib/firebird/plugins/udr"))
+                 #t)))))))
+    (inputs
+     `(("boost" ,boost)
+       ("editline" ,editline)
+       ("icu4c" ,icu4c-67)
+       ("libtommath" ,libtommath)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (home-page "https://www.firebirdsql.org")
+    (synopsis "Relational database with many ANSI SQL standard features")
+    (description
+     "Firebird is an SQL @acronym{RDBMS, relational database management system}
+with rich support for ANSI SQL (e.g., @code{INSERT...RETURNING}) including
+@acronym{UDFs, user-defined functions} and PSQL stored procedures, cursors, and
+triggers.  Transactions provide full ACID-compliant referential integrity.
+
+The database requires very little manual maintenance once set up, making it
+ideal for small business or embedded use.
+
+When installed as a traditional local or remote (network) database server,
+Firebird can grow to terabyte scale with proper tuning---although PostgreSQL
+may be a better choice for such very large environments.
+
+Firebird can also be embedded into stand-alone applications that don't want or
+need a full client & server.  Used in this manner, it offers richer SQL support
+than SQLite as well as the option to seamlessly migrate to a client/server
+database later.")
+    (properties
+     `((lint-hidden-cve . ("CVE-2017-6369"))))
+    (license
+     ;; See doc/license/README.license.usage.txt for rationale & details.
+     (list license:bsd-3                ; src/common/sha2/
+           license:bsd-4                ; src/common/enc.cpp
+           license:gpl2+                ; builds/posix/make.defaults
+           (license:non-copyleft "file:///builds/install/misc/IPLicense.txt"
+                                 "InterBase Public License v1.0")
+           (license:non-copyleft "file:///builds/install/misc/IDPLicense.txt"
+                                 "Initial Developer's Public License v1.0")
+           license:lgpl2.1           ; exception for OSI-compatible licences
+           license:mpl1.1            ; examples/interfaces/0{6,8}*.cpp
+           license:public-domain)))) ; including files without explicit licence
 
 (define-public leveldb
   (package
@@ -1023,6 +1203,8 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public postgresql-10 postgresql)
 
 (define-public postgresql-11
   (package

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -77,6 +77,7 @@ system.")
 We recommend NetworkManager or Connman for a WiFi-capable laptop; the DHCP \
 client may be enough for a server.")
      #:info-textbox-width 70
+     #:listbox-height 7
      #:listbox-items (filter (lambda (service)
                                (eq? 'network-management
                                     (system-service-type service)))

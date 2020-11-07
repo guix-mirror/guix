@@ -1312,6 +1312,12 @@ made by suckless.")
        ("ncurses" ,ncurses)
        ("pkg-config" ,pkg-config)
        ("python3" ,python)))
+    (native-search-paths
+     ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
+     ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
+     (list (search-path-specification
+            (variable "TERMINFO_DIRS")
+            (files '("share/terminfo")))))
     (home-page "https://github.com/alacritty/alacritty")
     (synopsis "GPU-accelerated terminal emulator")
     (description

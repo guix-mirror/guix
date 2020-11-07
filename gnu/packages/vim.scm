@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.1852")
+    (version "8.2.1964")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,18 +79,13 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0nvcvvig5fc45smf4kh71jqyqafffgxzaizwqknk0h9vzl4k4h57"))))
+               "0rhx93xq5gk7lgxnm0h0lnwl6zgifcnl0c9k0f4fqb6cx81ihp4q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'fix-installman
-           (lambda _
-             (substitute* "src/installman.sh"
-               ((" /bin/sh") (which "sh")))
-             #t))
          (add-after 'configure 'patch-absolute-paths
            (lambda _
              (substitute* "runtime/tools/mve.awk"

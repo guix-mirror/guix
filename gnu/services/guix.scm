@@ -188,8 +188,11 @@
                           ;; libraries, but it means that the Guile libraries
                           ;; needed for the Guix Build Coordinator don't need
                           ;; to be individually specified here.
-                          (map second (package-inputs
-                                       guix-build-coordinator-package)))
+                          (append
+                           (map second (package-inputs
+                                        guix-build-coordinator-package))
+                           (map second (package-propagated-inputs
+                                        guix-build-coordinator-package))))
      #~(begin
          (use-modules (srfi srfi-1)
                       (ice-9 match)
@@ -200,16 +203,21 @@
                       (guix-build-coordinator build-allocator)
                       (guix-build-coordinator coordinator))
 
+         (setvbuf (current-output-port) 'line)
+         (setvbuf (current-error-port) 'line)
+
+         (simple-format #t "starting the guix-build-coordinator:\n  ~A\n"
+                        (current-filename))
          (let* ((metrics-registry (make-metrics-registry
                                    #:namespace
-                                   "guixbuildcoordinator_"))
+                                   "guixbuildcoordinator"))
                 (datastore (database-uri->datastore
                             #$database-uri-string
                             #:metrics-registry metrics-registry))
                 (hooks
                  (list #$@(map (match-lambda
                                  ((name . hook-gexp)
-                                  #~(cons name #$hook-gexp)))
+                                  #~(cons '#$name #$hook-gexp)))
                                hooks)))
                 (hooks-with-defaults
                  `(,@hooks
@@ -265,7 +273,8 @@
                 #:environment-variables
                 `(,(string-append
                     "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
-                  "LC_ALL=en_US.utf8")
+                  "LC_ALL=en_US.utf8"
+                  "PATH=/run/current-system/profile/bin") ; for hooks
                 #:log-file "/var/log/guix-build-coordinator/coordinator.log"))
       (stop #~(make-kill-destructor))))))
 
@@ -362,6 +371,8 @@
 (define (guix-build-coordinator-agent-activation config)
   #~(begin
       (use-modules (guix build utils))
+
+      (define %user (getpw "guix-build-coordinator-agent"))
 
       (mkdir-p "/var/log/guix-build-coordinator")
 

@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,7 +214,7 @@ This can give a much better understanding of the command's performance.")
 (define-public benchmark
   (package
     (name "benchmark")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -222,16 +223,24 @@ This can give a much better understanding of the command's performance.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r9dbg4cbk47gwmayys31a83m3y67k0kh1f6pl8i869rbd609ndh"))
-              (patches (search-patches "benchmark-unbundle-googletest.patch"))))
+                "13rxagpzw6bal6ajlmrxlh9kgfvcixn6j734b2bvfqz7lch8n0pa"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest)))
+     `(("googletest-source" ,(package-source googletest))
+       ("googletest" ,googletest)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "googletest")
+             #t)))))
     (home-page "https://github.com/google/benchmark")
     (synopsis "Microbenchmark support library")
     (description
-     "Benchmark is a library to benchmark code snippets,
-similar to unit tests.")
+     "Benchmark is a library to benchmark code snippets, similar to unit
+tests.")
     (license license:asl2.0)))
 
 (define-public bonnie++

@@ -495,7 +495,7 @@ For PDF support, install the @emph{mupdf} package.")
 (define-public qview
   (package
     (name "qview")
-    (version "3.0")
+    (version "4.0")
     (source
      (origin
        (method git-fetch)
@@ -504,29 +504,22 @@ For PDF support, install the @emph{mupdf} package.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15a91bs3wcqhgf76wzigbn10hayg628j84pq4j2vaxar94ak0vk7"))))
+        (base32 "15n9cq7w3ckinnx38hvncxrbkv4qm4k51sal41q4y0pkvhmafhnr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
-             (invoke "qmake")))
-         ;; Installation process hard-codes "/usr/bin", possibly
-         ;; prefixed.
-         (add-after 'configure 'fix-install-directory
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("\\$\\(INSTALL_ROOT\\)/usr") out))
-               #t)))
-         ;; Don't phone home or show "Checking for updates..." in the
-         ;; About menu.
+               (invoke "qmake" (string-append "PREFIX=" out)))))
+         ;; Don't phone home or show "Checking for updates..." in the About
+         ;; menu.
          (add-before 'build 'disable-auto-update
            (lambda _
              (substitute* "src/qvaboutdialog.cpp"
-               (("ui->updateLabel->setText\\(updateText\\);") "")
-               (("requestUpdates\\(\\);") ""))
+               (("qvApp->checkUpdates\\(\\);") "")
+               (("updateText\\(\\);") ""))
              #t)))))
     (inputs
      `(("qtbase" ,qtbase)

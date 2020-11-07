@@ -3313,7 +3313,7 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
          ("java-cisd-args4j" ,java-cisd-args4j)
          ("java-commons-lang" ,java-commons-lang)
          ("java-commons-io" ,java-commons-io)
-         ("hdf5" ,hdf5)
+         ("hdf5" ,hdf5-1.8)
          ("zlib" ,zlib)))
       (native-inputs
        `(("jdk" ,icedtea-8)
@@ -9678,8 +9678,11 @@ not included are ones that require dependency to the Databind package.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://github.com/FasterXML/jackson-core")
-    (synopsis "")
-    (description "")
+    (synopsis "Low-level streaming parser and generator abstractions")
+    (description "This package contains core low-level incremental
+(streaming) parser and generator abstractions used by the Jackson Data
+Processor.  It also includes the default implementation of handler types
+(parser, generator) that handle JSON format.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
 (define-public java-fasterxml-jackson-databind
@@ -9926,12 +9929,14 @@ interface and high-performance Typed Access API.")
     (name "java-woodstox-core")
     (version "5.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/woodstox/archive/"
-                                  "woodstox-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/woodstox")
+                     (commit (string-append "woodstox-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i7pdgb8jbw6gdy5kmm0l6rz109n2ns92pqalpyp24vb8vlvdfd4"))))
+                "0bfylk24a967hwxprxqbg6cdvm6n4ldcarp54yg980viwvjiglyp"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "woodstox.jar"
@@ -9966,13 +9971,14 @@ interface and high-performance Typed Access API.")
     (name "java-fasterxml-jackson-dataformat-xml")
     (version "2.9.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/"
-                                  "jackson-dataformat-xml/archive/"
-                                  "jackson-dataformat-xml-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/jackson-dataformat-xml")
+                     (commit (string-append "jackson-dataformat-xml-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "111fkkl90w31jbf30kgj82qdcxlw4sxppki7i198liw0ck1jcavq"))))
+                "0s1wl65mbs57c2hz2v8rnh8i04y5lpyyvnjz562j5j6b83vwwpfx"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"

@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1430,6 +1431,30 @@ emphasis while still being readable.")
 (define-public font-open-dyslexic
   (deprecated-package "font-open-dyslexic" font-opendyslexic))
 
+(define-public font-openmoji
+  (package
+    (name "font-openmoji")
+    (version "12.4.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append "https://github.com/hfg-gmuend/openmoji/"
+                       "releases/download/" version
+                       "/openmoji-font.zip"))
+       (sha256
+        (base32
+         "0wvvg5vnc950h8v23wfgjyi7rv89mgm5hqq6viqv0bxcc3azglxb"))))
+    (build-system font-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://openmoji.org")
+    (synopsis "Font for rendering emoji characters")
+    (description
+     "This package provides the OpenMoji font in both color and black
+variants.")
+    (license license:cc-by-sa4.0)))
+
 (define-public font-dosis
   (package
     (name "font-dosis")
@@ -1761,6 +1786,36 @@ This package provides the TrueType fonts.")
 Mono’s typeface forms are simple and free from unnecessary details.  Rendered
 in small sizes, the text looks crisper.")
     (license license:asl2.0)))
+
+(define-public font-juliamono
+  (package
+    (name "font-juliamono")
+    (version "0.025")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cormullion/juliamono")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w8mpl9zc1y4j1f26ikbz5g9dqsszhikp4r9p1d3ch3b5ayb5c3m"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-website-folder
+           ;; This folder contains other unrelated fonts.
+           (lambda _
+             (delete-file-recursively "website")
+             #t)))))
+    (home-page "https://github.com/cormullion/juliamono")
+    (synopsis "Monospaced font for programming")
+    (description
+     "JuliaMono is a monospaced font for scientific and technical computing,
+designed to work for programming in the Julia Programming Language and other
+text environments.")
+    (license license:silofl1.1)))
 
 (define-public font-vazir
   (package
