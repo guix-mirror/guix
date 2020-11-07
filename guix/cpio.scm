@@ -27,6 +27,7 @@
             make-cpio-header
             file->cpio-header
             file->cpio-header*
+            special-file->cpio-header*
             write-cpio-header
             read-cpio-header
 
@@ -189,6 +190,25 @@ produced in a deterministic fashion."
                       #:nlink (stat:nlink st)
                       #:size (stat:size st)
                       #:name-size (string-length file-name))))
+
+(define* (special-file->cpio-header* file
+                                     device-type
+                                     device-major
+                                     device-minor
+                                     permission-bits
+                                     #:optional (file-name file))
+  "Create a character or block device header.
+
+DEVICE-TYPE is either 'char-special or 'block-special.
+
+The number of hard links is assumed to be 1."
+  (make-cpio-header #:mode (logior (match device-type
+                                    ('block-special C_ISBLK)
+                                    ('char-special C_ISCHR))
+                                    permission-bits)
+                    #:nlink 1
+                    #:rdev (device-number device-major device-minor)
+                    #:name-size (string-length file-name)))
 
 (define %trailer
   "TRAILER!!!")
