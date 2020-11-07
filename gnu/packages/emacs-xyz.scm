@@ -11371,6 +11371,30 @@ constructs.")
 configuration of Chinese fonts.")
     (license license:gpl2+)))
 
+(define-public emacs-csharp-mode
+  (package
+    (name "emacs-csharp-mode")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/josteink/csharp-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vwkbla2gkfa9dzxfvrvr7hd2z16769iwbycl7k6l701dnwli1fw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/josteink/csharp-mode")
+    (synopsis "Major mode for C# code")
+    (description
+     "This is a C# editing mode for Emacs, based on CC mode.  It handles
+syntax coloring, indentation, insertion of matched pairs of curly braces and
+documentation generation.  In addition, it provides menu-based navigation
+using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
+    ;; XXX: Project switched to GPL3+ after 0.10.0 release.
+    (license license:gpl2+)))
+
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
