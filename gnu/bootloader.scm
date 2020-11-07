@@ -232,7 +232,7 @@ record."
             (force %bootloaders))
       (leave (G_ "~a: no such bootloader~%") name)))
 
-(define (efi-bootloader-profile files bootloader-package hook)
+(define (efi-bootloader-profile files bootloader-package hooks)
   "Creates a profile with BOOTLOADER-PACKAGE and a directory collection/ with
 links to additional FILES from the store.  This collection is meant to be used
 by the bootloader installer.
@@ -243,7 +243,9 @@ then the directory content instead of the directory itself will be symlinked
 into the collection/ directory.
 
 FILES may contain file like objects produced by functions like plain-file,
-local-file, etc., or package contents produced with file-append."
+local-file, etc., or package contents produced with file-append.
+
+HOOKS lists additional hook functions to modify the profile."
   (define (bootloader-collection manifest)
     (define build
         (with-imported-modules '((guix build utils)
@@ -303,9 +305,8 @@ local-file, etc., or package contents produced with file-append."
                         (hook . bootloader-collection))))
 
   (profile (content (packages->manifest (list bootloader-package)))
-           (name "efi-bootloader-profile")
-           (hooks (append (list bootloader-collection)
-                          (or hook '())))
+           (name "bootloader-profile")
+           (hooks (append (list bootloader-collection) hooks))
            (locales? #f)
            (allow-collisions? #f)
            (relative-symlinks? #f)))
@@ -313,7 +314,7 @@ local-file, etc., or package contents produced with file-append."
 (define* (efi-bootloader-chain files
                                final-bootloader
                                #:key
-                               hook
+                               (hooks '())
                                installer)
   "Define a bootloader chain with FINAL-BOOTLOADER as the final bootloader and
 certain directories and files from the store given in the list of FILES.
@@ -326,19 +327,18 @@ which will be passed to the INSTALLER.
 If a directory name in FILES ends with '/', then the directory content instead
 of the directory itself will be symlinked into the collection/ directory.
 
-The PROFILE-HOOK function can be used to further modify the bootloader profile.
+The procedures in the HOOKS list can be used to further modify the bootloader
+profile.  It is possible to pass a single function instead of a list.
 
 If the INSTALLER argument is used, then this function will be called to install
-the bootloader.  Otherwise the installer of the FINAL-BOOTLOADER will be called.
-
-Independent of the INSTALLER argument, all files in the mentioned collection/
-directory of the bootloader profile will be copied into the bootloader target
-directory after the actual bootloader installer has been called."
+the bootloader.  Otherwise the installer of the FINAL-BOOTLOADER will be called."
   (let* ((final-installer (or installer
                               (bootloader-installer final-bootloader)))
          (profile (efi-bootloader-profile files
                                           (bootloader-package final-bootloader)
-                                          hook)))
+                                          (if (list? hooks)
+                                              hooks
+                                              (list hooks)))))
     (bootloader
      (inherit final-bootloader)
      (package profile)
