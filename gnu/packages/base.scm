@@ -1240,7 +1240,7 @@ command.")
                "02g88pbw82zr36x9dz5ib4sq6bfq253yx5hbhnfyhp143naky1cv"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
+     `(#:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out"))
                           (tmp (getenv "TMPDIR")))
                       (list (string-append "TOPDIR=" out)
@@ -1251,6 +1251,16 @@ command.")
                             ;; Likewise for the C library routines.
                             (string-append "LIBDIR=" tmp "/lib")
                             (string-append "MANDIR=" tmp "/man")
+
+                            ;; XXX: tzdata 2020b changed the on-disk format
+                            ;; of the time zone files from 'fat' to 'slim'.
+                            ;; Many packages (particularly evolution-data-server)
+                            ;; can not yet handle the latter, so we stick with
+                            ;; 'fat' for now.
+                            ,@(if (version>=? (package-version this-package)
+                                              "2020b")
+                                  '("CPPFLAGS=-DZIC_BLOAT_DEFAULT='\"fat\"'")
+                                  '())
 
                             "AWK=awk"
                             "CC=gcc"))
