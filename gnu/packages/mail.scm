@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2572,6 +2573,57 @@ existing mail server.  With Postfix, the proxies can operate as either
      "Mb2md is a Perl script that takes one or more mbox format files and
 converts them to maildir format directories.")
     (license license:public-domain)))
+
+(define-public mblaze
+  (package
+    (name "mblaze")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leahneukirchen/mblaze")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p97zfl35ilrnrx9ynj82igsb698m9klikfaicw5jhjpf6qp2n3y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:tests? #f                   ; XXX: Upstream tests appear to be broken
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          "PREFIX="
+                          (string-append "DESTDIR=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/leahneukirchen/mblaze")
+    (synopsis "Unix utilities to deal with Maildir")
+    (description
+     "The mblaze message system is a set of Unix utilities for processing and
+interacting with mail messages which are stored in maildir folders.
+
+Its design is roughly inspired by MH, the RAND Message Handling System, but it
+is a complete implementation from scratch.
+
+mblaze is a classic command line MUA and has no features for receiving or
+transferring messages; you can operate on messages in a local maildir spool,
+or fetch your messages using fdm(1), getmail(1), offlineimap(1), or similar
+utilities, and send it using dma(8), msmtp(1), sendmail(8), as provided by
+OpenSMTPD, Postfix, or similar.
+
+mblaze operates directly on maildir folders and doesn't use its own caches or
+databases.  There is no setup needed for many uses.  All utilities have been
+written with performance in mind.  Enumeration of all messages in a maildir is
+avoided unless necessary, and then optimized to limit syscalls.  Parsing
+message metadata is optimized to limit I/O requests.  Initial operations on a
+large maildir may feel slow, but as soon as they are in the file system cache,
+everything is blazingly fast.  The utilities are written to be memory
+efficient (i.e. not wasteful), but whole messages are assumed to fit into RAM
+easily (one at a time).")
+    (license (list license:public-domain
+                   license:expat))))    ; mystrverscmp.c and mymemmem
 
 (define-public mpop
   (package
