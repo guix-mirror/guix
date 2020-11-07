@@ -755,7 +755,7 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.14.2")
+    (version "4.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -763,7 +763,7 @@ on the screen.")
                                   "xfdesktop-" version ".tar.bz2"))
               (sha256
                (base32
-                "0x1yx9sd5aanrlr1qnbwd2nsmcg09g4132k0kyb7z47a3x3381d3"))
+                "14sp5a4n21prwmh2l5mjq5fjaq7r2pbjxddfx4wzaix8867x1mq6"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
