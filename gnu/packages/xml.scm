@@ -1080,14 +1080,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.30")
+    (version "1.2.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                   "xmlsec1-" version ".tar.gz"))
               (sha256
                (base32
-                "1j5bf7ni45jghyrbf7a14wx2pvfara557zyry7g7h8840c5kd11d"))))
+                "09hbbaz2d9hw645q27apkjs1mdr6vd85x5z3c9hzgr1iri9bq44v"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
