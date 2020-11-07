@@ -559,7 +559,7 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
      (origin
        (method git-fetch)
@@ -567,7 +567,7 @@ a card with a smaller capacity than stated.")
              (url "https://github.com/markfasheh/duperemove")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
+        (base32 "1a87mka2sfzhbch2jip6wlvvs0glxq9lqwmyrp359d1rmwwmqiw9"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
