@@ -581,7 +581,9 @@ a card with a smaller capacity than stated.")
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "CC=" ,(cc-for-target)))))
+                          (string-append "CC=" ,(cc-for-target))
+                          ;; Set to <next release>dev by default.
+                          (string-append "VER=" ,version))))
     (home-page "https://github.com/markfasheh/duperemove")
     (synopsis "Tools for de-duplicating file system data")
     (description "Duperemove is a simple tool for finding duplicated extents
