@@ -1615,14 +1615,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "6.0")
+    (version "6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "1zxiic91zhgdkxyfgyh1vkv4lzg90vq362y9k739n28ci6z4xzwm"))))
+        (base32 "1r1n8i59c6dsyqbphja7fnb1gg8rgbdqd4gdnda6ldq6jfippwlr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
