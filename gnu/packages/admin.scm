@@ -3425,7 +3425,7 @@ make it a perfect utility on modern distros.")
 on systems running the Linux kernel.")
     ;; arm and aarch64 don't have cpuid.h.
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (license license:gpl2+)))
+    (license license:gpl2)))
 
 (define-public masscan
   (package
