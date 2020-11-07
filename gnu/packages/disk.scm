@@ -86,7 +86,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public udevil
   (package
@@ -580,7 +581,7 @@ a card with a smaller capacity than stated.")
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")))
+                          (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/markfasheh/duperemove")
     (synopsis "Tools for de-duplicating file system data")
     (description "Duperemove is a simple tool for finding duplicated extents
