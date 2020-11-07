@@ -354,7 +354,7 @@
                       #$@(if non-derivation-substitute-urls
                              #~(#$(string-append
                                    "--non-derivation-substitute-urls="
-                                   (string-join derivation-substitute-urls " ")))
+                                   (string-join non-derivation-substitute-urls " ")))
                              #~())
                       #$@(map (lambda (system)
                                 (string-append "--system=" system))
