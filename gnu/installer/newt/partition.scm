@@ -64,7 +64,7 @@ are being formatted."
   ;; of device names of the user partitions that will be formatted.
   (run-confirmation-page (format #f (G_ "We are about to write the configured \
 partition table to the disk and format the partitions listed below.  Their \
-data will be lost.  Do you wish to continue?~%~{ - ~a~%~}")
+data will be lost.  Do you wish to continue?~%~%~{ - ~a~%~}")
                                  (map user-partition-file-name
                                       (filter user-partition-need-formatting?
                                               partitions)))
