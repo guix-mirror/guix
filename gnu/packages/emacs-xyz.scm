@@ -18589,6 +18589,16 @@ files.  It focuses on highlighting the document to improve readability.")
            (lambda _
              (substitute* "Makefile"
                (("\\$\\{CASK\\} exec ") ""))
+             #t))
+         ;; Two tests are failing with Emacs 27, as reported here:
+         ;; <https://github.com/racer-rust/emacs-racer/issues/136>.  Disable
+         ;; them.
+         (add-before 'check 'fix-failing-tests
+           (lambda _
+             (substitute* "test/racer-test.el"
+               (("`Write`") "Write")
+               (("^\\\\\\[`str\\]:.*") "")
+               ((" \\[`str`\\]") " str"))
              #t)))))
     (native-inputs
      `(("emacs-ert-runner" ,emacs-ert-runner)
