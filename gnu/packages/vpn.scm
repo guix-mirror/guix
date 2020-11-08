@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -131,10 +131,10 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (home-page "https://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
 (define-public vpnc-scripts
-  (let ((commit "1000e0f6dd7d6bff163169a46359211c1fc3a6d2"))
+  (let ((commit "3885f8bbc4ae03fd6da0ada6de12f7223a59595c"))
     (package
       (name "vpnc-scripts")
-      (version (string-append "20190116." (string-take commit 7)))
+      (version (string-append "20200925." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri
@@ -144,7 +144,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
+                  "1pmi4n58q81pmn9arvfixhvv6vkkf3rpwac3hwnwyl882q5q0ccx"))))
       (build-system gnu-build-system)
       (inputs `(("guile" ,guile-3.0) ; for the wrapper scripts
                 ("coreutils" ,coreutils)
