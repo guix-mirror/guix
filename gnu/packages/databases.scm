@@ -3888,7 +3888,7 @@ The drivers officially supported by @code{libdbi} are:
 (define-public soci
   (package
     (name "soci")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3897,7 +3897,7 @@ The drivers officially supported by @code{libdbi} are:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06faswdxd2frqr9xnx6bxc7zwarlzsbdi3bqpz7kwdxsjvq41rnb"))))
+                "14x2gjblkgpflv75wl144cyjp1sis5rbxnr9r2gj3yw16v2av0bp"))))
     (build-system cmake-build-system)
     (inputs
      `(("postgresql" ,postgresql)
@@ -3907,7 +3907,10 @@ The drivers officially supported by @code{libdbi} are:
        ("mariadb:dev" ,mariadb "dev")
        ("mariadb:lib" ,mariadb "lib")))
     (arguments
-     `(#:tests? #f ; Tests may require running database management systems.
+     `(#:configure-flags
+       ;; C++11 (-DSOCI_CXX11) is OFF by default.  hyperledger-iroha needs it.
+       (list "-DCMAKE_CXX_STANDARD=17")
+       #:tests? #f           ; may require running database management systems
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-lib-path
