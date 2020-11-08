@@ -307,6 +307,7 @@ dictionaries, including personal ones.")
 (define-public aspell-dict-pl
   (aspell-dictionary "pl" "Polish"
                      #:version "0.51-0"
+                     #:prefix "aspell-"
                      #:sha256
                      (base32
                       "1a3ccji6k5gys7l3ilr2lh5pzxgzb7ipc5vb737svl6nqgdy8757")))
