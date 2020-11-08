@@ -5156,8 +5156,12 @@ new API's in libXft, or the legacy API's in libX11.")
           (base32
             "0q8hz3slga3w3ch8wp0k7ay9ilhz315qnab0w1y2x9w3cf7hv8rn"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))             ;man pages represent 28% of the total
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:configure-flags (list "--disable-static"
+                               (string-append "--mandir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/man"))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)
