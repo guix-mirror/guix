@@ -1089,7 +1089,7 @@ features, and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/QuantStack/xtensor")
+                    (url "https://github.com/xtensor-stack/xtensor")
                     (commit version)))
               (sha256
                (base32
@@ -1103,7 +1103,7 @@ features, and more.")
      `(#:configure-flags
        '("-DBUILD_TESTS=ON")
        #:test-target "xtest"))
-    (home-page "https://quantstack.net/xtensor")
+    (home-page "https://xtensor.readthedocs.io/en/latest/")
     (synopsis "C++ tensors with broadcasting and lazy computing")
     (description "xtensor is a C++ library meant for numerical analysis with
 multi-dimensional array expressions.
