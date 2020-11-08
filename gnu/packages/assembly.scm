@@ -265,7 +265,7 @@ runtime")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rednex/rgbds")
+                    (url "https://github.com/gbdev/rgbds")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -292,7 +292,7 @@ runtime")
        ("util-linux" ,util-linux)))
     (inputs
      `(("libpng" ,libpng)))
-    (home-page "https://github.com/rednex/rgbds")
+    (home-page "https://github.com/gbdev/rgbds")
     (synopsis "Rednex Game Boy Development System")
     (description
      "RGBDS (Rednex Game Boy Development System) is an assembler/linker
