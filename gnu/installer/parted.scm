@@ -758,11 +758,33 @@ cause them to cross."
                                                       dev-constraint))
               (no-constraint (constraint-any device))
               ;; Try to create a partition with an optimal alignment
-              ;; constraint. If it fails, fallback to creating a partition with
-              ;; no specific constraint.
+              ;; constraint. If it fails, fallback to creating a partition
+              ;; with no specific constraint.
+              (partition-constraint-ok?
+               (disk-add-partition disk partition final-constraint))
+              (partition-no-contraint-ok?
+               (or partition-constraint-ok?
+                   (disk-add-partition disk partition no-constraint)))
               (partition-ok?
-               (or (disk-add-partition disk partition final-constraint)
-                   (disk-add-partition disk partition no-constraint))))
+               (or partition-constraint-ok? partition-no-contraint-ok?)))
+         (syslog "Creating partition:
+~/type: ~a
+~/filesystem-type: ~a
+~/start: ~a
+~/end: ~a
+~/start-range: [~a, ~a]
+~/end-range: [~a, ~a]
+~/constraint: ~a
+~/no-constraint: ~a
+"
+                 partition-type
+                 (filesystem-type-name filesystem-type)
+                 start-sector*
+                 end-sector
+                 (geometry-start start-range) (geometry-end start-range)
+                 (geometry-start end-range) (geometry-end end-range)
+                 partition-constraint-ok?
+                 partition-no-contraint-ok?)
          ;; Set the partition name if supported.
          (when (and partition-ok? has-name? name)
            (partition-set-name partition name))
