@@ -373,6 +373,13 @@ Font Format (WOFF).")
                             (copy-recursively source target)
                             (delete-file-recursively source)))
                         '("man3" "man5"))
+              #t)))
+        (add-after 'install 'remove-pdf-files
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; By default PDF versions of the user and development manuals are
+            ;; installs but they bring nothing useful.  Remove them.
+            (let ((doc (assoc-ref outputs "doc")))
+              (for-each delete-file (find-files doc "\\.pdf$"))
               #t))))))
    (synopsis "Library for configuring and customizing font access")
    (description
