@@ -4737,9 +4737,13 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))             ;man pages represent 40% of the total
     (arguments
      `(#:configure-flags
        (list "--disable-static"
+             (string-append "--mandir="
+                            (assoc-ref %outputs "doc")
+                            "/share/man")
              ;; Disable zero malloc check that fails when cross-compiling.
              ,@(if (%current-target-system)
                    '("--disable-malloc0returnsnull")
