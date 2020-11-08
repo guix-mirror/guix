@@ -6001,7 +6001,7 @@ discovery protocols.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.34.1")
+    (version "3.38.0")
     (source
      (origin
        (method url-fetch)
@@ -6010,14 +6010,14 @@ discovery protocols.")
                            "totem-" version ".tar.xz"))
        (sha256
         (base32
-         "028sc6xbyi7rs884862d8f3di6zhcm0lhvlpc3r69ifzjsq9my3b"))))
+         "0bs33ijvxbr2prb9yj4dxglsszslsn9k258n311sld84masz4ad8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
-       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("xorg-server" ,xorg-server-for-tests)))
