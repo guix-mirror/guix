@@ -19,11 +19,34 @@
 (define-module (gnu packages browser-extensions)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu build chromium-extension)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages python))
+
+(define play-to-kodi
+  (package
+    (name "play-to-kodi")
+    (version "1.9.1")
+    (home-page "https://github.com/khloke/play-to-xbmc-chrome")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01rmcpbkn9vhcd8mrah2jmd2801k2r5fz7aqvp22hbwmh2z5f1ch"))))
+    (build-system copy-build-system)
+    (synopsis "Send website contents to Kodi")
+    (description
+     "Play to Kodi is a browser add-on that can send video, audio, and other
+supported content to the Kodi media center.")
+    (license license:expat)))
+
+(define-public play-to-kodi/chromium
+  (make-chromium-extension play-to-kodi))
 
 (define uassets
   (let ((commit "0cef83c9fc68fdad8f3ee9dc07f6356ebc12791c"))
