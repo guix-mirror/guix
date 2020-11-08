@@ -2653,7 +2653,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.4")
+    (version "2.7.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2661,7 +2661,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "1acdb3m37vdzzbm8mwyibcn8msi7birb5v30qfi7jli5r00src3x"))
+               "1kwkn976ppahrcr74bnv6sqx75pzl9y21m1mvr5ksi1m6lgp924s"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -2679,6 +2679,7 @@ for use with HTML5 video.")
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("lame" ,lame)
+       ("libaom" ,libaom)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
@@ -2693,7 +2694,7 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (let ((ffmpeg "ffmpeg-4.1.4"))
+       (let ((ffmpeg "ffmpeg-4.2.3"))
          (modify-phases %standard-phases
            (add-before 'patch-source-shebangs 'unpack-ffmpeg
              (lambda _
