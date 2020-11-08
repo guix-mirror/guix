@@ -982,7 +982,7 @@ the data stored in various image formats.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/"
+                    "mirror://sourceforge/cdemu/cdemu-daemon/"
                     "cdemu-daemon-" version ".tar.bz2"))
               (sha256
                (base32
