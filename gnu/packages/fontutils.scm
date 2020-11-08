@@ -326,6 +326,7 @@ Font Format (WOFF).")
             (patches (search-patches "fontconfig-hurd-path-max.patch"))
             (sha256 (base32
                      "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
+   (outputs '("out" "doc"))
    (build-system gnu-build-system)
    ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
@@ -353,11 +354,26 @@ Font Format (WOFF).")
       #:phases
       (modify-phases %standard-phases
         (replace 'install
-                 (lambda _
-                   ;; Don't try to create /var/cache/fontconfig.
-                   (invoke "make" "install"
-                           "fc_cachedir=$(TMPDIR)"
-                           "RUN_FC_CACHE_TEST=false"))))))
+          (lambda _
+            ;; Don't try to create /var/cache/fontconfig.
+            (invoke "make" "install"
+                    "fc_cachedir=$(TMPDIR)"
+                    "RUN_FC_CACHE_TEST=false")))
+        (add-after 'install 'move-man-sections
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
+            ;; "out" for convenience.
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (for-each (lambda (section)
+                          (let ((source (string-append out "/share/man/"
+                                                       section))
+                                (target (string-append doc "/share/man/"
+                                                       section)))
+                            (copy-recursively source target)
+                            (delete-file-recursively source)))
+                        '("man3" "man5"))
+              #t))))))
    (synopsis "Library for configuring and customizing font access")
    (description
     "Fontconfig can discover new fonts when installed automatically;
