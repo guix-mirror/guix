@@ -539,19 +539,20 @@ and the cross tool chain."
 
         ;; FIXME: 'static-bash' should really be an input, not a native input, but
         ;; to do that will require building an intermediate cross libc.
-        (inputs '())
+        (inputs (if (hurd-triplet? target)
+                    `(;; TODO: move to glibc in the next rebuild cycle
+                      ("hurd-mach-print.patch"
+                       ,(search-patch "glibc-hurd-mach-print.patch"))
+                      ("hurd-gettyent.patch"
+                       ,(search-patch "glibc-hurd-gettyent.patch")))
+                    '()))
 
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)
                          ,@(if (hurd-triplet? target)
                                `(("cross-mig"
                                   ,@(assoc-ref (package-native-inputs xheaders)
-                                               "cross-mig"))
-                                 ;; TODO: move to glibc in the next rebuild cycle
-                                 ("hurd-mach-print.patch"
-                                  ,@(search-patches "glibc-hurd-mach-print.patch"))
-                                 ("hurd-gettyent.patch"
-                                  ,@(search-patches "glibc-hurd-gettyent.patch")))
+                                               "cross-mig")))
                                '())
                          ,@(package-inputs libc)  ;FIXME: static-bash
                          ,@(package-native-inputs libc))))))
