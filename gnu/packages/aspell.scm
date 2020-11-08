@@ -299,6 +299,7 @@ dictionaries, including personal ones.")
 (define-public aspell-dict-nn
   (aspell-dictionary "nn" "Norwegian Nynorsk"
                      #:version "0.50.1-1"
+                     #:prefix "aspell-"
                      #:sha256
                      (base32
                       "0w2k5l5rbqpliripgqwiqixz5ghnjf7i9ggbrc4ly4vy1ia10rmc")))
