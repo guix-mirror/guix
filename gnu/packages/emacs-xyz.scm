@@ -21655,8 +21655,8 @@ and searching through @code{Ctags} files.")
       (license license:expat))))
 
 (define-public emacs-org-download
-  (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
-        (revision "2"))
+  (let ((commit "42ac361ef5502017e6fc1bceb00333eba90402f4")
+        (revision "3"))
     (package
       (name "emacs-org-download")
       (version (git-version "0.1.0" revision commit))
@@ -21665,10 +21665,9 @@ and searching through @code{Ctags} files.")
                 (uri (git-reference
                       (url "https://github.com/abo-abo/org-download")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
-                 (base32
-                  "0i8wlx1i7y1vn5lqwjifvymvszg28a07vwqcm4jslf1v2ajs1lsl"))
-                (file-name (git-file-name name version))))
+                 (base32 "1frd6wk8xfk2q9xczkzz90iily8l8f9fancvbqbnj263z120zzdl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)
