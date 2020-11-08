@@ -5274,6 +5274,7 @@ protocol.")
           (base32
            "0d2chjgyn5lr9sfhacfvqgnj9l9faz11vn322a06jd6lk3dxcpm5"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))                      ;5.5 MiB of man pages
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
         ("libxau" ,libxau)
@@ -5285,8 +5286,11 @@ protocol.")
       `(("pkg-config" ,pkg-config)
         ("python" ,python-minimal-wrapper)))
     (arguments
-     `(#:configure-flags '("--enable-xkb"
-                           "--disable-static")))
+     `(#:configure-flags (list "--enable-xkb"
+                               "--disable-static"
+                               (string-append "--mandir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/man"))))
     (home-page "https://xcb.freedesktop.org/")
     (synopsis "The X C Binding (XCB) library")
     (description
