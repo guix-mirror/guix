@@ -397,7 +397,7 @@ arrays of data.")
 (define-public gstreamer-docs
   (package
     (name "gstreamer-docs")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -405,7 +405,7 @@ arrays of data.")
                     "/gstreamer-docs-" version ".tar.xz"))
               (sha256
                (base32
-                "0x6ix6dj3ndc1y133xidb21a4bamdfjh88mxxxld05d78wd1ayda"))))
+                "0npnsr1z4x951nw8bfcna1xlgi1p0b4qb291jj3pywlib2lscnnv"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -460,7 +460,7 @@ the GStreamer multimedia framework.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
       (method url-fetch)
@@ -469,7 +469,7 @@ the GStreamer multimedia framework.")
             version ".tar.xz"))
       (sha256
        (base32
-        "01bq1k0gj603zyhq975zl09q4zla12mxqvhmk9fyn2kcn12r5w0g"))))
+        "1fpcpsw740svvdxvvwn0hly5i72miizm4s0mbid10ji83zi8vpvr"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -520,7 +520,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
       (method url-fetch)
@@ -528,7 +528,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "15vqvcy842vhbic3w7l4yvannzazdgwggzv2x8f9m02hm78vsakn"))))
+        "0hf66sh8d4x2ksfnvaq2rqrrfq0vi0pv6wbh9i5jixrhvvbm99hv"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
@@ -582,7 +582,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
@@ -591,7 +591,7 @@ for the GStreamer multimedia library.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "1b4b3a6fm2wyqpnx300pg1sz01m9qhfajadk3b7sbzisg8vvqab3"))))
+        (base32 "0v329xi4qhlfh9aksfyviryqk9lclm4wj1lxrjnbdv4haldfj472"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
@@ -671,14 +671,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pqqq5bs9fjwcmbwgsgxs2dx6gznhxs7ii5pmjkslr6xmlfap0pk"))))
+                "1cn18cbqyysrxnrk5bpxdzd5xcws9g2kmm5rbv00cx6rhn69g5f1"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -771,7 +771,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
@@ -779,7 +779,7 @@ par compared to the rest.")
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "10p0nyzighvkciaspxnhlr7d7n4acrv96lf483i8l988bvj48rk8"))))
+        (base32 "09gpbykjchw3lb51ipxj53fy238gr9mg9jybcg5135pb56w6rk8q"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
@@ -829,7 +829,7 @@ think twice about shipping them.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
@@ -838,7 +838,7 @@ think twice about shipping them.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "0sm0sfdlalimpkf7a7rk7whvyvmmfi2kly2z3q2j5z53x5f3zya2"))))
+        (base32 "1n1fkkbxxsndblnbm0c2ziqp967hrz5gag6z36xbpvqk4sy1g9rr"))))
     (build-system meson-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -859,7 +859,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -867,7 +867,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
                     "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "1a00f07v0yjqz1hydhgkjjarm4rk99yjicbz5wkfl5alhzag1bjd"))))
+                "09rr5a198p1r9wcbsjl01xg6idkfkgj5h9x7xxywarb5i7qv6g79"))))
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
@@ -894,7 +894,7 @@ non-linear editors.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -902,7 +902,7 @@ non-linear editors.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "0ifx2s2j24sj2w5jm7cxyg1kinnhbxiz4x0qp3gnsjlwbawfigvn"))))
+                "1xpncj9xdn6ycnmrqnk6iaqaia658licyj08cxbjgcvs5x18kcj2"))))
     (build-system meson-build-system)
     (arguments
      `(#:modules ((guix build meson-build-system)
