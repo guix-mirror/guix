@@ -237,7 +237,7 @@ standard Go idioms.")
 (define-public ephemeralpg
   (package
     (name "ephemeralpg")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
@@ -245,7 +245,7 @@ standard Go idioms.")
              "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
-        (base32 "1j0g7g114ma7y7sadbng5p1ss1zsm9zpicm77qspym6565733vvh"))))
+        (base32 "1ap22ki8yz6agd0qybcjgs4b9izw1rwwcgpxn3jah2ccfyax34s6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
