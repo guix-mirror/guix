@@ -283,6 +283,7 @@ dictionaries, including personal ones.")
 (define-public aspell-dict-mi
   (aspell-dictionary "mi" "Maori"
                      #:version "0.50-0"
+                     #:prefix "aspell-"
                      #:sha256
                      (base32
                       "12bxplpd348yx8d2q8qvahi9dlp7qf28qmanzhziwc7np8rixvmy")))
