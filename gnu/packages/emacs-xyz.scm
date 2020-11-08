@@ -20594,7 +20594,12 @@ processes for Emacs")
                  #t)))))))
     (home-page "https://github.com/Alexander-Miller/treemacs")
     (synopsis "Emacs tree style file explorer")
-    (description "Powerful and flexible file tree project explorer.")
+    (description
+     "Treemacs is a file and project explorer similar to NeoTree or Vim's
+NerdTree, but largely inspired by the Project Explorer in Eclipse.  It shows
+the file system outlines of your projects in a simple tree layout allowing
+quick navigation and exploration, while also possessing basic file management
+utilities.")
     (license license:gpl3+)))
 
 (define-public emacs-treemacs-extra
