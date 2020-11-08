@@ -248,7 +248,7 @@ standard Go idioms.")
         (base32 "1ap22ki8yz6agd0qybcjgs4b9izw1rwwcgpxn3jah2ccfyax34s6"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
