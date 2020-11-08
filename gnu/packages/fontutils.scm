@@ -160,7 +160,7 @@ scripts.")
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ;no tests
        #:phases
        (modify-phases %standard-phases
