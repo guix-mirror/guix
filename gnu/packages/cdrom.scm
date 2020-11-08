@@ -953,7 +953,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/libmirage-"
+                    "mirror://sourceforge/cdemu/libmirage/libmirage-"
                     version ".tar.bz2"))
               (sha256
                (base32
