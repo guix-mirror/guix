@@ -101,7 +101,7 @@
     (version "3.16.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.cmake.org/files/v"
+              (uri (string-append "https://cmake.org/files/v"
                                   (version-major+minor version)
                                   "/cmake-" version ".tar.gz"))
               (sha256
