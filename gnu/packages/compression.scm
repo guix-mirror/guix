@@ -1667,7 +1667,7 @@ archive can be reverted.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://savannah.nongnu.org/download/atool/atool-"
+       (uri (string-append "mirror://savannah/atool/atool-"
                            version ".tar.gz"))
        (sha256
         (base32
