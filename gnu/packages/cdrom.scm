@@ -1011,7 +1011,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-client-"
+                    "mirror://sourceforge/cdemu/cdemu-client/cdemu-client-"
                     version ".tar.bz2"))
               (sha256
                (base32
