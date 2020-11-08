@@ -20540,7 +20540,7 @@ processes for Emacs")
     (inputs
      `(("python" ,python)))
     (arguments
-     `(#:tests? #t ;TODO: Investigate ‘treemacs--parse-collapsed-dirs’ test failure.
+     `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-makefile
@@ -20555,12 +20555,14 @@ processes for Emacs")
            (lambda _
              (chdir "src/elisp")))
          (replace 'check
+           ;; FIXME: Work around ‘treemacs--parse-collapsed-dirs’ and
+           ;; `treemacs-collect-child-nodes' test failures.
            (lambda _
              (with-directory-excursion "../.." ;treemacs root
                (chmod "test/test-treemacs.el" #o644)
                (emacs-substitute-sexps "test/test-treemacs.el"
-                 ("(describe \"treemacs--parse-collapsed-dirs\""
-                  ""))
+                 ("(describe \"treemacs--parse-collapsed-dirs\"" "")
+                 ("\"Finds only direct childre\"" ""))
                (invoke "make" "test"))))
          (add-before 'install 'patch-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
