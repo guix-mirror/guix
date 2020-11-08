@@ -2963,3 +2963,54 @@ commit message side by side
 
 If several repos are related, it helps to see their status together.")
       (license license:expat))))
+
+(define-public ghq
+  (package
+    (name "ghq")
+    (version "1.1.5")
+    (home-page "https://github.com/x-motemen/ghq")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "098fik155viylq07az7crzbgswcvhpx0hr68xpvyx0rpri792jbq"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:install-source? #f
+       #:import-path "github.com/x-motemen/ghq"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key outputs import-path #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash-completion (string-append out "/etc/bash_completion.d"))
+                    (zsh-completion (string-append out "/share/zsh/site-functions")))
+               (with-directory-excursion (string-append "src/" import-path)
+                 (mkdir-p bash-completion)
+                 (copy-file "misc/bash/_ghq"
+                            (string-append bash-completion "/ghq"))
+                 (mkdir-p zsh-completion)
+                 (copy-file "misc/zsh/_ghq"
+                            (string-append zsh-completion "/_ghq"))))
+             #t)))))
+    (native-inputs
+     `(("git" ,git-minimal)))
+    (inputs
+     `(("github.com/songmu/gitconfig" ,go-github-com-songmu-gitconfig)
+       ("github.com/mattn/go-isatty" ,go-github-com-mattn-go-isatty)
+       ("github.com/motemen/go-colorine" ,go-github-com-motemen-go-colorine)
+       ("github.com/saracen/walker" ,go-github-com-saracen-walker)
+       ("github.com/urfave/cli/v2" ,go-github-com-urfave-cli-v2)
+       ("golang.org/x/net/html" ,go-golang-org-x-net-html)
+       ("golang.org/x/sync/errgroup" ,go-golang.org-x-sync-errgroup)))
+    (synopsis "Manage remote repository clones")
+    (description
+     "@code{ghq} provides a way to organize remote repository clones, like
+@code{go get} does.  When you clone a remote repository by @code{ghq get}, ghq
+makes a directory under a specific root directory (by default @file{~/ghq})
+using the remote repository URL's host and path.")
+    (license license:expat)))
