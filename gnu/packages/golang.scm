@@ -507,6 +507,28 @@ jar struct to manage the cookies added to the cookie jar.")
     (description "This package provides additions to Go's stdlib @code{fmt}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-golangplus-testing
+  (package
+    (name "go-github-com-golangplus-testing")
+    (version "1.0.0")
+    (home-page "https://github.com/golangplus/testing")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1a29m4zplf9m14k74lrb55dids2l17vx28sv0g3y3qcv1xygksiv"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/golangplus/testing"))
+    (propagated-inputs
+     `(("go-github-com-golangplus-fmt" ,go-github-com-golangplus-fmt)))
+    (synopsis "Additions to Go's standard testing package")
+    (description "This package provides additions to Go's stdlib testing.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-leodido-go-urn
   (package
     (name "go-github-com-leodido-go-urn")
