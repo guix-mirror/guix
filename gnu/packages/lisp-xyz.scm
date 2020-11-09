@@ -14339,3 +14339,36 @@ directly.")
 
 (define-public ecl-custom-hash-table
   (sbcl-package->ecl-package sbcl-custom-hash-table))
+
+(define-public sbcl-collectors
+  (let ((commit "13acef25d8422d1d82e067b1861e513587c166ee"))
+    (package
+      (name "sbcl-collectors")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/collectors")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1si68n1j6rpns8jw6ksqjpb937pdl30v7xza8rld7j5vh0jhy2yi"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("symbol-munger" ,sbcl-symbol-munger)))
+      (native-inputs
+       `(("lisp-unit2" ,sbcl-lisp-unit2)))
+      (home-page "https://github.com/AccelerationNet/collectors/")
+      (synopsis "Common lisp library providing collector macros")
+      (description "A small collection of common lisp macros to make
+collecting values easier.")
+      (license license:bsd-3))))
+
+(define-public cl-collectors
+  (sbcl-package->cl-source-package sbcl-collectors))
+
+(define-public ecl-collectors
+  (sbcl-package->ecl-package sbcl-collectors))
