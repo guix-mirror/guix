@@ -3457,8 +3457,11 @@ structure for Python.")
     (synopsis "Python Documentation Utilities")
     (description
      "Docutils is a modular system for processing documentation into useful
-formats, such as HTML, XML, and LaTeX.  For input Docutils supports
-reStructuredText.")
+formats, such as HTML, XML, and LaTeX.  It uses @dfn{reStructuredText}, an
+easy to use markup language, for input.
+
+This package provides tools for converting @file{.rst} files to other formats
+via commands such as @command{rst2man}, as well as supporting Python code.")
     ;; Most of the source code is public domain, but some source files are
     ;; licensed under the PFSL, BSD 2-clause, and GPLv3+ licenses.
     (license (list license:public-domain license:psfl license:bsd-2 license:gpl3+))))
