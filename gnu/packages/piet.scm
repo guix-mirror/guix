@@ -59,17 +59,17 @@
     (native-inputs `(("groff" ,groff)))
     (synopsis "Piet interpreter")
     (description
-     "Npiet is an interpreter for the piet programming language.  Instead of
-text, piet programs are pictures.  Commands are determined based on changes in
+     "Npiet is an interpreter for the Piet programming language.  Instead of
+text, Piet programs are pictures.  Commands are determined based on changes in
 color.
 
 This package includes:
 @enumerate
-@item npiet, a piet interpreter with debugging capabilities
-@item npiet-foogol, a program that builds a piet program from foogol, an
-algol-like language
-@item npietedit, an editor for the piet programming language
-@end enumerate")
+@item @command{npiet}, a Piet interpreter with debugging capabilities
+@item @command{npiet-foogol}, a program that builds a Piet program from Foogol,
+an Algol-like language
+@item @command{npietedit}, an editor for Piet programs.
+@end enumerate\n")
     (home-page "https://www.bertnase.de/npiet/")
     (license license:gpl2+)))
 
