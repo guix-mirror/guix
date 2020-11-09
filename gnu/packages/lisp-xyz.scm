@@ -6634,8 +6634,8 @@ number of other open source projects.
   (sbcl-package->ecl-package sbcl-s-sysdeps))
 
 (define-public sbcl-cl-prevalence
-  (let ((commit "1e5f030d94237b33d20947a2f6c194abedb10727")
-        (revision "3"))
+  (let ((commit "5a76be036092ed6c18cb695a9e03bce87e21b840")
+        (revision "4"))
     (package
       (name "sbcl-cl-prevalence")
       (build-system asdf-build-system/sbcl)
@@ -6650,7 +6650,7 @@ number of other open source projects.
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "13yb8lv2aap5wvqa6hw7ms31xnax58f4m2nxifkssrzkb2w2qf29"))))
+           "050h6hwv8f16b5v6fzba8zmih92hgaaq27i2x9wv1iib41gbia3r"))))
       (inputs
        `(("s-sysdeps" ,sbcl-s-sysdeps)
          ("s-xml" ,sbcl-s-xml)))
