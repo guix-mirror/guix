@@ -507,6 +507,33 @@ jar struct to manage the cookies added to the cookie jar.")
     (description "This package provides additions to Go's stdlib @code{fmt}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-daviddengcn-go-colortext
+  (package
+    (name "go-github-com-daviddengcn-go-colortext")
+    (version "1.0.0")
+    (home-page "https://github.com/daviddengcn/go-colortext")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0j5ldwg3a768d3nniiglghr9axj4p87k7f7asqxa1a688xvcms48"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/daviddengcn/go-colortext"))
+    (native-inputs
+     `(("go-github-com-golangplus-testing" ,go-github-com-golangplus-testing)))
+    (synopsis "Change the color of console text and background")
+    (description
+     "This is a package to change the color of the text and background in the
+console, working both under Windows and other systems.
+
+Under Windows, the console APIs are used.  Otherwise, ANSI texts are output.")
+    ;; dual-licensed
+    (license (list license:bsd-3 license:expat))))
+
 (define-public go-github-com-golangplus-testing
   (package
     (name "go-github-com-golangplus-testing")
