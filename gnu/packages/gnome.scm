@@ -9971,7 +9971,7 @@ only know by its Unicode name or code point.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
+       (uri (string-append "https://www.bennewitz.com/bluefish/stable/source/"
                            "bluefish-" version ".tar.gz"))
        (sha256
         (base32 "0a7kf78q4cj2ap4igjks9kbmmr74brsrl4y2f9wbxpl0b0v2ck2x"))))
