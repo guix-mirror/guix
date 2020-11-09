@@ -826,9 +826,10 @@ release: dist-with-updated-version
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+	   	"`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
 	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
@@ -840,9 +841,10 @@ release: dist-with-updated-version
 	  mv "guix-binary.$$system.tar.xz"					\
 	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
 	done
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+		"`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\

@@ -44,9 +44,6 @@
 (define %top-srcdir
   (string-append (current-source-directory) "/.."))
 
-(define version-controlled?
-  (git-predicate %top-srcdir))
-
 (define (package-definition-location)
   "Return the source properties of the definition of the 'guix' package."
   (call-with-input-file (location-file (package-location guix))
@@ -114,8 +111,9 @@ COMMIT."
   "Create a new git worktree at DIRECTORY, detached on commit COMMIT."
   (invoke "git" "worktree" "add" "--detach" directory commit))
 
-(define-syntax-rule (with-temporary-git-worktree commit body ...)
-  "Execute BODY in the context of a temporary git worktree created from COMMIT."
+(define (call-with-temporary-git-worktree commit proc)
+  "Execute PROC in the context of a temporary git worktree created from
+COMMIT.  PROC receives the temporary directory file name as an argument."
   (call-with-temporary-directory
    (lambda (tmp-directory)
      (dynamic-wind
@@ -123,12 +121,12 @@ COMMIT."
          #t)
        (lambda ()
          (git-add-worktree tmp-directory commit)
-         (with-directory-excursion tmp-directory body ...))
+         (proc tmp-directory))
        (lambda ()
          (invoke "git" "worktree" "remove" "--force" tmp-directory))))))
 
 (define %savannah-guix-git-repo-push-url-regexp
-  "git.(savannah|sv).gnu.org/srv/git/guix.git \\(push\\)")
+  "git.(savannah|sv).gnu.org:?/srv/git/guix.git \\(push\\)")
 
 (define-syntax-rule (with-input-pipe-to-string prog arg ...)
   (let* ((input-pipe (open-pipe* OPEN_READ prog arg ...))
@@ -156,27 +154,60 @@ COMMIT."
                       "git" "branch" "-r" "--contains" commit
                       (string-append remote "/master")))))
 
+(define (keep-source-in-store store source)
+  "Add SOURCE to the store under the name that the 'guix' package expects."
+
+  ;; Add SOURCE to the store, but this time under the real name used in the
+  ;; 'origin'.  This allows us to build the package without having to make a
+  ;; real checkout; thus, it also works when working on a private branch.
+  (reload-module
+   (resolve-module '(gnu packages package-management)))
+
+  (let* ((source (add-to-store store
+                               (origin-file-name (package-source guix))
+                               #t "sha256" source
+                               #:select? (git-predicate source)))
+         (root   (store-path-package-name source)))
+
+    ;; Add an indirect GC root for SOURCE in the current directory.
+    (false-if-exception (delete-file root))
+    (symlink source root)
+    (add-indirect-root store
+                       (string-append (getcwd) "/" root))
+
+    (info (G_ "source code kept in ~a (GC root: ~a)~%")
+          source root)))
+
 
 (define (main . args)
   (match args
     ((commit version)
      (with-directory-excursion %top-srcdir
        (or (getenv "GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT")
-           (commit-already-pushed? (find-origin-remote) commit)
+           (let ((remote (find-origin-remote)))
+             (unless remote
+               (leave (G_ "Failed to find the origin git remote.~%")))
+             (commit-already-pushed? remote commit))
            (leave (G_ "Commit ~a is not pushed upstream.  Aborting.~%") commit))
-       (let* ((hash (with-temporary-git-worktree commit
-                        (nix-base32-string->bytevector
-                         (string-trim-both
-                          (with-output-to-string
-		            (lambda ()
-		              (guix-hash "-rx" ".")))))))
-              (location (package-definition-location))
-              (old-hash (content-hash-value
-                         (origin-hash (package-source guix)))))
-         (edit-expression location
-                          (update-definition commit hash
-                                             #:old-hash old-hash
-                                             #:version version)))))
+       (call-with-temporary-git-worktree commit
+           (lambda (tmp-directory)
+             (let* ((hash (nix-base32-string->bytevector
+                           (string-trim-both
+                            (with-output-to-string
+		              (lambda ()
+		                (guix-hash "-rx" tmp-directory))))))
+                    (location (package-definition-location))
+                    (old-hash (content-hash-value
+                               (origin-hash (package-source guix)))))
+               (edit-expression location
+                                (update-definition commit hash
+                                                   #:old-hash old-hash
+                                                   #:version version))
+               ;; When GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT is set, the sources are
+               ;; added to the store.  This is used as part of 'make release'.
+               (when (getenv "GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT")
+                 (with-store store
+                   (keep-source-in-store store tmp-directory))))))))
     ((commit)
      ;; Automatically deduce the version and revision numbers.
      (main commit #f))))
