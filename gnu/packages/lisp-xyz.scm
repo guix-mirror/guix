@@ -14201,3 +14201,34 @@ object-oriented framework for prototyping genetic algorithms in Common Lisp.")
 
 (define-public ecl-geco
   (sbcl-package->ecl-package sbcl-geco))
+
+(define-public sbcl-html-entities
+  (let ((commit "4af018048e891f41d77e7d680ed3aeb639e1eedb"))
+    (package
+      (name "sbcl-html-entities")
+      (version (git-version "0.02" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BnMcGn/html-entities/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1b2yl6lf6vis17y4n5s505p7ica96bdafcl6vydy1hg50fy33nfr"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ppcre" ,sbcl-cl-ppcre)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/BnMcGn/html-entities/")
+      (synopsis "Encode and decode entities in HTML with Common Lisp")
+      (description "Html-entities is a Common Lisp library that lets you
+encode and decode entities in HTML.")
+      (license license:expat))))
+
+(define-public cl-html-entities
+  (sbcl-package->cl-source-package sbcl-html-entities))
+
+(define-public ecl-html-entities
+  (sbcl-package->ecl-package sbcl-html-entities))
