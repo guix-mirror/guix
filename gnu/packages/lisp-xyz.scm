@@ -14232,3 +14232,47 @@ encode and decode entities in HTML.")
 
 (define-public ecl-html-entities
   (sbcl-package->ecl-package sbcl-html-entities))
+
+(define-public sbcl-quicksearch
+  (let ((commit "fb02ecf7c876ec580ab18c7d2c8c7814c06af599"))
+    (package
+      (name "sbcl-quicksearch")
+      (version (git-version "0.01.04" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tkych/quicksearch/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16k19zjkhh7r64vjq371k5jwjs7cdfjz83flh561n4h4v1z89fps"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("iterate" ,sbcl-iterate)
+         ("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("drakma" ,sbcl-drakma)
+         ("html-entities" ,sbcl-html-entities)
+         ("yason" ,sbcl-yason)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("do-urlencode" ,sbcl-do-urlencode)))
+      (home-page "https://github.com/tkych/quicksearch/")
+      (synopsis "Search Engine Interface for Common Lisp packages")
+      (description "Quicksearch is a search-engine-interface for Common Lisp.
+The goal of Quicksearch is to find the Common Lisp library quickly.  For
+example, if you will find the library about json, just type @code{(qs:?
+'json)} at REPL.
+
+The function @code{quicksearch} searches for Common Lisp projects in
+Quicklisp, Cliki, GitHub and BitBucket, then outputs results in REPL.  The
+function @code{?} is abbreviation wrapper for @code{quicksearch}.")
+      (license license:expat))))
+
+(define-public cl-quicksearch
+  (sbcl-package->cl-source-package sbcl-quicksearch))
+
+(define-public ecl-quicksearch
+  (sbcl-package->ecl-package sbcl-quicksearch))
