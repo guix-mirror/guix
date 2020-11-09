@@ -487,6 +487,26 @@ jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
 
+(define-public go-github-com-golangplus-fmt
+  (package
+    (name "go-github-com-golangplus-fmt")
+    (version "1.0.0")
+    (home-page "https://github.com/golangplus/fmt")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "07d5kxz0f8ss3v46y0c8jg02sagi0wlaaijhjzzp0r462jyzqii7"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/golangplus/fmt"))
+    (synopsis "Additions to Go's standard @code{fmt} package")
+    (description "This package provides additions to Go's stdlib @code{fmt}.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-leodido-go-urn
   (package
     (name "go-github-com-leodido-go-urn")
