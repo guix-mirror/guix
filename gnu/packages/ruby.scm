@@ -1582,7 +1582,7 @@ to save time in the following ways:
 (define-public ruby-chunky-png
   (package
     (name "ruby-chunky-png")
-    (version "1.3.12")
+    (version "1.3.14")
     (source
      (origin
        (method git-fetch)
@@ -1591,8 +1591,7 @@ to save time in the following ways:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0hn8ap7iib47qkqdp0awmxgma11z0lmk1ca3lp7c97ykhv7ij1zs"))))
+        (base32 "1m7y11ix38h5a2pj5v81qdmvqh980ql9hp62hk2dxwkwsa4nh22h"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
