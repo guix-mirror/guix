@@ -1008,8 +1008,11 @@ Optional thin wrappers allow usage of the library from other languages.")
     (version "3.3.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
-                                  version ".tar.bz2"))
+              (uri (list
+                     (string-append "https://bitbucket.org/eigen/eigen/get/"
+                                    version ".tar.bz2")
+                     (string-append "mirror://debian/pool/main/e/eigen3/eigen3_"
+                                    version ".orig.tar.bz2")))
               (sha256
                (base32
                 "1km3fyfzyqfdvmnl79drps3fjwnz3zbh0c7l34mfbqyvvs8cy4wz"))
