@@ -1868,8 +1868,8 @@ role, and your gender.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://downloads.sourceforge.net/pipewalker/"
-                           "pipewalker-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/pipewalker/pipewalker/"
+                           version "/pipewalker-" version ".tar.gz"))
        (sha256
         (base32 "1x46wgk0s55562pd96cxagxkn6wpgglq779f9b64ff1k3xzp3myn"))))
     (build-system gnu-build-system)
