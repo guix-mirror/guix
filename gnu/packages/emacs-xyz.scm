@@ -21674,7 +21674,7 @@ and searching through @code{Ctags} files.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1frd6wk8xfk2q9xczkzz90iily8l8f9fancvbqbnj263z120zzdl"))))
+                 (base32 "0cg4y7hy7xbq4vrbdicfzgvyaf3cjbx2zkqd4yl0y2garz71j99l"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)
