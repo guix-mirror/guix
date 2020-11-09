@@ -14372,3 +14372,37 @@ collecting values easier.")
 
 (define-public ecl-collectors
   (sbcl-package->ecl-package sbcl-collectors))
+
+(define-public cl-environments
+  ;; TODO: asdf-build-system/sbcl fails here, why?  See if it works with the
+  ;; build system revamp once staging is merged after 2020-11-09.
+  (package
+    (name "cl-environments")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/cl-environments")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08w364if2ivxwdarz44vwk0s61zk8l8pnrwskaghbrjg3his1nmd"))))
+    (build-system asdf-build-system/source)
+    (propagated-inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("collectors" ,sbcl-collectors)
+       ("optima" ,sbcl-optima)))
+    (native-inputs
+     `(("prove" ,sbcl-prove)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (home-page "https://github.com/alex-gutev/cl-environments")
+    (synopsis "Implements the Common Lisp standard environment access API")
+    (description "This library provides a uniform API, as specified in Common
+Lisp the Language 2, for accessing information about variable and function
+bindings from implementation-defined lexical environment objects.  All major
+Common Lisp implementations are supported, even those which don't support the
+CLTL2 environment access API.")
+    (license license:expat)))
