@@ -54,8 +54,8 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** New ‘hurd-vm-service-type’ to spawn a GNU/Hurd VM on GNU/Linux
 *** /etc/guix/acl on Guix System is now built from the OS configuration
 *** ‘rottlog-service-type’ is now part of ‘%base-services’
-*** Linux-libre modules are now GZIP compressed.
-*** The efivarfs filesystem is now part of %base-file-systems.
+*** Linux-libre modules are now gzip-compressed
+*** The efivarfs file system is now part of ‘%base-file-systems’
 *** mcron job specs are now statically checked at OS build time
 *** ‘swap-devices’ field of ‘operating-system’ can contains UUIDs and labels
 *** Graphical installer uses UUIDs for unencrypted swap partitions
@@ -71,6 +71,8 @@ simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
 *** XXX package updates
 
 ** Programming interfaces
+*** New ‘maven-build-system’, for packages built with Maven
+*** ‘haskell-build-system’ now always adds a “static” output
 *** New (gnu image) module, to build system images
 *** New (guix git-authenticate) module, for Git checkout authentication
 *** New (guix openpgp) module with a minimal OpenPGP implementation
@@ -132,8 +134,6 @@ simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
     (<https://issues.guix.gnu.org/43773>)
 *** ‘guix build --check’ now honors ‘--rounds’
     (<https://issues.guix.gnu.org/40144>)
-*** /dev/disk/by-id file names can now be used with U-Boot
-    (<https://issues.guix.gnu.org/44101>)
 *** ‘guix-install.sh’ now installs shell completion files
     (<https://bugs.gnu.org/43744>)
 *** ‘guix-install.sh’ now warns about lack of ‘nscd’
