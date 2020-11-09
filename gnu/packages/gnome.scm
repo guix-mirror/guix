@@ -6077,6 +6077,14 @@ discovery protocols.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
+         (add-after 'unpack 'patch-failing-test
+           (lambda _
+             ;; Work around test failure with GStreamer 1.18, because the test
+             ;; relies on "und" not being mapped to a particular language:
+             ;; https://gitlab.gnome.org/GNOME/totem/-/issues/450
+            (substitute* "src/test-totem.c"
+              (("und") "nosuchlang"))
+            #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
