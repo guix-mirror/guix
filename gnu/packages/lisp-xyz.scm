@@ -14406,3 +14406,67 @@ bindings from implementation-defined lexical environment objects.  All major
 Common Lisp implementations are supported, even those which don't support the
 CLTL2 environment access API.")
     (license license:expat)))
+
+(define-public sbcl-static-dispatch
+  (package
+    (name "sbcl-static-dispatch")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex-gutev/static-dispatch")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wp5yz8liqqic3yifqf33qhccd755pd7ycvsq1j4i7k3f1wm18i0"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("agutil" ,sbcl-agutil)
+       ("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("arrows" ,sbcl-arrows)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("iterate" ,sbcl-iterate)
+       ("trivia" ,sbcl-trivia)))
+    (propagated-inputs
+     `(("cl-environments" ,cl-environments)))
+    (native-inputs
+     `(("prove-asdf" ,sbcl-prove-asdf)
+       ("prove" ,sbcl-prove)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Use `arrows' instead of cl-arrows which is abandoned and unlicensed.
+         ;; https://github.com/nightfly19/cl-arrows/issues/5
+         (add-after 'unpack 'use-arrows-instead-of-cl-arrows
+           (lambda _
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  ((":cl-arrows") ":arrows")))
+              '("static-dispatch.asd"
+                "src/package.lisp"
+                "test/methods.lisp"
+                "test/test.lisp")))))))
+    (home-page "https://github.com/alex-gutev/static-dispatch")
+    (synopsis "Static generic function dispatch for Common Lisp")
+    (description "Static dispatch is a Common Lisp library, inspired by
+@code{inlined-generic-function}, which allows standard Common Lisp generic
+function dispatch to be performed statically (at compile time) rather than
+dynamically (runtime).  This is similar to what is known as \"overloading\" in
+languages such as C++ and Java.
+
+The purpose of static dispatch is to provide an optimization in cases where
+the usual dynamic dispatch is too slow, and the dynamic features of generic
+functions, such as adding/removing methods at runtime are not required.  An
+example of such a case is a generic equality comparison function.  Currently
+generic functions are considered far too slow to implement generic arithmetic
+and comparison operations when used heavily in numeric code.")
+    (license license:expat)))
+
+(define-public cl-static-dispatch
+  (sbcl-package->cl-source-package sbcl-static-dispatch))
+
+(define-public ecl-static-dispatch
+  (sbcl-package->ecl-package sbcl-static-dispatch))
