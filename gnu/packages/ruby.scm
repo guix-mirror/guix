@@ -1638,7 +1638,12 @@ pixel, depending on the hardware).
 Performance: ChunkyPNG is reasonably fast for Ruby standards, by only using
 integer math and a highly optimized saving routine.
 @item Interoperability with RMagick.
-@end itemize")
+@end itemize
+
+ChunkyPNG is vulnerable to decompression bombs and can run out of memory when
+loading a specifically crafted PNG file.  This is hard to fix in pure Ruby.
+Deal with untrusted images in a separate process, e.g., by using @code{fork}
+or a background processing library.")
     (home-page "https://github.com/wvanbergen/chunky_png/wiki")
     (license license:expat)))
 
