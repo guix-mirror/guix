@@ -1063,6 +1063,18 @@ for the Go language.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-net-html
+  (package
+    (inherit go-golang-org-x-net)
+    (name "go-golang.org-x-net-html")
+    (arguments
+     '(#:import-path "golang.org/x/net/html"
+       #:unpack-path "golang.org/x/net"))
+    (synopsis "HTML5-compliant tokenizer and parser")
+    (description
+     "This package provides an HTML5-compliant tokenizer and parser.")
+    (home-page "https://godoc.org/golang.org/x/net/html")))
+
 (define-public go-golang-org-x-image
   (let ((commit "58c23975cae11f062d4b3b0c143fe248faac195d")
         (revision "1"))
