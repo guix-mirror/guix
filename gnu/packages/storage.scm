@@ -55,14 +55,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "14.2.11")
+    (version "14.2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02mbinm8rk16cwm0x4winmd4488xznkzkyzycxkwlib26yd2xsnz"))
+                "0gaxjs909wf00nvh4z53cin89dw67v1q47b2jvi3iibynhkahkg1"))
               (patches
                (search-patches "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
