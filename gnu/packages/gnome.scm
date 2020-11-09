@@ -9989,7 +9989,7 @@ only know by its Unicode name or code point.")
     (home-page "http://bluefish.openoffice.nl")
     (synopsis "Web development studio")
     (description
-     "Bluefish is an editor targeted towards programmers and web developers,
+     "Bluefish is an editor aimed at programmers and web developers,
 with many options to write web sites, scripts and other code.
 Bluefish supports many programming and markup languages.")
     (license license:gpl3+)))
