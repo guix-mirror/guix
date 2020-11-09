@@ -5844,18 +5844,25 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.16.0")
+    (version "0.17.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/varnish/varnish-modules"
-                                  "/releases/download/varnish-modules-" version
-                                  "/varnish-modules-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ph5bplsip4rycql1c2hgbvmrwbgcrgv2ldgfp7saxxbsv5cpcds"))))
+                "0zg8y2sgkygdani70zp9rbx278431fmssj26d47c5qsiw939i519"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For bootstrapping.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+
+       ;; For generating manuals.
+       ("rst2man" ,python-docutils)))
     (inputs
      `(("python" ,python)
        ("varnish" ,varnish)))
