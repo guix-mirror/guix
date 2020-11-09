@@ -3909,15 +3909,9 @@ The drivers officially supported by @code{libdbi} are:
     (arguments
      `(#:configure-flags
        ;; C++11 (-DSOCI_CXX11) is OFF by default.  hyperledger-iroha needs it.
-       (list "-DCMAKE_CXX_STANDARD=17")
-       #:tests? #f           ; may require running database management systems
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-lib-path
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("set\\(SOCI_LIBDIR \"lib64\"\\)") ""))
-             #t)))))
+       (list "-DCMAKE_CXX_STANDARD=17"
+             "-DSOCI_LIBDIR=lib")
+       #:tests? #f))         ; may require running database management systems
     (synopsis "C++ Database Access Library")
     (description
      "SOCI is an abstraction layer for several database backends, including
