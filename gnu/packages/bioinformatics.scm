@@ -4470,7 +4470,7 @@ experiments.")
               ;; The PyPi tarball does not contain tests.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/taoliu/MACS")
+                    (url "https://github.com/macs3-project/MACS")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4489,7 +4489,7 @@ experiments.")
      `(("python-numpy" ,python-numpy)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/taoliu/MACS/")
+    (home-page "https://github.com/macs3-project/MACS")
     (synopsis "Model based analysis for ChIP-Seq data")
     (description
      "MACS is an implementation of a ChIP-Seq analysis algorithm for
