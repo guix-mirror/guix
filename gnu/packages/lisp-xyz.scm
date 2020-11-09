@@ -14276,3 +14276,33 @@ function @code{?} is abbreviation wrapper for @code{quicksearch}.")
 
 (define-public ecl-quicksearch
   (sbcl-package->ecl-package sbcl-quicksearch))
+
+(define-public sbcl-agutil
+  (let ((commit "df188d754d472da9faa1601a48f1f37bb7b34d68"))
+    (package
+      (name "sbcl-agutil")
+      (version (git-version "0.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alex-gutev/agutil/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xpnyzksk2xld64b6lw6rw0gn5zxlb77jwna59sd4yl7kxhxlfpf"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://github.com/alex-gutev/agutil/")
+      (synopsis "Collection of Common Lisp utilities")
+      (description "A collection of Common Lisp utility functions and macros
+mostly not found in other utility packages.")
+      (license license:expat))))
+
+(define-public cl-agutil
+  (sbcl-package->cl-source-package sbcl-agutil))
+
+(define-public ecl-agutil
+  (sbcl-package->ecl-package sbcl-agutil))
