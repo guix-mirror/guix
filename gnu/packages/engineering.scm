@@ -1537,8 +1537,12 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
     (version "28")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                                  version "/ngspice-" version ".tar.gz"))
+              (uri (list
+                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                                    version "/ngspice-" version ".tar.gz")
+                     (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                                    "old-releases/" version
+                                    "/ngspice-" version ".tar.gz")))
               (sha256
                (base32
                 "0rnz2rdgyav16w7wfn3sfrk2lwvvgz1fh0l9107zkcldijklz04l"))
