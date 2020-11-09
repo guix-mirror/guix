@@ -4480,11 +4480,12 @@ experiments.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v"))))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v"))
+             #t)))))
     (inputs
      `(("python-numpy" ,python-numpy)))
     (native-inputs
