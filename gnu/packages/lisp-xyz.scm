@@ -14306,3 +14306,36 @@ mostly not found in other utility packages.")
 
 (define-public ecl-agutil
   (sbcl-package->ecl-package sbcl-agutil))
+
+(define-public sbcl-custom-hash-table
+  (let ((commit "f26983133940f5edf826ebbc8077acc04816ddfa"))
+    (package
+      (name "sbcl-custom-hash-table")
+      (version (git-version "0.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/metawilm/cl-custom-hash-table")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1k4mvrpbqqds2fwjxp1bxmrfmr8ch4dkwhnkbw559knbqshvrlj5"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-file "cl-custom-hash-table.asd"
+         #:asd-system-name "cl-custom-hash-table"))
+      (home-page "https://github.com/metawilm/cl-custom-hash-table")
+      (synopsis "Custom hash tables for Common Lisp")
+      (description "This library allows creation of hash tables with arbitrary
+@code{test}/@code{hash} functions, in addition to the @code{test} functions
+allowed by the standard (@code{EQ}, @code{EQL}, @code{EQUAL} and
+@code{EQUALP}), even in implementations that don't support this functionality
+directly.")
+      (license license:expat))))
+
+(define-public cl-custom-hash-table
+  (sbcl-package->cl-source-package sbcl-custom-hash-table))
+
+(define-public ecl-custom-hash-table
+  (sbcl-package->ecl-package sbcl-custom-hash-table))
