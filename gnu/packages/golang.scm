@@ -507,6 +507,31 @@ jar struct to manage the cookies added to the cookie jar.")
     (description "This package provides additions to Go's stdlib @code{fmt}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-motemen-go-colorine
+  (let ((commit "45d19169413a019e4e2be69629dde5c7d92f8706")
+        (revision "0"))
+    (package
+      (name "go-github-com-motemen-go-colorine")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/motemen/go-colorine")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1mdy6q0926s1frj027nlzlvm2qssmkpjis7ic3l2smajkzh07118"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/motemen/go-colorine"))
+      (inputs
+       `(("github.com/daviddengcn/go-colortext" ,go-github-com-daviddengcn-go-colortext)))
+      (synopsis "Simple colorized console logger for golang")
+      (description
+       "This package provides simple colorized console logger for golang.")
+      (license license:expat))))
+
 (define-public go-github-com-daviddengcn-go-colortext
   (package
     (name "go-github-com-daviddengcn-go-colortext")
