@@ -3522,8 +3522,11 @@ interface.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
-                           "/qsynth-" version ".tar.gz"))
+       (uri (list
+              (string-append "mirror://sourceforge/qsynth/qsynth/" version
+                             "/qsynth-" version ".tar.gz")
+              (string-append "mirror://sourceforge/qsynth/qsynth (attic)"
+                             "/qsynth-" version ".tar.gz")))
        (sha256
         (base32 "18im4w8agj60nkppwbkxqnhpp13z5li3w30kklv4lgs20rvgbvl6"))))
     (build-system gnu-build-system)
