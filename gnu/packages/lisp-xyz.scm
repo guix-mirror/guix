@@ -13580,6 +13580,42 @@ LispWorks library that are used in software such as ContextL.")
 (define-public ecl-lw-compat
   (sbcl-package->ecl-package sbcl-lw-compat))
 
+(define-public sbcl-contextl
+  ;; No release since 2013.
+  (let ((commit "5d18a71a85824f6c25a9f35a21052f967b8b6bb9"))
+    (package
+      (name "sbcl-contextl")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pcostanza/contextl/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gk1izx6l6g48nypmnm9r6mzjx0jixqjj2kc6klf8a88rr5xd226"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)
+         ("lw-compat" ,sbcl-lw-compat)))
+      (home-page "https://github.com/pcostanza/contextl")
+      (synopsis "Context-oriented programming for Common Lisp")
+      (description "ContextL is a CLOS extension for Context-Oriented
+Programming (COP).
+
+Find overview of ContextL's features in an overview paper:
+@url{http://www.p-cos.net/documents/contextl-soa.pdf}.  See also this general
+overview article about COP which also contains some ContextL examples:
+@url{http://www.jot.fm/issues/issue_2008_03/article4/}.")
+      (license license:expat))))
+
+(define-public cl-contextl
+  (sbcl-package->cl-source-package sbcl-contextl))
+
+(define-public ecl-contextl
+  (sbcl-package->ecl-package sbcl-contextl))
+
 (define-public sbcl-hu.dwim.common-lisp
   (package
     (name "sbcl-hu.dwim.common-lisp")
