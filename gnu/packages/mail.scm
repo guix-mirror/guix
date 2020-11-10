@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1700,7 +1701,13 @@ delivery.")
                  (("(ZCAT_COMMAND=).*" all var)
                   (string-append var gzip "/bin/zcat\n"))
                  (("# (USE_GNUTLS(|_PC)=.*)" all line)
-                  (string-append line "\n")))
+                  (string-append line "\n"))
+                 (("# (AUTH_CRAM_MD5=yes)" all line) line)
+                 (("# (AUTH_DOVECOT=yes)" all line) line)
+                 (("# (AUTH_EXTERNAL=yes)" all line) line)
+                 (("# (AUTH_PLAINTEXT=yes)" all line) line)
+                 (("# (AUTH_SPA=yes)" all line) line)
+                 (("# (AUTH_TLS=yes)" all line) line))
                ;; This file has hard-coded relative file names for tools despite
                ;; the zcat configuration above.
                (substitute* '("src/exigrep.src")
