@@ -8782,25 +8782,24 @@ that uses the standard completion function completing-read.")
 (define-public emacs-yaml-mode
   (package
     (name "emacs-yaml-mode")
-    (version "0.0.14")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/yoshiki/yaml-mode")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "18g064ardqi1f3xz7j6rs1x9fvv9sn0iq9vgid8c6qvxq7gwj00r"))))
+    (version "0.0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yoshiki/yaml-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gsa153yp8lmwrvcc3nzpw5lj037y7q2nm23k5k404r5as4k355l"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yoshiki/yaml-mode")
     (synopsis "Major mode for editing YAML files")
     (description
-     "Yaml-mode is an Emacs major mode for editing files in the YAML data
-serialization format.  It was initially developed by Yoshiki Kurihara and many
-features were added by Marshall Vandegrift.  As YAML and Python share the fact
-that indentation determines structure, this mode provides indentation and
-indentation command behavior very similar to that of python-mode.")
+     "Yaml mode is an Emacs major mode for editing files in the YAML data
+serialization format.  As YAML and Python share the fact that indentation
+determines structure, this mode provides indentation and indentation command
+behavior very similar to that of Python mode.")
     (license license:gpl3+)))
 
 (define-public emacs-gitlab-ci-mode
