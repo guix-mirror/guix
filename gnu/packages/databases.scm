@@ -237,7 +237,7 @@ standard Go idioms.")
 (define-public ephemeralpg
   (package
     (name "ephemeralpg")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
@@ -245,10 +245,10 @@ standard Go idioms.")
              "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
-        (base32 "1j0g7g114ma7y7sadbng5p1ss1zsm9zpicm77qspym6565733vvh"))))
+        (base32 "1ap22ki8yz6agd0qybcjgs4b9izw1rwwcgpxn3jah2ccfyax34s6"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -1136,16 +1136,16 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://downloads.mariadb.org/f/connector-c-"
-                    version "/mariadb-connector-c-"
-                    version "-src.tar.gz"))
-              (sha256
-               (base32
-                "13v5z4w1cl890lnr2fbwbziw638lqw2aga45vdq1z0cyrc9mcgmg"))))
+    (version "3.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://downloads.mariadb.org/f/connector-c-" version
+             "/mariadb-connector-c-" version "-src.tar.gz"
+             "/from/https%3A//mirrors.ukfast.co.uk/sites/mariadb/?serve"))
+       (sha256
+        (base32 "03svzahdf7czjlm695c11r4bfd04qdqgx8r1vkpr1zlkjhwnqvry"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
@@ -1370,6 +1370,7 @@ including field and record folding.")))
      `(#:make-flags (list "CC=gcc" "V=1"
                           ;; Ceph requires that RTTI is enabled.
                           "USE_RTTI=1"
+                          "date=1970-01-01" ; build reproducibly
                           (string-append "INSTALL_PATH="
                                          (assoc-ref %outputs "out"))
 
@@ -2420,17 +2421,19 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "3.9.6")
-      (source
-        (origin
-        (method url-fetch)
-        (uri (pypi-uri "peewee" version))
-        (sha256
-         (base32
-          "1j4sh946k0736m7pd54z0y6i2hjhgg3kdllx1pwq8xkzzcgrx1xw"))))
+    (version "3.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "peewee" version))
+       (sha256
+        (base32
+         "0sc376v6rxga4b7ic9kxw2pmf28rmcx016320pa2nlb5d1rsjs8j"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Fails to import test data
+    (inputs
+     `(("sqlite" ,sqlite)))
     (native-inputs
      `(("python-cython" ,python-cython)))
     (home-page "https://github.com/coleifer/peewee/")
@@ -3869,7 +3872,7 @@ The drivers officially supported by @code{libdbi} are:
 (define-public soci
   (package
     (name "soci")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3878,23 +3881,21 @@ The drivers officially supported by @code{libdbi} are:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06faswdxd2frqr9xnx6bxc7zwarlzsbdi3bqpz7kwdxsjvq41rnb"))))
+                "14x2gjblkgpflv75wl144cyjp1sis5rbxnr9r2gj3yw16v2av0bp"))))
     (build-system cmake-build-system)
     (inputs
-     `(("postgresql" ,postgresql)
+     `(("firebird" ,firebird)
+       ("postgresql" ,postgresql)
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
        ("mariadb:dev" ,mariadb "dev")))
     (arguments
-     `(#:tests? #f ; Tests may require running database management systems.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-lib-path
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("set\\(SOCI_LIBDIR \"lib64\"\\)") ""))
-             #t)))))
+     `(#:configure-flags
+       ;; C++11 (-DSOCI_CXX11) is OFF by default.  hyperledger-iroha needs it.
+       (list "-DCMAKE_CXX_STANDARD=17"
+             "-DSOCI_LIBDIR=lib")
+       #:tests? #f))         ; may require running database management systems
     (synopsis "C++ Database Access Library")
     (description
      "SOCI is an abstraction layer for several database backends, including

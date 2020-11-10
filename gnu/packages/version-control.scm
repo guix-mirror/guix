@@ -93,6 +93,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -1441,7 +1442,7 @@ control to Git repositories.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.7.1")
+    (version "2.8.1")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1451,7 +1452,7 @@ control to Git repositories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n7qby5a4yz3s02nqcp5js6jg9wrd0x7msblxwb1883ds4b2b71a"))))
+        (base32 "0b3ks6viccq3n4p8i8zgfd40vp1k5nkhmmlz7p4nxcdizw8zxgn8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1492,6 +1493,12 @@ control to Git repositories.")
                       " and not test_additional_rust_lib_dependencies_installed"
                       " and not test_local_rust_additional_dependencies"
                       " and not test_rust_hook"
+                      ;; Disable dotnet tests.
+                      " and not test_dotnet_hook"
+                      ;; Disable nodejs tests.
+                      " and not test_unhealthy_if_system_node_goes_missing"
+                      " and not test_installs_without_links_outside_env"
+                      " and not test_healthy_system_node"
                       ;; Disable python2 test.
                       " and not test_switch_language_versions_doesnt_clobber"
                       ;; These tests try to open a network socket.
@@ -1534,8 +1541,10 @@ control to Git repositories.")
                #t))))))
     (native-inputs
      `(("git" ,git-minimal)
-       ("python-pytest" ,python-pytest)))
-    (inputs
+       ("python-pytest" ,python-pytest)
+       ("python-re-assert" ,python-re-assert)))
+    ;; Propagate because pre-commit is also used as a module.
+    (propagated-inputs
      `(("python-cfgv" ,python-cfgv)
        ("python-identify" ,python-identify)
        ("python-nodeenv" ,python-nodeenv)

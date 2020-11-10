@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -36,6 +36,7 @@
   #:use-module (guix build-system trivial)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages base) #:prefix base:)
   #:use-module (gnu packages bison)
@@ -487,7 +488,7 @@ SEGGER J-Link and compatible devices.")
 (define-public jimtcl
   (package
     (name "jimtcl")
-    (version "0.79")
+    (version "0.80")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -496,17 +497,26 @@ SEGGER J-Link and compatible devices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k88hz0v3bi19xdvlp0i9nsx38imzwpjh632w7326zwbv2wldf0h"))))
+                "06rn60cx9sapc175vxvan87b8j5rkhh5gvvz7343xznzwlr0wcgk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Doesn't use autoconf.
          (replace 'configure
+         ;; This package doesn't use autoconf.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "./configure"
-                       (string-append "--prefix=" out))))))))
+                       (string-append "--prefix=" out)))))
+         (add-before 'check 'delete-failing-tests
+           (lambda _
+             ;; XXX All but 1 TTY tests fail (Inappropriate ioctl for device).
+             (delete-file "tests/tty.test")
+             #t))
+         )))
+    (native-inputs
+     ;; For tests.
+     `(("inetutils" ,inetutils)))       ; for hostname
     (home-page "http://jim.tcl.tk/index.html")
     (synopsis "Small footprint Tcl implementation")
     (description "Jim is a small footprint implementation of the Tcl programming

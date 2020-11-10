@@ -106,6 +106,7 @@
                         (match (string-take target
                                             (string-index target #\-))
                           ("armhf" "arm-unknown-linux-gnueabi")
+                          ("mips64el" "mips-unknown-linux-gnu")
                           (x
                            (string-append x "-unknown-linux-gnu")))))
                    (symlink

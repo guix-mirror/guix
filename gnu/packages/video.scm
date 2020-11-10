@@ -45,6 +45,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2344,7 +2345,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1456")
+    (version "0.4.1475")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2353,7 +2354,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n6h5qkhjwsxy8rf6n4i8hd8dah38hbvchh9272c53gydgp9lp29"))))
+                "1hsa99fgx1zhzkf3n0hlbinckvipd54vhs6y4jkq0rd9r6yc1h7f"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2987,11 +2988,40 @@ tools, XML authoring components, and an extensible plug-in based API.")
                (base32
                 "1bkqlrizx0j2rd6ybam2x17bjrpwzl4v4szmnzm3cmixis3w3npr"))))
     (build-system gnu-build-system)
+    ;; Separate graphical tools in order to save almost 1 GiB on the closure
+    ;; for the common case.
+    (outputs '("out" "gui"))
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-udevdir="
+       (list "--disable-static"
+             (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev"))))
+                            "/lib/udev"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gui (assoc-ref outputs "gui")))
+               (mkdir-p (string-append gui "/bin"))
+               (mkdir-p (string-append gui "/share/man/man1"))
+               (mkdir-p (string-append gui "/share/applications"))
+               (for-each
+                (lambda (prog)
+                  (for-each
+                   (lambda (file)
+                     (rename-file (string-append out file)
+                                  (string-append gui file)))
+                   (list
+                    (string-append "/bin/" prog)
+                    (string-append "/share/man/man1/" prog ".1")
+                    (string-append "/share/applications/" prog ".desktop"))))
+                '("qv4l2" "qvidcap"))
+               (copy-recursively (string-append out "/share/icons")
+                                 (string-append gui "/share/icons"))
+               (delete-file-recursively (string-append out "/share/icons"))
+               (rmdir (string-append out "/share/applications"))
+               #t))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))

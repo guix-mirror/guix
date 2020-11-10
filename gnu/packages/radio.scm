@@ -538,7 +538,7 @@ to the fix block above.
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.13.3")
+    (version "2.13.5")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ to the fix block above.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0awj5wzq0p677my0065rpqkmfl3jc0bjdrnip8715z8031cd923n"))))
+        (base32 "168wjad5g0ka555hwsciwbj7fqx1c89q59hq1yxj8aiyp5kfcahx"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -567,7 +567,7 @@ to the fix block above.
        ("qtsvg" ,qtsvg)
        ("volk" ,volk)))
     (arguments
-     `(#:tests? #f)) ; No tests
+     `(#:tests? #f))                    ; no tests
     (synopsis "Software defined radio receiver")
     (description "Gqrx is a software defined radio (SDR) receiver implemented
 using GNU Radio and the Qt GUI toolkit.")
@@ -613,14 +613,14 @@ hardware.")
 (define-public flrig
   (package
     (name "flrig")
-    (version "1.3.51")
+    (version "1.3.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/flrig/flrig-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0aq4x0ai9q08ypfhzfj2inc4z3q39zq1l6h9as1kil9yn4zbay61"))))
+        (base32 "18c154080vl25cy4l5amh96abm6kzm7mzld9h58pabc28yqq8zl8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

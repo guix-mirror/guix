@@ -3457,8 +3457,11 @@ structure for Python.")
     (synopsis "Python Documentation Utilities")
     (description
      "Docutils is a modular system for processing documentation into useful
-formats, such as HTML, XML, and LaTeX.  For input Docutils supports
-reStructuredText.")
+formats, such as HTML, XML, and LaTeX.  It uses @dfn{reStructuredText}, an
+easy to use markup language, for input.
+
+This package provides tools for converting @file{.rst} files to other formats
+via commands such as @command{rst2man}, as well as supporting Python code.")
     ;; Most of the source code is public domain, but some source files are
     ;; licensed under the PFSL, BSD 2-clause, and GPLv3+ licenses.
     (license (list license:public-domain license:psfl license:bsd-2 license:gpl3+))))
@@ -10900,14 +10903,13 @@ for the module to work under Python 3.3.")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.4.3")
+   (version "0.4.4")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
-      (base32
-       "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))
+      (base32 "16w62sm95hmh55rqxn4zwdz0bkh3fqm1qnz9cwi3s510iasb4har"))))
    (build-system python-build-system)
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
@@ -21448,13 +21450,13 @@ information for your operating system.")
 (define-public python-canonicaljson
   (package
     (name "python-canonicaljson")
-    (version "1.1.4")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "canonicaljson" version))
        (sha256
-        (base32 "09cpacc8yvcc74i63pdmlfaahh77dnvbyw9zf29wml2zzwqfbg25"))))
+        (base32 "0c86g0vvzdcg3nrcsqnbzlfhpprc2i894p8i14hska56yl27d6w9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)

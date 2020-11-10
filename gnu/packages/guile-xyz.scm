@@ -1803,8 +1803,8 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
-        (revision "822"))
+  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
+        (revision "839"))
     (package
       (name "g-golf")
       (version (git-version "0.1.0" revision commit))
@@ -1816,7 +1816,7 @@ capabilities.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5"))))
+          (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -3084,7 +3084,7 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "v0.4.1-31-g415d96f"))
+  (let ((commit "v0.4.1-37-g5f91ee6"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
@@ -3097,7 +3097,7 @@ in C using Gtk+-3 and WebKitGtk.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1cs1i1hxwrv0a512j54yrvfh743nci1chx6qjgp4jyzq98ncvxgg"))))
+          (base32 "03ym14g9qhjqmryr5z065kynqm8yhmvnbs2djl6vp3i9cmqln8cl"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
@@ -3150,7 +3150,7 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.2.0-alpha-100-g6a565d3")
+    (version "0.2.0-alpha-199-g3e7a475")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3159,7 +3159,7 @@ perform geometrical transforms on JPEG images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0anmprm63a88kii251rl296v1g4iq62r6n4nssx5jbc0hzkknanz"))))
+                "0p0ha6prp7pyadp61clbhc6b55023vxzfwy14j2qygb2mkq7fhic"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3190,6 +3190,7 @@ perform geometrical transforms on JPEG images.")
        ("gtk+:bin" ,gtk+ "bin")
        ("webkitgtk" ,webkitgtk)
        ("gtksourceview" ,gtksourceview)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("vte" ,vte)
        ;; Gstreamer
        ("gstreamer" ,gstreamer)

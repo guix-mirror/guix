@@ -111,6 +111,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/boost.scm			\
   %D%/packages/bootloaders.scm			\
   %D%/packages/bootstrap.scm			\
+  %D%/packages/browser-extensions.scm		\
   %D%/packages/build-tools.scm			\
   %D%/packages/busybox.scm			\
   %D%/packages/c.scm				\
@@ -657,6 +658,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
+  %D%/build/chromium-extension.scm		\
   %D%/build/cross-toolchain.scm			\
   %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
@@ -1424,6 +1426,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plasma-framework-fix-KF5PlasmaMacros.cmake.patch \
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
   %D%/packages/patches/samba-fix-fcntl-hint-detection.patch		\
+  %D%/packages/patches/sdcc-disable-non-free-code.patch		\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\

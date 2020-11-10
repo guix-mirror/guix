@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -115,11 +115,12 @@
                      ;; determine the root file system when it's a RAID
                      ;; device.  Failing to do that, 'grub-probe' silently
                      ;; fails if 'mdadm' is not in $PATH.
-                     (substitute* "grub-core/osdep/linux/getroot.c"
-                       (("argv\\[0\\] = \"mdadm\"")
-                        (string-append "argv[0] = \""
-                                       (assoc-ref inputs "mdadm")
-                                       "/sbin/mdadm\"")))
+                     (when (assoc-ref inputs "mdadm")
+                       (substitute* "grub-core/osdep/linux/getroot.c"
+                         (("argv\\[0\\] = \"mdadm\"")
+                          (string-append "argv[0] = \""
+                                         (assoc-ref inputs "mdadm")
+                                         "/sbin/mdadm\""))))
 
                      ;; Make the font visible.
                      (copy-file (assoc-ref (or native-inputs inputs)

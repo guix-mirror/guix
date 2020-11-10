@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -3522,8 +3522,11 @@ interface.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
-                           "/qsynth-" version ".tar.gz"))
+       (uri (list
+              (string-append "mirror://sourceforge/qsynth/qsynth/" version
+                             "/qsynth-" version ".tar.gz")
+              (string-append "mirror://sourceforge/qsynth/qsynth (attic)"
+                             "/qsynth-" version ".tar.gz")))
        (sha256
         (base32 "18im4w8agj60nkppwbkxqnhpp13z5li3w30kklv4lgs20rvgbvl6"))))
     (build-system gnu-build-system)
@@ -3802,8 +3805,11 @@ machine-readable ASCII format.")
     (version "3.0.10")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://etree.org/shnutils/shntool/dist/src/"
-                                 "shntool-" version ".tar.gz"))
+             (uri (list
+                    (string-append "http://etree.org/shnutils/shntool/dist/src/"
+                                   "shntool-" version ".tar.gz")
+                    (string-append "mirror://debian/pool/main/s/shntool/shntool_"
+                                   version ".orig.tar.gz")))
              (sha256
               (base32
                "00i1rbjaaws3drkhiczaign3lnbhr161b7rbnjr8z83w8yn2wc3l"))))

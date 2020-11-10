@@ -5634,14 +5634,14 @@ on the fly.")
 (define-public hitch
   (package
     (name "hitch")
-    (version "1.6.0")
+    (version "1.7.0")
     (home-page "https://hitch-tls.org/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "source/hitch-" version ".tar.gz"))
               (sha256
                (base32
-                "01n70yf8hx42jb801jv5q1xhrpqxyjnqhd98hjf81lvxpd5fnisf"))))
+                "1i75giwyr66ip8xsvk3gg5xdbxnmcabgxz8dqi06c58mw7qzhzn9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5774,13 +5774,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.4.0")
+    (version "6.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1hkn98vbxk7rc1sd08367qn6rcv8wkxgwbmm1x46y50vi0nvldpn"))))
+                "1dfdswri6lkfk6kml3szvffm91y49pajgqy1k5y26llqixl4r5hi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -5848,18 +5848,25 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.16.0")
+    (version "0.17.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/varnish/varnish-modules"
-                                  "/releases/download/varnish-modules-" version
-                                  "/varnish-modules-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ph5bplsip4rycql1c2hgbvmrwbgcrgv2ldgfp7saxxbsv5cpcds"))))
+                "0zg8y2sgkygdani70zp9rbx278431fmssj26d47c5qsiw939i519"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For bootstrapping.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+
+       ;; For generating manuals.
+       ("rst2man" ,python-docutils)))
     (inputs
      `(("python" ,python)
        ("varnish" ,varnish)))

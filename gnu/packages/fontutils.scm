@@ -160,7 +160,7 @@ scripts.")
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ;no tests
        #:phases
        (modify-phases %standard-phases
@@ -170,7 +170,8 @@ scripts.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "sfnt2woff" bin)
-               (install-file "woff2sfnt" bin)))))))
+               (install-file "woff2sfnt" bin))
+             #t)))))
     (synopsis "Convert between OpenType and WOFF fonts")
     (description
      "This package provides two tools:

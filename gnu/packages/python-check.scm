@@ -436,6 +436,40 @@ in Pytest.")
 of the project to ensure it renders properly.")
     (license license:expat)))
 
+(define-public python-re-assert
+  (package
+    (name "python-re-assert")
+    (version "1.1.0")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asottile/re-assert")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rssq4wpqmx1c17hjfx5l3sn3zmnlz9jffddiqrs4f6h7m6cadai"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-covdefaults" ,python-covdefaults)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-regex" ,python-regex)))
+    (home-page "https://github.com/asottile/re-assert")
+    (synopsis "Show where your regex match assertion failed")
+    (description
+     "@code{re-assert} provides a helper class to make assertions of regexes
+simpler.")
+    (license license:expat)))
+
 (define-public python-pytest-trio
   (package
     (name "python-pytest-trio")

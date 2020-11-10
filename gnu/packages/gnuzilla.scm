@@ -1476,6 +1476,27 @@ standards of the IceCat project.")
 Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
     (license license:mpl2.0)))
 
+(define-public icedove/wayland
+  (package/inherit icedove
+    (name "icedove-wayland")
+    (arguments
+     (substitute-keyword-arguments (package-arguments icedove)
+       ((#:phases phases)
+        `(modify-phases ,phases
+          (replace 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share"))
+                    (pulseaudio (assoc-ref inputs "pulseaudio"))
+                    (pulseaudio-lib (string-append pulseaudio "/lib")))
+               (wrap-program (car (find-files lib "^icedove$"))
+                 `("MOZ_ENABLE_WAYLAND" = ("1"))
+                 `("XDG_DATA_DIRS" prefix (,gtk-share))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib)))
+               #t)))))))))
+
 (define-public firefox-decrypt
   (package
     (name "firefox-decrypt")

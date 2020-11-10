@@ -2693,7 +2693,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.14.3")
+    (version "0.14.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2701,7 +2701,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "15smnxwplk48nas2c8ji6a5fqcsh770f1yl5nc2j5iprjspbm4mg"))))
+                "0xmi24ckpps32k7hc139psgbsnsf4g106sv4l9m445m46amkxggd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

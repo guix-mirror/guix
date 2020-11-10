@@ -414,6 +414,7 @@ image ~a {
                 out-image))
              (convert-disk-image out-image '#$format #$output)))))
     (computed-file name builder
+                   #:local-build? #f              ;too I/O-intensive
                    #:options `(#:substitutable? ,substitutable?))))
 
 

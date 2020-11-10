@@ -583,7 +583,10 @@ requested using POOL."
      ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
      (with-atomic-file-output nar
        (lambda (port)
-         (write-file item port))))))
+         (write-file item port)
+         ;; Make the file world-readable, contrary to what
+         ;; 'with-atomic-file-output' does.
+         (chmod port (logand #o644 (lognot (umask)))))))))
 
 (define* (bake-narinfo+nar cache item
                            #:key ttl (compressions (list %no-compression))
@@ -615,7 +618,12 @@ requested using POOL."
                                           #:nar-path nar-path
                                           #:compressions compressions
                                           #:file-sizes sizes)
-                          port)))))
+                          port)))
+
+             ;; Make the cached narinfo world-readable, contrary to what
+             ;; 'with-atomic-file-output' does, so that other users can rsync
+             ;; the whole cache.
+             (chmod port (logand #o644 (lognot (umask))))))
 
          ;; Make narinfo files for OTHERS hard links to NARINFO such that the
          ;; atime-based cache eviction considers either all the nars or none

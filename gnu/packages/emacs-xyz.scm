@@ -1615,14 +1615,14 @@ incrementally confined in Isearch manner.")
 (define emacs-emms-print-metadata
   (package
     (name "emacs-emms-print-metadata")
-    (version "6.1")
+    (version "6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "emms-" version ".tar"))
        (sha256
-        (base32 "1r1n8i59c6dsyqbphja7fnb1gg8rgbdqd4gdnda6ldq6jfippwlr"))))
+        (base32 "0d95sjrh9vpl41vz26y8clgji987z15lj4ky2kr9yrl0zpa8yv35"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("emms-print-metadata")
@@ -8782,25 +8782,24 @@ that uses the standard completion function completing-read.")
 (define-public emacs-yaml-mode
   (package
     (name "emacs-yaml-mode")
-    (version "0.0.14")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/yoshiki/yaml-mode")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "18g064ardqi1f3xz7j6rs1x9fvv9sn0iq9vgid8c6qvxq7gwj00r"))))
+    (version "0.0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yoshiki/yaml-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gsa153yp8lmwrvcc3nzpw5lj037y7q2nm23k5k404r5as4k355l"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yoshiki/yaml-mode")
     (synopsis "Major mode for editing YAML files")
     (description
-     "Yaml-mode is an Emacs major mode for editing files in the YAML data
-serialization format.  It was initially developed by Yoshiki Kurihara and many
-features were added by Marshall Vandegrift.  As YAML and Python share the fact
-that indentation determines structure, this mode provides indentation and
-indentation command behavior very similar to that of python-mode.")
+     "Yaml mode is an Emacs major mode for editing files in the YAML data
+serialization format.  As YAML and Python share the fact that indentation
+determines structure, this mode provides indentation and indentation command
+behavior very similar to that of Python mode.")
     (license license:gpl3+)))
 
 (define-public emacs-gitlab-ci-mode
@@ -18589,6 +18588,16 @@ files.  It focuses on highlighting the document to improve readability.")
            (lambda _
              (substitute* "Makefile"
                (("\\$\\{CASK\\} exec ") ""))
+             #t))
+         ;; Two tests are failing with Emacs 27, as reported here:
+         ;; <https://github.com/racer-rust/emacs-racer/issues/136>.  Disable
+         ;; them.
+         (add-before 'check 'fix-failing-tests
+           (lambda _
+             (substitute* "test/racer-test.el"
+               (("`Write`") "Write")
+               (("^\\\\\\[`str\\]:.*") "")
+               ((" \\[`str`\\]") " str"))
              #t)))))
     (native-inputs
      `(("emacs-ert-runner" ,emacs-ert-runner)
@@ -20517,20 +20526,20 @@ processes for Emacs")
                 "0m083g3pg0n4ymi1w0jx34awr7cqbm4r561adij9kklblxsz7sc2"))))
     (build-system emacs-build-system)
     (propagated-inputs
-      `(("emacs-dash" ,emacs-dash)
-        ("emacs-s" ,emacs-s)
-        ("emacs-f" ,emacs-f)
-        ("emacs-ace-window" ,emacs-ace-window)
-        ("emacs-pfuture" ,emacs-pfuture)
-        ("emacs-hydra" ,emacs-hydra)
-        ("emacs-ht" ,emacs-ht)))
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-hydra" ,emacs-hydra)
+       ("emacs-pfuture" ,emacs-pfuture)
+       ("emacs-s" ,emacs-s)))
     (native-inputs
      `(("emacs-buttercup" ,emacs-buttercup)
        ("emacs-el-mock" ,emacs-el-mock)))
     (inputs
      `(("python" ,python)))
     (arguments
-     `(#:tests? #t ;TODO: Investigate ‘treemacs--parse-collapsed-dirs’ test failure.
+     `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-makefile
@@ -20545,12 +20554,14 @@ processes for Emacs")
            (lambda _
              (chdir "src/elisp")))
          (replace 'check
+           ;; FIXME: Work around ‘treemacs--parse-collapsed-dirs’ and
+           ;; `treemacs-collect-child-nodes' test failures.
            (lambda _
              (with-directory-excursion "../.." ;treemacs root
                (chmod "test/test-treemacs.el" #o644)
                (emacs-substitute-sexps "test/test-treemacs.el"
-                 ("(describe \"treemacs--parse-collapsed-dirs\""
-                  ""))
+                 ("(describe \"treemacs--parse-collapsed-dirs\"" "")
+                 ("\"Finds only direct childre\"" ""))
                (invoke "make" "test"))))
          (add-before 'install 'patch-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -20582,7 +20593,12 @@ processes for Emacs")
                  #t)))))))
     (home-page "https://github.com/Alexander-Miller/treemacs")
     (synopsis "Emacs tree style file explorer")
-    (description "Powerful and flexible file tree project explorer.")
+    (description
+     "Treemacs is a file and project explorer similar to NeoTree or Vim's
+NerdTree, but largely inspired by the Project Explorer in Eclipse.  It shows
+the file system outlines of your projects in a simple tree layout allowing
+quick navigation and exploration, while also possessing basic file management
+utilities.")
     (license license:gpl3+)))
 
 (define-public emacs-treemacs-extra
@@ -21645,8 +21661,8 @@ and searching through @code{Ctags} files.")
       (license license:expat))))
 
 (define-public emacs-org-download
-  (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
-        (revision "2"))
+  (let ((commit "42ac361ef5502017e6fc1bceb00333eba90402f4")
+        (revision "3"))
     (package
       (name "emacs-org-download")
       (version (git-version "0.1.0" revision commit))
@@ -21655,10 +21671,9 @@ and searching through @code{Ctags} files.")
                 (uri (git-reference
                       (url "https://github.com/abo-abo/org-download")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
-                 (base32
-                  "0i8wlx1i7y1vn5lqwjifvymvszg28a07vwqcm4jslf1v2ajs1lsl"))
-                (file-name (git-file-name name version))))
+                 (base32 "0cg4y7hy7xbq4vrbdicfzgvyaf3cjbx2zkqd4yl0y2garz71j99l"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)
@@ -24342,7 +24357,7 @@ launching other commands/applications from within Emacs, similar to the
 (define-public emacs-no-littering
   (package
     (name "emacs-no-littering")
-    (version "1.0.3")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -24351,7 +24366,7 @@ launching other commands/applications from within Emacs, similar to the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17is06l0w6glppabv2kaclrnqi3dqb6p6alpslpg7lrjd8vd45ir"))))
+        (base32 "1hma9var0nmrmjlh16s49hbfc1s4jvfd2prqxf14lxfd51404niw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacscollective/no-littering")
     (synopsis "Help keep ~/.emacs.d/ clean")

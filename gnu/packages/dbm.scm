@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -41,7 +41,7 @@
                                    "See LICENSE in the distribution."))
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+             (uri (string-append "https://download.oracle.com/berkeley-db/db-"
                                  version ".tar.gz"))
              (sha256
               (base32
@@ -104,7 +104,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (version "5.3.28")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+              (uri (string-append "https://download.oracle.com/berkeley-db/db-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -116,7 +116,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (version "6.2.32")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+              (uri (string-append "https://download.oracle.com/berkeley-db/db-"
                                   version ".tar.gz"))
               (sha256
                (base32

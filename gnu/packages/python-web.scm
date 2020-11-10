@@ -453,6 +453,8 @@ other HTTP libraries.")
 syntax highlighting, wget-like downloads, plugins, and more.  It consists of
 a single http command designed for painless debugging and interaction with
 HTTP servers, RESTful APIs, and web services.")
+    ;; This was fixed in 1.0.3.
+    (properties `((lint-hidden-cve . ("CVE-2019-10751"))))
     (license license:bsd-3)))
 
 (define-public python-html2text

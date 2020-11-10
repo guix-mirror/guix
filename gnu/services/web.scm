@@ -668,6 +668,12 @@ of index files."
                                            '#$lua-package-cpath)
                                       ";"))
                "")
+           (if server-names-hash-bucket-size
+               (string-append
+                 "    server_names_hash_bucket_size "
+                 (number->string server-names-hash-bucket-size)
+                 ";\n")
+               "")
            (if server-names-hash-bucket-max-size
                (string-append
                 "    server_names_hash_bucket_max_size "

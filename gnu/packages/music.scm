@@ -1804,17 +1804,30 @@ special variant of additive synthesis.")
         (base32
          "1882pfcmf3rqg3vd4qflzkppcv158d748i603spqjbxqi8z7x7w0"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             (substitute* "src/GUI/editor_pane.c"
+               (("/usr/bin/unzip") (which "unzip")))
+             (substitute* "src/GUI/GUI.cc"
+               (("/usr/bin/which") (which "which")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)
        ("jack" ,jack-1)
-       ("lv2" ,lv2)
        ("lash" ,lash)
        ("libsndfile" ,libsndfile)
-       ("gtk+" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)))
+       ("lv2" ,lv2)
+       ;; External commands invoked at run time.
+       ("unzip" ,unzip)
+       ("which" ,which)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://amsynth.github.io")
     (synopsis "Analog modeling synthesizer")
     (description

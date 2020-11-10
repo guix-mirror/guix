@@ -1009,6 +1009,17 @@ It has been modified to remove all non-free binary blobs.")
                      '("riscv64-linux")
                      #:extra-version "riscv64-generic"))
 
+(define-public linux-libre-mips64el-fuloong2e
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("mips64el-linux")
+                     #:defconfig "fuloong2e_defconfig"
+                     #:extra-version "mips64el-fuloong2e"
+                     #:extra-options
+                     (append
+                      `(("CONFIG_OVERLAY_FS" . m))
+                      %default-extra-linux-options)))
+
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*

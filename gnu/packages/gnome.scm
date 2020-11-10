@@ -6007,7 +6007,7 @@ discovery protocols.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.34.1")
+    (version "3.38.0")
     (source
      (origin
        (method url-fetch)
@@ -6016,14 +6016,14 @@ discovery protocols.")
                            "totem-" version ".tar.xz"))
        (sha256
         (base32
-         "028sc6xbyi7rs884862d8f3di6zhcm0lhvlpc3r69ifzjsq9my3b"))))
+         "0bs33ijvxbr2prb9yj4dxglsszslsn9k258n311sld84masz4ad8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
-       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("xorg-server" ,xorg-server-for-tests)))
@@ -9981,14 +9981,14 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.11")
+    (version "2.2.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
+       (uri (string-append "https://www.bennewitz.com/bluefish/stable/source/"
                            "bluefish-" version ".tar.gz"))
        (sha256
-        (base32 "0a7kf78q4cj2ap4igjks9kbmmr74brsrl4y2f9wbxpl0b0v2ck2x"))))
+        (base32 "09hgxq139kbkjda5y073lqhq1z1x7cx0j80jh77afrqa3y9c53wl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -10003,7 +10003,7 @@ only know by its Unicode name or code point.")
     (home-page "http://bluefish.openoffice.nl")
     (synopsis "Web development studio")
     (description
-     "Bluefish is an editor targeted towards programmers and web developers,
+     "Bluefish is an editor aimed at programmers and web developers,
 with many options to write web sites, scripts and other code.
 Bluefish supports many programming and markup languages.")
     (license license:gpl3+)))
@@ -11477,6 +11477,62 @@ card sheets that you’ll find at most office supply stores.")
 such as build tools, completion of LaTeX commands, structure navigation,
 symbol tables, document templates, project management, spell-checking, menus
 and toolbars.")
+    (license license:gpl3+)))
+
+(define-public setzer
+  (package
+    (name "setzer")
+    (version "0.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cvfosammmm/Setzer")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qdffi6hws1a104bqzpaxbbjimjcwwmhgb3baiwh0w0b8nhbmhjl"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/setzer"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("pango" ,pango)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)
+       ("webkitgtk" ,webkitgtk)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://www.cvfosammmm.org/setzer/")
+    (synopsis "LaTeX editor written in Python with GTK+")
+    (description
+     "Setzer is a simple yet full-featured LaTeX editor written in Python with
+GTK+.  It integrates well with the GNOME desktop environment.")
     (license license:gpl3+)))
 
 (define-public libratbag
