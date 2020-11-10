@@ -2993,7 +2993,8 @@ tools, XML authoring components, and an extensible plug-in based API.")
     (outputs '("out" "gui"))
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-udevdir="
+       (list "--disable-static"
+             (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
                             "/lib/udev"))
        #:phases
