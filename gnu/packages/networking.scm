@@ -872,6 +872,7 @@ transparently check connection attempts against an access control list.")
                (base32
                 "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
     (description
