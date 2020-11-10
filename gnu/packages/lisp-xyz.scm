@@ -13552,6 +13552,34 @@ and decoder for Common Lisp.")
 (define-public ecl-qbase64
   (sbcl-package->ecl-package sbcl-qbase64))
 
+(define-public sbcl-lw-compat
+  ;; No release since 2013.
+  (let ((commit "aabfe28c6c1a4949f9d7b3cb30319367c9fd1c0d"))
+    (package
+      (name "sbcl-lw-compat")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pcostanza/lw-compat/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "131rq5k2mlv9bfhmafiv6nfsivl4cxx13d9wr06v5jrqnckh4aav"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/pcostanza/lw-compat/")
+      (synopsis "LispWorks utilities ported to other Common Lisp implementations")
+      (description "This package contains a few utility functions from the
+LispWorks library that are used in software such as ContextL.")
+      (license license:expat))))
+
+(define-public cl-lw-compat
+  (sbcl-package->cl-source-package sbcl-lw-compat))
+
+(define-public ecl-lw-compat
+  (sbcl-package->ecl-package sbcl-lw-compat))
+
 (define-public sbcl-hu.dwim.common-lisp
   (package
     (name "sbcl-hu.dwim.common-lisp")
