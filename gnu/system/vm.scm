@@ -655,7 +655,14 @@ of the GNU system as described by OS."
                                'dce)))
 
 
-  (let* ((os (operating-system (inherit os)
+  (let* ((os (operating-system
+               (inherit os)
+
+               ;; As in 'virtualized-operating-system', use BIOS-style GRUB.
+               (bootloader (bootloader-configuration
+                            (bootloader grub-bootloader)
+                            (target "/dev/vda")))
+
                ;; Assume we have an initrd with the whole QEMU shebang.
 
                ;; Force our own root file system.  Refer to it by UUID so that
