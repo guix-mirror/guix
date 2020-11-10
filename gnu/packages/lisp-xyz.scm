@@ -8221,8 +8221,8 @@ and camel-case rules.")
   (sbcl-package->ecl-package sbcl-lisp-unit2))
 
 (define-public sbcl-cl-csv
-  (let ((commit "3eba29c8364b033fbe0d189c2500559278b6a362")
-        (revision "1"))
+  (let ((commit "68ecb5d816545677513d7f6308d9e5e8d2265651")
+        (revision "2"))
     (package
       (name "sbcl-cl-csv")
       (version (git-version "1.0.6" revision commit))
@@ -8235,7 +8235,7 @@ and camel-case rules.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "07h4ni89jzx93clx453hlnnb5g53hhlcmz5hghqv6ysam48lc8g6"))))
+           "0gcmlbwx5m3kwgk12qi80w08ak8fgdnvyia429fz6gnxmhg0k54x"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        ;; See: https://github.com/AccelerationNet/cl-csv/pull/34
