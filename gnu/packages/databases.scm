@@ -1386,6 +1386,7 @@ including field and record folding.")))
      `(#:make-flags (list "CC=gcc" "V=1"
                           ;; Ceph requires that RTTI is enabled.
                           "USE_RTTI=1"
+                          "date=1970-01-01" ; build reproducibly
                           (string-append "INSTALL_PATH="
                                          (assoc-ref %outputs "out"))
 
