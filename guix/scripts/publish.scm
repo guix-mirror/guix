@@ -891,6 +891,8 @@ blocking."
                                             client))
                (port        (begin
                               (force-output client)
+                              (setsockopt client SOL_SOCKET
+                                          SO_SNDBUF (* 128 1024))
                               (nar-response-port response compression))))
           ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
           ;; 'render-nar', BODY here is just the file name of the store item.
