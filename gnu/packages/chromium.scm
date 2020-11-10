@@ -301,7 +301,7 @@
                         "/svntogit-packages/" revision "/trunk/" name))
     (sha256 (base32 hash))))
 
-(define %chromium-version "86.0.4240.183")
+(define %chromium-version "86.0.4240.193")
 (define %ungoogled-revision "b68e17f32e9eff56615a07b44e457835bb9460c6")
 (define %debian-revision "debian/84.0.4147.105-1")
 (define %arch-revision "2cbe439471932d30ff2c8ded6b3dfd51b312bbc9")
@@ -455,7 +455,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1g39i82js7fm4fqb8i66d6xs0kzqjxzi4vzvvwz5y9rkbikcc4ma"))
+                "0d55xkw3fygqpa3a5bvz7vqmzb0d9w1kis72h54cnwsqgw4xag90"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
