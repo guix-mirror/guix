@@ -718,7 +718,7 @@ evaluating the tests and bodies of CLAUSES."
                        (package-full-name package)
                        (build-system-name system))))
              ((gexp-input-error? c)
-              (let ((input (package-error-invalid-input c)))
+              (let ((input (gexp-error-invalid-input c)))
                 (leave (G_ "~s: invalid G-expression input~%")
                        (gexp-error-invalid-input c))))
              ((profile-not-found-error? c)
