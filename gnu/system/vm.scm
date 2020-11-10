@@ -224,6 +224,12 @@ substitutable."
               (use-modules (guix build utils)
                            (gnu build vm))
 
+              ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded
+              ;; by 'estimated-partition-size' below.
+              (setenv "GUIX_LOCPATH"
+                      #+(file-append glibc-utf8-locales "/lib/locale"))
+              (setlocale LC_ALL "en_US.utf8")
+
               (let* ((native-inputs
                       '#+(list qemu (canonical-package coreutils)))
                      (linux   (string-append
