@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -249,6 +250,21 @@ usage."
   `(("StoreDir" . ,%store-directory)
     ("WantMassQuery" . 0)
     ("Priority" . 100)))
+
+;;; A common buffer size value used for the TCP socket SO_SNDBUF option and
+;;; the gzip compressor buffer size.
+(define %default-buffer-size
+  (* 208 1024))
+
+(define %default-socket-options
+  ;; List of options passed to 'setsockopt' when transmitting files.
+  (list (list SO_SNDBUF %default-buffer-size)))
+
+(define* (configure-socket socket #:key (level SOL_SOCKET)
+                           (options %default-socket-options))
+  "Apply multiple option tuples in OPTIONS to SOCKET, using LEVEL."
+  (for-each (cut apply setsockopt socket level <>)
+            options))
 
 (define (signed-string s)
   "Sign the hash of the string S with the daemon's key.  Return a canonical
@@ -569,7 +585,7 @@ requested using POOL."
        (lambda (port)
          (write-file item port))
        #:level (compression-level compression)
-       #:buffer-size (* 128 1024))
+       #:buffer-size %default-buffer-size)
      (rename-file (string-append nar ".tmp") nar))
     ('lzip
      ;; Note: the file port gets closed along with the lzip port.
@@ -866,7 +882,7 @@ or if EOF is reached."
      ;; 'make-gzip-output-port' wants a file port.
      (make-gzip-output-port (response-port response)
                             #:level level
-                            #:buffer-size (* 64 1024)))
+                            #:buffer-size %default-buffer-size))
     (($ <compression> 'lzip level)
      (make-lzip-output-port (response-port response)
                             #:level level))
@@ -891,8 +907,7 @@ blocking."
                                             client))
                (port        (begin
                               (force-output client)
-                              (setsockopt client SOL_SOCKET
-                                          SO_SNDBUF (* 128 1024))
+                              (configure-socket client)
                               (nar-response-port response compression))))
           ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
           ;; 'render-nar', BODY here is just the file name of the store item.
@@ -922,7 +937,7 @@ blocking."
                                                                          size)
                                                     client))
                           (output   (response-port response)))
-                     (setsockopt client SOL_SOCKET SO_SNDBUF (* 128 1024))
+                     (configure-socket client)
                      (if (file-port? output)
                          (sendfile output input size)
                          (dump-port input output))
@@ -1067,7 +1082,8 @@ methods, return the applicable compression."
 (define (open-server-socket address)
   "Return a TCP socket bound to ADDRESS, a socket address."
   (let ((sock (socket (sockaddr:fam address) SOCK_STREAM 0)))
-    (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
+    (configure-socket sock #:options (cons (list SO_REUSEADDR 1)
+                                           %default-socket-options))
     (bind sock address)
     sock))
 
