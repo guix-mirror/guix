@@ -7301,17 +7301,16 @@ installing configuration files or for finding any piece of settings.")
 (define-public perl-moox-handlesvia
   (package
     (name "perl-moox-handlesvia")
-    (version "0.001008")
+    (version "0.001009")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/M/MA/MATTP/MooX-HandlesVia-"
+             "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-HandlesVia-"
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "137yrjn2jmw4cj0fjdajnkjgqr5arnpq72kbm6w66xskncinz55h"))))
+        (base32 "04kcyflg49rclxa1nm035c05jpyvhdacjyy1wklbgv4li3im6qvi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-moox-types-mooselike"
