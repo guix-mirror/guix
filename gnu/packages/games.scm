@@ -6620,7 +6620,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        ("vorbis" ,libvorbis)
        ("luajit" ,luajit)))
     (arguments
-     `(#:make-flags '("CC=gcc" "config=release")
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "config=release")
        ;; XXX: Building in parallel occasionally causes this build failure:
        ;;   ../src/luajit2/src/host/buildvm.c:73:10: fatal error: buildvm_arch.h:
        ;;   No such file or directory
