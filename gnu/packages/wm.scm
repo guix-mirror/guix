@@ -630,7 +630,7 @@ Features include:
                             (string-append bin "/i3lock-fancy"))
                (copy-recursively "icons" icons)
                #t))))))
-    (native-inputs
+    (inputs
      `(("imagemagick" ,imagemagick)
        ("wmctrl" ,wmctrl)
        ("gawk" ,gawk)))
