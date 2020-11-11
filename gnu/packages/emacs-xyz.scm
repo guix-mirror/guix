@@ -11131,7 +11131,7 @@ abbreviation of the mode line displays (lighters) of minor modes.")
 (define-public emacs-use-package
   (package
     (name "emacs-use-package")
-    (version "2.4")
+    (version "2.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11140,7 +11140,7 @@ abbreviation of the mode line displays (lighters) of minor modes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b7mjjh0d6fmkkd9vyj64vca27xqhga0nvyrrcqxpqjn62zq046y"))))
+                "088kl3bml0rs5bkfymgzr15ram9qvy66h1kaisrbkynh0yxvf8g9"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
