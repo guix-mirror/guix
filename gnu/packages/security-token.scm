@@ -136,7 +136,7 @@ readers and is needed to communicate with such devices through the
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              ;; configure.ac relies on ‘git --describe’ to get the version.
              ;; Patch it to just return the real version number directly.
