@@ -461,7 +461,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-3")
+    (version "2-pre-release-4")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +472,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "16crhc89hpvzkms5fypq9vdrf7glidqwh7yvy5cdmjdq4v7fkmy4"))
+         "00865plmvgl1nj009a4w9bcb5mf0zgqjx7w6slacyqgidjzad6qm"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -482,27 +482,19 @@ driven and does not detract you from your daily work.")
        #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
        #:phases
        (modify-phases %standard-phases
-         ;; Version is guessed from .git which Guix does not have.
-         (add-after 'unpack 'patch-version
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((version (format #f "~a" ,version))
-                   (file "source/global.lisp"))
-               (chmod file #o666)
-               (let ((port (open-file file "a")))
-                 (format port "(setf +version+ ~s)" version)
-                 (close-port port)))
-             #t))
-         (add-before 'build 'make-desktop-version-number
-           (lambda _
-             (with-output-to-file "version"
-               (lambda _
-                 (format #t "~a" ,version)
-                 #t))))
-
          (delete 'configure)
          (add-before 'build 'fix-common-lisp-cache-folder
            (lambda _
              (setenv "HOME" "/tmp")
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "NYXT_VERSION" ,version)
+             #t))
+         (add-before 'check 'configure-tests
+           (lambda _
+             (setenv "NYXT_TESTS_NO_NETWORK" "1")
+             (setenv "NYXT_TESTS_ERROR_ON_FAIL" "1")
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
