@@ -2599,7 +2599,8 @@ package.")
                (install-file "grovel/common.h"
                              (string-append
                               (assoc-ref outputs "out")
-                              "/include/grovel"))))))))))
+                              "/include/grovel"))
+               #t))))))))
 
 (define-public sbcl-cffi
   (package
