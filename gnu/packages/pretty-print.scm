@@ -40,7 +40,6 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gv)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -72,8 +71,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)
-       ("gv" ,gv)
-       ("imagemagick" ,imagemagick)))
+       ("gv" ,gv)))
     (native-inputs
      `(("gperf" ,gperf)
        ("groff" ,groff)
