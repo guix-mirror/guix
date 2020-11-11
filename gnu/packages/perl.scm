@@ -1692,15 +1692,14 @@ one.")
 (define-public perl-clone-pp
   (package
     (name "perl-clone-pp")
-    (version "1.07")
+    (version "1.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/Clone-PP-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "15dkhqvih6rx9dnngfwwljcm9s8afb0nbyl2vdvhd8frnw4y31dz"))))
+        (base32 "0y7m25fksiavzg4xj4cm9zkz8rmnk4iqy7lm01m4nmyqlna3082p"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Clone-PP")
     (synopsis "Recursively copy Perl datatypes")
