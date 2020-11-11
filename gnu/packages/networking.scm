@@ -136,7 +136,6 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
