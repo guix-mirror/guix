@@ -3887,7 +3887,7 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 (define-public python-aiosmtpd
   (package
     (name "python-aiosmtpd")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -3895,7 +3895,7 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
              (url "https://github.com/aio-libs/aiosmtpd")
              (commit version)))
        (sha256
-        (base32 "14c30dm6jzxiblnsah53fdv68vqhxwvb9x0aq9bc4vcdas747vr7"))
+        (base32 "0083d6nf75xv8nq1il6jabz36v6c452svy4p402csxwwih5pw6sk"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
