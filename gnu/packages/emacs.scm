@@ -59,7 +59,6 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)     ; alsa-lib
   #:use-module (gnu packages mail)      ; for mailutils
   #:use-module (gnu packages multiprecision)
