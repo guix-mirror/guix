@@ -2373,7 +2373,7 @@ support for high performance Telegram Bot creation.")
 (define-public chatty
  (package
    (name "chatty")
-   (version "0.1.16")
+   (version "0.1.17")
    (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2382,7 +2382,7 @@ support for high performance Telegram Bot creation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "085hb3ii1cy0jb3f0mim25v5r5w3gpfsdpjid5dmrpw4gi88aa2x"))))
+                "0ba1rw8a3vif9k3570hxjfm25vqys3vk3f6g8z5irklwq4bi6lmn"))))
    (build-system meson-build-system)
    (arguments
     '(#:phases
