@@ -5897,15 +5897,14 @@ intersections, unions, unique elements, complements and many more.")
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
-    (version "0.428")
+    (version "0.430")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "List-MoreUtils-" version ".tar.gz"))
        (sha256
-        (base32
-         "1hkc8xkd27yzfkgaglzn77j4qjmilyva4gaz3pc64vpism2hjgki"))))
+        (base32 "09v5cipjf634a1176wy2wicibzz51lry0d0yim9rnbfl5j2ggcb3"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
