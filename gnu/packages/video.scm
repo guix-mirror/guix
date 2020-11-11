@@ -245,7 +245,7 @@
        ("faac" ,faac)
        ("ffmpeg" ,ffmpeg)
        ("freetype" ,freetype)
-       ("imagemagick" ,imagemagick)
+       ("imagemagick" ,imagemagick-next)
        ("lame" ,lame)
        ("liba52" ,liba52)
        ("libdv" ,libdv)
