@@ -9833,7 +9833,7 @@ generally slower on larger files.")
 (define-public perl-text-format
   (package
     (name "perl-text-format")
-    (version "0.61")
+    (version "0.62")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -9841,7 +9841,7 @@ generally slower on larger files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0axfyiml3zwawwd127z8rl2lm53z6dlsflzmp80m3j0myn7kp2mv"))))
+                "0104z7jjv46kqh77rnx8kvmsbr5dy0s56xm01dckq4ly65br0hkx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
