@@ -1393,17 +1393,22 @@ different sorts of messages in different formats.")
 (define-public telepathy-idle
   (package
     (name "telepathy-idle")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://telepathy.freedesktop.org/releases/"
-                                  name "/" name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1argdzbif1vdmwp5vqbgkadq9ancjmgdm2ncp0qfckni715ss4rh"))))
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TelepathyIM/telepathy-idle")
+             (commit (string-append "telepathy-idle-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pfw4g2cicw3ykxhsy743r0fc1yqbdrqxh2c5ha6am19dajcr95l"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("xsltproc" ,libxslt)
        ("python" ,python-2)
