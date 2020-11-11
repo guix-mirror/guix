@@ -2479,7 +2479,8 @@ Both command-line and GTK2 interface are available.")
                 "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-bdjava-jar")
+     `(#:configure-flags '("--disable-bdjava-jar"
+                           "--disable-static")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-libxml2-in-.pc-file
