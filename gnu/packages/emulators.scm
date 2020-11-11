@@ -477,14 +477,14 @@ V2.")
 (define-public mednafen
   (package
     (name "mednafen")
-    (version "1.24.3")
+    (version "1.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mednafen.github.io/releases/files/"
                            "mednafen-" version ".tar.xz"))
        (sha256
-        (base32 "03zplcfvmnnv7grhacmr1zy789pb2wda36wylmzmar23g0zqbsix"))))
+        (base32 "1x7xhxjhwsdbak8l0iyb497f043xkhibk73w96xck4j2bk10fac4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
