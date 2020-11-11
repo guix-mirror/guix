@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
@@ -3423,20 +3423,23 @@ the use of a local MTA such as Sendmail.")
 (define-public afew
   (package
     (name "afew")
-    (version "1.2.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "afew" version))
        (sha256
         (base32
-         "121w7bd53xyibllxxbfykjj76n81kn1vgjqd22izyh67y8qyyk5r"))))
+         "0wpfqbqjlfb9z0hafvdhkm7qw56cr9kfy6n8vb0q42dwlghpz1ff"))))
     (build-system python-build-system)
     (inputs
-     `(("python-chardet" ,python-chardet)
+     `(("notmuch" ,notmuch)
+       ("python-chardet" ,python-chardet)
+       ("python-dkimpy" ,python-dkimpy)
        ("python-notmuch" ,python-notmuch)))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-freezegun" ,python-freezegun)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/afewmail/afew")
     (synopsis "Initial tagging script for notmuch mail")
     (description "afew is an initial tagging script for notmuch mail.  It
