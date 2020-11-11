@@ -141,6 +141,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -938,6 +939,29 @@ Additionally, it is able to send GraphQL queries to an end-point URL.
 Files with the @file{.graphql} and @file{.gql} extensions are
 automatically opened with this mode.")
       (license license:gpl3+))))
+
+(define-public emacs-ghq
+  (package
+    (name "emacs-ghq")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rcoedo/emacs-ghq")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rh2k93c3a0vl073a3s3a3h6gkw454v1lyd7y8l3pd24vw9hc628"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("ghq" ,ghq)))
+    (home-page "https://github.com/rcoedo/emacs-ghq")
+    (synopsis "Emacs interface for @code{ghq} tool")
+    (description
+     "This package provides a set of functions wrapping @code{ghq}, a tool for
+organizing remote Go repository clones.")
+    (license license:gpl3+)))
 
 (define-public emacs-ghub
   (package
