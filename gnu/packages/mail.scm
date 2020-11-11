@@ -2881,14 +2881,13 @@ messages with @acronym{DKIM, DomainKeys Identified Mail} (RFC 4871).")
 (define-public mailman
   (package
     (name "mailman")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mailman" version))
         (sha256
-         (base32
-          "0idfiv48jjgc0jq4731094ddhraqq8bxnwmjk6sg5ask0jss9kxq"))))
+         (base32 "0a5ckbf8hc3y28b7p5psp0d4bxk601jlr5pd3hhh545xd8d9f0dg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("gunicorn" ,gunicorn)
