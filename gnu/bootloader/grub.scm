@@ -573,21 +573,24 @@ fi~%"))))
 
 (define install-grub-efi
   #~(lambda (bootloader efi-dir mount-point)
-      ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
-      ;; system whose root is mounted at MOUNT-POINT.
-      (let ((grub-install (string-append bootloader "/sbin/grub-install"))
-            (install-dir (string-append mount-point "/boot"))
-            ;; When installing Guix, it's common to mount EFI-DIR below
-            ;; MOUNT-POINT rather than /boot/efi on the live image.
-            (target-esp (if (file-exists? (string-append mount-point efi-dir))
-                            (string-append mount-point efi-dir)
-                            efi-dir)))
-        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
-        ;; root partition.
-        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
-        (invoke/quiet grub-install "--boot-directory" install-dir
-                      "--bootloader-id=Guix"
-                      "--efi-directory" target-esp))))
+      ;; There is nothing useful to do when called in the context of a disk
+      ;; image generation.
+      (when efi-dir
+        ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
+        ;; system whose root is mounted at MOUNT-POINT.
+        (let ((grub-install (string-append bootloader "/sbin/grub-install"))
+              (install-dir (string-append mount-point "/boot"))
+              ;; When installing Guix, it's common to mount EFI-DIR below
+              ;; MOUNT-POINT rather than /boot/efi on the live image.
+              (target-esp (if (file-exists? (string-append mount-point efi-dir))
+                              (string-append mount-point efi-dir)
+                              efi-dir)))
+          ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
+          ;; root partition.
+          (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+          (invoke/quiet grub-install "--boot-directory" install-dir
+                        "--bootloader-id=Guix"
+                        "--efi-directory" target-esp)))))
 
 (define (install-grub-efi-netboot subdir)
   "Define a grub-efi-netboot bootloader installer for installation in SUBDIR,
