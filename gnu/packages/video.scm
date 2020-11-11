@@ -1228,6 +1228,8 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
                (base32
                 "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freeglut" ,freeglut)
