@@ -2470,7 +2470,18 @@ scientific applications modeled by partial differential equations.")
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))))
+           "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Ensure source file is regenerated in the build phase.
+            (delete-file "src/petsc4py.PETSc.c")
+            ;; Remove legacy GC code.  See
+            ;; https://bitbucket.org/petsc/petsc4py/issues/125.
+            (substitute* "src/PETSc/cyclicgc.pxi"
+                         ((".*gc_refs.*") "" )
+                         ((".*PyGC_Head.*") ""))
+            #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2482,6 +2493,8 @@ scientific applications modeled by partial differential equations.")
              #t))
          (add-before 'check 'mpi-setup
            ,%openmpi-setup))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     (inputs
      `(("petsc" ,petsc-openmpi)
        ("python-numpy" ,python-numpy)))
