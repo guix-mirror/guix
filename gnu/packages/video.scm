@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -65,7 +65,7 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -2203,7 +2203,18 @@ To load this plugin, specify the following option when starting mpv:
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0iv4l78ylzx8q6myv4v7xq6r5y0hacz6l30bqk1szncfikvfc3cf"))))
+                "0iv4l78ylzx8q6myv4v7xq6r5y0hacz6l30bqk1szncfikvfc3cf"))
+              (snippet
+               '(begin
+                  ;; Delete the pre-generated files, except for the man page
+                  ;; which requires 'pandoc' to build.
+                  (for-each delete-file '("youtube-dl"
+                                          ;;pandoc is needed to generate
+                                          ;;"youtube-dl.1"
+                                          "youtube-dl.bash-completion"
+                                          "youtube-dl.fish"
+                                          "youtube-dl.zsh"))
+                  #t))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2224,6 +2235,16 @@ To load this plugin, specify the following option when starting mpv:
                         (("\\.get\\('ffmpeg_location'\\)" match)
                          (format #f "~a or '~a'" match (which "ffmpeg"))))
                       #t))
+                  (add-before 'build 'build-generated-files
+                    (lambda _
+                      ;; Avoid the make targets that require pandoc.
+                      (invoke "make"
+                              "PYTHON=python"
+                              "youtube-dl"
+                              ;;"youtube-dl.1"   ; needs pandoc
+                              "youtube-dl.bash-completion"
+                              "youtube-dl.zsh"
+                              "youtube-dl.fish")))
                   (add-before 'install 'fix-the-data-directories
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -2247,6 +2268,8 @@ To load this plugin, specify the following option when starting mpv:
                         (copy-file "youtube-dl.zsh"
                                    (string-append zsh "/_youtube-dl"))
                         #t))))))
+    (native-inputs
+     `(("zip" ,zip)))
     (inputs
      `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos from YouTube.com and other sites")
