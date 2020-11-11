@@ -269,15 +269,14 @@ more.")
 (define-public perl-algorithm-c3
   (package
     (name "perl-algorithm-c3")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Algorithm-C3-" version ".tar.gz"))
        (sha256
-        (base32
-         "01hlcaxndls86bl92rkd3fvf9pfa3inxqaimv88bxs95803kmkss"))))
+        (base32 "02ck52cf0yyk57354rd1rp5l0kbfwi1pvg2lh3jadvjxfrkq9x5a"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Algorithm-C3")
     (synopsis "Module for merging hierarchies using the C3 algorithm")
