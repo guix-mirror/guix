@@ -21867,13 +21867,13 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.10.2")
+    (version "4.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzo" version))
        (sha256
-        (base32 "1zplxcb78qy8qibifmnsx5i9gnlfmw9n6nr4yflsabpxw57mx4m1"))))
+        (base32 "0vzsk6rchavlvy7ciq1z9qh3qrj9q213v2nn491fgjq3g19glj53"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -21883,8 +21883,8 @@ dictionaries.")
              ;; Tests fail with "Permission denied: '/homeless-shelter'".
              (setenv "HOME" "/tmp")
              #t)))
-       ;; Tests fail with "Uncaught Python exception: invalid literal for
-       ;; int() with base 10: 'test'".
+       ;; Tests fail with "Uncaught Python exception: python: undefined
+       ;; symbol: objc_getClass".
        #:tests? #f))
     (propagated-inputs
      `(("python-pyqt" ,python-pyqt)))
