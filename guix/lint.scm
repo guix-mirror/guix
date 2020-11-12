@@ -35,6 +35,8 @@
   #:use-module (guix http-client)
   #:use-module (guix packages)
   #:use-module (guix i18n)
+  #:use-module ((guix gexp)
+                #:select (local-file? local-file-absolute-file-name))
   #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix grafts)
@@ -73,6 +75,7 @@
             check-inputs-should-be-native
             check-inputs-should-not-be-an-input-at-all
             check-patch-file-names
+            check-patch-headers
             check-synopsis-style
             check-derivation
             check-home-page
@@ -711,6 +714,54 @@ patch could not be found."
                           #f))
                      (_ #f))
                    patches)))))
+
+(define (check-patch-headers package)
+  "Check that PACKAGE's patches start with a comment.  Return a list of
+warnings."
+  (define (blank? str)
+    (string-every char-set:blank str))
+
+  (define (patch-header-warnings patch)
+    (call-with-input-file patch
+      (lambda (port)
+        ;; Read from PORT until a non-blank line is found or EOF is reached.
+        (let loop ()
+          (let ((line (read-line port)))
+            (cond ((eof-object? line)
+                   (list (make-warning package
+                                       (G_ "~a: empty patch")
+                                       (list (basename patch))
+                                       #:field 'source)))
+                  ((blank? line)
+                   (loop))
+                  ((or (string-prefix? "--- " line)
+                       (string-prefix? "+++ " line))
+                   (list (make-warning package
+                                       (G_ "~a: patch lacks comment and \
+upstream status")
+                                       (list (basename patch))
+                                       #:field 'source)))
+                  (else
+                   '())))))))
+
+  (guard (c ((formatted-message? c)               ;raised by 'search-patch'
+             (list (%make-warning package
+                                  (formatted-message-string c)
+                                  (formatted-message-arguments c)
+                                  #:field 'source))))
+   (let ((patches (if (origin? (package-source package))
+                      (origin-patches (package-source package))
+                      '())))
+     (append-map (lambda (patch)
+                   ;; Dismiss PATCH if it's an origin or similar.
+                   (cond ((string? patch)
+                          (patch-header-warnings patch))
+                         ((local-file? patch)
+                          (patch-header-warnings
+                           (local-file-absolute-file-name patch)))
+                         (else
+                          '())))
+                 patches))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
@@ -1417,6 +1468,10 @@ or a list thereof")
     (name        'patch-file-names)
     (description "Validate file names and availability of patches")
     (check       check-patch-file-names))
+   (lint-checker
+    (name        'patch-headers)
+    (description "Validate patch headers")
+    (check       check-patch-headers))
    (lint-checker
      (name        'formatting)
      (description "Look for formatting issues in the source")

@@ -36,6 +36,8 @@
   #:use-module (guix lint)
   #:use-module (guix ui)
   #:use-module (guix swh)
+  #:use-module ((guix gexp) #:select (local-file))
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
@@ -343,6 +345,60 @@
                  (patches
                   (list (search-patch "this-patch-does-not-exist!"))))))))
      (check-patch-file-names pkg))))
+
+(test-assert "patch headers: no warnings"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (call-with-output-file (string-append directory "/t.patch")
+       (lambda (port)
+         (display "This is a patch.\n\n--- a\n+++ b\n"
+                  port)))
+
+     (parameterize ((%patch-path (list directory)))
+       (let ((pkg (dummy-package "x"
+                    (source (dummy-origin
+                             (patches (search-patches "t.patch")))))))
+         (null? (check-patch-headers pkg)))))))
+
+(test-equal "patch headers: missing comment"
+  "t.patch: patch lacks comment and upstream status"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (call-with-output-file (string-append directory "/t.patch")
+       (lambda (port)
+         (display "\n--- a\n+++ b\n"
+                  port)))
+
+     (parameterize ((%patch-path (list directory)))
+       (let ((pkg (dummy-package "x"
+                    (source (dummy-origin
+                             (patches (search-patches "t.patch")))))))
+         (single-lint-warning-message (check-patch-headers pkg)))))))
+
+(test-equal "patch headers: empty"
+  "t.patch: empty patch"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (call-with-output-file (string-append directory "/t.patch")
+       (const #t))
+
+     (parameterize ((%patch-path '()))
+       (let ((pkg (dummy-package "x"
+                    (source (dummy-origin
+                             (patches
+                              (list (local-file
+                                     (string-append directory
+                                                    "/t.patch")))))))))
+         (single-lint-warning-message (check-patch-headers pkg)))))))
+
+(test-equal "patch headers: patch not found"
+  "does-not-exist.patch: patch not found\n"
+  (parameterize ((%patch-path '()))
+    (let ((pkg (dummy-package "x"
+                 (source (dummy-origin
+                          (patches
+                           (search-patches "does-not-exist.patch")))))))
+      (single-lint-warning-message (check-patch-headers pkg)))))
 
 (test-equal "derivation: invalid arguments"
   "failed to create x86_64-linux derivation: (wrong-type-arg \"map\" \"Wrong type argument: ~S\" (invalid-module) ())"
