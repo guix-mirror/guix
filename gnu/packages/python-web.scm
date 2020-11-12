@@ -2888,12 +2888,12 @@ pretty printer and a tree visitor.")
     (name "python-flask-basicauth")
     (version "0.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "Flask-BasicAuth" version))
-        (sha256
-          (base32
-            "1zq1spkjr4sjdnalpp8wl242kdqyk6fhbnhr8hi4r4f0km4bspnz"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-BasicAuth" version))
+       (sha256
+        (base32
+         "1zq1spkjr4sjdnalpp8wl242kdqyk6fhbnhr8hi4r4f0km4bspnz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2908,12 +2908,10 @@ pretty printer and a tree visitor.")
                       #t)))))
     (propagated-inputs
      `(("python-flask" ,python-flask)))
-    (home-page
-      "https://github.com/jpvanhal/flask-basicauth")
-    (synopsis
-      "HTTP basic access authentication for Flask")
+    (home-page "https://github.com/jpvanhal/flask-basicauth")
+    (synopsis "HTTP basic access authentication for Flask")
     (description
-      "This package provides HTTP basic access authentication for Flask.")
+     "This package provides HTTP basic access authentication for Flask.")
     (license license:bsd-3)))
 
 (define-public python-flask-htpasswd
