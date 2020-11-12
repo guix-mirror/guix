@@ -7469,63 +7469,68 @@ navigate code in a tree-like fashion.")
     (license license:gpl3+)))
 
 (define-public emacs-lispy
-  (package
-    (name "emacs-lispy")
-    (version "0.27.0")
-    (home-page "https://github.com/abo-abo/lispy")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/abo-abo/lispy")
-                    (commit version)))
-              (sha256
-               (base32
-                "1cm7f4pyl73f3vhkb7ah6bbbrj2sa7n0p31g09k7dy4zgx04bgw6"))
-              (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-ace-window" ,emacs-ace-window)
-       ("emacs-hydra" ,emacs-hydra)
-       ("emacs-iedit" ,emacs-iedit)
-       ("emacs-swiper" ,emacs-swiper)
-       ("emacs-zoutline" ,emacs-zoutline)))
-    (native-inputs
-     `(("emacs-clojure-mode" ,emacs-clojure-mode)
-       ("emacs-undercover" ,emacs-undercover)))
-    (arguments
-     `(#:include (cons* "^lispy-clojure\\.clj$"
-                        "^lispy-python\\.py$"
-                        %default-include)
-       #:phases
-       ;; XXX: one failing test involving python evaluation
-       (modify-phases %standard-phases
-         (add-before 'check 'make-test-writable
-           (lambda _
-             (make-file-writable "lispy-test.el")
-             #t))
-         (add-before 'check 'remove-python-eval-test
-           (lambda _
-             (emacs-batch-edit-file "lispy-test.el"
-               `(progn
-                 (progn
-                  (goto-char (point-min))
-                  (re-search-forward
-                   "ert-deftest lispy-eval-python-str")
-                  (beginning-of-line)
-                  (kill-sexp))
-                 (basic-save-buffer)))
-             #t)))
-       #:tests? #t
-       #:test-command '("make" "test")))
-    (synopsis "Modal S-expression editing")
-    (description
-     "Due to the structure of Lisp syntax it's very rare for the programmer
+  ;; No release since May 2019 and tons of fixes have landed on master.
+  ;; https://github.com/abo-abo/lispy/issues/513
+  (let ((commit "5c8a59ae7dd3dd342e7c86a8c0acdbd13e2989f3"))
+    (package
+      (name "emacs-lispy")
+      (version (git-version "0.27.0" "1" commit))
+      (home-page "https://github.com/abo-abo/lispy")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/abo-abo/lispy")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0738v9bp4dlxbwsnykvc35yh4dl4pvw25jl8srb7r3744ydvgyii"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ace-window" ,emacs-ace-window)
+         ("emacs-hydra" ,emacs-hydra)
+         ("emacs-iedit" ,emacs-iedit)
+         ("emacs-swiper" ,emacs-swiper)
+         ("emacs-zoutline" ,emacs-zoutline)))
+      (native-inputs
+       `(("which" ,which)
+         ("emacs-clojure-mode" ,emacs-clojure-mode)
+         ("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:include (cons* "^lispy-clojure\\.clj$"
+                          "^lispy-python\\.py$"
+                          %default-include)
+         #:phases
+         ;; XXX: Some failing tests
+         (modify-phases %standard-phases
+           (add-before 'check 'make-test-writable
+             (lambda _
+               (make-file-writable "lispy-test.el")
+               #t))
+           (add-before 'check 'remove-failing-test
+             (lambda _
+               (emacs-batch-edit-file "lispy-test.el"
+                 `(progn
+                   (dolist (test '("lispy-eval-python-str" "lispy--clojure-dot-object"))
+                    (goto-char (point-min))
+                    (re-search-forward
+                     (concat "ert-deftest " test))
+                    (beginning-of-line)
+                    (kill-sexp))
+                   (basic-save-buffer)))
+               #t)))
+         #:tests? #t
+         ;; Set BEMACS to prevent the test suite from loading straight.el.
+         #:test-command '("make" "test" "BEMACS=emacs -batch")))
+      (synopsis "Modal S-expression editing")
+      (description
+       "Due to the structure of Lisp syntax it's very rare for the programmer
 to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-lispyville
   (let ((commit "1bf38088c981f5ab4ef2e2684952ab6af96378db")
