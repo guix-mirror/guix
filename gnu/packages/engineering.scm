@@ -754,8 +754,8 @@ fonts to gEDA.")
       (license license:gpl2+))))
 
 (define-public libfive
-  (let ((commit "6e39254e57c179459bb929df49ae96a6017a0ed6")
-        (revision "3"))
+  (let ((commit "8ca1b8685ef3fac7b64e66b10459b8421a3020c6")
+        (revision "4"))
     (package
       (name "libfive")
       (version (git-version "0" revision commit))
@@ -766,7 +766,7 @@ fonts to gEDA.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
+                  "1c762cd70iv2b9av0l9lq0py9138y98wk3dirhdmil7jncdhvq98"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
@@ -784,7 +784,7 @@ fonts to gEDA.")
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
-         ("guile" ,guile-2.2)))
+         ("guile" ,guile-3.0)))
       (home-page "https://libfive.com")
       (synopsis "Tool for programmatic computer-aided design")
       (description
