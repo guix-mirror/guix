@@ -49,6 +49,12 @@ TARGET."
        '("bootstrap-tarballs" "gcc-toolchain" "nss-certs"
          "openssh" "emacs" "vim" "python" "guile" "guix")))
 
+(define %base-packages/hurd
+  ;; XXX: For now we are less demanding of "i586-gnu".
+  (map specification->package
+       '("coreutils" "grep" "findutils" "gawk" "make"
+         "gcc-toolchain" "tar" "xz")))
+
 (define %system-packages
   ;; Key packages proposed by the Guix System installer.
   (append (map specification->package
@@ -94,7 +100,9 @@ TARGET."
   (manifest
    (append-map (lambda (system)
                  (map (cut package->manifest-entry* <> system)
-                      %base-packages))
+                      (if (string=? system "i586-gnu")
+                          %base-packages/hurd
+                          %base-packages)))
                %hydra-supported-systems)))
 
 (define %system-manifest

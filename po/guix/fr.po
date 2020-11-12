@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: guix 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-11-05 17:27+0100\n"
-"PO-Revision-Date: 2020-11-08 21:36+0100\n"
+"PO-Revision-Date: 2020-11-09 16:46+0100\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -4978,8 +4978,8 @@ msgstr "résolution de « ~a » à partir du répertoire actuel~%"
 #, scheme-format
 msgid "importing module~{ ~a~} from the host~%"
 msgid_plural "importing modules~{ ~a~} from the host~%"
-msgstr[0] "import du module~{ ~a~} à partir de l'hôte"
-msgstr[1] "import des modules~{ ~a~} à partir de l'hôte"
+msgstr[0] "import du module~{ ~a~} à partir de l'hôte~%"
+msgstr[1] "import des modules~{ ~a~} à partir de l'hôte~%"
 
 #: guix/gnu-maintenance.scm:699
 msgid "Updater for GNU packages"
@@ -6474,7 +6474,7 @@ msgstr "produit une sortie de déboguage"
 #~ msgstr "argument non supporté pour le graphe de référence"
 
 #~ msgid "~a: note: using ~a but ~a is available upstream~%"
-#~ msgstr "~a: note: utilisation de ~a mais ~a est disponible en amont"
+#~ msgstr "~a: note: utilisation de ~a mais ~a est disponible en amont~%"
 
 #~ msgid "~a: not a number~%"
 #~ msgstr "~a: pas un nombre~%"
@@ -6486,7 +6486,7 @@ msgstr "produit une sortie de déboguage"
 #~ msgstr "échec de la compilation du profil vide~%"
 
 #~ msgid "nothing to do: already at the empty profile~%"
-#~ msgstr "aucune action à faire: profil courant vide"
+#~ msgstr "aucune action à faire: profil courant vide~%"
 
 #~ msgid "(Please consider upgrading Guile to get proper progress report.)~%"
 #~ msgstr "(Veuillez mettre Guile à jour pour obtenir le rapport de progression approprié.)~%"

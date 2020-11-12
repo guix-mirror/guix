@@ -802,14 +802,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/audiofile-CVE-2015-7747.patch		\
   %D%/packages/patches/audiofile-CVE-2018-13440.patch		\
   %D%/packages/patches/audiofile-CVE-2018-17095.patch		\
-  %D%/packages/patches/audiofile-Check-the-number-of-coefficients.patch \
+  %D%/packages/patches/audiofile-check-number-of-coefficients.patch \
   %D%/packages/patches/audiofile-Fail-on-error-in-parseFormat.patch \
   %D%/packages/patches/audiofile-Fix-index-overflow-in-IMA.cpp.patch \
-  %D%/packages/patches/audiofile-Fix-multiply-overflow-sfconvert.patch \
-  %D%/packages/patches/audiofile-Fix-overflow-in-MSADPCM-decodeSam.patch \
-  %D%/packages/patches/audiofile-division-by-zero-BlockCodec-runPull.patch \
-  %D%/packages/patches/audiofile-hurd.patch \
-  %D%/packages/patches/audiofile-signature-of-multiplyCheckOverflow.patch \
+  %D%/packages/patches/audiofile-multiply-overflow.patch	\
+  %D%/packages/patches/audiofile-overflow-in-MSADPCM.patch	\
+  %D%/packages/patches/audiofile-division-by-zero.patch 	\
+  %D%/packages/patches/audiofile-hurd.patch 			\
+  %D%/packages/patches/audiofile-function-signature.patch	\
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avogadro-boost148.patch			\
@@ -1196,6 +1196,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jsoncpp-fix-inverted-case.patch		\
   %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libffi-3.3-powerpc-fixes.patch		\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
@@ -1525,7 +1526,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python-pycrypto-time-clock.patch		\
-  %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  %D%/packages/patches/python2-pygobject-2-deprecation.patch	\
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python-robotframework-source-date-epoch.patch \
   %D%/packages/patches/python-shouldbe-0.1.2-cpy3.8.patch	\

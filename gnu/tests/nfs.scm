@@ -404,7 +404,7 @@ directories can be mounted.")
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
-  (gexp->derivation "nfs-server-test" test))
+  (gexp->derivation "nfs-root-fs-test" test))
 
 (define %test-nfs-root-fs
   (system-test

@@ -7,10 +7,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: guix 1.2.0-pre2\n"
+"Project-Id-Version: guix 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2020-10-20 16:52+0200\n"
-"PO-Revision-Date: 2020-11-05 01:01+0530\n"
+"POT-Creation-Date: 2020-11-05 17:27+0100\n"
+"PO-Revision-Date: 2020-11-11 11:48+0530\n"
 "Last-Translator: Arun Isaac <arunisaac@systemreboot.net>\n"
 "Language-Team: Tamil <tamil@systemreboot.net>\n"
 "Language: ta\n"
@@ -74,7 +74,7 @@ msgstr "தெளிவற்ற மென்பொருள் தொகுப�
 msgid "choosing ~a@~a from ~a~%"
 msgstr "~a@~a யிலிருந்து ~a~% யைத் தேர்ந்தெடுக்கப்பட்டது"
 
-#: gnu/packages.scm:486 guix/scripts/package.scm:210
+#: gnu/packages.scm:486 guix/scripts/package.scm:211
 #, scheme-format
 msgid "package '~a' has been superseded by '~a'~%"
 msgstr "'~a' நிரல்தொகுப்பு '~a' நிரல்தொகுப்பால் மாற்றாக்கப்பட்டது~%"
@@ -197,26 +197,26 @@ msgstr "ஒன்றிற்கு மேலான '~a' வகைப் பண�
 msgid "service of type '~a' not found"
 msgstr "'~a' வகைப் பணி கிடைக்கவில்லை"
 
-#: gnu/system.scm:404
+#: gnu/system.scm:421
 #, scheme-format
 msgid "unrecognized boot parameters at '~a'~%"
 msgstr ""
 
-#: gnu/system.scm:956
+#: gnu/system.scm:973
 #, scheme-format
 msgid "using a string for file '~a' is deprecated; use 'plain-file' instead~%"
 msgstr "'~a' கோப்பிற்கு வரியுருத்தொடரைப் பயன்படுத்துவது வழக்கொழிந்தது; அதற்குப் பதிலாக 'plain-file' யைப் பயன்படுத்துக~%"
 
-#: gnu/system.scm:972
+#: gnu/system.scm:989
 #, scheme-format
 msgid "using a monadic value for '~a' is deprecated; use 'plain-file' instead~%"
 msgstr ""
 
-#: gnu/system.scm:1099
+#: gnu/system.scm:1116
 msgid "missing root file system"
 msgstr "வேர் கோப்பமைப்பு இல்லை"
 
-#: gnu/system.scm:1175
+#: gnu/system.scm:1192
 #, scheme-format
 msgid "~a: invalid locale name"
 msgstr ""
@@ -347,7 +347,7 @@ msgstr "பணிகள்"
 msgid "Partitioning"
 msgstr "வகிர்வமைத்தல்"
 
-#: gnu/installer.scm:298 gnu/installer/newt/final.scm:53
+#: gnu/installer.scm:298 gnu/installer/newt/final.scm:54
 msgid "Configuration file"
 msgstr "அமைவடிவக்கோப்பு"
 
@@ -392,17 +392,17 @@ msgstr "ஈத்தர்வலை இணைப்பு"
 #: gnu/installer/newt/locale.scm:43 gnu/installer/newt/network.scm:63
 #: gnu/installer/newt/network.scm:84 gnu/installer/newt/page.scm:303
 #: gnu/installer/newt/page.scm:666 gnu/installer/newt/page.scm:751
-#: gnu/installer/newt/partition.scm:55 gnu/installer/newt/partition.scm:84
-#: gnu/installer/newt/partition.scm:116 gnu/installer/newt/partition.scm:127
-#: gnu/installer/newt/partition.scm:624 gnu/installer/newt/partition.scm:645
-#: gnu/installer/newt/partition.scm:691 gnu/installer/newt/partition.scm:742
-#: gnu/installer/newt/partition.scm:753 gnu/installer/newt/services.scm:86
+#: gnu/installer/newt/partition.scm:56 gnu/installer/newt/partition.scm:91
+#: gnu/installer/newt/partition.scm:123 gnu/installer/newt/partition.scm:134
+#: gnu/installer/newt/partition.scm:631 gnu/installer/newt/partition.scm:652
+#: gnu/installer/newt/partition.scm:698 gnu/installer/newt/partition.scm:749
+#: gnu/installer/newt/partition.scm:760 gnu/installer/newt/services.scm:87
 #: gnu/installer/newt/timezone.scm:63 gnu/installer/newt/user.scm:204
 #: gnu/installer/newt/wifi.scm:205
 msgid "Exit"
 msgstr "வெளியேறு"
 
-#: gnu/installer/newt/final.scm:46
+#: gnu/installer/newt/final.scm:47
 #, scheme-format
 msgid "We're now ready to proceed with the installation! A system configuration file has been generated, it is displayed below.  This file will be available as '~a' on the installed system.  The new system will be created from this file once you've pressed OK.  This will take a few minutes."
 msgstr ""
@@ -410,31 +410,31 @@ msgstr ""
 "இக்கோப்பு நிறுவிய நிலையத்தில் '~a' என்னும் இடத்தில் இருக்கும்.  \"சரி\" அழுத்தியதும்\n"
 "நிலையம் நிறுவப்படும்.  இதுச் சில நிமிடங்களாகும்."
 
-#: gnu/installer/newt/final.scm:70
+#: gnu/installer/newt/final.scm:71
 msgid "Installation complete"
 msgstr "நிறுவல் முடிந்தது"
 
-#: gnu/installer/newt/final.scm:71 gnu/installer/newt/welcome.scm:139
+#: gnu/installer/newt/final.scm:72 gnu/installer/newt/welcome.scm:139
 msgid "Reboot"
 msgstr "மீள்தொடக்கு"
 
-#: gnu/installer/newt/final.scm:72
+#: gnu/installer/newt/final.scm:73
 msgid "Congratulations!  Installation is now complete.  You may remove the device containing the installation image and press the button to reboot."
 msgstr ""
 
-#: gnu/installer/newt/final.scm:86
+#: gnu/installer/newt/final.scm:87
 msgid "Installation failed"
 msgstr "நிறுவல் தோல்வியுற்றது"
 
-#: gnu/installer/newt/final.scm:87
+#: gnu/installer/newt/final.scm:88
 msgid "Resume"
 msgstr "தொடர்"
 
-#: gnu/installer/newt/final.scm:88
+#: gnu/installer/newt/final.scm:89
 msgid "Restart the installer"
 msgstr "நிறுவியை மீள்துவங்கு"
 
-#: gnu/installer/newt/final.scm:89
+#: gnu/installer/newt/final.scm:90
 msgid "The final system installation step failed.  You can resume from a specific step, or restart the installer."
 msgstr ""
 "இறுதிக்கட்ட நிறுவல் தோல்வியுற்றது.  குறிப்பிட்டக் கட்டத்திலிருந்து மீள்துவங்கலாம்\n"
@@ -466,7 +466,7 @@ msgstr "நிறுவல் வரைகூறு"
 
 #: gnu/installer/newt/parameters.scm:53 gnu/installer/newt/keymap.scm:74
 #: gnu/installer/newt/locale.scm:63 gnu/installer/newt/locale.scm:78
-#: gnu/installer/newt/locale.scm:94 gnu/installer/newt/partition.scm:581
+#: gnu/installer/newt/locale.scm:94 gnu/installer/newt/partition.scm:588
 #: gnu/installer/newt/timezone.scm:64
 msgid "Back"
 msgstr "பின்"
@@ -603,9 +603,9 @@ msgid "Show"
 msgstr "காட்டு"
 
 #: gnu/installer/newt/page.scm:219 gnu/installer/newt/page.scm:665
-#: gnu/installer/newt/page.scm:750 gnu/installer/newt/partition.scm:444
-#: gnu/installer/newt/partition.scm:623 gnu/installer/newt/partition.scm:644
-#: gnu/installer/newt/partition.scm:683 gnu/installer/newt/user.scm:66
+#: gnu/installer/newt/page.scm:750 gnu/installer/newt/partition.scm:451
+#: gnu/installer/newt/partition.scm:630 gnu/installer/newt/partition.scm:651
+#: gnu/installer/newt/partition.scm:690 gnu/installer/newt/user.scm:66
 #: gnu/installer/newt/user.scm:203
 msgid "OK"
 msgstr "சரி"
@@ -620,250 +620,253 @@ msgstr ""
 
 #: gnu/installer/newt/page.scm:753
 msgid "Edit"
-msgstr "திருத்து"
+msgstr "தொகு"
 
-#: gnu/installer/newt/partition.scm:46
+#: gnu/installer/newt/partition.scm:47
 msgid "Everything is one partition"
 msgstr "எல்லாம் ஒரே வகிர்வில்"
 
-#: gnu/installer/newt/partition.scm:47
+#: gnu/installer/newt/partition.scm:48
 msgid "Separate /home partition"
 msgstr "தனி /home வகிர்வு"
 
-#: gnu/installer/newt/partition.scm:49
+#: gnu/installer/newt/partition.scm:50
 msgid "Please select a partitioning scheme."
 msgstr "வகிர்வுத் திட்டத்தைத் தேர்ந்தெடுக்க."
 
-#: gnu/installer/newt/partition.scm:50
+#: gnu/installer/newt/partition.scm:51
 msgid "Partition scheme"
 msgstr "வகிர்வுத் திட்டம்"
 
-#: gnu/installer/newt/partition.scm:62
-msgid "We are about to format your hard disk.  All its data will be lost.  Do you wish to continue?"
+#. TRANSLATORS: The ~{ and ~} format specifiers are used to iterate the list
+#. of device names of the user partitions that will be formatted.
+#: gnu/installer/newt/partition.scm:65
+#, scheme-format
+msgid "We are about to write the configured partition table to the disk and format the partitions listed below.  Their data will be lost.  Do you wish to continue?~%~{ - ~a~%~}"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:64
+#: gnu/installer/newt/partition.scm:71
 msgid "Format disk?"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:67
+#: gnu/installer/newt/partition.scm:74
 msgid "Partition formatting is in progress, please wait."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:68
+#: gnu/installer/newt/partition.scm:75
 msgid "Preparing partitions"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:79
+#: gnu/installer/newt/partition.scm:86
 msgid "Please select a disk."
 msgstr "வட்டைத் தேர்ந்தெடுக்க."
 
-#: gnu/installer/newt/partition.scm:80
+#: gnu/installer/newt/partition.scm:87
 msgid "Disk"
 msgstr "வட்டு"
 
-#: gnu/installer/newt/partition.scm:92
+#: gnu/installer/newt/partition.scm:99
 msgid "Select a new partition table type. Be careful, all data on the disk will be lost."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:94
+#: gnu/installer/newt/partition.scm:101
 msgid "Partition table"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:111
+#: gnu/installer/newt/partition.scm:118
 msgid "Please select a partition type."
 msgstr "வகிர்வு வகையைத் தேர்ந்தெடுக்க."
 
-#: gnu/installer/newt/partition.scm:112
+#: gnu/installer/newt/partition.scm:119
 msgid "Partition type"
 msgstr "வகிர்வு வகை"
 
-#: gnu/installer/newt/partition.scm:122
+#: gnu/installer/newt/partition.scm:129
 msgid "Please select the file-system type for this partition."
 msgstr "இவ்வகிர்வுக்கு கோப்பமைப்பைத் தேர்ந்தெடுக்க."
 
-#: gnu/installer/newt/partition.scm:123
+#: gnu/installer/newt/partition.scm:130
 msgid "File-system type"
 msgstr "கோப்பமைப்பு"
 
-#: gnu/installer/newt/partition.scm:136
+#: gnu/installer/newt/partition.scm:143
 msgid "Primary partitions count exceeded."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:137 gnu/installer/newt/partition.scm:142
-#: gnu/installer/newt/partition.scm:147
+#: gnu/installer/newt/partition.scm:144 gnu/installer/newt/partition.scm:149
+#: gnu/installer/newt/partition.scm:154
 msgid "Creation error"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:141
+#: gnu/installer/newt/partition.scm:148
 msgid "Extended partition creation error."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:146
+#: gnu/installer/newt/partition.scm:153
 msgid "Logical partition creation error."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:160
+#: gnu/installer/newt/partition.scm:167
 #, scheme-format
 msgid "Please enter the password for the encryption of partition ~a (label: ~a)."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:162 gnu/installer/newt/wifi.scm:92
+#: gnu/installer/newt/partition.scm:169 gnu/installer/newt/wifi.scm:92
 msgid "Password required"
 msgstr "கடவுச்சொல் தேவை"
 
-#: gnu/installer/newt/partition.scm:167
+#: gnu/installer/newt/partition.scm:174
 #, scheme-format
 msgid "Please confirm the password for the encryption of partition ~a (label: ~a)."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:169 gnu/installer/newt/user.scm:160
+#: gnu/installer/newt/partition.scm:176 gnu/installer/newt/user.scm:160
 msgid "Password confirmation required"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:181 gnu/installer/newt/user.scm:168
+#: gnu/installer/newt/partition.scm:188 gnu/installer/newt/user.scm:168
 msgid "Password mismatch, please try again."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:182 gnu/installer/newt/user.scm:169
+#: gnu/installer/newt/partition.scm:189 gnu/installer/newt/user.scm:169
 msgid "Password error"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:268
+#: gnu/installer/newt/partition.scm:275
 msgid "Please enter the partition gpt name."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:269
+#: gnu/installer/newt/partition.scm:276
 msgid "Partition name"
 msgstr "வகிர்வு பெயர்"
 
-#: gnu/installer/newt/partition.scm:299
+#: gnu/installer/newt/partition.scm:306
 msgid "Please enter the encrypted label"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:300
+#: gnu/installer/newt/partition.scm:307
 msgid "Encryption label"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:317
+#: gnu/installer/newt/partition.scm:324
 #, scheme-format
 msgid "Please enter the size of the partition. The maximum size is ~a."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:319
+#: gnu/installer/newt/partition.scm:326
 msgid "Partition size"
 msgstr "வகிர்வளவு"
 
-#: gnu/installer/newt/partition.scm:337
+#: gnu/installer/newt/partition.scm:344
 msgid "The percentage can not be superior to 100."
 msgstr "விழுக்காடு 100 க்கு மேல் இருக்க முடியாது."
 
-#: gnu/installer/newt/partition.scm:338 gnu/installer/newt/partition.scm:343
-#: gnu/installer/newt/partition.scm:348
+#: gnu/installer/newt/partition.scm:345 gnu/installer/newt/partition.scm:350
+#: gnu/installer/newt/partition.scm:355
 msgid "Size error"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:342
+#: gnu/installer/newt/partition.scm:349
 msgid "The requested size is incorrectly formatted, or too large."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:347
+#: gnu/installer/newt/partition.scm:354
 msgid "The request size is superior to the maximum size."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:367
+#: gnu/installer/newt/partition.scm:374
 msgid "Please enter the desired mounting point for this partition. Leave this field empty if you don't want to set a mounting point."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:369
+#: gnu/installer/newt/partition.scm:376
 msgid "Mounting point"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:433
+#: gnu/installer/newt/partition.scm:440
 #, scheme-format
 msgid "Creating ~a partition starting at ~a of ~a."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:435
+#: gnu/installer/newt/partition.scm:442
 #, scheme-format
 msgid "You are currently editing partition ~a."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:438
+#: gnu/installer/newt/partition.scm:445
 msgid "Partition creation"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:439
+#: gnu/installer/newt/partition.scm:446
 msgid "Partition edit"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:620
+#: gnu/installer/newt/partition.scm:627
 #, scheme-format
 msgid "Are you sure you want to delete everything on disk ~a?"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:622
+#: gnu/installer/newt/partition.scm:629
 msgid "Delete disk"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:636
+#: gnu/installer/newt/partition.scm:643
 msgid "You cannot delete a free space area."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:637 gnu/installer/newt/partition.scm:643
+#: gnu/installer/newt/partition.scm:644 gnu/installer/newt/partition.scm:650
 msgid "Delete partition"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:641
+#: gnu/installer/newt/partition.scm:648
 #, scheme-format
 msgid "Are you sure you want to delete partition ~a?"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:658
+#: gnu/installer/newt/partition.scm:665
 msgid ""
 "You can change a disk's partition table by selecting it and pressing ENTER. You can also edit a partition by selecting it and pressing ENTER, or remove it by pressing DELETE. To create a new partition, select a free space area and press ENTER.\n"
 "\n"
 "At least one partition must have its mounting point set to '/'."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:664
+#: gnu/installer/newt/partition.scm:671
 #, scheme-format
 msgid "This is the proposed partitioning. It is still possible to edit it or to go back to install menu by pressing the Exit button.~%~%"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:674
+#: gnu/installer/newt/partition.scm:681
 msgid "Guided partitioning"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:675
+#: gnu/installer/newt/partition.scm:682
 msgid "Manual partitioning"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:700
+#: gnu/installer/newt/partition.scm:707
 msgid "No root mount point found."
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:701
+#: gnu/installer/newt/partition.scm:708
 msgid "Missing mount point"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:732
+#: gnu/installer/newt/partition.scm:739
 msgid "Guided - using the entire disk"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:733
+#: gnu/installer/newt/partition.scm:740
 msgid "Guided - using the entire disk with encryption"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:734
+#: gnu/installer/newt/partition.scm:741
 msgid "Manual"
 msgstr ""
 
-#: gnu/installer/newt/partition.scm:736
+#: gnu/installer/newt/partition.scm:743
 msgid "Please select a partitioning method."
 msgstr "வகிர்வமைத்தல் முறையைத் தேர்ந்தெடுக்க."
 
-#: gnu/installer/newt/partition.scm:737
+#: gnu/installer/newt/partition.scm:744
 msgid "Partitioning method"
 msgstr "வகிர்வமைத்தல் முறை"
 
@@ -1019,11 +1022,60 @@ msgstr ""
 msgid "Wifi"
 msgstr ""
 
-#: gnu/installer/parted.scm:403 gnu/installer/parted.scm:440
+#: gnu/installer/parted.scm:404 gnu/installer/parted.scm:441
 msgid "Free space"
 msgstr "வெற்றிடம்"
 
-#: gnu/installer/parted.scm:1370
+#: gnu/installer/parted.scm:530
+#, scheme-format
+msgid "Name: ~a"
+msgstr "பெயர்: ~a"
+
+#: gnu/installer/parted.scm:531 gnu/installer/parted.scm:577
+msgid "None"
+msgstr ""
+
+#: gnu/installer/parted.scm:536
+#, scheme-format
+msgid "Type: ~a"
+msgstr ""
+
+#: gnu/installer/parted.scm:540
+#, scheme-format
+msgid "File system type: ~a"
+msgstr "கோப்பமைப்பு வகை: ~a"
+
+#: gnu/installer/parted.scm:546
+#, scheme-format
+msgid "Bootable flag: ~:[off~;on~]"
+msgstr ""
+
+#: gnu/installer/parted.scm:550
+#, scheme-format
+msgid "ESP flag: ~:[off~;on~]"
+msgstr ""
+
+#: gnu/installer/parted.scm:556
+#, scheme-format
+msgid "Size: ~a"
+msgstr ""
+
+#: gnu/installer/parted.scm:562
+#, scheme-format
+msgid "Encryption: ~:[No~a~;Yes (label '~a')~]"
+msgstr ""
+
+#: gnu/installer/parted.scm:568
+#, scheme-format
+msgid "Format the partition? ~:[No~;Yes~]"
+msgstr ""
+
+#: gnu/installer/parted.scm:574
+#, scheme-format
+msgid "Mount point: ~a"
+msgstr ""
+
+#: gnu/installer/parted.scm:1374
 #, scheme-format
 msgid "Device ~a is still in use."
 msgstr ""
@@ -1106,14 +1158,14 @@ msgstr ""
 msgid "could not roll-back machine"
 msgstr ""
 
-#: gnu/machine/ssh.scm:511
+#: gnu/machine/ssh.scm:514
 msgid ""
 "Provisioning for machines that are accessible over SSH\n"
 "and have a known host-name. This entails little more than maintaining an SSH\n"
 "connection to the host."
 msgstr ""
 
-#: gnu/machine/ssh.scm:521
+#: gnu/machine/ssh.scm:524
 #, scheme-format
 msgid ""
 "unsupported machine configuration '~a'\n"
@@ -1129,8 +1181,28 @@ msgstr ""
 msgid "Raw build system with direct store access"
 msgstr ""
 
+#: gnu/packages/bootstrap.scm:466
+msgid "Bootstrap Guile"
+msgstr ""
+
 #: gnu/packages/bootstrap.scm:467
 msgid "Pre-built Guile for bootstrapping purposes."
+msgstr ""
+
+#: gnu/packages/bootstrap.scm:650
+msgid "Bootstrap binaries and headers of the GNU C Library"
+msgstr ""
+
+#: gnu/packages/bootstrap.scm:748
+msgid "Bootstrap binaries of the GNU Compiler Collection"
+msgstr ""
+
+#: gnu/packages/bootstrap.scm:796
+msgid "Bootstrap binaries of MesCC Tools"
+msgstr ""
+
+#: gnu/packages/bootstrap.scm:846
+msgid "Bootstrap binaries of Mes"
 msgstr ""
 
 #: guix/build/utils.scm:715
@@ -1166,7 +1238,7 @@ msgstr "ஏற்கத்தகாச் செயலுருபு: ~a~%"
 #: guix/scripts.scm:150 guix/scripts/download.scm:167
 #: guix/scripts/search.scm:71 guix/scripts/show.scm:71
 #: guix/scripts/import/cran.scm:84 guix/scripts/import/elpa.scm:84
-#: guix/scripts/publish.scm:1023 guix/scripts/edit.scm:89
+#: guix/scripts/publish.scm:1088 guix/scripts/edit.scm:89
 #: guix/scripts/describe.scm:311 guix/scripts/processes.scm:232
 #, scheme-format
 msgid "~A: unrecognized option~%"
@@ -1207,128 +1279,19 @@ msgstr ""
 "guix gc --delete-generations=1m\n"
 "@end example\n"
 
-#: guix/scripts/build.scm:93
+#: guix/scripts/build.scm:83
 #, scheme-format
 msgid "cannot access build log at '~a':~%"
 msgstr "'~a' பெயர்குறிப்பு அணுக இயலவில்லை:~%"
 
-#: guix/scripts/build.scm:147
+#: guix/scripts/build.scm:137
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
 msgstr "`~a' குப்பைத்திரட்டி வேரை உருவாக்க இயலவில்லை: ~a~%"
 
-#: guix/scripts/build.scm:252 guix/scripts/build.scm:317
-#, scheme-format
-msgid "invalid replacement specification: ~s~%"
-msgstr "ஏற்கத்தகா மாற்றக் குறிப்பு: ~s~%"
-
-#: guix/scripts/build.scm:299
-#, scheme-format
-msgid "the source of ~a is not a Git reference~%"
-msgstr ""
-
-#: guix/scripts/build.scm:387
-#, scheme-format
-msgid "~a: invalid Git URL replacement specification~%"
-msgstr "~a: ஏற்கத்தகா Git முகவரி மாற்றக் குறிப்பு~%"
-
-#: guix/scripts/build.scm:463
-#, scheme-format
-msgid "~a: invalid toolchain replacement specification~%"
-msgstr ""
-
-#: guix/scripts/build.scm:579
-msgid ""
-"\n"
-"      --with-source=[PACKAGE=]SOURCE\n"
-"                         use SOURCE when building the corresponding package"
-msgstr ""
-
-#: guix/scripts/build.scm:582
-msgid ""
-"\n"
-"      --with-input=PACKAGE=REPLACEMENT\n"
-"                         replace dependency PACKAGE by REPLACEMENT"
-msgstr ""
-"\n"
-"      --with-input=<நிரல்தொகுப்பு>=<மாற்று>\n"
-"                         உள்ளீட்டு <நிரல்தொகுப்புக்கு> மாற்றாக <மாற்றைப்> பயன்படுத்து"
-
-#: guix/scripts/build.scm:585
-msgid ""
-"\n"
-"      --with-graft=PACKAGE=REPLACEMENT\n"
-"                         graft REPLACEMENT on packages that refer to PACKAGE"
-msgstr ""
-"\n"
-"      --with-graft=<நிரல்தொகுப்பு>=<மாற்று>\n"
-"                         <நிரல்தொகுப்பைச்> சுட்டும் நிரல்தொகுப்புகள் மீது <மாற்றை> ஒட்டு"
-
-#: guix/scripts/build.scm:588
-msgid ""
-"\n"
-"      --with-branch=PACKAGE=BRANCH\n"
-"                         build PACKAGE from the latest commit of BRANCH"
-msgstr ""
-"\n"
-"      --with-branch=<நிரல்தொகுப்பு>=<கிளை>\n"
-"                         <நிரல்தொகுப்பைக்> <கிளையின்> கடைசி பதிவிலிருந்துப் பெயர்"
-
-#: guix/scripts/build.scm:591
-msgid ""
-"\n"
-"      --with-commit=PACKAGE=COMMIT\n"
-"                         build PACKAGE from COMMIT"
-msgstr ""
-"\n"
-"      --with-commit=<நிரல்தொகுப்பு>=<பதிவு>\n"
-"                         <நிரல்தொகுப்பை> Git <பதிவைக்> கொண்டுப் பெயர்"
-
-#: guix/scripts/build.scm:594
-msgid ""
-"\n"
-"      --with-git-url=PACKAGE=URL\n"
-"                         build PACKAGE from the repository at URL"
-msgstr ""
-"\n"
-"      --with-git-url=<நிரல்தொகுப்பு>=<முகவரி>\n"
-"                         <நிரல்தொகுப்பை> <முகவரியிலுள்ள> Git களஞ்சியத்தைக் கொண்டுப் பெயர்"
-
-#: guix/scripts/build.scm:597
-msgid ""
-"\n"
-"      --with-c-toolchain=PACKAGE=TOOLCHAIN\n"
-"                         build PACKAGE and its dependents with TOOLCHAIN"
-msgstr ""
-
-#: guix/scripts/build.scm:600
-msgid ""
-"\n"
-"      --with-debug-info=PACKAGE\n"
-"                         build PACKAGE and preserve its debug info"
-msgstr ""
-"\n"
-"      --with-debug-info=<நிரல்தொகுப்பு>\n"
-"                         <நிரல்தொகுப்பை> வழுநீக்கத் தகவலுடன் பெயர்"
-
-#: guix/scripts/build.scm:603
-msgid ""
-"\n"
-"      --without-tests=PACKAGE\n"
-"                         build PACKAGE without running its tests"
-msgstr ""
-"\n"
-"      --without-tests=<நிரல்தொகுப்பு>\n"
-"                         <நிரல்தொகுப்பைச்> சோதிக்காமல் பெயர்"
-
-#: guix/scripts/build.scm:647
-#, scheme-format
-msgid "transformation '~a' had no effect on ~a~%"
-msgstr "'~a' உருமாற்றம் ~a மீது எத்தாக்கமும் கொள்ளவில்லை~%"
-
-#: guix/scripts/build.scm:689 guix/scripts/search.scm:41
-#: guix/scripts/show.scm:41 guix/scripts/lint.scm:101 guix/scripts/edit.scm:48
-#: guix/scripts/size.scm:246 guix/scripts/graph.scm:545
+#: guix/scripts/build.scm:152 guix/scripts/search.scm:41
+#: guix/scripts/show.scm:41 guix/scripts/lint.scm:107 guix/scripts/edit.scm:48
+#: guix/scripts/size.scm:246 guix/scripts/graph.scm:546
 msgid ""
 "\n"
 "  -L, --load-path=DIR    prepend DIR to the package module search path"
@@ -1336,13 +1299,13 @@ msgstr ""
 "\n"
 "  -L, --load-path=<அடைவு>    <அடைவை> Guile நிரல்கூறு தேடுபாதைகளின் முன் சேர்"
 
-#: guix/scripts/build.scm:691
+#: guix/scripts/build.scm:154
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
 msgstr ""
 
-#: guix/scripts/build.scm:693
+#: guix/scripts/build.scm:156
 msgid ""
 "\n"
 "  -k, --keep-going       keep going when some of the derivations fail"
@@ -1351,7 +1314,7 @@ msgstr ""
 "\n"
 "  -k, --keep-going      சில வருவிகள் தோல்வியுற்றாலும் தொடர்க"
 
-#: guix/scripts/build.scm:695
+#: guix/scripts/build.scm:158
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
@@ -1360,26 +1323,26 @@ msgstr ""
 "\n"
 "  -n, --dry-run         வருவிகளைப் பெயர்க்காதே"
 
-#: guix/scripts/build.scm:697
+#: guix/scripts/build.scm:160
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
 msgstr ""
 
-#: guix/scripts/build.scm:699
+#: guix/scripts/build.scm:162
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
 
-#: guix/scripts/build.scm:701 guix/scripts/size.scm:235
+#: guix/scripts/build.scm:164 guix/scripts/size.scm:235
 msgid ""
 "\n"
 "      --substitute-urls=URLS\n"
 "                         fetch substitute from URLS if they are authorized"
 msgstr ""
 
-#: guix/scripts/build.scm:704
+#: guix/scripts/build.scm:167
 msgid ""
 "\n"
 "      --no-grafts        do not graft packages"
@@ -1387,7 +1350,7 @@ msgstr ""
 "\n"
 "      --no-grafts        நிரல்தொகுப்புகளை ஒட்டாதே"
 
-#: guix/scripts/build.scm:706
+#: guix/scripts/build.scm:169
 msgid ""
 "\n"
 "      --no-offload       do not attempt to offload builds"
@@ -1395,7 +1358,7 @@ msgstr ""
 "\n"
 "      --no-offload       பெயர்ப்புகளைப் பிற நிலையங்களிடம் ஒப்படைக்காதே"
 
-#: guix/scripts/build.scm:708
+#: guix/scripts/build.scm:171
 msgid ""
 "\n"
 "      --max-silent-time=SECONDS\n"
@@ -1405,7 +1368,7 @@ msgstr ""
 "      --max-silent-time=<நொடிகள்>\n"
 "                         <நொடிகளுக்கு> மேலான அமைதியைக் பெயர்ப்புத் தோல்வியெனக் கருது"
 
-#: guix/scripts/build.scm:711
+#: guix/scripts/build.scm:174
 msgid ""
 "\n"
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
@@ -1413,13 +1376,13 @@ msgstr ""
 "\n"
 "       --timeout=<நொடிகள்>  <நொடிகளுக்கு> மேலான செயற்பாட்டைக் பெயர்ப்புத் தோல்வியெனக் கருது"
 
-#: guix/scripts/build.scm:713
+#: guix/scripts/build.scm:176
 msgid ""
 "\n"
 "      --rounds=N         build N times in a row to detect non-determinism"
 msgstr ""
 
-#: guix/scripts/build.scm:715
+#: guix/scripts/build.scm:178
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
@@ -1427,7 +1390,7 @@ msgstr ""
 "\n"
 "  -c, --cores=N          பெயர்ப்புக்கு N கணிப்பிகள் வரை அனுமதி"
 
-#: guix/scripts/build.scm:717
+#: guix/scripts/build.scm:180
 msgid ""
 "\n"
 "  -M, --max-jobs=N       allow at most N build jobs"
@@ -1436,7 +1399,7 @@ msgstr ""
 "\n"
 "  -M, --max-jobs=N      N பெயர்ப்புகள் வரை அனுமதி"
 
-#: guix/scripts/build.scm:719
+#: guix/scripts/build.scm:182
 msgid ""
 "\n"
 "      --help-transform   list package transformation options not shown here"
@@ -1444,32 +1407,32 @@ msgstr ""
 "\n"
 "      --help-transform  குறிப்பிடப்படா நிரல்தொகுப்பு உருமாற்றச் செயல்மாற்றிகளைக் காட்டு"
 
-#: guix/scripts/build.scm:721
+#: guix/scripts/build.scm:184
 msgid ""
 "\n"
 "      --debug=LEVEL      produce debugging output at LEVEL"
 msgstr ""
 
-#: guix/scripts/build.scm:738
+#: guix/scripts/build.scm:201
 msgid "'--keep-failed' ignored since you are talking to a remote daemon\n"
 msgstr "தொலைச்செயலாக்கத்துடன் பேசிக் கொண்டிருப்பதால் '--keep-failed' புறக்கணிக்கப்பட்டது\n"
 
-#: guix/scripts/build.scm:819
+#: guix/scripts/build.scm:282
 #, scheme-format
 msgid "'--no-build-hook' is deprecated; use '--no-offload' instead~%"
 msgstr "'--no-build-hook' வழக்கொழிந்தது; '--no-offload' செயல்மாற்றியைப் பயன்படுத்துக~%"
 
-#: guix/scripts/build.scm:849 guix/scripts/build.scm:856
+#: guix/scripts/build.scm:312 guix/scripts/build.scm:319
 #, scheme-format
 msgid "not a number: '~a' option argument: ~a~%"
 msgstr "எண்ணல்ல: '~a' செயல்மாற்றி செயலுருபு: ~a~%"
 
-#: guix/scripts/build.scm:861
+#: guix/scripts/build.scm:324
 #, scheme-format
 msgid "Available package transformation options:~%"
 msgstr "நிரல்தொகுப்பு உருமாற்றச் செயல்மாற்றிகள்:"
 
-#: guix/scripts/build.scm:884
+#: guix/scripts/build.scm:347
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
@@ -1477,27 +1440,27 @@ msgstr ""
 "பயன்பாடு: guix build [<செயல்மாற்றி>]... <மென்பொருள் தொகுப்போ வருவியோ>...\n"
 "<மென்பொருள் தொகுப்பையோ வருவியையோக்> கட்டமைத்து அதன் வெளியீட்டுப் பாதையைக் கொடு.\n"
 
-#: guix/scripts/build.scm:886
+#: guix/scripts/build.scm:349
 msgid ""
 "\n"
 "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
 msgstr ""
 
-#: guix/scripts/build.scm:888
+#: guix/scripts/build.scm:351
 msgid ""
 "\n"
 "  -f, --file=FILE        build the package or derivation that the code within\n"
 "                         FILE evaluates to"
 msgstr ""
 
-#: guix/scripts/build.scm:891
+#: guix/scripts/build.scm:354
 msgid ""
 "\n"
 "  -m, --manifest=FILE    build the packages that the manifest given in FILE\n"
 "                         evaluates to"
 msgstr ""
 
-#: guix/scripts/build.scm:894
+#: guix/scripts/build.scm:357
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
@@ -1505,7 +1468,7 @@ msgstr ""
 "\n"
 "  -S, --source           நிரல்தொகுப்புகளின் மூல வருவிகளைப் பெயர்"
 
-#: guix/scripts/build.scm:896
+#: guix/scripts/build.scm:359
 msgid ""
 "\n"
 "      --sources[=TYPE]   build source derivations; TYPE may optionally be one\n"
@@ -1515,8 +1478,8 @@ msgstr ""
 "      --source[=<வகை>] மூல வருவிகளைப் பெயர்; <வகை> \"package\", \"all\"\n"
 "                        (இயல்பிருப்பு), \"transitive\" ஆகியவற்றில் ஒன்று"
 
-#: guix/scripts/build.scm:899 guix/scripts/pull.scm:120
-#: guix/scripts/pack.scm:1054
+#: guix/scripts/build.scm:362 guix/scripts/pull.scm:120
+#: guix/scripts/pack.scm:1073
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -1524,14 +1487,14 @@ msgstr ""
 "\n"
 "  -s, --system=<கணியக்கட்டமைப்பு>   <கணியக்கட்டமைப்புக்குப்> (\"i686-linux\" போன்று) பெயர்க்க முயல்"
 
-#: guix/scripts/build.scm:901 guix/scripts/system.scm:994
-#: guix/scripts/pack.scm:1056
+#: guix/scripts/build.scm:364 guix/scripts/system.scm:997
+#: guix/scripts/pack.scm:1075
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
 msgstr ""
 
-#: guix/scripts/build.scm:903
+#: guix/scripts/build.scm:366
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
@@ -1539,19 +1502,19 @@ msgstr ""
 "\n"
 "  -d, --derivations      நிரல்தொகுப்புகளின் வருவிகளைக் காட்டு"
 
-#: guix/scripts/build.scm:905
+#: guix/scripts/build.scm:368
 msgid ""
 "\n"
 "      --check            rebuild items to check for non-determinism issues"
 msgstr ""
 
-#: guix/scripts/build.scm:907
+#: guix/scripts/build.scm:370
 msgid ""
 "\n"
 "      --repair           repair the specified items"
 msgstr ""
 
-#: guix/scripts/build.scm:909 guix/scripts/pack.scm:1074
+#: guix/scripts/build.scm:372 guix/scripts/pack.scm:1093
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
@@ -1561,17 +1524,17 @@ msgstr ""
 "  -r, --root=<கோப்பு>     <கோப்பை> விளைவுக்கு மென்னிணைப்பாக ஆக்கி அதைக்\n"
 "                         குப்பைக்கூட்டி வேராகப் பதி"
 
-#: guix/scripts/build.scm:912 guix/scripts/package.scm:384
-#: guix/scripts/install.scm:36 guix/scripts/remove.scm:36
-#: guix/scripts/upgrade.scm:37 guix/scripts/pull.scm:118
-#: guix/scripts/system.scm:996 guix/scripts/copy.scm:115
-#: guix/scripts/pack.scm:1079 guix/scripts/deploy.scm:58
+#: guix/scripts/build.scm:375 guix/scripts/package.scm:385
+#: guix/scripts/install.scm:37 guix/scripts/remove.scm:36
+#: guix/scripts/upgrade.scm:38 guix/scripts/pull.scm:118
+#: guix/scripts/system.scm:999 guix/scripts/copy.scm:115
+#: guix/scripts/pack.scm:1098 guix/scripts/deploy.scm:58
 msgid ""
 "\n"
 "  -v, --verbosity=LEVEL  use the given verbosity LEVEL"
 msgstr ""
 
-#: guix/scripts/build.scm:914
+#: guix/scripts/build.scm:377
 msgid ""
 "\n"
 "  -q, --quiet            do not show the build log"
@@ -1580,24 +1543,24 @@ msgstr ""
 "\n"
 "  -q, --quiet            பெயர்குறிப்பைக் காட்டாதே"
 
-#: guix/scripts/build.scm:916
+#: guix/scripts/build.scm:379
 msgid ""
 "\n"
 "      --log-file         return the log file names for the given derivations"
 msgstr ""
 
-#: guix/scripts/build.scm:921 guix/scripts/download.scm:103
-#: guix/scripts/package.scm:400 guix/scripts/install.scm:41
-#: guix/scripts/remove.scm:41 guix/scripts/upgrade.scm:44
+#: guix/scripts/build.scm:384 guix/scripts/download.scm:103
+#: guix/scripts/package.scm:401 guix/scripts/install.scm:42
+#: guix/scripts/remove.scm:41 guix/scripts/upgrade.scm:45
 #: guix/scripts/search.scm:36 guix/scripts/show.scm:36 guix/scripts/gc.scm:88
 #: guix/scripts/git.scm:34 guix/scripts/git/authenticate.scm:110
 #: guix/scripts/hash.scm:65 guix/scripts/import.scm:95
 #: guix/scripts/import/cran.scm:47 guix/scripts/pull.scm:126
-#: guix/scripts/substitute.scm:857 guix/scripts/system.scm:999
-#: guix/scripts/lint.scm:104 guix/scripts/publish.scm:97
+#: guix/scripts/substitute.scm:857 guix/scripts/system.scm:1002
+#: guix/scripts/lint.scm:110 guix/scripts/publish.scm:101
 #: guix/scripts/edit.scm:51 guix/scripts/size.scm:249
-#: guix/scripts/graph.scm:548 guix/scripts/challenge.scm:423
-#: guix/scripts/copy.scm:120 guix/scripts/pack.scm:1084
+#: guix/scripts/graph.scm:549 guix/scripts/challenge.scm:423
+#: guix/scripts/copy.scm:120 guix/scripts/pack.scm:1103
 #: guix/scripts/weather.scm:293 guix/scripts/describe.scm:95
 #: guix/scripts/processes.scm:214 guix/scripts/deploy.scm:53
 #: guix/scripts/container.scm:35 guix/scripts/container/exec.scm:43
@@ -1609,18 +1572,18 @@ msgstr ""
 "\n"
 "  -h, --help             இவ்வுதவிச் செய்தியைக் காட்டி வெளியேறு"
 
-#: guix/scripts/build.scm:923 guix/scripts/download.scm:105
-#: guix/scripts/package.scm:402 guix/scripts/install.scm:43
-#: guix/scripts/remove.scm:43 guix/scripts/upgrade.scm:46
+#: guix/scripts/build.scm:386 guix/scripts/download.scm:105
+#: guix/scripts/package.scm:403 guix/scripts/install.scm:44
+#: guix/scripts/remove.scm:43 guix/scripts/upgrade.scm:47
 #: guix/scripts/search.scm:38 guix/scripts/show.scm:38 guix/scripts/gc.scm:90
 #: guix/scripts/git.scm:36 guix/scripts/git/authenticate.scm:112
 #: guix/scripts/hash.scm:67 guix/scripts/import.scm:97
 #: guix/scripts/import/cran.scm:51 guix/scripts/pull.scm:128
-#: guix/scripts/substitute.scm:859 guix/scripts/system.scm:1001
-#: guix/scripts/lint.scm:108 guix/scripts/publish.scm:99
+#: guix/scripts/substitute.scm:859 guix/scripts/system.scm:1004
+#: guix/scripts/lint.scm:114 guix/scripts/publish.scm:103
 #: guix/scripts/edit.scm:53 guix/scripts/size.scm:251
-#: guix/scripts/graph.scm:550 guix/scripts/challenge.scm:425
-#: guix/scripts/copy.scm:122 guix/scripts/pack.scm:1086
+#: guix/scripts/graph.scm:551 guix/scripts/challenge.scm:425
+#: guix/scripts/copy.scm:122 guix/scripts/pack.scm:1105
 #: guix/scripts/weather.scm:295 guix/scripts/describe.scm:97
 #: guix/scripts/processes.scm:216 guix/scripts/deploy.scm:55
 #: guix/scripts/container.scm:37 guix/scripts/container/exec.scm:45
@@ -1632,19 +1595,19 @@ msgstr ""
 "\n"
 "  -V, --version          பதிப்பு விவரத்தைக் காட்டி வெளியேறு"
 
-#: guix/scripts/build.scm:950
+#: guix/scripts/build.scm:413
 #, scheme-format
 msgid ""
 "invalid argument: '~a' option argument: ~a, ~\n"
 "must be one of 'package', 'all', or 'transitive'~%"
 msgstr ""
 
-#: guix/scripts/build.scm:1012
+#: guix/scripts/build.scm:475
 #, scheme-format
 msgid "~s: not something we can build~%"
 msgstr "~s: பெயர்க்க இயன்றதல்ல~%"
 
-#: guix/scripts/build.scm:1017
+#: guix/scripts/build.scm:480
 msgid ""
 "If you build from a file, make sure the last Scheme\n"
 "expression returns a package value.  @code{define-public} defines a variable,\n"
@@ -1661,22 +1624,26 @@ msgid ""
 "@end example"
 msgstr ""
 
-#: guix/scripts/build.scm:1030
+#: guix/scripts/build.scm:493
 msgid ""
 "If you build from a file, make sure the last\n"
 "Scheme expression returns a package, gexp, derivation or a list of such\n"
 "values."
 msgstr ""
 
-#: guix/scripts/build.scm:1117
+#: guix/scripts/build.scm:579
 #, scheme-format
 msgid "package '~a' has no source~%"
 msgstr "'~a' நிரல்தொகுப்பிற்கு மூலமில்லை~%"
 
-#: guix/scripts/build.scm:1165
+#: guix/scripts/build.scm:627
 #, scheme-format
 msgid "no build log for '~a'~%"
 msgstr "'~a' க்குக் பெயர்குறிப்பில்லை~%"
+
+#: guix/scripts/build.scm:636
+msgid "build packages or derivations without installing them"
+msgstr ""
 
 #: guix/discovery.scm:96
 #, scheme-format
@@ -2090,8 +2057,12 @@ msgstr ""
 msgid "~a: unknown hash algorithm~%"
 msgstr ""
 
-#: guix/scripts/download.scm:170 guix/scripts/package.scm:954
-#: guix/scripts/upgrade.scm:82 guix/scripts/publish.scm:1025
+#: guix/scripts/download.scm:161
+msgid "download a file to the store and print its hash"
+msgstr ""
+
+#: guix/scripts/download.scm:170 guix/scripts/package.scm:955
+#: guix/scripts/upgrade.scm:83 guix/scripts/publish.scm:1090
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr "~A: கூடுதல் செயலுருபு~%"
@@ -2111,27 +2082,27 @@ msgstr "~a: முகவரியைப் பகுத்தாய இயலவ
 msgid "~a: download failed~%"
 msgstr "~a: பதிவிறக்கம் தோல்வியுற்றது~%"
 
-#: guix/scripts/package.scm:124
+#: guix/scripts/package.scm:125
 #, scheme-format
 msgid "not removing generation ~a, which is current~%"
 msgstr "தற்போதைய வரிசையாதலால் வரிசை ~a யை அழிக்கவில்லை"
 
-#: guix/scripts/package.scm:131
+#: guix/scripts/package.scm:132
 #, scheme-format
 msgid "no matching generation~%"
 msgstr "பொருத்தமான வரிசை இல்லை~%"
 
-#: guix/scripts/package.scm:153
+#: guix/scripts/package.scm:154
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "செய்வதற்கொன்றுமில்லை~%"
 
-#: guix/scripts/package.scm:256
+#: guix/scripts/package.scm:257
 #, scheme-format
 msgid "package '~a' no longer exists~%"
 msgstr "'~a' நிரல்தொகுப்பு தற்போது இல்லை~%"
 
-#: guix/scripts/package.scm:311
+#: guix/scripts/package.scm:312
 #, scheme-format
 msgid ""
 "Consider setting the necessary environment\n"
@@ -2153,7 +2124,7 @@ msgstr ""
 "\n"
 "இல்லையெனின், @command{guix package --search-paths -p ~s} கட்டளையைப் பார்க்க."
 
-#: guix/scripts/package.scm:339
+#: guix/scripts/package.scm:340
 msgid ""
 "Usage: guix package [OPTION]...\n"
 "Install, remove, or upgrade packages in a single transaction.\n"
@@ -2161,7 +2132,7 @@ msgstr ""
 "பயன்பாடு: guix package [<செயல்மாற்றி>]...\n"
 "மென்பொருள் தொகுப்புகளை ஒரே மாற்றமாக நிறுவு, நீக்கு அல்லது திறமுயர்த்து.\n"
 
-#: guix/scripts/package.scm:341
+#: guix/scripts/package.scm:342
 msgid ""
 "\n"
 "  -i, --install PACKAGE ...\n"
@@ -2171,14 +2142,14 @@ msgstr ""
 "  -i, --install <நிரல்தொகுப்பு> ...\n"
 "                         <நிரல்தொகுப்புகளை> நிறுவு"
 
-#: guix/scripts/package.scm:344
+#: guix/scripts/package.scm:345
 msgid ""
 "\n"
 "  -e, --install-from-expression=EXP\n"
 "                         install the package EXP evaluates to"
 msgstr ""
 
-#: guix/scripts/package.scm:347
+#: guix/scripts/package.scm:348
 msgid ""
 "\n"
 "  -f, --install-from-file=FILE\n"
@@ -2186,7 +2157,7 @@ msgid ""
 "                         evaluates to"
 msgstr ""
 
-#: guix/scripts/package.scm:351
+#: guix/scripts/package.scm:352
 msgid ""
 "\n"
 "  -r, --remove PACKAGE ...\n"
@@ -2196,7 +2167,7 @@ msgstr ""
 "  -r, --remove <நிரல்தொகுப்பு> ...\n"
 "                         <நிரல்தொகுப்புகளை> நீக்கு"
 
-#: guix/scripts/package.scm:354
+#: guix/scripts/package.scm:355
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
@@ -2204,14 +2175,14 @@ msgstr ""
 "\n"
 "  -u, --upgrade[=<சுருங்குறித்தொடர்>] <சுருங்குறித்தொடருக்குப்> பொருந்தும் நிரல்தொகுப்புகளைத் திறமுயர்த்து"
 
-#: guix/scripts/package.scm:356
+#: guix/scripts/package.scm:357
 msgid ""
 "\n"
 "  -m, --manifest=FILE    create a new profile generation with the manifest\n"
 "                         from FILE"
 msgstr ""
 
-#: guix/scripts/package.scm:359 guix/scripts/upgrade.scm:39
+#: guix/scripts/package.scm:360 guix/scripts/upgrade.scm:40
 msgid ""
 "\n"
 "      --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"
@@ -2219,7 +2190,7 @@ msgstr ""
 "\n"
 "      --do-not-upgrade[=<சுருங்குறித்தொடர்>] <சுருங்குறித்தொடருக்குப்> பொருந்தும் நிரல்தொகுப்புகளைத் திறமுயர்த்தாதே"
 
-#: guix/scripts/package.scm:361 guix/scripts/pull.scm:108
+#: guix/scripts/package.scm:362 guix/scripts/pull.scm:108
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
@@ -2227,7 +2198,7 @@ msgstr ""
 "\n"
 "      --roll-back        முந்தைய வரிசைக்குச் செல்"
 
-#: guix/scripts/package.scm:363
+#: guix/scripts/package.scm:364
 msgid ""
 "\n"
 "      --search-paths[=KIND]\n"
@@ -2237,7 +2208,7 @@ msgstr ""
 "      --search-paths[=<வகை>]\n"
 "                         தேவையான சூழல் மாறிகளைக் காட்டு"
 
-#: guix/scripts/package.scm:366 guix/scripts/pull.scm:105
+#: guix/scripts/package.scm:367 guix/scripts/pull.scm:105
 msgid ""
 "\n"
 "  -l, --list-generations[=PATTERN]\n"
@@ -2247,7 +2218,7 @@ msgstr ""
 "  -l, --list-generations[=<குறிப்பீடு>]\n"
 "                         <குறிப்பீட்டுக்குப்> பொருந்தும் வரிசைகளைப் பட்டியலிடு"
 
-#: guix/scripts/package.scm:369 guix/scripts/pull.scm:110
+#: guix/scripts/package.scm:370 guix/scripts/pull.scm:110
 msgid ""
 "\n"
 "  -d, --delete-generations[=PATTERN]\n"
@@ -2257,7 +2228,7 @@ msgstr ""
 "  -d, --delete-generations[=<குறிப்பீடு>]\n"
 "                         <குறிப்பீட்டுக்குப்> பொருந்தும் வரிசைகளை நீக்கு"
 
-#: guix/scripts/package.scm:372 guix/scripts/pull.scm:113
+#: guix/scripts/package.scm:373 guix/scripts/pull.scm:113
 msgid ""
 "\n"
 "  -S, --switch-generation=PATTERN\n"
@@ -2267,8 +2238,8 @@ msgstr ""
 "  -S, --switch-generation=<குறிப்பீடு>\n"
 "                         <குறிப்பீட்டுக்குப்> பொருந்தும் வரிசைக்கு மாறு"
 
-#: guix/scripts/package.scm:375 guix/scripts/install.scm:33
-#: guix/scripts/remove.scm:33 guix/scripts/upgrade.scm:35
+#: guix/scripts/package.scm:376 guix/scripts/install.scm:34
+#: guix/scripts/remove.scm:33 guix/scripts/upgrade.scm:36
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
@@ -2276,7 +2247,7 @@ msgstr ""
 "\n"
 "  -p, --profile=<தனியமைப்பு>  பயனரின் இயல்பிருப்பு தனியமைப்புக்கு மாற்றாக <தனியமைப்பைப்> பயன்படுத்து"
 
-#: guix/scripts/package.scm:377
+#: guix/scripts/package.scm:378
 msgid ""
 "\n"
 "      --list-profiles    list the user's profiles"
@@ -2284,19 +2255,19 @@ msgstr ""
 "\n"
 "      --list-profiles    பயனரின் தனியமைப்புகளைப் பட்டியலிடு"
 
-#: guix/scripts/package.scm:380
+#: guix/scripts/package.scm:381
 msgid ""
 "\n"
 "      --allow-collisions do not treat collisions in the profile as an error"
 msgstr ""
 
-#: guix/scripts/package.scm:382
+#: guix/scripts/package.scm:383
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
 msgstr ""
 
-#: guix/scripts/package.scm:387
+#: guix/scripts/package.scm:388
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
@@ -2304,7 +2275,7 @@ msgstr ""
 "\n"
 "  -s, --search=<சுருங்குறித்தொடர்>    பொழிப்புரையையும் விளக்கவுரையையும் <சுருங்குறித்தொடர்> கொண்டுத் தேடு"
 
-#: guix/scripts/package.scm:389
+#: guix/scripts/package.scm:390
 msgid ""
 "\n"
 "  -I, --list-installed[=REGEXP]\n"
@@ -2314,7 +2285,7 @@ msgstr ""
 "  -I, --list-installed[=<சுருங்குறித்தொடர்>]\n"
 "                         நிறுவியிருக்கும் நிரல்தொகுப்புகளுள் <சுருங்குறித்தொடருக்குப்> பொருந்துபவற்றைப் பட்டியலிடு"
 
-#: guix/scripts/package.scm:392
+#: guix/scripts/package.scm:393
 msgid ""
 "\n"
 "  -A, --list-available[=REGEXP]\n"
@@ -2324,7 +2295,7 @@ msgstr ""
 "  -A, --list-available[=<சுருங்குறித்தொடர்>]\n"
 "                         எல்லாத் நிரல்தொகுப்புகளுள் <சுருங்குறித்தொடருக்குப்> பொருந்துபவற்றைப் பட்டியலிடு"
 
-#: guix/scripts/package.scm:395
+#: guix/scripts/package.scm:396
 msgid ""
 "\n"
 "      --show=PACKAGE     show details about PACKAGE"
@@ -2333,37 +2304,41 @@ msgstr ""
 "\n"
 "      --show=<நிரல்தொகுப்பு>    <நிரல்தொகுப்பு> பற்றின விவரங்களைக் காட்டு"
 
-#: guix/scripts/package.scm:448
+#: guix/scripts/package.scm:449
 #, scheme-format
 msgid "upgrade regexp '~a' looks like a command-line option~%"
 msgstr "திறமுயர்த்த சுருங்குறித்தொடர் '~a' கட்டளை செயல்மாற்றி போலுள்ளது~%"
 
-#: guix/scripts/package.scm:451
+#: guix/scripts/package.scm:452
 #, scheme-format
 msgid "is this intended?~%"
 msgstr "இதைத் தான் கருதினீரா?"
 
-#: guix/scripts/package.scm:501
+#: guix/scripts/package.scm:502
 #, scheme-format
 msgid "~a: unsupported kind of search path~%"
 msgstr ""
 
-#: guix/scripts/package.scm:627
+#: guix/scripts/package.scm:628
 #, scheme-format
 msgid "cannot install non-package object: ~s~%"
 msgstr "நிரல்தொகுப்பு அல்லாததை நிறுவ இயலாது: ~s~%"
 
-#: guix/scripts/package.scm:808
+#: guix/scripts/package.scm:809
 #, scheme-format
 msgid "~a~@[@~a~]: package not found~%"
 msgstr "~a~@[@~a~]: நிரல்தொகுப்பு கிடைக்கவில்லை~%"
 
-#: guix/scripts/package.scm:843 guix/scripts/pull.scm:687
+#: guix/scripts/package.scm:844 guix/scripts/pull.scm:687
 #, scheme-format
 msgid "cannot switch to generation '~a'~%"
 msgstr "வரிசை '~a' க்கு மாற இயலவில்லை~%"
 
-#: guix/scripts/install.scm:30
+#: guix/scripts/package.scm:949
+msgid "manage packages and profiles"
+msgstr "நிரல்தொகுப்புகளையும் தனியமைப்புகளையும் ஒழுங்கமை"
+
+#: guix/scripts/install.scm:31
 msgid ""
 "Usage: guix install [OPTION] PACKAGES...\n"
 "Install the given PACKAGES.\n"
@@ -2372,6 +2347,10 @@ msgstr ""
 "பயன்பாடு: guix install [<செயல்மாற்றிகள்>] <நிரல்தொகுப்புகள்>...\n"
 "<நிரல்தொகுப்புகளை> நிறுவு.\n"
 "இது 'guix package -i' கட்டளையை இயக்கும் இன்னொரு முறை.\n"
+
+#: guix/scripts/install.scm:69
+msgid "install packages"
+msgstr "நிரல்தொகுப்புகளை நிறுவு"
 
 #: guix/scripts/remove.scm:30
 msgid ""
@@ -2383,7 +2362,11 @@ msgstr ""
 "<நிரல்தொகுப்புகளை> நீக்கு.\n"
 "இது 'guix package -r' கட்டளையை இயக்கும் இன்னொரு முறை.\n"
 
-#: guix/scripts/upgrade.scm:32
+#: guix/scripts/remove.scm:67
+msgid "remove installed packages"
+msgstr ""
+
+#: guix/scripts/upgrade.scm:33
 msgid ""
 "Usage: guix upgrade [OPTION] [REGEXP]\n"
 "Upgrade packages that match REGEXP.\n"
@@ -2392,6 +2375,10 @@ msgstr ""
 "பயன்பாடு: guix upgrade [<செயல்மாற்றிகள்>] [<சுருங்குறித்தொடர்>]\n"
 "<சுருங்குறித்தொடருக்குப்> பொருந்தும் நிரல்தொகுப்புகளைத் திறமுயர்த்து.\n"
 "இது 'guix package -u' கட்டளையை இயக்கும் இன்னொரு முறை.\n"
+
+#: guix/scripts/upgrade.scm:72
+msgid "upgrade packages to their latest version"
+msgstr ""
 
 #: guix/scripts/search.scm:31
 msgid ""
@@ -2408,6 +2395,10 @@ msgid ""
 msgstr ""
 "\n"
 "இது 'guix package -s' கட்டளையை இயக்கும் இன்னொரு முறை.\n"
+
+#: guix/scripts/search.scm:61
+msgid "search for packages"
+msgstr "நிரல்தொகுப்புகளுக்குத் தேடு"
 
 #: guix/scripts/search.scm:76
 #, scheme-format
@@ -2429,6 +2420,10 @@ msgid ""
 msgstr ""
 "\n"
 "இது 'guix package --show=' கட்டளையை இயக்கும் இன்னொரு முறை.\n"
+
+#: guix/scripts/show.scm:61
+msgid "show information about packages"
+msgstr ""
 
 #: guix/scripts/show.scm:76
 #, scheme-format
@@ -2582,6 +2577,10 @@ msgstr ""
 msgid "~s does not denote a duration~%"
 msgstr "~s காலயளவைக் குறிப்பதில்லை~%"
 
+#: guix/scripts/gc.scm:224
+msgid "invoke the garbage collector"
+msgstr ""
+
 #: guix/scripts/gc.scm:251
 msgid "already ~h MiBs available on ~a, nothing to do~%"
 msgstr "~a பாதையில் ஏற்கனவே ~a MiB வெற்றிடம் உள்ளது, செய்ய ஒன்றுமில்லை~%"
@@ -2607,13 +2606,17 @@ msgstr ""
 "பயன்பாடு: guix git <கட்டளை> <செயலுருபுகள்>...\n"
 "Git களஞ்சியங்கள் மீது கட்டளைகளை இயக்கு.\n"
 
-#: guix/scripts/git.scm:29 guix/scripts/system.scm:918
+#: guix/scripts/git.scm:29 guix/scripts/system.scm:921
 #: guix/scripts/container.scm:30
 msgid "The valid values for ACTION are:\n"
 msgstr "ஏற்கத்தகுச் <செயல்கள்>:\n"
 
 #: guix/scripts/git.scm:31
 msgid "   authenticate    verify commit signatures and authorizations\n"
+msgstr ""
+
+#: guix/scripts/git.scm:51
+msgid "operate on Git repositories"
 msgstr ""
 
 #: guix/scripts/git.scm:57
@@ -2702,15 +2705,19 @@ msgid ""
 "  -r, --recursive        compute the hash on FILE recursively"
 msgstr ""
 
+#: guix/scripts/hash.scm:121
+msgid "compute the cryptographic hash of a file"
+msgstr ""
+
 #: guix/scripts/hash.scm:171 guix/ui.scm:397 guix/ui.scm:428 guix/ui.scm:785
 #: guix/ui.scm:833 guix/ui.scm:889
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
 
-#: guix/scripts/hash.scm:174 guix/scripts/system.scm:1244
-#: guix/scripts/system.scm:1260 guix/scripts/system.scm:1267
-#: guix/scripts/system.scm:1273
+#: guix/scripts/hash.scm:174 guix/scripts/system.scm:1247
+#: guix/scripts/system.scm:1263 guix/scripts/system.scm:1270
+#: guix/scripts/system.scm:1276
 #, scheme-format
 msgid "wrong number of arguments~%"
 msgstr ""
@@ -2726,6 +2733,10 @@ msgstr ""
 #: guix/scripts/import.scm:92
 msgid "IMPORTER must be one of the importers listed below:\n"
 msgstr "<இறக்கி> பின்வரும் இறக்கிகளுளொன்றாக இருக்க வேண்டும்:\n"
+
+#: guix/scripts/import.scm:104
+msgid "import a package definition from an external repository"
+msgstr ""
 
 #: guix/scripts/import.scm:109
 #, scheme-format
@@ -2995,6 +3006,10 @@ msgstr ""
 "'GUIX_PULL_URL' சூழல்மாறி வழக்கொழிந்தது.\n"
 "'~/.config/guix/channels.scm' கோப்பைப் பயன்படுத்துக."
 
+#: guix/scripts/pull.scm:755
+msgid "pull the latest revision of Guix"
+msgstr ""
+
 #: guix/scripts/pull.scm:795
 #, scheme-format
 msgid "Building from this channel:~%"
@@ -3122,6 +3137,10 @@ msgstr ""
 msgid "~a: invalid URI~%"
 msgstr "~a: ஏற்கத்தகா முகவரி~%"
 
+#: guix/scripts/substitute.scm:1101
+msgid "implement the build daemon's substituter protocol"
+msgstr ""
+
 #: guix/scripts/substitute.scm:1171
 #, scheme-format
 msgid "~a: unrecognized options~%"
@@ -3145,6 +3164,10 @@ msgstr ""
 #: guix/scripts/authenticate.scm:92
 #, scheme-format
 msgid "corrupt signature data: ~a"
+msgstr ""
+
+#: guix/scripts/authenticate.scm:151
+msgid "sign or verify signatures on normalized archives (nars)"
 msgstr ""
 
 #: guix/scripts/authenticate.scm:184
@@ -3184,8 +3207,8 @@ msgstr ""
 msgid "not running as 'root', so the ownership of '~a' may be incorrect!~%"
 msgstr ""
 
-#: guix/scripts/system.scm:247 guix/scripts/system.scm:740
-#: guix/scripts/system.scm:848
+#: guix/scripts/system.scm:247 guix/scripts/system.scm:743
+#: guix/scripts/system.scm:851
 #, scheme-format
 msgid "bootloader successfully installed on '~a'~%"
 msgstr ""
@@ -3236,46 +3259,46 @@ msgstr ""
 msgid "cannot switch to system generation '~a'~%"
 msgstr ""
 
-#: guix/scripts/system.scm:435
+#: guix/scripts/system.scm:438
 msgid "the DAG of services"
 msgstr ""
 
-#: guix/scripts/system.scm:448
+#: guix/scripts/system.scm:451
 msgid "the dependency graph of shepherd services"
-msgstr ""
-
-#: guix/scripts/system.scm:463
-#, scheme-format
-msgid "      repository URL: ~a~%"
-msgstr ""
-
-#: guix/scripts/system.scm:465
-#, scheme-format
-msgid "      branch: ~a~%"
 msgstr ""
 
 #: guix/scripts/system.scm:466
 #, scheme-format
+msgid "      repository URL: ~a~%"
+msgstr ""
+
+#: guix/scripts/system.scm:468
+#, scheme-format
+msgid "      branch: ~a~%"
+msgstr ""
+
+#: guix/scripts/system.scm:469
+#, scheme-format
 msgid "      commit: ~a~%"
 msgstr ""
 
-#: guix/scripts/system.scm:486
+#: guix/scripts/system.scm:489
 #, scheme-format
 msgid "  file name: ~a~%"
 msgstr "  கோப்புப் பெயர்: ~a~%"
 
-#: guix/scripts/system.scm:487
+#: guix/scripts/system.scm:490
 #, scheme-format
 msgid "  canonical file name: ~a~%"
 msgstr "  ஒழுங்குமுறைப்பட்ட கோப்புப் பெயர்: ~a~%"
 
 #. TRANSLATORS: Please preserve the two-space indentation.
-#: guix/scripts/system.scm:489
+#: guix/scripts/system.scm:492
 #, scheme-format
 msgid "  label: ~a~%"
 msgstr "  சிட்டை: ~a~%"
 
-#: guix/scripts/system.scm:490
+#: guix/scripts/system.scm:493
 #, scheme-format
 msgid "  bootloader: ~a~%"
 msgstr "  தொடக்க ஏற்றி: ~a~%"
@@ -3288,39 +3311,39 @@ msgstr "  தொடக்க ஏற்றி: ~a~%"
 #. root device: label: "my-root"
 #. or just:
 #. root device: /dev/sda3
-#: guix/scripts/system.scm:500
+#: guix/scripts/system.scm:503
 #, scheme-format
 msgid "  root device: ~[UUID: ~a~;label: ~s~;~a~]~%"
 msgstr ""
 
-#: guix/scripts/system.scm:506
+#: guix/scripts/system.scm:509
 #, scheme-format
 msgid "  kernel: ~a~%"
 msgstr ""
 
-#: guix/scripts/system.scm:511
+#: guix/scripts/system.scm:514
 #, scheme-format
 msgid "  multiboot: ~a~%"
 msgstr ""
 
 #. TRANSLATORS: Here "channel" is the same terminology as used in
 #. "guix describe" and "guix pull --channels".
-#: guix/scripts/system.scm:517
+#: guix/scripts/system.scm:520
 #, scheme-format
 msgid "  channels:~%"
 msgstr "  அலைத்தடங்கள்:~%"
 
-#: guix/scripts/system.scm:520
+#: guix/scripts/system.scm:523
 #, scheme-format
 msgid "  configuration file: ~a~%"
 msgstr "  அமைவடிவக்கோப்பு: ~a~%"
 
-#: guix/scripts/system.scm:593
+#: guix/scripts/system.scm:596
 #, scheme-format
 msgid "device '~a' not found: ~a~%"
 msgstr "'~a' கருவி இல்லை: ~a~%"
 
-#: guix/scripts/system.scm:596
+#: guix/scripts/system.scm:599
 #, scheme-format
 msgid ""
 "If '~a' is a file system\n"
@@ -3329,51 +3352,51 @@ msgstr ""
 "'~a' கோப்பமைப்பு சிட்டையெனின் @code{device} புலத்தில்\n"
 "@code{(file-system-label ~s)} என்க."
 
-#: guix/scripts/system.scm:605
+#: guix/scripts/system.scm:608
 #, scheme-format
 msgid "file system with label '~a' not found~%"
 msgstr "'~a' சிட்டையுடை கோப்பமைப்பு இல்லை~%"
 
-#: guix/scripts/system.scm:611
+#: guix/scripts/system.scm:614
 #, scheme-format
 msgid "file system with UUID '~a' not found~%"
 msgstr "'~a' UUID உடைய கோப்பமைப்பு இல்லை~%"
 
-#: guix/scripts/system.scm:718
+#: guix/scripts/system.scm:721
 #, scheme-format
 msgid "Consider running 'guix pull' before 'reconfigure'.~%"
 msgstr "'reconfigure' செய்யும் முன் 'guix pull' கட்டளையை இயக்கக் கருதுக.~%"
 
-#: guix/scripts/system.scm:719
+#: guix/scripts/system.scm:722
 #, scheme-format
 msgid "Failing to do that may downgrade your system!~%"
 msgstr "அதைச் செய்யாவிடின் நிலையம் திறங்குறைக்கப்படலாம்!~%"
 
-#: guix/scripts/system.scm:841
+#: guix/scripts/system.scm:844
 #, scheme-format
 msgid "activating system...~%"
 msgstr ""
 
-#: guix/scripts/system.scm:852
+#: guix/scripts/system.scm:855
 msgid ""
 "To complete the upgrade, run 'herd restart SERVICE' to stop,\n"
 "upgrade, and restart each service that was not automatically restarted.\n"
 msgstr ""
 
-#: guix/scripts/system.scm:855
+#: guix/scripts/system.scm:858
 msgid "Run 'herd status' to view the list of services on your system.\n"
 msgstr ""
 
-#: guix/scripts/system.scm:859
+#: guix/scripts/system.scm:862
 #, scheme-format
 msgid "initializing operating system under '~a'...~%"
 msgstr ""
 
-#: guix/scripts/system.scm:904
+#: guix/scripts/system.scm:907
 msgid "The available image types are:\n"
 msgstr ""
 
-#: guix/scripts/system.scm:914
+#: guix/scripts/system.scm:917
 msgid ""
 "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]\n"
 "Build the operating system declared in FILE according to ACTION.\n"
@@ -3383,91 +3406,91 @@ msgstr ""
 "<கோப்பில்> குறிப்பிட்ட இயங்குதளத்தைச் <செயலின்படி> அமை.\n"
 "சிலச் <செயல்கள்> கூடுதல் செயலுருபுகளை ஏற்கும்.\n"
 
-#: guix/scripts/system.scm:920
+#: guix/scripts/system.scm:923
 msgid "   search           search for existing service types\n"
 msgstr ""
 
-#: guix/scripts/system.scm:922
+#: guix/scripts/system.scm:925
 msgid "   reconfigure      switch to a new operating system configuration\n"
 msgstr "   reconfigure       இன்னொரு இயங்குதள அமைப்புக்கு மாறு\n"
 
-#: guix/scripts/system.scm:924
+#: guix/scripts/system.scm:927
 msgid "   roll-back        switch to the previous operating system configuration\n"
 msgstr ""
 
-#: guix/scripts/system.scm:926
+#: guix/scripts/system.scm:929
 msgid "   describe         describe the current system\n"
 msgstr ""
 
-#: guix/scripts/system.scm:928
+#: guix/scripts/system.scm:931
 msgid "   list-generations list the system generations\n"
 msgstr ""
 
-#: guix/scripts/system.scm:930
+#: guix/scripts/system.scm:933
 msgid "   switch-generation switch to an existing operating system configuration\n"
 msgstr ""
 
-#: guix/scripts/system.scm:932
+#: guix/scripts/system.scm:935
 msgid "   delete-generations delete old system generations\n"
 msgstr ""
 
-#: guix/scripts/system.scm:934
+#: guix/scripts/system.scm:937
 msgid "   build            build the operating system without installing anything\n"
 msgstr ""
 
-#: guix/scripts/system.scm:936
+#: guix/scripts/system.scm:939
 msgid "   container        build a container that shares the host's store\n"
 msgstr ""
 
-#: guix/scripts/system.scm:938
+#: guix/scripts/system.scm:941
 msgid "   vm               build a virtual machine image that shares the host's store\n"
 msgstr ""
 
-#: guix/scripts/system.scm:940
+#: guix/scripts/system.scm:943
 msgid "   vm-image         build a freestanding virtual machine image\n"
 msgstr ""
 
-#: guix/scripts/system.scm:942
+#: guix/scripts/system.scm:945
 msgid "   disk-image       build a disk image, suitable for a USB stick\n"
 msgstr ""
 
-#: guix/scripts/system.scm:944
+#: guix/scripts/system.scm:947
 msgid "   docker-image     build a Docker image\n"
 msgstr ""
 
-#: guix/scripts/system.scm:946
+#: guix/scripts/system.scm:949
 msgid "   init             initialize a root file system to run GNU\n"
 msgstr ""
 
-#: guix/scripts/system.scm:948
+#: guix/scripts/system.scm:951
 msgid "   extension-graph  emit the service extension graph in Dot format\n"
 msgstr ""
 
-#: guix/scripts/system.scm:950
+#: guix/scripts/system.scm:953
 msgid "   shepherd-graph   emit the graph of shepherd services in Dot format\n"
 msgstr ""
 
-#: guix/scripts/system.scm:954
+#: guix/scripts/system.scm:957
 msgid ""
 "\n"
 "  -d, --derivation       return the derivation of the given system"
 msgstr ""
 
-#: guix/scripts/system.scm:956
+#: guix/scripts/system.scm:959
 msgid ""
 "\n"
 "  -e, --expression=EXPR  consider the operating-system EXPR evaluates to\n"
 "                         instead of reading FILE, when applicable"
 msgstr ""
 
-#: guix/scripts/system.scm:959
+#: guix/scripts/system.scm:962
 msgid ""
 "\n"
 "      --allow-downgrades for 'reconfigure', allow downgrades to earlier\n"
 "                         channel revisions"
 msgstr ""
 
-#: guix/scripts/system.scm:962
+#: guix/scripts/system.scm:965
 msgid ""
 "\n"
 "      --on-error=STRATEGY\n"
@@ -3475,63 +3498,63 @@ msgid ""
 "                         or debug) when an error occurs while reading FILE"
 msgstr ""
 
-#: guix/scripts/system.scm:966
+#: guix/scripts/system.scm:969
 msgid ""
 "\n"
 "      --list-image-types list available image types"
 msgstr ""
 
-#: guix/scripts/system.scm:968
+#: guix/scripts/system.scm:971
 msgid ""
 "\n"
 "  -t, --image-type=TYPE  for 'disk-image', produce an image of TYPE"
 msgstr ""
 
-#: guix/scripts/system.scm:970
+#: guix/scripts/system.scm:973
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
 msgstr ""
 
-#: guix/scripts/system.scm:972
+#: guix/scripts/system.scm:975
 msgid ""
 "\n"
 "      --no-bootloader    for 'init', do not install a bootloader"
 msgstr ""
 
-#: guix/scripts/system.scm:974
+#: guix/scripts/system.scm:977
 msgid ""
 "\n"
 "      --label=LABEL      for 'disk-image', label disk image with LABEL"
 msgstr ""
 
-#: guix/scripts/system.scm:976 guix/scripts/pack.scm:1067
+#: guix/scripts/system.scm:979 guix/scripts/pack.scm:1086
 msgid ""
 "\n"
 "      --save-provenance  save provenance information"
 msgstr ""
 
-#: guix/scripts/system.scm:978
+#: guix/scripts/system.scm:981
 msgid ""
 "\n"
 "      --share=SPEC       for 'vm' and 'container', share host file system with\n"
 "                         read/write access according to SPEC"
 msgstr ""
 
-#: guix/scripts/system.scm:981
+#: guix/scripts/system.scm:984
 msgid ""
 "\n"
 "      --expose=SPEC      for 'vm' and 'container', expose host file system\n"
 "                         directory as read-only according to SPEC"
 msgstr ""
 
-#: guix/scripts/system.scm:984
+#: guix/scripts/system.scm:987
 msgid ""
 "\n"
 "  -N, --network          for 'container', allow containers to access the network"
 msgstr ""
 
-#: guix/scripts/system.scm:986
+#: guix/scripts/system.scm:989
 msgid ""
 "\n"
 "  -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',\n"
@@ -3539,54 +3562,58 @@ msgid ""
 "                         register it as a garbage collector root"
 msgstr ""
 
-#: guix/scripts/system.scm:990
+#: guix/scripts/system.scm:993
 msgid ""
 "\n"
 "      --full-boot        for 'vm', make a full boot sequence"
 msgstr ""
 
-#: guix/scripts/system.scm:992
+#: guix/scripts/system.scm:995
 msgid ""
 "\n"
 "      --skip-checks      skip file system and initrd module safety checks"
 msgstr ""
 
-#: guix/scripts/system.scm:1129
+#: guix/scripts/system.scm:1132
 #, scheme-format
 msgid "'~a' does not return an operating system~%"
 msgstr ""
 
-#: guix/scripts/system.scm:1152
+#: guix/scripts/system.scm:1155
 #, scheme-format
 msgid "both file and expression cannot be specified~%"
 msgstr ""
 
-#: guix/scripts/system.scm:1159
+#: guix/scripts/system.scm:1162
 #, scheme-format
 msgid "no configuration specified~%"
 msgstr "அமைவடிவம் குறிப்பிடப்படவில்லை~%"
 
-#: guix/scripts/system.scm:1249
+#: guix/scripts/system.scm:1252
 #, scheme-format
 msgid "no system generation, nothing to describe~%"
 msgstr ""
 
-#: guix/scripts/system.scm:1295
+#: guix/scripts/system.scm:1284
+msgid "build and deploy full operating systems"
+msgstr ""
+
+#: guix/scripts/system.scm:1298
 #, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~a: ஏற்கத்தகாச் செயல்~%"
 
-#: guix/scripts/system.scm:1311
+#: guix/scripts/system.scm:1314
 #, scheme-format
 msgid "wrong number of arguments for action '~a'~%"
 msgstr ""
 
-#: guix/scripts/system.scm:1316
+#: guix/scripts/system.scm:1319
 #, scheme-format
 msgid "guix system: missing command name~%"
 msgstr ""
 
-#: guix/scripts/system.scm:1318
+#: guix/scripts/system.scm:1321
 #, scheme-format
 msgid "Try 'guix system --help' for more information.~%"
 msgstr "மேலும் விவரங்களுக்கு 'guix system --help' கட்டளையை இயக்குக.~%"
@@ -3619,18 +3646,35 @@ msgid ""
 "                         only run the specified checkers"
 msgstr ""
 
-#: guix/scripts/lint.scm:106
+#: guix/scripts/lint.scm:101
+msgid ""
+"\n"
+"  -x, --exclude=CHECKER1,CHECKER2...\n"
+"                         exclude the specified checkers"
+msgstr ""
+
+#: guix/scripts/lint.scm:104
+msgid ""
+"\n"
+"  -n, --no-network       only run checkers that do not access the network"
+msgstr ""
+
+#: guix/scripts/lint.scm:112
 msgid ""
 "\n"
 "  -l, --list-checkers    display the list of available lint checkers"
 msgstr ""
 
-#: guix/scripts/lint.scm:125
+#: guix/scripts/lint.scm:131
 #, scheme-format
 msgid "~a: invalid checker~%"
 msgstr ""
 
-#: guix/scripts/publish.scm:71
+#: guix/scripts/lint.scm:173
+msgid "validate package definitions"
+msgstr "நிரல்தொகுப்பு வரையறையைச் சரி பார்"
+
+#: guix/scripts/publish.scm:72
 #, scheme-format
 msgid ""
 "Usage: guix publish [OPTION]...\n"
@@ -3639,109 +3683,120 @@ msgstr ""
 "பயன்பாடு: guix publish [<செயல்மாற்றி>]...\n"
 "~a யை HTTP மூலம் வெளியிடு.\n"
 
-#: guix/scripts/publish.scm:73
+#: guix/scripts/publish.scm:74
 msgid ""
 "\n"
 "  -p, --port=PORT        listen on PORT"
 msgstr ""
 
-#: guix/scripts/publish.scm:75
+#: guix/scripts/publish.scm:76
 msgid ""
 "\n"
 "      --listen=HOST      listen on the network interface for HOST"
 msgstr ""
 
-#: guix/scripts/publish.scm:77
+#: guix/scripts/publish.scm:78
 msgid ""
 "\n"
 "  -u, --user=USER        change privileges to USER as soon as possible"
 msgstr ""
 
-#: guix/scripts/publish.scm:79
+#: guix/scripts/publish.scm:80
 msgid ""
 "\n"
 "  -C, --compression[=METHOD:LEVEL]\n"
 "                         compress archives with METHOD at LEVEL"
 msgstr ""
 
-#: guix/scripts/publish.scm:82
+#: guix/scripts/publish.scm:83
 msgid ""
 "\n"
 "  -c, --cache=DIRECTORY  cache published items to DIRECTORY"
 msgstr ""
 
-#: guix/scripts/publish.scm:84
+#: guix/scripts/publish.scm:85
 msgid ""
 "\n"
-"      --workers=N        use N workers to bake items"
-msgstr ""
-
-#: guix/scripts/publish.scm:86
-msgid ""
-"\n"
-"      --ttl=TTL          announce narinfos can be cached for TTL seconds"
+"      --cache-bypass-threshold=SIZE\n"
+"                         serve store items below SIZE even when not cached"
 msgstr ""
 
 #: guix/scripts/publish.scm:88
 msgid ""
 "\n"
-"      --nar-path=PATH    use PATH as the prefix for nar URLs"
+"      --workers=N        use N workers to bake items"
 msgstr ""
 
 #: guix/scripts/publish.scm:90
 msgid ""
 "\n"
-"      --public-key=FILE  use FILE as the public key for signatures"
+"      --ttl=TTL          announce narinfos can be cached for TTL seconds"
 msgstr ""
 
 #: guix/scripts/publish.scm:92
 msgid ""
 "\n"
-"      --private-key=FILE use FILE as the private key for signatures"
+"      --nar-path=PATH    use PATH as the prefix for nar URLs"
 msgstr ""
 
 #: guix/scripts/publish.scm:94
 msgid ""
 "\n"
+"      --public-key=FILE  use FILE as the public key for signatures"
+msgstr ""
+
+#: guix/scripts/publish.scm:96
+msgid ""
+"\n"
+"      --private-key=FILE use FILE as the private key for signatures"
+msgstr ""
+
+#: guix/scripts/publish.scm:98
+msgid ""
+"\n"
 "  -r, --repl[=PORT]      spawn REPL server on PORT"
 msgstr ""
 
-#: guix/scripts/publish.scm:110
+#: guix/scripts/publish.scm:114
 #, scheme-format
 msgid "lookup of host '~a' failed: ~a~%"
 msgstr ""
 
-#: guix/scripts/publish.scm:158
+#: guix/scripts/publish.scm:168
 #, scheme-format
 msgid "lookup of host '~a' returned nothing"
 msgstr ""
 
-#: guix/scripts/publish.scm:181
+#: guix/scripts/publish.scm:191
 #, scheme-format
 msgid "~a: unsupported compression type~%"
 msgstr ""
 
-#: guix/scripts/publish.scm:195
+#: guix/scripts/publish.scm:209
 #, scheme-format
 msgid "~a: invalid duration~%"
 msgstr "~a: ஏற்கத்தகா காலயளவு~%"
 
-#: guix/scripts/publish.scm:1008
+#: guix/scripts/publish.scm:1073
 #, scheme-format
 msgid "user '~a' not found: ~a~%"
 msgstr "பயனர் '~a' இல்லை: ~a~%"
 
-#: guix/scripts/publish.scm:1060
+#: guix/scripts/publish.scm:1083
+msgid "publish build results over HTTP"
+msgstr ""
+
+#: guix/scripts/publish.scm:1125
 #, scheme-format
 msgid "server running as root; consider using the '--user' option!~%"
 msgstr "வழங்கி root பயனராக இயங்குகிறது; --user செயல்மாற்றியைப் பயன்படுத்தினால் நன்று!~%"
 
-#: guix/scripts/publish.scm:1065
+#: guix/scripts/publish.scm:1133
 #, scheme-format
 msgid "publishing ~a on ~a, port ~d~%"
 msgstr "~a ~a, வாயில் ~d யில் வெளியிடப்படுகிறது~%"
 
-#: guix/scripts/publish.scm:1071
+#: guix/scripts/publish.scm:1139
 #, scheme-format
 msgid "using '~a' compression method, level ~a~%"
 msgstr "இறுக்கமுறை ~a இறுக்கநிலை ~a பயன்படுத்தப்படுகிறது~%"
@@ -3758,6 +3813,10 @@ msgstr ""
 #, scheme-format
 msgid "file '~a' not found in search path ~s~%"
 msgstr "'~a' கோப்பு தேடு பாதை ~s யில் கிடைக்கவில்லை~%"
+
+#: guix/scripts/edit.scm:83
+msgid "view and edit package definitions"
+msgstr "நிரல்தொகுப்பு வரையறையைப் பார், தொகு"
 
 #: guix/scripts/edit.scm:106
 #, scheme-format
@@ -3827,124 +3886,128 @@ msgstr ""
 msgid "~a: invalid sorting key~%"
 msgstr ""
 
+#: guix/scripts/size.scm:303
+msgid "profile the on-disk size of packages"
+msgstr ""
+
 #: guix/scripts/size.scm:318
 msgid "missing store item argument\n"
 msgstr "கிடங்குருப்படி குறிப்பிடப்படவில்லை\n"
 
-#: guix/scripts/graph.scm:93
+#: guix/scripts/graph.scm:94
 #, scheme-format
 msgid "~a: invalid argument (package name expected)"
 msgstr "~a: ஏற்கத்தகாச் செயலுருபு (நிரல்தொகுப்புப் பெயர் எதிர்பாரக்கப்பட்டது)"
 
-#: guix/scripts/graph.scm:104
+#: guix/scripts/graph.scm:105
 msgid "the DAG of packages, excluding implicit inputs"
 msgstr ""
 
-#: guix/scripts/graph.scm:140
+#: guix/scripts/graph.scm:141
 msgid "the reverse DAG of packages"
 msgstr ""
 
-#: guix/scripts/graph.scm:190
+#: guix/scripts/graph.scm:191
 msgid "the DAG of packages, including implicit inputs"
 msgstr ""
 
-#: guix/scripts/graph.scm:200
+#: guix/scripts/graph.scm:201
 msgid "the DAG of packages and origins, including implicit inputs"
 msgstr ""
 
-#: guix/scripts/graph.scm:230
+#: guix/scripts/graph.scm:231
 msgid "same as 'bag', but without the bootstrap nodes"
 msgstr ""
 
-#: guix/scripts/graph.scm:247
+#: guix/scripts/graph.scm:248
 msgid "the reverse DAG of packages, including implicit inputs"
 msgstr ""
 
-#: guix/scripts/graph.scm:286
+#: guix/scripts/graph.scm:287
 msgid "the DAG of derivations"
 msgstr ""
 
-#: guix/scripts/graph.scm:298
+#: guix/scripts/graph.scm:299
 msgid "unsupported argument for derivation graph"
 msgstr ""
 
-#: guix/scripts/graph.scm:332
+#: guix/scripts/graph.scm:333
 msgid "unsupported argument for this type of graph"
 msgstr ""
 
-#: guix/scripts/graph.scm:346
+#: guix/scripts/graph.scm:347
 #, scheme-format
 msgid "references for '~a' are not known~%"
 msgstr ""
 
-#: guix/scripts/graph.scm:353
+#: guix/scripts/graph.scm:354
 msgid "the DAG of run-time dependencies (store references)"
 msgstr ""
 
-#: guix/scripts/graph.scm:369
+#: guix/scripts/graph.scm:370
 msgid "the DAG of referrers in the store"
 msgstr ""
 
-#: guix/scripts/graph.scm:399
+#: guix/scripts/graph.scm:400
 msgid "the graph of package modules"
 msgstr ""
 
-#: guix/scripts/graph.scm:428
+#: guix/scripts/graph.scm:429
 #, scheme-format
 msgid "~a: unknown node type~%"
 msgstr ""
 
-#: guix/scripts/graph.scm:435
+#: guix/scripts/graph.scm:436
 #, scheme-format
 msgid "~a: unknown backend~%"
 msgstr "~a: இல்லாப் பின்னிலை~%"
 
-#: guix/scripts/graph.scm:439
+#: guix/scripts/graph.scm:440
 msgid "The available node types are:\n"
 msgstr ""
 
-#: guix/scripts/graph.scm:449
+#: guix/scripts/graph.scm:450
 msgid "The available backend types are:\n"
 msgstr ""
 
-#: guix/scripts/graph.scm:476
+#: guix/scripts/graph.scm:477
 #, scheme-format
 msgid "no path from '~a' to '~a'~%"
 msgstr "~a கணுவிலிருந்து ~a கணுவிற்கு பாதையில்லை~%"
 
 #. TRANSLATORS: Here 'dot' is the name of a program; it must not be
 #. translated.
-#: guix/scripts/graph.scm:528
+#: guix/scripts/graph.scm:529
 msgid ""
 "Usage: guix graph PACKAGE...\n"
 "Emit a representation of the dependency graph of PACKAGE...\n"
 msgstr ""
 
-#: guix/scripts/graph.scm:530
+#: guix/scripts/graph.scm:531
 msgid ""
 "\n"
 "  -b, --backend=TYPE     produce a graph with the given backend TYPE"
 msgstr ""
 
-#: guix/scripts/graph.scm:532
+#: guix/scripts/graph.scm:533
 msgid ""
 "\n"
 "      --list-backends    list the available graph backends"
 msgstr ""
 
-#: guix/scripts/graph.scm:534
+#: guix/scripts/graph.scm:535
 msgid ""
 "\n"
 "  -t, --type=TYPE        represent nodes of the given TYPE"
 msgstr ""
 
-#: guix/scripts/graph.scm:536
+#: guix/scripts/graph.scm:537
 msgid ""
 "\n"
 "      --list-types       list the available graph types"
 msgstr ""
 
-#: guix/scripts/graph.scm:538
+#: guix/scripts/graph.scm:539
 msgid ""
 "\n"
 "      --path             display the shortest path between the given nodes"
@@ -3952,13 +4015,13 @@ msgstr ""
 "\n"
 "      --path            குறிப்பிட்டுள்ள கணுக்களிடையே மீச்சிறு பாதையைக் காட்டு"
 
-#: guix/scripts/graph.scm:540 guix/scripts/pack.scm:1052
+#: guix/scripts/graph.scm:541 guix/scripts/pack.scm:1071
 msgid ""
 "\n"
 "  -e, --expression=EXPR  consider the package EXPR evaluates to"
 msgstr ""
 
-#: guix/scripts/graph.scm:542
+#: guix/scripts/graph.scm:543
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    consider the graph for SYSTEM--e.g., \"i686-linux\""
@@ -3966,7 +4029,11 @@ msgstr ""
 "\n"
 "  -s, --system=<கணியக்கட்டமைப்பு>    <கணியக்கட்டமைப்புக்கான> (i686-linux போன்று) நிரல்தொகுப்புகளைக் காட்டு"
 
-#: guix/scripts/graph.scm:603
+#: guix/scripts/graph.scm:568
+msgid "view and query package dependency graphs"
+msgstr ""
+
+#: guix/scripts/graph.scm:604
 #, scheme-format
 msgid "'--path' option requires exactly two nodes (given ~a)~%"
 msgstr "--path செயல்மாற்றிக்குச் சரியாக இருக் கணுக்கள் தேவை (~a கொடுக்கப்பட்டுள்ளது)~%"
@@ -4061,6 +4128,10 @@ msgstr ""
 msgid "~a: unknown diff mode~%"
 msgstr ""
 
+#: guix/scripts/challenge.scm:480
+msgid "challenge substitute servers, comparing their binaries"
+msgstr ""
+
 #: guix/scripts/copy.scm:61
 #, scheme-format
 msgid "~a: invalid TCP port number~%"
@@ -4095,61 +4166,65 @@ msgstr ""
 "\n"
 "      --from=<நிலையம்>    <கிடங்குருப்படிகளை> <நிலையத்திலிருந்து> எடு"
 
+#: guix/scripts/copy.scm:175
+msgid "copy store items remotely over SSH"
+msgstr ""
+
 #: guix/scripts/copy.scm:192
 #, scheme-format
 msgid "use '--to' or '--from'~%"
 msgstr "--to அல்லது --from செயல்மாற்றியைக் குறிப்பிடுக~%"
 
-#: guix/scripts/pack.scm:104
+#: guix/scripts/pack.scm:106
 #, scheme-format
 msgid "~a: compressor not found~%"
 msgstr "~a: இறுக்கியில்லை~%"
 
-#: guix/scripts/pack.scm:309
+#: guix/scripts/pack.scm:313
 #, scheme-format
 msgid "entry point not supported in the '~a' format~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:690
+#: guix/scripts/pack.scm:694
 #, scheme-format
 msgid ""
 "cross-compilation not implemented here;\n"
 "please email '~a'~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:935
+#: guix/scripts/pack.scm:954
 msgid "The supported formats for 'guix pack' are:"
 msgstr ""
 
-#: guix/scripts/pack.scm:937
+#: guix/scripts/pack.scm:956
 msgid ""
 "\n"
 "  tarball       Self-contained tarball, ready to run on another machine"
 msgstr ""
 
-#: guix/scripts/pack.scm:939
+#: guix/scripts/pack.scm:958
 msgid ""
 "\n"
 "  squashfs      Squashfs image suitable for Singularity"
 msgstr ""
 
-#: guix/scripts/pack.scm:941
+#: guix/scripts/pack.scm:960
 msgid ""
 "\n"
 "  docker        Tarball ready for 'docker load'"
 msgstr ""
 
-#: guix/scripts/pack.scm:1010
+#: guix/scripts/pack.scm:1029
 #, scheme-format
 msgid "~a: invalid symlink specification~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:1024
+#: guix/scripts/pack.scm:1043
 #, scheme-format
 msgid "~a: unsupported profile name~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:1042
+#: guix/scripts/pack.scm:1061
 msgid ""
 "Usage: guix pack [OPTION]... PACKAGE...\n"
 "Create a bundle of PACKAGE.\n"
@@ -4157,7 +4232,7 @@ msgstr ""
 "பயன்பாடு: guix pack [<செயல்மாற்றி>]... <நிரல்தொகுப்பு>...\n"
 "<நிரல்தொகுப்பிற்கு> பொதி உருவாக்கு.\n"
 
-#: guix/scripts/pack.scm:1046
+#: guix/scripts/pack.scm:1065
 msgid ""
 "\n"
 "  -f, --format=FORMAT    build a pack in the given FORMAT"
@@ -4165,7 +4240,7 @@ msgstr ""
 "\n"
 "  -f, --format=<வடிவம்>   <வடிவத்தில்> பொதி அமை"
 
-#: guix/scripts/pack.scm:1048
+#: guix/scripts/pack.scm:1067
 msgid ""
 "\n"
 "      --list-formats     list the formats available"
@@ -4173,13 +4248,13 @@ msgstr ""
 "\n"
 "      --list-formats    ஏற்கத்தகு வடிவங்கள்"
 
-#: guix/scripts/pack.scm:1050
+#: guix/scripts/pack.scm:1069
 msgid ""
 "\n"
 "  -R, --relocatable      produce relocatable executables"
 msgstr ""
 
-#: guix/scripts/pack.scm:1058
+#: guix/scripts/pack.scm:1077
 msgid ""
 "\n"
 "  -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""
@@ -4187,7 +4262,7 @@ msgstr ""
 "\n"
 "  -C, --compression=<நிரல்>  <நிரல்> (lzip போன்று) கொண்டு இறுக்கு"
 
-#: guix/scripts/pack.scm:1060
+#: guix/scripts/pack.scm:1079
 msgid ""
 "\n"
 "  -S, --symlink=SPEC     create symlinks to the profile according to SPEC"
@@ -4195,13 +4270,13 @@ msgstr ""
 "\n"
 "  -S, --symlink=<குறிப்பீடு>   <குறிப்பீட்டில்> குறிப்பிட்டதுபோல் தனியமைப்புக்கு மென்னிணைப்புகள் அமை"
 
-#: guix/scripts/pack.scm:1062
+#: guix/scripts/pack.scm:1081
 msgid ""
 "\n"
 "  -m, --manifest=FILE    create a pack with the manifest from FILE"
 msgstr ""
 
-#: guix/scripts/pack.scm:1064
+#: guix/scripts/pack.scm:1083
 msgid ""
 "\n"
 "      --entry-point=PROGRAM\n"
@@ -4211,7 +4286,7 @@ msgstr ""
 "      --entry-point=<நிரல்>\n"
 "                         <நிரலைப்> பொதியின் நுழைவு நிரலாக அமை"
 
-#: guix/scripts/pack.scm:1069
+#: guix/scripts/pack.scm:1088
 msgid ""
 "\n"
 "      --localstatedir    include /var/guix in the resulting pack"
@@ -4219,14 +4294,14 @@ msgstr ""
 "\n"
 "      --localstatedir    பொதியில் /var/guix அடைவைச் சேர்"
 
-#: guix/scripts/pack.scm:1071
+#: guix/scripts/pack.scm:1090
 msgid ""
 "\n"
 "      --profile-name=NAME\n"
 "                         populate /var/guix/profiles/.../NAME"
 msgstr ""
 
-#: guix/scripts/pack.scm:1077
+#: guix/scripts/pack.scm:1096
 msgid ""
 "\n"
 "  -d, --derivation       return the derivation of the pack"
@@ -4234,38 +4309,42 @@ msgstr ""
 "\n"
 "  -d, --derivation       பொதியின் வருவியைக் காட்டு"
 
-#: guix/scripts/pack.scm:1081
+#: guix/scripts/pack.scm:1100
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap binaries to build the pack"
 msgstr ""
 
-#: guix/scripts/pack.scm:1135
+#: guix/scripts/pack.scm:1117
+msgid "create application bundles"
+msgstr ""
+
+#: guix/scripts/pack.scm:1154
 #, scheme-format
 msgid "could not determine provenance of package ~a~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:1149
+#: guix/scripts/pack.scm:1168
 #, scheme-format
 msgid "both a manifest and a package list were given~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:1208
+#: guix/scripts/pack.scm:1227
 #, scheme-format
 msgid "~a: unknown pack format~%"
 msgstr "~a: ஏற்கத்தகாப் பொதி வடிவம்~%"
 
-#: guix/scripts/pack.scm:1232
+#: guix/scripts/pack.scm:1251
 #, scheme-format
 msgid "no packages specified; building an empty pack~%"
 msgstr "நிரல்தொகுப்புகள் குறிப்பிடப்படவில்லை; வெற்றுப் பொதி அமைக்கப்படுகிறது~%"
 
-#: guix/scripts/pack.scm:1236
+#: guix/scripts/pack.scm:1255
 #, scheme-format
 msgid "Singularity requires you to provide a shell~%"
 msgstr ""
 
-#: guix/scripts/pack.scm:1237
+#: guix/scripts/pack.scm:1256
 msgid "Add @code{bash} or @code{bash-minimal} to your package list."
 msgstr "@code{bash} நிரல்தொகுப்பையோ @code{bash-minimal} நிரல்தொகுப்பையோ உம் பொதியில் சேர்க்க."
 
@@ -4420,6 +4499,10 @@ msgid_plural "~a packages are missing from '~a' for '~a', among which:~%"
 msgstr[0] "~1@*~a வழங்கியில் ~2@*~a கணியக்கட்டமைப்புக்கு ~0@*~a நிரல்தொகுப்பில்லை:~%"
 msgstr[1] "~1@*~a வழங்கியில் ~2@*~a கணியக்கட்டமைப்புக்கு ~0@*~a நிரல்தொகுப்புகளில்லை, அவற்றுள்:~%"
 
+#: guix/scripts/weather.scm:499
+msgid "report on the availability of pre-built package binaries"
+msgstr ""
+
 #: guix/scripts/describe.scm:52
 msgid "The available formats are:\n"
 msgstr "வெளியீட்டு வடிவங்கள்:\n"
@@ -4521,6 +4604,10 @@ msgstr "    கிளை: ~a~%"
 msgid "    commit: ~a~%"
 msgstr "    பதிவு: ~a~%"
 
+#: guix/scripts/describe.scm:308
+msgid "describe the channel revisions currently used"
+msgstr ""
+
 #: guix/scripts/processes.scm:211
 msgid ""
 "Usage: guix processes\n"
@@ -4528,6 +4615,10 @@ msgid ""
 msgstr ""
 "பயன்பாடு: guix processes\n"
 "Guix அமர்வுகளையும் செயலாக்கங்களையும் பட்டியலிடு."
+
+#: guix/scripts/processes.scm:228
+msgid "list currently running sessions"
+msgstr ""
 
 #: guix/scripts/deploy.scm:49
 msgid ""
@@ -4562,10 +4653,21 @@ msgstr "~a பின் செலுத்தப்படுகிறது...~%
 msgid "successfully deployed ~a~%"
 msgstr ""
 
-#: guix/gexp.scm:414
+#: guix/scripts/deploy.scm:140
+msgid "deploy operating systems on a set of machines"
+msgstr ""
+
+#: guix/gexp.scm:425
 #, scheme-format
 msgid "resolving '~a' relative to current directory~%"
 msgstr ""
+
+#: guix/gexp.scm:808
+#, scheme-format
+msgid "importing module~{ ~a~} from the host~%"
+msgid_plural "importing modules~{ ~a~} from the host~%"
+msgstr[0] ""
+msgstr[1] ""
 
 #: guix/gnu-maintenance.scm:699
 msgid "Updater for GNU packages"
@@ -4595,6 +4697,10 @@ msgstr ""
 
 #: guix/scripts/container.scm:32
 msgid "   exec            execute a command inside of an existing container\n"
+msgstr ""
+
+#: guix/scripts/container.scm:52
+msgid "run code in containers created by 'guix environment -C'"
 msgstr ""
 
 #: guix/scripts/container.scm:58
@@ -4637,6 +4743,115 @@ msgstr "~d செயலாக்கயெண்ணுடைய செயலா�
 #, scheme-format
 msgid "exec failed with status ~d~%"
 msgstr ""
+
+#: guix/transformations.scm:174 guix/transformations.scm:242
+#, scheme-format
+msgid "invalid replacement specification: ~s"
+msgstr "ஏற்கத்தகா மாற்றக் குறிப்பு: ~s"
+
+#: guix/transformations.scm:223
+#, scheme-format
+msgid "the source of ~a is not a Git reference"
+msgstr ""
+
+#: guix/transformations.scm:315
+#, scheme-format
+msgid "~a: invalid Git URL replacement specification"
+msgstr "~a: ஏற்கத்தகா Git முகவரி மாற்றக் குறிப்பு"
+
+#: guix/transformations.scm:393
+#, scheme-format
+msgid "~a: invalid toolchain replacement specification"
+msgstr ""
+
+#: guix/transformations.scm:514
+msgid ""
+"\n"
+"      --with-source=[PACKAGE=]SOURCE\n"
+"                         use SOURCE when building the corresponding package"
+msgstr ""
+
+#: guix/transformations.scm:517
+msgid ""
+"\n"
+"      --with-input=PACKAGE=REPLACEMENT\n"
+"                         replace dependency PACKAGE by REPLACEMENT"
+msgstr ""
+"\n"
+"      --with-input=<நிரல்தொகுப்பு>=<மாற்று>\n"
+"                         உள்ளீட்டு <நிரல்தொகுப்புக்கு> மாற்றாக <மாற்றைப்> பயன்படுத்து"
+
+#: guix/transformations.scm:520
+msgid ""
+"\n"
+"      --with-graft=PACKAGE=REPLACEMENT\n"
+"                         graft REPLACEMENT on packages that refer to PACKAGE"
+msgstr ""
+"\n"
+"      --with-graft=<நிரல்தொகுப்பு>=<மாற்று>\n"
+"                         <நிரல்தொகுப்பைச்> சுட்டும் நிரல்தொகுப்புகள் மீது <மாற்றை> ஒட்டு"
+
+#: guix/transformations.scm:523
+msgid ""
+"\n"
+"      --with-branch=PACKAGE=BRANCH\n"
+"                         build PACKAGE from the latest commit of BRANCH"
+msgstr ""
+"\n"
+"      --with-branch=<நிரல்தொகுப்பு>=<கிளை>\n"
+"                         <நிரல்தொகுப்பைக்> <கிளையின்> கடைசி பதிவிலிருந்துப் பெயர்"
+
+#: guix/transformations.scm:526
+msgid ""
+"\n"
+"      --with-commit=PACKAGE=COMMIT\n"
+"                         build PACKAGE from COMMIT"
+msgstr ""
+"\n"
+"      --with-commit=<நிரல்தொகுப்பு>=<பதிவு>\n"
+"                         <நிரல்தொகுப்பை> Git <பதிவைக்> கொண்டுப் பெயர்"
+
+#: guix/transformations.scm:529
+msgid ""
+"\n"
+"      --with-git-url=PACKAGE=URL\n"
+"                         build PACKAGE from the repository at URL"
+msgstr ""
+"\n"
+"      --with-git-url=<நிரல்தொகுப்பு>=<முகவரி>\n"
+"                         <நிரல்தொகுப்பை> <முகவரியிலுள்ள> Git களஞ்சியத்தைக் கொண்டுப் பெயர்"
+
+#: guix/transformations.scm:532
+msgid ""
+"\n"
+"      --with-c-toolchain=PACKAGE=TOOLCHAIN\n"
+"                         build PACKAGE and its dependents with TOOLCHAIN"
+msgstr ""
+
+#: guix/transformations.scm:535
+msgid ""
+"\n"
+"      --with-debug-info=PACKAGE\n"
+"                         build PACKAGE and preserve its debug info"
+msgstr ""
+"\n"
+"      --with-debug-info=<நிரல்தொகுப்பு>\n"
+"                         <நிரல்தொகுப்பை> வழுநீக்கத் தகவலுடன் பெயர்"
+
+#: guix/transformations.scm:538
+msgid ""
+"\n"
+"      --without-tests=PACKAGE\n"
+"                         build PACKAGE without running its tests"
+msgstr ""
+"\n"
+"      --without-tests=<நிரல்தொகுப்பு>\n"
+"                         <நிரல்தொகுப்பைச்> சோதிக்காமல் பெயர்"
+
+#: guix/transformations.scm:589
+#, scheme-format
+msgid "transformation '~a' had no effect on ~a~%"
+msgstr "'~a' உருமாற்றம் ~a மீது எத்தாக்கமும் கொள்ளவில்லை~%"
 
 #: guix/upstream.scm:337
 #, scheme-format
@@ -5485,61 +5700,60 @@ msgstr "ஏற்கத்தகா அலைத்தடச் செய்த�
 msgid "unsupported manifest format"
 msgstr ""
 
-#: guix/profiles.scm:1923
+#: guix/profiles.scm:1935
 #, scheme-format
 msgid "while creating directory `~a': ~a"
 msgstr "`~a' அடைவை உருவாக்கும்பொழுது: ~a"
 
-#: guix/profiles.scm:1928
+#: guix/profiles.scm:1940
 #, scheme-format
 msgid "Please create the @file{~a} directory, with you as the owner."
 msgstr "@file{~a} உருவாக்கி உமதாக்குக."
 
-#: guix/profiles.scm:1937
+#: guix/profiles.scm:1949
 #, scheme-format
 msgid "directory `~a' is not owned by you"
 msgstr "`~a' அடைவு உமக்குரியதல்ல"
 
-#: guix/profiles.scm:1941
+#: guix/profiles.scm:1953
 #, scheme-format
 msgid "Please change the owner of @file{~a} to user ~s."
 msgstr "@file{~a} அடைவை ~s பயனர்க்குரியதாக்குக."
 
-#: guix/git.scm:175
-msgid "long Git object ID is required"
+#: guix/git.scm:136
+msgid "receiving objects"
 msgstr ""
 
-#: guix/git.scm:226
+#: guix/git.scm:138
+msgid "indexing objects"
+msgstr ""
+
+#: guix/git.scm:268
 #, scheme-format
 msgid "Git error ~a~%"
 msgstr "Git பிழை ~a~%"
 
-#: guix/git.scm:228 guix/git.scm:418
+#: guix/git.scm:270 guix/git.scm:438
 #, scheme-format
 msgid "Git error: ~a~%"
 msgstr "Git பிழை: ~a~%"
 
-#: guix/git.scm:256
+#: guix/git.scm:284
 #, scheme-format
 msgid "updating submodule '~a'...~%"
 msgstr ""
 
-#: guix/git.scm:269
-#, scheme-format
-msgid "Support for submodules is missing; please upgrade Guile-Git.~%"
-msgstr ""
-
-#: guix/git.scm:512
+#: guix/git.scm:532
 #, scheme-format
 msgid "cannot fetch commit ~a from ~a: ~a"
 msgstr "~1@*~a முகவரியிலுருந்து ~0@*~a பதிவை எடுக்க இயலவில்லை: ~2@*~a"
 
-#: guix/git.scm:515
+#: guix/git.scm:535
 #, scheme-format
 msgid "cannot fetch branch '~a' from ~a: ~a"
 msgstr "~1@*~a முகவரியிலிருந்து ~0@*~a கிளையை எடுக்க இயலவில்லை: ~2@*~a"
 
-#: guix/git.scm:518
+#: guix/git.scm:538
 #, scheme-format
 msgid "Git failure while fetching ~a: ~a"
 msgstr "~a முகவரியை எடுக்கும்பொழுது தோல்வி: ~a"
