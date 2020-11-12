@@ -810,7 +810,14 @@ language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lan6930g5a9z4ack9jj0zdd0mb2s6q2xzpiwcjdc3pvl9b1nbw4"))))
+                  "0lan6930g5a9z4ack9jj0zdd0mb2s6q2xzpiwcjdc3pvl9b1nbw4"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Allow builds with Guile 3.0.
+                    (substitute* "configure.ac"
+                      (("2\\.2") "3.0 2.2"))
+                    #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases
@@ -829,10 +836,10 @@ language.")
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("mesa" ,mesa)
-         ("guile" ,guile-2.2)))
+         ("guile" ,guile-3.0)))
       (propagated-inputs
        `(("libfive" ,libfive)
-         ("guile-opengl" ,guile-opengl)))
+         ("guile-opengl" ,guile3.0-opengl)))
       (home-page "https://gitlab.com/kavalogic-inc/inspekt3d/")
       (synopsis "Lightweight 3D viewer for Libfive written in Guile Scheme")
       (description
