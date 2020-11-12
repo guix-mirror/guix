@@ -710,7 +710,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
 # Name of the 'guix' package shipped in the binary tarball.
-GUIX_FOR_BINARY_TARBALL = guile3.0-guix
+GUIX_FOR_BINARY_TARBALL = guix
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
