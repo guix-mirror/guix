@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -265,6 +266,18 @@ installed with setuptools."
   (setenv "PYTHONDONTWRITEBYTECODE" "1")
   #t)
 
+(define* (ensure-no-cythonized-files #:rest _)
+  "Check the source code for @code{.c} files which may have been pre-generated
+by Cython."
+  (for-each
+    (lambda (file)
+      (let ((generated-file
+              (string-append (string-drop-right file 3) "c")))
+        (when (file-exists? generated-file)
+          (warning (G_ "Possible Cythonized file found: ~a~%") generated-file))))
+    (find-files "." "\\.pyx$"))
+  #t)
+
 (define %standard-phases
   ;; The build phase only builds C extensions and copies the Python sources,
   ;; while the install phase copies then byte-compiles the sources to the
@@ -274,6 +287,8 @@ installed with setuptools."
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
       enable-bytecode-determinism)
+    (add-after 'enable-bytecode-determinism 'ensure-no-cythonized-files
+      ensure-no-cythonized-files)
     (delete 'bootstrap)
     (delete 'configure)                 ;not needed
     (replace 'build build)
