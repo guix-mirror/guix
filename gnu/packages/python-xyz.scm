@@ -280,6 +280,39 @@ threads.")
 task of adding retry behavior to just about anything.")
     (license license:asl2.0)))
 
+(define-public python-pytelegrambotapi
+  (package
+    (name "python-pytelegrambotapi")
+    (version "3.7.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eternnoir/pyTelegramBotAPI")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0r7g5zs0fk3g2dxvbpl0pi730x7r2kalrhn30fs0pvc15a59fmxz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "tests"
+                 (invoke "py.test")))
+             #t)))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/eternnoir/pyTelegramBotAPI")
+    (synopsis "Python Telegram bot api")
+    (description "This package provides a simple, but extensible Python
+implementation for the Telegram Bot API.")
+    (license license:gpl2)))
+
 (define-public python-colorlog
   (package
     (name "python-colorlog")
