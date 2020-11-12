@@ -31027,11 +31027,25 @@ a value.  Docker images are built to contain exactly what they need, so
 the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
+@cindex disk-image, creating disk images
 The @code{disk-image} command can produce various image types.  The
 image type can be selected using the @command{--image-type} option.  It
-defaults to @code{raw}. When its value is @code{iso9660}, the
+defaults to @code{raw}.  When its value is @code{iso9660}, the
 @option{--label} option can be used to specify a volume ID with
-@code{disk-image}.
+@code{disk-image}.  When using @code{disk-image}, the bootloader
+installed on the generated image is taken from the provided
+@code{operating-system} definition.  The following example demonstrates
+how to generate an image that uses the @code{grub-efi-bootloader}
+bootloader and boot it with QEMU:
+
+@example
+image=$(guix system disk-image --image-type=qcow2 \
+             gnu/system/examples/lightweight-desktop.tmpl)
+cp $image /tmp/my-image.qcow2
+chmod +w /tmp/my-image.qcow2
+qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000
+                   -bios $(guix build ovmf)/share/firmware/ovmf_x64.bin
+@end example
 
 When using the @code{raw} image type, a raw disk image is produced; it
 can be copied as is to a USB stick, for instance.  Assuming
@@ -31045,10 +31059,17 @@ the image to it using the following command:
 The @code{--list-image-types} command lists all the available image
 types.
 
+@cindex vm-image, creating virtual machine images
 When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
-for more information on how to run the image in a virtual machine.
+the QEMU emulator can efficiently use. @xref{Running Guix in a VM}, for
+more information on how to run the image in a virtual machine.  The
+@code{grub-bootloader} bootloader is always used independently of what
+is declared in the @code{operating-system} file passed as argument.
+This is to make it easier to work with QEMU, which uses the SeaBIOS BIOS
+by default, expecting a bootloader to be installed in the Master Boot
+Record (MBR).
 
+@cindex docker-image, creating docker images
 When using @code{docker-image}, a Docker image is produced.  Guix builds
 the image from scratch, not from a pre-existing Docker base image.  As a
 result, it contains @emph{exactly} what you define in the operating
