@@ -31029,10 +31029,12 @@ the @option{--image-size} option is ignored in the case of
 
 @cindex disk-image, creating disk images
 The @code{disk-image} command can produce various image types.  The
-image type can be selected using the @command{--image-type} option.  It
+image type can be selected using the @option{--image-type} option.  It
 defaults to @code{raw}.  When its value is @code{iso9660}, the
 @option{--label} option can be used to specify a volume ID with
-@code{disk-image}.  When using @code{disk-image}, the bootloader
+@code{disk-image}.  By default, the root file system of a disk image is
+mounted non-volatile; the @option{--volatile} option can be provided to
+make it volatile instead.  When using @code{disk-image}, the bootloader
 installed on the generated image is taken from the provided
 @code{operating-system} definition.  The following example demonstrates
 how to generate an image that uses the @code{grub-efi-bootloader}
