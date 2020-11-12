@@ -93,14 +93,18 @@
                (rename-file (string-append out "/bin/transmission-gtk")
                             (string-append gui "/bin/transmission-gtk"))
 
-               ;; Move the '.desktop' and icon files as well.
                (mkdir (string-append gui "/share"))
                (for-each
                 (lambda (dir)
                   (rename-file (string-append out "/share/" dir)
                                (string-append gui "/share/" dir)))
-                '("applications" "icons" "pixmaps")))
-             #t)))))
+                '("appdata" "applications" "icons" "locale" "pixmaps"))
+
+               (mkdir-p (string-append gui "/share/man/man1"))
+               (rename-file
+                (string-append out "/share/man/man1/transmission-gtk.1")
+                (string-append gui "/share/man/man1/transmission-gtk.1"))
+             #t))))))
     (inputs
      `(("libevent" ,libevent)
        ("curl" ,curl)
