@@ -1029,6 +1029,57 @@ in userspace)
 (define-public python2-pycryptodome
   (package-with-python2 python-pycryptodome))
 
+(define-public python-pycryptodomex
+  (package
+    (name "python-pycryptodomex")
+    (version "3.9.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycryptodomex" version))
+       (sha256
+        (base32 "0lbx4qk3xmwqiidhmkj8qa7bh2lf8bwzg0xjpsh2w5zqjrc7qnvv"))))
+    (build-system python-build-system)
+    (home-page "https://www.pycryptodome.org")
+    (synopsis "Low-level cryptographic Python library")
+    (description
+     "PyCryptodome is a self-contained Python package of low-level
+cryptographic primitives.  It's not a wrapper to a separate C library like
+OpenSSL.  To the largest possible extent, algorithms are implemented in pure
+Python.  Only the pieces that are extremely critical to performance (e.g.,
+block ciphers) are implemented as C extensions.
+
+You are expected to have a solid understanding of cryptography and security
+engineering to successfully use these primitives.  You must also be able to
+recognize that some are obsolete (e.g., TDES) or even insecure (RC4).
+
+It provides many enhancements over the last release of PyCrypto (2.6.1):
+
+@itemize
+@item Authenticated encryption modes (GCM, CCM, EAX, SIV, OCB)
+@item Accelerated AES on Intel platforms via AES-NI
+@item First-class support for PyPy
+@item Elliptic curves cryptography (NIST P-256 curve only)
+@item Better and more compact API (nonce and iv attributes for ciphers,
+automatic generation of random nonces and IVs, simplified CTR cipher mode, and
+more)
+@item SHA-3 (including SHAKE XOFs) and BLAKE2 hash algorithms
+@item Salsa20 and ChaCha20 stream ciphers
+@item scrypt and HKDF
+@item Deterministic (EC)DSA
+@item Password-protected PKCS#8 key containers
+@item Shamir’s Secret Sharing scheme
+@item Random numbers get sourced directly from the OS (and not from a CSPRNG
+in userspace)
+@item Cleaner RSA and DSA key generation (largely based on FIPS 186-4)
+@item Major clean-ups and simplification of the code base
+@end itemize
+
+PyCryptodomex is the stand-alone version of PyCryptodome that no longer
+provides drop-in compatibility with PyCrypto.")
+    (license (list license:bsd-2
+                   license:public-domain)))) ; code inherited from PyCrypto
+
 (define-public python-m2crypto
   (package
     (name "python-m2crypto")
