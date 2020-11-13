@@ -437,7 +437,7 @@ computational cluster.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (inputs
-     `(("samtools" ,samtools)
+     `(("samtools" ,samtools-1.9)
        ("zlib" ,zlib)))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
