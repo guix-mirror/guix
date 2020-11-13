@@ -1035,7 +1035,8 @@ in userspace)
 
 This package provides drop-in compatibility with PyCrypto.  It is one of two
 PyCryptodome variants, the other being python-pycryptodomex.")
-    (license license:bsd-2)))
+    (license (list license:bsd-2
+                   license:public-domain)))) ; code inherited from PyCrypto
 
 (define-public python2-pycryptodome
   (package-with-python2 python-pycryptodome))
