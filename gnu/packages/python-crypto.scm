@@ -1127,7 +1127,7 @@ through the Engine interface.")
 (define-public python-pykeepass
   (package
     (name "python-pykeepass")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1137,7 +1137,7 @@ through the Engine interface.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wxbfpy7467mlnfsvmh685fhfnq4fki9y7yc9cylp30r5n3hisaj"))))
+        (base32 "1symxf4ahylynihnp9z4z3lh2vy65ipvg8s4hjrnn936hcaaxghk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1161,7 +1161,7 @@ through the Engine interface.")
        ("python-dateutil" ,python-dateutil)
        ("python-future" ,python-future)
        ("python-lxml" ,python-lxml)
-       ("python-pycryptodome" ,python-pycryptodome)))
+       ("python-pycryptodomex" ,python-pycryptodomex)))
     (home-page "https://github.com/libkeepass/pykeepass")
     (synopsis "Python library to interact with keepass databases")
     (description
