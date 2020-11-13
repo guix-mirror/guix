@@ -731,8 +731,8 @@ distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 EXTRA_DIST += $(top_srcdir)/.version
 BUILT_SOURCES += $(top_srcdir)/.version
-$(top_srcdir)/.version:
-	echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
+$(top_srcdir)/.version: config.status
+	$(AM_V_GEN)echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
 
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
