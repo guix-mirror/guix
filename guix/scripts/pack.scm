@@ -59,11 +59,16 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (compressor?
+            compressor-name
+            compressor-extenstion
+            compressor-command
+            %compressors
             lookup-compressor
             self-contained-tarball
             docker-image
             squashfs-image
 
+            %formats
             guix-pack))
 
 ;; Type of a compression tool.
