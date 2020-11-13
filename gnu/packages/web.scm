@@ -567,7 +567,7 @@ documentation.")
   (package
     (inherit nginx)
     (name "nginx-lua-module")
-    (version "0.10.15")
+    (version "0.10.16")
     (source
      (origin
        (method git-fetch)
@@ -576,8 +576,7 @@ documentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "lua-nginx-module" version))
        (sha256
-        (base32
-         "1j216isp0546hycklbr5wi8mlga5hq170hk7f2sm16sfavlkh5gz"))))
+        (base32 "0nwcbqm1visg1dkxav7qa16w0d0n8cgqn4881xiqn88xfkxj0dyg"))))
     (build-system gnu-build-system)
     (inputs
      `(("nginx-sources" ,(package-source nginx-socket-cloexec))
