@@ -931,7 +931,7 @@ Encryption to Gajim.")
 (define-public dino
   (package
     (name "dino")
-    (version "0.1.0")
+    (version "0.2.0")
     (outputs '("out" "debug"))
     (source
      (origin
@@ -940,7 +940,7 @@ Encryption to Gajim.")
                            version "/dino-" version ".tar.gz"))
        (sha256
         (base32
-         "0dcq2jhpywgxrp9x1qqmrl2z50hazspqj547b9zz70apy3y4418h"))))
+         "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
