@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,8 +189,9 @@ active sessions, and the master 'guix-daemon' process."
               (format port "LockHeld: ~a~%" lock))
             (daemon-session-locks-held session))
   (for-each (lambda (process)
-              (format port "ChildProcess: ~a:~{ ~a~}~%"
-                      (process-id process)
+              (format port "ChildPID: ~a~%"
+                      (process-id process))
+              (format port "ChildCommand: :~{ ~a~}~%"
                       (process-command process)))
             (daemon-session-children session)))
 

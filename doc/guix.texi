@@ -84,6 +84,7 @@ Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*
 Copyright @copyright{} 2020 raingloom@*
 Copyright @copyright{} 2020 Daniel Brooks@*
+Copyright @copyright{} 2020 John Soo@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -12865,9 +12866,12 @@ ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 LockHeld: /gnu/store/@dots{}-perl-ipc-cmd-0.96.lock
 LockHeld: /gnu/store/@dots{}-python-six-bootstrap-1.11.0.lock
 LockHeld: /gnu/store/@dots{}-libjpeg-turbo-2.0.0.lock
-ChildProcess: 20495: guix offload x86_64-linux 7200 1 28800
-ChildProcess: 27733: guix offload x86_64-linux 7200 1 28800
-ChildProcess: 27793: guix offload x86_64-linux 7200 1 28800
+ChildPID: 20495
+ChildCommand: guix offload x86_64-linux 7200 1 28800
+ChildPID: 27733
+ChildCommand: guix offload x86_64-linux 7200 1 28800
+ChildPID: 27793
+ChildCommand: guix offload x86_64-linux 7200 1 28800
 @end example
 
 In this example we see that @command{guix-daemon} has three clients:
@@ -12876,12 +12880,12 @@ integration tool; their process identifier (PID) is given by the
 @code{ClientPID} field.  The @code{SessionPID} field gives the PID of the
 @command{guix-daemon} sub-process of this particular session.
 
-The @code{LockHeld} fields show which store items are currently locked by this
-session, which corresponds to store items being built or substituted (the
-@code{LockHeld} field is not displayed when @command{guix processes} is not
-running as root).  Last, by looking at the @code{ChildProcess} field, we
-understand that these three builds are being offloaded (@pxref{Daemon Offload
-Setup}).
+The @code{LockHeld} fields show which store items are currently locked
+by this session, which corresponds to store items being built or
+substituted (the @code{LockHeld} field is not displayed when
+@command{guix processes} is not running as root).  Last, by looking at
+the @code{ChildPID} and @code{ChildCommand} fields, we understand that
+these three builds are being offloaded (@pxref{Daemon Offload Setup}).
 
 The output is in Recutils format so we can use the handy @command{recsel}
 command to select sessions of interest (@pxref{Selection Expressions,,,
