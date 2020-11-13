@@ -597,6 +597,14 @@ for the GStreamer multimedia library.")
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-test
+           (lambda _
+             ;; Fix test failure on 32-bit.  Remove for > 1.18.1.
+             ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues/803
+             (substitute* "tests/check/elements/qtdemux.c"
+               (("10000000")
+                "G_GUINT64_CONSTANT (10000000)"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
