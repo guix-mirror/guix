@@ -5699,6 +5699,31 @@ variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
 
+(define-public samtools-1.9
+  (package (inherit samtools)
+    (name "samtools")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "10ilqbmm7ri8z431sn90lvbjwizd0hhkf9rcqw8j823hf26nhgq8"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete bundled htslib.
+                   (delete-file-recursively "htslib-1.9")
+                   #t))))
+    (inputs
+     `(("htslib" ,htslib-1.9)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))))
+
 (define-public samtools-0.1
   ;; This is the most recent version of the 0.1 line of samtools.  The input
   ;; and output formats differ greatly from that used and produced by samtools
