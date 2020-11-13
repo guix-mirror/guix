@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,14 +196,14 @@
          "1bpa0fcqpa3ai3hm8mz0p13bf76fsq53wsfcx5qw302zh22108xr"))))
     (arguments
      `(#:make-flags
-       (list "CC=gcc")
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'check 'set-ld-library-path
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs #:allow-other-keys)
              (setenv "LD_LIBRARY_PATH"
-                     (string-append (assoc-ref inputs "zlib") "/lib"))))
+                     (string-append (assoc-ref native-inputs "zlib") "/lib"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
