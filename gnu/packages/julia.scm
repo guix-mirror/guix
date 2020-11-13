@@ -52,8 +52,8 @@
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "35b1504507a7a4168caae3d78db54d1121b121e1")
-        (revision "1"))
+  (let ((commit "1fcc6d66f9df74189c74d3d390f02202bb7db953")
+        (revision "2"))
     ;; When upgrading Julia, also upgrade this.  Get the commit from
     ;; https://github.com/JuliaLang/julia/blob/v1.5.2/deps/libuv.version
     (package
@@ -68,7 +68,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0dn3v6fdp1z382pqg3nhjzk60l61ky9b65mfgaj29fv2da95rwjs"))))
+                  "040l7f1hk7xyza11sry5cj4fhw05na949865axqqhxnifdvnmfji"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -105,7 +105,7 @@
                  "/deps/patches/" name ".patch"))
 
 (define (julia-patch name sha)
-  (let ((version "1.5.2"))
+  (let ((version "1.5.3"))
     (origin (method url-fetch)
             (uri (julia-patch-url version name))
             (sha256 (base32 sha))
@@ -223,7 +223,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -231,7 +231,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "08wazf3f1lb2c2c5s700kyak8llfqwki8xlnqyrbwmwxjj801p2n"))
+                "1zmim82x9kkdcgn0cdi01hmzi59zbszy1sqlygb86xq4hc1n66dy"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
