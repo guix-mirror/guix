@@ -999,16 +999,24 @@ protocol (Javascript Object Signing and Encryption).")
          "0dh6ky5ngxayyn5f6n7gdamjl49g3khz6pdx9sdnag1zwi8248hs"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
-    (synopsis "Cryptographic library for Python")
-    (description "This package provides a cryptographic library for Python.
+    (synopsis "Low-level cryptographic Python library")
+    (description
+     "PyCryptodome is a self-contained Python package of low-level
+cryptographic primitives.  It's not a wrapper to a separate C library like
+OpenSSL.  To the largest possible extent, algorithms are implemented in pure
+Python.  Only the pieces that are extremely critical to performance (e.g.,
+block ciphers) are implemented as C extensions.
 
-It brings the following enhancements with respect to the last official version
-of PyCrypto:
+You are expected to have a solid understanding of cryptography and security
+engineering to successfully use these primitives.  You must also be able to
+recognize that some are obsolete (e.g., TDES) or even insecure (RC4).
+
+It provides many enhancements over the last release of PyCrypto (2.6.1):
 
 @itemize
 @item Authenticated encryption modes (GCM, CCM, EAX, SIV, OCB)
 @item Accelerated AES on Intel platforms via AES-NI
-@item First class support for PyPy
+@item First-class support for PyPy
 @item Elliptic curves cryptography (NIST P-256 curve only)
 @item Better and more compact API (nonce and iv attributes for ciphers,
 automatic generation of random nonces and IVs, simplified CTR cipher mode, and
@@ -1022,8 +1030,11 @@ more)
 @item Random numbers get sourced directly from the OS (and not from a CSPRNG
 in userspace)
 @item Cleaner RSA and DSA key generation (largely based on FIPS 186-4)
-@item Major clean ups and simplification of the code base
-@end itemize\n")
+@item Major clean-ups and simplification of the code base
+@end itemize
+
+This package provides drop-in compatibility with PyCrypto.  It is one of two
+PyCryptodome variants, the other being python-pycryptodomex.")
     (license license:bsd-2)))
 
 (define-public python2-pycryptodome
