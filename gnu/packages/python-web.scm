@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5674,3 +5675,62 @@ over IMAP:
      "@code{python-hstspreload} contains Chromium HSTS Preload list
 as a Python package.")
     (license license:bsd-3)))
+
+(define-public python-sanic
+  (package
+    (name "python-sanic")
+    (version "20.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sanic" version))
+       (sha256
+        (base32
+         "06p0lsxqbfbka2yaqlpp0bg5pf7ma44zi6kq7qbb6hhry48dp1w6"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-recent-pytest
+           ;; Allow using recent dependencies.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("httpcore==0.3.0") "httpcore")
+               (("pytest==5.2.1") "pytest")
+               (("multidict==5.0.0") "multidict"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "./tests" "-k"
+                     "not test_zero_downtime and not test_gunicorn_worker"))))))
+    (propagated-inputs
+     `(("python-aiofiles" ,python-aiofiles)
+       ("python-httptools" ,python-httptools)
+       ("python-httpx" ,python-httpx)
+       ("python-multidict" ,python-multidict)
+       ("python-ujson" ,python-ujson)
+       ("python-uvloop" ,python-uvloop)
+       ("python-websockets" ,python-websockets)))
+    (native-inputs
+     `(("gunicorn" ,gunicorn)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-hstspreload" ,python-hstspreload)
+       ("python-httpcore" ,python-httpcore)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-sanic" ,python-pytest-sanic)
+       ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-urllib3" ,python-urllib3)
+       ("python-uvicorn" ,python-uvicorn)))
+    (home-page
+     "https://github.com/huge-success/sanic/")
+    (synopsis
+     "Async Python 3.6+ web server/framework")
+    (description
+     "Sanic is a Python 3.6+ web server and web framework
+that's written to go fast.  It allows the usage of the
+@code{async/await} syntax added in Python 3.5, which makes
+your code non-blocking and speedy.")
+    (license license:expat)))
