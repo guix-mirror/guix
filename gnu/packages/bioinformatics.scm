@@ -354,6 +354,28 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
+(define-public bcftools-1.9
+  (package (inherit bcftools)
+    (name "bcftools")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samtools/bcftools/"
+                                  "releases/download/"
+                                  version "/bcftools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1j3h638i8kgihzyrlnpj82xg1b23sijibys9hvwari3fy7kd0dkg"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Delete bundled htslib.
+                          (delete-file-recursively "htslib-1.9")
+                          #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("htslib" ,htslib-1.9)
+       ("perl" ,perl)))))
+
 (define-public bedops
   (package
     (name "bedops")
@@ -1955,7 +1977,7 @@ multiple sequence alignments.")
                ;; FIXME: tests keep timing out on some systems.
                (invoke "nosetests" "-v" "--processes" "1")))))))
     (propagated-inputs
-     `(("htslib" ,htslib))) ; Included from installed header files.
+     `(("htslib" ,htslib-1.9))) ; Included from installed header files.
     (inputs
      `(("ncurses" ,ncurses)
        ("curl" ,curl)
@@ -1963,7 +1985,7 @@ multiple sequence alignments.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ;; Dependencies below are are for tests only.
-       ("samtools" ,samtools)
+       ("samtools" ,samtools-1.9)
        ("bcftools" ,bcftools)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
