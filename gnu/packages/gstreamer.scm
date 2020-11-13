@@ -713,7 +713,9 @@ model to base your own plug-in on, here it is.")
                  (("'GST_PLUGIN_SYSTEM_PATH_1_0', ''")
                   (string-append "'GST_PLUGIN_SYSTEM_PATH_1_0', '"
                                  gst-plugins-good "/lib/gstreamer-1.0'"))
-                 ;; This test occasionally times out, see
+                 ;; These tests are flaky and occasionally time out:
+                 ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/932
+                 ((".*elements/curlhttpsrc\\.c.*") "")
                  ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
                  ((".*elements/dtls\\.c.*") ""))
                #t))))))
