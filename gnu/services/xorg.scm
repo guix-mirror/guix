@@ -45,6 +45,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu system shadow)
+  #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix packages)
@@ -70,6 +71,7 @@
             xorg-wrapper
             xorg-start-command
             xinitrc
+            xorg-server-service-type
 
             %default-slim-theme
             %default-slim-theme-name
@@ -482,6 +484,41 @@ a `service-extension', as used by `set-xorg-configuration'."
                       (inherit config)
                       (xorg-configuration xorg-configuration))
                      config)))))))
+
+(define (xorg-server-profile-service config)
+  ;; XXX: profile-service-type only accepts <package> objects.
+  (list
+   (package
+     (name "xorg-wrapper")
+     (version (package-version xorg-server))
+     (source (xorg-wrapper config))
+     (build-system trivial-build-system)
+     (arguments
+      '(#:modules ((guix build utils))
+        #:builder
+        (begin
+          (use-modules (guix build utils))
+          (let* ((source (assoc-ref %build-inputs "source"))
+                 (out (assoc-ref %outputs "out"))
+                 (bin (string-append out "/bin")))
+            (mkdir-p bin)
+            (symlink source (string-append bin "/X"))
+            (symlink source (string-append bin "/Xorg"))
+            #t))))
+     (home-page (package-home-page xorg-server))
+     (synopsis (package-synopsis xorg-server))
+     (description (package-description xorg-server))
+     (license (package-license xorg-server)))))
+
+(define xorg-server-service-type
+  (service-type
+   (name 'xorg-server)
+   (extensions
+    (list (service-extension profile-service-type
+                             xorg-server-profile-service)))
+   (default-value (xorg-configuration))
+   (description "Add @command{X} to the system profile, to be used with
+@command{sx} or @command{xinit}.")))
 
 
 ;;;
