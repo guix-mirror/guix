@@ -11966,17 +11966,17 @@ developed with the aim of being used with the Librem 5 phone.")
 (define-public libgda
   (package
     (name "libgda")
-    (version "5.2.9")
+    (version "5.2.10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.gnome.org/GNOME/libgda.git/")
-             (commit "LIBGDA_5_2_9")))
+             (commit (string-append "LIBGDA_" (string-replace-substring
+                                               version "." "_")))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "122anbk15vj2dfxrw7s48b6zwlpp7cyppshxizynvf3zmc0ygw3j"))))
+        (base32 "18rg773gq9v3cdywpmrp12c5xyp97ir9yqjinccpi22sksb1kl8a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-vala")
@@ -12021,6 +12021,7 @@ developed with the aim of being used with the Librem 5 phone.")
        ("vala" ,vala)))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("glib:bin" ,glib "bin")
        ("gnome-common" ,gnome-common)
