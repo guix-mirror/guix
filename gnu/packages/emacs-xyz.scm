@@ -2764,20 +2764,21 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (let ((commit "58a840d0671091e3064e36244790ef8839da87d6")
-        (revision "2"))
+  (let* ((commit "a694fdbcedb6edd2239a31d326e475c763ee32f8")
+         (revision "3"))
     (package
       (name "emacs-guix")
       (version (git-version "0.5.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/emacs-guix/emacs-guix")
+                      ;; TODO: Use the official version when it has a new home
+                      (url "https://github.com/jsoo1/guix.el")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qnr5sixmvrhr9rinrhfy7sy20mikjvvwbdixwkbx30qpcdwgwj1"))))
+                  "1pqw7zbgxzwpig4xr0izc3z8h80c72i6bl5yi12br0d7aq6dbkvj"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -2786,7 +2787,8 @@ type, for example: packages, buffers, files, etc.")
          ("texinfo" ,texinfo)
          ("emacs" ,emacs-minimal)))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       `(("guile"
+          ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guix" ,guix)))
       (propagated-inputs
        `(("geiser" ,emacs-geiser)
