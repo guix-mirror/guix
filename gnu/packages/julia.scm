@@ -201,9 +201,10 @@
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'check 'set-ld-library-path
-           (lambda* (#:key native-inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (setenv "LD_LIBRARY_PATH"
-                     (string-append (assoc-ref native-inputs "zlib") "/lib"))))
+                     (string-append (assoc-ref (or native-inputs inputs) "zlib")
+                                    "/lib"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
