@@ -1986,7 +1986,7 @@ multiple sequence alignments.")
      `(("python-cython" ,python-cython)
        ;; Dependencies below are are for tests only.
        ("samtools" ,samtools-1.9)
-       ("bcftools" ,bcftools)
+       ("bcftools" ,bcftools-1.9)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
