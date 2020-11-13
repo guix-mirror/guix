@@ -920,7 +920,7 @@ on numbers.")
 (define-public lua-resty-lrucache
   (package
     (name "lua-resty-lrucache")
-    (version "0.09")
+    (version "0.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -929,7 +929,7 @@ on numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mwiy55qs8bija1kpgizmqgk15ijizzv4sa1giaz9qlqs2kqd7q2"))))
+                "1bsc54v1rvxmkwg7a2c01p192lvw5g576f589is8fy1m1c6v4ap8"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
