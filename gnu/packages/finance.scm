@@ -1091,13 +1091,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.60.0")
+    (version "0.60.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "0djn6ykmqbp8l2xbg6z8r7rkz9ijgygp2pr0gc6i7dsrlsqmjh32"))))
+        (base32 "1cwda5mk05zmpar7fpk9m4bziyz2s5pd0922h22fns5hw7vfsybh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests fail with: "TypeError: block_uid() missing 1 required
