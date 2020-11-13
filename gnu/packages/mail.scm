@@ -1228,14 +1228,14 @@ and search library.")
 (define-public muchsync
   (package
     (name "muchsync")
-    (version "5")
+    (version "6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.muchsync.org/src/"
                            "muchsync-" version ".tar.gz"))
        (sha256
-        (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
+        (base32 "1s799kx16nm5ry1fcqcc0grgxrwnnp4cnzd0hzwbkvc5v2sf6g8b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pandoc" ,pandoc)
@@ -1255,7 +1255,7 @@ broadband.  Muchsync supports arbitrary pairwise synchronization among
 replicas.  A version-vector-based algorithm allows it to exchange only the
 minimum information necessary to bring replicas up to date regardless of which
 pairs have previously synchronized.")
-    (license license:gpl2+)))
+    (license license:gpl2+)))           ; with OpenSSL libcrypto exception
 
 (define-public getmail
   (package
