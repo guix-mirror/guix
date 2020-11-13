@@ -883,7 +883,7 @@ on numbers.")
 (define-public lua-resty-core
   (package
     (name "lua-resty-core")
-    (version "0.1.17")
+    (version "0.1.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -892,7 +892,7 @@ on numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11fyli6yrg7b91nv9v2sbrc6y7z3h9lgf4lrrhcjk2bb906576a0"))))
+                "1c58hykwpg5zqbyhrcb703pzwbkih409v3bh2gady6z2kj9q32dw"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
