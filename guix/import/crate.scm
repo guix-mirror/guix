@@ -150,6 +150,12 @@ record or #f if it was not found."
     ((args ...)
      `((arguments (,'quasiquote ,args))))))
 
+(define (version->semver-prefix version)
+  "Return the version up to and including the first non-zero part"
+  (first
+   (map match:substring
+        (list-matches "^(0+\\.){,2}[0-9]+" version))))
+
 (define* (make-crate-sexp #:key name version cargo-inputs cargo-development-inputs
                           home-page synopsis description license build?)
   "Return the `package' s-expression for a rust package with the given NAME,
@@ -160,7 +166,7 @@ and LICENSE."
      (match-lambda
       ((name version)
        (list (crate-name->package-name name)
-             (version-major+minor version))))
+             (version->semver-prefix version))))
      inputs))
 
   (let* ((port (http-fetch (crate-uri name version)))
@@ -194,7 +200,7 @@ and LICENSE."
                                ((license) license)
                                (_ `(list ,@license)))))))
          (close-port port)
-         (package->definition pkg #t)))
+         (package->definition pkg (version->semver-prefix version))))
 
 (define (string->license string)
   (filter-map (lambda (license)

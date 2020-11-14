@@ -263,16 +263,21 @@ package definition."
     ((package-inputs ...)
      `((native-inputs (,'quasiquote ,package-inputs))))))
 
-(define* (package->definition guix-package #:optional append-version?)
+(define* (package->definition guix-package #:optional append-version?/string)
+  "If APPEND-VERSION?/STRING is #t, append the package's major+minor
+version. If APPEND-VERSION?/string is a string, append this string."
   (match guix-package
     ((or
       ('package ('name name) ('version version) . rest)
       ('let _ ('package ('name name) ('version version) . rest)))
 
      `(define-public ,(string->symbol
-                       (if append-version?
-                           (string-append name "-" (version-major+minor version))
-                           version))
+                       (cond
+                        ((string? append-version?/string)
+                         (string-append name "-" append-version?/string))
+                        ((= append-version?/string #t)
+                         (string-append name "-" (version-major+minor version)))
+                        ((#t) version)))
         ,guix-package))))
 
 (define (build-system-modules)
