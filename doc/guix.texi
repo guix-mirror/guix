@@ -405,7 +405,7 @@ using a different distro underneath!}.  @xref{GNU Distribution}.
 @cindex user interfaces
 Guix provides a command-line package management interface
 (@pxref{Package Management}), tools to help with software development
-(@pxref{Development}), command-line utilities for more advanced usage,
+(@pxref{Development}), command-line utilities for more advanced usage
 (@pxref{Utilities}), as well as Scheme programming interfaces
 (@pxref{Programming Interface}).
 @cindex build daemon
