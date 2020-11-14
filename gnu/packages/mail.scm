@@ -63,6 +63,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -107,6 +108,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
@@ -114,6 +116,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
@@ -702,6 +705,91 @@ mailpack.  What can alterMIME do?
     ;; published under the alterMIME license.
     (license (list (license:non-copyleft "file://LICENSE")
                    license:bsd-3))))
+
+(define-public astroid
+  (package
+    (name "astroid")
+    (version "0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astroidmail/astroid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11cxbva9ni98gii59xmbxh4c6idcg3mg0pgdsp1c3j0yg7ix0lj3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; https://github.com/astroidmail/astroid/pull/685
+           (substitute* "tests/test_composed_message.cc"
+             (("\\\\n\\.\\.\\.") "\\n...\\n"))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-GNinja")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-markdown-test
+           ;; This test relies on the plugins and the test suite
+           ;; cannot find the Astroid module.
+           ;;  gi.require_version ('Astroid', '0.2')
+           ;; ValueError: Namespace Astroid not available
+           (lambda _
+             (substitute* "tests/CMakeLists.txt"
+               ((".*markdown.*") ""))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "ninja" "-j" (number->string (parallel-job-count)))))
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (setenv "HOME" (getcwd))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+               (invoke "ctest" "."))
+             #t))
+         (replace 'install
+           (lambda _
+             (invoke "ninja" "install"))))))
+    (native-inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gnupg" ,gnupg)
+       ("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)
+       ("ronn" ,ronn)
+       ("w3m" ,w3m)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmime" ,gmime)
+       ("gobject-introspection" ,gobject-introspection) ; it is referenced
+       ("gtkmm" ,gtkmm)
+       ("libpeas" ,libpeas)
+       ("libsass" ,libsass)
+       ("notmuch" ,notmuch)
+       ("protobuf" ,protobuf)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://astroidmail.github.io/")
+    (synopsis "GTK frontend to the notmuch mail system")
+    (description
+     "Astroid is a lightweight and fast Mail User Agent that provides a
+graphical interface to searching, display and composing email, organized in
+thread and tags.  Astroid uses the notmuch backend for searches through tons of
+email.  Astroid searches, displays and compose emails — and relies on other
+programs for fetching, syncing and sending email.")
+    (license (list license:gpl3+        ; 'this program'
+                   license:lgpl2.1+)))) ; code from geary, gmime
 
 (define-public ripmime
   ;; Upstream does not tag or otherwise provide any releases (only a version
