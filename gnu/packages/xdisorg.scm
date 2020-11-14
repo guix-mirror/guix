@@ -2550,3 +2550,35 @@ such as sway, similar to @command{rofi}.")
      "@command{dex}, @dfn{DesktopEntry Execution}, is a program to generate
 and execute @file{.desktop} files of the Application type.")
     (license license:gpl3+)))
+
+(define-public sx
+  (package
+    (name "sx")
+    (version "2.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Earnestly/sx")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0p24ghp1ygvyc2hv81byhxax7491yhcc5priq5ldv07nzl7akagc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))))
+    (propagated-inputs
+     `(("xauth" ,xauth)))
+    (home-page "https://github.com/Earnestly/sx")
+    (synopsis "Start an xorg server")
+    (description
+     "@command{sx} is a simple alternative to both @command{xinit} and
+@command{startx} for starting an Xorg server.")
+    (license license:x11)))
