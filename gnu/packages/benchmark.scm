@@ -47,14 +47,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.23")
+    (version "3.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "0cy32431hv0i84yrryna5byj4r610n6i1rm8nfflnrznbf051axs"))))
+                "0qshbyqpvm01hmpkmk0v0jhjz23sngqhy291kiz38z04s2df4vxn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
