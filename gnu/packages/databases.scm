@@ -1324,12 +1324,12 @@ organized in a hash table or B+ tree.")
     (native-inputs `(("bc" ,bc)
                      ("bash:include" ,bash "include")
                      ("check" ,check)
-                     ("libuuid" ,util-linux)
                      ("pkg-config" ,pkg-config)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
-              ("libgcrypt" ,libgcrypt)))
+              ("libgcrypt" ,libgcrypt)
+              ("libuuid" ,util-linux "lib")))
     (synopsis "Manipulate plain text files as databases")
     (description
      "GNU Recutils is a set of tools and libraries for creating and
