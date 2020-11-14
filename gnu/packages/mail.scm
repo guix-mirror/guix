@@ -593,12 +593,15 @@ It adds a large amount of new and improved features to mutt.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gnupg" ,gnupg)))               ; for tests only
+       ("gnupg" ,gnupg)                 ; for tests only
+       ("gobject-introspection" ,gobject-introspection)))
     (inputs `(("glib" ,glib)
               ("gpgme" ,gpgme)
               ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+         (list "--enable-introspection=yes")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'patch-paths-in-tests
