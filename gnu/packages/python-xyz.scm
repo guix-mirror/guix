@@ -90,6 +90,7 @@
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18234,6 +18235,44 @@ gevent-powered application.")
 
 (define-public python2-gipc
   (package-with-python2 python-gipc))
+
+(define-public python-beautifultable
+  (package
+    (name "python-beautifultable")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beautifultable" version))
+       (sha256
+        (base32
+         "0wwlbifcbpzy3wfv6yzsxncarsngzizmmxbn6cy5gazlcq7h4k5x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("setup\\(")
+                "setup(\n    test_suite=\"test\",")))))))
+    (home-page "https://github.com/pri22296/beautifultable")
+    (synopsis "Print ASCII tables for terminals")
+    (description "@code{python-beautifultable} provides a class for easily
+printing tabular data in a visually appealing ASCII format to a terminal.
+
+Features include, but are not limited to:
+@itemize
+@item Full customization of the look and feel of the table
+@item Row and column accessors.
+@item Full support for colors using ANSI sequences or any library.
+@item Plenty of predefined styles and option to create custom ones.
+@item Support for Unicode characters.
+@item Supports streaming table when data is slow to retrieve.
+@end itemize")
+    (license license:expat)))
 
 (define-public python-fusepy
   (package
