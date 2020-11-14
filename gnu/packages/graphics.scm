@@ -931,23 +931,27 @@ operating system features.")
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.12.6")
+    (version "1.12.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/OGRECave/ogre")
-             (commit (string-append "v" version))
-             (recursive? #t)))          ;for Dear ImGui submodule
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ap3krrl55hswv1n2r3ijf3xrb3kf9dnqvwyrc0fgnc7j7vd45sk"))))
+        (base32 "0b0pwh31nykrfhka6jqwclfx1pxzhj11vkl91951d63kwr5bbzms"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'unpack-dear-imgui
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "dear-imgui-source")
+                               "../dear-imgui-source")
+             #t))
          (add-before 'configure 'pre-configure
-           ;; CMakeLists.txt forces CMAKE_INSTALL_RPATH value.  As
+           ;; CMakeLists.txt forces a CMAKE_INSTALL_RPATH value.  As
            ;; a consequence, we cannot suggest ours in configure flags.  Fix
            ;; it.
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -961,6 +965,7 @@ operating system features.")
                                   (string-append out "/lib/OGRE"))
                             ";")))
          (list (string-append "-DCMAKE_INSTALL_RPATH=" runpath)
+               "-DIMGUI_DIR=../dear-imgui-source"
                "-DOGRE_BUILD_DEPENDENCIES=OFF"
                "-DOGRE_BUILD_TESTS=TRUE"
                "-DOGRE_INSTALL_DOCS=TRUE"
@@ -968,6 +973,7 @@ operating system features.")
                "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE"))))
     (native-inputs
      `(("boost" ,boost)
+       ("dear-imgui-source" ,(package-source dear-imgui))
        ("doxygen" ,doxygen)
        ("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))
