@@ -18691,79 +18691,37 @@ validation testing and application logic.")
 (define-public python-numba
   (package
     (name "python-numba")
-    (version "0.46.0")
+    (version "0.51.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numba" version))
        (sha256
         (base32
-         "1vnfzcq6fcnkmdms6114d49awvvj5181fl7z1wlha27qc2paxjy2"))))
+         "0s0777m8kq4l96i88zj78np7283v1n4878qfc1gvzb8l45bmkg8n"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-proprietary-features
            (lambda _
              (setenv "NUMBA_DISABLE_HSA" "1")
              (setenv "NUMBA_DISABLE_CUDA" "1")
              #t))
-         (add-after 'unpack 'remove-failing-tests
-           (lambda _
-             ;; FIXME: These tests fail for unknown reasons:
-             ;; test_non_writable_pycache, test_non_creatable_pycache, and
-             ;; test_frozen (all in numba.tests.test_dispatcher.TestCache).
-             (substitute* "numba/tests/test_dispatcher.py"
-               (("def test(_non_writable_pycache)" _ m)
-                (string-append "def guix_skip" m))
-               (("def test(_non_creatable_pycache)" _ m)
-                (string-append "def guix_skip" m))
-               (("def test(_frozen)" _ m)
-                (string-append "def guix_skip" m)))
-
-             ;; These tests fail because we don't run the tests from the build
-             ;; directory: test_setup_py_distutils, test_setup_py_setuptools
-             ;; They are in numba.tests.test_pycc.TestDistutilsSupport.
-             (substitute* "numba/tests/test_pycc.py"
-               (("def test(_setup_py_distutils|_setup_py_setuptools)" _ m)
-                (string-append "def guix_skip" m)))
-
-             ;; These tests fail because our version of Python does not have
-             ;; a recognizable front-end for the Numba distribution to use
-             ;; to check against.
-             (substitute* "numba/tests/test_entrypoints.py"
-               (("def test(_init_entrypoint)" _ m)
-                (string-append "def guix_skip" m)))
-             (substitute* "numba/tests/test_jitclasses.py"
-               (("def test(_jitclass_longlabel_not_truncated)" _ m)
-                (string-append "def guix_skip" m)))
-             #t))
          (replace 'check
-           (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH")))
-               ;; Something is wrong with the PYTHONPATH when running the
-               ;; tests from the build directory, as it complains about not being
-               ;; able to import certain modules.
-               (with-directory-excursion "/tmp"
-                 (invoke "python3" "-m" "numba.runtests" "-v" "-m")))
-             #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; Something is wrong with the PYTHONPATH when running the
+             ;; tests from the build directory, as it complains about not being
+             ;; able to import certain modules.
+             (with-directory-excursion "/tmp"
+               (setenv "HOME" (getcwd))
+               (invoke "python3" "-m" "numba.runtests" "-v" "-m")))))))
     (propagated-inputs
      `(("python-llvmlite" ,python-llvmlite)
        ("python-numpy" ,python-numpy)
        ("python-singledispatch" ,python-singledispatch)))
-    ;; Needed for tests.
-    (inputs
+    (native-inputs                      ;for tests
      `(("python-jinja2" ,python-jinja2)
        ("python-pygments" ,python-pygments)))
     (home-page "https://numba.pydata.org")
