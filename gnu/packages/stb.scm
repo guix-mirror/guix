@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,6 +102,12 @@ decoding from file or memory.  A variety of formats are supported."))
    "stb-image-write" "1.13"
    "stb-image-write is a small library for writing image files to the
 C@tie{}@code{stdio} interface."))
+
+(define-public stb-rect-pack
+  (make-stb-header-package
+   "stb-rect-pack" "1.00"
+   "stb-rect-pack is a small rectangle packing library useful for, e.g., packing
+rectangular textures into an atlas.  It does not do rotation."))
 
 (define-public stb-sprintf
   (make-stb-header-package
