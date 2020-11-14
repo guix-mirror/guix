@@ -989,14 +989,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.7.3")
+    (version "3.9.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "0dh6ky5ngxayyn5f6n7gdamjl49g3khz6pdx9sdnag1zwi8248hs"))))
+         "1i4m74f88qj9ci8rpyzrbk2slmsdj5ipmwdkq6qk24byalm203li"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Low-level cryptographic Python library")
