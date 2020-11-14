@@ -352,7 +352,7 @@
              (_ (error "Unexpected URL: " url)))))
 
         (match (crate->guix-package "foo")
-          ((define-public 'rust-foo-1.0.3
+          ((define-public 'rust-foo-1.0
              (package (name "rust-foo")
                       (version "1.0.3")
                       (source
@@ -369,7 +369,7 @@
                         (#:skip-build? #t
                          #:cargo-inputs
                          (("rust-leaf-alice"
-                           ('unquote 'rust-leaf-alice-0.7.5))))))
+                           ('unquote 'rust-leaf-alice-0.7))))))
                       (home-page "http://example.com")
                       (synopsis "summary")
                       (description "summary")
@@ -433,7 +433,7 @@
         (match (crate-recursive-import "root")
           ;; rust-intermediate-b has no dependency on the rust-leaf-alice
           ;; package, so this is a valid ordering
-          (((define-public 'rust-leaf-alice-0.7.5
+          (((define-public 'rust-leaf-alice-0.7
               (package
                 (name "rust-leaf-alice")
                 (version "0.7.5")
@@ -452,7 +452,7 @@
                 (synopsis "summary")
                 (description "summary")
                 (license (list license:expat license:asl2.0))))
-            (define-public 'rust-leaf-bob-3.0.1
+            (define-public 'rust-leaf-bob-3.0
               (package
                 (name "rust-leaf-bob")
                 (version "3.0.1")
@@ -471,7 +471,7 @@
                 (synopsis "summary")
                 (description "summary")
                 (license (list license:expat license:asl2.0))))
-            (define-public 'rust-intermediate-b-1.2.3
+            (define-public 'rust-intermediate-b-1.2
               (package
                 (name "rust-intermediate-b")
                 (version "1.2.3")
@@ -489,12 +489,12 @@
                  ('quasiquote (#:skip-build? #t
                                #:cargo-inputs
                                (("rust-leaf-bob"
-                                 ('unquote 'rust-leaf-bob-3.0.1))))))
+                                 ('unquote 'rust-leaf-bob-3.0))))))
                 (home-page "http://example.com")
                 (synopsis "summary")
                 (description "summary")
                 (license (list license:expat license:asl2.0))))
-            (define-public 'rust-intermediate-a-1.0.42
+            (define-public 'rust-intermediate-a-1.0
               (package
                 (name "rust-intermediate-a")
                 (version "1.0.42")
@@ -512,16 +512,16 @@
                  ('quasiquote (#:skip-build? #t
                                #:cargo-inputs
                                (("rust-intermediate-b"
-                                 ('unquote 'rust-intermediate-b-1.2.3))
+                                 ('unquote 'rust-intermediate-b-1.2))
                                 ("rust-leaf-alice"
-                                 ('unquote 'rust-leaf-alice-0.7.5))
+                                 ('unquote 'rust-leaf-alice-0.7))
                                 ("rust-leaf-bob"
-                                 ('unquote 'rust-leaf-bob-3.0.1))))))
+                                 ('unquote 'rust-leaf-bob-3.0))))))
                 (home-page "http://example.com")
                 (synopsis "summary")
                 (description "summary")
                 (license (list license:expat license:asl2.0))))
-            (define-public 'rust-root-1.0.4
+            (define-public 'rust-root-1.0
               (package
                 (name "rust-root")
                 (version "1.0.4")
@@ -538,13 +538,13 @@
                 (arguments
                  ('quasiquote (#:cargo-inputs
                                (("rust-intermediate-a"
-                                 ('unquote 'rust-intermediate-a-1.0.42))
+                                 ('unquote 'rust-intermediate-a-1.0))
                                 ("rust-intermediate-b"
-                                 ('unquote 'rust-intermediate-b-1.2.3))
+                                 ('unquote 'rust-intermediate-b-1.2))
                                 ("rust-leaf-alice"
-                                 ('unquote 'rust-leaf-alice-0.7.5))
+                                 ('unquote 'rust-leaf-alice-0.7))
                                 ("rust-leaf-bob"
-                                 ('unquote 'rust-leaf-bob-3.0.1))))))
+                                 ('unquote 'rust-leaf-bob-3.0))))))
                 (home-page "http://example.com")
                 (synopsis "summary")
                 (description "summary")

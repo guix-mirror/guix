@@ -159,7 +159,8 @@ and LICENSE."
     (map
      (match-lambda
       ((name version)
-       (list (crate-name->package-name name) version)))
+       (list (crate-name->package-name name)
+             (version-major+minor version))))
      inputs))
 
   (let* ((port (http-fetch (crate-uri name version)))

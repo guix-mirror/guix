@@ -269,9 +269,10 @@ package definition."
       ('package ('name name) ('version version) . rest)
       ('let _ ('package ('name name) ('version version) . rest)))
 
-     `(define-public ,(string->symbol (if append-version?
-                                          (string-append name "-" version)
-                                          version))
+     `(define-public ,(string->symbol
+                       (if append-version?
+                           (string-append name "-" (version-major+minor version))
+                           version))
         ,guix-package))))
 
 (define (build-system-modules)
