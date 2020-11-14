@@ -1494,7 +1494,7 @@ commands and their arguments.")
 (define-public opendoas
   (package
     (name "opendoas")
-    (version "6.6.1")
+    (version "6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1503,7 +1503,7 @@ commands and their arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+                "1dlwnvy8r6slxcy260gfkximp1ms510wdslpfq9y6xvd2qi5izcb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1511,19 +1511,17 @@ commands and their arguments.")
          (replace 'configure
            ;; The configure script doesn't accept most of the default flags.
            (lambda* (#:key configure-flags #:allow-other-keys)
-             ;; The configure script can only be told which compiler to use
+             ;; The configure script can be told which compiler to use only
              ;; through environment variables.
              (setenv "CC" ,(cc-for-target))
              (apply invoke "./configure" configure-flags)))
          (add-before 'install 'fix-makefile
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "bsd.prog.mk"
+             (substitute* "GNUmakefile"
                (("^\tchown.*$") ""))
              #t)))
        #:configure-flags
        (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             ;; Nothing is done with this value (yet?) but it's supported.
-             ;; (string-append "--target=" (or ,(%current-target-system) ""))
              "--with-timestamp")
        ;; Compiler choice is not carried over from the configure script.
        #:make-flags
