@@ -183,8 +183,7 @@
              (substitute* (cons* "tests/qemu-iotests/common.qemu"
                                  (find-files "tests/qemu-iotests" "^[0-9]+$"))
                (("QEMU_COMM_TIMEOUT=[0-9]+" match)
-                (string-append match "9")))
-             (fail)))
+                (string-append match "9")))))
          (add-after 'unpack 'disable-unusable-tests
            (lambda _
              (substitute* "tests/Makefile.include"
