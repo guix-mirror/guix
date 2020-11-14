@@ -89,6 +89,7 @@
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5062,6 +5063,9 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                ;; has not effect.
                (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
                (setenv "HOME" (getcwd))
+               ;; Fix rounding errors when using the x87 FPU.
+               (when (string-prefix? "i686" ,(%current-system))
+                 (setenv "CFLAGS" "-ffloat-store"))
                (call-with-output-file "setup.cfg"
                  (lambda (port)
                    (format port "[directories]~%
