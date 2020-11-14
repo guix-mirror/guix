@@ -1042,18 +1042,15 @@ PyCryptodome variants, the other being python-pycryptodomex.")
   (package-with-python2 python-pycryptodome))
 
 (define-public python-pycryptodomex
-  (package
+  (package (inherit python-pycryptodome)
     (name "python-pycryptodomex")
-    (version "3.9.9")
+    (version (package-version python-pycryptodome))
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodomex" version))
        (sha256
         (base32 "0lbx4qk3xmwqiidhmkj8qa7bh2lf8bwzg0xjpsh2w5zqjrc7qnvv"))))
-    (build-system python-build-system)
-    (home-page "https://www.pycryptodome.org")
-    (synopsis "Low-level cryptographic Python library")
     (description
      "PyCryptodome is a self-contained Python package of low-level
 cryptographic primitives.  It's not a wrapper to a separate C library like
@@ -1088,9 +1085,7 @@ in userspace)
 @end itemize
 
 PyCryptodomex is the stand-alone version of PyCryptodome that no longer
-provides drop-in compatibility with PyCrypto.")
-    (license (list license:bsd-2
-                   license:public-domain)))) ; code inherited from PyCrypto
+provides drop-in compatibility with PyCrypto.")))
 
 (define-public python-m2crypto
   (package
