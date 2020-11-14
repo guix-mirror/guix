@@ -4430,7 +4430,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4439,8 +4439,7 @@ arrays when needed.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14n8pcgnliicqxzc40xvjxk4cafm4qx7a3rsx5qva74r3ydzx8rn"))
-              (patches (search-patches "multipath-tools-sans-systemd.patch"))
+                "0gipg0z79h76j0f449cx4wcrfsv69ravjlpphsac11h302g3nrvg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4497,6 +4496,18 @@ arrays when needed.")
              (substitute* "tests/Makefile"
                (("-lmultipath -lcmocka")
                 "-lmultipath -L$(mpathcmddir) -lmpathcmd -lcmocka"))
+             #t))
+         (add-after 'unpack 'skip-failing-tests
+           (lambda _
+             ;; This test and the module's setup() test an arbitrary block
+             ;; device node name, but the build environment has none.
+             (substitute* "tests/devt.c"
+               (("return get_one_devt.*") "return 0;\n")
+               (("cmocka_unit_test\\(test_devt2devname_devt_good\\),") ""))
+             ;; The above triggers -Werror=unused-function.  Ignore it.
+             (substitute* "tests/Makefile"
+               (("CFLAGS \\+= " match)
+                (string-append match "-Wno-error=unused-function ")))
              #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
