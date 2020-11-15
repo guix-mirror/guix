@@ -25,6 +25,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
+  #:use-module (gnu packages)
   #:use-module (ice-9 iconv)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-64))
@@ -312,6 +313,7 @@
   \"dependencies\": []
 }")
 
+
 (define test-source-hash
   "")
 
@@ -571,5 +573,86 @@
 (test-equal "licenses: MIT/Apache-2.0"
   '(license:expat license:asl2.0)
   (string->license "MIT/Apache-2.0"))
+
+
+
+(define test-doctool-crate
+  "{
+  \"crate\": {
+    \"max_version\": \"2.2.2\",
+    \"name\": \"leaf-bob\",
+    \"description\": \"summary\",
+    \"homepage\": \"http://example.com\",
+    \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\", \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": 234280,
+        \"num\": \"2.2.2\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/doctool/2.2.2/dependencies\"
+        }
+      }
+    ]
+  }
+}")
+
+;; FIXME: This test depends on some existing packages
+(define test-doctool-dependencies
+  "{
+  \"dependencies\": [
+     {
+       \"crate_id\": \"docopt\",
+       \"kind\": \"normal\",
+       \"req\": \"^0.8.1\"
+     }
+  ]
+}")
+
+
+(test-assert "self-test: rust-docopt 0.8.x is gone, please adjust the test case"
+  (not (null? (find-packages-by-name "rust-docopt" "0.8"))))
+
+(test-assert "cargo-recursive-import-hoors-existing-packages"
+  (mock ((guix http-client) http-fetch
+         (lambda (url . rest)
+           (match url
+             ("https://crates.io/api/v1/crates/doctool"
+              (open-input-string test-doctool-crate))
+             ("https://crates.io/api/v1/crates/doctool/2.2.2/download"
+              (set! test-source-hash
+                    (bytevector->nix-base32-string
+                     (sha256 (string->bytevector "empty file\n" "utf-8"))))
+              (open-input-string "empty file\n"))
+             ("https://crates.io/api/v1/crates/doctool/2.2.2/dependencies"
+              (open-input-string test-doctool-dependencies))
+             (_ (error "Unexpected URL: " url)))))
+        (match (crate-recursive-import "doctool")
+          (((define-public 'rust-doctool-2
+              (package
+                (name "rust-doctool")
+                (version "2.2.2")
+                (source
+                 (origin
+                   (method url-fetch)
+                   (uri (crate-uri "doctool" version))
+                   (file-name
+                    (string-append name "-" version ".tar.gz"))
+                   (sha256
+                    (base32
+                     (?  string? hash)))))
+                (build-system cargo-build-system)
+                (arguments
+                 ('quasiquote (#:cargo-inputs
+                               (("rust-docopt"
+                                 ('unquote 'rust-docopt-0.8))))))
+                (home-page "http://example.com")
+                (synopsis "summary")
+                (description "summary")
+                (license (list license:expat license:asl2.0)))))
+            #t)
+          (x
+           (pk 'fail x #f)))))
 
 (test-end "crate")

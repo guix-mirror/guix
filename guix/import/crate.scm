@@ -32,6 +32,7 @@
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (json)
@@ -92,7 +93,7 @@
   (requirement   crate-dependency-requirement "req")) ;string
 
 (module-autoload! (current-module)
-		  '(semver) '(string->semver semver<?))
+		  '(semver) '(string->semver semver->string semver<?))
 (module-autoload! (current-module)
 		  '(semver ranges) '(string->semver-range semver-range-contains?))
 
@@ -235,6 +236,21 @@ look up the development dependencs for the given crate."
          (or version
              (crate-latest-version crate))))
 
+  ;; find the highest existing package that fulfills the semver <range>
+  (define (find-package-version name range)
+    (let* ((semver-range (string->semver-range range))
+           (versions
+            (sort
+             (filter (lambda (version)
+                       (semver-range-contains? semver-range version))
+                     (map (lambda (pkg)
+                            (string->semver (package-version pkg)))
+                          (find-packages-by-name
+                           (crate-name->package-name name))))
+             semver<?)))
+      (and (not (null-list? versions))
+           (semver->string (last versions)))))
+
   ;; find the highest version of a crate that fulfills the semver <range>
   (define (find-crate-version crate range)
     (let* ((semver-range (string->semver-range range))
@@ -251,6 +267,17 @@ look up the development dependencs for the given crate."
       (and (not (null-list? versions))
            (second (last versions)))))
 
+  (define (dependency-name+version dep)
+    (let* ((name (crate-dependency-id dep))
+           (req (crate-dependency-requirement dep))
+           (existing-version (find-package-version name req)))
+      (if existing-version
+          (list name existing-version)
+          (let* ((crate (lookup-crate* name))
+                 (ver (find-crate-version crate req)))
+            (list name
+                  (crate-version-number ver))))))
+
   (define version*
     (and crate
          (find-crate-version crate version-number)))
@@ -258,13 +285,7 @@ look up the development dependencs for the given crate."
   ;; sort and map the dependencies to a list containing
   ;; pairs of (name version)
   (define (sort-map-dependencies deps)
-    (sort (map (lambda (dep)
-                 (let* ((name (crate-dependency-id dep))
-                        (crate (lookup-crate* name))
-                        (req (crate-dependency-requirement dep))
-                        (ver (find-crate-version crate req)))
-                   (list name
-                         (crate-version-number ver))))
+    (sort (map dependency-name+version
                deps)
           (match-lambda* (((name _) ...)
                           (apply string-ci<? name)))))
