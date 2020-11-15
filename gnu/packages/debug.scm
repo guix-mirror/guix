@@ -613,7 +613,7 @@ error reporting, better tracing, profiling, and a debugger.")
        ("which" ,which)))
     (inputs
      `(("gdb" ,gdb)
-       ("cpanproto" ,capnproto)
+       ("capnproto" ,capnproto)
        ("python" ,python)
        ("python-pexpect" ,python-pexpect)))
     (home-page "https://rr-project.org/")
