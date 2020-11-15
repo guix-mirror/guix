@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1664,24 +1664,33 @@ zero means that PACKAGE does not match any of REGEXPS."
 
 (define* (call-with-paginated-output-port proc
                                           #:key (less-options "FrX"))
-  (if (isatty?* (current-output-port))
-      ;; Set 'LESS' so that 'less' exits if everything fits on the screen (F),
-      ;; lets ANSI escapes through (r), does not send the termcap
-      ;; initialization string (X).  Set it unconditionally because some
-      ;; distros set it to something that doesn't work here.
-      ;;
-      ;; For things that produce long lines, such as 'guix processes', use 'R'
-      ;; instead of 'r': this strips hyperlinks but allows 'less' to make a
-      ;; good estimate of the line length.
-      (let ((pager (with-environment-variables `(("LESS" ,less-options))
-                     (open-pipe* OPEN_WRITE
-                                 (or (getenv "GUIX_PAGER") (getenv "PAGER")
-                                     "less")))))
-        (dynamic-wind
-          (const #t)
-          (lambda () (proc pager))
-          (lambda () (close-pipe pager))))
-      (proc (current-output-port))))
+  (let ((pager-command-line (or (getenv "GUIX_PAGER")
+                                (getenv "PAGER")
+                                "less")))
+    ;; Setting PAGER to the empty string conventionally disables paging.
+    (if (and (not (string-null? pager-command-line))
+             (isatty?* (current-output-port)))
+        ;; Set 'LESS' so that 'less' exits if everything fits on the screen
+        ;; (F), lets ANSI escapes through (r), does not send the termcap
+        ;; initialization string (X).  Set it unconditionally because some
+        ;; distros set it to something that doesn't work here.
+        ;;
+        ;; For things that produce long lines, such as 'guix processes', use
+        ;; 'R' instead of 'r': this strips hyperlinks but allows 'less' to
+        ;; make a good estimate of the line length.
+        (let* ((pager (with-environment-variables `(("LESS" ,less-options))
+                        (apply open-pipe* OPEN_WRITE
+                               ;; Split into arguments.  Treat runs of multiple
+                               ;; whitespace characters as one.  libpipeline-
+                               ;; style "cmd one\ arg" escaping is unsupported.
+                               (remove (lambda (s) (string-null? s))
+                                       (string-split pager-command-line
+                                                     char-set:whitespace))))))
+          (dynamic-wind
+            (const #t)
+            (lambda () (proc pager))
+            (lambda () (close-pipe pager))))
+        (proc (current-output-port)))))
 
 (define-syntax with-paginated-output-port
   (syntax-rules ()
