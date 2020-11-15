@@ -5138,14 +5138,13 @@ Encoding for HTTP.")
 (define-public python-cloudscraper
   (package
     (name "python-cloudscraper")
-    (version "1.2.46")
+    (version "1.2.48")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cloudscraper" version))
        (sha256
-        (base32
-         "1br4p648yassywsd7whz1c7s10rwdysnd7wdqfjq9bksqfxrac3r"))
+        (base32 "0qjxzb0z5bprvmdhx42ayqhlhi2h49d9dwc0vvycj817s71f2sxv"))
        (modules '((guix build utils)))
        (snippet
         '(with-directory-excursion "cloudscraper"
