@@ -5156,6 +5156,10 @@ Encoding for HTTP.")
                        "captcha/deathbycaptcha.py"
                        "interpreters/js2py.py"
                        "interpreters/v8.py"))
+           (substitute* "__init__.py"
+             ;; Perhaps it's a joke, but don't promote proprietary software.
+             (("([Th]is feature is not available) in the .*'" _ prefix)
+              (string-append prefix ".'")))
            #t))))
     (build-system python-build-system)
     (propagated-inputs
