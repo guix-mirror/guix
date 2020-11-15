@@ -136,7 +136,6 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
@@ -872,6 +871,7 @@ transparently check connection attempts against an access control list.")
                (base32
                 "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
     (description
@@ -1823,7 +1823,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.27")
+  (version "1.28")
   (source
     (origin
       (method url-fetch)
@@ -1834,7 +1834,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "0hdx5ajr34f39rycai090y9w8gq9v0shgziynaaj0rzk21vjfdpk"))))
+       (base32 "0kh2qbhxv005pqb35mdk2bld7cg7xnxl12qvdwv30sgd91aqica7"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))

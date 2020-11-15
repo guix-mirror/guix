@@ -1007,7 +1007,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1016,7 +1016,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0786bppk8dhp5p2284qp7pm3b9vwh1cm4n03hiqwd2vvgv41aypy"))))
+        (base32 "0idp1ayqghi5bg83v9qmvzz9wj05flwrp1fxb4kqa6vwxmprvhyk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1228,6 +1228,8 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
                (base32
                 "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freeglut" ,freeglut)
@@ -2186,14 +2188,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.01.1")
+    (version "2020.11.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "06lhba4b9bm6f5yqrb5xvdr0l5shwd95djf9nlpg86prr5xihqks"))))
+                "0c98sjaj6mvxnjp0qnwqbr6fibgb4dlizad2xvkiswf4g4h0pc5f"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2479,7 +2481,8 @@ Both command-line and GTK2 interface are available.")
                 "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-bdjava-jar")
+     `(#:configure-flags '("--disable-bdjava-jar"
+                           "--disable-static")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-libxml2-in-.pc-file

@@ -1176,7 +1176,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-screensaver
   (package
     (name "xfce4-screensaver")
-    (version "0.1.10")
+    (version "0.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1186,7 +1186,7 @@ A plugin for the Xfce panel is also available.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0mqxbyq9np6jzky8y35dlxxmk78q2w0jvwg9kh7a4ib7vmw1qvsq"))))
+                "0xxcvvcch8bqd35ksq8l88a46xnidp59iq4ssyygki0a2vd20h41"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1986,7 +1986,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
 (define-public xfce4-weather-plugin
   (package
    (name "xfce4-weather-plugin")
-   (version "0.10.1")
+   (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1995,7 +1995,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
                                   "/xfce4-weather-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "12bs2rfmmy021087i10vxibdbbvd5vld0vk3h5hymhpz7rgszcmg"))))
+                "1ik2qvmwylsz5vyz4np2y0mmd37s89xkayxi97490c4mj85pj5wh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

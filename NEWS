@@ -11,6 +11,137 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 1.2.0 (since 1.1.0)
+
+** Package management
+*** ‘guix pull’ now crytographically authenticates channels
+*** ‘guix describe -f channels’ now shows “channel introductions”
+*** ‘guix describe -f channels-sans-intro’ omits channel introductions
+*** New ‘guix git authenticate’ command, to authenticate Git checkouts
+*** ‘guix pull’ and ‘guix system reconfigure’ detect attempts to downgrade
+*** New ‘--allow-downgrades’ option for ‘guix pull’ and ‘guix system’
+*** Guix build time reduced thanks to Guile 3.0.4’s “baseline compiler”
+*** New ‘--with-debug-info’ package transformation option
+*** New ‘--with-c-toolchain’ package transformation option
+*** New ‘--without-tests’ package transformation option
+*** ‘--with-input’ & co. now also apply to implicit dependencies
+*** Package transformation options are now recorded in profiles
+*** New fakechroot “execution engine” for packs produced by ‘guix pack -RR’
+*** New ‘--cache-bypass-threshold’ option for ‘guix publish’
+*** New ‘--diff’ option for ‘guix challenge’, to compare substitutes
+*** New ‘--exclude’ option for ‘guix lint’, to exclude checkers
+*** New ‘check-for-collisions’ checker in ‘guix lint’
+*** All of Guix and Guix System now runs on Guile 3.0
+*** ‘guix pull’ and ‘--with-git-url’ now support authenticated SSH repos
+*** ‘guix pull’ now honors $http_proxy and $https_proxy
+*** New ‘--path’ option for ‘guix graph’, showing the shortest path
+*** ‘guix repl’ can now be passed a script to execute
+*** ‘guix help’ finally shows command descriptions
+*** ‘guix install’ etc. no longer list items to download by default
+*** ‘guix search’ etc. now automatically invoke the pager
+*** New ‘--hash’ option for ‘guix hash’
+*** New ‘--list-formats’ option for ‘guix describe’
+*** New “Getting Started” section in the manual
+
+** Distribution
+*** Bootstrap binary seeds reduced to 60 MiB on x86_64/i686
+*** New ‘--target’ option for ‘guix system’, for cross-compilation
+*** New ‘--image-type’ option for ‘guix system disk-image’
+*** New ‘--label’ option for ‘guix system disk-image’
+*** Guix System can now boot from a Btrfs subvolume
+*** New ‘hurd’ field of ‘operating-system’, for GNU/Hurd support
+*** Guix System can be cross-compiled to GNU/Hurd with ‘--target=i586-pc-gnu’
+*** New ‘hurd-vm-service-type’ to spawn a GNU/Hurd VM on GNU/Linux
+*** /etc/guix/acl on Guix System is now built from the OS configuration
+*** ‘rottlog-service-type’ is now part of ‘%base-services’
+*** Linux-libre modules are now gzip-compressed
+*** The efivarfs file system is now part of ‘%base-file-systems’
+*** mcron job specs are now statically checked at OS build time
+*** ‘swap-devices’ field of ‘operating-system’ can contains UUIDs and labels
+*** Graphical installer uses UUIDs for unencrypted swap partitions
+*** Graphical installer now supports NTFS file systems
+*** New services
+
+autossh, ganeti, gmnisrv, guix-build-coordinator,
+guix-build-coordinator-agent, guix-build-coordinator-queue-builds, hostapd,
+hurd-console, hurd-getty, hurd-vm, lxqt, rshiny, secret-service,
+simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
+
+*** XXX new packages
+*** XXX package updates
+
+** Programming interfaces
+*** New ‘maven-build-system’, for packages built with Maven
+*** ‘haskell-build-system’ now always adds a “static” output
+*** New (gnu image) module, to build system images
+*** New (guix git-authenticate) module, for Git checkout authentication
+*** New (guix openpgp) module with a minimal OpenPGP implementation
+*** New (guix transformations) module, for package transformations
+*** New (gnu services hurd) module providing GNU/Hurd services
+*** (guix json) removed in favor of Guile-JSON’s (json) module
+*** (guix zlib) and (guix lzlib) removed in favor of Guile-{Zlib,Lzlib}
+*** ‘local-file’ warns about non-literal relative file names
+*** Daemon now supports more hash algorithms: SHA3 and BLAKE2s
+*** New <content-hash> record type for use in ‘origin’
+*** New ‘let-system’ for in (guix gexp), for system-dependent code
+*** New lowerable <profile> record type in (guix profiles)
+*** (gnu build secret-service) can share secrets with a guest OS
+*** “Programming Interface” section of the manual greatly expounded
+
+** Noteworthy bug fixes
+*** ‘guix pull’ now shows a progress bar while fetching from Git
+    (<https://bugs.gnu.org/39260>)
+*** ‘guix copy’ and ‘guix deploy’ show a progress bar while copying
+*** Bootloader messages are now localized
+    (<https://issues.guix.gnu.org/35394>)
+*** ‘guix system reconfigure’ now starts services not currently running
+    (<https://bugs.gnu.org/43720>)
+*** Offloading and copying small items is now much faster
+    (<https://issues.guix.gnu.org/43340>)
+*** GCC switched back to C_INCLUDE_PATH & co. from CPATH
+    (<https://bugs.gnu.org/30756>)
+*** Graphical installer no longer hangs while connecting to WiFi network
+    (<https://issues.guix.gnu.org/40682>)
+*** GNU Aspell truly honors ASPELL_DICT_DIR (<https://bugs.gnu.org/29686>)
+*** Fix overly aggressive memoization of “commencement” packages
+    (<https://bugs.gnu.org/40482>)
+*** Duplicate /etc entries are now reported (<https://bugs.gnu.org/40729>)
+*** ‘guix pack -R’ wrapper correctly reports exit code
+    (<https://bugs.gnu.org/40816>)
+*** Fix time travel to pre-Guile 3.0 revisions
+    (<https://bugs.gnu.org/41028>)
+*** ‘package-grafts’ returns grafts for all the relevant outputs
+    (<https://bugs.gnu.org/41796>)
+*** ‘guix pull’ and related commands authenticate Git checkouts
+    (<https://bugs.gnu.org/22883>)
+*** Fix GNU libstdc++ misconfiguration in recent ‘gcc-toolchain’ versions
+    (<https://bugs.gnu.org/42392>)
+*** ‘guix pack -R’ wraps propagated inputs as well
+    (<https://bugs.gnu.org/42510>)
+*** ‘guix pack -R’ wrapper leaves root available to child processes
+    (<https://bugs.gnu.org/44261>)
+*** ‘lib/guix/package.cache’ generated by ‘guix pull’ is now bit-reproducible
+    (<https://bugs.gnu.org/42009>)
+*** Graphical installer now properly detects disks containing an LVM partition
+    (<https://issues.guix.gnu.org/42683>)
+*** Fix possible crash when copying store items over SSH
+    (<https://bugs.gnu.org/42740>)
+*** ‘gcc’ is now a “deprecated” alias for ‘gcc-toolchain’
+    (<https://bugs.gnu.org/43303>)
+*** ‘package-input-rewriting’ & co. no longer yield unnecessary rebuilds
+    (<https://bugs.gnu.org/42156>)
+*** Offloading better normalizes build machine load
+    (<https://issues.guix.gnu.org/43773>)
+*** ‘guix build --check’ now honors ‘--rounds’
+    (<https://issues.guix.gnu.org/40144>)
+*** ‘guix-install.sh’ now installs shell completion files
+    (<https://bugs.gnu.org/43744>)
+*** ‘guix-install.sh’ now warns about lack of ‘nscd’
+    (<https://bugs.gnu.org/43744>)
+
+** Native language support
+*** TODO populate
+
 * Changes in 1.1.0 (since 1.0.1)
 ** Package management
 *** New ‘guix deploy’ command to deploy several machines at once

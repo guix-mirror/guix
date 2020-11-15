@@ -2470,7 +2470,18 @@ scientific applications modeled by partial differential equations.")
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))))
+           "1rm1qj5wlkhxl39by9n78lh3gbmii31wsnb8j1rr5hvfr5xgbx2q"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Ensure source file is regenerated in the build phase.
+            (delete-file "src/petsc4py.PETSc.c")
+            ;; Remove legacy GC code.  See
+            ;; https://bitbucket.org/petsc/petsc4py/issues/125.
+            (substitute* "src/PETSc/cyclicgc.pxi"
+                         ((".*gc_refs.*") "" )
+                         ((".*PyGC_Head.*") ""))
+            #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2482,6 +2493,8 @@ scientific applications modeled by partial differential equations.")
              #t))
          (add-before 'check 'mpi-setup
            ,%openmpi-setup))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     (inputs
      `(("petsc" ,petsc-openmpi)
        ("python-numpy" ,python-numpy)))
@@ -2895,14 +2908,14 @@ easy-to-write markup language for mathematics.")
 (define-public superlu
   (package
     (name "superlu")
-    (version "5.2.1")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://portal.nersc.gov/project/sparse/superlu/"
                            "superlu_" version ".tar.gz"))
        (sha256
-        (base32 "0qzlb7cd608q62kyppd0a8c65l03vrwqql6gsm465rky23b6dyr8"))
+        (base32 "13520vk6fqspyl22cq4ak2jh3rlmhja4czq56j75fdx65fkk80s7"))
        (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub adapted

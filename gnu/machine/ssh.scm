@@ -37,6 +37,7 @@
   #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -353,8 +354,9 @@ of MACHINE's system profile, ordered from most recent to oldest."
 
   (define remote-exp
     (with-extensions (list guile-gcrypt)
-      (with-imported-modules (source-module-closure '((guix config)
-                                                      (guix profiles)))
+      (with-imported-modules (source-module-closure
+                              `(((guix config) => ,(make-config.scm))
+                                (guix profiles)))
         #~(begin
             (use-modules (guix config)
                          (guix profiles)

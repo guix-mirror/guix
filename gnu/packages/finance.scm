@@ -727,7 +727,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.1")
+    (version "0.17.1.4")
     (source
      (origin
        (method git-fetch)
@@ -736,7 +736,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0aqhp4rmqsgwjb875kgh6qwz0wyyiag1fksyic9cnhgg5j5y95nx"))))
+        (base32 "1ixjfdlvwr2an2s9jaql240bk7jpq5hhm5c4hww0bicyy3fp12ng"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -748,8 +748,6 @@ the Monero command line client and daemon.")
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtlocation" ,qtlocation)
-       ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2",qtquickcontrols2)
        ("qtsvg" ,qtsvg)
@@ -761,7 +759,7 @@ the Monero command line client and daemon.")
              "-DENABLE_PASS_STRENGTH_METER=ON"
              (string-append "-DReadline_ROOT_DIR="
                             (assoc-ref %build-inputs "readline"))
-             "-DCMAKE_BUILD_TYPE=Release")
+             "-DCMAKE_PREFIX_PATH=\"\"")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
@@ -774,9 +772,6 @@ the Monero command line client and daemon.")
              #t))
          (add-after 'extract-monero-sources 'fix-build
            (lambda _
-             (substitute* "monero/src/version.cpp.in"
-               (("@VERSION_IS_RELEASE@")
-                "false"))
              (substitute* "src/version.js.in"
                (("@VERSION_TAG_GUI@")
                 ,version))
@@ -1096,13 +1091,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.60.0")
+    (version "0.60.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "0djn6ykmqbp8l2xbg6z8r7rkz9ijgygp2pr0gc6i7dsrlsqmjh32"))))
+        (base32 "1cwda5mk05zmpar7fpk9m4bziyz2s5pd0922h22fns5hw7vfsybh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests fail with: "TypeError: block_uid() missing 1 required

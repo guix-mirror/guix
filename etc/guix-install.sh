@@ -6,6 +6,7 @@
 # Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 # Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+# Copyright © 2020 Daniel Brooks <db48x@db48x.net>
 #
 # This file is part of GNU Guix.
 #
@@ -60,6 +61,7 @@ INF="[ INFO ] "
 
 DEBUG=0
 GNU_URL="https://ftp.gnu.org/gnu/guix/"
+#GNU_URL="https://alpha.gnu.org/gnu/guix/"
 OPENPGP_SIGNING_KEY_ID="3CE464558A84FDC69DB40CFB090B11993D9AEBB5"
 
 # This script needs to know where root's home directory is.  However, we
@@ -228,11 +230,11 @@ guix_get_bin_list()
 
     # Filter only version and architecture
     bin_ver_ls=("$(wget -qO- "$gnu_url" \
-        | sed -n -e 's/.*guix-binary-\([0-9.]*\)\..*.tar.xz.*/\1/p' \
+        | sed -n -e 's/.*guix-binary-\([0-9.]*[a-z0-9]*\)\..*.tar.xz.*/\1/p' \
         | sort -Vu)")
 
     latest_ver="$(echo "$bin_ver_ls" \
-                       | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}" \
+                       | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}[a-z0-9]*" \
                        | tail -n1)"
 
     default_ver="guix-binary-${latest_ver}.${ARCH_OS}"

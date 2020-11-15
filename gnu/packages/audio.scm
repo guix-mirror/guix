@@ -862,16 +862,16 @@ tools.")
          "audiofile-Fix-index-overflow-in-IMA.cpp.patch"
          ;; CVE-2017-6827, CVE-2017-6828, CVE-2017-6832, CVE-2017-6835,
          ;; CVE-2017-6837:
-         "audiofile-Check-the-number-of-coefficients.patch"
+         "audiofile-check-number-of-coefficients.patch"
          ;; CVE-2017-6839:
-         "audiofile-Fix-overflow-in-MSADPCM-decodeSam.patch"
+         "audiofile-overflow-in-MSADPCM.patch"
          ;; CVE-2017-6830, CVE-2017-6834, CVE-2017-6836, CVE-2017-6838:
-         "audiofile-Fix-multiply-overflow-sfconvert.patch"
-         "audiofile-signature-of-multiplyCheckOverflow.patch"
+         "audiofile-multiply-overflow.patch"
+         "audiofile-function-signature.patch"
          ;; CVE-2017-6831:
          "audiofile-Fail-on-error-in-parseFormat.patch"
          ;; CVE-2017-6833:
-         "audiofile-division-by-zero-BlockCodec-runPull.patch"
+         "audiofile-division-by-zero.patch"
          "audiofile-CVE-2018-13440.patch"
          "audiofile-CVE-2018-17095.patch"))))
     (properties `((lint-hidden-cve . ("CVE-2017-6829"

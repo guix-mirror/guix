@@ -83,6 +83,7 @@ Copyright @copyright{} 2020 pinoaffe@*
 Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*
 Copyright @copyright{} 2020 raingloom@*
+Copyright @copyright{} 2020 Daniel Brooks@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -405,7 +406,7 @@ using a different distro underneath!}.  @xref{GNU Distribution}.
 @cindex user interfaces
 Guix provides a command-line package management interface
 (@pxref{Package Management}), tools to help with software development
-(@pxref{Development}), command-line utilities for more advanced usage,
+(@pxref{Development}), command-line utilities for more advanced usage
 (@pxref{Utilities}), as well as Scheme programming interfaces
 (@pxref{Programming Interface}).
 @cindex build daemon
@@ -1397,6 +1398,11 @@ build a package that provides this executable and convince a user to
 install and run it, which lifts it into the @code{guix_daemon_t} domain.
 At that point SELinux could not prevent it from accessing files that are
 allowed for processes in that domain.
+
+You will need to relabel the store directory after all upgrades to
+@file{guix-daemon}, such as after running @code{guix pull}.  Assuming the
+store is in @file{/gnu}, you can do this with @code{restorecon -vR /gnu},
+or by other means provided by your operating system.
 
 We could generate a much more restrictive policy at installation time,
 so that only the @emph{exact} file name of the currently installed
@@ -6834,6 +6840,18 @@ commit:
   (commit "dc7dc56a00e48fe6f231a58f6537139fe2908fb9"))
 @end lisp
 @end deftp
+
+For Mercurial repositories, the module @code{(guix hg-download)} defines
+the @code{hg-fetch} origin method and @code{hg-reference} data type for
+support of the Mercurial version control system.
+
+@deffn {Scheme Procedure} hg-fetch @var{ref} @var{hash-algo} @var{hash} @
+           [name]
+Return a fixed-output derivation that fetches @var{ref}, a
+@code{<hg-reference>} object.  The output is expected to have recursive
+hash @var{hash} of type @var{hash-algo} (a symbol).  Use @var{name} as
+the file name, or a generic name if @code{#false}.
+@end deffn
 
 @node Defining Package Variants
 @section Defining Package Variants
@@ -14524,6 +14542,9 @@ the name of the log-in program.
 @item @code{login-pause?} (default: @code{#f})
 When set to @code{#t} in conjunction with @var{auto-login}, the user
 will have to press a key before the log-in shell is launched.
+
+@item @code{clear-on-logout?} (default: @code{#t})
+When set to @code{#t}, the screen will be cleared after logout.
 
 @item @code{mingetty} (default: @var{mingetty})
 The Mingetty package to use.
@@ -29220,18 +29241,18 @@ the password from can also be specified, and this is more secure.
 A file containing the password to use when connecting to the
 coordinator.
 
-@item @code{systems} (default: @var{#f})
+@item @code{systems} (default: @code{#f})
 The systems for which this agent should fetch builds.  The agent process
 will use the current system it's running on as the default.
 
 @item @code{max-parallel-builds} (default: @code{1})
 The number of builds to perform in parallel.
 
-@item @code{derivation-substitute-urls} (default: @code{1})
+@item @code{derivation-substitute-urls} (default: @code{#f})
 URLs from which to attempt to fetch substitutes for derivations, if the
 derivations aren't already available.
 
-@item @code{non-derivation-substitute-urls} (default: @code{1})
+@item @code{non-derivation-substitute-urls} (default: @code{#f})
 URLs from which to attempt to fetch substitutes for build inputs, if the
 input store items aren't already available.
 

@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
@@ -60,6 +62,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -341,6 +344,129 @@ access.")
     (properties `((lint-hidden-cve . ("CVE-2016-9179"))))
     (license license:gpl2)))
 
+(define-public kristall
+  ;; Fixes to the build system applied after the latest tag
+  ;; Use tagged release when updating
+  (let ((commit "204b08a9303e75cd8d4c252b0554935062766f86")
+        (revision "1"))
+    (package
+      (name "kristall")
+      (version (string-append "0.3-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/MasterQ32/kristall")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mymq0dh6r0829x74j0jkw8hw46amqwbznlf1b4ra6w77h9yz3lj"))
+         (modules '((srfi srfi-1)
+                    (ice-9 ftw)
+                    (guix build utils)))
+         (snippet
+          '(let ((preserved-lib-files '("luis-l-gist")))
+             (with-directory-excursion "lib"
+               (for-each
+                (lambda (directory)
+                  (simple-format #t "deleting: ~A\n" directory)
+                  (delete-file-recursively directory))
+                (lset-difference string=?
+                                 (scandir ".")
+                                 (cons* "." ".." preserved-lib-files))))
+             ;; Contains executable of 7z and pscp
+             (delete-file-recursively "ci/tools")
+             ;; Remove bundled fonts
+             (delete-file-recursively "src/fonts")
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build qt-utils)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build qt-utils))
+         #:make-flags
+         (list (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no ./configure script
+           (delete 'check)              ; no check target
+           (add-before 'build 'set-program-version
+             (lambda _
+               ;; configure.ac relies on ‘git --describe’ to get the version.
+               ;; Patch it to just return the real version number directly.
+               (substitute* "src/kristall.pro"
+                 (("(KRISTALL_VERSION=).*" _ match)
+                  (string-append match ,version "\n")))
+               #t))
+           (add-before 'build 'dont-use-bundled-cmark
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 (("(^include\\(.*cmark.*)" _ match)
+                  (string-append
+                   "LIBS += -I" (assoc-ref %build-inputs "cmark") " -lcmark")))
+               #t))
+           (add-before 'build 'dont-use-bundled-breeze-stylesheet
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 (("../lib/BreezeStyleSheets/breeze.qrc")
+                  (string-append
+                   (assoc-ref %build-inputs "breeze-stylesheet") "/breeze.qrc")))
+               #t))
+           (add-before 'build 'dont-use-bundled-fonts
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 ((".*fonts.qrc.*") ""))
+               (substitute* "src/main.cpp"
+                 (("/fonts/OpenMoji-Color")
+                  (string-append
+                   (assoc-ref %build-inputs "font-openmoji")
+                   "/share/fonts/truetype/OpenMoji-Color"))
+                 (("/fonts/NotoColorEmoji")
+                  (string-append
+                   (assoc-ref %build-inputs "font-google-noto")
+                   "/share/fonts/truetype/NotoColorEmoji")))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-qt-program out "kristall"))
+               #t)))))
+      (native-inputs
+       `(("breeze-stylesheet"
+          ,(let ((commit "2d595a956f8a5f493aa51139a470b768a6d82cce")
+                 (revision "0"))
+             (origin
+               (method git-fetch)
+               (uri
+                (git-reference
+                 (url "https://github.com/Alexhuszagh/BreezeStyleSheets")
+                 (commit "2d595a956f8a5f493aa51139a470b768a6d82cce")))
+               (file-name (git-file-name "breeze-stylesheet"
+                                         (git-version "0" revision commit)))
+               (sha256
+                (base32
+                 "1kvkxkisi3czldnb43ig60l55pi4a3m2a4ixp7krhpf9fc5wp294")))))))
+      (inputs
+       `(("cmark" ,cmark)
+         ("font-google-noto" ,font-google-noto)
+         ("font-openmoji" ,font-openmoji)
+         ("openssl" ,openssl)
+         ("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtsvg" ,qtsvg)))
+      (home-page "https://kristall.random-projects.net")
+      (synopsis "Small-internet graphical client")
+      (description "Graphical small-internet client with with many features
+including multi-protocol support (gemini, HTTP, HTTPS, gopher, finger),
+bookmarks, TSL certificates management, outline generation and a tabbed
+interface.")
+      (license (list license:gpl3+
+                     ;; for breeze-stylesheet
+                     license:expat)))))
+
 (define-public qutebrowser
   (package
     (name "qutebrowser")
@@ -461,7 +587,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-3")
+    (version "2-pre-release-4")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +598,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "16crhc89hpvzkms5fypq9vdrf7glidqwh7yvy5cdmjdq4v7fkmy4"))
+         "00865plmvgl1nj009a4w9bcb5mf0zgqjx7w6slacyqgidjzad6qm"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -482,27 +608,19 @@ driven and does not detract you from your daily work.")
        #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
        #:phases
        (modify-phases %standard-phases
-         ;; Version is guessed from .git which Guix does not have.
-         (add-after 'unpack 'patch-version
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((version (format #f "~a" ,version))
-                   (file "source/global.lisp"))
-               (chmod file #o666)
-               (let ((port (open-file file "a")))
-                 (format port "(setf +version+ ~s)" version)
-                 (close-port port)))
-             #t))
-         (add-before 'build 'make-desktop-version-number
-           (lambda _
-             (with-output-to-file "version"
-               (lambda _
-                 (format #t "~a" ,version)
-                 #t))))
-
          (delete 'configure)
          (add-before 'build 'fix-common-lisp-cache-folder
            (lambda _
              (setenv "HOME" "/tmp")
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "NYXT_VERSION" ,version)
+             #t))
+         (add-before 'check 'configure-tests
+           (lambda _
+             (setenv "NYXT_TESTS_NO_NETWORK" "1")
+             (setenv "NYXT_TESTS_ERROR_ON_FAIL" "1")
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)

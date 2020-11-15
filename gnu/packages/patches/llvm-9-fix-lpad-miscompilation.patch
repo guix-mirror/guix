@@ -15,8 +15,8 @@ PR45261
 
 diff --git a/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp b/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
 index 5ac3606dc662..2638b1e8a05c 100644
---- a/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
-+++ b/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
+--- llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
++++ llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
 @@ -225,6 +225,21 @@ static bool isRegUsedByPhiNodes(unsigned DefReg,
    return false;
  }
@@ -50,8 +50,8 @@ index 5ac3606dc662..2638b1e8a05c 100644
      }
 diff --git a/llvm/test/CodeGen/X86/sink-local-value.ll b/llvm/test/CodeGen/X86/sink-local-value.ll
 index b0e511ac1189..f7d861ac9b6c 100644
---- a/llvm/test/CodeGen/X86/sink-local-value.ll
-+++ b/llvm/test/CodeGen/X86/sink-local-value.ll
+--- llvm/test/CodeGen/X86/sink-local-value.ll
++++ llvm/test/CodeGen/X86/sink-local-value.ll
 @@ -145,6 +145,42 @@ try.cont:                                         ; preds = %entry, %lpad
  ; CHECK:         retl
  

@@ -354,6 +354,28 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
+(define-public bcftools-1.9
+  (package (inherit bcftools)
+    (name "bcftools")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samtools/bcftools/"
+                                  "releases/download/"
+                                  version "/bcftools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1j3h638i8kgihzyrlnpj82xg1b23sijibys9hvwari3fy7kd0dkg"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Delete bundled htslib.
+                          (delete-file-recursively "htslib-1.9")
+                          #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("htslib" ,htslib-1.9)
+       ("perl" ,perl)))))
+
 (define-public bedops
   (package
     (name "bedops")
@@ -437,7 +459,7 @@ computational cluster.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (inputs
-     `(("samtools" ,samtools)
+     `(("samtools" ,samtools-1.9)
        ("zlib" ,zlib)))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
@@ -1955,7 +1977,7 @@ multiple sequence alignments.")
                ;; FIXME: tests keep timing out on some systems.
                (invoke "nosetests" "-v" "--processes" "1")))))))
     (propagated-inputs
-     `(("htslib" ,htslib))) ; Included from installed header files.
+     `(("htslib" ,htslib-1.9))) ; Included from installed header files.
     (inputs
      `(("ncurses" ,ncurses)
        ("curl" ,curl)
@@ -1963,8 +1985,8 @@ multiple sequence alignments.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ;; Dependencies below are are for tests only.
-       ("samtools" ,samtools)
-       ("bcftools" ,bcftools)
+       ("samtools" ,samtools-1.9)
+       ("bcftools" ,bcftools-1.9)
        ("python-nose" ,python-nose)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
@@ -4250,6 +4272,19 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
 
+(define-public htslib-1.9
+  (package (inherit htslib)
+    (name "htslib")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))))
+
 ;; This package should be removed once no packages rely upon it.
 (define htslib-1.3
   (package
@@ -5685,6 +5720,31 @@ sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
 variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
+
+(define-public samtools-1.9
+  (package (inherit samtools)
+    (name "samtools")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "10ilqbmm7ri8z431sn90lvbjwizd0hhkf9rcqw8j823hf26nhgq8"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete bundled htslib.
+                   (delete-file-recursively "htslib-1.9")
+                   #t))))
+    (inputs
+     `(("htslib" ,htslib-1.9)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))))
 
 (define-public samtools-0.1
   ;; This is the most recent version of the 0.1 line of samtools.  The input
@@ -15376,7 +15436,7 @@ patterns.")
 (define-public methyldackel
   (package
     (name "methyldackel")
-    (version "0.4.0")
+    (version "0.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15385,7 +15445,7 @@ patterns.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10gh8k0ca92kywnrw5pkacq3g6r8s976s12k8jhp8g3g49q9a97g"))))
+                "1sfhf2ap75qxpnmy1ifgmxqs18rq8mah9mcgkby73vc6h0sw99ws"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -15398,11 +15458,14 @@ patterns.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
+               (("-lhts ") "-lhts -lBigWig ")
                (("install MethylDackel \\$\\(prefix\\)" match)
                 (string-append "install -d $(prefix); " match)))
              #t)))))
     (inputs
-     `(("htslib" ,htslib)
+     `(("curl" ,curl) ; XXX: needed by libbigwig
+       ("htslib" ,htslib-1.9)
+       ("libbigwig" ,libbigwig)
        ("zlib" ,zlib)))
     ;; Needed for tests
     (native-inputs

@@ -269,15 +269,14 @@ more.")
 (define-public perl-algorithm-c3
   (package
     (name "perl-algorithm-c3")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Algorithm-C3-" version ".tar.gz"))
        (sha256
-        (base32
-         "01hlcaxndls86bl92rkd3fvf9pfa3inxqaimv88bxs95803kmkss"))))
+        (base32 "02ck52cf0yyk57354rd1rp5l0kbfwi1pvg2lh3jadvjxfrkq9x5a"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Algorithm-C3")
     (synopsis "Module for merging hierarchies using the C3 algorithm")
@@ -1267,14 +1266,14 @@ different getters and setters.")
 (define-public perl-class-c3
   (package
     (name "perl-class-c3")
-    (version "0.34")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Class-C3-" version ".tar.gz"))
        (sha256
-        (base32 "1dcibc31v5jwmi6hsdzi7c5ag1sb4wp3kxkibc889qrdj7jm12sd"))))
+        (base32 "0gp3czp6y0jxx4448kz37f7gdxq4vw514bvc0l98rk4glvqkq1c4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-c3" ,perl-algorithm-c3)))
@@ -1693,15 +1692,14 @@ one.")
 (define-public perl-clone-pp
   (package
     (name "perl-clone-pp")
-    (version "1.07")
+    (version "1.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/Clone-PP-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "15dkhqvih6rx9dnngfwwljcm9s8afb0nbyl2vdvhd8frnw4y31dz"))))
+        (base32 "0y7m25fksiavzg4xj4cm9zkz8rmnk4iqy7lm01m4nmyqlna3082p"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Clone-PP")
     (synopsis "Recursively copy Perl datatypes")
@@ -5779,14 +5777,14 @@ one: logging, exceptions, and translations.")
 (define-public perl-libintl-perl
   (package
     (name "perl-libintl-perl")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GU/GUIDO/"
                            "libintl-perl-" version ".tar.gz"))
        (sha256
-        (base32 "1afandrl44mq9c32r57xr489gkfswdgc97h8x86k98dz1byv3l6a"))))
+        (base32 "19gbbh9w3rl805mv6mg1q80fsrg610h098qhf7ycnkjnyac84440"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -5899,15 +5897,14 @@ intersections, unions, unique elements, complements and many more.")
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
-    (version "0.428")
+    (version "0.430")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "List-MoreUtils-" version ".tar.gz"))
        (sha256
-        (base32
-         "1hkc8xkd27yzfkgaglzn77j4qjmilyva4gaz3pc64vpism2hjgki"))))
+        (base32 "09v5cipjf634a1176wy2wicibzz51lry0d0yim9rnbfl5j2ggcb3"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -5934,15 +5931,14 @@ functionality on lists which is not going to go into List::Util.")
 (define-public perl-list-moreutils-xs
   (package
     (name "perl-list-moreutils-xs")
-    (version "0.428")
+    (version "0.430")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/List-MoreUtils-XS-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0bfndmnkqaaf3gffprak143bzplxd69c368jxgr7rzlx88hyd7wx"))))
+        (base32 "0hmjkhmk1qlzbg8skq7g1zral07k1x0fk4w2fpcfr7hpgkaldkp8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
@@ -7280,15 +7276,14 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
 (define-public perl-moox-file-configdir
   (package
     (name "perl-moox-file-configdir")
-    (version "0.007")
+    (version "0.008")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "MooX-File-ConfigDir-" version ".tar.gz"))
        (sha256
-        (base32
-         "074v150wrbddhy1n0qc8s80zrb71l3c4is968cnr06ac5l9kmshz"))))
+        (base32 "1b033injzk9d8clgip67ps5j5bpkrnag28q89ddwhrgqx12i3m7q"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-configdir" ,perl-file-configdir)
@@ -7304,17 +7299,16 @@ installing configuration files or for finding any piece of settings.")
 (define-public perl-moox-handlesvia
   (package
     (name "perl-moox-handlesvia")
-    (version "0.001008")
+    (version "0.001009")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/M/MA/MATTP/MooX-HandlesVia-"
+             "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-HandlesVia-"
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "137yrjn2jmw4cj0fjdajnkjgqr5arnpq72kbm6w66xskncinz55h"))))
+        (base32 "04kcyflg49rclxa1nm035c05jpyvhdacjyy1wklbgv4li3im6qvi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-moox-types-mooselike"
@@ -9837,7 +9831,7 @@ generally slower on larger files.")
 (define-public perl-text-format
   (package
     (name "perl-text-format")
-    (version "0.61")
+    (version "0.62")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -9845,7 +9839,7 @@ generally slower on larger files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0axfyiml3zwawwd127z8rl2lm53z6dlsflzmp80m3j0myn7kp2mv"))))
+                "0104z7jjv46kqh77rnx8kvmsbr5dy0s56xm01dckq4ly65br0hkx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)

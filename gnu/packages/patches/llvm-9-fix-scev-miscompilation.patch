@@ -21,8 +21,8 @@ llvm-svn: 373184
 
 diff --git a/llvm/lib/Analysis/ScalarEvolution.cpp b/llvm/lib/Analysis/ScalarEvolution.cpp
 index 354ae05bb841..c29fc5dbccfb 100644
---- a/llvm/lib/Analysis/ScalarEvolution.cpp
-+++ b/llvm/lib/Analysis/ScalarEvolution.cpp
+--- llvm/lib/Analysis/ScalarEvolution.cpp
++++ llvm/lib/Analysis/ScalarEvolution.cpp
 @@ -4992,7 +4992,7 @@ const SCEV *ScalarEvolution::createSimpleAffineAddRec(PHINode *PN,
    // overflow.
    if (auto *BEInst = dyn_cast<Instruction>(BEValueV))
@@ -34,8 +34,8 @@ index 354ae05bb841..c29fc5dbccfb 100644
  }
 diff --git a/llvm/test/Analysis/ScalarEvolution/limit-depth.ll b/llvm/test/Analysis/ScalarEvolution/limit-depth.ll
 index db68a4f84c91..6fdf8c5df974 100644
---- a/llvm/test/Analysis/ScalarEvolution/limit-depth.ll
-+++ b/llvm/test/Analysis/ScalarEvolution/limit-depth.ll
+--- llvm/test/Analysis/ScalarEvolution/limit-depth.ll
++++ llvm/test/Analysis/ScalarEvolution/limit-depth.ll
 @@ -46,7 +46,7 @@ define void @test_mul(i32 %a, i32 %b, i32 %c, i32 %d, i32 %e, i32 %f) {
  define void @test_sext(i32 %a, i32 %b, i32 %c, i32 %d, i32 %e, i32 %f) {
  ; CHECK-LABEL: @test_sext
@@ -47,8 +47,8 @@ index db68a4f84c91..6fdf8c5df974 100644
  
 diff --git a/llvm/test/Analysis/ScalarEvolution/nsw.ll b/llvm/test/Analysis/ScalarEvolution/nsw.ll
 index 69427368625d..ca24f9d4a04b 100644
---- a/llvm/test/Analysis/ScalarEvolution/nsw.ll
-+++ b/llvm/test/Analysis/ScalarEvolution/nsw.ll
+--- llvm/test/Analysis/ScalarEvolution/nsw.ll
++++ llvm/test/Analysis/ScalarEvolution/nsw.ll
 @@ -163,7 +163,7 @@ bb5:                                              ; preds = %bb2
  declare void @f(i32)
  
@@ -60,8 +60,8 @@ index 69427368625d..ca24f9d4a04b 100644
    %add = add nsw i32 %v, 1
 diff --git a/llvm/test/Analysis/ScalarEvolution/trip-count12.ll b/llvm/test/Analysis/ScalarEvolution/trip-count12.ll
 index 5e7d72d5e4f3..d0086ee2e6ac 100644
---- a/llvm/test/Analysis/ScalarEvolution/trip-count12.ll
-+++ b/llvm/test/Analysis/ScalarEvolution/trip-count12.ll
+--- llvm/test/Analysis/ScalarEvolution/trip-count12.ll
++++ llvm/test/Analysis/ScalarEvolution/trip-count12.ll
 @@ -1,7 +1,7 @@
  ; RUN: opt < %s -analyze -scalar-evolution | FileCheck %s
  
@@ -73,8 +73,8 @@ index 5e7d72d5e4f3..d0086ee2e6ac 100644
  define zeroext i16 @test(i16* nocapture %p, i32 %len) nounwind readonly {
 diff --git a/llvm/test/Analysis/ScalarEvolution/trip-count9.ll b/llvm/test/Analysis/ScalarEvolution/trip-count9.ll
 index c0a1d12fa00e..9a080b34743f 100644
---- a/llvm/test/Analysis/ScalarEvolution/trip-count9.ll
-+++ b/llvm/test/Analysis/ScalarEvolution/trip-count9.ll
+--- llvm/test/Analysis/ScalarEvolution/trip-count9.ll
++++ llvm/test/Analysis/ScalarEvolution/trip-count9.ll
 @@ -179,7 +179,7 @@ exit:
  }
  

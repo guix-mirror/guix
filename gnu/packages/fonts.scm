@@ -1761,24 +1761,30 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "2.002")
+    (version "2.210")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://download.jetbrains.com/fonts/"
-                       "JetBrainsMono-" version ".zip"))
+        (string-append "https://github.com/JetBrains/JetBrainsMono/releases/"
+                       "download/v" version "/JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0lcsl718jhkqgld1xqll7fsv8j968jlf292541fkqxwm8i5g93sn"))))
+        (base32 "19wbggnmqs3k1wdqy7l7imnx23g7hh159pl32nz3mzz8s8sqfdix"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'install-license-files 'change-directory-to-archive-root
-           ;; Find the LICENSE file outside of the default subdirectory.
+           ;; Find the license file outside of the default subdirectory.
            (lambda _
              (chdir "..")
-             #t)))))
+             #t))
+         (replace 'install-license-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "OFL.txt" doc)
+               #t))))))
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
     (description

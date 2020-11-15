@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -566,7 +566,7 @@ error reporting, better tracing, profiling, and a debugger.")
 (define-public rr
   (package
     (name "rr")
-    (version "5.3.0")
+    (version "5.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -574,18 +574,19 @@ error reporting, better tracing, profiling, and a debugger.")
                     (commit version)))
               (sha256
                (base32
-                "1x6l1xsdksnhz9v50p4r7hhmr077cq20kaywqy1jzdklvkjqzf64"))
+                "1sfldgkkmsdyaqa28i5agcykc63gwm3zjihd64g86i852w8al2w6"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        ;; The 'rr_exec_stub' is a static binary, which leads CMake to fail
-       ;; with:
-       ;;
-       ;;   file RPATH_CHANGE could not write new RPATH:
-       ;;
+       ;; with ‘file RPATH_CHANGE could not write new RPATH: ...’.
        ;; Clear CMAKE_INSTALL_RPATH to avoid that problem.
        (list "-DCMAKE_INSTALL_RPATH="
+             ;; Satisfy the ‘validate-runpath’ phase.  This isn't a direct
+             ;; consequence of clearing CMAKE_INSTALL_RPATH.
+             (string-append "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath="
+                            (assoc-ref %build-inputs "capnproto") "/lib")
              ,@(if (and (not (%current-target-system))
                         (member (%current-system)
                                 '("x86_64-linux" "aarch64-linux")))
@@ -613,7 +614,7 @@ error reporting, better tracing, profiling, and a debugger.")
        ("which" ,which)))
     (inputs
      `(("gdb" ,gdb)
-       ("cpanproto" ,capnproto)
+       ("capnproto" ,capnproto)
        ("python" ,python)
        ("python-pexpect" ,python-pexpect)))
     (home-page "https://rr-project.org/")

@@ -145,7 +145,7 @@ windows.")
 (define-public python-libtmux
   (package
     (name "python-libtmux")
-    (version "0.8.3")
+    (version "0.8.5")
     (source
      (origin
        (method git-fetch)
@@ -155,7 +155,7 @@ windows.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18dqqd3jmgq3jb1l3xpgywlh4x82mzjxch61gwnlhfaqx5mzvjph"))))
+        (base32 "1vrd99kl2gsk49mvbp6k7l1k7r96vf1fczsqclb62yd4hdpp7zaa"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("procps" ,procps)))             ;tests need top
@@ -171,6 +171,8 @@ windows.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
+             ;; Fix <https://github.com/tmux-python/libtmux/issues/265>.
+             (setenv "LANG" "en_US.utf8")
              ;; Skip tests that I suspect fail because of a change
              ;; in behavior in tmux 3 from tmux 2
              ;; https://github.com/tmux-python/libtmux/issues/281

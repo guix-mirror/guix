@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -309,6 +310,16 @@ the input port."
       (lambda (key proc err)
         (leave (G_ "failed to read public key: ~a: ~a~%")
                (error-source err) (error-string err)))))
+
+  ;; Warn about potentially volatile ACLs, but continue: system reconfiguration
+  ;; might not be possible without (newly-authorized) substitutes.
+  (let ((stat (false-if-exception (lstat %acl-file))))
+    (when (and stat (eq? 'symlink (stat:type (lstat %acl-file))))
+      (warning (G_ "replacing symbolic link ~a with a regular file~%")
+               %acl-file)
+      (when (string-prefix? (%store-prefix) (readlink %acl-file))
+        (display-hint (G_ "On Guix System, add public keys to the
+@code{authorized-keys} field of your @code{operating-system} instead.")))))
 
   (let ((key (read-key))
         (acl (current-acl)))

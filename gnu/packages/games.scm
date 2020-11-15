@@ -54,6 +54,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6590,7 +6591,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.7.0")
+    (version "1.7.2")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6598,7 +6599,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1fs0320n3ndd5kd6j9y22jsd1hbn356d4dr11kl3iy5ssix7832s"))
+        (base32 "1xa0pdn9pggwf7hnqb87ya2qxqhjahkdjwf8cr2y01gixgrkj9lv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6620,7 +6621,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        ("vorbis" ,libvorbis)
        ("luajit" ,luajit)))
     (arguments
-     `(#:make-flags '("CC=gcc" "config=release")
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "config=release")
        ;; XXX: Building in parallel occasionally causes this build failure:
        ;;   ../src/luajit2/src/host/buildvm.c:73:10: fatal error: buildvm_arch.h:
        ;;   No such file or directory
@@ -11940,3 +11943,33 @@ inside the Zenith Colony.")
 X11 that won't set your CPU on fire, drain your laptop battery, or lower video
 game FPS.")
       (license license:unlicense))))
+
+(define-public curseofwar
+  (package
+    (name "curseofwar")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/a-nikolaev/curseofwar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wd71wdnj9izg5d95m81yx3684g4zdi7fsy0j5wwnbd9j34ilz1i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://a-nikolaev.github.io/curseofwar/")
+    (synopsis "Fast-paced action strategy game")
+    (description "Curse of War is a fast-paced action strategy game originally
+implemented using ncurses user interface.  An SDL graphical version is also
+available.")
+    (license license:gpl3+)))

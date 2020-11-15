@@ -931,7 +931,7 @@ Encryption to Gajim.")
 (define-public dino
   (package
     (name "dino")
-    (version "0.1.0")
+    (version "0.2.0")
     (outputs '("out" "debug"))
     (source
      (origin
@@ -940,7 +940,7 @@ Encryption to Gajim.")
                            version "/dino-" version ".tar.gz"))
        (sha256
         (base32
-         "0dcq2jhpywgxrp9x1qqmrl2z50hazspqj547b9zz70apy3y4418h"))))
+         "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -2373,7 +2373,7 @@ support for high performance Telegram Bot creation.")
 (define-public chatty
  (package
    (name "chatty")
-   (version "0.1.16")
+   (version "0.1.17")
    (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2382,7 +2382,7 @@ support for high performance Telegram Bot creation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "085hb3ii1cy0jb3f0mim25v5r5w3gpfsdpjid5dmrpw4gi88aa2x"))))
+                "0ba1rw8a3vif9k3570hxjfm25vqys3vk3f6g8z5irklwq4bi6lmn"))))
    (build-system meson-build-system)
    (arguments
     '(#:phases

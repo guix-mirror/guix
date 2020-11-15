@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -2192,6 +2192,12 @@ non-consing thread safe queues and fibonacci priority queues.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-arm-support
+           (lambda _
+             ;; This is apparently deprecated since libffi-3.3.
+             (substitute* "libffi/libffi-types.lisp"
+               (("\\\(\\\(:unix64.*") ")\n"))
+             #t))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "libffi/libffi.lisp"

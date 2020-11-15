@@ -7469,63 +7469,68 @@ navigate code in a tree-like fashion.")
     (license license:gpl3+)))
 
 (define-public emacs-lispy
-  (package
-    (name "emacs-lispy")
-    (version "0.27.0")
-    (home-page "https://github.com/abo-abo/lispy")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/abo-abo/lispy")
-                    (commit version)))
-              (sha256
-               (base32
-                "1cm7f4pyl73f3vhkb7ah6bbbrj2sa7n0p31g09k7dy4zgx04bgw6"))
-              (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-ace-window" ,emacs-ace-window)
-       ("emacs-hydra" ,emacs-hydra)
-       ("emacs-iedit" ,emacs-iedit)
-       ("emacs-swiper" ,emacs-swiper)
-       ("emacs-zoutline" ,emacs-zoutline)))
-    (native-inputs
-     `(("emacs-clojure-mode" ,emacs-clojure-mode)
-       ("emacs-undercover" ,emacs-undercover)))
-    (arguments
-     `(#:include (cons* "^lispy-clojure\\.clj$"
-                        "^lispy-python\\.py$"
-                        %default-include)
-       #:phases
-       ;; XXX: one failing test involving python evaluation
-       (modify-phases %standard-phases
-         (add-before 'check 'make-test-writable
-           (lambda _
-             (make-file-writable "lispy-test.el")
-             #t))
-         (add-before 'check 'remove-python-eval-test
-           (lambda _
-             (emacs-batch-edit-file "lispy-test.el"
-               `(progn
-                 (progn
-                  (goto-char (point-min))
-                  (re-search-forward
-                   "ert-deftest lispy-eval-python-str")
-                  (beginning-of-line)
-                  (kill-sexp))
-                 (basic-save-buffer)))
-             #t)))
-       #:tests? #t
-       #:test-command '("make" "test")))
-    (synopsis "Modal S-expression editing")
-    (description
-     "Due to the structure of Lisp syntax it's very rare for the programmer
+  ;; No release since May 2019 and tons of fixes have landed on master.
+  ;; https://github.com/abo-abo/lispy/issues/513
+  (let ((commit "5c8a59ae7dd3dd342e7c86a8c0acdbd13e2989f3"))
+    (package
+      (name "emacs-lispy")
+      (version (git-version "0.27.0" "1" commit))
+      (home-page "https://github.com/abo-abo/lispy")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/abo-abo/lispy")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0738v9bp4dlxbwsnykvc35yh4dl4pvw25jl8srb7r3744ydvgyii"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ace-window" ,emacs-ace-window)
+         ("emacs-hydra" ,emacs-hydra)
+         ("emacs-iedit" ,emacs-iedit)
+         ("emacs-swiper" ,emacs-swiper)
+         ("emacs-zoutline" ,emacs-zoutline)))
+      (native-inputs
+       `(("which" ,which)
+         ("emacs-clojure-mode" ,emacs-clojure-mode)
+         ("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:include (cons* "^lispy-clojure\\.clj$"
+                          "^lispy-python\\.py$"
+                          %default-include)
+         #:phases
+         ;; XXX: Some failing tests
+         (modify-phases %standard-phases
+           (add-before 'check 'make-test-writable
+             (lambda _
+               (make-file-writable "lispy-test.el")
+               #t))
+           (add-before 'check 'remove-failing-test
+             (lambda _
+               (emacs-batch-edit-file "lispy-test.el"
+                 `(progn
+                   (dolist (test '("lispy-eval-python-str" "lispy--clojure-dot-object"))
+                    (goto-char (point-min))
+                    (re-search-forward
+                     (concat "ert-deftest " test))
+                    (beginning-of-line)
+                    (kill-sexp))
+                   (basic-save-buffer)))
+               #t)))
+         #:tests? #t
+         ;; Set BEMACS to prevent the test suite from loading straight.el.
+         #:test-command '("make" "test" "BEMACS=emacs -batch")))
+      (synopsis "Modal S-expression editing")
+      (description
+       "Due to the structure of Lisp syntax it's very rare for the programmer
 to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-lispyville
   (let ((commit "1bf38088c981f5ab4ef2e2684952ab6af96378db")
@@ -9504,8 +9509,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "910c1f4507d91a4790e26ddccf73ad1e5a12f68d")
-        (revision "17"))
+  (let ((commit "8c256263ad100fecd6246c6c55cbb19dab717c39")
+        (revision "18"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.3" revision commit))
@@ -9517,7 +9522,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0bkx1bwgw1n3fbd95z8i32i1yvv8w8bgzsxsybm1lcgv1v23qn8l"))))
+                  "0hz1yfv5g016dm99bwnibbmyhbi21qlc39ckd7p3s82az89hgf2n"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -10707,46 +10712,42 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  ;; There won't be a new release after 1.10.1 until
-  ;; https://github.com/emacs-helm/helm-system-packages/issues/25 is fixed,
-  ;; and latest commits fix import issues with Guix.
-  (let ((commit "6572340f41611ef1991e9612d34d59130957ee4a"))
-    (package
-      (name "emacs-helm-system-packages")
-      (version (git-version "1.10.1" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-system-packages")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mcz6vkpk12vsyd37xv1rbg4v442sxc3lj8yxskqg294xbdaclz4"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("recutils" ,recutils)))
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((recutils (assoc-ref inputs "recutils")))
-                 ;; Specify the absolute file names of the various
-                 ;; programs so that everything works out-of-the-box.
-                 (substitute* "helm-system-packages-guix.el"
-                   (("recsel") (string-append recutils "/bin/recsel")))))))))
-      (home-page "https://github.com/emacs-helm/helm-system-packages")
-      (synopsis "Helm System Packages is an interface to your package manager")
-      (description "List all available packages in Helm (with installed
+  (package
+    (name "emacs-helm-system-packages")
+    (version "1.10.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-system-packages")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13a8jpj4wwm0yjv8hnsizgjf8wi3r2ap87lyvw7g4c7snp2dydwa"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("recutils" ,recutils)))
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((recutils (assoc-ref inputs "recutils")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (substitute* "helm-system-packages-guix.el"
+                 (("recsel") (string-append recutils "/bin/recsel")))))))))
+    (home-page "https://github.com/emacs-helm/helm-system-packages")
+    (synopsis "Helm System Packages is an interface to your package manager")
+    (description "List all available packages in Helm (with installed
 packages displayed in their own respective face).  Fuzzy-search, mark and
 execute the desired action over any selections of packages: Install,
 uninstall, display packages details (in Org Mode) or insert details at point,
 find files owned by packages...  And much more, including performing all the
 above over the network.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-org-rifle
   (package
@@ -11131,7 +11132,7 @@ abbreviation of the mode line displays (lighters) of minor modes.")
 (define-public emacs-use-package
   (package
     (name "emacs-use-package")
-    (version "2.4")
+    (version "2.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11140,7 +11141,7 @@ abbreviation of the mode line displays (lighters) of minor modes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b7mjjh0d6fmkkd9vyj64vca27xqhga0nvyrrcqxpqjn62zq046y"))))
+                "088kl3bml0rs5bkfymgzr15ram9qvy66h1kaisrbkynh0yxvf8g9"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -11174,14 +11175,14 @@ performance-oriented and tidy.")
 (define-public emacs-leaf
   (package
     (name "emacs-leaf")
-    (version "4.2.5")
+    (version "4.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "leaf-" version ".tar"))
        (sha256
-        (base32 "0y78mp4c2gcwp7dc87wlx3r4hfmap14vvx8gkjc9nkf99qavpnkw"))))
+        (base32 "190sfnnii9jnj8amjkdabd8w9k2xyalhg4h488a5gzjxdzz2s6zi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/conao3/leaf.el")
     (synopsis "Simplify your init.el configuration, extended use-package")
@@ -15007,6 +15008,34 @@ and @code{erc-send-modify-hook} to download and show images.")
     (synopsis "List-manipulation utility functions")
     (description "This package provides a list manipulation library for Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-parsec
+  ;; Last release is too old (2016).
+  (let ((revision "0")
+        (commit "2cbbbc2254aa7bcaa4fb5e07c8c1bf2f381dba26"))
+    (package
+      (name "emacs-parsec")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cute-jumper/parsec.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1g1s8s45g3kkbi3h7w0pmadmzdswb64mkdvdpg2lihg341kx37gm"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/cute-jumper/parsec.el")
+      (synopsis "Parser combinator library for Emacs Lisp")
+      (description
+       "Parsec is a parser combinator library for Emacs Lisp, similar to
+Haskell's Parsec library.  It contains most of the parser combinators in
+Text.Parsec.Combinator, and more combinators can be added if necessary!  Most
+of the parser combinators have the same behavior as their Haskell
+counterparts.  Parsec also comes with a simple error handling mechanism so
+that it can display an error message showing how the parser fails.")
+      (license license:gpl3+))))
 
 (define-public emacs-move-text
   (package
@@ -19312,7 +19341,7 @@ correctly.")
 (define-public emacs-helm-sly
   (package
     (name "emacs-helm-sly")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -19321,7 +19350,7 @@ correctly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b2dx9nzh5233lkix3lz81c9cv626lk2hjpcjiikwvyp6y0q92ys"))))
+                "1690rxwwg69jbcjhi51nyjlx3gziaiaa8ssyal71gmc6schq2592"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
@@ -19331,11 +19360,12 @@ correctly.")
     (description "Helm-SLY defines a few new commands:
 
 @itemize
-@item helm-sly-list-connections: Yet another Lisp connection list with Helm.
-@item: helm-sly-apropos: Yet another @command{apropos} with Helm.
-@item helm-sly-mini: Like @command{helm-sly-list-connections}, but include an
-extra source of Lisp-related buffers, like the events buffer or the scratch
-buffer.
+@item @code{helm-sly-list-connections}: Yet another Lisp connection list with
+Helm.
+@item @code{helm-sly-apropos}: Yet another @command{apropos} with Helm.
+@item @code{helm-sly-mini}: Like @command{helm-sly-list-connections}, but
+include an extra source of Lisp-related buffers, like the events buffer or the
+scratch buffer.
 @end itemize\n")
     (license license:gpl3+)))
 

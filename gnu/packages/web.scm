@@ -129,6 +129,7 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -567,7 +568,7 @@ documentation.")
   (package
     (inherit nginx)
     (name "nginx-lua-module")
-    (version "0.10.15")
+    (version "0.10.16")
     (source
      (origin
        (method git-fetch)
@@ -576,8 +577,7 @@ documentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "lua-nginx-module" version))
        (sha256
-        (base32
-         "1j216isp0546hycklbr5wi8mlga5hq170hk7f2sm16sfavlkh5gz"))))
+        (base32 "0nwcbqm1visg1dkxav7qa16w0d0n8cgqn4881xiqn88xfkxj0dyg"))))
     (build-system gnu-build-system)
     (inputs
      `(("nginx-sources" ,(package-source nginx-socket-cloexec))
@@ -3792,15 +3792,14 @@ exists it is used instead.")
 (define-public perl-lwp-protocol-https
   (package
     (name "perl-lwp-protocol-https")
-    (version "6.07")
+    (version "6.09")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "LWP-Protocol-https-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rxrpwylfw1afah0nk96kgkwjbl2p1a7lwx50iipg8c4rx3cjb2j"))))
+        (base32 "14pm785cgyrnppks6ccasb2vkqifh0a8fz36nmnhc2v926jy3kqn"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
@@ -4426,14 +4425,14 @@ RFC 6570.")
               (uri (string-append
                     "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
                     version".tar.gz"))
-              (patches (search-patches "perl-www-curl-remove-symbol.patch"))
+              (patches (search-patches "perl-www-curl-fix-struct-void.patch"
+                                       "perl-www-curl-remove-symbol.patch"))
               (sha256
                (base32
                 "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
     (build-system perl-build-system)
     (arguments
      '(#:tests? #f                          ;XXX: tests require network access
-
        #:phases (modify-phases %standard-phases
                    (add-before 'configure 'set-search-path
                      (lambda _
@@ -7717,10 +7716,11 @@ solution for any project's interface needs:
     (license license:expat)))
 
 (define-public gmnisrv
-  (let ((commit "a22bec51494a50c044416d469cc33e043480e7fd"))
+  (let ((commit "d484ba0ab0020866535a44be5948c9482b8f2b8d")
+        (revision "1"))
     (package
       (name "gmnisrv")
-      (version (git-version "0" "0" commit))
+      (version (git-version "0" revision commit))
       (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
       (source (origin
                 (method git-fetch)
@@ -7729,7 +7729,7 @@ solution for any project's interface needs:
                       (commit commit)))
                 (sha256
                  (base32
-                  "1k1n7cqd37jgbhxyh231bagdxdxqwpr6n5pk3gax2516w6xbzlb9"))
+                  "11phipixsxx1jgm42agp76p5s68l0zj65kgb41vzaymgwcq79ivn"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -7739,19 +7739,14 @@ solution for any project's interface needs:
              (lambda _
                (setenv "CC" "gcc")
                #t))
-           (delete 'check)
-           (add-after 'install 'install-config
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((etc (string-append (assoc-ref outputs "out")
-                                         "/etc")))
-                 (mkdir-p etc)
-                 (copy-file "config.ini" (string-append etc "/gmnisrv.ini"))
-                 #t))))))
+           (delete 'check))))
       (inputs
        `(("openssl" ,openssl)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("scdoc" ,scdoc)))
+      (propagated-inputs
+       `(("mailcap" ,mailcap)))
       (synopsis "Simple Gemini protocol server")
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+

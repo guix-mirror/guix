@@ -611,7 +611,7 @@ Features include:
                                         "/bin/gawk")))
 
                (substitute* "lock"
-                 (("$(which wmctrl)") wmctrl)
+                 (("\\$\\(command -V wmctrl\\)") wmctrl)
                  (("convert") mconvert)
                  (("shot=\\(import") (string-append "shot=\(" mimport))
                  (("awk -F") (string-append awk " -F"))
@@ -630,7 +630,7 @@ Features include:
                             (string-append bin "/i3lock-fancy"))
                (copy-recursively "icons" icons)
                #t))))))
-    (native-inputs
+    (inputs
      `(("imagemagick" ,imagemagick)
        ("wmctrl" ,wmctrl)
        ("gawk" ,gawk)))

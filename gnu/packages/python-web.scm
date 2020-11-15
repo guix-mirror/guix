@@ -958,19 +958,22 @@ options.")
   (package
     (inherit python-cssutils)
     (name "python-css-parser")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "css-parser" version ".tar.gz"))
        (sha256
-        (base32
-         "0i4xfykiffxzr4f6y0m2ggqvx1rzam6pw6krlr5k6ldf29akbay7"))))
+        (base32 "0bmg4kiiir6pj9x3sd12x4dz2c1xpp2bn5nn60fxnbk2lnl4im2f"))))
     (home-page "https://github.com/ebook-utils/css-parser")
     (synopsis "Fork of cssutils modified for parsing ebooks")
     (description
-     "Css-parser is a fork of cssutils 1.0.2, updated and modified for parsing
-ebooks, due to cssutils not receiving updates as of 1.0.2.")
+      "Css-parser is a Python package for parsing and building CSS
+Cascading Style Sheets.  Currently it provides a DOM only and no rendering
+options.
+
+It's a fork of cssutils 1.0.2, updated and modified for parsing ebooks, due to
+cssutils not receiving updates as of 1.0.2.")
     (license license:lgpl3+)))
 
 (define-public python2-css-parser
@@ -3520,16 +3523,15 @@ addon modules.")
 (define-public python-bottle
   (package
     (name "python-bottle")
-    (version "0.12.18")
+    (version "0.12.19")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "bottle" version))
       (sha256
-        (base32
-          "17pn43kzr7m6czjbm4nda7kzs4ap9mmb30qfbhifyzas2i5vf688"))))
+        (base32 "0b6s50vc4iad97b6bb3xnyrgajb3nj6n6jbr5p54a4vapky3zmx9"))))
     (build-system python-build-system)
-    (home-page "http://bottlepy.org/")
+    (home-page "https://bottlepy.org/")
     (synopsis "WSGI framework for small web-applications.")
     (description "@code{python-bottle} is a WSGI framework for small web-applications.")
     (license license:expat)))
@@ -5140,14 +5142,13 @@ Encoding for HTTP.")
 (define-public python-cloudscraper
   (package
     (name "python-cloudscraper")
-    (version "1.2.46")
+    (version "1.2.48")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cloudscraper" version))
        (sha256
-        (base32
-         "1br4p648yassywsd7whz1c7s10rwdysnd7wdqfjq9bksqfxrac3r"))
+        (base32 "0qjxzb0z5bprvmdhx42ayqhlhi2h49d9dwc0vvycj817s71f2sxv"))
        (modules '((guix build utils)))
        (snippet
         '(with-directory-excursion "cloudscraper"
@@ -5158,6 +5159,10 @@ Encoding for HTTP.")
                        "captcha/deathbycaptcha.py"
                        "interpreters/js2py.py"
                        "interpreters/v8.py"))
+           (substitute* "__init__.py"
+             ;; Perhaps it's a joke, but don't promote proprietary software.
+             (("([Th]is feature is not available) in the .*'" _ prefix)
+              (string-append prefix ".'")))
            #t))))
     (build-system python-build-system)
     (propagated-inputs

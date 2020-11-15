@@ -2301,6 +2301,49 @@ collections efficiently.  Mirrors decide to clone and update repositories
 based on a manifest file published by servers.")
     (license license:gpl3+)))
 
+(define-public b4
+  (package
+    (name "b4")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/utils/b4/b4.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "1w11fiyspyncz2m7njrjfylgzch4azi7560ngd8i733wvjjhg3mj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((man (string-append (assoc-ref outputs "out")
+                                       "/man/man5/")))
+               (mkdir-p man)
+               (for-each (lambda (file) (install-file file man))
+                         (find-files "man" "\\.[1-8]$")))
+             #t)))))
+    (inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://git.kernel.org/pub/scm/utils/b4/b4.git")
+    (synopsis "Tool for working with patches in public-inbox archives")
+    (description
+     "The @code{b4} command is designed to make it easier to participate in
+patch-based workflows for projects that have public-inbox archives.
+
+Features include:
+@itemize
+@item downloading a thread's mbox given a message ID
+@item processing an mbox so that is ready to be fed to @code{git-am}
+@item creating templated replies for processed patches and pull requests
+@item submitting cryptographic attestation for patches.
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public git-annex-remote-rclone
   (package
     (name "git-annex-remote-rclone")

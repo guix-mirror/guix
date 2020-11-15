@@ -89,6 +89,7 @@
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +139,6 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -3884,14 +3884,13 @@ outside the standard library.")
 (define-public python-scp
   (package
     (name "python-scp")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scp" version))
        (sha256
-        (base32
-         "1crlpw9lnn58fs1c1rmh7s7s9y5gkgpgjsqlvg9qa51kq1knx7gg"))))
+        (base32 "1m2v09m407p097cy3xy5rxicqfzrqjwf8v5rd4qhfqkk7lllimwb"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))                     ;tests require an SSH server
@@ -5000,7 +4999,6 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("libpng" ,libpng)
-       ("imagemagick" ,imagemagick)
        ("freetype" ,freetype)
        ("cairo" ,cairo)
        ("glib" ,glib)
@@ -5075,6 +5073,9 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
                ;; has not effect.
                (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
                (setenv "HOME" (getcwd))
+               ;; Fix rounding errors when using the x87 FPU.
+               (when (string-prefix? "i686" ,(%current-system))
+                 (setenv "CFLAGS" "-ffloat-store"))
                (call-with-output-file "setup.cfg"
                  (lambda (port)
                    (format port "[directories]~%
@@ -18704,79 +18705,37 @@ validation testing and application logic.")
 (define-public python-numba
   (package
     (name "python-numba")
-    (version "0.46.0")
+    (version "0.51.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numba" version))
        (sha256
         (base32
-         "1vnfzcq6fcnkmdms6114d49awvvj5181fl7z1wlha27qc2paxjy2"))))
+         "0s0777m8kq4l96i88zj78np7283v1n4878qfc1gvzb8l45bmkg8n"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-proprietary-features
            (lambda _
              (setenv "NUMBA_DISABLE_HSA" "1")
              (setenv "NUMBA_DISABLE_CUDA" "1")
              #t))
-         (add-after 'unpack 'remove-failing-tests
-           (lambda _
-             ;; FIXME: These tests fail for unknown reasons:
-             ;; test_non_writable_pycache, test_non_creatable_pycache, and
-             ;; test_frozen (all in numba.tests.test_dispatcher.TestCache).
-             (substitute* "numba/tests/test_dispatcher.py"
-               (("def test(_non_writable_pycache)" _ m)
-                (string-append "def guix_skip" m))
-               (("def test(_non_creatable_pycache)" _ m)
-                (string-append "def guix_skip" m))
-               (("def test(_frozen)" _ m)
-                (string-append "def guix_skip" m)))
-
-             ;; These tests fail because we don't run the tests from the build
-             ;; directory: test_setup_py_distutils, test_setup_py_setuptools
-             ;; They are in numba.tests.test_pycc.TestDistutilsSupport.
-             (substitute* "numba/tests/test_pycc.py"
-               (("def test(_setup_py_distutils|_setup_py_setuptools)" _ m)
-                (string-append "def guix_skip" m)))
-
-             ;; These tests fail because our version of Python does not have
-             ;; a recognizable front-end for the Numba distribution to use
-             ;; to check against.
-             (substitute* "numba/tests/test_entrypoints.py"
-               (("def test(_init_entrypoint)" _ m)
-                (string-append "def guix_skip" m)))
-             (substitute* "numba/tests/test_jitclasses.py"
-               (("def test(_jitclass_longlabel_not_truncated)" _ m)
-                (string-append "def guix_skip" m)))
-             #t))
          (replace 'check
-           (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH")))
-               ;; Something is wrong with the PYTHONPATH when running the
-               ;; tests from the build directory, as it complains about not being
-               ;; able to import certain modules.
-               (with-directory-excursion "/tmp"
-                 (invoke "python3" "-m" "numba.runtests" "-v" "-m")))
-             #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; Something is wrong with the PYTHONPATH when running the
+             ;; tests from the build directory, as it complains about not being
+             ;; able to import certain modules.
+             (with-directory-excursion "/tmp"
+               (setenv "HOME" (getcwd))
+               (invoke "python3" "-m" "numba.runtests" "-v" "-m")))))))
     (propagated-inputs
      `(("python-llvmlite" ,python-llvmlite)
        ("python-numpy" ,python-numpy)
        ("python-singledispatch" ,python-singledispatch)))
-    ;; Needed for tests.
-    (inputs
+    (native-inputs                      ;for tests
      `(("python-jinja2" ,python-jinja2)
        ("python-pygments" ,python-pygments)))
     (home-page "https://numba.pydata.org")
@@ -21878,13 +21837,13 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.10.2")
+    (version "4.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzo" version))
        (sha256
-        (base32 "1zplxcb78qy8qibifmnsx5i9gnlfmw9n6nr4yflsabpxw57mx4m1"))))
+        (base32 "0vzsk6rchavlvy7ciq1z9qh3qrj9q213v2nn491fgjq3g19glj53"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -21894,8 +21853,8 @@ dictionaries.")
              ;; Tests fail with "Permission denied: '/homeless-shelter'".
              (setenv "HOME" "/tmp")
              #t)))
-       ;; Tests fail with "Uncaught Python exception: invalid literal for
-       ;; int() with base 10: 'test'".
+       ;; Tests fail with "Uncaught Python exception: python: undefined
+       ;; symbol: objc_getClass".
        #:tests? #f))
     (propagated-inputs
      `(("python-pyqt" ,python-pyqt)))

@@ -352,15 +352,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.9-version "5.9.6")
+(define-public linux-libre-5.9-version "5.9.8")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
    (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "0is78bvpx6mrhibpspz4iqnsa1xplh11q1cnalkkm4hpsiy0fi4g")))
+   (base32 "0wp0mx5d2qhv7brc595qj34phiaxz9z5gf26w5369nh9mll5cbw6")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "0w2kcng09nzk09dwkx4azdfgnwzbd2mz8lyl4j69bwx837z85hbc")))
+        (hash (base32 "19l67gzk97higd2cbggipcb0wi21pv0ag0mc4qh6cqk564xp6mkn")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,20 +368,20 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.75")
+(define-public linux-libre-5.4-version "5.4.77")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "1h6gbc9cfhb7dqx669iq26a23whka6km5av0ysk61aaz2z57vkrk")))
+   (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0w0lpiy56zqdm2vpx9ckxakna334n88pnqbv52zyfcslxgb6yinj")))
+        (hash (base32 "1xyvml0mps7bsa11bgpa4l0w8x6pasdz9yab2z4ds394f1lkxq53")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.155")
+(define-public linux-libre-4.19-version "4.19.157")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1lj81aadyskmxs3j4s923nhnk69dfj2kiwm0nxabbcjw83sliinb")))
+        (hash (base32 "0mgpgv2ny49bb7kgaygy2ay6ckjgw7mg091viivi66jw4mjs7p3n")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.204")
+(define-public linux-libre-4.14-version "4.14.206")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1ncacsy2g80zigfx8nmr1f7v50s1y9ys1xy9jgizrnvmxjcji0wy")))
+        (hash (base32 "1b46f0s15xnlam43cmw8w41rrvcwrhm6km0278lq6f86lpx3w8qw")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.241")
+(define-public linux-libre-4.9-version "4.9.243")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0b5k9cwz7vpaybw4nd03pn2z4d8qbhmhd9mx4j2yd0fqj57x1in4")))
+        (hash (base32 "111rlzx6z4kf8zwxncib96d9wy6qmkbs0cq3dhnybipwlyf1iank")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.241")
+(define-public linux-libre-4.4-version "4.4.243")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "054jd6jgymxbkjfmk8wbckihl355gjimjg2xi5yr4v2343qi9zij")))
+        (hash (base32 "1daqbmj9ka9wdkkym625hqwqaxq5n11y7c4yc9ln3xkjpnv4dplm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4447,7 +4447,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4456,8 +4456,7 @@ arrays when needed.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14n8pcgnliicqxzc40xvjxk4cafm4qx7a3rsx5qva74r3ydzx8rn"))
-              (patches (search-patches "multipath-tools-sans-systemd.patch"))
+                "0gipg0z79h76j0f449cx4wcrfsv69ravjlpphsac11h302g3nrvg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4514,6 +4513,18 @@ arrays when needed.")
              (substitute* "tests/Makefile"
                (("-lmultipath -lcmocka")
                 "-lmultipath -L$(mpathcmddir) -lmpathcmd -lcmocka"))
+             #t))
+         (add-after 'unpack 'skip-failing-tests
+           (lambda _
+             ;; This test and the module's setup() test an arbitrary block
+             ;; device node name, but the build environment has none.
+             (substitute* "tests/devt.c"
+               (("return get_one_devt.*") "return 0;\n")
+               (("cmocka_unit_test\\(test_devt2devname_devt_good\\),") ""))
+             ;; The above triggers -Werror=unused-function.  Ignore it.
+             (substitute* "tests/Makefile"
+               (("CFLAGS \\+= " match)
+                (string-append match "-Wno-error=unused-function ")))
              #t))
          (delete 'configure))))         ; no configure script
     (native-inputs

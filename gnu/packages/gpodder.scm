@@ -177,21 +177,20 @@ downloading episode status changes.")
 (define-public python-podcastparser
   (package
     (name "python-podcastparser")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "podcastparser" version))
        (sha256
-        (base32 "0k62ppg20i41gcc5x8ddjn7zbpy47hqpxzrq9257g2c71m4qw07b"))))
+        (base32 "0m24r2qhck0win44xfhxajbppkss4ha6am0042s0xyq3408883m3"))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "nosetests"))))))
+           (lambda _ (invoke "pytest"))))))
     (build-system python-build-system)
     (home-page "http://gpodder.org/podcastparser")
     (synopsis "Simplified and fast RSS parser Python library")

@@ -698,8 +698,7 @@ useful for C++.")
        (sha256
         (base32
          "0nkam61rsn7y3wik3vw46wk5q2cjfh2iph57hl9m39rc8jijb7dv"))
-       (patches (search-patches
-                 "python2-pygobject-2-gi-info-type-error-domain.patch"))))
+       (patches (search-patches "python2-pygobject-2-deprecation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)

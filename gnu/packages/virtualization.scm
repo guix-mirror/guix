@@ -177,6 +177,13 @@
                                               '("include")
                                               input-directories)
                #t)))
+         (add-after 'unpack 'extend-test-time-outs
+           (lambda _
+             ;; These tests can time out on heavily-loaded and/or slow storage.
+             (substitute* (cons* "tests/qemu-iotests/common.qemu"
+                                 (find-files "tests/qemu-iotests" "^[0-9]+$"))
+               (("QEMU_COMM_TIMEOUT=[0-9]+" match)
+                (string-append match "9")))))
          (add-after 'unpack 'disable-unusable-tests
            (lambda _
              (substitute* "tests/Makefile.include"
@@ -1286,14 +1293,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.14")
+    (version "3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1jrr3v99g18gc0hriz0avq6ccdvyya0j6wwz888sdsc4icc30gzn"))))
+                "09d0j24x0cyc7wkgi7cnxqgfjk7kbdlm79zxpj8d356sa3rw2z24"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1374,7 +1381,8 @@ domains, their live performance and resource utilization statistics.")
        ("libcap" ,libcap)
        ("libnet" ,libnet)
        ("libnl" ,libnl)
-       ("libbsd" ,libbsd)))
+       ("libbsd" ,libbsd)
+       ("nftables" ,nftables)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)

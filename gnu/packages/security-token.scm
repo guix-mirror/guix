@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -102,7 +104,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.4.27")
+    (version "5.0.8")
     (source
      (origin
        (method git-fetch)
@@ -111,13 +113,15 @@ readers and is needed to communicate with such devices through the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17lw8iwp7h5cs3db80sysr84ffi333cf2vrhncs9l6hy6glfl2v1"))))
+        (base32 "1ckini00iz9w96n9hpkx6w2ivpfkd4yyxyhnmsl9n0k8x4j6jg5a"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
+       ("libassuan" ,libassuan)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (inputs
@@ -132,14 +136,29 @@ readers and is needed to communicate with such devices through the
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              ;; configure.ac relies on ‘git --describe’ to get the version.
              ;; Patch it to just return the real version number directly.
              (substitute* "scripts/build-aux/genver.sh"
                (("/bin/sh") (which "sh"))
                (("^(GITDESC=).*" _ match) (string-append match ,version "\n")))
-             (invoke "sh" "./bootstrap.sh"))))))
+             (invoke "sh" "./bootstrap.sh")))
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "scripts/mac/create-vers.sh"
+               (("NOW=.*")
+                "NOW=1970-01-01\n"))
+             #t))
+         ;; Remove failing test that was removed upstream after version 5.0.8.
+         ;; See: https://github.com/Fedict/eid-mw/commit/3d1187b1b61118b9ae97607903d3d2fc0bad7518
+         (add-before 'check 'remove-failing-test
+           (lambda _
+             (substitute* "tests/unit/Makefile.am"
+               (("sign_state ordering cardcom_common")
+                "sign_state ordering #cardcom_common"))
+             #t))
+         )))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")

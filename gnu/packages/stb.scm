@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +27,8 @@
 (define stb
   ;; stb is a collection of libraries developed within the same repository.
   ;; When updating this, remember to change versions below as appropriate.
-  (let ((commit "2c2908f50515dcd939f24be261c3ccbcd277bb49")
-        (revision "1"))
+  (let ((commit "b42009b3b9d4ca35bc703f5310eedc74f584be58")
+        (revision "2"))
     (package
       (name "stb")
       (home-page "https://github.com/nothings/stb")
@@ -39,7 +40,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1z753rscqc4clp0rd57bw68i60kz694y1z52bwv6slzmkgds1cki"))
+                  "1gmcjhmj62mfdscrsg2hv4j4j9v447y8zj3rbrm7mqn94cx73z1i"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -92,23 +93,29 @@ the C programming language.")
 ;; converted to macros as outlined in <https://bugs.gnu.org/32155>.
 (define-public stb-image
   (make-stb-header-package
-   "stb-image" "2.22"
+   "stb-image" "2.26"
    "stb-image is a small and self-contained library for image loading or
 decoding from file or memory.  A variety of formats are supported."))
 
 (define-public stb-image-write
   (make-stb-header-package
-   "stb-image-write" "1.13"
+   "stb-image-write" "1.15"
    "stb-image-write is a small library for writing image files to the
 C@tie{}@code{stdio} interface."))
 
+(define-public stb-rect-pack
+  (make-stb-header-package
+   "stb-rect-pack" "1.00"
+   "stb-rect-pack is a small rectangle packing library useful for, e.g., packing
+rectangular textures into an atlas.  It does not do rotation."))
+
 (define-public stb-sprintf
   (make-stb-header-package
-   "stb-sprintf" "1.06"
+   "stb-sprintf" "1.09"
    "stb-sprintf implements fast @code{sprintf}, @code{snprintf} for C/C++."))
 
 (define-public stb-truetype
   (make-stb-header-package
-   "stb-truetype" "1.22"
+   "stb-truetype" "1.24"
    "stb-truetype is a library for parsing, decoding, and rasterizing
 characters from TrueType fonts."))

@@ -1494,7 +1494,7 @@ commands and their arguments.")
 (define-public opendoas
   (package
     (name "opendoas")
-    (version "6.6.1")
+    (version "6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1503,7 +1503,7 @@ commands and their arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+                "1dlwnvy8r6slxcy260gfkximp1ms510wdslpfq9y6xvd2qi5izcb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1511,19 +1511,17 @@ commands and their arguments.")
          (replace 'configure
            ;; The configure script doesn't accept most of the default flags.
            (lambda* (#:key configure-flags #:allow-other-keys)
-             ;; The configure script can only be told which compiler to use
+             ;; The configure script can be told which compiler to use only
              ;; through environment variables.
              (setenv "CC" ,(cc-for-target))
              (apply invoke "./configure" configure-flags)))
          (add-before 'install 'fix-makefile
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "bsd.prog.mk"
+             (substitute* "GNUmakefile"
                (("^\tchown.*$") ""))
              #t)))
        #:configure-flags
        (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             ;; Nothing is done with this value (yet?) but it's supported.
-             ;; (string-append "--target=" (or ,(%current-target-system) ""))
              "--with-timestamp")
        ;; Compiler choice is not carried over from the configure script.
        #:make-flags
@@ -1842,7 +1840,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200717")
+    (version "20200925")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1850,7 +1848,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0jyy71szjr40c8v40qqw6yh3gfk8d6sl3nay69zrn5d88i3r0jca"))))
+                "18n6129fkgj85piid7v4zxxksv3h0amqp4p977vcl9xg3bq0zd2w"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -3591,7 +3589,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.08-1")
+      (version "3.1.09-1")
       (source
        (origin
          (method git-fetch)
@@ -3600,7 +3598,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "15b0fn8kv09k7kzyzix1pr1wmjw5yinzgw01v8pf9p547m4a899a"))))
+          (base32 "0m6s8kxjppy3jm39is5i1lbrah29cw86rq0vamvx46izbdyf84y5"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
