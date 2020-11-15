@@ -745,7 +745,6 @@ ease from the desktop to a microcontroller or embedded system.")
        ("tcl" ,tcl)
        ("tk" ,tk)
        ("glibc" ,glibc)
-       ("bash-minimal" ,bash-minimal)   ; Used as /bin/sh
        ("xz" ,xz)))                     ; liblzma
     (arguments
      `(#:tests? #f                     ;FIXME: 43 out of 364 tests are failing
@@ -777,6 +776,12 @@ ease from the desktop to a microcontroller or embedded system.")
                       (substitute* '("lib_pypy/_curses_build.py")
                         ;; Find curses
                         (("/usr/local") (assoc-ref inputs "ncurses")))
+                      (substitute* '("lib_pypy/_dbm.py")
+                        ;; Use gdbm compat library, so we don’t need to pull
+                        ;; in bdb.
+                        (("ctypes.util.find_library\\('db'\\)")
+                         (format #f "'~a/lib/libgdbm_compat.so'"
+                                 (assoc-ref inputs "gdbm"))))
                       (substitute* '("lib_pypy/_sqlite3_build.py")
                         ;; Always use search paths
                         (("sys\\.platform\\.startswith\\('freebsd'\\)") "True")
@@ -788,12 +793,10 @@ ease from the desktop to a microcontroller or embedded system.")
                                         "/lib/libsqlite3.so.0'")))
                       (substitute* '("lib-python/3/subprocess.py")
                         ;; Fix shell path
-                        (("/bin/sh")
-                         (string-append (assoc-ref inputs "bash-minimal") "/bin/sh")))
+                        (("/bin/sh") (which "sh")))
                       (substitute* '("lib-python/3/distutils/unixccompiler.py")
                         ;; gcc-toolchain does not provide symlink cc -> gcc
-                        (("\"cc\"") "\"gcc\""))
-                      #t))
+                        (("\"cc\"") "\"gcc\""))))
                   (add-after
                       'unpack 'set-source-file-times-to-1980
                     ;; copied from python package, required by zip testcase
@@ -801,8 +804,7 @@ ease from the desktop to a microcontroller or embedded system.")
                       (let ((circa-1980 (* 10 366 24 60 60)))
                         (ftw "." (lambda (file stat flag)
                                    (utime file circa-1980 circa-1980)
-                                   #t))
-                        #t)))
+                                   #t)))))
                   (replace 'build
                     (lambda* (#:key inputs #:allow-other-keys)
                       (with-directory-excursion "pypy/goal"
@@ -812,7 +814,8 @@ ease from the desktop to a microcontroller or embedded system.")
                                 (string-append "--make-jobs="
                                                (number->string (parallel-job-count)))
                                 "-Ojit"
-                                "targetpypystandalone"))
+                                "targetpypystandalone"
+                                "--allworkingmodules"))
                       ;; Build c modules and package everything, so tests work.
                       (with-directory-excursion "pypy/tool/release"
                         (unsetenv "PYTHONPATH") ; Do not use the system’s python libs:
@@ -834,44 +837,45 @@ ease from the desktop to a microcontroller or embedded system.")
                              "pypy/test_all.py"
                              "--pypy=pypy/tool/release/pypy-dist/bin/pypy3"
                              "lib-python"))
-                          (format #t "test suite not run~%"))
-                      #t))
+                          (format #t "test suite not run~%"))))
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (with-directory-excursion "pypy/tool/release"
-                        ;; Delete test data.
-                        (for-each
-                         (lambda (x)
-                           (delete-file-recursively (string-append
-                                                     "pypy-dist/lib-python/3/" x)))
-                         '("tkinter/test"
-                           "test"
-                           "sqlite3/test"
-                           "lib2to3/tests"
-                           "idlelib/idle_test"
-                           "distutils/tests"
-                           "ctypes/test"
-                           "unittest/test"))
-                        ;; Patch shebang referencing python2
-                        (substitute* '("pypy-dist/lib-python/3/cgi.py"
-                                       "pypy-dist/lib-python/3/encodings/rot_13.py")
-                          (("#!.+/bin/python")
-                           (string-append "#!" (assoc-ref outputs "out") "/bin/pypy3")))
-                        (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                          (substitute* '("pypy-dist/lib_pypy/_md5.py"
-                                         "pypy-dist/lib_pypy/_sha1.py")
-                            (("#!.+/bin/python")
-                             (string-append "#!" (assoc-ref outputs "out") "/bin/pypy3"))))
-                        (copy-recursively "pypy-dist" (assoc-ref outputs "out")))
-                      #t)))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin-pypy3 (string-append out "/bin/pypy3"))
+                             (shebang-match-python "#!.+/bin/python")
+                             (shebang-pypy3 (string-append "#!" bin-pypy3))
+                             (dist-dir "pypy/tool/release/pypy-dist"))
+                        (with-directory-excursion dist-dir
+                          ;; Delete test data.
+                          (for-each
+                           (lambda (x)
+                             (delete-file-recursively (string-append
+                                                       "lib-python/3/" x)))
+                           '("tkinter/test"
+                             "test"
+                             "sqlite3/test"
+                             "lib2to3/tests"
+                             "idlelib/idle_test"
+                             "distutils/tests"
+                             "ctypes/test"
+                             "unittest/test"))
+                          ;; Patch shebang referencing python2
+                          (substitute* '("lib-python/3/cgi.py"
+                                         "lib-python/3/encodings/rot_13.py")
+                            ((shebang-match-python) shebang-pypy3))
+                          (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                            (substitute* '("lib_pypy/_md5.py"
+                                           "lib_pypy/_sha1.py")
+                              ((shebang-match-python) shebang-pypy3))))
+                        (copy-recursively dist-dir out)))))))
     (home-page "https://www.pypy.org/")
     (synopsis "Python implementation with just-in-time compilation")
     (description "PyPy is a faster, alternative implementation of the Python
 programming language employing a just-in-time compiler.  It supports most
 Python code natively, including C extensions.")
-    (license (list license:expat        ; pypy itself; _pytest/
-                   license:psfl ; python standard library in lib-python/
-                   license:asl2.0 ; dotviewer/font/ and some of lib-python/
+    (license (list license:expat     ; pypy itself; _pytest/
+                   license:psfl      ; python standard library in lib-python/
+                   license:asl2.0    ; dotviewer/font/ and some of lib-python/
                    license:gpl3+ ; ./rpython/rlib/rvmprof/src/shared/libbacktrace/dwarf2.*
                    license:bsd-3 ; lib_pypy/cffi/_pycparser/ply/
                    (license:non-copyleft
