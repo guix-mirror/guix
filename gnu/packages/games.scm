@@ -11959,7 +11959,7 @@ game FPS.")
         (base32 "1wd71wdnj9izg5d95m81yx3684g4zdi7fsy0j5wwnbd9j34ilz1i"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f; no tests
+     `(#:tests? #f ; no tests
        #:make-flags
        (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -11969,6 +11969,7 @@ game FPS.")
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://a-nikolaev.github.io/curseofwar/")
     (synopsis "Fast-paced action strategy game")
-    (description "Curse of War is a fast-paced action strategy game for
-Linux originally implemented using ncurses user interface.")
+    (description "Curse of War is a fast-paced action strategy game originally
+implemented using ncurses user interface.  An SDL graphical version is also
+available.")
     (license license:gpl3)))
