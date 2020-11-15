@@ -15437,7 +15437,7 @@ patterns.")
 (define-public methyldackel
   (package
     (name "methyldackel")
-    (version "0.4.0")
+    (version "0.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15446,7 +15446,7 @@ patterns.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10gh8k0ca92kywnrw5pkacq3g6r8s976s12k8jhp8g3g49q9a97g"))))
+                "1sfhf2ap75qxpnmy1ifgmxqs18rq8mah9mcgkby73vc6h0sw99ws"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -15459,11 +15459,14 @@ patterns.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
+               (("-lhts ") "-lhts -lBigWig ")
                (("install MethylDackel \\$\\(prefix\\)" match)
                 (string-append "install -d $(prefix); " match)))
              #t)))))
     (inputs
-     `(("htslib" ,htslib)
+     `(("curl" ,curl) ; XXX: needed by libbigwig
+       ("htslib" ,htslib-1.9)
+       ("libbigwig" ,libbigwig)
        ("zlib" ,zlib)))
     ;; Needed for tests
     (native-inputs
