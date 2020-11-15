@@ -54,6 +54,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11942,3 +11943,32 @@ inside the Zenith Colony.")
 X11 that won't set your CPU on fire, drain your laptop battery, or lower video
 game FPS.")
       (license license:unlicense))))
+
+(define-public curseofwar
+  (package
+    (name "curseofwar")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/a-nikolaev/curseofwar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wd71wdnj9izg5d95m81yx3684g4zdi7fsy0j5wwnbd9j34ilz1i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:make-flags
+       (list "CC=gcc" "PREFIX="
+             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://a-nikolaev.github.io/curseofwar/")
+    (synopsis "Fast-paced action strategy game")
+    (description "Curse of War is a fast-paced action strategy game for
+Linux originally implemented using ncurses user interface.")
+    (license license:gpl3)))
