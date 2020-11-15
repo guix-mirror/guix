@@ -3873,14 +3873,13 @@ outside the standard library.")
 (define-public python-scp
   (package
     (name "python-scp")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scp" version))
        (sha256
-        (base32
-         "1crlpw9lnn58fs1c1rmh7s7s9y5gkgpgjsqlvg9qa51kq1knx7gg"))))
+        (base32 "1m2v09m407p097cy3xy5rxicqfzrqjwf8v5rd4qhfqkk7lllimwb"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))                     ;tests require an SSH server
