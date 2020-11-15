@@ -11962,8 +11962,7 @@ game FPS.")
      `(#:tests? #f; no tests
        #:make-flags
        (list (string-append "CC=" ,(cc-for-target))
-             "PREFIX="
-             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
