@@ -969,8 +969,12 @@ options.")
     (home-page "https://github.com/ebook-utils/css-parser")
     (synopsis "Fork of cssutils modified for parsing ebooks")
     (description
-     "Css-parser is a fork of cssutils 1.0.2, updated and modified for parsing
-ebooks, due to cssutils not receiving updates as of 1.0.2.")
+      "Css-parser is a Python package for parsing and building CSS
+Cascading Style Sheets.  Currently it provides a DOM only and no rendering
+options.
+
+It's a fork of cssutils 1.0.2, updated and modified for parsing ebooks, due to
+cssutils not receiving updates as of 1.0.2.")
     (license license:lgpl3+)))
 
 (define-public python2-css-parser
