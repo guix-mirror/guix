@@ -11972,4 +11972,4 @@ game FPS.")
     (description "Curse of War is a fast-paced action strategy game originally
 implemented using ncurses user interface.  An SDL graphical version is also
 available.")
-    (license license:gpl3)))
+    (license license:gpl3+)))
