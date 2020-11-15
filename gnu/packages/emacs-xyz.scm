@@ -19313,7 +19313,7 @@ correctly.")
 (define-public emacs-helm-sly
   (package
     (name "emacs-helm-sly")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -19322,7 +19322,7 @@ correctly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b2dx9nzh5233lkix3lz81c9cv626lk2hjpcjiikwvyp6y0q92ys"))))
+                "1690rxwwg69jbcjhi51nyjlx3gziaiaa8ssyal71gmc6schq2592"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
@@ -19332,11 +19332,12 @@ correctly.")
     (description "Helm-SLY defines a few new commands:
 
 @itemize
-@item helm-sly-list-connections: Yet another Lisp connection list with Helm.
-@item: helm-sly-apropos: Yet another @command{apropos} with Helm.
-@item helm-sly-mini: Like @command{helm-sly-list-connections}, but include an
-extra source of Lisp-related buffers, like the events buffer or the scratch
-buffer.
+@item @code{helm-sly-list-connections}: Yet another Lisp connection list with
+Helm.
+@item @code{helm-sly-apropos}: Yet another @command{apropos} with Helm.
+@item @code{helm-sly-mini}: Like @command{helm-sly-list-connections}, but
+include an extra source of Lisp-related buffers, like the events buffer or the
+scratch buffer.
 @end itemize\n")
     (license license:gpl3+)))
 
