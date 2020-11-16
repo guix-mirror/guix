@@ -25,7 +25,7 @@
                ;; strange problem where this code "escapes" to some other buffers,
                ;; at least vc-mode.  See:
                ;;   https://lists.gnu.org/archive/html/guix-devel/2020-11/msg00296.html
-               ;; (TODO: add/replace with upstream emacs bug link when reported)
+               ;; Upstream report: <https://bugs.gnu.org/44698>
                ;; Hence the following "when", which might otherwise be unnecessary;
                ;; it prevents causing an error when root-dir-unexpanded is nil.
                (when root-dir-unexpanded
