@@ -2386,8 +2386,10 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
                     (lambda* (#:key make-flags #:allow-other-keys)
                       (apply invoke "make" "-Csrc" make-flags)))
                   (replace 'check
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      (apply invoke "make" "-Ctests" make-flags)))
+                    (lambda* (#:key tests? make-flags #:allow-other-keys)
+                      (when tests?
+                        (apply invoke "make" "-Ctests" make-flags))
+                      #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
