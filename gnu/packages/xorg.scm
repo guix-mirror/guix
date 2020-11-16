@@ -6111,16 +6111,16 @@ to answer a question.  Xmessage can also exit after a specified time.")
   (package
     (name "xterm")
     (version "361")
-    (source (origin
-              (method url-fetch)
-              (uri (list
-                    (string-append "http://invisible-mirror.net/archives/xterm/"
-                                   "xterm-" version ".tgz")
-                    (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                   "xterm-" version ".tgz")))
-              (sha256
-               (base32
-                "0gv27akkfb796aww1snq3c2sxmi8vajgfxk83g60awp4slh0yqc5"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "https://invisible-mirror.net/archives/xterm/"
+                            "xterm-" version ".tgz")
+             (string-append "ftp://ftp.invisible-island.net/xterm/"
+                            "xterm-" version ".tgz")))
+       (sha256
+        (base32 "0gv27akkfb796aww1snq3c2sxmi8vajgfxk83g60awp4slh0yqc5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
