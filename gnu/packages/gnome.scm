@@ -9538,16 +9538,16 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20190917")
+    (version "20201013")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/NicoHood/arc-theme")
+                    (url "https://github.com/jnsh/arc-theme")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
+                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
