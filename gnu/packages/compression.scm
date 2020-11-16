@@ -848,9 +848,9 @@ time for compression ratio.")
                 "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "XZ_SUPPORT=1"
              "LZO_SUPPORT=1"
              "LZ4_SUPPORT=1"
