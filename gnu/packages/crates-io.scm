@@ -33216,6 +33216,41 @@ color in a Windows console.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-win-crypto-ng-0.2
+  (package
+    (name "rust-win-crypto-ng")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "win-crypto-ng" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0ab0iwl4bmqvysypyn6xgax7rlh3w524jji2y1zfwfpdr7wwyv23"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-doc-comment" ,rust-doc-comment-0.3)
+         ("rust-rand-core" ,rust-rand-core-0.5)
+         ("rust-winapi" ,rust-winapi-0.3)
+         ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://crates.io/crates/win-crypto-ng")
+    (synopsis "Safe bindings to MS Windows Cryptography API Next
+Generation")
+    (description
+      "Cryptography API Next Generation (CNG) are cryptographic
+primitives and utilities provided by the operating system and/or
+hardware.  It is available since Windows Vista and replaces the now
+deprecated CryptoAPI.
+
+The primitives do not depend on OpenSSL or other libraries of the
+sort, they are provided by Microsoft and/or by the hardware
+manufacturer.  They are the primitives used in kernel space programs.
+Therefore, if you are using Microsoft Windows, you already accepted to
+trust these primitives.")
+    (license license:bsd-3)))
+
 (define-public rust-winpty-sys-0.4
   (package
     (name "rust-winpty-sys")
