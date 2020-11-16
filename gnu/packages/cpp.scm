@@ -212,11 +212,12 @@ combination of these streams.")
      `(("googletest" ,googletest)))
     (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
-    (description "xsimd provides a unified means for using SIMD features for
-library authors.  Namely, it enables manipulation of batches of numbers with
-the same arithmetic operators as for single values.  It also provides
-accelerated implementation of common mathematical functions operating on
-batches.")
+    (description
+     "xsimd provides a unified means for using @acronym{SIMD, single instruction
+multiple data} features for library authors.  Namely, it enables manipulation of
+batches of numbers with the same arithmetic operators as for single values.
+It also provides accelerated implementation of common mathematical functions
+operating on batches.")
     (license license:bsd-3)))
 
 (define-public chaiscript
