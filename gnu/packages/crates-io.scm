@@ -7351,6 +7351,37 @@ be plugged in, enabling support for using different Ed25519 implementations,
 including HSMs or Cloud KMS services.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-ed25519-dalek-1
+  (package
+    (name "rust-ed25519-dalek")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ed25519-dalek" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "17bsriciv93nkm39z22w7mr0h2a3hnbmgf378v4c895gvkkblqn7"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-curve25519-dalek" ,rust-curve25519-dalek-3)
+         ("rust-ed25519" ,rust-ed25519-1)
+         ("rust-merlin" ,rust-merlin-2)
+         ("rust-rand" ,rust-rand-0.7)
+         ("rust-rand-core" ,rust-rand-core-0.5)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-serde-bytes" ,rust-serde-bytes-0.11)
+         ("rust-sha2" ,rust-sha2-0.9)
+         ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://dalek.rs")
+    (synopsis "Ed25519 EdDSA key generations, signing, and verification")
+    (description
+      "This package provides fast and efficient ed25519 EdDSA key generations,
+signing, and verification in pure Rust.")
+    (license license:bsd-3)))
+
 (define-public rust-edit-distance-2.1
   (package
     (name "rust-edit-distance")
