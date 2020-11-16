@@ -3840,9 +3840,9 @@ use them split WAVE data into multiple files.")
     (build-system gnu-build-system)
     (arguments
      ;; Test files are missing: https://github.com/foo86/dcadec/issues/53
-     '(#:tests? #f
+     `(#:tests? #f
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              ;; Build shared library.
              "CONFIG_SHARED=1"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
