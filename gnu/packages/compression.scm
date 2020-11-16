@@ -1426,7 +1426,10 @@ or junctions, and always follows hard links.")
 
                #t))))
        #:make-flags
-       (list "CC=gcc"
+       ;; TODO: Integrate in next rebuild cycle.
+       (list ,(if (%current-target-system)
+                (string-append "CC=" (cc-for-target))
+                "CC=gcc")
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib")
              (string-append "INCLUDEDIR=" (assoc-ref %outputs "lib") "/include")
