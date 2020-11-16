@@ -1013,6 +1013,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-4.9-libsanitizer-ustat.patch		\
   %D%/packages/patches/gcc-libsanitizer-ustat.patch		\
   %D%/packages/patches/gcc-4.9-libsanitizer-mode-size.patch	\
+  %D%/packages/patches/gcc-6-fix-isl-includes.patch	\
+  %D%/packages/patches/gcc-6-fix-buffer-size.patch	\
   %D%/packages/patches/gcc-6-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-7-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
