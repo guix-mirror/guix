@@ -11,8 +11,9 @@
       . "<https?://\\(debbugs\\|bugs\\)\\.gnu\\.org/\\([0-9]+\\)>")
 
      ;; Emacs-Guix
-     (eval . (setq guix-directory
-                   (locate-dominating-file default-directory ".dir-locals.el")))
+     (eval . (setq-local guix-directory
+                         (locate-dominating-file default-directory
+                                                 ".dir-locals.el")))
 
      ;; Geiser
      ;; This allows automatically setting the `geiser-guile-load-path'
