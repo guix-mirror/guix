@@ -5835,6 +5835,35 @@ use with bindgen.")
      "This package provides native bindings to the @code{libcurl} library.")
     (license license:expat)))
 
+(define-public rust-curve25519-dalek-3
+  (package
+    (name "rust-curve25519-dalek")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "curve25519-dalek" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "01xknhlwagv601k6125372vr0lw2j6xjsvnnl74hprp943j2sjf8"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-byteorder" ,rust-byteorder-1)
+         ("rust-digest" ,rust-digest-0.9)
+         ("rust-packed-simd" ,rust-packed-simd-0.3)
+         ("rust-rand-core" ,rust-rand-core-0.5)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-subtle" ,rust-subtle-2)
+         ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://dalek.rs/curve25519-dalek")
+    (synopsis "Group operations on ristretto255 and Curve25519")
+    (description
+      "This package provides a pure-Rust implementation of group operations on
+ristretto255 and Curve25519")
+    (license license:bsd-3)))
+
 (define-public rust-custom-derive-0.1
   (package
     (name "rust-custom-derive")
