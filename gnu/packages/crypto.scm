@@ -1240,13 +1240,14 @@ Trusted comments are signed, thus verified, before being displayed.")
                (base32
                 "14b5cplcnbf2baq0lvz4f97m6swxpb13rvxdajxyw3s4mbvasia4"))
               (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "ctest" "build/tests"))))))
-    (build-system cmake-build-system)
+             (with-directory-excursion "tests"
+               (invoke "ctest" ".")))))))
     (synopsis "Implementation of the olm and megolm cryptographic ratchets")
     (description "The libolm library implements the Double Ratchet
 cryptographic ratchet.  It is written in C and C++11, and exposed as a C
