@@ -12983,6 +12983,24 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-keccak-0.1
+  (package
+    (name "rust-keccak")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "keccak" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "19ybbvxrdk9yy65rk7f5ad0hcxszkjwph68yzkj3954lnir1bhk7"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://crates.io/crates/keccak")
+    (synopsis "Keccak-f sponge function for Rust")
+    (description "This package provides a keccak-f sponge function")
+    (license license:cc0)))
+
 (define-public rust-kernel32-sys-0.2
   (package
     (name "rust-kernel32-sys")
