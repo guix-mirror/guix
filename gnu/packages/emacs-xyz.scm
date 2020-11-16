@@ -11371,6 +11371,35 @@ constructs.")
 configuration of Chinese fonts.")
     (license license:gpl2+)))
 
+(define-public emacs-boon
+  (package
+    (name "emacs-boon")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/boon")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ss9bjs34q41pa0g0nbdzd8fwpjcbd2239rdlx5aykfv9v0b8j77"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-expand-region" ,emacs-expand-region)
+       ("emacs-multiple-cursors" ,emacs-multiple-cursors)
+       ("emacs-powerline" ,emacs-powerline)
+       ("emacs-spaceline" ,emacs-spaceline)))
+    (home-page "https://github.com/jyp/boon")
+    (synopsis "Ergonomic command mode for Emacs")
+    (description "Boon is a complete package for modal editing with a focus on
+ergonomics and modularity.  Spacial allocation of keys comes first, mnemonics
+second.  Most common operations are mapped to the home row, common editing
+commands are bound to keys reachable with the left hand and movement keys are
+reached with the right hand.")
+    (license license:gpl3+)))
+
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
