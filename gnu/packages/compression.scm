@@ -1461,8 +1461,14 @@ speed.")
     (version (package-version zstd))
     (source (package-source zstd))
     (build-system gnu-build-system)
+    (inputs
+     `(,@(if (%current-target-system)
+           `(("googletest" ,googletest))
+           '())))
     (native-inputs
-     `(("googletest" ,googletest)))
+     `(,@(if (%current-system)
+           `(("googletest" ,googletest))
+           '())))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1480,7 +1486,8 @@ speed.")
                (install-file "README.md" doc)
                #t))))
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "CXX=" ,(cxx-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (home-page (package-home-page zstd))
     (synopsis "Threaded implementation of the Zstandard compression algorithm")
