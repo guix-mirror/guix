@@ -68,7 +68,7 @@
                 "13br735ig7lygvzyfd15fc2rdygrqm503j6xj5xkrl1r7w2wipq6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags `("CC=gcc"
+     `(#:make-flags `(,(string-append "CC=" ,(cc-for-target))
                       ,(string-append "INSTALL_PREFIX="
                                       (assoc-ref %outputs "out")))
        #:test-target "test"
