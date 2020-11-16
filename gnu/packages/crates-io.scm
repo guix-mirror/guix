@@ -26039,6 +26039,34 @@ words, like Python's shlex.")
     (description "Backend crate for signal-hook.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-signature-derive-1
+  (package
+    (name "rust-signature-derive")
+    (version "1.0.0-pre.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "signature_derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0wp8b8ald7qixrcvvclhdcpmn8hkx049jlc29g57ql0304c6qrdh"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1)
+         ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "signature_derive")
+    (synopsis "Custom derive support for the 'signature' crate")
+    (description "This package provides proc macros used by the signature
+crate.
+
+It's not intended to be used directly.  See the signature crate's documentation
+for additional details.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-simba-0.1
   (package
     (name "rust-simba")
