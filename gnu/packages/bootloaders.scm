@@ -150,10 +150,11 @@
                         (("test_unset grub_func_test")
                           "test_unset"))
                       #t)))
-       ;; Disable tests on ARM and AARCH64 platforms.
-       #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)
-                                                       (%current-system)))
-                           '("arm" "aarch64")))))
+       ;; Disable tests on ARM and AARCH64 platforms or when cross-compiling.
+       #:tests? ,(not (or (any (cute string-prefix? <> (or (%current-target-system)
+                                                           (%current-system)))
+                               '("arm" "aarch64"))
+                          (%current-target-system)))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
