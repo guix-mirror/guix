@@ -2383,17 +2383,18 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (replace 'build
-                    (lambda _
-                      (invoke "make" (string-append "CC=" ,(cc-for-target)) "-Csrc")))
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "make" "-Csrc" make-flags)))
                   (replace 'check
-                    (lambda _
-                      (invoke "make" (string-append "CC=" ,(cc-for-target)) "-Ctests")))
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "make" "-Ctests" make-flags)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin")))
                         (install-file "src/cpulimit" bin))
-                      #t)))))
+                      #t)))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/opsengine/cpulimit")
     (synopsis "Limit CPU usage")
     (description
