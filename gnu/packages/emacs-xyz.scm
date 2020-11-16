@@ -19428,10 +19428,10 @@ Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-matrix-client
-  (let ((commit "a0623667b07a4bf60980c97b078e9faed97ace79"))
+  (let ((commit "59c792423fd0503f1375f356bec56130e65d3b51"))
     (package
       (name "emacs-matrix-client")
-      (version (git-version "0.0.0" "4" commit))
+      (version (git-version "0.0.0" "5" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -19440,7 +19440,7 @@ Emacs.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1zya8id3y9wzjaj7nplq7br6nhm3lsskv0fkn1xr1y77fzcfgcdb"))))
+                  "1gmpw14q9zkvviqpnmvh5vbyxk42038yilxm6b2zqw7mwxfc1xra"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
