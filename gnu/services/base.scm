@@ -285,8 +285,19 @@ This service must be the root of the service dependency graph so that its
 (define (file-system->shepherd-service-name file-system)
   "Return the symbol that denotes the service mounting and unmounting
 FILE-SYSTEM."
-  (symbol-append 'file-system-
-                 (string->symbol (file-system-mount-point file-system))))
+  (define valid-characters
+    ;; Valid store characters; see 'checkStoreName' in the daemon.
+    (string->char-set
+     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-._?="))
+
+  (define mount-point
+    (string-map (lambda (chr)
+                  (if (char-set-contains? valid-characters chr)
+                      chr
+                      #\-))
+                (file-system-mount-point file-system)))
+
+  (symbol-append 'file-system- (string->symbol mount-point)))
 
 (define (mapped-device->shepherd-service-name md)
   "Return the symbol that denotes the shepherd service of MD, a <mapped-device>."
