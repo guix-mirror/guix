@@ -3479,9 +3479,9 @@ on systems running the Linux kernel.")
     (inputs
      `(("libpcap" ,libpcap)))
     (arguments
-     '(#:test-target "regress"
+     `(#:test-target "regress"
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
