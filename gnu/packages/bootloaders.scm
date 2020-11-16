@@ -134,6 +134,19 @@
                         (string-append (assoc-ref inputs "console-setup")
                                        "/bin/ckbcomp ")))
                      #t))
+                  (add-after 'unpack 'set-freetype-variables
+                    ;; These variables need to be set to the native versions
+                    ;; of the dependencies because they are used to build
+                    ;; programs which are executed during build time.
+                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                      (let ((freetype (assoc-ref (or native-inputs inputs) "freetype")))
+                        (setenv "BUILD_FREETYPE_LIBS"
+                                (string-append "-L" freetype
+                                               "/lib -lfreetype"))
+                        (setenv "BUILD_FREETYPE_CFLAGS"
+                                (string-append "-I" freetype
+                                               "/include/freetype2")))
+                     #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
                       ;; This test is unreliable. For more information, see:
@@ -196,6 +209,7 @@
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
+       ("freetype" ,freetype)   ; native version needed for build-grub-mkfont
 
        ;; XXX: When building GRUB 2.02 on 32-bit x86, we need a binutils
        ;; capable of assembling 64-bit instructions.  However, our default
