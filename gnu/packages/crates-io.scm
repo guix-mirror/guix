@@ -7291,6 +7291,37 @@ floating-point primitives to an @code{io::Write}.")
      "This package provides lightweight binding to DirectWrite.")
     (license license:mpl2.0)))
 
+(define-public rust-ed25519-1
+  (package
+    (name "rust-ed25519")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ed25519" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1vxn7x1xinbv1cl31015m0fw08jwkphylxrll17animv9i9nmiip"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-serde" ,rust-serde-1)
+         ("rust-signature" ,rust-signature-1))))
+    (home-page "")
+    (synopsis "Edwards Digital Signature Algorithm (EdDSA) over Curve25519")
+    (description
+      "EdDSA over Curve25519 is specified in RFC 8032.  This package contains
+an ed25519::Signature type which other packages can use in conjunction with
+the signature::Signer and signature::Verifier traits It doesn't contain an
+implementation of Ed25519.
+
+These traits allow packages which produce and consume Ed25519 signatures to be
+written abstractly in such a way that different signer/verifier providers can
+be plugged in, enabling support for using different Ed25519 implementations,
+including HSMs or Cloud KMS services.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-edit-distance-2.1
   (package
     (name "rust-edit-distance")
