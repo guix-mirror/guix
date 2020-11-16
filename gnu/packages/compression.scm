@@ -955,7 +955,8 @@ tarballs.")
                 "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "INSTALL=install" "CC=gcc"
+     `(#:make-flags (list "INSTALL=install"
+                          (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
