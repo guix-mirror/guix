@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +27,15 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
@@ -112,3 +119,44 @@ files, and printing page and documents.
 The viewer can simultaneously display several pages using a side-by-side or
 a continuous layout.")
     (license license:gpl2+)))
+
+(define-public pdf2djvu
+  (package
+    (name "pdf2djvu")
+    (version "0.9.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwilk/pdf2djvu/releases/download/" version
+             "/pdf2djvu-" version ".tar.xz"))
+       (sha256
+        (base32 "18r648kna6ccw0m0nfxxnsmz541k69d0w9zzqvm1x2l5qyyvgfsv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("python2" ,python-2)
+       ("python2-nose" ,python2-nose)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("exiv2" ,exiv2)
+       ("graphicsmagick" ,graphicsmagick)
+       ("poppler" ,poppler)
+       ("poppler-data" ,poppler-data)
+       ("util-linux-lib" ,util-linux "lib"))) ; for libuuid
+    (arguments
+     `(#:test-target "test"))
+    (synopsis "PDF to DjVu converter")
+    (description
+     "@code{pdf2djvu} creates DjVu files from PDF files.
+It is able to extract:
+@itemize
+@item graphics,
+@item text layer,
+@item hyperlinks,
+@item document outline (bookmarks),
+@item metadata (including XMP metadata).
+@end itemize\n")
+    (home-page "https://jwilk.net/software/pdf2djvu")
+    (license license:gpl2)))
