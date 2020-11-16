@@ -1862,8 +1862,8 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
     (arguments
-     '(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc"
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "CC=" ,(cc-for-target))
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f                      ; no 'check' target
