@@ -3382,15 +3382,23 @@ information tool.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "Makefile"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t)))
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        "CC=gcc")))
+        (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
     (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
