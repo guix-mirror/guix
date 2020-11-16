@@ -1559,10 +1559,10 @@ features of sudo with a fraction of the codebase.")
                     #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              (chdir "wpa_supplicant")
              (copy-file "defconfig" ".config")
              (let ((port (open-file ".config" "al")))
@@ -1576,6 +1576,15 @@ features of sudo with a fraction of the codebase.")
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
                (close-port port))
+             ;; Make sure we have a pkg-config when cross compiling
+             (substitute* '(".config"
+                            "Android.mk"
+                            "Makefile"
+                            "dbus/Makefile")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (which (string-append ,(%current-target-system)
+                                          "-pkg-config")))))
              #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1604,7 +1613,7 @@ features of sudo with a fraction of the codebase.")
                            "wpa_supplicant.conf"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
