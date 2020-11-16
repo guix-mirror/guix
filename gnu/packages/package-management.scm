@@ -336,7 +336,13 @@ $(prefix)/etc/init.d\n")))
                             (let ((bash (assoc-ref inputs "bash")))
                               (substitute* (string-append out "/bin/guix")
                                 (("^#!.*/bash") (string-append "#! " bash "/bin/bash")))))
-                          #t))))))
+                          #t)))
+
+                    ;; The 'guix' executable has 'OUT/libexec/guix/guile' has
+                    ;; its shebang; that should remain unchanged, thus remove
+                    ;; the 'patch-shebangs' phase, which would otherwise
+                    ;; change it to 'GUILE/bin/guile'.
+                    (delete 'patch-shebangs))))
       (native-inputs `(("pkg-config" ,pkg-config)
 
                        ;; Guile libraries are needed here for
