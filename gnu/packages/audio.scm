@@ -3917,8 +3917,8 @@ loudness of audio and video files to the same level.")
            "0hbb290n3wb23f2k692a6bhc23nnqmxqi9sc9j15pnya8wifw64g"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:make-flags (list (string-append "PREFIX=" %output)
-                            "CC=gcc")
+       `(#:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "CC=" ,(cc-for-target)))
          #:tests? #f ; No tests
          #:phases
          (modify-phases %standard-phases
