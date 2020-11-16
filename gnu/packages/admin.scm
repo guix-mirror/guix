@@ -1723,10 +1723,10 @@ command.")
                 "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; This is mostly copied from 'wpa-supplicant' above.
              (chdir "hostapd")
              (copy-file "defconfig" ".config")
@@ -1737,6 +1737,14 @@ command.")
       CONFIG_IEEE80211N=y
       CONFIG_IEEE80211AC=y\n" port)
                (close-port port))
+             #t))
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "src/drivers/drivers.mak"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
              #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1754,7 +1762,7 @@ command.")
                          (find-files "." "\\.8"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
