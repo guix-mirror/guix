@@ -23538,6 +23538,29 @@ internal windowing system.  This combines particularly well with tiling window
 managers such as XMonad.")
     (license license:gpl3+)))
 
+(define-public emacs-modalka
+  (package
+    (name "emacs-modalka")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mrkkrp/modalka")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ggj8q92sb6wp3hs1vhpmy56id0p3i9zwnw24g2v7xa7w8ac9s7l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mrkkrp/modalka")
+    (synopsis "Minor mode to easily define native custom modal editing")
+    (description
+     "This is a building kit to help switch to modal editing in Emacs.  The
+main goal of the package is to make modal editing in Emacs as natural and
+native as possible.  Modalka lets you define your own keys and does not come
+with a preconfigured set of keys.")
+    (license license:gpl3+)))
+
 (define-public emacs-shrink-path
   (package
     (name "emacs-shrink-path")
