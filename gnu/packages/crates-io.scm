@@ -15159,6 +15159,35 @@ for Rust structs.")
        (sha256
         (base32 "13ir50j549gdz94pds1i7ljnk14d66q5x91s11hncm1pih7jif8c"))))))
 
+(define-public rust-merlin-2
+  (package
+    (name "rust-merlin")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "merlin" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0y5vd610q7x82vf54pmnzlh0mh8hgxr6imv92yh46d7syi3cmzn6"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-byteorder" ,rust-byteorder-1)
+         ("rust-hex" ,rust-hex-0.3)
+         ("rust-keccak" ,rust-keccak-0.1)
+         ("rust-rand-core" ,rust-rand-core-0.5)
+         ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://docs.rs/merlin")
+    (synopsis "Composable proof transcripts for public-coin arguments of
+knowledge")
+    (description
+     "Merlin is a STROBE-based transcript construction for zero-knowledge
+proofs.  It automates the Fiat-Shamir transform, so that by using Merlin,
+non-interactive protocols can be implemented as if they were interactive.")
+    (license license:expat)))
+
 (define-public rust-metadeps-1.1
   (package
     (name "rust-metadeps")
