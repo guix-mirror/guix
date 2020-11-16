@@ -1605,7 +1605,14 @@ such as chess or stockfish.")
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       ;; SSE instructions are available on Intel systems only.
+       (list ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                    (%current-system)))
+                        '("x86_64" "i686"))
+                   '("--enable-simd=sse2") ; prevent avx instructions
+                   '()))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
