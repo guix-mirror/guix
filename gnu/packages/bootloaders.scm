@@ -425,7 +425,7 @@ menu to select one of the installed operating systems.")
      `(("python" ,python)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
 
              ;; /bin/fdt{get,overlay,put} need help finding libfdt.so.1.
              (string-append "LDFLAGS=-Wl,-rpath="
@@ -436,6 +436,15 @@ menu to select one of the installed operating systems.")
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* '("Makefile"
+                            "tests/run_tests.sh")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t))
          (delete 'configure))))         ; no configure script
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
