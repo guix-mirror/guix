@@ -62,7 +62,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:re-export (user-processes-service-type)       ;backwards compatibility
+  #:re-export (user-processes-service-type        ;backwards compatibility
+               %default-substitute-urls)
   #:export (fstab-service-type
             root-file-system-service
             file-system-service-type
