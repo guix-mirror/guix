@@ -2384,10 +2384,10 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
                   (delete 'configure)
                   (replace 'build
                     (lambda _
-                      (invoke "make" "CC=gcc" "-Csrc")))
+                      (invoke "make" (string-append "CC=" ,(cc-for-target)) "-Csrc")))
                   (replace 'check
                     (lambda _
-                      (invoke "make" "CC=gcc" "-Ctests")))
+                      (invoke "make" (string-append "CC=" ,(cc-for-target)) "-Ctests")))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
