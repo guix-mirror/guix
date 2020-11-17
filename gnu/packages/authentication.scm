@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,14 +33,14 @@
 (define-public oath-toolkit
   (package
     (name "oath-toolkit")
-    (version "2.6.3")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1cjial8njck2sd7452jcxspbi5h5fnp3n8v3wbmlw8fzqmgzvxx1"))))
+        (base32 "116na9nncpwshl3ww8w3llzwk49igilplxcjy1k6jzl3mmg2bimz"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO ‘--enable-pskc’ causes xmlsec-related test suite failures.
