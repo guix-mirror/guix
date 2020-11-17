@@ -10915,7 +10915,7 @@ advanced image management tool")
        ;; Test suite dependencies.
        ("xorg-server" ,xorg-server-for-tests)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
-    (home-page "https://source.puri.sm/Librem5/libhandy")
+    (home-page "https://gitlab.gnome.org/GNOME/libhandy/")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user
 interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
