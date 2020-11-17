@@ -255,18 +255,18 @@ living in the same process.")
              `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
-     `(("guile" ,guile-3.0)
-       ,@(let ((system (or (%current-target-system)
-                           (%current-system))))
-           (if (string-prefix? "mips64el" system)
-               '()
-               `(("p11-kit" ,p11-kit))))))
+     `(("guile" ,guile-3.0)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
        ("libidn2" ,libidn2)
        ("nettle" ,nettle)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ,@(let ((system (or (%current-target-system)
+                           (%current-system))))
+           (if (string-prefix? "mips64el" system)
+               '()
+               `(("p11-kit" ,p11-kit))))))
     (home-page "https://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description
