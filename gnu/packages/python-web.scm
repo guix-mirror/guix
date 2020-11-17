@@ -5597,15 +5597,25 @@ Encoding for HTTP.")
                      '("captcha/2captcha.py"
                        "captcha/9kw.py"
                        "captcha/anticaptcha.py"
-                       "captcha/deathbycaptcha.py"
-                       "interpreters/js2py.py"
-                       "interpreters/v8.py"))
+                       "captcha/deathbycaptcha.py"))
            (substitute* "__init__.py"
              ;; Perhaps it's a joke, but don't promote proprietary software.
              (("([Th]is feature is not available) in the .*'" _ prefix)
               (string-append prefix ".'")))
            #t))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; XXX: Dependencies, that have not yet been packaged
+         ;;      and cause an import error when included.
+         (add-after 'unpack 'drop-unsupported-sources
+           (lambda _
+             (with-directory-excursion "cloudscraper"
+               (for-each delete-file
+                         '("interpreters/js2py.py"
+                           "interpreters/v8.py")))
+             #t)))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
