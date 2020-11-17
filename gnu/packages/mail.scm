@@ -2485,14 +2485,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.10")
+    (version "1.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1243hazpiwgvz2m3p48cdh0yw1019i6xjxgc7qyhmxcdy0inb6wy"))))
+        (base32 "1gcxvhin5y0q47svqbf90r5aip0cgywm8sq6m84ygda7km8xylwv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
