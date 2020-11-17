@@ -9550,7 +9550,9 @@ functionality and behavior.")
                 "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       (list "--disable-cinnamon")
+       #:phases
        (modify-phases %standard-phases
          ;; autogen.sh calls configure at the end of the script.
          (replace 'bootstrap
