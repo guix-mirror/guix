@@ -1368,11 +1368,6 @@ commit that others can't refer to, a check is made that the commit used
 has already been pushed to the Savannah-hosted Guix git repository.
 
 This check can be disabled, @emph{at your own peril}, by setting the
-@code{GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT} environment variable.
-
-To build the resulting 'guix' package when using a private commit, the
-following command can be used:
-
-@example
-./pre-inst-env guix build guix --with-git-url=guix=$PWD
-@end example
+@code{GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT} environment variable.  When
+this variable is set, the updated package source is also added to the
+store.  This is used as part of the release process of Guix.

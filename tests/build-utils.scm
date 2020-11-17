@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -174,7 +174,7 @@ echo hello world"))
        (let ((script-file-name (string-append directory "/foo")))
          (call-with-output-file script-file-name
            (lambda (port)
-             (format port script-contents)))
+             (display script-contents port)))
          (chmod script-file-name #o777)
          (wrap-script script-file-name
                       `("GUIX_FOO" prefix ("/some/path"

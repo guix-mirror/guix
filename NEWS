@@ -60,6 +60,8 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘swap-devices’ field of ‘operating-system’ can contains UUIDs and labels
 *** Graphical installer uses UUIDs for unencrypted swap partitions
 *** Graphical installer now supports NTFS file systems
+*** File systems UUIDs and labels now recognized for F2FS and NTFS
+*** Root file system can now be on NFS
 *** New services
 
 autossh, ganeti, gmnisrv, guix-build-coordinator,
@@ -96,6 +98,8 @@ simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
     (<https://issues.guix.gnu.org/35394>)
 *** ‘guix system reconfigure’ now starts services not currently running
     (<https://bugs.gnu.org/43720>)
+*** Desktop environments now detect newly installed applications
+    (<https://bugs.gnu.org/35594>)
 *** Offloading and copying small items is now much faster
     (<https://issues.guix.gnu.org/43340>)
 *** GCC switched back to C_INCLUDE_PATH & co. from CPATH
