@@ -3799,7 +3799,7 @@ iTunes-style metadata.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2019.05.29")
+    (version "2020.11.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3807,7 +3807,7 @@ iTunes-style metadata.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "08i63jr8ihn1xiq5z5n3yls3yz6li5sg0s454l56p5bcvbrw81my"))))
+                "1dx5imjil5yiya5dqlvbqkvzgic5pybsfilx5jz1cpi1znkzpgc9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -3826,6 +3826,8 @@ iTunes-style metadata.")
                     (lambda _
                       (invoke "./genMakefiles"
                               "linux-with-shared-libraries"))))))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "http://www.live555.com/liveMedia/")
     (synopsis "Set of C++ libraries for multimedia streaming")
     (description "This code forms a set of C++ libraries for multimedia
