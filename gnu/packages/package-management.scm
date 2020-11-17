@@ -338,7 +338,7 @@ $(prefix)/etc/init.d\n")))
                                 (("^#!.*/bash") (string-append "#! " bash "/bin/bash")))))
                           #t)))
 
-                    ;; The 'guix' executable has 'OUT/libexec/guix/guile' has
+                    ;; The 'guix' executable has 'OUT/libexec/guix/guile' as
                     ;; its shebang; that should remain unchanged, thus remove
                     ;; the 'patch-shebangs' phase, which would otherwise
                     ;; change it to 'GUILE/bin/guile'.
