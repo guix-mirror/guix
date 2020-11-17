@@ -1347,7 +1347,7 @@ not supported."
                 (lambda ()
                   (call-with-ascii-input-file prog
                     (lambda (p)
-                      (format out header)
+                      (display header out)
                       (dump-port p out)
                       (close out)
                       (chmod template mode)
