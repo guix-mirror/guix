@@ -41,6 +41,7 @@
   #:use-module (ice-9 regex)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -318,7 +319,7 @@ PARTED-OBJECT field equals PARTITION, return #f if not found."
 fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   ;; Kernel always return EINVAL for BLKRRPART on loopdevices.
   (and (not (string-match "/dev/loop*" file-name))
-       (let loop ((try 4))
+       (let loop ((try 16))
          (usleep 250000)
          (let ((in-use? (device-in-use? file-name)))
            (if (and in-use? (> try 0))
@@ -339,15 +340,12 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
 (define (non-install-devices)
   "Return all the available devices, except the busy one, allegedly the
 install device. DEVICE-IS-BUSY? is a parted call, checking if the device is
-mounted. The install image uses an overlayfs so the install device does not
-appear as mounted and won't be considered as busy. So use also DEVICE-IN-USE?
-from (guix build syscalls) module, who will try to re-read the device's
-partition table to determine whether or not it is already used (like sfdisk
-from util-linux)."
+mounted."
+  ;; FIXME: The install image uses an overlayfs so the install device does not
+  ;; appear as mounted and won't be considered as busy.
   (remove (lambda (device)
             (let ((file-name (device-path device)))
-              (or (device-is-busy? device)
-                  (with-delay-device-in-use? file-name))))
+              (device-is-busy? device)))
           (devices)))
 
 
@@ -1390,9 +1388,12 @@ the devices not to be used before returning."
   (let ((device-file-names (map device-path devices)))
     (for-each force-device-sync devices)
     (for-each (lambda (file-name)
-                (let ((in-use? (with-delay-device-in-use? file-name)))
-                  (and in-use?
-                       (error
-                        (format #f (G_ "Device ~a is still in use.")
-                                file-name)))))
+                (let/time ((time in-use?
+                                 (with-delay-device-in-use? file-name)))
+                  (if in-use?
+                      (error
+                       (format #f (G_ "Device ~a is still in use.")
+                               file-name))
+                      (syslog "Syncing ~a took ~a seconds.~%"
+                              file-name (time-second time)))))
               device-file-names)))
