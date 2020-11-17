@@ -3810,8 +3810,9 @@ iTunes-style metadata.")
                 "1dx5imjil5yiya5dqlvbqkvzgic5pybsfilx5jz1cpi1znkzpgc9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f                      ; no tests
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "CXX=" ,(cxx-for-target))
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")
                           (string-append "PREFIX="
