@@ -18274,6 +18274,31 @@ Features include, but are not limited to:
 @end itemize")
     (license license:expat)))
 
+(define-public python-globber
+  (package
+    (name "python-globber")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asharov/globber")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "055xf7ja7zjhxis0ab5fnfsx16fsvr5fvc6mixqybanwxh8sgfjk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/asharov/globber")
+    (synopsis "Library for string matching with glob patterns")
+    (description
+     "Globber is a Python library for matching file names against glob patterns.
+In contrast to other glob-matching libraries, it matches arbitrary strings and
+doesn't require the matched names to be existing files.  In addition, it
+supports the globstar @code{**} operator to match an arbitrary number of
+path components.")
+    (license license:asl2.0)))
+
 (define-public python-fusepy
   (package
     (name "python-fusepy")
