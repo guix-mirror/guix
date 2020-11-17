@@ -118,6 +118,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
@@ -8002,3 +8003,29 @@ It contains the code shared by all Kiwix ports.")
     (description "Kiwix Desktop allows you to enjoy a lot of different content
 offline (such as Wikipedia), without any access to Internet.")
     (license license:gpl3)))
+
+(define-public uriparser
+  (let ((commit "25dddb16cf044a7df27884e7ad3911baaaca3d7c")
+        (revision "1"))
+    (package
+      (name "uriparser")
+      (version (git-version "0.9.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/uriparser/uriparser")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1ffzia679axcsccx2fxjpxhb0i5xc42zxn446x6c1170w6v69qf6"))))
+      (build-system cmake-build-system)
+      (native-inputs `(("gtest" ,googletest)
+                       ("doxygen" ,doxygen)
+                       ("graphviz" ,graphviz)))
+      (synopsis "Strictly RFC 3986 compliant URI parsing and handling library")
+      (description "uriparser is a strictly RFC 3986 compliant URI parsing and
+handling library written in C89 (\"ANSI C\").  uriparser is fast and supports
+Unicode.")
+      (home-page "https://uriparser.github.io/")
+      (license license:bsd-3))))
