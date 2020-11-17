@@ -10877,7 +10877,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -10886,7 +10886,7 @@ advanced image management tool")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "193y09yy0302x8fkyrnq591m805xp68bkd93fl5qggxi52k8pj0v"))))
+        (base32 "1bmmkahshvlvpsnb7zp8bddv7i1h5k4p967n6kxh71g1vnj8x20m"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
