@@ -18299,6 +18299,46 @@ supports the globstar @code{**} operator to match an arbitrary number of
 path components.")
     (license license:asl2.0)))
 
+(define-public python-git-hammer
+  (package
+    (name "python-git-hammer")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asharov/git-hammer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0f9xlk86ijzpdj25hr1q4wcy8k72v3w470ngwm9mpdkfj8ng84wr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("setup\\(")
+                "setup(\n    test_suite=\"test\",")))))))
+    (propagated-inputs
+     `(("python-beautifultable" ,python-beautifultable)
+       ("python-dateutil" ,python-dateutil)
+       ("python-gitpython" ,python-gitpython)
+       ("python-globber" ,python-globber)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-sqlalchemy-utils"
+        ,python-sqlalchemy-utils)))
+    (home-page "https://github.com/asharov/git-hammer")
+    (synopsis "Provide statistics for git repositories")
+    (description
+     "Git Hammer is a statistics tool for projects in git repositories.
+Its major feature is tracking the number of lines authored by each person for every
+commit, but it also includes some other useful statistics.")
+    (license license:asl2.0)))
+
 (define-public python-fusepy
   (package
     (name "python-fusepy")
