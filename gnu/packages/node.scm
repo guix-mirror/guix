@@ -207,14 +207,14 @@ devices.")
 (define-public node-10.22
   (package
     (inherit node)
-    (version "10.22.0")
+    (version "10.22.1")
     (source (origin
               (inherit (package-source node))
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "1nz18fa550li10r0kzsm28c2rvvq61nq8bqdygip0rmvbi2paxg0"))))
+                "0pr569qiabr4m7k38s7rwi3iyzrc5jmx19z2z0k7n4xfvhjlfzzl"))))
     (inputs
      (alist-replace "nghttp2" (list nghttp2-1.41 "lib")
                     (package-inputs node)))))
