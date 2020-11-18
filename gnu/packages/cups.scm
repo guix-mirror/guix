@@ -819,7 +819,10 @@ language.")
       ;; PPDs have been obsolete since CUPS 1.2 and make up 90% of total size.
       (outputs (list "out" "ppd"))
       (arguments
-       '(#:make-flags
+       `(#:modules
+         ((srfi srfi-26)
+          ,@%gnu-build-system-modules)
+         #:make-flags
          (list (string-append "CUPSDRV="
                               (assoc-ref %outputs "out") "/share/cups/drv")
                (string-append "CUPSFILTER="
@@ -841,7 +844,12 @@ language.")
                (apply invoke "make" "drv" make-flags)))
            (add-after 'install 'install-.drv-files
              (lambda* (#:key make-flags #:allow-other-keys)
-               (apply invoke "make" "install" "DRV_ONLY=1" make-flags))))
+               (apply invoke "make" "install" "DRV_ONLY=1" make-flags)))
+           (add-after 'install 'compress-PPDs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((ppd (assoc-ref outputs "ppd")))
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files ppd "\\.ppd$"))))))
          #:tests? #f))                  ; no test suite
       (inputs
        `(("cups" ,cups-minimal)
