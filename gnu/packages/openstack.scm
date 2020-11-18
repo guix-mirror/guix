@@ -59,19 +59,18 @@
      ;; python-stestr.
      `(#:tests? #f))
     (propagated-inputs
-      `(("python-gitpython" ,python-gitpython)
-        ("python-pyyaml" ,python-pyyaml)
-        ("python-six" ,python-six)
-        ("python-stevedore" ,python-stevedore)))
+     `(("python-gitpython" ,python-gitpython)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)))
+     `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/PyCQA/bandit")
     (synopsis "Security oriented static analyser for python code")
-    (description
-      "Bandit is a tool designed to find common security issues in Python code.
-To do this Bandit processes each file, builds an AST from it, and runs
-appropriate plugins against the AST nodes.  Once Bandit has finished scanning
-all the files it generates a report.")
+    (description "Bandit is a tool designed to find common security issues in
+Python code.  To do this Bandit processes each file, builds an AST from it,
+and runs appropriate plugins against the AST nodes.  Once Bandit has finished
+scanning all the files it generates a report.")
     (license asl2.0)))
 
 (define-public python-debtcollector
