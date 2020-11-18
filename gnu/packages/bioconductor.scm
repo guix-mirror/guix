@@ -1606,6 +1606,30 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
 
+(define r-rcppnumerical
+  (package
+   (name "r-rcppnumerical")
+   (version "0.4-0")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "RcppNumerical" version))
+            (sha256
+             (base32
+              "1a92fql6mijhnr1kxkcxwivf95pk9lhgmhzkshs51h0ybfv5krik"))))
+   (properties `((upstream-name . "RcppNumerical")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-rcpp" ,r-rcpp)
+      ("r-rcppeigen" ,r-rcppeigen)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://github.com/yixuan/RcppNumerical")
+   (synopsis "Rcpp integration for numerical computing libraries")
+   (description "This package provides a collection of open source libraries
+for numerical computing (numerical integration, optimization, etc.) and their
+integration with @code{Rcpp}.")
+   (license license:gpl2+)))
+
 (define-public r-diffbind
   (package
     (name "r-diffbind")
