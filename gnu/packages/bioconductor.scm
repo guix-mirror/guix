@@ -72,6 +72,35 @@
 database, assembled using data from REACTOME.")
     (license license:cc-by4.0)))
 
+(define-public r-bluster
+  (package
+   (name "r-bluster")
+   (version "1.0.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "bluster" version))
+            (sha256
+             (base32
+              "0izrf82m5znyrgai5y5jss4k2brabh4ajxdvnlwwc92l5bw7jp61"))))
+   (properties `((upstream-name . "bluster")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biocneighbors" ,r-biocneighbors)
+      ("r-biocparallel" ,r-biocparallel)
+      ("r-igraph" ,r-igraph)
+      ("r-matrix" ,r-matrix)
+      ("r-rcpp" ,r-rcpp)
+      ("r-s4vectors" ,r-s4vectors)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://bioconductor.org/packages/bluster")
+   (synopsis "Clustering algorithms for Bioconductor")
+   (description"This package wraps common clustering algorithms in an easily
+extended S4 framework.  Backends are implemented for hierarchical, k-means
+and graph-based clustering.  Several utilities are also provided to compare
+and evaluate clustering results.")
+   (license license:gpl3)))
+
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
     (name "r-bsgenome-celegans-ucsc-ce6")
