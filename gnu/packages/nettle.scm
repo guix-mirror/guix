@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,14 +75,14 @@ themselves.")
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.5.1")
+    (version "3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06clvkdfxhlbagn4afssylmn5vrak59dlmnvy8b2xc31hycs3k3m"))))
+                "1wg3sprl0bzy49cmbwwm91vw67hk1x5i3ksdygsciyxz587hsk6j"))))
     (arguments
      (substitute-keyword-arguments (package-arguments nettle-2)
        ((#:configure-flags flags)
