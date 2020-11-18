@@ -577,14 +577,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.15")
+    (version "4.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1fzbcv2dgg6byb2l8m2d6i69yn0a44pq52mpmms756jdf6z622i6"))))
+        (base32 "1dfkvhs0ri5kbyskk730ik8ix5z138qys26b31p6kixd8jjkw3k4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
