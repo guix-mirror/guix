@@ -1657,6 +1657,33 @@ effect sizes for a variety of GLM models, using approximation of the
 posterior for individual coefficients.")
    (license license:gpl2)))
 
+(define-public r-greylistchip
+  (package
+   (name "r-greylistchip")
+   (version "1.22.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "GreyListChIP" version))
+            (sha256
+             (base32
+              "1d1yvza1aw3vs3di6mrra5l52ig0p9bpzprrqvknjaz5i4yb8ma6"))))
+   (properties `((upstream-name . "GreyListChIP")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-bsgenome" ,r-bsgenome)
+      ("r-genomeinfodb" ,r-genomeinfodb)
+      ("r-genomicalignments" ,r-genomicalignments)
+      ("r-genomicranges" ,r-genomicranges)
+      ("r-mass" ,r-mass)
+      ("r-rsamtools" ,r-rsamtools)
+      ("r-rtracklayer" ,r-rtracklayer)
+      ("r-summarizedexperiment" ,r-summarizedexperiment)))
+   (home-page "https://bioconductor.org/packages/GreyListChIP")
+   (synopsis "Greylist artefact regions based on ChIP inputs")
+   (description "This package identifies regions of ChIP experiments with high
+signal in the input, that lead to spurious peaks during peak calling.")
+   (license license:artistic2.0)))
+
 (define-public r-diffbind
   (package
     (name "r-diffbind")
