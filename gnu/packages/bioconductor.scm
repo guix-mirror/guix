@@ -1630,6 +1630,33 @@ for numerical computing (numerical integration, optimization, etc.) and their
 integration with @code{Rcpp}.")
    (license license:gpl2+)))
 
+(define-public r-apeglm
+  (package
+   (name "r-apeglm")
+   (version "1.12.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "apeglm" version))
+            (sha256
+             (base32
+              "0pix1fhxk2q89p2745fgsmxwics9rf10l392qhw3rw6v6ynhims2"))))
+   (properties `((upstream-name . "apeglm")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-emdbook" ,r-emdbook)
+      ("r-genomicranges" ,r-genomicranges)
+      ("r-rcpp" ,r-rcpp)
+      ("r-rcppeigen" ,r-rcppeigen)
+      ("r-rcppnumerical" ,r-rcppnumerical)
+      ("r-summarizedexperiment" ,r-summarizedexperiment)))
+   (native-inputs `(("r-knitr" ,r-knitr)))
+   (home-page "https://bioconductor.org/packages/apeglm")
+   (synopsis "Approximate posterior estimation for GLM coefficients")
+   (description "This package provides Bayesian shrinkage estimators for
+effect sizes for a variety of GLM models, using approximation of the
+posterior for individual coefficients.")
+   (license license:gpl2)))
+
 (define-public r-diffbind
   (package
     (name "r-diffbind")
