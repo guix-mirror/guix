@@ -762,7 +762,10 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
         (base32 "1pygg2bd2gh27dc65h3dzwrpvi6bq5c87wl0ldchqlc2b3blsx6p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:modules
+       ((srfi srfi-26)
+        ,@%gnu-build-system-modules)
+       #:configure-flags
        `(,(string-append "--prefix="
                          (assoc-ref %outputs "out"))
          ,(string-append "--with-cupsfilterdir="
@@ -781,7 +784,13 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
                 (string-append match "aclocal"))
                (("^(AUTOMAKE=).*" _ match)
                 (string-append match "automake")))
-             #t)))))
+             #t))
+         (add-after 'install 'compress-PPDs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion out
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files "share/cups" "\\.ppd$")))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
