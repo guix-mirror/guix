@@ -7442,14 +7442,14 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.22.0")
+    (version "1.24.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "01ilhlrvy28jfdyxjria4024yryj5zgympgqznw17g3y3az78kk2"))))
+         "0blvvci57q12sl18yvw07233rfnj47mfadzm0pdpig1ll5z6ld2j"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7465,6 +7465,7 @@ ungapped alignment formats.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-go-db" ,r-go-db)
        ("r-gostats" ,r-gostats)
+       ("r-iranges" ,r-iranges)
        ("r-limma" ,r-limma)
        ("r-magrittr" ,r-magrittr)
        ("r-pheatmap" ,r-pheatmap)
