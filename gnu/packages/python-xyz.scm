@@ -8137,27 +8137,6 @@ PEP 8.")
 (define-public python2-pyflakes
   (package-with-python2 python-pyflakes))
 
-;; Flake8 2.6 requires an older version of pyflakes.
-;; This should be removed ASAP.
-(define-public python-pyflakes-1.2
-  (package (inherit python-pyflakes)
-    (version "1.2.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyflakes" version))
-       (sha256
-        (base32
-         "17hkw8yd44cr8fz13phy4aih3r5j2p7ild4zlvqdh2c8dmiinjif"))))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This one test fails.
-         (replace 'check
-           (lambda _ (invoke "pytest" "-vv" "-k" "not test_f_string"))))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))))
-
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -8182,39 +8161,6 @@ complexity of Python source code.")
 
 (define-public python2-mccabe
   (package-with-python2 python-mccabe))
-
-(define-public python-mccabe-0.2.1
-  (package (inherit python-mccabe)
-    (version "0.2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mccabe" version))
-        (sha256
-          (base32
-            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))))
-
-(define-public python2-mccabe-0.2.1
-  (package-with-python2 python-mccabe-0.2.1))
-
-;; Flake8 2.4.1 requires an older version of pep8.
-;; This should be removed ASAP.
-(define-public python-pep8-1.5.7
-  (package (inherit python-pep8)
-    (version "1.5.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pep8" version))
-       (sha256
-        (base32
-         "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
-    (arguments
-     ;; XXX Tests not compatible with Python 3.5.
-     '(#:tests? #f))))
-
-(define-public python2-pep8-1.5.7
-  (package-with-python2 python-pep8-1.5.7))
 
 (define-public python-flake8
   (package
@@ -8261,40 +8207,6 @@ complexity of Python source code.")
          ("python2-functools32" ,python2-functools32)
          ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
-
-;; python-hacking requires flake8 <2.7.0.
-(define-public python-flake8-2.6
-  (package
-    (inherit python-flake8)
-    (version "2.6.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "flake8" version))
-              (sha256
-               (base32
-                "0y57hzal0j84dh9i1g1g6dc4aywvrnhy2fjmmbglpv5ajihxh713"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-later-pycodestyles
-           (lambda __
-             (substitute* '("flake8.egg-info/requires.txt"
-                            "setup.py")
-               (("pycodestyle >= 2.0, < 2.1")
-                "pycodestyle >= 2.0"))
-             #t))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v")
-             #t)))))
-    (propagated-inputs
-     `(("python-pep8" ,python-pep8)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-entrypoints" ,python-entrypoints)
-       ("python-pyflakes" ,python-pyflakes-1.2)
-       ("python-mccabe" ,python-mccabe)))))
 
 (define-public python-flake8-bugbear
   (package

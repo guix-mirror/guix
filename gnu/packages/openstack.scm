@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -148,39 +150,30 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "1.1.0")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "1vlgh81v4vsw3q3cf7qggsp043vq16knp203lrll82h7l7rhd8r3"))))
+         "062rvbkvbavqqz55f7q00ikwipkn5j0rdls1rrajdbfwgckjcrsm"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-test
-           (lambda _
-             ;; TODO: Just one test fails:
-             ;; hacking.tests.test_doctest.HackingTestCase.test_pycodestyle
-             ;;   (H403-hacking_docstring_multiline_end-line-5)
-             (delete-file "hacking/tests/test_doctest.py")
-             #t)))))
-    (propagated-inputs
-     `(("python-flake8" ,python-flake8-2.6)
-       ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
-       ("python-pbr" ,python-pbr)
-       ("python-pep8-1.5.7" ,python-pep8-1.5.7)
-       ("python-pyflakes-1.2" ,python-pyflakes-1.2)
-       ("python-six" ,python-six)))
+     (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
     (native-inputs
      `( ;; Tests
+       ("python-coverage" ,python-coverage)
+       ("python-ddt" ,python-ddt)
+       ("python-dnspython" ,python-dnspython)
+       ("python-fixtures" ,python-fixtures)
        ("python-eventlet" ,python-eventlet)
        ("python-mock" ,python-mock)
-       ("python-reno" ,python-reno)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testscenarios" ,python-testscenarios)))
+       ("python-monotonic" ,python-monotonic)
+       ("python-subunit" ,python-subunit)
+       ("python-stestr" ,python-stestr)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
     (description
@@ -188,9 +181,6 @@ manner.")
 @uref{http://docs.openstack.org/developer/hacking/, OpenStack style
 guidelines}.")
     (license asl2.0)))
-
-(define-public python2-hacking
-  (package-with-python2 python-hacking))
 
 (define-public python-mox3
   (package
