@@ -482,7 +482,7 @@ programs.")
    (package cups)
    "The CUPS package.")
   (extensions
-   (package-list (list cups-filters))
+   (package-list (list cups-filters escpr hplip-minimal foomatic-filters))
    "Drivers and other extensions to the CUPS package.")
   (files-configuration
    (files-configuration (files-configuration))
