@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -444,15 +444,14 @@ total number of shares generated.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://files.dyne.org/tomb/"
+              (uri (string-append "https://files.dyne.org/tomb/releases/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "0x3al02796vx1cvy6y6h685c367qx70dwv471g0hmks2gr10f0cn"))
-              (patches (search-patches "tomb-fix-errors-on-open.patch"))))
+                "0bggzzqmpfiknr76lyl8iszybrcpyqlbgiqk47fxq08h2b5ln1ic"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -1230,7 +1229,7 @@ Trusted comments are signed, thus verified, before being displayed.")
 (define-public libolm
   (package
     (name "libolm")
-    (version "3.1.5")
+    (version "3.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1238,15 +1237,16 @@ Trusted comments are signed, thus verified, before being displayed.")
                     (commit version)))
               (sha256
                (base32
-                "030g0jmmvhx2dh32k708sz6cdd5q1wz48i4gigh6dclqk10w28lm"))
+                "14b5cplcnbf2baq0lvz4f97m6swxpb13rvxdajxyw3s4mbvasia4"))
               (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "ctest" "build/tests"))))))
-    (build-system cmake-build-system)
+             (with-directory-excursion "tests"
+               (invoke "ctest" ".")))))))
     (synopsis "Implementation of the olm and megolm cryptographic ratchets")
     (description "The libolm library implements the Double Ratchet
 cryptographic ratchet.  It is written in C and C++11, and exposed as a C

@@ -64,13 +64,16 @@
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:test-target "test"
        #:make-flags
-       '("MYCFLAGS=-fPIC -DLUA_DL_DLOPEN"
-         "linux")
+       (list "MYCFLAGS=-fPIC -DLUA_DL_DLOPEN"
+             (string-append "CC=" ,(cc-for-target))
+             (string-append "SYSLIBS=-L" (assoc-ref %build-inputs "readline")
+                            "/lib")
+             "linux")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

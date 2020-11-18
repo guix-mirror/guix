@@ -9552,19 +9552,21 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20190917")
+    (version "20201013")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/NicoHood/arc-theme")
+                    (url "https://github.com/jnsh/arc-theme")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
+                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       (list "--disable-cinnamon")
+       #:phases
        (modify-phases %standard-phases
          ;; autogen.sh calls configure at the end of the script.
          (replace 'bootstrap
@@ -10889,7 +10891,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -10898,7 +10900,7 @@ advanced image management tool")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "193y09yy0302x8fkyrnq591m805xp68bkd93fl5qggxi52k8pj0v"))))
+        (base32 "1bmmkahshvlvpsnb7zp8bddv7i1h5k4p967n6kxh71g1vnj8x20m"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -10927,7 +10929,7 @@ advanced image management tool")
        ;; Test suite dependencies.
        ("xorg-server" ,xorg-server-for-tests)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
-    (home-page "https://source.puri.sm/Librem5/libhandy")
+    (home-page "https://gitlab.gnome.org/GNOME/libhandy/")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user
 interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
@@ -11913,7 +11915,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.21.1")
+    (version "0.22.1")
     (source
      (origin
        (method git-fetch)
@@ -11923,7 +11925,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17ss5k2hnymk6xyx1dy3q0y2pwcld78cw7d0cs9c0hnhskh5dirh"))))
+         "0ds4j542zprbyh36qyii1c9mb7kj14cvrfk5miqjvp8y4b5i6mdi"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

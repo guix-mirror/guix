@@ -78,6 +78,7 @@
             target-arm?
             target-64bit?
             cc-for-target
+            cxx-for-target
 
             version-compare
             version>?
@@ -541,6 +542,11 @@ a character other than '@'."
   (if target
       (string-append target "-gcc")
       "gcc"))
+
+(define* (cxx-for-target #:optional (target (%current-target-system)))
+  (if target
+      (string-append target "-g++")
+      "g++"))
 
 (define version-compare
   (let ((strverscmp

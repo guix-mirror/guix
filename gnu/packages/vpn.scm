@@ -505,7 +505,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard-linux-compat
   (package
     (name "wireguard-linux-compat")
-    (version "1.0.20200623")
+    (version "1.0.20201112")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/wireguard-linux-compat/"
@@ -513,12 +513,13 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                                   ".tar.xz"))
               (sha256
                (base32
-                "0iclixsqfckaz6kz6a4lhzdary3xhfy1d0pz0pgrwy8m8mr3f28k"))))
+                "1qcpg1rcmy4h529a0spjm50qgxjgjy20j29fpbrqsv5xq3qfgsl9"))))
     (build-system linux-module-build-system)
     (outputs '("out"
                "kernel-patch"))
     (arguments
-     `(#:tests? #f ; No test suite
+     `(#:linux ,linux-libre-5.4         ; mustn't have WG built-in
+       #:tests? #f                      ; no test suite
        #:modules ((guix build linux-module-build-system)
                   (guix build utils)
                   (ice-9 popen)
@@ -538,7 +539,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                (call-with-output-file "wireguard.patch"
                  (lambda (port)
                    (format port "~a" str))))
-               #t))
+             #t))
          (add-after 'install 'install-patch
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "wireguard.patch"

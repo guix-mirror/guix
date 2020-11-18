@@ -391,6 +391,16 @@ as well as the classic centralized workflow.")
               (install-file "contrib/subtree/git-subtree.1"
                             (string-append subtree "/share/man/man1"))
               #t)))
+         (add-after 'install 'restore-sample-hooks-shebang
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/git-core/templates/hooks")))
+               (for-each (lambda (file)
+                           (format #t "restoring shebang on `~a'~%" file)
+                           (substitute* file
+                             (("^#!.*/bin/sh") "#!/bin/sh")))
+                         (find-files dir ".*"))
+               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Split the binaries to the various outputs.

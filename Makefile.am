@@ -562,7 +562,7 @@ dist_zshcompletion_DATA = etc/completion/zsh/_guix
 dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 
 # SELinux policy
-nodist_selinux_policy_DATA = etc/guix-daemon.cil.in
+nodist_selinux_policy_DATA = etc/guix-daemon.cil
 
 EXTRA_DIST +=						\
   HACKING						\
@@ -570,6 +570,7 @@ EXTRA_DIST +=						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  .guix-authorizations					\
   .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
@@ -710,7 +711,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
 # Name of the 'guix' package shipped in the binary tarball.
-GUIX_FOR_BINARY_TARBALL = guile3.0-guix
+GUIX_FOR_BINARY_TARBALL = guix
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
@@ -730,8 +731,8 @@ distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 EXTRA_DIST += $(top_srcdir)/.version
 BUILT_SOURCES += $(top_srcdir)/.version
-$(top_srcdir)/.version:
-	echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
+$(top_srcdir)/.version: config.status
+	$(AM_V_GEN)echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
 
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
@@ -826,9 +827,10 @@ release: dist-with-updated-version
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+	   	"`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
 	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
@@ -840,9 +842,10 @@ release: dist-with-updated-version
 	  mv "guix-binary.$$system.tar.xz"					\
 	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
 	done
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+		"`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\

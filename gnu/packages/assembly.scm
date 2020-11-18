@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
@@ -51,7 +51,7 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages xml)
   #:use-module ((guix utils)
-                #:select (%current-system)))
+                #:select (%current-system cc-for-target)))
 
 (define-public nasm
   (package
@@ -276,13 +276,21 @@ runtime")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "Makefile"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t))
          (replace 'check
            (lambda _
              (with-directory-excursion "test/asm"
                (invoke "./test.sh"))
              (with-directory-excursion "test/link"
                (invoke "./test.sh")))))
-       #:make-flags `("CC=gcc"
+       #:make-flags `(,(string-append "CC=" ,(cc-for-target))
                       ,(string-append "PREFIX="
                                       (assoc-ref %outputs "out")))))
     (native-inputs

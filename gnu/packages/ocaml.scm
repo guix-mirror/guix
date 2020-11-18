@@ -5802,7 +5802,9 @@ convenience functions for vectors and matrices.")
                 "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "tests"))
+     `(;; FIXME: (got signal SEGV) #44725
+       #:tests? #f
+       #:test-target "tests"))
     (inputs
      `(("cairo" ,cairo)
        ("gtk+-2" ,gtk+-2)

@@ -1308,12 +1308,12 @@ organized in a hash table or B+ tree.")
     (native-inputs `(("bc" ,bc)
                      ("bash:include" ,bash "include")
                      ("check" ,check-0.14)
-                     ("libuuid" ,util-linux)
                      ("pkg-config" ,pkg-config)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
-              ("libgcrypt" ,libgcrypt)))
+              ("libgcrypt" ,libgcrypt)
+              ("libuuid" ,util-linux "lib")))
     (synopsis "Manipulate plain text files as databases")
     (description
      "GNU Recutils is a set of tools and libraries for creating and
@@ -2421,17 +2421,16 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "3.13.3")
+    (version "3.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "peewee" version))
        (sha256
-        (base32
-         "0sc376v6rxga4b7ic9kxw2pmf28rmcx016320pa2nlb5d1rsjs8j"))))
+        (base32 "1yl49gxrg0c2x3n3r60z3lixw9am8b61s0477l9vjabhhx1yziar"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ; Fails to import test data
+     `(#:tests? #f))                    ; fails to import test data
     (inputs
      `(("sqlite" ,sqlite)))
     (native-inputs
@@ -3458,7 +3457,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 (define-public python-pypika
   (package
     (name "python-pypika")
-    (version "0.37.2")
+    (version "0.44.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -3467,7 +3466,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "089z1c778q1fwhzsc88ws8j5gm2hgxknibabn4wpax8rz2bfs3ck"))))
+               "0mpddrw9z1pzcc40j3pzhd583hlgjx96aa8ak6m9zzhpm4bv3ard"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-parameterized" ,python-parameterized)))

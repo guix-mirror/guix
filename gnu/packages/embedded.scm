@@ -1024,8 +1024,8 @@ the Raspberry Pi chip.")
       (home-page "https://github.com/puppeh/vc4-toolchain/"))))
 
 (define-public gcc-vc4
-  (let ((commit "165f6d0e11d2e76ee799533bb45bd5c92bf60dc2")
-        (xgcc (cross-gcc "vc4-elf" #:xbinutils binutils-vc4)))
+  (let ((commit "0fe4b83897341742f9df65797474cb0feab4b377")
+        (xgcc (cross-gcc "vc4-elf" #:xgcc gcc-6 #:xbinutils binutils-vc4)))
     (package (inherit xgcc)
       (name "gcc-vc4")
       (source (origin
@@ -1039,7 +1039,10 @@ the Raspberry Pi chip.")
                                           "-checkout"))
                 (sha256
                  (base32
-                  "13h30qjcwnlz6lfma1d82nnvfmjnhh7abkagip4vly6vm5fpnvf2"))))
+                  "0kvaq4s0assvinmmicwqp07d0wwldcw0fv6f4k13whp3q5909jnr"))
+                (patches
+                 (search-patches "gcc-6-fix-buffer-size.patch"
+                                 "gcc-6-fix-isl-includes.patch"))))
       (native-inputs
         `(("flex" ,flex)
           ,@(package-native-inputs xgcc)))

@@ -1871,12 +1871,12 @@ than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
 (define-public emacs-gcmh
-  ;; No tagged release upstream.
-  (let ((commit "84c43a4c0b41a595ac6e299fa317d2831813e580")
-        (revision "0"))
+  ;; No tagged release upstream, but the commit below correspond to the 0.2.1
+  ;; release.
+  (let ((commit "0089f9c3a6d4e9a310d0791cf6fa8f35642ecfd9"))
     (package
       (name "emacs-gcmh")
-      (version (git-version "0.1" revision commit))
+      (version "0.2.1")
       (source
        (origin
          (method git-fetch)
@@ -1884,7 +1884,7 @@ than @code{electric-indent-mode}.")
                (url "https://gitlab.com/koral/gcmh")
                (commit commit)))
          (sha256
-          (base32 "1r3wiqhrzh7wvqy484nl031fd4bn4cpvkv9646s4cjgvnnnv7jz3"))
+          (base32 "0yh1ap8phv3x44rp0yr6z884xqw2apanbx4c0acqglvj0gaaqx25"))
          (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (home-page "https://gitlab.com/koral/gcmh")
@@ -2604,14 +2604,14 @@ filters, new key bindings and faces.  It can be enabled by
 (define-public emacs-djvu
   (package
     (name "emacs-djvu")
-    (version "1.1")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "djvu-" version ".el"))
        (sha256
-        (base32 "0njgyx09q225hliacsnjk8wallg5i6xkz6bj501pb05nwqfbvfk7"))))
+        (base32 "0z2qk1v4qkvcwl27ycqfb8vyszq5v6b8ci29b4la00yaki16p04i"))))
     (build-system emacs-build-system)
     (inputs `(("djview" ,djview)
               ("djvulibre" ,djvulibre)))
@@ -8904,7 +8904,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.6.5")
+    (version "3.7.0")
     (source
      (origin
        (method git-fetch)
@@ -8913,7 +8913,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yzpb84346v42ig4h0rsnvzmln58ilhc0gsq0ggc7038ypqkdw4d"))))
+        (base32 "0lxq13bsbh7xawgsq08kjm7s28x9yl8mid3538flv5kcc1rv2b9y"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -11371,6 +11371,35 @@ constructs.")
 configuration of Chinese fonts.")
     (license license:gpl2+)))
 
+(define-public emacs-boon
+  (package
+    (name "emacs-boon")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/boon")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ss9bjs34q41pa0g0nbdzd8fwpjcbd2239rdlx5aykfv9v0b8j77"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-expand-region" ,emacs-expand-region)
+       ("emacs-multiple-cursors" ,emacs-multiple-cursors)
+       ("emacs-powerline" ,emacs-powerline)
+       ("emacs-spaceline" ,emacs-spaceline)))
+    (home-page "https://github.com/jyp/boon")
+    (synopsis "Ergonomic command mode for Emacs")
+    (description "Boon is a complete package for modal editing with a focus on
+ergonomics and modularity.  Spacial allocation of keys comes first, mnemonics
+second.  Most common operations are mapped to the home row, common editing
+commands are bound to keys reachable with the left hand and movement keys are
+reached with the right hand.")
+    (license license:gpl3+)))
+
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
@@ -11494,14 +11523,14 @@ and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".el"))
        (sha256
-        (base32 "1yrk2bnlx5bpkjkzqialf0q4bdp9c5pipnvj3zsb5hbjni24x0yb"))))
+        (base32 "05m56aw2yxik0pgcvyr5c92j2mwfksxgq1syzvik6161gy8hdd0g"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
@@ -19428,10 +19457,10 @@ Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-matrix-client
-  (let ((commit "a0623667b07a4bf60980c97b078e9faed97ace79"))
+  (let ((commit "59c792423fd0503f1375f356bec56130e65d3b51"))
     (package
       (name "emacs-matrix-client")
-      (version (git-version "0.0.0" "4" commit))
+      (version (git-version "0.0.0" "5" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -19440,7 +19469,7 @@ Emacs.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1zya8id3y9wzjaj7nplq7br6nhm3lsskv0fkn1xr1y77fzcfgcdb"))))
+                  "1gmpw14q9zkvviqpnmvh5vbyxk42038yilxm6b2zqw7mwxfc1xra"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -23536,6 +23565,29 @@ replicate some of the features of the Doom modeline package.")
      "This is an Emacs global minor mode to use Emacs frames instead of Emacs'
 internal windowing system.  This combines particularly well with tiling window
 managers such as XMonad.")
+    (license license:gpl3+)))
+
+(define-public emacs-modalka
+  (package
+    (name "emacs-modalka")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mrkkrp/modalka")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ggj8q92sb6wp3hs1vhpmy56id0p3i9zwnw24g2v7xa7w8ac9s7l"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mrkkrp/modalka")
+    (synopsis "Minor mode to easily define native custom modal editing")
+    (description
+     "This is a building kit to help switch to modal editing in Emacs.  The
+main goal of the package is to make modal editing in Emacs as natural and
+native as possible.  Modalka lets you define your own keys and does not come
+with a preconfigured set of keys.")
     (license license:gpl3+)))
 
 (define-public emacs-shrink-path

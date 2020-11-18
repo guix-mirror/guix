@@ -134,6 +134,19 @@
                         (string-append (assoc-ref inputs "console-setup")
                                        "/bin/ckbcomp ")))
                      #t))
+                  (add-after 'unpack 'set-freetype-variables
+                    ;; These variables need to be set to the native versions
+                    ;; of the dependencies because they are used to build
+                    ;; programs which are executed during build time.
+                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                      (let ((freetype (assoc-ref (or native-inputs inputs) "freetype")))
+                        (setenv "BUILD_FREETYPE_LIBS"
+                                (string-append "-L" freetype
+                                               "/lib -lfreetype"))
+                        (setenv "BUILD_FREETYPE_CFLAGS"
+                                (string-append "-I" freetype
+                                               "/include/freetype2")))
+                     #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
                       ;; This test is unreliable. For more information, see:
@@ -150,10 +163,11 @@
                         (("test_unset grub_func_test")
                           "test_unset"))
                       #t)))
-       ;; Disable tests on ARM and AARCH64 platforms.
-       #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)
-                                                       (%current-system)))
-                           '("arm" "aarch64")))))
+       ;; Disable tests on ARM and AARCH64 platforms or when cross-compiling.
+       #:tests? ,(not (or (any (cute string-prefix? <> (or (%current-target-system)
+                                                           (%current-system)))
+                               '("arm" "aarch64"))
+                          (%current-target-system)))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
@@ -195,6 +209,7 @@
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
+       ("freetype" ,freetype)   ; native version needed for build-grub-mkfont
 
        ;; XXX: When building GRUB 2.02 on 32-bit x86, we need a binutils
        ;; capable of assembling 64-bit instructions.  However, our default
@@ -425,7 +440,7 @@ menu to select one of the installed operating systems.")
      `(("python" ,python)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
 
              ;; /bin/fdt{get,overlay,put} need help finding libfdt.so.1.
              (string-append "LDFLAGS=-Wl,-rpath="
@@ -436,6 +451,15 @@ menu to select one of the installed operating systems.")
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* '("Makefile"
+                            "tests/run_tests.sh")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t))
          (delete 'configure))))         ; no configure script
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")

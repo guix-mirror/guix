@@ -90,6 +90,7 @@
 ;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17200,14 +17201,14 @@ such as figshare or Zenodo.")
         (base32
          "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (delete-file "setup.cfg")
+                      (invoke "py.test"))))))
     (native-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-distlib" ,python-distlib)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-filelock" ,python-filelock)
-       ("python-six" ,python-six)
-       ("python-tox" ,python-tox)
-       ("python-virtualenv" ,python-virtualenv)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/k-bx/python-semver")
     (synopsis "Python helper for Semantic Versioning")
     (description "This package provides a Python library for
@@ -18245,6 +18246,109 @@ gevent-powered application.")
 
 (define-public python2-gipc
   (package-with-python2 python-gipc))
+
+(define-public python-beautifultable
+  (package
+    (name "python-beautifultable")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beautifultable" version))
+       (sha256
+        (base32
+         "0wwlbifcbpzy3wfv6yzsxncarsngzizmmxbn6cy5gazlcq7h4k5x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("setup\\(")
+                "setup(\n    test_suite=\"test\",")))))))
+    (home-page "https://github.com/pri22296/beautifultable")
+    (synopsis "Print ASCII tables for terminals")
+    (description "@code{python-beautifultable} provides a class for easily
+printing tabular data in a visually appealing ASCII format to a terminal.
+
+Features include, but are not limited to:
+@itemize
+@item Full customization of the look and feel of the table
+@item Row and column accessors.
+@item Full support for colors using ANSI sequences or any library.
+@item Plenty of predefined styles and option to create custom ones.
+@item Support for Unicode characters.
+@item Supports streaming table when data is slow to retrieve.
+@end itemize")
+    (license license:expat)))
+
+(define-public python-globber
+  (package
+    (name "python-globber")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asharov/globber")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "055xf7ja7zjhxis0ab5fnfsx16fsvr5fvc6mixqybanwxh8sgfjk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/asharov/globber")
+    (synopsis "Library for string matching with glob patterns")
+    (description
+     "Globber is a Python library for matching file names against glob patterns.
+In contrast to other glob-matching libraries, it matches arbitrary strings and
+doesn't require the matched names to be existing files.  In addition, it
+supports the globstar @code{**} operator to match an arbitrary number of
+path components.")
+    (license license:asl2.0)))
+
+(define-public python-git-hammer
+  (package
+    (name "python-git-hammer")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asharov/git-hammer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0f9xlk86ijzpdj25hr1q4wcy8k72v3w470ngwm9mpdkfj8ng84wr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("setup\\(")
+                "setup(\n    test_suite=\"test\",")))))))
+    (propagated-inputs
+     `(("python-beautifultable" ,python-beautifultable)
+       ("python-dateutil" ,python-dateutil)
+       ("python-gitpython" ,python-gitpython)
+       ("python-globber" ,python-globber)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-sqlalchemy-utils"
+        ,python-sqlalchemy-utils)))
+    (home-page "https://github.com/asharov/git-hammer")
+    (synopsis "Provide statistics for git repositories")
+    (description
+     "Git Hammer is a statistics tool for projects in git repositories.
+Its major feature is tracking the number of lines authored by each person for every
+commit, but it also includes some other useful statistics.")
+    (license license:asl2.0)))
 
 (define-public python-fusepy
   (package
@@ -22531,6 +22635,41 @@ and pandoc-citeproc.")
      "This package provides the @command{rnc2rng} command-line tool as well as
 a Python library to convert RELAX NG schemata in Compact syntax (rnc) to
 equivalent schemata in the XML-based default RELAX NG syntax.")
+    (license license:expat)))
+
+(define-public python-telethon
+  (package
+    (name "python-telethon")
+    (version "1.17.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/LonamiWebs/Telethon")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0l9fhdrq576vllgi9aam45xzw5xi6jhgdv5zz8i4ygssdp7cm8jl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "py.test" "-v"))
+             #t)))))
+    (propagated-inputs
+     `(("python-rsa" ,python-rsa)
+       ("python-pyaes" ,python-pyaes)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-trio" ,python-pytest-trio)))
+    (home-page "https://docs.telethon.dev")
+    (synopsis "Full-featured Telegram client library for Python 3")
+    (description "This library is designed to make it easy to write Python
+programs that can interact with Telegram.")
     (license license:expat)))
 
 (define-public python-citeproc-py

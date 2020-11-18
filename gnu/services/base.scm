@@ -106,6 +106,12 @@
             agetty-service-type
 
             mingetty-configuration
+            mingetty-configuration-tty
+            mingetty-configuration-auto-login
+            mingetty-configuration-login-program
+            mingetty-configuration-login-pause?
+            mingetty-configuration-clear-on-logout?
+            mingetty-configuration-mingetty
             mingetty-configuration?
             mingetty-service
             mingetty-service-type

@@ -674,7 +674,8 @@ checking this by themselves in their 'check' procedure."
 (define* (system-derivation-for-action os action
                                        #:key image-size image-type
                                        full-boot? container-shared-network?
-                                       mappings label)
+                                       mappings label
+                                       volatile-root?)
   "Return as a monadic value the derivation for OS according to ACTION."
   (mlet %store-monad ((target (current-target-system)))
     (case action
@@ -706,7 +707,8 @@ checking this by themselves in their 'check' procedure."
                          base-image))
             (target (or base-target target))
             (size image-size)
-            (operating-system os))))))
+            (operating-system os)
+            (volatile-root? volatile-root?))))))
       ((docker-image)
        (system-docker-image os
                             #:shared-network? container-shared-network?)))))
@@ -761,6 +763,7 @@ and TARGET arguments."
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
                          image-size image-type
+                         volatile-root?
                          full-boot? label container-shared-network?
                          (mappings '())
                          (gc-root #f))
@@ -768,7 +771,8 @@ and TARGET arguments."
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
 the 'vm-image' and 'disk-image' actions.  IMAGE-TYPE is the type of image to
-be built.
+be built.  When VOLATILE-ROOT? is #t, the root file system is mounted
+volatile.
 
 FULL-BOOT? is used for the 'vm' action; it determines whether to
 boot directly to the kernel or to the bootloader.  CONTAINER-SHARED-NETWORK?
@@ -816,6 +820,7 @@ static checks."
                                                 #:label label
                                                 #:image-type image-type
                                                 #:image-size image-size
+                                                #:volatile-root? volatile-root?
                                                 #:full-boot? full-boot?
                                                 #:container-shared-network? container-shared-network?
                                                 #:mappings mappings))
@@ -975,6 +980,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
+      --volatile         for 'disk-image', make the root file system volatile"))
+  (display (G_ "
       --label=LABEL      for 'disk-image', label disk image with LABEL"))
   (display (G_ "
       --save-provenance  save provenance information"))
@@ -1048,6 +1055,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'install-bootloader? #f result)))
+         (option '("volatile") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'volatile-root? #t result)))
          (option '("label") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'label arg result)))
@@ -1109,7 +1119,8 @@ Some ACTIONS support additional ARGS.\n"))
     (image-type . raw)
     (image-size . guess)
     (install-bootloader? . #t)
-    (label . #f)))
+    (label . #f)
+    (volatile-root? . #f)))
 
 (define (verbosity-level opts)
   "Return the verbosity level based on OPTS, the alist of parsed options."
@@ -1206,6 +1217,8 @@ resulting from command-line parsing."
                                #:image-type (lookup-image-type-by-name
                                              (assoc-ref opts 'image-type))
                                #:image-size (assoc-ref opts 'image-size)
+                               #:volatile-root?
+                               (assoc-ref opts 'volatile-root?)
                                #:full-boot? (assoc-ref opts 'full-boot?)
                                #:container-shared-network?
                                (assoc-ref opts 'container-shared-network?)

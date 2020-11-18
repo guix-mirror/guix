@@ -181,6 +181,7 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
+   (replacement glib-with-gio-patch)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -387,11 +388,20 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
+(define glib-with-gio-patch
+  ;; GLib with a fix for <https://bugs.gnu.org/35594>.
+  ;; TODO: Fold into 'glib' above in the next rebuild cycle.
+  (package
+    (inherit glib)
+    (source (origin
+              (inherit (package-source glib))
+              (patches (cons (search-patch "glib-appinfo-watch.patch")
+                             (origin-patches (package-source glib))))))))
+
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
-  (package
-    (inherit glib)
+  (package/inherit glib
     (properties (alist-delete 'hidden? (package-properties glib)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs

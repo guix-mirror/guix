@@ -576,7 +576,9 @@ it can be used for bootloading."
          (file-systems-to-keep
           (srfi-1:remove
            (lambda (fs)
-             (string=? (file-system-mount-point fs) "/"))
+             (let ((mount-point (file-system-mount-point fs)))
+               (or (string=? mount-point "/")
+                   (string=? mount-point "/boot/efi"))))
            (operating-system-file-systems base-os)))
          (format (image-format image))
          (os

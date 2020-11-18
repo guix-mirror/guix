@@ -194,7 +194,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "7.2.3")
+    (version "7.4.9")
     (source
      (origin
        (method git-fetch)
@@ -202,7 +202,7 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
-        (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
+        (base32 "11by8gbshm4vv6flqp0ihff8c6nmbaqq7ms93b38rrq68bigcply"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -212,11 +212,12 @@ combination of these streams.")
      `(("googletest" ,googletest)))
     (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
-    (description "xsimd provides a unified means for using SIMD features for
-library authors.  Namely, it enables manipulation of batches of numbers with
-the same arithmetic operators as for single values.  It also provides
-accelerated implementation of common mathematical functions operating on
-batches.")
+    (description
+     "xsimd provides a unified means for using @acronym{SIMD, single instruction
+multiple data} features for library authors.  Namely, it enables manipulation of
+batches of numbers with the same arithmetic operators as for single values.
+It also provides accelerated implementation of common mathematical functions
+operating on batches.")
     (license license:bsd-3)))
 
 (define-public chaiscript

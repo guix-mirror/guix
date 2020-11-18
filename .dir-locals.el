@@ -11,23 +11,34 @@
       . "<https?://\\(debbugs\\|bugs\\)\\.gnu\\.org/\\([0-9]+\\)>")
 
      ;; Emacs-Guix
-     (eval . (setq guix-directory
-                   (locate-dominating-file default-directory ".dir-locals.el")))
+     (eval . (setq-local guix-directory
+                         (locate-dominating-file default-directory
+                                                 ".dir-locals.el")))
 
      ;; Geiser
      ;; This allows automatically setting the `geiser-guile-load-path'
      ;; variable when using various Guix checkouts (e.g., via git worktrees).
-     (eval . (let* ((root-dir (expand-file-name
-                               (locate-dominating-file
-                                default-directory ".dir-locals.el")))
-                    ;; Workaround for bug https://issues.guix.gnu.org/43818.
-                    (root-dir* (directory-file-name root-dir)))
-               (unless (boundp 'geiser-guile-load-path)
-                 (defvar geiser-guile-load-path '()))
-               (make-local-variable 'geiser-guile-load-path)
-               (require 'cl-lib)
-               (cl-pushnew root-dir* geiser-guile-load-path
-                           :test #'string-equal)))))
+     (eval . (let ((root-dir-unexpanded (locate-dominating-file
+                                         default-directory ".dir-locals.el")))
+               ;; While Guix should in theory always have a .dir-locals.el
+               ;; (we are reading this file, after all) there seems to be a
+               ;; strange problem where this code "escapes" to some other buffers,
+               ;; at least vc-mode.  See:
+               ;;   https://lists.gnu.org/archive/html/guix-devel/2020-11/msg00296.html
+               ;; Upstream report: <https://bugs.gnu.org/44698>
+               ;; Hence the following "when", which might otherwise be unnecessary;
+               ;; it prevents causing an error when root-dir-unexpanded is nil.
+               (when root-dir-unexpanded
+                 (let* ((root-dir (expand-file-name root-dir-unexpanded))
+                        ;; Workaround for bug https://issues.guix.gnu.org/43818.
+                        (root-dir* (directory-file-name root-dir)))
+
+                   (unless (boundp 'geiser-guile-load-path)
+                     (defvar geiser-guile-load-path '()))
+                   (make-local-variable 'geiser-guile-load-path)
+                   (require 'cl-lib)
+                   (cl-pushnew root-dir* geiser-guile-load-path
+                               :test #'string-equal)))))))
 
  (c-mode          . ((c-file-style . "gnu")))
  (scheme-mode
@@ -123,7 +134,6 @@
    (eval . (put 'call-with-progress-reporter 'scheme-indent-function 1))
    (eval . (put 'with-repository 'scheme-indent-function 2))
    (eval . (put 'with-temporary-git-repository 'scheme-indent-function 2))
-   (eval . (put 'with-temporary-git-worktree 'scheme-indent-function 2))
    (eval . (put 'with-environment-variables 'scheme-indent-function 1))
    (eval . (put 'with-fresh-gnupg-setup 'scheme-indent-function 1))
 

@@ -2188,14 +2188,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.12")
+    (version "2020.11.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0c98sjaj6mvxnjp0qnwqbr6fibgb4dlizad2xvkiswf4g4h0pc5f"))))
+                "0b0vsmvnm2jn1k66jmymzly0nb34nk79z97msns0sw0cqhbld1b2"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2653,7 +2653,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.4")
+    (version "2.7.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2661,7 +2661,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "1acdb3m37vdzzbm8mwyibcn8msi7birb5v30qfi7jli5r00src3x"))
+               "1kwkn976ppahrcr74bnv6sqx75pzl9y21m1mvr5ksi1m6lgp924s"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -2679,6 +2679,7 @@ for use with HTML5 video.")
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("lame" ,lame)
+       ("libaom" ,libaom)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
@@ -2693,7 +2694,7 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (let ((ffmpeg "ffmpeg-4.1.4"))
+       (let ((ffmpeg "ffmpeg-4.2.3"))
          (modify-phases %standard-phases
            (add-before 'patch-source-shebangs 'unpack-ffmpeg
              (lambda _
@@ -3798,7 +3799,7 @@ iTunes-style metadata.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2019.05.29")
+    (version "2020.11.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3806,11 +3807,12 @@ iTunes-style metadata.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "08i63jr8ihn1xiq5z5n3yls3yz6li5sg0s454l56p5bcvbrw81my"))))
+                "1dx5imjil5yiya5dqlvbqkvzgic5pybsfilx5jz1cpi1znkzpgc9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f                      ; no tests
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "CXX=" ,(cxx-for-target))
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")
                           (string-append "PREFIX="
@@ -3825,6 +3827,8 @@ iTunes-style metadata.")
                     (lambda _
                       (invoke "./genMakefiles"
                               "linux-with-shared-libraries"))))))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "http://www.live555.com/liveMedia/")
     (synopsis "Set of C++ libraries for multimedia streaming")
     (description "This code forms a set of C++ libraries for multimedia

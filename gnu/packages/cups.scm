@@ -49,7 +49,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module (guix svn-download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -797,27 +797,32 @@ language.")
     (license license:gpl2+)))
 
 (define-public splix
-  ;; The last release was in 2009.  The SVN repository contains 5 years of
-  ;; unreleased bug fixes and support for newer printer models.
-  (let ((revision 315))
+  ;; Last released in 2009 <https://sourceforge.net/projects/splix/files/>.
+  ;; Last SVN commit was 2013 <https://svn.code.sf.net/p/splix/code/splix/>.
+  ;; Use a more maintained fork with several bug fixes and support for newer
+  ;; printer models.
+  (let ((commit "76268c4dd7dbc8218ea7426401104c3b40cc707a")
+        (revision "315"))
     (package
       (name "splix")
-      (version (string-append "2.0.0-" (number->string revision)))
+      (version (git-version "2.0.0" revision commit))
       (source
        (origin
-         (method svn-fetch)
-         (uri (svn-reference
-               (url "https://svn.code.sf.net/p/splix/code/splix/")
-               (revision revision)))
-         (file-name (string-append name "-" version "-checkout"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ScumCoder/splix")
+               (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "16wbm4xnz35ca3mw2iggf5f4jaxpyna718ia190ka6y4ah932jxl"))))
+          (base32 "1mxsvllwwr1v8sgrax0b7gkajjhnm0l06s67spmaxz47lyll1qab"))))
       (build-system gnu-build-system)
-      ;; 90% (3.8 MiB) of output are .ppd files.  Don't install them by default:
-      ;; CUPS has been able to read the .drv sources directly since version 1.2.
+      ;; PPDs have been obsolete since CUPS 1.2 and make up 90% of total size.
       (outputs (list "out" "ppd"))
       (arguments
-       '(#:make-flags
+       `(#:modules
+         ((srfi srfi-26)
+          ,@%gnu-build-system-modules)
+         #:make-flags
          (list (string-append "CUPSDRV="
                               (assoc-ref %outputs "out") "/share/cups/drv")
                (string-append "CUPSFILTER="
@@ -828,21 +833,28 @@ language.")
                "THREADS=4")             ; compress and print faster
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'enter-subdirectory
+             ;; The git repository replicates the top-level SVN layout.
+             (lambda _
+               (chdir "splix")
+               #t))
            (delete 'configure)          ; no configure script
            (add-before 'build 'build-.drv-files
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "drv" make-flags)))
            (add-after 'install 'install-.drv-files
              (lambda* (#:key make-flags #:allow-other-keys)
-               (apply invoke "make" "install" "DRV_ONLY=1" make-flags))))
+               (apply invoke "make" "install" "DRV_ONLY=1" make-flags)))
+           (add-after 'install 'compress-PPDs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((ppd (assoc-ref outputs "ppd")))
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files ppd "\\.ppd$"))))))
          #:tests? #f))                  ; no test suite
       (inputs
        `(("cups" ,cups-minimal)
-         ("zlib" ,zlib)
-
-         ;; This dependency can be dropped by setting DISABLE_JBIG=1, but the
-         ;; result will not support some printers like the Samsung CLP-600.
-         ("jbigkit" ,jbigkit)))
+         ("jbigkit" ,jbigkit)
+         ("zlib" ,zlib)))
       (synopsis "QPDL (SPL2) printer driver")
       (description
        "SpliX is a set of CUPS drivers for printers that speak @acronym{QPDL,

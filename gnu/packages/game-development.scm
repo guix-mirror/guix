@@ -444,7 +444,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.5")
+    (version "1.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -453,10 +453,11 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14v2zfka2y3h0r0biw1rl59585lji5074x958s4xnb352jm5h9b9"))))
+                "0nhmv5rnmlnnmkiz95l3iy62f3754d98dm1wyh1m47xb3nbnl05b"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1842,7 +1843,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
 (define-public bennu-game-development
   (package
     (name "bennu-game-development")
-    (version "348")
+    (version "353")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1851,7 +1852,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))
+                "1iri58ryk9lbqn585cbccnvrfkj8qxlbcsk8rpih40jhvs1j101l"))
               (modules '((guix build utils)))
               (snippet
                '(begin

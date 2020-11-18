@@ -849,9 +849,9 @@ time for compression ratio.")
                 "0zmhvczscqz0mzh4b9m8m42asq14db0a6lc8clp5ljq5ybrv70d9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "XZ_SUPPORT=1"
              "LZO_SUPPORT=1"
              "LZ4_SUPPORT=1"
@@ -956,7 +956,8 @@ tarballs.")
                 "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "INSTALL=install" "CC=gcc"
+     `(#:make-flags (list "INSTALL=install"
+                          (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
@@ -1426,7 +1427,10 @@ or junctions, and always follows hard links.")
 
                #t))))
        #:make-flags
-       (list "CC=gcc"
+       ;; TODO: Integrate in next rebuild cycle.
+       (list ,(if (%current-target-system)
+                (string-append "CC=" (cc-for-target))
+                "CC=gcc")
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib")
              (string-append "INCLUDEDIR=" (assoc-ref %outputs "lib") "/include")
@@ -1458,8 +1462,14 @@ speed.")
     (version (package-version zstd))
     (source (package-source zstd))
     (build-system gnu-build-system)
+    (inputs
+     `(,@(if (%current-target-system)
+           `(("googletest" ,googletest))
+           '())))
     (native-inputs
-     `(("googletest" ,googletest)))
+     `(,@(if (%current-system)
+           `(("googletest" ,googletest))
+           '())))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1477,7 +1487,8 @@ speed.")
                (install-file "README.md" doc)
                #t))))
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "CXX=" ,(cxx-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (home-page (package-home-page zstd))
     (synopsis "Threaded implementation of the Zstandard compression algorithm")

@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,7 +68,7 @@
                 "13br735ig7lygvzyfd15fc2rdygrqm503j6xj5xkrl1r7w2wipq6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags `("CC=gcc"
+     `(#:make-flags `(,(string-append "CC=" ,(cc-for-target))
                       ,(string-append "INSTALL_PREFIX="
                                       (assoc-ref %outputs "out")))
        #:test-target "test"
@@ -252,7 +253,7 @@ resembles Python.")
     (native-inputs
      `(("unzip" ,unzip))) ; for unpacking the source
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f ; No test suite
        #:phases
        (modify-phases %standard-phases

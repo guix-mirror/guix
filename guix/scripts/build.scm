@@ -51,7 +51,9 @@
   #:use-module ((guix progress) #:select (current-terminal-columns))
   #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (guix transformations)
-  #:export (%standard-build-options
+  #:export (log-url
+
+            %standard-build-options
             set-build-options-from-command-line
             set-build-options-from-command-line*
             show-build-options-help

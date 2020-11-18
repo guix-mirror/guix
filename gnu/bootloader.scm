@@ -22,6 +22,8 @@
 
 (define-module (gnu bootloader)
   #:use-module (guix discovery)
+  #:use-module (guix gexp)
+  #:use-module (guix profiles)
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
@@ -66,7 +68,9 @@
             bootloader-configuration-additional-configuration
 
             %bootloaders
-            lookup-bootloader-by-name))
+            lookup-bootloader-by-name
+
+            efi-bootloader-chain))
 
 
 ;;;
@@ -227,3 +231,122 @@ record."
               (eq? name (bootloader-name bootloader)))
             (force %bootloaders))
       (leave (G_ "~a: no such bootloader~%") name)))
+
+(define (efi-bootloader-profile files bootloader-package hooks)
+  "Creates a profile with BOOTLOADER-PACKAGE and a directory collection/ with
+links to additional FILES from the store.  This collection is meant to be used
+by the bootloader installer.
+
+FILES is a list of file or directory names from the store, which will be
+symlinked into the collection/ directory.  If a directory name ends with '/',
+then the directory content instead of the directory itself will be symlinked
+into the collection/ directory.
+
+FILES may contain file like objects produced by functions like plain-file,
+local-file, etc., or package contents produced with file-append.
+
+HOOKS lists additional hook functions to modify the profile."
+  (define (bootloader-collection manifest)
+    (define build
+        (with-imported-modules '((guix build utils)
+                                 (ice-9 ftw)
+                                 (srfi srfi-1)
+                                 (srfi srfi-26))
+          #~(begin
+            (use-modules ((guix build utils)
+                          #:select (mkdir-p strip-store-file-name))
+                         ((ice-9 ftw)
+                          #:select (scandir))
+                         ((srfi srfi-1)
+                          #:select (append-map every remove))
+                         ((srfi srfi-26)
+                          #:select (cut)))
+            (define (symlink-to file directory transform)
+              "Creates a symlink to FILE named (TRANSFORM FILE) in DIRECTORY."
+              (symlink file (string-append directory "/" (transform file))))
+            (define (directory-content directory)
+              "Creates a list of absolute path names inside DIRECTORY."
+              (map (lambda (name)
+                     (string-append directory name))
+                   (or (scandir directory (lambda (name)
+                                            (not (member name '("." "..")))))
+                       '())))
+            (define name-ends-with-/? (cut string-suffix? "/" <>))
+            (define (name-is-store-entry? name)
+              "Return #t if NAME is a direct store entry and nothing inside."
+              (not (string-index (strip-store-file-name name) #\/)))
+            (let* ((collection (string-append #$output "/collection"))
+                   (files '#$files)
+                   (directories (filter name-ends-with-/? files))
+                   (names-from-directories
+                    (append-map (lambda (directory)
+                                  (directory-content directory))
+                                directories))
+                   (names (append names-from-directories
+                                  (remove name-ends-with-/? files))))
+              (mkdir-p collection)
+              (if (every file-exists? names)
+                  (begin
+                    (for-each (lambda (name)
+                               (symlink-to name collection
+                                            (if (name-is-store-entry? name)
+                                                strip-store-file-name
+                                                basename)))
+                              names)
+                    #t)
+                  #f)))))
+
+    (gexp->derivation "bootloader-collection"
+                      build
+                      #:local-build? #t
+                      #:substitutable? #f
+                      #:properties
+                      `((type . profile-hook)
+                        (hook . bootloader-collection))))
+
+  (profile (content (packages->manifest (list bootloader-package)))
+           (name "bootloader-profile")
+           (hooks (append (list bootloader-collection) hooks))
+           (locales? #f)
+           (allow-collisions? #f)
+           (relative-symlinks? #f)))
+
+(define* (efi-bootloader-chain files
+                               final-bootloader
+                               #:key
+                               (hooks '())
+                               installer)
+  "Define a bootloader chain with FINAL-BOOTLOADER as the final bootloader and
+certain directories and files from the store given in the list of FILES.
+
+FILES may contain file like objects produced by functions like plain-file,
+local-file, etc., or package contents produced with file-append.  They will be
+collected inside a directory collection/ inside a generated bootloader profile,
+which will be passed to the INSTALLER.
+
+If a directory name in FILES ends with '/', then the directory content instead
+of the directory itself will be symlinked into the collection/ directory.
+
+The procedures in the HOOKS list can be used to further modify the bootloader
+profile.  It is possible to pass a single function instead of a list.
+
+If the INSTALLER argument is used, then this function will be called to install
+the bootloader.  Otherwise the installer of the FINAL-BOOTLOADER will be called."
+  (let* ((final-installer (or installer
+                              (bootloader-installer final-bootloader)))
+         (profile (efi-bootloader-profile files
+                                          (bootloader-package final-bootloader)
+                                          (if (list? hooks)
+                                              hooks
+                                              (list hooks)))))
+    (bootloader
+     (inherit final-bootloader)
+     (package profile)
+     (installer
+      #~(lambda (bootloader target mount-point)
+          (#$final-installer bootloader target mount-point)
+          (copy-recursively
+           (string-append bootloader "/collection")
+           (string-append mount-point target)
+           #:follow-symlinks? #t
+           #:log (%make-void-port "w")))))))

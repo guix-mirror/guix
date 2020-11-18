@@ -521,7 +521,7 @@ a card with a smaller capacity than stated.")
 (define-public python-parted
   (package
     (name "python-parted")
-    (version "3.11.6")
+    (version "3.11.7")
     (source
      (origin
        (method git-fetch)
@@ -530,7 +530,7 @@ a card with a smaller capacity than stated.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xgrqhvn44vr3676j5sy2x3xfv2dzf7vncg25cmrsmkbd49x3z5j"))))
+        (base32 "01193fmkss9icjvqpw85szpk8ld1pnha7p9kqm7mpwk6rc6gi2m3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

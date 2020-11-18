@@ -130,9 +130,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "1.1.0")
-        (commit "5e7cf66fb35780f930ad0bc5fe21ac330df4411d")
-        (revision 32))
+  (let ((version "1.2.0rc1")
+        (commit "3ba6ffd0dd092ae879d014e4971989f231eaa56d")
+        (revision 1))
     (package
       (name "guix")
 
@@ -148,7 +148,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "15clfjp845gvl0p6qw0b1gdibqfq20zwzr6dbxvq8l9fgzj1kb6b"))
+                  "1wa67gdipmzqr400hp0cw5ih0rlfvj345h65rqbk9s4g3bkg38hm"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -336,7 +336,13 @@ $(prefix)/etc/init.d\n")))
                             (let ((bash (assoc-ref inputs "bash")))
                               (substitute* (string-append out "/bin/guix")
                                 (("^#!.*/bash") (string-append "#! " bash "/bin/bash")))))
-                          #t))))))
+                          #t)))
+
+                    ;; The 'guix' executable has 'OUT/libexec/guix/guile' as
+                    ;; its shebang; that should remain unchanged, thus remove
+                    ;; the 'patch-shebangs' phase, which would otherwise
+                    ;; change it to 'GUILE/bin/guile'.
+                    (delete 'patch-shebangs))))
       (native-inputs `(("pkg-config" ,pkg-config)
 
                        ;; Guile libraries are needed here for

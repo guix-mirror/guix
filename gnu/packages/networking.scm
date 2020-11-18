@@ -141,6 +141,34 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
+(define-public axel
+  (package
+    (name "axel")
+    (version "2.17.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/axel-download-accelerator/axel/"
+                           "releases/download/v" version "/"
+                           "axel-" version ".tar.xz"))
+       (sha256
+        (base32 "0m1smb9rmw9w2fcfcf0162qyffx6a1x0j612sg3fydflandlsdpi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libressl" ,libressl)))
+    (home-page "https://github.com/axel-download-accelerator/axel")
+    (synopsis "Light command line download accelerator")
+    (description
+     "Axel tries to accelerate the download process by using multiple
+connections per file, and can also balance the load between different
+servers.  It tries to be as light as possible, so it might be useful
+on byte-critical systems.  It supports HTTP, HTTPS, FTP and FTPS
+protocols.")
+    (license license:gpl2+)))
+
 ;; This package does not have a release yet.
 ;; But this is required to provide a feature in PipeWire.
 (define-public libcamera
@@ -2142,14 +2170,14 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.16")
+    (version "1.3.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://enet.bespin.org/download/"
                            "enet-" version ".tar.gz"))
        (sha256
-        (base32 "1lggc82rbzscci057dqqyhkbq4j6mr5k01hbrvn06jkzc2xpxdxv"))))
+        (base32 "1p6f9mby86af6cs7pv6h48032ip9g32c05cb7d9mimam8lchz3x3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

@@ -1559,10 +1559,10 @@ features of sudo with a fraction of the codebase.")
                     #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              (chdir "wpa_supplicant")
              (copy-file "defconfig" ".config")
              (let ((port (open-file ".config" "al")))
@@ -1576,6 +1576,15 @@ features of sudo with a fraction of the codebase.")
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
                (close-port port))
+             ;; Make sure we have a pkg-config when cross compiling
+             (substitute* '(".config"
+                            "Android.mk"
+                            "Makefile"
+                            "dbus/Makefile")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (which (string-append ,(%current-target-system)
+                                          "-pkg-config")))))
              #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1604,7 +1613,7 @@ features of sudo with a fraction of the codebase.")
                            "wpa_supplicant.conf"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
@@ -1714,10 +1723,10 @@ command.")
                 "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; This is mostly copied from 'wpa-supplicant' above.
              (chdir "hostapd")
              (copy-file "defconfig" ".config")
@@ -1728,6 +1737,14 @@ command.")
       CONFIG_IEEE80211N=y
       CONFIG_IEEE80211AC=y\n" port)
                (close-port port))
+             #t))
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "src/drivers/drivers.mak"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
              #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1745,7 +1762,7 @@ command.")
                          (find-files "." "\\.8"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
@@ -1840,7 +1857,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200925")
+    (version "20201113")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1848,13 +1865,13 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "18n6129fkgj85piid7v4zxxksv3h0amqp4p977vcl9xg3bq0zd2w"))))
+                "0fmck3zklc328c8nzvfzm2xyh2i8zszzrd4k8kk8q30y4avnc6z1"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
     (arguments
-     '(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc"
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "CC=" ,(cc-for-target))
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f                      ; no 'check' target
@@ -2374,17 +2391,20 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (replace 'build
-                    (lambda _
-                      (invoke "make" "CC=gcc" "-Csrc")))
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "make" "-Csrc" make-flags)))
                   (replace 'check
-                    (lambda _
-                      (invoke "make" "CC=gcc" "-Ctests")))
+                    (lambda* (#:key tests? make-flags #:allow-other-keys)
+                      (when tests?
+                        (apply invoke "make" "-Ctests" make-flags))
+                      #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin")))
                         (install-file "src/cpulimit" bin))
-                      #t)))))
+                      #t)))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/opsengine/cpulimit")
     (synopsis "Limit CPU usage")
     (description
@@ -3355,14 +3375,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.4")
+    (version "3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "189h950m1jjrnhvgcvzk6nj89l58rkxim7bxa0441ssajxpaw0vq"))))
+        (base32 "1ww18vvfjkvi36rcamw8kpix4bhk71w5bw9kmnh158crah1x8dp6"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3370,15 +3390,23 @@ information tool.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "Makefile"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t)))
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        "CC=gcc")))
+        (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
     (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
@@ -3459,9 +3487,9 @@ on systems running the Linux kernel.")
     (inputs
      `(("libpcap" ,libpcap)))
     (arguments
-     '(#:test-target "regress"
+     `(#:test-target "regress"
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases

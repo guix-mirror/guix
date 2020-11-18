@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -107,6 +109,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
@@ -114,6 +117,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
@@ -593,12 +597,15 @@ It adds a large amount of new and improved features to mutt.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gnupg" ,gnupg)))               ; for tests only
+       ("gnupg" ,gnupg)                 ; for tests only
+       ("gobject-introspection" ,gobject-introspection)))
     (inputs `(("glib" ,glib)
               ("gpgme" ,gpgme)
               ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+         (list "--enable-introspection=yes")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'patch-paths-in-tests
@@ -699,6 +706,118 @@ mailpack.  What can alterMIME do?
     ;; published under the alterMIME license.
     (license (list (license:non-copyleft "file://LICENSE")
                    license:bsd-3))))
+
+(define-public astroid
+  (package
+    (name "astroid")
+    (version "0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astroidmail/astroid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11cxbva9ni98gii59xmbxh4c6idcg3mg0pgdsp1c3j0yg7ix0lj3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; https://github.com/astroidmail/astroid/pull/685
+           (substitute* "tests/test_composed_message.cc"
+             (("\\\\n\\.\\.\\.") "\\n...\\n"))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:configure-flags (list "-GNinja")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-markdown-test
+           ;; This test relies on the plugins and the test suite
+           ;; cannot find the Astroid module.
+           ;;  gi.require_version ('Astroid', '0.2')
+           ;; ValueError: Namespace Astroid not available
+           (lambda _
+             (substitute* "tests/CMakeLists.txt"
+               ((".*markdown.*") ""))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "ninja" "-j" (number->string (parallel-job-count)))))
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (setenv "HOME" (getcwd))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+               (invoke "ctest" "."))
+             #t))
+         (replace 'install
+           (lambda _
+             (invoke "ninja" "install")))
+         (add-after 'install 'wrap-with-GI_TYPELIB_PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (paths (map (match-lambda
+                                 ((outputs . directory)
+                                  (let ((girepodir (string-append
+                                                    directory
+                                                    "/lib/girepository-1.0")))
+                                    (if (file-exists? girepodir)
+                                        girepodir
+                                        #f))))
+                               inputs)))
+               (wrap-program (string-append out "/bin/astroid")
+                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gnupg" ,gnupg)
+       ("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)
+       ("ronn" ,ronn)
+       ("w3m" ,w3m)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmime" ,gmime)
+       ("gobject-introspection" ,gobject-introspection) ; it is referenced
+       ("gtkmm" ,gtkmm)
+       ("libpeas" ,libpeas)
+       ("libsass" ,libsass)
+       ("notmuch" ,notmuch)
+       ("protobuf" ,protobuf)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme))) ; Required for the thread view
+    (home-page "https://astroidmail.github.io/")
+    (synopsis "GTK frontend to the notmuch mail system")
+    (description
+     "Astroid is a lightweight and fast Mail User Agent that provides a
+graphical interface to searching, display and composing email, organized in
+thread and tags.  Astroid uses the notmuch backend for searches through tons of
+email.  Astroid searches, displays and compose emails — and relies on other
+programs for fetching, syncing and sending email.")
+    (license (list license:gpl3+        ; 'this program'
+                   license:lgpl2.1+)))) ; code from geary, gmime
 
 (define-public ripmime
   ;; Upstream does not tag or otherwise provide any releases (only a version
@@ -2482,17 +2601,68 @@ existing mail server.  With Postfix, the proxies can operate as either
 converts them to maildir format directories.")
     (license license:public-domain)))
 
+(define-public mblaze
+  (package
+    (name "mblaze")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leahneukirchen/mblaze")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p97zfl35ilrnrx9ynj82igsb698m9klikfaicw5jhjpf6qp2n3y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:tests? #f                   ; XXX: Upstream tests appear to be broken
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          "PREFIX="
+                          (string-append "DESTDIR=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/leahneukirchen/mblaze")
+    (synopsis "Unix utilities to deal with Maildir")
+    (description
+     "The mblaze message system is a set of Unix utilities for processing and
+interacting with mail messages which are stored in maildir folders.
+
+Its design is roughly inspired by MH, the RAND Message Handling System, but it
+is a complete implementation from scratch.
+
+mblaze is a classic command line MUA and has no features for receiving or
+transferring messages; you can operate on messages in a local maildir spool,
+or fetch your messages using fdm(1), getmail(1), offlineimap(1), or similar
+utilities, and send it using dma(8), msmtp(1), sendmail(8), as provided by
+OpenSMTPD, Postfix, or similar.
+
+mblaze operates directly on maildir folders and doesn't use its own caches or
+databases.  There is no setup needed for many uses.  All utilities have been
+written with performance in mind.  Enumeration of all messages in a maildir is
+avoided unless necessary, and then optimized to limit syscalls.  Parsing
+message metadata is optimized to limit I/O requests.  Initial operations on a
+large maildir may feel slow, but as soon as they are in the file system cache,
+everything is blazingly fast.  The utilities are written to be memory
+efficient (i.e. not wasteful), but whole messages are assumed to fit into RAM
+easily (one at a time).")
+    (license (list license:public-domain
+                   license:expat))))    ; mystrverscmp.c and mymemmem
+
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.10")
+    (version "1.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1243hazpiwgvz2m3p48cdh0yw1019i6xjxgc7qyhmxcdy0inb6wy"))))
+        (base32 "1gcxvhin5y0q47svqbf90r5aip0cgywm8sq6m84ygda7km8xylwv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
