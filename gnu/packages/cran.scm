@@ -8636,6 +8636,37 @@ conveniently wrapped into a data frame.")
 multiple-imputation datasets.")
     (license license:gpl2)))
 
+(define-public r-mixsqp
+  (package
+   (name "r-mixsqp")
+   (version "0.3-43")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "mixsqp" version))
+            (sha256
+             (base32
+              "1qics04w0swyp216d6g8dmsph8q2kpadpacp66h2qih3521js12q"))))
+   (properties `((upstream-name . "mixsqp")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-irlba" ,r-irlba)
+      ("r-rcpp" ,r-rcpp)
+      ("r-rcpparmadillo" ,r-rcpparmadillo)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://github.com/stephenslab/mixsqp")
+   (synopsis
+    "Sequential quadratic programming for maximum-likelihood estimation")
+   (description
+    "This package provides an optimization method based on sequential
+quadratic programming for maximum likelihood estimation of the mixture
+proportions in a finite mixture model where the component densities are
+known.  The algorithm is expected to obtain solutions that are at least
+as accurate as the state-of-the-art MOSEK interior-point solver, and they
+are expected to arrive at solutions more quickly when the number of
+samples is large and the number of mixture components is not too large.")
+   (license license:expat)))
+
 (define-public r-magick
   (package
     (name "r-magick")
