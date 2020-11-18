@@ -14708,31 +14708,26 @@ converting text with ANSI color codes to HTML or LaTeX.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.1.3")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1lw17420iimhghkgzgax85nn8d1an2d6k2cfvb7j5kwn2dqlr1vk"))))
+         "1niqpzc26sxdbyi46r07n4pma5fjx6crww2539vpfmsf0w6yg585"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-pyyaml" ,python-pyyaml)))
-    (home-page "https://github.com/txels/ddt")
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/datadriventests/ddt")
     (synopsis "Data-Driven Tests")
     (description
      "Data-Driven Tests (@dfn{DDT}) allow you to multiply one test case by
 running it with different test data, and make it appear as multiple test
 cases.")
     (license license:expat)))
-
-(define-public python2-ddt
-  (package-with-python2 python-ddt))
 
 (define-public python-pycountry
   (package
