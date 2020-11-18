@@ -744,9 +744,9 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (license (list license:expat        ; icc2ps/*.[ch]
                    license:gpl2+))))    ; everything else
 
-(define-public escpr
+(define-public epson-inkjet-printer-escpr
   (package
-    (name "escpr")
+    (name "epson-inkjet-printer-escpr")
     (version "1.7.8")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
@@ -805,6 +805,9 @@ printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX")
     (license license:gpl2+)))
+
+(define-public escpr
+  (deprecated-package "escpr" epson-inkjet-printer-escpr))
 
 (define-public splix
   ;; Last released in 2009 <https://sourceforge.net/projects/splix/files/>.

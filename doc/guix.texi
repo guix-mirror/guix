@@ -17503,16 +17503,17 @@ CUPS service will generate a self-signed certificate if needed, for
 secure connections to the print server.
 
 Suppose you want to enable the Web interface of CUPS and also add
-support for Epson printers @i{via} the @code{escpr} package and for HP
-printers @i{via} the @code{hplip-minimal} package.  You can do that directly,
-like this (you need to use the @code{(gnu packages cups)} module):
+support for Epson printers @i{via} the @code{epson-inkjet-printer-escpr}
+package and for HP printers @i{via} the @code{hplip-minimal} package.
+You can do that directly, like this (you need to use the
+@code{(gnu packages cups)} module):
 
 @lisp
 (service cups-service-type
          (cups-configuration
            (web-interface? #t)
            (extensions
-             (list cups-filters escpr hplip-minimal))))
+             (list cups-filters epson-inkjet-printer-escpr hplip-minimal))))
 @end lisp
 
 Note: If you wish to use the Qt5 based GUI which comes with the hplip
@@ -17541,7 +17542,7 @@ Available @code{cups-configuration} fields are:
 The CUPS package.
 @end deftypevr
 
-@deftypevr {@code{cups-configuration} parameter} package-list extensions (default: @code{(list escpr hplip-minimal foomatic-filters)})
+@deftypevr {@code{cups-configuration} parameter} package-list extensions (default: @code{(list epson-inkjet-printer-escpr hplip-minimal foomatic-filters)})
 Drivers and other extensions to the CUPS package.
 @end deftypevr
 
