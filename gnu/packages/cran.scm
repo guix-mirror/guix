@@ -256,6 +256,35 @@ ordered indexed observations.  It is particularly aimed at irregular time
 series of numeric vectors/matrices and factors.")
     (license license:gpl2+)))
 
+(define-public r-ggalluvial
+  (package
+   (name "r-ggalluvial")
+   (version "0.12.2")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "ggalluvial" version))
+            (sha256
+             (base32
+              "1qcpbb6h2znsq246n1291rxgfryiw24caghbk8acjzzfbdhdj8x1"))))
+   (properties `((upstream-name . "ggalluvial")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-dplyr" ,r-dplyr)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-lazyeval" ,r-lazyeval)
+      ("r-rlang" ,r-rlang)
+      ("r-tidyr" ,r-tidyr)
+      ("r-tidyselect" ,r-tidyselect)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "http://corybrunson.github.io/ggalluvial/")
+   (synopsis "Alluvial plots for ggplot2")
+   (description "This package provides alluvial plots for @code{ggplot2}.
+Alluvial plots use variable-width ribbons and stacked bar plots to represent
+multi-dimensional or repeated-measures data with categorical or ordinal
+variables.")
+   (license license:gpl3)))
+
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
