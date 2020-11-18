@@ -2769,6 +2769,25 @@ complex object; primarily used in common with the packages extRemes and
 SpatialVx.")
     (license license:gpl2+)))
 
+(define-public r-etrunct
+  (package
+   (name "r-etrunct")
+   (version "0.1")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "etrunct" version))
+            (sha256
+             (base32
+              "0ayazgyqlc8jcqr03cwfmfhm4pck6xri1r6vkgqy4arqkrrnrcqr"))))
+   (properties `((upstream-name . "etrunct")))
+   (build-system r-build-system)
+   (home-page "https://cran.r-project.org/web/packages/etrunct")
+   (synopsis "Computes moments of univariate truncated T distribution")
+   (description "This package computes moments of univariate truncated
+T distribution.  There is only one exported function, @code{e_trunct},
+which should be seen for details.")
+   (license license:expat)))
+
 (define-public r-extremes
   (package
     (name "r-extremes")
