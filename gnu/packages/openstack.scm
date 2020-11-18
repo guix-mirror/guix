@@ -45,40 +45,26 @@
 (define-public python-bandit
   (package
     (name "python-bandit")
-    (version "1.4.0")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bandit" version))
        (sha256
         (base32
-         "1m5bm42120zyazky4k0lp3d9r0jwhjmp6sb108xfr0vz952p15yb"))))
+         "0rb034c99pyhb4a60z7f2kz40cjydhm8m9v2blaal1rmhlam7rs1"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'check)
-                  (add-after 'install 'check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Tests require the 'bandit' executable in PATH.
-                      ;; It's only built during install time.
-                      (add-installed-pythonpath inputs outputs)
-                      (setenv "PATH" (string-append (assoc-ref outputs "out")
-                                                    "/bin:" (getenv "PATH")))
-                      (invoke "python" "setup.py" "testr"))))))
+     ;; The tests are disabled to avoid a circular dependency with
+     ;; python-stestr.
+     `(#:tests? #f))
     (propagated-inputs
       `(("python-gitpython" ,python-gitpython)
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)
         ("python-stevedore" ,python-stevedore)))
     (native-inputs
-      `(;; Tests.
-        ("python-beautifulsoup4" ,python-beautifulsoup4)
-        ("python-fixtures" ,python-fixtures)
-        ("python-mock" ,python-mock)
-        ("python-subunit" ,python-subunit)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)))
+      `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/PyCQA/bandit")
     (synopsis "Security oriented static analyser for python code")
     (description
