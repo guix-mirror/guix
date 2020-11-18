@@ -28,6 +28,7 @@
 (define-module (gnu packages python-check)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web)
@@ -1078,3 +1079,36 @@ any Python VM with basically no runtime overhead.")
     (description "Robber is a Python assertion library for test-driven and
 behavior-driven development (TDD and BDD).")
     (license license:expat)))
+
+(define-public python-stestr
+  (package
+    (name "python-stestr")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stestr" version))
+       (sha256
+        (base32
+         "0adhqp9c9338wlvlq776k57k04lyxp38bv591afdm9gjsn2qn1zm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;to avoid circular dependencies
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
+    (propagated-inputs
+     `(("python-cliff" ,python-cliff)
+       ("python-fixtures" ,python-fixtures)
+       ("python-future" ,python-future)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)
+       ("python-voluptuous" ,python-voluptuous)))
+    (home-page "https://stestr.readthedocs.io/en/latest/")
+    (synopsis "Parallel Python test runner")
+    (description "This package provides the @command{stestr} command, a
+parallel Python test runner built around @code{subunit}.  It is designed to
+execute @code{unittest} test suites using multiple processes to split up
+execution of a test suite.  It will also store a history of all test runs to
+help in debugging failures and optimizing the scheduler to improve speed.")
+    (license license:asl2.0)))
