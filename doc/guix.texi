@@ -31045,7 +31045,7 @@ image=$(guix system disk-image --image-type=qcow2 \
              gnu/system/examples/lightweight-desktop.tmpl)
 cp $image /tmp/my-image.qcow2
 chmod +w /tmp/my-image.qcow2
-qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000
+qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000 \
                    -bios $(guix build ovmf)/share/firmware/ovmf_x64.bin
 @end example
 
