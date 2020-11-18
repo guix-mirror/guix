@@ -1005,7 +1005,7 @@ Optional thin wrappers allow usage of the library from other languages.")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.3.7")
+    (version "3.3.8")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -1015,7 +1015,7 @@ Optional thin wrappers allow usage of the library from other languages.")
                                     version ".orig.tar.bz2")))
               (sha256
                (base32
-                "1km3fyfzyqfdvmnl79drps3fjwnz3zbh0c7l34mfbqyvvs8cy4wz"))
+                "1vxrsncfnkyq6gwxpsannpryp12mk7lc8f42ybvz3saf7icwc582"))
               (file-name (string-append name "-" version ".tar.bz2"))
               (patches (search-patches "eigen-stabilise-sparseqr-test.patch"))
               (modules '((guix build utils)))
