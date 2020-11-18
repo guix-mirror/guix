@@ -793,7 +793,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 System} that offers high-quality printing with Seiko@tie{}Epson color ink jet
 printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
-    (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (home-page "http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX")
     (license license:gpl2+)))
 
 (define-public splix
