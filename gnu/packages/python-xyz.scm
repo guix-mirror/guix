@@ -10427,13 +10427,13 @@ config files.")
 (define-public python-configargparse
   (package
     (name "python-configargparse")
-    (version "0.14.0")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
-                "149fy4zya0rsnlkvxbbq43cyr8lscb5k4pj1m6n7f1grwcmzwbif"))))
+                "1p1pzpf5qpf80bfxsx1mbw9blyhhypjvhl3i60pbmhfmhvlpplgd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)))
