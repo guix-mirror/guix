@@ -310,22 +310,21 @@ to docs.openstack.org and developer.openstack.org.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.28.0")
+    (version "3.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
         (base32
-         "02ynfgwma84g59834dmvzr39mcppy5s229zf1w23c0qngf753izi"))))
+         "1w11lm293afzb73iq0ba9wnmr2rjwymnhr92km4a4xrs7a5qcigq"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-six" ,python-six)))
+    (arguments
+     ;; The tests are disabled to avoid a circular dependency with
+     ;; python-stestr.
+     `(#:tests? #f))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)))
+     `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
