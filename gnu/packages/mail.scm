@@ -729,7 +729,13 @@ mailpack.  What can alterMIME do?
            #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags (list "-GNinja")
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:configure-flags (list "-GNinja")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-markdown-test
@@ -759,7 +765,26 @@ mailpack.  What can alterMIME do?
              #t))
          (replace 'install
            (lambda _
-             (invoke "ninja" "install"))))))
+             (invoke "ninja" "install")))
+         (add-after 'install 'wrap-with-GI_TYPELIB_PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (paths (map (match-lambda
+                                 ((outputs . directory)
+                                  (let ((girepodir (string-append
+                                                    directory
+                                                    "/lib/girepository-1.0")))
+                                    (if (file-exists? girepodir)
+                                        girepodir
+                                        #f))))
+                               inputs)))
+               (wrap-program (string-append out "/bin/astroid")
+                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -781,6 +806,8 @@ mailpack.  What can alterMIME do?
        ("python" ,python-wrapper)
        ("python-pygobject" ,python-pygobject)
        ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme))) ; Required for the thread view
     (home-page "https://astroidmail.github.io/")
     (synopsis "GTK frontend to the notmuch mail system")
     (description
