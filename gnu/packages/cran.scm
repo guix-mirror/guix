@@ -560,6 +560,30 @@ generalized linear, additive and interaction models to potentially
 high-dimensional data.")
    (license license:gpl2)))
 
+(define-public r-shadowtext
+  (package
+   (name "r-shadowtext")
+   (version "0.0.7")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "shadowtext" version))
+            (sha256
+             (base32
+              "1s1ip8zfr684a3ld7hvf524bhn2j31k6d1wbhh1ni0flsggv2ckf"))))
+   (properties `((upstream-name . "shadowtext")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-ggplot2" ,r-ggplot2)
+      ("r-scales" ,r-scales)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://github.com/GuangchuangYu/shadowtext/")
+   (synopsis "Shadow text grob and layer")
+   (description "This package implements @code{shadowtextGrob()} for
+@code{grid} and @code{geom_shadowtext()} layer for @code{ggplot2}.
+These functions draw text grob with background shadow.")
+   (license license:artistic2.0)))
+
 (define-public r-sys
   (package
     (name "r-sys")
