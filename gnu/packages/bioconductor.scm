@@ -1952,6 +1952,33 @@ for finding the peaks with bi-directional promoters with summary statistics
 enrichedGO (addGeneIDs).")
     (license license:gpl2+)))
 
+(define-public r-matrixgenerics
+  (package
+   (name "r-matrixgenerics")
+   (version "1.2.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "MatrixGenerics" version))
+            (sha256
+             (base32
+              "1a3sw79185d6rld3wlrynkzcbp754a7jkracrmvn0ra964ia8zvc"))))
+   (properties
+    `((upstream-name . "MatrixGenerics")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-matrixstats" ,r-matrixstats)))
+   (home-page "https://bioconductor.org/packages/MatrixGenerics")
+   (synopsis "S4 generic summary statistic functions for matrix-like objects")
+   (description
+    "This package provides S4 generic functions modeled after the
+@code{matrixStats} API for alternative matrix implementations.  Packages with
+alternative matrix implementation can depend on this package and implement the
+generic functions that are defined here for a useful set of row and column
+summary statistics.  Other package developers can import this package and
+handle a different matrix implementations without worrying about
+incompatibilities.")
+   (license license:artistic2.0)))
+
 (define-public r-marray
   (package
     (name "r-marray")
