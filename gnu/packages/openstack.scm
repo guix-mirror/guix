@@ -639,30 +639,29 @@ from the OpenStack project.")
     (name "python-oslotest")
     (version "3.4.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "oslotest" version))
-        (sha256
-          (base32
-            "1pp8lq61d548cxcqi451czvrz5i5b3hyi2ry00wmngdgiswcqj1h"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oslotest" version))
+       (sha256
+        (base32
+         "1pp8lq61d548cxcqi451czvrz5i5b3hyi2ry00wmngdgiswcqj1h"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-fixtures" ,python-fixtures)
-        ("python-mock" ,python-mock)
-        ("python-mox3" ,python-mox3)
-        ("python-os-client-config" ,python-os-client-config)
-        ("python-six" ,python-six)
-        ("python-subunit" ,python-subunit)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testtools" ,python-testtools)))
+     `(("python-fixtures" ,python-fixtures)
+       ("python-mock" ,python-mock)
+       ("python-mox3" ,python-mox3)
+       ("python-os-client-config" ,python-os-client-config)
+       ("python-six" ,python-six)
+       ("python-subunit" ,python-subunit)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-testscenarios" ,python-testscenarios)))
+     `(("python-pbr" ,python-pbr)
+       ("python-testscenarios" ,python-testscenarios)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
-    (description
-      "The Oslo Test framework provides common fixtures, support for debugging,
-and better support for mocking results.")
+    (description "The Oslo Test framework provides common fixtures, support
+for debugging, and better support for mocking results.")
     (license asl2.0)))
 
 (define-public python2-oslotest
