@@ -1843,7 +1843,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
 (define-public bennu-game-development
   (package
     (name "bennu-game-development")
-    (version "348")
+    (version "353")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1852,7 +1852,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))
+                "1iri58ryk9lbqn585cbccnvrfkj8qxlbcsk8rpih40jhvs1j101l"))
               (modules '((guix build utils)))
               (snippet
                '(begin
