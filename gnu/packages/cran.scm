@@ -2878,6 +2878,24 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
 representation of intervals, including a method of coercing variables
 in data frames.")
     (license license:gpl2)))
+(define-public r-invgamma
+  (package
+   (name "r-invgamma")
+   (version "1.1")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "invgamma" version))
+            (sha256
+             (base32
+              "12ga2y4wc9bc5zz6vimvxwgjpsx3ys3209nq63gscbw559ydxa5a"))))
+   (properties `((upstream-name . "invgamma")))
+   (build-system r-build-system)
+   (home-page "https://github.com/dkahle/invgamma")
+   (synopsis "Inverse gamma distribution")
+   (description "This package provides a light weight implementation of the
+standard distribution functions for the inverse gamma distribution, wrapping
+those for the gamma distribution in the @code{stats} package.")
+   (license license:gpl2)))
 
 (define-public r-bdsmatrix
   (package
