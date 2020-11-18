@@ -17190,14 +17190,14 @@ such as figshare or Zenodo.")
         (base32
          "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (delete-file "setup.cfg")
+                      (invoke "py.test"))))))
     (native-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-distlib" ,python-distlib)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-filelock" ,python-filelock)
-       ("python-six" ,python-six)
-       ("python-tox" ,python-tox)
-       ("python-virtualenv" ,python-virtualenv)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/k-bx/python-semver")
     (synopsis "Python helper for Semantic Versioning")
     (description "This package provides a Python library for
