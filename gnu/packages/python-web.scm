@@ -460,14 +460,14 @@ HTTP servers, RESTful APIs, and web services.")
 (define-public python-html2text
   (package
     (name "python-html2text")
-    (version "2019.8.11")
+    (version "2020.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "html2text" version))
        (sha256
         (base32
-         "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm"))))
+         "1fvv4z6dblii2wk1x82981ag8yhxbim1v2ksgywxsndh2s7335p2"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
