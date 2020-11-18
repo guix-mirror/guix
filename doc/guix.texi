@@ -24909,14 +24909,18 @@ Defaults to @samp{tun}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-client-configuration} parameter} string ca
+If you do not have some of these files (eg.@: you use a username and
+password), you can disable any of the following three fields by setting
+it to @code{'disabled}.
+
+@deftypevr {@code{openvpn-client-configuration} parameter} maybe-string ca
 The certificate authority to check connections against.
 
 Defaults to @samp{"/etc/openvpn/ca.crt"}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-client-configuration} parameter} string cert
+@deftypevr {@code{openvpn-client-configuration} parameter} maybe-string cert
 The certificate of the machine the daemon is running on.  It should be
 signed by the authority given in @code{ca}.
 
@@ -24924,7 +24928,7 @@ Defaults to @samp{"/etc/openvpn/client.crt"}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-client-configuration} parameter} string key
+@deftypevr {@code{openvpn-client-configuration} parameter} maybe-string key
 The key of the machine the daemon is running on.  It must be the key whose
 certificate is @code{cert}.
 
@@ -25060,14 +25064,18 @@ Defaults to @samp{tun}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-server-configuration} parameter} string ca
+If you do not have some of these files (eg.@: you use a username and
+password), you can disable any of the following three fields by setting
+it to @code{'disabled}.
+
+@deftypevr {@code{openvpn-server-configuration} parameter} maybe-string ca
 The certificate authority to check connections against.
 
 Defaults to @samp{"/etc/openvpn/ca.crt"}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-server-configuration} parameter} string cert
+@deftypevr {@code{openvpn-server-configuration} parameter} maybe-string cert
 The certificate of the machine the daemon is running on.  It should be
 signed by the authority given in @code{ca}.
 
@@ -25075,7 +25083,7 @@ Defaults to @samp{"/etc/openvpn/client.crt"}.
 
 @end deftypevr
 
-@deftypevr {@code{openvpn-server-configuration} parameter} string key
+@deftypevr {@code{openvpn-server-configuration} parameter} maybe-string key
 The key of the machine the daemon is running on.  It must be the key whose
 certificate is @code{cert}.
 
