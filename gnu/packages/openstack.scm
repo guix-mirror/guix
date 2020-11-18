@@ -73,6 +73,38 @@ and runs appropriate plugins against the AST nodes.  Once Bandit has finished
 scanning all the files it generates a report.")
     (license asl2.0)))
 
+(define-public python-cliff
+  (package
+    (name "python-cliff")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cliff" version))
+       (sha256
+        (base32
+         "0n8pzr0mnn9lq2mykds69ij2xrn0fsirh4ndmkx0mzydbx5niysv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
+    (propagated-inputs
+     `(("python-cmd2" ,python-cmd2)
+       ("python-prettytable" ,python-prettytable)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-bandit" ,python-bandit)
+       ("python-stevedore" ,python-stevedore)))
+    (home-page "https://opendev.org/openstack/cliff")
+    (synopsis "Framework for building command line programs")
+    (description "The @code{cliff} framework allows creating multi-level
+commands such as those of @command{subversion} and @command{git}, where the
+main program handles some basic argument parsing and then invokes a
+sub-command to do the work.  It uses plugins to define sub-commands, output
+formatters, and other extensions.")
+    (license asl2.0)))
+
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
