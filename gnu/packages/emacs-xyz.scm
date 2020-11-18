@@ -1871,12 +1871,12 @@ than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
 (define-public emacs-gcmh
-  ;; No tagged release upstream.
-  (let ((commit "84c43a4c0b41a595ac6e299fa317d2831813e580")
-        (revision "0"))
+  ;; No tagged release upstream, but the commit below correspond to the 0.2.1
+  ;; release.
+  (let ((commit "0089f9c3a6d4e9a310d0791cf6fa8f35642ecfd9"))
     (package
       (name "emacs-gcmh")
-      (version (git-version "0.1" revision commit))
+      (version "0.2.1")
       (source
        (origin
          (method git-fetch)
@@ -1884,7 +1884,7 @@ than @code{electric-indent-mode}.")
                (url "https://gitlab.com/koral/gcmh")
                (commit commit)))
          (sha256
-          (base32 "1r3wiqhrzh7wvqy484nl031fd4bn4cpvkv9646s4cjgvnnnv7jz3"))
+          (base32 "0yh1ap8phv3x44rp0yr6z884xqw2apanbx4c0acqglvj0gaaqx25"))
          (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (home-page "https://gitlab.com/koral/gcmh")
