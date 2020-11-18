@@ -585,6 +585,34 @@ interrupts and timeouts.  This provides the basis for a sandboxing
 mechanism.")
     (license license:expat)))
 
+(define-public r-ashr
+  (package
+   (name "r-ashr")
+   (version "2.2-47")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "ashr" version))
+            (sha256
+             (base32
+              "1rqb5j30ylaf1h4l66x4jxyn5inrvhc42d90qd5mgkxsq0ghdlr4"))))
+   (properties `((upstream-name . "ashr")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-etrunct" ,r-etrunct)
+      ("r-invgamma" ,r-invgamma)
+      ("r-matrix" ,r-matrix)
+      ("r-mixsqp" ,r-mixsqp)
+      ("r-rcpp" ,r-rcpp)
+      ("r-squarem" ,r-squarem)
+      ("r-truncnorm" ,r-truncnorm)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://github.com/stephens999/ashr")
+   (synopsis "Methods for adaptive shrinkage, using empirical bayes")
+   (description "This package implements an empirical Bayes approach for
+large-scale hypothesis testing and false discovery rate estimation.")
+   (license license:gpl3+)))
+
 (define-public r-askpass
   (package
     (name "r-askpass")
