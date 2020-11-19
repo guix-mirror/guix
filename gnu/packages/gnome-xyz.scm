@@ -131,7 +131,7 @@ the Obsidian icon theme.")
               (method git-fetch)
               (uri (git-reference
                     (url
-                     "https://github.com/ubuntu/gnome-shell-extension-appindicator.git")
+                     "https://github.com/ubuntu/gnome-shell-extension-appindicator")
                     (commit (string-append "v" version))))
               (sha256
                (base32

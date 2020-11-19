@@ -76,7 +76,7 @@ used in the Raspberry Pi")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/RPi-Distro/raspi-gpio.git")
+                      (url "https://github.com/RPi-Distro/raspi-gpio")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -98,7 +98,7 @@ used in the Raspberry Pi")
   (origin
    (method git-fetch)
    (uri (git-reference
-         (url "https://github.com/librerpi/rpi-open-firmware.git")
+         (url "https://github.com/librerpi/rpi-open-firmware")
          (commit "6be45466e0be437a1b0b3512a86f3d9627217006")))
    (file-name "rpi-open-firmware-checkout")
    (sha256

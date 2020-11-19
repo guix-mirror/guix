@@ -49,7 +49,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/nuspell/nuspell.git")
+         (url "https://github.com/nuspell/nuspell")
          (commit
           (string-append "v" version))))
        (file-name

@@ -1383,7 +1383,7 @@ complete studio.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/onkelDead/tascam-gtk.git")
+                      (url "https://github.com/onkelDead/tascam-gtk")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -5152,7 +5152,7 @@ for integration into status line generators or other command-line tools.")
               (method git-fetch)
               (uri (git-reference
                     (url
-                     "https://github.com/openAVproductions/openAV-ArtyFX.git")
+                     "https://github.com/openAVproductions/openAV-ArtyFX")
                     (commit (string-append "release-" version))))
               (file-name (git-file-name name version))
               (sha256

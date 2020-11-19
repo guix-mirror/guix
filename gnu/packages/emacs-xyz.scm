@@ -2238,7 +2238,7 @@ Lock key.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/contrapunctus-1/chronometrist.git")
+             (url "https://github.com/contrapunctus-1/chronometrist")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4564,7 +4564,7 @@ compile}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/purcell/flycheck-ledger.git")
+             (url "https://github.com/purcell/flycheck-ledger")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -7662,7 +7662,7 @@ The purpose of this library is to wrap all the quirks and hassle of
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/fuxialexander/counsel-notmuch.git")
+               (url "https://github.com/fuxialexander/counsel-notmuch")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -17339,7 +17339,7 @@ Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
           (base32
            "1k8lljdbc90nd29xrhdrsscxavzdq532wq2mg7ljc94krj7538b1"))))
       (build-system emacs-build-system)
-      (home-page "https://github.com/bgamari/dts-mode.git")
+      (home-page "https://github.com/bgamari/dts-mode")
       (synopsis "Emacs minor mode for editing device tree files")
       (description
        "This package provides an Emacs minor mode for highlighting
@@ -19291,7 +19291,7 @@ scratch, and you think the Spacemacs theme looks good.
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/TheBB/spaceline.git")
+               (url "https://github.com/TheBB/spaceline")
                (commit commit)))
          (sha256
           (base32 "11lwckqcgzsahrkkm5wk1ph4kc7d4yz05r7251g8c9f0q6vdj9dp"))
@@ -19885,7 +19885,7 @@ programs can use this table component for the application UI.")
     (package
       (name "emacs-leetcode")
       (version (git-version "0" "1" commit))
-      (home-page "https://github.com/ginqi7/leetcode-emacs.git")
+      (home-page "https://github.com/ginqi7/leetcode-emacs")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -24915,7 +24915,7 @@ personal wiki.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/conao3/org-generate.el.git")
+                    (url "https://github.com/conao3/org-generate.el")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

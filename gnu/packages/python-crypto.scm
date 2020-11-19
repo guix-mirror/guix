@@ -74,7 +74,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/python-otr/pure-python-otr.git")
+         (url "https://github.com/python-otr/pure-python-otr")
          (commit version)))
        (file-name
         (git-file-name name version))

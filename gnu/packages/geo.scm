@@ -112,7 +112,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/jiuka/memphis.git")
+         (url "https://github.com/jiuka/memphis")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256

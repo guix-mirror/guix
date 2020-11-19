@@ -119,7 +119,7 @@ modify some aspects of this style through the use of regular expressions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/ebassi/mutest.git")
+         (url "https://github.com/ebassi/mutest")
          (commit "e6246c9")))
        (file-name (git-file-name name version))
        (sha256

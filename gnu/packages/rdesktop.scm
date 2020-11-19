@@ -87,7 +87,7 @@ to remotely control a user's Windows desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://github.com/FreeRDP/FreeRDP.git")
+             (url "git://github.com/FreeRDP/FreeRDP")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

@@ -53,7 +53,7 @@ supported content to the Kodi media center.")
     (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/uBlockOrigin/uAssets.git")
+            (url "https://github.com/uBlockOrigin/uAssets")
             (commit commit)))
       (file-name (git-file-name "uAssets" (string-take commit 9)))
       (sha256

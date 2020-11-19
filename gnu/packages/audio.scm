@@ -140,7 +140,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry.git")
+         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry")
          (commit "ea5104bf37bf525c25e6ae2386586048179d0fda")))
        (file-name (git-file-name name version))
        (sha256
@@ -202,7 +202,7 @@ promoting the market for advanced audio.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Mindwerks/wildmidi.git")
+         (url "https://github.com/Mindwerks/wildmidi")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -277,7 +277,7 @@ Coding (AAC) encoder.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/tinyalsa/tinyalsa.git")
+         (url "https://github.com/tinyalsa/tinyalsa")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256

@@ -1366,7 +1366,7 @@ at login.  Local and dynamic reconfiguration are its key features.")
         ;; Tests not distributed in pypi release.
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/minrk/pamela.git")
+               (url "https://github.com/minrk/pamela")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -7559,7 +7559,7 @@ created by Alastair Robertson.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/eBUS/ttyebus.git")
+               (url "https://github.com/eBUS/ttyebus")
                (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f")))
          (file-name (git-file-name name version))
          (sha256

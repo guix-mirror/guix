@@ -790,7 +790,7 @@ images of initially unknown height.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/uclouvain/openjpeg-data.git")
+         (url "https://github.com/uclouvain/openjpeg-data")
          (commit "c5c4a8c")))
        (file-name (git-file-name name version))
        (sha256

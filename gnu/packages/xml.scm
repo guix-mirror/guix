@@ -84,7 +84,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hughsie/libxmlb.git")
+         (url "https://github.com/hughsie/libxmlb")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -218,7 +218,7 @@ project (but it is usable outside of the Gnome platform).")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -278,7 +278,7 @@ It uses libxml2 to access the XML files.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256

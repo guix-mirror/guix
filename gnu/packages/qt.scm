@@ -1584,7 +1584,7 @@ message.")))
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/manisandro/qtspell.git")
+             (url "https://github.com/manisandro/qtspell")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

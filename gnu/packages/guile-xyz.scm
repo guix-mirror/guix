@@ -2973,7 +2973,7 @@ more expressive and flexible than the traditional @code{format} procedure.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/scheme-requests-for-implementation/srfi-180.git")
+               (url "https://github.com/scheme-requests-for-implementation/srfi-180")
                (commit commit)))
          (sha256
           (base32
@@ -3734,7 +3734,7 @@ models and also supports a rich set of boolean query operators.")
     (source (origin (method git-fetch)
                     (uri (git-reference
                           (url
-                           "https://github.com/o-nly/torrent.git")
+                           "https://github.com/o-nly/torrent")
                           (commit version)))
                     (file-name (git-file-name name version))
                     (sha256

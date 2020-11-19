@@ -95,7 +95,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/occipital/OpenNI2.git")
+         (url "https://github.com/occipital/OpenNI2")
          (commit (string-append "v" version "-debian"))))
        (file-name (git-file-name name version))
        (sha256
@@ -167,7 +167,7 @@ module for the DMA capture of the video flow.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/CCExtractor/ccextractor.git")
+         (url "https://github.com/CCExtractor/ccextractor")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -220,7 +220,7 @@ and very fast.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Libvisual/libvisual.git")
+         (url "https://github.com/Libvisual/libvisual")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -268,7 +268,7 @@ applications that want audio visualisation and audio visualisation plugins.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Libvisual/libvisual.git")
+         (url "https://github.com/Libvisual/libvisual")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256

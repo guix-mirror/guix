@@ -242,7 +242,7 @@ and a Python library.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url"https://github.com/soimort/translate-shell.git")
+               (url"https://github.com/soimort/translate-shell")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256

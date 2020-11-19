@@ -121,7 +121,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/NVIDIA/eglexternalplatform.git")
+         (url "https://github.com/NVIDIA/eglexternalplatform")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -172,7 +172,7 @@ application-facing EGL functions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/NVIDIA/egl-wayland.git")
+         (url "https://github.com/NVIDIA/egl-wayland")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -202,7 +202,7 @@ EGLStream families of extensions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hodefoting/mmm.git")
+         (url "https://github.com/hodefoting/mmm")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -231,7 +231,7 @@ framebuffer graphics, audio output and input event.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/deniskropp/DirectFB.git")
+         (url "https://github.com/deniskropp/DirectFB")
          (commit "DIRECTFB_1_7_7")))
        (file-name (git-file-name name version))
        (sha256
@@ -301,7 +301,7 @@ minimum of resource usage and overhead.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/deniskropp/flux.git")
+         (url "https://github.com/deniskropp/flux")
          (commit "e45758a")))
        (file-name (git-file-name name version))
        (sha256

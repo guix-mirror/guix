@@ -286,7 +286,7 @@ video and audio streams from a DVD.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/OpenVisualCloud/SVT-HEVC.git")
+         (url "https://github.com/OpenVisualCloud/SVT-HEVC")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -314,7 +314,7 @@ efficiency.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Intel-Media-SDK/MediaSDK.git")
+         (url "https://github.com/Intel-Media-SDK/MediaSDK")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -490,7 +490,7 @@ and mmsh protocols.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/farindk/libvideogfx.git")
+         (url "https://github.com/farindk/libvideogfx")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -534,7 +534,7 @@ applications by providing high-level classes for commonly required tasks.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/strukturag/libde265.git")
+         (url "https://github.com/strukturag/libde265")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -575,7 +575,7 @@ other software.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/libts/tslib.git")
+         (url "https://github.com/libts/tslib")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
