@@ -369,11 +369,12 @@ verbose output to the LOG port."
                     (lambda (dir stat result)     ; down
                       (let ((target (string-append destination
                                                    (strip-source dir))))
-                        (mkdir-p target)
-                        (when keep-mtime?
-                          (set-file-time target stat))))
+                        (mkdir-p target)))
                     (lambda (dir stat result)     ; up
-                      result)
+                      (when keep-mtime?
+                        (let ((target (string-append destination
+                                                     (strip-source dir))))
+                          (set-file-time target stat))))
                     (const #t)                    ; skip
                     (lambda (file stat errno result)
                       (format (current-error-port) "i/o error: ~a: ~a~%"
