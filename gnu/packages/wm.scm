@@ -1391,9 +1391,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
-    ;; be dropped from the grim package.
-    (version "1.4")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1402,7 +1400,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11qf89y3q92g696a6f4d23qb44gqixg6qxq740vwv2jw59ms34ja"))))
+        (base32 "1xsa3h8zhf29p0mi90baxpr76jkd9pd1gr97ky8cnjbcs4isj9j0"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1431,16 +1429,16 @@ modules for building a Wayland compositor.")
               ("swaybg" ,swaybg)
               ("wayland" ,wayland)
               ("wlroots" ,wlroots)))
-    (native-inputs `(("libcap" ,libcap)
-                     ("linux-pam" ,linux-pam)
-                     ("mesa" ,mesa)
-                     ("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("linux-pam" ,linux-pam)
+       ("mesa" ,mesa)
+       ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Wayland compositor compatible with i3")
     (description "Sway is a i3-compatible Wayland compositor.")
-    (license license:expat)))       ; MIT license
+    (license license:expat)))
 
 (define-public swayidle
   (package
