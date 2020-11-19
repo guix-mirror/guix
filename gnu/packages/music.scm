@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -943,6 +944,60 @@ engine (except effects) that can be used for layering or split patches.")
      "klick is an advanced command-line based metronome for JACK.  It allows
 you to define complex tempo maps for entire songs or performances.")
     (license license:gpl2+)))
+
+(define-public glyr
+  (package
+    (name "glyr")
+    (version "1.0.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sahib/glyr")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1miwbqzkhg0v3zysrwh60pj9sv6ci4lzq2vq2hhc6pc6hdyh8xyr"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DTEST=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "spec/capi/check_api.c"
+               (("fail_unless \\(c != NULL,\"Could not load www.google.de\"\\);")
+                ""))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; capi tests
+               (invoke "bin/check_api")
+               ;; (invoke "bin/check_opt") TODO Very dependent on the network
+               (invoke "bin/check_dbc"))
+
+             ;; TODO Work out how to run the spec/providers Python tests
+             #t)))))
+    (inputs
+     `(("glib" ,glib)
+       ("curl" ,curl)
+       ("sqlite" ,sqlite)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("check" ,check)))
+    (home-page "https://github.com/sahib/glyr")
+    (synopsis "Search engine for music related metadata")
+    (description
+     "Glyr comes both in a command-line interface tool (@command{glyrc}) and
+as a C library (libglyr).
+
+The sort of metadata glyr is searching (and downloading) is usually the data
+you see in your musicplayer.  And indeed, originally it was written to serve
+as internally library for a musicplayer, but has been extended to work as a
+standalone program which is able to download cover art, lyrics, photos,
+biographies, reviews and more.")
+    (license license:lgpl3+)))
 
 (define-public gtklick
   (package
