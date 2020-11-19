@@ -636,17 +636,16 @@ and building documentation from them.")
              ;; Therefore, we don't do it here.
              (invoke "python" "setup.py" "build_sphinx"))))))
     (propagated-inputs
-      `(("python-requests" ,python-requests)))
+     `(("python-requests" ,python-requests)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-docutils" ,python-docutils)
-        ("python-hacking" ,python-hacking)
-        ("python-sphinx" ,python-sphinx)))
+     `(("python-pbr" ,python-pbr)
+       ("python-docutils" ,python-docutils)
+       ("python-hacking" ,python-hacking)
+       ("python-sphinx" ,python-sphinx)))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
-    (description
-      "This package provides themes and extensions for Sphinx documentation
-from the OpenStack project.")
+    (description "This package provides themes and extensions for Sphinx
+documentation from the OpenStack project.")
     (license asl2.0)))
 
 (define-public python2-oslosphinx
