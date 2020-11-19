@@ -78,6 +78,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1941,16 +1942,18 @@ identical visual appearance.")
      (sha256
       (base32 "1fby2v2ylcadgclds05wpkl9xi2r9dfz49dqyqpn20rjv1wnz3jv"))))
    (build-system meson-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("cairo" ,cairo)
-             ("scdoc" ,scdoc)
-             ("wayland" ,wayland)
-             ("wayland-protocols" ,wayland-protocols)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("scdoc" ,scdoc)))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libxkbcommon" ,libxkbcommon)
+      ("wayland" ,wayland)
+      ("wayland-protocols" ,wayland-protocols)))
    (home-page "https://github.com/emersion/slurp")
    (synopsis "Select a region in a Wayland compositor")
    (description "Slurp can select a region in a Wayland compositor and print it
 to the standard output.  It works well together with grim.")
-   ;; MIT license.
    (license license:expat)))
 
 (define-public sng
