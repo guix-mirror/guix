@@ -617,39 +617,37 @@ and building documentation from them.")
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
-    (version "4.10.0")
+    (version "4.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslosphinx" version))
        (sha256
         (base32
-         "09mxqyabi68f3s3arvdhlhq0mn38vf74jbsfcg84151hcj6czhnl"))))
+         "1xm41857vzrzjmnyi6bqirg4i5qa61v7wxcsdc4q1nzgr3ndgz5k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
+         (add-after 'unpack 'relax-requirements
            (lambda _
-             ;; Note: Upstream tests would have also built the release notes.
-             ;; That only would work if we were in a git checkout.
-             ;; Therefore, we don't do it here.
-             (invoke "python" "setup.py" "build_sphinx"))))))
+             (substitute* "test-requirements.txt"
+               (("hacking!=0.13.0,<0.14,>=0.12.0")
+                "hacking!=0.13.0,>=0.12.0"))
+             #t)))))
     (propagated-inputs
      `(("python-requests" ,python-requests)))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-docutils" ,python-docutils)
-       ("python-hacking" ,python-hacking)
+     `(("python-hacking" ,python-hacking)
+       ("python-openstackdocstheme" ,python-openstackdocstheme)
+       ("python-pbr" ,python-pbr)
+       ("python-reno" ,python-reno)
        ("python-sphinx" ,python-sphinx)))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
     (description "This package provides themes and extensions for Sphinx
 documentation from the OpenStack project.")
     (license asl2.0)))
-
-(define-public python2-oslosphinx
-  (package-with-python2 python-oslosphinx))
 
 (define-public python-oslotest
   (package
