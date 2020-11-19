@@ -273,6 +273,15 @@ and workspaces that can be used in the compiler environment of your choice.")
        #:phases
        (modify-phases %standard-phases
          ,@%common-build-phases
+         (add-after 'install 'delete-help-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+               (string-append (assoc-ref outputs "out")
+                              "/share/cmake-"
+                              ,(version-major+minor
+                                 (package-version cmake-bootstrap))
+                              "/Help"))
+             #t))
          (replace 'check
            (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
              (let ((skipped-tests (list ,@%common-disabled-tests
@@ -317,6 +326,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                  ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'delete-help-documentation)
            (add-after 'install 'move-html-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
