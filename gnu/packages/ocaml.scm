@@ -5802,7 +5802,9 @@ convenience functions for vectors and matrices.")
                 "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
     (build-system dune-build-system)
     (arguments
-     `(;; FIXME: (got signal SEGV) #44725
+     `(;; NOTE: GC reclaims bigarrays packed into a custom structure
+       ;; regardless of their refcounts. Affects OCaml >= 4.10.x
+       ;; https://github.com/ocaml/ocaml/issues/9360
        #:tests? #f
        #:test-target "tests"))
     (inputs
