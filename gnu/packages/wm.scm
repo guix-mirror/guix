@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
@@ -72,6 +72,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools) ;for meson-0.55
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -1342,7 +1343,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.10.1")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -1351,32 +1352,35 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j2lh9vc92zhn44rjbia5aw3y1rpgfng1x1h17lcvj5m4i6vj0pc"))))
+        (base32 "01j38lmgs2c6fq68v8b75pkilia2wsgzgp46ivfbi9hhx47kgcfn"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
+       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "xwayland/xwayland.c"
+             (substitute* "xwayland/server.c"
                (("Xwayland") (string-append (assoc-ref inputs
                                                        "xorg-server-xwayland")
                                             "/bin/Xwayland")))
              #t)))))
-    (inputs `(("elogind" ,elogind)
-              ("eudev" ,eudev)
-              ("libinput" ,libinput)
-              ("libxkbcommon" ,libxkbcommon)
-              ("mesa" ,mesa)
-              ("pixman" ,pixman)
-              ("wayland" ,wayland)
-              ("xorg-server-xwayland" ,xorg-server-xwayland)))
-    (native-inputs `(("ffmpeg" ,ffmpeg)
-                     ("libcap" ,libcap)
-                     ("libpng" ,libpng)
-                     ("pkg-config" ,pkg-config)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (propagated-inputs
+     `(;; As required by wlroots.pc.
+       ("elogind" ,elogind)
+       ("eudev" ,eudev)
+       ("libinput" ,libinput)
+       ("libxkbcommon" ,libxkbcommon)
+       ("mesa" ,mesa)
+       ("pixman" ,pixman)
+       ("wayland" ,wayland)
+       ("xcb-util-errors" ,xcb-util-errors)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
