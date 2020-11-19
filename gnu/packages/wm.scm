@@ -1469,7 +1469,7 @@ modules for building a Wayland compositor.")
 (define-public swaylock
   (package
     (name "swaylock")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -1478,7 +1478,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ii9ql1mxkk2z69dv6bg1x22nl3a46iww764wqjiv78x08xpk982"))))
+        (base32 "0r95p4w11dwm5ra614vddz83r8j7z6gd120z2vcchy7m9b0f15kf"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("gdk-pixbuf" ,gdk-pixbuf)
