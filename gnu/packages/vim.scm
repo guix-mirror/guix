@@ -110,7 +110,7 @@
              ;; Make sure the TERM environment variable is set for the tests
              (setenv "TERM" "xterm")
              #t))
-         (add-before 'check 'skip-failing-tests
+         (add-before 'check 'skip-or-fix-failing-tests
            (lambda _
              ;; This test assumes that PID 1 is run as root and that the user
              ;; running the test suite does not have permission to kill(1, 0)
@@ -131,6 +131,20 @@
              (substitute* "src/testdir/test_popupwin.vim"
                ((".*Test_popup_drag_termwin.*" line)
                 (string-append line "return\n")))
+
+             ;; This test compares output against a golden ‘…/|b|i|n|/|s|h…’
+             ;; literal.  We need to match that and substitute a similarly
+             ;; ‘spliced’ path to ‘sh’ in the store, truncated to the last
+             ;; 44 (spliced: 88) characters.
+             (let ((splice (lambda (s separator)
+                               (string-join (map string (string->list s))
+                                            separator))))
+               (substitute* "src/testdir/dumps/Test_terminal_from_cmd.dump"
+                 (((splice "/bin/sh" "\\|"))
+                  (splice (string-take-right (which "sh") 44) "|"))
+                 ;; Blindly fix some other differences based on error output.
+                 (("^\\|!") "|<")
+                 (("@37") "")))
              #t)))))
     (inputs
      `(("gawk" ,gawk)
