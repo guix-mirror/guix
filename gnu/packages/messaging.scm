@@ -743,7 +743,8 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))))
+        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))
+       (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:imported-modules
@@ -756,16 +757,6 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'add-plugin-dirs
-           (lambda _
-             (substitute* "gajim/common/configpaths.py"
-               (("_paths\\['PLUGINS_USER'\\]\\]")
-                "_paths['PLUGINS_USER']] + \
-([os.getenv('GAJIM_PLUGIN_PATH')] \
-if os.getenv('GAJIM_PLUGIN_PATH') \
-and Path(os.getenv('GAJIM_PLUGIN_PATH')).is_dir() \
-else [])"))
-             #t))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
