@@ -888,7 +888,7 @@ multi-client end-to-end encryption.")
 (define-public gajim-openpgp
   (package
     (name "gajim-openpgp")
-    (version "1.3.5")
+    (version "1.2.14")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -897,7 +897,7 @@ multi-client end-to-end encryption.")
          "https://ftp.gajim.org/plugins_releases/openpgp_"
          version ".zip"))
        (sha256
-        (base32 "1jvpl2gjl5xxvsgxpmvh3mn2mm142dg2hknakkc32swb7l1fqx5m"))))
+        (base32 "0wdjpf1i4pvl4ha4plfpywwi9aw5n2mhrpv8mmbidpawxqfbd94b"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
