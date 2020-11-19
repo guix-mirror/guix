@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -171,24 +171,30 @@ hierarchical form with variable field lengths.")
               (base32
                "07xynh8hcxb2yb1fs051xrgszjvj37wnxvxgsj10rzmqzy9y3zma"))))
     (build-system gnu-build-system)
-    (outputs '("out" "static"))
+    (outputs '("out" "static" "doc"))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-after 'install 'move-static-libs
+                  (add-after 'install 'use-other-outputs
                     (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((src (string-append (assoc-ref outputs "out") "/lib"))
+                      (let ((src (assoc-ref outputs "out"))
+                            (doc (string-append (assoc-ref outputs "doc") "/share"))
                             (dst (string-append (assoc-ref outputs "static")
                                                 "/lib")))
+                        (mkdir-p doc)
                         (mkdir-p dst)
+                        (for-each (lambda (dir)
+                                    (rename-file (string-append src "/share/" dir)
+                                                 (string-append doc "/" dir)))
+                                  '("doc" "gtk-doc"))
                         (for-each (lambda (ar)
                                     (rename-file ar (string-append dst "/"
                                                                    (basename ar))))
-                                  (find-files src "\\.a$"))
+                                  (find-files (string-append src "/lib") "\\.a$"))
 
                         ;; Remove reference to the static library from the .la
                         ;; file such that Libtool does the right thing when both
                         ;; the shared and static variants are available.
-                        (substitute* (string-append src "/libxml2.la")
+                        (substitute* (string-append src "/lib/libxml2.la")
                           (("^old_library='libxml2.a'") "old_library=''"))
                         #t))))))
     (home-page "http://www.xmlsoft.org/")
