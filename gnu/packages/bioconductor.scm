@@ -8660,6 +8660,8 @@ block processing.")
                  ;; Remove unnecessary store reference.
                  (("C Compiler:.*")
                   "C Compiler: GCC\n"))
+               (rename-file "hdf5/src/libhdf5.settings.in"
+                            "hdf5/src/libhdf5.settings")
                (rename-file "Makevars.in" "Makevars")
                (substitute* "Makevars"
                  (("@ZLIB_LIB@") "-lz")
