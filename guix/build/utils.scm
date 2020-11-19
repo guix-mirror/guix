@@ -343,11 +343,12 @@ name."
                            #:key
                            (log (current-output-port))
                            (follow-symlinks? #f)
+                           (copy-file copy-file)
                            keep-mtime?)
   "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
-is true; otherwise, just preserve them.  When KEEP-MTIME? is true, keep the
-modification time of the files in SOURCE on those of DESTINATION.  Write
-verbose output to the LOG port."
+is true; otherwise, just preserve them.  Call COPY-FILE to copy regular files.
+When KEEP-MTIME? is true, keep the modification time of the files in SOURCE on
+those of DESTINATION.  Write verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)

@@ -7778,12 +7778,13 @@ Make @var{file} writable for its owner.
 @end deffn
 
 @deffn {Scheme Procedure} copy-recursively @var{source} @var{destination} @
-  [#:log (current-output-port)] [#:follow-symlinks? #f] [#:keep-mtime? #f]
+  [#:log (current-output-port)] [#:follow-symlinks? #f] @
+  [#:copy-file copy-file] [#:keep-mtime? #f]
 Copy @var{source} directory to @var{destination}.  Follow symlinks if
-@var{follow-symlinks?}  is true; otherwise, just preserve them.  When
-@var{keep-mtime?} is true, keep the modification time of the files in
-@var{source} on those of @var{destination}.  Write verbose output to the
-@var{log} port.
+@var{follow-symlinks?}  is true; otherwise, just preserve them.  Call
+@var{copy-file} to copy regular files.  When @var{keep-mtime?} is true,
+keep the modification time of the files in @var{source} on those of
+@var{destination}.  Write verbose output to the @var{log} port.
 @end deffn
 
 @deffn {Scheme Procedure} delete-file-recursively @var{dir} @
