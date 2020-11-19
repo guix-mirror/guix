@@ -344,11 +344,12 @@ name."
                            (log (current-output-port))
                            (follow-symlinks? #f)
                            (copy-file copy-file)
-                           keep-mtime?)
+                           keep-mtime? keep-permissions?)
   "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
 is true; otherwise, just preserve them.  Call COPY-FILE to copy regular files.
 When KEEP-MTIME? is true, keep the modification time of the files in SOURCE on
-those of DESTINATION.  Write verbose output to the LOG port."
+those of DESTINATION.  When KEEP-PERMISSIONS? is true, preserve file
+permissions.  Write verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)
@@ -366,16 +367,20 @@ those of DESTINATION.  Write verbose output to the LOG port."
                           (else
                            (copy-file file dest)
                            (when keep-mtime?
-                             (set-file-time dest stat))))))
+                             (set-file-time dest stat))
+                           (when keep-permissions?
+                             (chmod dest (stat:perms stat)))))))
                     (lambda (dir stat result)     ; down
                       (let ((target (string-append destination
                                                    (strip-source dir))))
                         (mkdir-p target)))
                     (lambda (dir stat result)     ; up
-                      (when keep-mtime?
-                        (let ((target (string-append destination
-                                                     (strip-source dir))))
-                          (set-file-time target stat))))
+                      (let ((target (string-append destination
+                                                   (strip-source dir))))
+                        (when keep-mtime?
+                          (set-file-time target stat))
+                        (when keep-permissions?
+                          (chmod target (stat:perms stat)))))
                     (const #t)                    ; skip
                     (lambda (file stat errno result)
                       (format (current-error-port) "i/o error: ~a: ~a~%"
