@@ -433,22 +433,33 @@ common features used in Tempest.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "2.20.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "0iiq9rpwg6wrdqnhf3d8z8g0g7fjhs5zn6qw6igvxplz2c3rbvvx"))))
+         "1l2z186rkd9acrb2ygf53yrdc1lgf7cy1akbhm21kgkzind4p2r6"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-requirements
+                    (lambda _
+                      (substitute* "test-requirements.txt"
+                        (("hacking>=3.0.1,<3.1.0")
+                         "hacking>=3.0.1"))
+                      #t)))))
     (propagated-inputs
-     `(("python-debtcollector" ,python-debtcollector)
-       ("python-pbr" ,python-pbr)))
+     `(("python-debtcollector" ,python-debtcollector)))
     (native-inputs
-     `(("python-fixtures" ,python-fixtures)
+     `(("python-bandit" ,python-bandit)
+       ("python-coverage" ,python-coverage)
+       ("python-fixtures" ,python-fixtures)
        ("python-hacking" ,python-hacking)
-       ("python-oslotest" ,python-oslotest)))
+       ("python-oslotest" ,python-oslotest)
+       ("python-pbr" ,python-pbr)
+       ("python-stestr" ,python-stestr)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
