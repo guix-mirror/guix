@@ -211,7 +211,6 @@
        ,@(if (hurd-target?)
              '()
              `(("libuv" ,libuv)))       ;not supported on the Hurd
-       ("ncurses" ,ncurses)             ;required for ccmake
        ("rhash" ,rhash)
        ("zlib" ,zlib)))
     (native-search-paths
@@ -330,6 +329,9 @@ and workspaces that can be used in the compiler environment of your choice.")
                                    (string-append doc html))
                  (delete-file-recursively (string-append out html))
                  #t)))))))
+    (inputs
+     `(("ncurses" ,ncurses)             ;required for ccmake
+       ,@(package-inputs cmake-minimal)))
     ;; Extra inputs required to build the documentation.
     (native-inputs
      `(,@(package-native-inputs cmake-minimal)
