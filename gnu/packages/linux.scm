@@ -6056,43 +6056,40 @@ set the screen to be pitch black at a value of 0 (or higher).
     (license license:gpl3+)))
 
 (define-public brightnessctl
-  (let ((commit "6a791e7694aeeb5d027f71c6098e5182cf03371c"))
-    (package
-      (name "brightnessctl")
-      (version (git-version "0.4" "0" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Hummer12007/brightnessctl/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1n1gb8ldgqv3vs565yhk1w4jfvrviczp94r8wqlkv5q6ab43c8w9"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f                    ; no tests
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output)
-                            (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'adjust-udev-rules
-             (lambda _
-               (substitute* "90-brightnessctl.rules"
-                 (("/bin/") "/run/current-system/profile/bin/"))
-               #t)))))
-      (home-page "https://github.com/Hummer12007/brightnessctl")
-      (synopsis "Backlight and LED brightness control")
-      (description
-       "This program allows you read and control device brightness.  Devices
+  (package
+    (name "brightnessctl")
+    (version "0.5.1")
+    (home-page "https://github.com/Hummer12007/brightnessctl")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0immxc7almmpg80n3bdn834p3nrrz7bspl2syhb04s3lawa5y2lq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output)
+                          (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'adjust-udev-rules
+           (lambda _
+             (substitute* "90-brightnessctl.rules"
+               (("/bin/") "/run/current-system/profile/bin/"))
+             #t)))))
+    (synopsis "Backlight and LED brightness control")
+    (description
+     "This program allows you read and control device brightness.  Devices
 include backlight and LEDs.  It can also preserve current brightness before
 applying the operation, such as on lid close.
 
 The appropriate permissions must be set on the backlight or LED control
 interface in sysfs, which can be accomplished with the included udev rules.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public tlp
   (package
