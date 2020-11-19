@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -91,7 +91,6 @@
   (package
     (name "dbus")
     (version "1.12.16")
-    (replacement dbus/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -100,7 +99,8 @@
               (sha256
                (base32
                 "107ckxaff1cv4q6kmfdi2fb1nlsv03312a7kf6lb4biglhpjv8jl"))
-              (patches (search-patches "dbus-helper-search-path.patch"))))
+              (patches (search-patches "dbus-CVE-2020-12049.patch"
+                                       "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -167,15 +167,6 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
-
-;; Replacement package to fix CVE-2020-12049.
-(define dbus/fixed
-  (package
-    (inherit dbus)
-    (source (origin
-              (inherit (package-source dbus))
-              (patches (append (search-patches "dbus-CVE-2020-12049.patch")
-                               (origin-patches (package-source dbus))))))))
 
 (define glib
   (package
