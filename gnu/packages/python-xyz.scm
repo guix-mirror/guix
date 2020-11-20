@@ -16036,7 +16036,7 @@ by path in a JSON document (see RFC 6901).")
         (base32
          "0k9pff06lxama3nhsc7cdxbp83422bdy8ifs52i6xkas8hpyzfzr"))))
     (build-system python-build-system)
-    (native-inputs
+    (propagated-inputs
      `(("python-jsonpointer" ,python-jsonpointer)))
     (home-page "https://github.com/stefankoegl/python-json-patch")
     (synopsis "Applying JSON Patches in Python 2.6+ and 3.x")
