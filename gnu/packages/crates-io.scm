@@ -29490,6 +29490,33 @@ metadata, rather than programmatically in @file{build.rs}.  This makes those
 dependencies declarative, so other tools can read them as well.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tabwriter-1
+  (package
+    (name "rust-tabwriter")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tabwriter" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "048i0mj3b07zlry9m5fl706y5bzdzgrswymqn32drakzk7y5q81n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/BurntSushi/tabwriter")
+    (synopsis "Elastic tabstops")
+    (description "@code{tabwriter} is a crate that implements
+@url{http://nickgravgaard.com/elastictabstops/index.html,elastic tabstops}.  It
+provides both a library for wrapping Rust @code{Writer}s and a small program
+that exposes the same functionality at the command line.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-take-mut-0.2
   (package
     (name "rust-take-mut")
