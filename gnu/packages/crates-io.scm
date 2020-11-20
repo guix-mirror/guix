@@ -1330,6 +1330,32 @@ methods.")
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
     (arguments '(#:skip-build? #t))))
 
+(define-public rust-automod-1
+  (package
+    (name "rust-automod")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "automod" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z8kdbvvz0k8mfs45mvs16lr9xj59cdcp0sm45fawfh93gai4mhg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       ;; Tests not included in tar.
+       #:tests? #f))
+    (home-page "https://github.com/dtolnay/automod")
+    (synopsis "Pull in every source file in a directory as a module")
+    (description "Pull in every source file in a directory as a module.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-average-0.10
   (package
     (name "rust-average")
