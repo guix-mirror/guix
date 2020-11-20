@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,14 +142,17 @@ directory = '" port)
 
 (define* (build #:key
                 skip-build?
-                features
+                (features '())
                 (cargo-build-flags '("--release"))
                 #:allow-other-keys)
   "Build a given Cargo package."
   (or skip-build?
-      (apply invoke "cargo" "build"
-             "--features" (string-join features)
-             cargo-build-flags)))
+      (apply invoke
+             `("cargo" "build"
+               ,@(if (null? features)
+                     '()
+                     `("--features" ,(string-join features)))
+               ,@cargo-build-flags))))
 
 (define* (check #:key
                 tests?
