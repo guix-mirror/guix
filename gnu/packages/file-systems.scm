@@ -68,6 +68,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml))
 
 (define-public autofs
@@ -181,6 +182,79 @@ another location, similar to @command{mount --bind}.  It can be used for:
 @item Changing the permissions with which files are created.
 @end itemize ")
     (license license:gpl2+)))
+
+(define-public davfs2
+  (package
+    (name "davfs2")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.savannah.nongnu.org/releases/"
+                           "davfs2/davfs2-" version ".tar.gz"))
+       (sha256
+        (base32 "0l1vnv5lfigciwg17p10zxwhzj4qw2d9kw30prr7g4dxhmb6fsrf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--sysconfdir=/etc"        ; so man pages & binaries contain /etc
+             (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version)
+             (string-append "ssbindir=" (assoc-ref %outputs "out") "/sbin")
+             ;; The default ‘davfs2’ user and group don't exist on most systems.
+             "dav_user=nobody"
+             "dav_group=nogroup")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'omit-redundancy
+           ;; Don't install redundant copies of /etc examples into /share.
+           (lambda _
+             (substitute* "etc/Makefile.in"
+               (("(dist_pkgdata_DATA =.*) davfs2.conf secrets(.*)"
+                 _ prefix suffix)
+                (string-append prefix suffix)))
+             #t))
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             ;; Don't auto-load the FUSE kernel module.  That's up to root.
+             ;; XXX If/when we restore the previous behaviour, make sure not
+             ;; to introduce a security hole when mount.davfs is setuid.
+             (substitute* "src/kernel_interface.c"
+               (("/sbin/modprobe") "/modprobe/disabled"))
+             #t))
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (apply invoke "make" "install"
+                      (string-append "pkgsysconfdir=" out "/etc")
+                      make-flags)))))))
+    (inputs
+     `(("neon" ,neon)
+
+       ;; Neon requires but doesn't propagate zlib, nor would we want that.
+       ;; XZ as well, but that's already present in the build environment.
+       ("zlib" ,zlib)))
+    (home-page "https://savannah.nongnu.org/projects/davfs2")
+    (synopsis "Mount remote WebDAV resources in the local file system")
+    (description
+     "The @acronym{WebDAV, Web Distributed Authoring and Versioning} extension
+to the HTTP protocol defines a standard way to author resources on a remote Web
+server.  Davfs2 exposes such resources as a typical filesystem which can be used
+by standard applications with no built-in support for WebDAV, such as the GNU
+coreutils (@command{cp}, @command{mv}, etc.) or a graphical word processor.
+
+Davfs2 works with most WebDAV servers with no or little configuration.  It
+supports TLS (HTTPS), HTTP proxies, HTTP basic and digest authentication, and
+client certificates.  It performs extensive caching to avoid unnecessary network
+traffic, stay responsive even over slow or unreliable connections, and prevent
+data loss.  It aims to make use by unprivileged users as easy and secure as
+possible.
+
+However, davfs2 is not a full-featured WebDAV client.  The file system interface
+and the WebDAV protocol are quite different.  Translating between the two is not
+always possible.")
+    (license (list license:bsd-2        ; src/fuse_kernel.h
+                   license:gpl3+))))    ; everything else
 
 (define-public fsarchiver
   (package
