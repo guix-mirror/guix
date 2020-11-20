@@ -4440,7 +4440,7 @@ file contents, and more.")
 (define-public ghc-filepath-bytestring
   (package
     (name "ghc-filepath-bytestring")
-    (version "1.4.2.1.1")
+    (version "1.4.2.1.6")
     (source
      (origin
        (method url-fetch)
@@ -4449,7 +4449,7 @@ file contents, and more.")
               "filepath-bytestring-" version ".tar.gz"))
        (sha256
         (base32
-         "06shdskjj391hb9295slm9gg2rbn5fdq5v6fg0mgn3yl5dv8q5dx"))))
+         "11xrrzdkm5i96dazbz0gi1qp8nnj2lwbnxzwy7f4cnahskz4f4g7"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
