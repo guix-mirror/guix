@@ -7057,6 +7057,28 @@ on Linux, the Known Folder API on Windows, and the Standard
 Directory guidelines on macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-directories-next-1
+  (package
+    (inherit rust-directories-3)
+    (name "rust-directories-next")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories-next" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mmym1h9vlyapwlzygfas3q9mx03mki8cnf5y1bmr713q7mwqa4a"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-sys" ,rust-dirs-sys-next-0.1))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1))))
+    (home-page "https://github.com/xdg-rs/dirs/tree/master/directories")))
+
 (define-public rust-dirs-3
   (package
     (name "rust-dirs")
