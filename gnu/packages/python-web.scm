@@ -485,7 +485,17 @@ Swartz.")
     (license license:gpl3+)))
 
 (define-public python2-html2text
-  (package-with-python2 python-html2text))
+  (let ((base (package-with-python2 python-html2text)))
+    (package
+      (inherit base)
+      ;; This is the last version with support for Python 2.
+      (version "2019.8.11")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "html2text" version))
+                (sha256
+                 (base32
+                  "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm")))))))
 
 (define-public python-mechanicalsoup
   (package
