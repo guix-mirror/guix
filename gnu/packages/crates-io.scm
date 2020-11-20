@@ -15362,18 +15362,18 @@ key-value pairs.")
 (define-public rust-lzma-sys-0.1
   (package
     (name "rust-lzma-sys")
-    (version "0.1.15")
+    (version "0.1.17")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "lzma-sys" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "14gyj256yh0wm77jbvmlc39v7lfn0navpfrja4alczarzlc8ir2k"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin (delete-file-recursively "xz-5.2") #t))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lzma-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06fnjsx5cj2w6rsqb12x30nl9lnj0xv4hv78z4x1vlfsxp1vgd5x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (delete-file-recursively "xz-5.2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
