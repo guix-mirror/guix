@@ -26611,6 +26611,33 @@ for the serde framework.")
      "Macros to auto-generate implementations for the serde framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-stacker-0.1
+  (package
+    (name "rust-serde-stacker")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-stacker" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qlfpy0nmxrvahz4hs9p1y84rb0vy6mbxn1lfgvq6fryls8j7jgl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-stacker" ,rust-stacker-0.1))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/dtolnay/serde-stacker")
+    (synopsis "@code{serde} adapter that avoids stack overflow")
+    (description
+     "This package provides a @code{serde} adapter that avoids stack overflow
+by dynamically growing the stack.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-test-1
   (package
     (name "rust-serde-test")
