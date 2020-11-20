@@ -2795,13 +2795,13 @@ Betamax.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.2.0")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "08fhj73b1ai52hrs2q3nggshq3pswn1gq8ch3m009cb2v2vmqggj"))))
+                "1nzp5kwmy9669334shcz9ipg89jgpdqhrmbkgdg18r7wmvi3f6lj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
