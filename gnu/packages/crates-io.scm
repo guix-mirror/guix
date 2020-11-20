@@ -20392,6 +20392,25 @@ functions.")
      "Render boolean-valued predicate functions results as a tree.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-predicates-tree-0.9
+  (package
+    (inherit rust-predicates-tree-1)
+    (name "rust-predicates-tree")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "predicates-tree" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ga0yyfmqbwi28naxlr6cvpmiig0qnwx5adc858hmjxxh6dxz1if"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-predicates-core" ,rust-predicates-core-0.9)
+        ("rust-treeline" ,rust-treeline-0.1))))))
+
 (define-public rust-pretty-assertions-0.6
   (package
     (name "rust-pretty-assertions")
