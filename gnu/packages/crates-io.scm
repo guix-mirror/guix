@@ -20345,6 +20345,30 @@ dependency to expose a precomputed hash.")
 functions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-predicates-0.9
+  (package
+    (inherit rust-predicates-1)
+    (name "rust-predicates")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "predicates" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "085ysw5iigw9l7fdy0pxqs7h165m9hxaxdknmkyq868izivpj7pk"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-difference" ,rust-difference-2)
+        ("rust-float-cmp" ,rust-float-cmp-0.4)
+        ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.2)
+        ("rust-predicates-core" ,rust-predicates-core-0.9)
+        ("rust-regex" ,rust-regex-1))
+       #:cargo-development-inputs
+       (("rust-predicates-tree" ,rust-predicates-tree-0.9))))))
+
 (define-public rust-predicates-core-1
   (package
     (name "rust-predicates-core")
