@@ -499,7 +499,7 @@ interface for those who are accustomed to the ircII way of doing things.")
 (define-public inspircd
   (package
     (name "inspircd")
-    (version "3.7.0")
+    (version "3.8.1")
     (source
      (origin
        (method git-fetch)
@@ -508,8 +508,7 @@ interface for those who are accustomed to the ircII way of doing things.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1npzp23c3ac7m1grkm39i1asj04rs4i0jwf5w0c0j0hmnwslnz7a"))))
+        (base32 "1i30649dw84iscxa5as81g96f393mn1i883aq4za5ypdinr5x65g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (map (lambda (module)
