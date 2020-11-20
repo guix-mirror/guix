@@ -3799,7 +3799,7 @@ iTunes-style metadata.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2020.11.05")
+    (version "2020.11.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3807,7 +3807,7 @@ iTunes-style metadata.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1dx5imjil5yiya5dqlvbqkvzgic5pybsfilx5jz1cpi1znkzpgc9"))))
+                "16w6yxdbmjdhvffnrb752dn4llf3l0wb00dgdkyia0vqsv2qqyn7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
