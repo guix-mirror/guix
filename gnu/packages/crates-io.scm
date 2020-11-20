@@ -20351,6 +20351,21 @@ functions.")
      "An API for boolean-valued predicate functions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-predicates-core-0.9
+  (package
+    (inherit rust-predicates-core-1)
+    (name "rust-predicates-core")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "predicates-core" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ig5wi3j2faxss6kshv5xdwnchiwbkq2fgx6v962mh6ij31hpy45"))))))
+
 (define-public rust-predicates-tree-1
   (package
     (name "rust-predicates-tree")
