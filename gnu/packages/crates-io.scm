@@ -3786,7 +3786,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
 (define-public rust-chrono-0.4
   (package
     (name "rust-chrono")
-    (version "0.4.13")
+    (version "0.4.19")
     (source
      (origin
        (method url-fetch)
@@ -3795,28 +3795,30 @@ depending on a large number of #[cfg] parameters.  Structured like an
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dm0q1kmk2vq5djwhp1j9cm4aa38wr9vy1i1w19p2y0nj4188kf7"))))
+         "0wyfl6c00vhfl562spnfcna3zkw8jqvcp652m9iskhl8j26dc2k7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-num-integer" ,rust-num-integer-0.1)
+     `(#:cargo-inputs
+       (("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-pure-rust-locales" ,rust-pure-rust-locales-0.5)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-serde" ,rust-serde-1)
         ("rust-time" ,rust-time-0.1)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
        #:cargo-development-inputs
-       (;("rust-bincode" ,rust-bincode-0.8)
-        ("rust-criterion" ,rust-criterion-0.2)
+       (("rust-bincode" ,rust-bincode-0.8)
+        ("rust-criterion" ,rust-criterion-0.3)
         ("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-num-iter" ,rust-num-iter-0.1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
-    (home-page
-     "https://github.com/chronotope/chrono")
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))
+       #:features '("unstable-locales")
+       #:tests? #f))
+    (home-page "https://github.com/chronotope/chrono")
     (synopsis "Date and time library for Rust")
     (description "Date and time library for Rust.")
     (license (list license:expat license:asl2.0))))
