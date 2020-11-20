@@ -25498,3 +25498,36 @@ syntax highlighting and UI components.")
       (description
        "This package provides an Emacs major mode for editing Janet files.")
       (license license:gpl3))))
+
+(define-public emacs-inf-janet
+  (let ((commit "df46651d3aad32593b2195c80ca91fb64d571fb7"))
+    (package
+      (name "emacs-inf-janet")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/velkyel/inf-janet")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g0y7q62667j0p32md1h6zb2cap9fga9qgdg7138xwjqnk0328v7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("janet-mode" ,emacs-janet-mode)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-program-name
+             (lambda _
+               (make-file-writable "inf-janet.el")
+               (emacs-substitute-variables "inf-janet.el"
+                 ("inf-janet-program" "janet"))
+               #t)))))
+      (home-page "https://github.com/velkyel/inf-janet")
+      (synopsis "Run an external Janet process in an Emacs buffer")
+      (description
+       "This Emacs package provides a Janet REPL to evaluate @code{janet-mode}
+s-expression.")
+      (license license:expat))))
