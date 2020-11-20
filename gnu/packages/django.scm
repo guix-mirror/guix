@@ -862,14 +862,13 @@ settings.py and easily use them in your project.")
 (define-public python-django-q
   (package
     (name "python-django-q")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-q" version))
         (sha256
-         (base32
-          "1fs29767940akbsn3vdzw2rqnn9v77b0b55bi7fvydny1rk7fw6y"))))
+         (base32 "03z1pf6wlf47i7afr79a8fiiidfk1vq19yaqnv0m4qdny7f58gaj"))))
     (build-system python-build-system)
     ;; FIXME: Tests require disque, Redis, MongoDB, Docker.
     (arguments '(#:tests? #f))
