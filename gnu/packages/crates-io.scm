@@ -14650,6 +14650,42 @@ file.
     (description "Native bindings to the libsqlite3 library")
     (license license:expat)))
 
+(define-public rust-libsqlite3-sys-0.18
+  (package
+    (inherit rust-libsqlite3-sys-0.20)
+    (name "rust-libsqlite3-sys")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libsqlite3-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ggpbnis0rci97ln628y2v6pkgfhb6zgc8rsp444mkdfph14lw0y"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "sqlite3")
+           ;; Enable unstable features
+           (substitute* "src/lib.rs"
+             (("#!\\[allow\\(non_snake_case, non_camel_case_types\\)\\]" all)
+              (string-append "#![feature(non_exhaustive)]\n" all)))))))
+    (arguments
+     `(#:cargo-inputs
+       ;; build-dependencies
+       (("rust-bindgen" ,rust-bindgen-0.53)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")
+             #t)))))))
+
 (define-public rust-libsqlite3-sys-0.15
   (package
     (inherit rust-libsqlite3-sys-0.20)
