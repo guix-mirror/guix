@@ -1777,6 +1777,29 @@ tracebacks.")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
+(define-public rust-bincode-0.8
+  (package
+    (inherit rust-bincode-1)
+    (name "rust-bincode")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bincode" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nbj0lwykwa1a7sa4303rxgpng9p2hcz9s5d5qcrckrpmcxjsjkf"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-num-traits" ,rust-num-traits-0.1)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-bytes" ,rust-serde-bytes-0.10)
+        ("rust-serde-derive" ,rust-serde-derive-1))))))
+
 (define-public rust-bindgen-0.55
   (package
     (name "rust-bindgen")
