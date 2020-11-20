@@ -14900,6 +14900,41 @@ punctuation.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-lmdb-rkv-sys-0.11
+  (package
+    (name "rust-lmdb-rkv-sys")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lmdb-rkv-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1994mvbdxkvq6c3z9npv1zjpvrhvpk9zry3azgyklyqn4nn70x5j"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "lmdb")
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests fail after removing bundled source.
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-bindgen" ,rust-bindgen-0.53)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("lmdb" ,lmdb)))
+    (home-page "https://github.com/mozilla/lmdb-rs")
+    (synopsis "Rust bindings for liblmdb")
+    (description "This package provides rust bindings for liblmdb.")
+    (license license:asl2.0)))
+
 (define-public rust-locale-0.2
   (package
     (name "rust-locale")
