@@ -8078,7 +8078,7 @@ encodings.")
 (define-public rust-encoding-rs-0.8
   (package
     (name "rust-encoding-rs")
-    (version "0.8.17")
+    (version "0.8.26")
     (source
      (origin
        (method url-fetch)
@@ -8087,13 +8087,13 @@ encodings.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1v902qqnbd37vdq4rjvp6k05wmghrasfdcjy30gp1xpjg5f7hma1"))))
+         "10xjcafwbxvm2kfsyymxlz8wc9s4bmdj1xzlc809rxyp2yrbl6w0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-packed-simd" ,rust-packed-simd-0.3)
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-packed-simd" ,rust-packed-simd-2-0.3)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1)
