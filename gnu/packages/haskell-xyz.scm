@@ -997,6 +997,32 @@ Users wishing to have an improved Prelude can use BasicPrelude.  Developers
 wishing to create a new prelude should use CorePrelude.")
     (license license:expat)))
 
+(define-public ghc-bencode
+  (package
+    (name "ghc-bencode")
+    (version "0.6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/bencode/bencode-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0znv0y3b3zm5jvhlvj5f5s7y93db67j9yd59w1bnrw2pqv30gqaq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/bencode")
+    (synopsis "Parsers and printers for bencoded data")
+    (description
+     "This library provides parsers and printers for bencoded data.  Bencode
+is the encoding used by the peer-to-peer file sharing system BitTorrent for
+storing and transmitting loosely structured data.")
+    (license license:bsd-3)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
