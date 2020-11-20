@@ -10979,6 +10979,8 @@ manipulation library.")
     (license license:expat)))
 
 (define-public python-botocore
+  ;; Note: When updating botocore, also make sure that boto3 and awscli
+  ;; are compatible.
   (package
     (name "python-botocore")
     (version "1.15.26")

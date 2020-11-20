@@ -2288,6 +2288,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public awscli
   (package
+    ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
     (version "1.18.6")
     (source
