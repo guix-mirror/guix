@@ -26520,29 +26520,28 @@ for the serde framework.")
 (define-public rust-serde-json-1
   (package
     (name "rust-serde-json")
-    (version "1.0.50")
+    (version "1.0.60")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "serde-json" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0rs8rsk59kgkgsrw8hyyjrlhas9k1by2jwxxqcz3c2bq2qna39vq"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-json" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yapc7xxk8dx12691yj0l13008rgvknmc6krvk8jwj7y4x6yh00m"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-indexmap" ,rust-indexmap-1)
         ("rust-itoa" ,rust-itoa-0.4)
         ("rust-ryu" ,rust-ryu-1.0)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (;("rust-automod" ,rust-automod-0.1)
+       (("rust-automod" ,rust-automod-1)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-serde-bytes" ,rust-serde-bytes-0.11)
         ("rust-serde-derive" ,rust-serde-derive-1)
-        ;("rust-serde-stacker" ,rust-serde-stacker-0.1)
+        ("rust-serde-stacker" ,rust-serde-stacker-0.1)
         ("rust-trybuild" ,rust-trybuild-1))))
     (home-page "https://github.com/serde-rs/json")
     (synopsis "JSON serialization file format")
