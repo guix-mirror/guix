@@ -21527,6 +21527,31 @@ compliant email address validation.")
     (description "This package provides a library for async wake signals.")
     (license license:asl2.0)))
 
+(define-public rust-pure-rust-locales-0.5
+  (package
+    (name "rust-pure-rust-locales")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pure-rust-locales" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ryjj0gs4hfadqx9vl4sgi32zyb2dlvwpxca1m1kmrw9hk1g7gv5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-itertools" ,rust-itertools-0.8)
+        ("rust-nom" ,rust-nom-5))))
+    (home-page "https://github.com/cecton/pure-rust-locales")
+    (synopsis "Pure Rust locales imported directly from the GNU C Library")
+    (description
+     "Pure Rust locales imported directly from the GNU C Library.
+@code{LC_COLLATE} and @code{LC_CTYPE} are not yet supported.")
+    (license license:expat)))
+
 (define-public rust-quantiles-0.7
   (package
     (name "rust-quantiles")
