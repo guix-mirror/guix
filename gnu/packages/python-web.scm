@@ -953,6 +953,30 @@ both of which are installed automatically if you install this library.")
 (define-public python2-flask-babel
   (package-with-python2 python-flask-babel))
 
+(define-public python-flask-cors
+  (package
+    (name "python-flask-cors")
+    (version "3.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask-Cors" version))
+              (sha256
+               (base32
+                "1f36hkaxc92zn12f88fkzwifdvlvsnmlp1dv3p5inpcc500c3kvb"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-nose" ,python-nose)
+       ("python-packaging" ,python-packaging)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://flask-cors.readthedocs.io/en/latest/")
+    (synopsis "Handle Cross-Origin Resource Sharing with Flask")
+    (description
+     "This package provides a Flask extension for handling @acronym{CORS,Cross
+Origin Resource Sharing}, making cross-origin AJAX possible.")
+    (license license:expat)))
+
 (define-public python-html5lib
   (package
     (name "python-html5lib")
