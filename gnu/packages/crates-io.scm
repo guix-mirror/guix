@@ -17011,6 +17011,21 @@ combinators library.")
 with all line endings.")
     (license license:asl2.0)))
 
+(define-public rust-normalize-line-endings-0.2
+  (package
+    (inherit rust-normalize-line-endings-0.3)
+    (name "rust-normalize-line-endings")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "normalize-line-endings" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a1knz9j1w5a1pl2q6whmjphm3z6p64r5njnam7syp5rx8wil2if"))))))
+
 (define-public rust-notify-4
   (package
     (name "rust-notify")
