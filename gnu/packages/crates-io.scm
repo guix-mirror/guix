@@ -7144,6 +7144,27 @@ standard locations of directories for config, cache and other data.")
 and @code{directories} crates.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-dirs-sys-next-0.1
+  (package
+    (inherit rust-dirs-sys-0.3)
+    (name "rust-dirs-sys-next")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs-sys-next" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zgy7is3h2dyf1l4sa7k065w2kvx0l12l40my4rswm2mc1gkdplr"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-users" ,rust-redox-users-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/xdg-rs/dirs/tree/master/dirs-sys")))
+
 (define-public rust-discard-1.0
   (package
     (name "rust-discard")
