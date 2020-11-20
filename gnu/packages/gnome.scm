@@ -4270,7 +4270,7 @@ passwords in the GNOME keyring.")
      `(("graphviz" ,graphviz)))
     (propagated-inputs
      `(("glib" ,glib))) ; required by libvala-0.40.pc
-    (home-page "https://live.gnome.org/Vala/")
+    (home-page "https://wiki.gnome.org/Projects/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
      "Vala is a programming language that aims to bring modern programming
@@ -4282,7 +4282,7 @@ libraries written in C.")
 (define-public vala-0.50
   (package
     (inherit vala)
-    (version "0.50.1")
+    (version "0.50.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4290,7 +4290,7 @@ libraries written in C.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "0v4g2gvn7x7cl33h8sj1y2xyyskw5ayaj4jm2jrd3my3r439z3cm"))))))
+                "1nnf0x6vk0a9p2y6z7jwjfvmlxh3qhj581v381r0y1sxsv35s39c"))))))
 
 (define-public vte
   (package
