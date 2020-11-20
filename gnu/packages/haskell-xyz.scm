@@ -13823,6 +13823,28 @@ from a shell.  The @code{tldr} pages are a community effort to simplify the
 man pages with practical examples.")
     (license license:bsd-3)))
 
+(define-public ghc-torrent
+  (package
+    (name "ghc-torrent")
+    (version "10000.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/torrent/torrent-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0m7s0q7f8c7glxzqhf2j86ch5xhk6jnzwwsa4mkywag22119c290"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bencode" ,ghc-bencode)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page "https://hackage.haskell.org/package/torrent")
+    (synopsis "BitTorrent file parser and generator")
+    (description "This library provides support for parsing and generating
+BitTorrent files.")
+    (license license:bsd-3)))
+
 (define-public ghc-transformers
   (package
     (name "ghc-transformers")
