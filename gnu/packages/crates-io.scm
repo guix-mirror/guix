@@ -18979,6 +18979,51 @@ normally prevent moving a type that has been borrowed from.")
     (description "Portable Packed SIMD vectors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-packed-simd-2-0.3
+  (package
+    (name "rust-packed-simd-2")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "packed-simd-2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05wsm2yxxpwww6a74hi8l80qszisfar5d7whf2pd87wn5x4y0y1j"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Unpin the dependencies.
+           (substitute* "Cargo.toml"
+             (("=0.2.52") "^0.2.52")
+             (("=0.3.2") "^0.3.2"))
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; error[E0432]: unresolved import `packed_simd`
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-core-arch" ,rust-core-arch-0.1)
+        ("rust-libm" ,rust-libm-0.1)
+        ("rust-sleef-sys" ,rust-sleef-sys-0.1))
+       #:cargo-development-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")
+             #t)))))
+    (home-page "https://github.com/rust-lang-nursery/packed_simd")
+    (synopsis "Portable Packed SIMD vectors")
+    (description "Portable Packed SIMD vectors.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pad-0.1
   (package
     (name "rust-pad")
