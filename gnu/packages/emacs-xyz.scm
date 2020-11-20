@@ -19374,7 +19374,7 @@ correctly.")
 (define-public emacs-helm-sly
   (package
     (name "emacs-helm-sly")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -19383,7 +19383,7 @@ correctly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1690rxwwg69jbcjhi51nyjlx3gziaiaa8ssyal71gmc6schq2592"))))
+                "13s2dj09mcdwlibjlahyyq2dxjkjlpxs88dbdyvcd64249jmahsx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
