@@ -6690,7 +6690,7 @@ error-chain.")
 (define-public rust-derive-more-0.99
   (package
     (name "rust-derive-more")
-    (version "0.99.9")
+    (version "0.99.11")
     (source
      (origin
        (method url-fetch)
@@ -6699,7 +6699,7 @@ error-chain.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0xizcpj39rx0474mbbx8m0xww98qh92zsg82gf52qnvbryqri299"))))
+         "131xrz5nmnh8zq3vcvv0wfpcaflypbxp3fin984fsqddc5hhxjs1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Some test files missing.
