@@ -25477,3 +25477,24 @@ Emacs.")
 uncluttered design pattern to achieve optimal focus and readability for code
 syntax highlighting and UI components.")
     (license license:expat)))
+
+(define-public emacs-janet-mode
+  (let ((commit "2f5bcabcb6953e1ed1926ba6a2328c453e8b4ac7"))
+    (package
+      (name "emacs-janet-mode")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ALSchwalm/janet-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qj0gpycv2f3z1dgz1a27bjn983hrr3ppvrp7csl34lagnmp89rz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ALSchwalm/janet-mode")
+      (synopsis "Emacs major mode for the Janet programming language")
+      (description
+       "This package provides an Emacs major mode for editing Janet files.")
+      (license license:gpl3))))
