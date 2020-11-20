@@ -27458,6 +27458,29 @@ variants in pure Rust.")
      "SipHash functions from rust-core < 1.13.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-size-format-1
+  (package
+    (name "rust-size-format")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "size-format" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fxjl0rc0x7yc14x885dh7jjf2jrlhpwf66akp3dxii246mzdmbf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.12)
+        ("rust-num" ,rust-num-0.2))))
+    (home-page "https://github.com/aticu/size_format")
+    (synopsis "Allow easier formatting of sizes")
+    (description "This package allows for easier formatting of sizes.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-skeptic-0.9
   (package
     (name "rust-skeptic")
