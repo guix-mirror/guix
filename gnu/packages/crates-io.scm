@@ -8551,6 +8551,35 @@ variables.")
        (("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-exitfailure-0.5
+  (package
+    (name "rust-exitfailure")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "exitfailure" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0585wix3b3pjjj90fkqj9x4ar46d24x82k8rdin3czzk5a1vvx9g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-0.9)
+        ("rust-predicates" ,rust-predicates-0.9))
+       ;; Tests fail with "No such file or directory".
+       #:tests? #f))
+    (home-page "https://github.com/tismith/exitfailure")
+    (synopsis "Provide @code{newtype} wrappers for using @code{?} in @code{main}")
+    (description
+     "This package provides a basic @code{newtype} wrappers to help with using
+@code{?} in @code{main}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-expat-sys-2.1
   (package
     (name "rust-expat-sys")
