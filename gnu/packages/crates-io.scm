@@ -14900,6 +14900,39 @@ punctuation.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-lmdb-rkv-0.14
+  (package
+    (name "rust-lmdb-rkv")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lmdb-rkv" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aylp9j3s34cgxfj3dszcnplj5a594ylykhgnpxrqafag9pjjyj4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-lmdb-rkv-sys" ,rust-lmdb-rkv-sys-0.11))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("lmdb" ,lmdb)))
+    (home-page "https://github.com/mozilla/lmdb-rs")
+    (synopsis "Safe Rust bindings for LMDB")
+    (description "This package provides idiomatic and safe APIs for interacting
+with lmdb.")
+    (license license:asl2.0)))
+
 (define-public rust-lmdb-rkv-sys-0.11
   (package
     (name "rust-lmdb-rkv-sys")
