@@ -3732,6 +3732,32 @@ archive to be linked into Rustcode.")
        #:cargo-development-inputs
        (("rust-clang-sys" ,rust-clang-sys-0.11))))))
 
+(define-public rust-cfg-if-1
+  (package
+    (name "rust-cfg-if")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cfg-if" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1za0vb97n4brpzpv8lsbnzmq5r8f2b0cpqqr0sy8h5bn751xxwds"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
+    (home-page "https://github.com/alexcrichton/cfg-if")
+    (synopsis "Define an item depending on parameters")
+    (description "This package provides a macro to ergonomically define an
+item depending on a large number of @code{#[cfg]} parameters.  Structured like
+an @code{if-else} chain, the first matching branch is the item that gets
+emitted.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cfg-if-0.1
   (package
     (name "rust-cfg-if")
