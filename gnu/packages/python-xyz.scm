@@ -10983,22 +10983,22 @@ manipulation library.")
   ;; are compatible.
   (package
     (name "python-botocore")
-    (version "1.15.26")
+    (version "1.19.22")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "botocore" version))
        (sha256
         (base32
-         "1a87pbwkk5vlwz92hy1wizfnpiwn11bhaicr6bmji1i5ybwdhnr8"))))
+         "0iim86x7c6hqmvd61ygz6x6x9glnsfbnyzv2y67qjdcdx8jpkmw7"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-docutils" ,python-docutils)
-       ("python-jmespath" ,python-jmespath)))
+       ("python-jmespath" ,python-jmespath)
+       ("python-urllib3" ,python-urllib3)))
     (home-page "https://github.com/boto/botocore")
     (synopsis "Low-level interface to AWS")
     (description "Botocore is a Python library that provides a low-level
