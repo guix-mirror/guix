@@ -11395,6 +11395,39 @@ hash map.")
         ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-hashbrown-0.1
+  (package
+    (inherit rust-hashbrown-0.5)
+    (name "rust-hashbrown")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hashbrown" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1np350nrzysy021ndn2135q5vpzrp5nli78ywz114d1vcnv2kbiv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Cargo.toml"
+             (("~1.2") "1.2"))
+           #t))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-scopeguard" ,rust-scopeguard-0.3)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
+        ("rust-serde-test" ,rust-serde-test-1))))))
+
 (define-public rust-hashlink-0.6
   (package
     (name "rust-hashlink")
