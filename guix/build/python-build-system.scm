@@ -260,6 +260,9 @@ installed with setuptools."
   "Improve determinism of pyc files."
   ;; Use deterministic hashes for strings, bytes, and datetime objects.
   (setenv "PYTHONHASHSEED" "0")
+  ;; Prevent Python from creating .pyc files when loading modules (such as
+  ;; when running a test suite).
+  (setenv "PYTHONDONTWRITEBYTECODE" "1")
   #t)
 
 (define %standard-phases
