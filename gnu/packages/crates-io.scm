@@ -7116,6 +7116,28 @@ standard locations of directories for config, cache and other data.")
         ("rust-redox-users" ,rust-redox-users-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-dirs-next-1
+  (package
+    (inherit rust-dirs-1.0)
+    (name "rust-dirs-next")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs-next" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dl2dqzsrcb7qigfiwpdpakhdkpz0629pvylbj2ylyrkh1dfcdng"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-sys" ,rust-dirs-sys-next-0.1))))
+    (home-page "https://github.com/xdg-rs/dirs")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-sys-0.3
   (package
     (name "rust-dirs-sys")
