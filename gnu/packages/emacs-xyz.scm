@@ -3048,6 +3048,32 @@ graphical tree presentation of all previous states of buffer that
 allows easily move between them.")
     (license license:gpl3+)))
 
+(define-public emacs-undo-fu
+  ;; There are no tagged releases upstream on gitlab, instead we are using
+  ;; the most recent commit.
+  (let ((commit "c0806c1903c5a0e4c69b6615cdc3366470a9b8ca")
+        (revision "0"))
+    (package
+      (name "emacs-undo-fu")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ideasman42/emacs-undo-fu")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1n594aakmcgyl7qbda86v4wsx8clm62ypiv3h559xz3x72h7mr3j"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/ideasman42/emacs-undo-fu")
+      (synopsis "Simple, stable linear undo with redo for Emacs")
+      (description
+       "This is a light weight wrapper for Emacs built-in undo system,
+adding convenient undo/redo without losing access to the full undo history,
+allowing you to visit all previous states of the document if you need.")
+      (license license:gpl3+))))
+
 (define-public emacs-s
   (package
     (name "emacs-s")
