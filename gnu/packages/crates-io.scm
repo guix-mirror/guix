@@ -9117,6 +9117,21 @@ streams.")
          (base32
           "03hmx3n48hjm0x1ig84n1j87kzp75lzr6cj1sgi6a6pykgn4n8km"))))))
 
+(define-public rust-float-cmp-0.4
+  (package
+    (inherit rust-float-cmp-0.5)
+    (name "rust-float-cmp")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "float-cmp" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0036jb8ry4h83n319jb20b5yvyfyq8mx8dkxnyjm22nq8fl8yjhk"))))))
+
 (define-public rust-float-cmp-0.3
   (package
     (inherit rust-float-cmp-0.5)
