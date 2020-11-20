@@ -3946,8 +3946,8 @@ in Lisp modes.")
       (license license:gpl3+))))
 
 (define-public emacs-literate-calc-mode
-  (let ((commit "e855bd718fa7d0d70b8f43264e10664369dd3a37")
-        (revision "0"))
+  (let ((commit "a50e897a816cb5580ad6ec867eeaae212e0e4798")
+        (revision "1"))
     (package
       (name "emacs-literate-calc-mode")
       (version (git-version "0.1" revision commit))
@@ -3959,7 +3959,7 @@ in Lisp modes.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0mk4cig8g8ibz97mvyan79fkypyanh7r0h7h20ibafq09nb0mw01"))))
+          (base32 "0z6y5f1rj28lbr30m6g4a9l6ahs66whi8861g4cx9xzhs84nwv5g"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-s" ,emacs-s)))
