@@ -8837,6 +8837,40 @@ factors for each cell, along with the usual metadata for genes and
 libraries.")
     (license license:gpl3)))
 
+(define-public r-scuttle
+  (package
+    (name "r-scuttle")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scuttle" version))
+       (sha256
+        (base32
+         "1k8q3wzq6f6j6wkjp9fy9j214rv98kyvcxnpavk6blqgaxjqwdr6"))))
+    (properties `((upstream-name . "scuttle")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/scuttle")
+    (synopsis "Single-cell RNA-Seq analysis utilities")
+    (description
+     "This package provides basic utility functions for performing single-cell
+analyses, focusing on simple normalization, quality control and data
+transformations.  It also provides some helper functions to assist development
+of other packages.")
+    (license license:gpl3)))
+
 (define-public r-scater
   (package
     (name "r-scater")
