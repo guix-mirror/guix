@@ -923,19 +923,19 @@ Encryption to Gajim.")
   (package
     (name "dino")
     (version "0.2.0")
-    (outputs '("out" "debug"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/dino/dino/releases/download/v"
-                           version "/dino-" version ".tar.gz"))
+       (uri
+        (string-append "https://github.com/dino/dino/releases/download/v"
+                       version "/dino-" version ".tar.gz"))
        (sha256
-        (base32
-         "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
+        (base32 "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f
-       #:parallel-build? #f ; not supported
+       #:parallel-build? #f             ; not supported
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   (guix build utils))
@@ -946,6 +946,11 @@ Encryption to Gajim.")
        (modify-phases %standard-phases
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("vala" ,vala)
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("libgee" ,libgee)
        ("libsignal-protocol-c" ,libsignal-protocol-c)
@@ -957,15 +962,10 @@ Encryption to Gajim.")
        ("gtk+" ,gtk+)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
-       ("vala" ,vala)
-       ("gettext" ,gettext-minimal)))
-    (home-page "https://dino.im")
     (synopsis "Graphical Jabber (XMPP) client")
     (description "Dino is a Jabber (XMPP) client which aims to fit well into
 a graphical desktop environment like GNOME.")
+    (home-page "https://dino.im")
     (license license:gpl3+)))
 
 (define-public prosody
