@@ -1067,6 +1067,8 @@ last resort for relocation."
 Create a bundle of PACKAGE.\n"))
   (show-build-options-help)
   (newline)
+  (show-transformation-options-help)
+  (newline)
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
   (display (G_ "
