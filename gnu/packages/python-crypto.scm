@@ -476,13 +476,13 @@ risk.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2020.4.5.1")
+    (version "2020.11.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "06b5gfs7wmmipln8f3z928d2mmx2j4b3x7pnqmj6cvmyfh8v7z2i"))))
+                "1x4w18gm71dbwys5g2mbcnbw27b3dvphj5d56icg5ys45h4yypgh"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;no tests
     (home-page "https://certifi.io/")
