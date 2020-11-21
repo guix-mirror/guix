@@ -9701,9 +9701,14 @@ proteomics packages.")
            (lambda _
              (substitute* "src/Makevars"
                (("\\./boost/libs.*") "")
-               (("ARCH_OBJS=" line)
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\(RHDF5_LIBS\\)" match)
+                (string-append match "/libhdf5.a"))
+               (("PKG_LIBS=") "PKG_LIBS=$(BOOST_LIBS) ")
+               (("\\ARCH_OBJS=" line)
                 (string-append line
-                               "\nARCH_LIBS=-lboost_system -lboost_regex \
+                               "\nBOOST_LIBS=-lboost_system -lboost_regex \
 -lboost_iostreams -lboost_thread -lboost_filesystem -lboost_chrono\n")))
              #t)))))
     (inputs
