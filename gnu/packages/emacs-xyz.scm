@@ -13335,7 +13335,6 @@ literate programming tools for exporting, weaving and tangling.")
 (define-public emacs-polymode-ansible
   (package
     (name "emacs-polymode-ansible")
-    ;; No upstream version release yet.
     (version "0.3.0")
     (source
      (origin
