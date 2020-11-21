@@ -7507,7 +7507,7 @@ and above.")
 (define-public bpftrace
   (package
     (name "bpftrace")
-    (version "0.10.0")
+    (version "0.11.4")
     (source
      (origin
        (method git-fetch)
@@ -7516,8 +7516,7 @@ and above.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "023ardywbw5w8815j2ny9rrp2xlpxndqaa7v2njjm8109p7ilsdn"))
+        (base32 "0y4qgm2cpccrsm20rnh92hqplddqsc5q5zhw9nqn2igm3h9i0z7h"))
        (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
     (build-system cmake-build-system)
     (native-inputs
