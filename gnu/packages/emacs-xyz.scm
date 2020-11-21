@@ -12680,31 +12680,29 @@ functions written in continuation-passing style.")
     (license license:gpl3+)))
 
 (define-public emacs-attrap
-  (let ((commit "18cd1f7832870a36c404e872fa83a271fe8e688d")
-        (revision "2"))
-    (package
-      (name "emacs-attrap")
-      (version (git-version "1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/jyp/attrap")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "078391949h0fgmshin8f79a1a595m06ig577rkgjqgngcp0d61l9"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-f" ,emacs-f)
-         ("emacs-flycheck" ,emacs-flycheck)
-         ("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/jyp/attrap")
-      (synopsis "Fix coding error at point")
-      (description "This package provides a command to fix the Flycheck error
+  (package
+    (name "emacs-attrap")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/attrap")
+             (commit version)))
+       (sha256
+        (base32 "0wqc7bqx9rvk8r7fd3x84h8p01v97s6w2jf29nnjb59xakwp22i7"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/jyp/attrap")
+    (synopsis "Fix coding error at point")
+    (description "This package provides a command to fix the Flycheck error
 at point.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-git-messenger
   (package
