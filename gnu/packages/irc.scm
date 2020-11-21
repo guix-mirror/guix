@@ -62,6 +62,7 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -513,7 +514,8 @@ interface for those who are accustomed to the ircII way of doing things.")
     (arguments
      `(#:configure-flags (map (lambda (module)
                                 (string-append "--enable-extras=" module))
-                              '("m_geo_maxmind.cpp"
+                              '("m_argon2.cpp"
+                                "m_geo_maxmind.cpp"
                                 "m_ldap.cpp"
                                 "m_mysql.cpp"
                                 "m_pgsql.cpp"
@@ -551,7 +553,8 @@ interface for those who are accustomed to the ircII way of doing things.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
+     `(("argon2" ,argon2)
+       ("gnutls" ,gnutls)
        ("libmaxminddb" ,libmaxminddb)
        ("mbedtls-apache" ,mbedtls-apache)
        ("mysql" ,mysql)
