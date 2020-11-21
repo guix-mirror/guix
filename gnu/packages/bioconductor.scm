@@ -8917,6 +8917,34 @@ cell-specific biases, assignment of cell cycle phase, and detection of highly
 variable and significantly correlated genes.")
     (license license:gpl3)))
 
+(define-public r-sparsematrixstats
+  (package
+    (name "r-sparsematrixstats")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "sparseMatrixStats" version))
+       (sha256
+        (base32
+         "0d1idbda1pzhdam9m0i5rn0c6pl7gwv0v3mcrv4wi5760v9qd5qh"))))
+    (properties
+     `((upstream-name . "sparseMatrixStats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-matrixgenerics" ,r-matrixgenerics)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/sparseMatrixStats/")
+    (synopsis "Summary statistics for rows and columns of sparse matrices")
+    (description
+     "This package provides high performance functions for row and column
+operations on sparse matrices.  Currently, the optimizations are limited to
+data in the column sparse format.")
+    (license license:expat)))
+
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
