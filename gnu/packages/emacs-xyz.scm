@@ -13311,16 +13311,16 @@ contexts.
 (define-public emacs-polymode
   (package
     (name "emacs-polymode")
-    (version "0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/polymode/polymode")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "04v0gnzfsjb50bgly6kvpryx8cyzwjaq2llw4qv9ijw1l6ixmq3b"))))
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/polymode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18ssl2h861dm2jkd3df6wkfr48p8zk337dbvpq5522kia7fq1lbn"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/polymode/polymode")
     (synopsis "Framework for multiple Emacs modes based on indirect buffers")
