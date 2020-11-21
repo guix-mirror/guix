@@ -13388,7 +13388,7 @@ Microsoft PowerShell files.")
 (define-public emacs-polymode-org
   (package
     (name "emacs-polymode-org")
-    (version "0.2")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -13397,8 +13397,7 @@ Microsoft PowerShell files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "04x6apjad4kg30456z1j4ipp64yjgkcaim6hqr6bb0rmrianqhck"))))
+        (base32 "1srnwcsn2bh8gqzxixkhffk7gbnk66kd4dgvxbnps5nxqc6v0qhc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-polymode" ,emacs-polymode)))
@@ -13406,10 +13405,9 @@ Microsoft PowerShell files.")
     (home-page "https://github.com/polymode/poly-org")
     (synopsis "Polymode definitions for Org mode buffers")
     (description
-     "Provides definitions for @code{emacs-polymode} to support
-@code{emacs-org} buffers.  Edit source blocks in an Org mode buffer using the
-native modes of the blocks' languages while remaining inside the primary Org
-buffer.")
+     "This package provides definitions for Polymode to support Org buffers.
+It edits source blocks in an Org buffer using the native modes of the blocks'
+languages while remaining inside the primary Org buffer.")
     (license license:gpl3+)))
 
 (define-public eless
