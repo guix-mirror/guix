@@ -766,7 +766,8 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
        ((srfi srfi-26)
         ,@%gnu-build-system-modules)
        #:configure-flags
-       `(,(string-append "--prefix="
+       `("--disable-static"
+         ,(string-append "--prefix="
                          (assoc-ref %outputs "out"))
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
