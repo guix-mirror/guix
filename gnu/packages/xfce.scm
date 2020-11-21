@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
@@ -64,6 +64,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
@@ -201,6 +202,41 @@ storage system.")
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
 to share commonly used Xfce widgets among the Xfce applications.")
     (license lgpl2.0+)))
+
+(define-public elementary-xfce-icon-theme
+  (package
+    (name "elementary-xfce-icon-theme")
+    (version "0.15.1")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/shimmerproject/elementary-xfce")
+                (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rl15kh9c7qxw4pvwmw44fb4v3vwh6zin4wpx55bnvm5j76y6p3f"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
+    (native-inputs
+     `(("gtk+" ,gtk+)
+       ("optipng" ,optipng)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://shimmerproject.org/")
+    (synopsis "Elementary icons extended and maintained for Xfce")
+    (description "This is a fork of the upstream elementary project.  This icon
+theme is supposed to keep everything working for Xfce, but gets updates from
+upstream occasionally.")
+    (license gpl2+)))
 
 (define-public exo
   (package
