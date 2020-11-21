@@ -41,7 +41,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-11-05 17:27+0100\n"
-"PO-Revision-Date: 2020-11-09 00:09+0100\n"
+"PO-Revision-Date: 2020-11-20 14:37+0100\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -658,7 +658,7 @@ msgstr "La distribution GNU est jeune et vos paquets préférés peuvent manquer
 #. type: Plain text
 #: doc/contributing.texi:339
 msgid "Free software packages are usually distributed in the form of @dfn{source code tarballs}---typically @file{tar.gz} files that contain all the source files.  Adding a package to the distribution means essentially two things: adding a @dfn{recipe} that describes how to build the package, including a list of other packages required to build it, and adding @dfn{package metadata} along with that recipe, such as a description and licensing information."
-msgstr "Les paquets de logiciels libres sont habituellement distribués sous forme @dfn{d'archives de sources} — typiquement des fichiers @file{.tar.gz} contenant tous les fichiers sources.  Ajouter un paquet à la distribution signifie essentiellement deux choses : ajouter une @dfn{recette} qui décrit comment construire le paquet, avec une liste d'autres paquets requis pour le construire, et ajouter des @dfn{métadonnées de paquet} avec la recette, comme une description et une licence."
+msgstr "Les paquets de logiciels libres sont habituellement distribués sous forme @dfn{d'archives de sources} — typiquement des fichiers @file{.tar.gz} contenant tous les fichiers sources.  Ajouter un paquet à la distribution signifie en substance deux choses : ajouter une @dfn{recette} qui décrit comment construire le paquet, avec une liste d'autres paquets requis pour le construire, et ajouter des @dfn{métadonnées de paquet} avec la recette, comme une description et une licence."
 
 #. type: Plain text
 #: doc/contributing.texi:348
@@ -10698,7 +10698,7 @@ msgstr "Le format nar est comparable dans l'esprit au format \"tar\", mais avec 
 #. type: Plain text
 #: doc/guix.texi:4747
 msgid "That nar bundle format is essentially the concatenation of zero or more nars along with metadata for each store item it contains: its file name, references, corresponding derivation, and a digital signature."
-msgstr "Ce format nar bundle est essentiellement la concaténation de zéro ou plus de nar avec des métadonnées pour chaque élément du dépôt qu'il contient : son nom de fichier, ses références, la dérivation correspondante et une signature numérique."
+msgstr "Ce format de lot nar est surtout la concaténation de zéro, un ou plusieurs nar avec des métadonnées pour chaque élément du dépôt qu'il contient : son nom de fichier, ses références, la dérivation correspondante et une signature numérique."
 
 #. type: Plain text
 #: doc/guix.texi:4753
@@ -11226,12 +11226,9 @@ msgstr ""
 " (version 0)\n"
 " (dependencies\n"
 "  (channel\n"
-"   (name une-collection)\n"
-"   (url \"https://exemple.org/premiere-collection.git\"))\n"
-"  (channel\n"
-"   (name une-autre-collection)\n"
-"   (url \"https://exemple.org/deuxieme-collection.git\")\n"
-"   (branch \"testing\"))))\n"
+"   (name 'some-collection)\n"
+"   (url \"https://example.org/first-collection.git\")\n"
+"\n"
 
 #. type: lisp
 #: doc/guix.texi:5151
@@ -11249,7 +11246,7 @@ msgid ""
 "   (url \"https://example.org/second-collection.git\")\n"
 "   (branch \"testing\"))))\n"
 msgstr ""
-"   ;; La partie \"introduction\" ci-dessous est facultative : vous la\n"
+"   ;; La partie « introduction » ci-dessous est facultative : vous la\n"
 "   ;; fournissez pour les dépendances qui peuvent être authentifiées.\n"
 "   (introduction\n"
 "    (channel-introduction\n"
@@ -12361,7 +12358,7 @@ msgstr "Produire des @dfn{binaires repositionnables} — c.-à-d.@: des binaires
 #. type: table
 #: doc/guix.texi:5890
 msgid "When this option is passed once, the resulting binaries require support for @dfn{user namespaces} in the kernel Linux; when passed @emph{twice}@footnote{Here's a trick to memorize it: @code{-RR}, which adds PRoot support, can be thought of as the abbreviation of ``Really Relocatable''.  Neat, isn't it?}, relocatable binaries fall to back to other techniques if user namespaces are unavailable, and essentially work anywhere---see below for the implications."
-msgstr "Lorsque vous passez cette option une fois, les binaires qui en résultent demandent le support des @dfn{espaces de nom utilisateurs} dans le noyau Linux ; lorsque vous la passez @emph{deux fois}@footnote{Il y a une astuce pour s'en souvenir : on peut envisager @code{-RR}, qui ajoute le support PRoot, comme étant l'abréviation de « Réellement Repositionnable ».  Pas mal, hein ?}, les binaires repositionnables utilisent PRoot si les espaces de noms ne sont pas utilisables, et ça fonctionne partout — voir plus bas pour comprendre les implications."
+msgstr "Lorsque vous passez cette option une fois, les binaires qui en résultent demandent le support des @dfn{espaces de nom utilisateurs} dans le noyau Linux ; lorsque vous la passez @emph{deux fois}@footnote{Il y a une astuce pour s'en souvenir : on peut envisager @code{-RR}, qui ajoute le support PRoot, comme étant l'abréviation de « Réellement Repositionnable ».  Pas mal, hein ?}, les binaires repositionnables utilisent PRoot si les espaces de noms ne sont pas utilisables, et ça fonctionne à peu près partout — voir plus bas pour comprendre les implications."
 
 #. type: table
 #: doc/guix.texi:5892
@@ -12875,7 +12872,7 @@ msgstr "En ajoutant le répertoire contenant vos modules de paquets au chemin de
 #. type: enumerate
 #: doc/guix.texi:6264
 msgid "By defining a @dfn{channel} and configuring @command{guix pull} so that it pulls from it.  A channel is essentially a Git repository containing package modules.  @xref{Channels}, for more information on how to define and use channels."
-msgstr "En définissant un @dfn{canal} et en configurant @command{guix pull} pour qu'il l'utilise.  Un canal est essentiellement un dépôt Git contenant des modules de paquets.  @xref{Channels}, pour plus d'informations sur comment définir et utiliser des canaux."
+msgstr "En définissant un @dfn{canal} et en configurant @command{guix pull} pour qu'il l'utilise.  Un canal est en substance un dépôt Git contenant des modules de paquets.  @xref{Channels}, pour plus d'informations sur comment définir et utiliser des canaux."
 
 #. type: Plain text
 #: doc/guix.texi:6267
@@ -12968,7 +12965,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:6325
 msgid "Without being a Scheme expert, the reader may have guessed the meaning of the various fields here.  This expression binds the variable @code{hello} to a @code{<package>} object, which is essentially a record (@pxref{SRFI-9, Scheme records,, guile, GNU Guile Reference Manual}).  This package object can be inspected using procedures found in the @code{(guix packages)} module; for instance, @code{(package-name hello)} returns---surprise!---@code{\"hello\"}."
-msgstr "Sans être un expert Scheme, le lecteur peut comprendre la signification des différents champs présents.  Cette expression lie la variable @code{hello} à un objet @code{<package>}, qui est essentiellement un enregistrement (@pxref{SRFI-9, Scheme records,, guile, GNU Guile Reference Manual}).  On peut inspecter cet objet de paquet avec les procédures qui se trouvent dans le module @code{(guix packages)} ; par exemple, @code{(package-name hello)} renvoie — oh surprise ! — @code{\"hello\"}."
+msgstr "Sans être un expert Scheme, le lecteur peut comprendre la signification des différents champs présents.  Cette expression lie la variable @code{hello} à un objet @code{<package>}, qui est en substance un enregistrement (@pxref{SRFI-9, Scheme records,, guile, GNU Guile Reference Manual}).  On peut inspecter cet objet de paquet avec les procédures qui se trouvent dans le module @code{(guix packages)} ; par exemple, @code{(package-name hello)} renvoie — oh surprise ! — @code{\"hello\"}."
 
 #. type: Plain text
 #: doc/guix.texi:6329
@@ -13959,7 +13956,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:6888
 msgid "The example above corresponds to what the @option{--with-source} package transformation option does.  Essentially @code{hello-2.2} preserves all the fields of @code{hello}, except @code{version} and @code{source}, which it overrides.  Note that the original @code{hello} variable is still there, in the @code{(gnu packages base)} module, unchanged.  When you define a custom package like this, you are really @emph{adding} a new package definition; the original one remains available."
-msgstr "L'exemple ci-dessus correspond à ce que l'option de transformation des paquets @option{--with-source} fait.  Essentiellement, @code{hello-2.2} préserve tous les champs de @code{hello}, sauf @code{version} et @code{source}, qu'il remplace.  Remarquez que la variable @code{hello} originale est toujours là, dans le module @code{(gnu packages base)}, et n'est pas modifiée.  Lorsque vous définissez un paquet personnalisé comme ceci, vous @emph{ajoutez} en fait une nouvelle définition de paquet ; la version originale est toujours disponible."
+msgstr "L'exemple ci-dessus correspond à ce que l'option de transformation des paquets @option{--with-source} fait.  En substance, @code{hello-2.2} préserve tous les champs de @code{hello}, sauf @code{version} et @code{source}, qu'il remplace.  Remarquez que la variable @code{hello} originale est toujours là, dans le module @code{(gnu packages base)}, et n'est pas modifiée.  Lorsque vous définissez un paquet personnalisé comme ceci, vous @emph{ajoutez} en fait une nouvelle définition de paquet ; la version originale est toujours disponible."
 
 #. type: Plain text
 #: doc/guix.texi:6894
@@ -14997,7 +14994,7 @@ msgstr "{Variable Scheme} julia-build-system"
 #. type: defvr
 #: doc/guix.texi:7550
 msgid "This variable is exported by @code{(guix build-system julia)}.  It implements the build procedure used by @uref{https://julialang.org/, julia} packages, which essentially is similar to running @samp{julia -e 'using Pkg; Pkg.add(package)'} in an environment where @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.  Tests are run with @code{Pkg.test}."
-msgstr "Cette variable est exportée par @code{(guix build-system julia)}.  Elle implémente la procédure de compilation utilisée par les paquets @uref{https://julialang.org/, julia}, qui est essentiellement similaire à l'exécution de @samp{julia -e 'using Pkg ; Pkg.add(package)'} dans un environnement où @env{JULIA_LOAD_PATH} contient les chemins de toutes les entrées des paquets Julia. Les tests sont effectués avec @code{Pkg.test}."
+msgstr "Cette variable est exportée par @code{(guix build-system julia)}.  Elle implémente la procédure de compilation utilisée par les paquets @uref{https://julialang.org/, julia}, qui est globalement similaire à l'exécution de @samp{julia -e 'using Pkg ; Pkg.add(package)'} dans un environnement où @env{JULIA_LOAD_PATH} contient les chemins de toutes les entrées des paquets Julia. Les tests sont effectués avec @code{Pkg.test}."
 
 #. type: defvr
 #: doc/guix.texi:7553
@@ -15221,7 +15218,7 @@ msgstr "{Variable Scheme} r-build-system"
 #. type: defvr
 #: doc/guix.texi:7753
 msgid "This variable is exported by @code{(guix build-system r)}.  It implements the build procedure used by @uref{https://r-project.org, R} packages, which essentially is little more than running @samp{R CMD INSTALL --library=/gnu/store/@dots{}} in an environment where @env{R_LIBS_SITE} contains the paths to all R package inputs.  Tests are run after installation using the R function @code{tools::testInstalledPackage}."
-msgstr "Cette variable est exportée par @code{(guix build-system r)}.  Elle implémente la procédure de compilation utilisée par les paquets @uref{https://r-project.org, R}, qui consiste essentiellement à exécuter @samp{R CMD INSTALL --library=/gnu/store/@dots{}} dans un environnement où @env{R_LIBS_SITE} contient les chemins de toutes les entrées des paquets R.  Les tests sont exécutés après l'installation en utilisant la fonction R @code{tools::testInstalledPackage}."
+msgstr "Cette variable est exportée par @code{(guix build-system r)}.  Elle implémente la procédure de compilation utilisée par les paquets @uref{https://r-project.org, R}, qui consiste en substance à exécuter @samp{R CMD INSTALL --library=/gnu/store/@dots{}} dans un environnement où @env{R_LIBS_SITE} contient les chemins de toutes les entrées des paquets R.  Les tests sont exécutés après l'installation en utilisant la fonction R @code{tools::testInstalledPackage}."
 
 #. type: defvr
 #: doc/guix.texi:7755
@@ -18835,7 +18832,7 @@ msgstr "Produire une sortie de débogage qui provient du démon de construction.
 #. type: Plain text
 #: doc/guix.texi:10046
 msgid "Behind the scenes, @command{guix build} is essentially an interface to the @code{package-derivation} procedure of the @code{(guix packages)} module, and to the @code{build-derivations} procedure of the @code{(guix derivations)} module."
-msgstr "Sous le capot, @command{guix build} est surtout un interface à la procédure @code{package-derivation} du module @code{(guix packages)}, et à la procédure @code{build-derivations} du module @code{(guix derivations)}."
+msgstr "Sous le capot, @command{guix build} est surtout une interface à la procédure @code{package-derivation} du module @code{(guix packages)}, et à la procédure @code{build-derivations} du module @code{(guix derivations)}."
 
 #. type: Plain text
 #: doc/guix.texi:10050
@@ -20766,7 +20763,7 @@ msgstr "guix refresh -l -e '(@@@@ (gnu packages commencement) glibc-final)'\n"
 #. type: table
 #: doc/guix.texi:11317
 msgid "This command lists the dependents of the ``final'' libc (essentially all the packages)."
-msgstr "Cette commande liste les dépendances de la libc « finale » (essentiellement tous les paquets)."
+msgstr "Cette commande liste les dépendances de la libc « finale » (presque tous les paquets)."
 
 #. type: item
 #: doc/guix.texi:11318
@@ -23567,17 +23564,19 @@ msgid ""
 "\n"
 msgstr ""
 "(define %my-services\n"
-"  ;; Ma propre liste de services.\n"
+"  ;; ma propre liste de services.\n"
 "  (modify-services %base-services\n"
 "    (guix-service-type config =>\n"
 "                       (guix-configuration\n"
 "                        (inherit config)\n"
-"                        (use-substitutes? #f)\n"
-"                        (extra-options '(\"--gc-keep-derivations\"))))\n"
+"                        ;; Récupérer les substituts depuis example.org.\n"
+"                        (substitute-urls\n"
+"                          (list \"https://example.org/guix\"\n"
+"                                \"https://ci.guix.gnu.org\"))))\n"
 "    (mingetty-service-type config =>\n"
 "                           (mingetty-configuration\n"
-"                            (inherit config)))))\n"
-"                            ;; Automatially log in as \"guest\".\n"
+"                            (inherit config)\n"
+"                            ;; Connexion automatique en tant que « guest ».\n"
 "                            (auto-login \"guest\")))))\n"
 "\n"
 
@@ -25029,7 +25028,7 @@ msgstr ""
 "                          \"audio\"   ;carte son\n"
 "                          \"video\"   ;périphériques réseaux comme les webcams\n"
 "                          \"cdrom\")) ;le bon vieux CD-ROM\n"
-"  (comment \"Bob's sister\")\n"
+"  (comment \"Bob's sister\"))\n"
 
 #. type: Plain text
 #: doc/guix.texi:13865
