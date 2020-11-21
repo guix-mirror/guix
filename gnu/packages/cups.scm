@@ -446,6 +446,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                      "locatedriverdir = $(pkglibexecdir)\n"))
                   #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "ppd"))
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
     (synopsis "HP printer drivers")
     (description
@@ -473,6 +474,8 @@ should only be used as part of the Guix cups-pk-helper service.")
                          (assoc-ref %outputs "out") "/lib/cups/filter")
          ,(string-append "--with-cupsbackenddir="
                          (assoc-ref %outputs "out") "/lib/cups/backend")
+         ,(string-append "--with-hpppddir="
+                         (assoc-ref %outputs "ppd") "/share/ppd/HP")
          ,(string-append "--with-icondir="
                          (assoc-ref %outputs "out") "/share/applications")
          ,(string-append "--with-systraydir="
@@ -534,7 +537,7 @@ should only be used as part of the Guix cups-pk-helper service.")
          (add-before 'configure 'fix-build-with-python-3.8
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python (assoc-ref inputs "python")))
-               ;; XXX: The configure script of looks for Python headers in the
+               ;; XXX: The configure script looks for Python headers in the
                ;; wrong places as of version 3.20.3.  Help it by adding the
                ;; include directory on C_INCLUDE_PATH.
                (when python
