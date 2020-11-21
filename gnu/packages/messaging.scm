@@ -962,9 +962,10 @@ Encryption to Gajim.")
        ("gtk+" ,gtk+)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-    (synopsis "Graphical Jabber (XMPP) client")
-    (description "Dino is a Jabber (XMPP) client which aims to fit well into
-a graphical desktop environment like GNOME.")
+    (synopsis "Graphical Jabber/XMPP Client using GTK+/Vala")
+    (description "Dino is a chat client for the desktop.  It focuses on providing
+a minimal yet reliable Jabber/XMPP experience and having encryption enabled by
+default.")
     (home-page "https://dino.im")
     (license license:gpl3+)))
 
