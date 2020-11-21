@@ -550,7 +550,6 @@ interface for those who are accustomed to the ircII way of doing things.")
              #t)))))
     (native-inputs
      `(("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt)
        ("libmaxminddb" ,libmaxminddb)
        ("mysql" ,mysql)
        ("mbedtls-apache" ,mbedtls-apache)
