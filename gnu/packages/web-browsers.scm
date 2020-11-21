@@ -538,7 +538,7 @@ interface.")
                                       (assoc-ref inputs "qtwebengine")
                                       "/lib/qt5/libexec/QtWebEngineProcess")))
                (wrap-program bin
-                 `("QTWEBENGINEPROCESS_PATH" ":" prefix (,qt-process-path)))
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (home-page "https://qutebrowser.org/")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")
