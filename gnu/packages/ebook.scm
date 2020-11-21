@@ -281,7 +281,7 @@
                   (lambda (binary)
                     (wrap-program binary
                       ;; Make QtWebEngineProcess available.
-                      `("QTWEBENGINEPROCESS_PATH" ":" =
+                      `("QTWEBENGINEPROCESS_PATH" =
                         ,(list (string-append
                                 qtwebengine
                                 "/lib/qt5/libexec/QtWebEngineProcess")))))
