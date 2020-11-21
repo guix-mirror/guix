@@ -9076,6 +9076,32 @@ provided as a matrix which can be used as an offset for different expression
 of gene-level counts.")
     (license license:gpl2+)))
 
+(define-public r-rhdf5filters
+  (package
+    (name "r-rhdf5filters")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "rhdf5filters" version))
+       (sha256
+        (base32
+         "1jvnss44liapbc6hk93yg1gknv0ahd5x86dydqiwq9l65jd03psq"))))
+    (properties `((upstream-name . "rhdf5filters")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rhdf5lib" ,r-rhdf5lib)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/grimbough/rhdf5filters")
+    (synopsis "HDF5 compression filters")
+    (description
+     "This package provides a collection of compression filters for use with
+HDF5 datasets.")
+    (license license:bsd-2)))
+
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
