@@ -6346,53 +6346,47 @@ toolkits.")
 (define-public python2-matplotlib
   (let ((matplotlib (package-with-python2
                      (strip-python2-variant python-matplotlib))))
-    (package (inherit matplotlib)
-      (version "2.2.4")
+    (package/inherit matplotlib
+      (version "2.2.5")
       (source
        (origin
          (method url-fetch)
          (uri (pypi-uri "matplotlib" version))
          (sha256
           (base32
-           "09i1gnrra1590brc1f8d5rh2zvnknmfgzp613ab0462qkrwj15h2"))))
+           "1sk05fdai9rw35l983rw2ymvz0nafs7szs7yz4nxrpyr1j27l0x3"))))
       (arguments
        (substitute-keyword-arguments (package-arguments matplotlib)
          ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'install-jquery-ui
-               (lambda* (#:key outputs inputs #:allow-other-keys)
-                 (let ((dir (string-append (assoc-ref outputs "out")
-                                           "/lib/python2.7/site-packages/"
-                                           "matplotlib/backends/web_backend/")))
-                   (mkdir-p dir)
-                   (invoke "unzip"
-                           (assoc-ref inputs "jquery-ui")
-                           "-d" dir))))
-             ;; Without this file mpl_toolkits cannot be imported.
-             (add-after 'install 'create-init-file
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (with-output-to-file
-                     (string-append
-                      (assoc-ref outputs "out")
-                      "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
-                   (lambda _ (display "")))))
-             (delete 'fix-and-disable-failing-tests)
-             (delete 'check))))) ; These tests weren't run the the past.
-      ;; Make sure to use special packages for Python 2 instead
-      ;; of those automatically rewritten by package-with-python2.
+          #~(modify-phases #$phases
+              (add-after 'install 'create-init-file
+                (lambda _
+                  (with-output-to-file
+                      (string-append
+                       #$output
+                       "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
+                    (lambda _ (display "")))))
+              (delete 'fix-and-disable-failing-tests)
+              (delete 'check)))))      ; These tests weren't run the the past.
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
       (propagated-inputs
-       `(("python2-pycairo" ,python2-pycairo)
-         ("python2-backports-functools-lru-cache"
-          ,python2-backports-functools-lru-cache)
+       `(("gobject-introspection" ,gobject-introspection)
+         ("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache)
+         ("python2-certifi" ,python2-certifi)
+         ("python2-cycler" ,python2-cycler)
+         ("python2-dateutil" ,python2-dateutil)
          ("python2-functools32" ,python2-functools32)
+         ("python2-kiwisolver" ,python2-kiwisolver)
+         ("python2-numpy" ,python2-numpy)
+         ("python2-pillow" ,python2-pillow)
+         ("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
+         ("python2-pyparsing" ,python2-pyparsing)
+         ("python2-pytz" ,python2-pytz)
+         ("python2-six" ,python2-six)
          ("python2-subprocess32" ,python2-subprocess32)
-         ("python2-tkinter" ,python-2 "tk")
-         ,@(fold alist-delete (package-propagated-inputs matplotlib)
-                 '("python-cairocffi"
-                   "python-pycairo"
-                   "python-pygobject"
-                   "python-tkinter")))))))
+         ("python2-tkinter" ,python-2 "tk"))))))
 
 (define-public python-matplotlib-documentation
   (package
