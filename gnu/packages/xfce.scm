@@ -787,6 +787,7 @@ on the screen.")
                                           "/tmp/final.jpg")
                                   (copy-file "/tmp/final.jpg" image))
                                 '(;; "backgrounds/xfce-blue.jpg"
+                                  "backgrounds/xfce-stripes.png"
                                   "backgrounds/xfce-teal.jpg"))
                       #t)))
 
