@@ -12591,7 +12591,7 @@ when browsing files with Dired.")
 (define-public emacs-org-edit-latex
   (package
     (name "emacs-org-edit-latex")
-    (version "0.8.0")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -12600,18 +12600,16 @@ when browsing files with Dired.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zcllyhx9n9vcr5w87h0hfz25v52lvh5fi717cb7mf3jh89zh842"))))
+        (base32 "1w0lyz71dq8x28ira4hig1b70bqn1dr53w3k5dgch9szcf6xa86y"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-auctex" ,emacs-auctex)
-       ;; The version of org in Emacs 25.2 is not sufficient, because the
-       ;; `org-latex-make-preamble' function is required.
        ("emacs-org" ,emacs-org)))
     (home-page "https://github.com/et2010/org-edit-latex")
-    (synopsis "Edit a latex fragment just like editing a src block")
-    (description "@code{emacs-org-edit-latex} is an extension for org-mode.
-It lets you edit a latex fragment in a dedicated buffer just like editing a
-src block.")
+    (synopsis "Edit a LaTeX fragment just like editing a source block")
+    (description
+     "Org Edit LaTeX is an extension for Org mode.  It lets you edit a LaTeX
+fragment in a dedicated buffer just like editing a source block.")
     (license license:gpl3+)))
 
 (define-public emacs-emamux
