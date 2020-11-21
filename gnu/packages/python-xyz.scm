@@ -5698,6 +5698,7 @@ efficient internal representation, and fairly powerful image processing
 capabilities.  The core image library is designed for fast access to data
 stored in a few basic pixel formats.  It should provide a solid foundation for
 a general image processing tool.")
+    (properties `((python2-variant . ,(delay python2-pillow))))
     (license (license:x11-style
               "http://www.pythonware.com/products/pil/license.htm"
               "The PIL Software License"))))
@@ -5705,16 +5706,16 @@ a general image processing tool.")
 (define-public python2-pillow
   (package-with-python2
    (package
-     (inherit python-pillow)
+     (inherit (strip-python2-variant python-pillow))
      ;; Version 6 is the last series with Python 2 support.
      (version "6.2.2")
      (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Pillow" version))
-       (sha256
-        (base32
-         "0l5rv8jkdrb5q846v60v03mcq64yrhklidjkgwv6s1pda71g17yv")))))))
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Pillow" version))
+        (sha256
+         (base32
+          "0l5rv8jkdrb5q846v60v03mcq64yrhklidjkgwv6s1pda71g17yv")))))))
 
 (define-public python-pillow-2.9
   (package
