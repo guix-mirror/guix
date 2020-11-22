@@ -7775,6 +7775,26 @@ Standard.")
 accessor functions on enums.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-enum-as-inner-0.2
+  (package
+    (inherit rust-enum-as-inner-0.3)
+    (name "rust-enum-as-inner")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "enum-as-inner" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zg3h7k3g1z7a9ayqy63sk302d4dg5g2h274ddv80mj4jxn2cn1x"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))))
+
 (define-public rust-env-logger-0.7
   (package
     (name "rust-env-logger")
