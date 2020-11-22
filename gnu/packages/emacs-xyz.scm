@@ -6719,6 +6719,33 @@ background of file-visiting buffers (and certain aspects of the UI) to make
 them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
+(define-public emacs-embark
+  ;; There are no tagged releases upstream on GitHub, instead we are using the
+  ;; most recent commit.
+  (let ((commit "dc20b4e53c4ce1ad91100dfeb093115f2cc0b210")
+        (revision "0"))
+    (package
+      (name "emacs-embark")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oantolin/embark")
+               (commit commit)))
+         (sha256
+          (base32 "1jrvdlwip7zll5ixlnk9l0apr8hj60ysqfc47q3k4hhfyl9rawbq"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-avy" ,emacs-avy)))
+      (home-page "https://github.com/oantolin/embark")
+      (synopsis "Emacs mini-buffer actions rooted in keymaps")
+      (description "This package provides a command embark-act (and a variant
+embark-act-noexit), to execute actions on the top minibuffer completion
+canidate: the one that would be chosen by minibuffer-force-complete.")
+      (license license:gpl3+))))
+
 (define-public emacs-prescient
   (package
     (name "emacs-prescient")
