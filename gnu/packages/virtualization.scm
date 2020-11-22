@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -2047,3 +2049,48 @@ administrators and developers in managing the database.")
 libosinfo library.  It provides information about guest operating systems for
 use with virtualization provisioning tools")
     (license license:lgpl2.0+)))
+
+(define-public python-transient
+  (package
+    (name "python-transient")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "transient" version))
+       (sha256
+        (base32
+         "1740l50483fcq9748g69nkk28s2x69n4hh1l7n8f4s7p6lq1kqjy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Requires behave
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-dependencies
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("==")
+                         ">="))
+                      #t)))))
+    (propagated-inputs
+     `(("python-beautifultable" ,python-beautifultable)
+       ("python-click" ,python-click)
+       ("python-importlib-resources"
+        ,python-importlib-resources)
+       ("python-lark-parser" ,python-lark-parser)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-progressbar2" ,python-progressbar2)
+       ("python-requests" ,python-requests)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-mypy" ,python-mypy)
+       ("python-pyhamcrest" ,python-pyhamcrest)
+       ("python-twine" ,python-twine)))
+    (home-page
+     "https://github.com/ALSchwalm/transient")
+    (synopsis
+     "QEMU Wrapper written in Python")
+    (description
+     "@code{transient} is a wrapper for QEMU allowing the creation of virtual
+machines with shared folder, ssh, and disk creation support.")
+    (license license:expat)))
