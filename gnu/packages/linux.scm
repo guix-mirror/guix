@@ -1059,6 +1059,14 @@ It has been modified to remove all non-free binary blobs.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-before 'install 'patch-shebangs-harder
+           ;; The (only) shebangs in examples/ don't justify a reference.
+           ;; However, do substitute a more portable one than the original.
+           (lambda _
+             (substitute* (find-files "examples" ".")
+               (("^(#! *)/[^ ]*/" _ shebang)
+                (string-append shebang "/usr/bin/env ")))
+             #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
