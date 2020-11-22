@@ -91,6 +91,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +123,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages docker)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
@@ -3933,6 +3935,30 @@ augment the changelog, but it can be used for other documents, too.")
 (define-public python2-rst.linker
   (package-with-python2 python-rst.linker))
 
+(define-public python-sshpubkeys
+  (package
+    (name "python-sshpubkeys")
+    (version "3.1.0")
+    (home-page "https://github.com/ojarva/python-sshpubkeys")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h4gwmcfn84kkqh83km1vfz8sc5kr2g4gzgzmr8gz704jmqiv7nq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-ecdsa" ,python-ecdsa)))
+    (synopsis "OpenSSH public key parser")
+    (description
+     "This package provides a library for parsing and validating OpenSSH
+public key files.")
+    (license license:bsd-3)))
+
 (define-public python-feedgenerator
   (package
     (name "python-feedgenerator")
@@ -5636,14 +5662,14 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "6.2.1")
+    (version "8.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "1c8wkzc58f5wdh006jvmwdk3wxld1xgagcbdvj7iv17qi0m9fkmz"))))
+         "17pv0flaqqfld9m4lz8ayxyqb11gbbmr7w04mw4ar79cn3lwdi8i"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -5683,12 +5709,24 @@ efficient internal representation, and fairly powerful image processing
 capabilities.  The core image library is designed for fast access to data
 stored in a few basic pixel formats.  It should provide a solid foundation for
 a general image processing tool.")
+    (properties `((python2-variant . ,(delay python2-pillow))))
     (license (license:x11-style
               "http://www.pythonware.com/products/pil/license.htm"
               "The PIL Software License"))))
 
 (define-public python2-pillow
-  (package-with-python2 python-pillow))
+  (package-with-python2
+   (package
+     (inherit (strip-python2-variant python-pillow))
+     ;; Version 6 is the last series with Python 2 support.
+     (version "6.2.2")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Pillow" version))
+        (sha256
+         (base32
+          "0l5rv8jkdrb5q846v60v03mcq64yrhklidjkgwv6s1pda71g17yv")))))))
 
 (define-public python-pillow-2.9
   (package
@@ -8148,27 +8186,6 @@ PEP 8.")
 (define-public python2-pyflakes
   (package-with-python2 python-pyflakes))
 
-;; Flake8 2.6 requires an older version of pyflakes.
-;; This should be removed ASAP.
-(define-public python-pyflakes-1.2
-  (package (inherit python-pyflakes)
-    (version "1.2.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyflakes" version))
-       (sha256
-        (base32
-         "17hkw8yd44cr8fz13phy4aih3r5j2p7ild4zlvqdh2c8dmiinjif"))))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; This one test fails.
-         (replace 'check
-           (lambda _ (invoke "pytest" "-vv" "-k" "not test_f_string"))))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))))
-
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -8193,39 +8210,6 @@ complexity of Python source code.")
 
 (define-public python2-mccabe
   (package-with-python2 python-mccabe))
-
-(define-public python-mccabe-0.2.1
-  (package (inherit python-mccabe)
-    (version "0.2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mccabe" version))
-        (sha256
-          (base32
-            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))))
-
-(define-public python2-mccabe-0.2.1
-  (package-with-python2 python-mccabe-0.2.1))
-
-;; Flake8 2.4.1 requires an older version of pep8.
-;; This should be removed ASAP.
-(define-public python-pep8-1.5.7
-  (package (inherit python-pep8)
-    (version "1.5.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pep8" version))
-       (sha256
-        (base32
-         "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
-    (arguments
-     ;; XXX Tests not compatible with Python 3.5.
-     '(#:tests? #f))))
-
-(define-public python2-pep8-1.5.7
-  (package-with-python2 python-pep8-1.5.7))
 
 (define-public python-flake8
   (package
@@ -8272,40 +8256,6 @@ complexity of Python source code.")
          ("python2-functools32" ,python2-functools32)
          ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
-
-;; python-hacking requires flake8 <2.7.0.
-(define-public python-flake8-2.6
-  (package
-    (inherit python-flake8)
-    (version "2.6.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "flake8" version))
-              (sha256
-               (base32
-                "0y57hzal0j84dh9i1g1g6dc4aywvrnhy2fjmmbglpv5ajihxh713"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-later-pycodestyles
-           (lambda __
-             (substitute* '("flake8.egg-info/requires.txt"
-                            "setup.py")
-               (("pycodestyle >= 2.0, < 2.1")
-                "pycodestyle >= 2.0"))
-             #t))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v")
-             #t)))))
-    (propagated-inputs
-     `(("python-pep8" ,python-pep8)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-entrypoints" ,python-entrypoints)
-       ("python-pyflakes" ,python-pyflakes-1.2)
-       ("python-mccabe" ,python-mccabe)))))
 
 (define-public python-flake8-bugbear
   (package
@@ -8733,6 +8683,26 @@ should be stored on various operating systems.")
 
 (define-public python2-appdirs
   (package-with-python2 python-appdirs))
+
+(define-public python-gorilla
+  (package
+    (name "python-gorilla")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gorilla" version))
+              (sha256
+               (base32
+                "0b40blcp6fih4nvqbilra4qw1dfccv1ahjmr41ac4d9rjadqkcpy"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/christophercrouzet/gorilla")
+    (synopsis "Convenient monkey patching with Python")
+    (description
+     "Gorilla is a Python library that provides a convenient approach to
+monkey patching.  Monkey patching is the process of modifying module and
+class attributes at runtime with the purpose of replacing or extending
+third-party code.")
+    (license license:expat)))
 
 (define-public python-llfuse
   (package
@@ -10922,6 +10892,73 @@ text.")
 (define-public python2-colorama
   (package-with-python2 python-colorama))
 
+(define-public python-moto
+  (package
+    (name "python-moto")
+    ;; XXX: Use a pre-release for compatibility with latest botocore & friends.
+    (version "1.3.16.dev134")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "moto" version))
+              (sha256
+               (base32
+                "1pix0c7zszjwzfy88n1rpih9vkdm25nqcvz93z850xvgwb4v81bd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-hardcoded-executable-names
+                    (lambda _
+                      (substitute* "moto/batch/models.py"
+                        (("/bin/sh")
+                         (which "sh")))
+                      (substitute* (find-files "tests" "\\.py$")
+                        (("#!/bin/bash")
+                         (string-append "#!" (which "bash"))))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append "./build/lib:"
+                                                          (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv" "-m" "not network"
+                              ;; These tests require Docker.
+                              "-k" "not test_terminate_job \
+and not test_invoke_function_from_sqs_exception"))))))
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-flask-cors" ,python-flask-cors)
+       ("python-freezegun" ,python-freezegun)
+       ("python-parameterized" ,python-parameterized)
+       ("python-pytest" ,python-pytest)
+       ("python-sure" ,python-sure)))
+    (propagated-inputs
+     `(("python-aws-xray-sdk" ,python-aws-xray-sdk)
+       ("python-boto" ,python-boto)
+       ("python-boto3" ,python-boto3)
+       ("python-botocore" ,python-botocore)
+       ("python-cfn-lint" ,python-cfn-lint)
+       ("python-cryptography" ,python-cryptography)
+       ("python-dateutil" ,python-dateutil)
+       ("python-docker" ,python-docker)
+       ("python-idna" ,python-idna)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jose" ,python-jose)
+       ("python-jsondiff" ,python-jsondiff)
+       ("python-mock" ,python-mock)
+       ("python-pytz" ,python-pytz)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-responses" ,python-responses)
+       ("python-six" ,python-six)
+       ("python-sshpubkeys" ,python-sshpubkeys)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-xmltodict" ,python-xmltodict)))
+    (home-page "https://github.com/spulec/moto")
+    (synopsis "Mock out the boto library")
+    (description
+     "@code{moto} is a library designed to easily mock out the
+@code{boto} library.")
+    (license license:asl2.0)))
+
 (define-public python-rsa
   (package
    (name "python-rsa")
@@ -11077,32 +11114,55 @@ document.")
 manipulation library.")
     (license license:expat)))
 
+(define-public python-boto
+  (package
+    (name "python-boto")
+    (version "2.49.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "boto" version))
+              (sha256
+               (base32
+                "0njy09c4wjx7ipxhwi6vv404nflyiasl78vwwxxpclnql903n3ga"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: This package is unmaintained and has problems with newer versions
+     ;; of Python 3 as well as test libraries.  'python-moto' still uses a
+     ;; subset of this library, so keep it around for now, but disable tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/boto/boto")
+    (synopsis "Python interfaces for Amazon Web Services")
+    (description
+     "This package provides various facilities for interacting with Amazon
+Web Services through Python.
+
+This software is unmaintained, and new projects should use @code{boto3} instead.")
+    (license license:expat)))
+
 (define-public python-botocore
+  ;; Note: When updating botocore, also make sure that boto3 and awscli
+  ;; are compatible.
   (package
     (name "python-botocore")
-    (version "1.15.26")
+    (version "1.19.22")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "botocore" version))
        (sha256
         (base32
-         "1a87pbwkk5vlwz92hy1wizfnpiwn11bhaicr6bmji1i5ybwdhnr8"))))
+         "0iim86x7c6hqmvd61ygz6x6x9glnsfbnyzv2y67qjdcdx8jpkmw7"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-docutils" ,python-docutils)
-       ("python-jmespath" ,python-jmespath)))
-    (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("behave" ,behave)
-       ("python-tox" ,python-tox)
-       ("python-urllib3" ,python-urllib3)
-       ("python-wheel" ,python-wheel)))
+       ("python-jmespath" ,python-jmespath)
+       ("python-urllib3" ,python-urllib3)))
     (home-page "https://github.com/boto/botocore")
     (synopsis "Low-level interface to AWS")
     (description "Botocore is a Python library that provides a low-level
@@ -11111,6 +11171,40 @@ interface to the Amazon Web Services (AWS) API.")
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
+
+(define-public python-boto3
+  (package
+    (name "python-boto3")
+    (version "1.16.22")
+    (home-page "https://github.com/boto/boto3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h20hgl4yfl58g75qhb6ibrdmzn47md3srgar7hask14cjmfhfy3"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-network-tests
+           ;; Deleting integration tests because they are trying to connect to AWS.
+	   (lambda _
+	     (delete-file-recursively "tests/integration")
+	     #t)))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-botocore" ,python-botocore)
+       ("python-jmespath" ,python-jmespath)
+       ("python-s3transfer" ,python-s3transfer)))
+    (synopsis "AWS SDK for Python")
+    (description
+     "Boto3 is a Python library for writing programs that interact with
+@acronym{AWS,Amazon Web Services}.")
+    (license license:asl2.0)))
 
 (define-public python-pyfiglet
   (package
@@ -14719,31 +14813,26 @@ converting text with ANSI color codes to HTML or LaTeX.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.1.3")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1lw17420iimhghkgzgax85nn8d1an2d6k2cfvb7j5kwn2dqlr1vk"))))
+         "1niqpzc26sxdbyi46r07n4pma5fjx6crww2539vpfmsf0w6yg585"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-pyyaml" ,python-pyyaml)))
-    (home-page "https://github.com/txels/ddt")
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/datadriventests/ddt")
     (synopsis "Data-Driven Tests")
     (description
      "Data-Driven Tests (@dfn{DDT}) allow you to multiply one test case by
 running it with different test data, and make it appear as multiple test
 cases.")
     (license license:expat)))
-
-(define-public python2-ddt
-  (package-with-python2 python-ddt))
 
 (define-public python-pycountry
   (package
@@ -16038,7 +16127,7 @@ by path in a JSON document (see RFC 6901).")
         (base32
          "0k9pff06lxama3nhsc7cdxbp83422bdy8ifs52i6xkas8hpyzfzr"))))
     (build-system python-build-system)
-    (native-inputs
+    (propagated-inputs
      `(("python-jsonpointer" ,python-jsonpointer)))
     (home-page "https://github.com/stefankoegl/python-json-patch")
     (synopsis "Applying JSON Patches in Python 2.6+ and 3.x")

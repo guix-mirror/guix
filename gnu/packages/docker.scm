@@ -70,11 +70,11 @@
     (inputs
      `(("python-requests" ,python-requests-2.20)
        ("python-six" ,python-six)
-       ("python-urllib3" ,python-urllib3-1.24)
-       ("python-websocket-client" ,python-websocket-client)))
+       ("python-urllib3" ,python-urllib3-1.24)))
     (propagated-inputs
      `(("python-docker-pycreds" ,python-docker-pycreds)
-       ("python-paramiko" ,python-paramiko))) ; adds SSH support
+       ("python-paramiko" ,python-paramiko)    ;adds SSH support
+       ("python-websocket-client" ,python-websocket-client)))
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
     (description "Docker-Py is a Python client for the Docker container

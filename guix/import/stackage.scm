@@ -30,7 +30,8 @@
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
-  #:export (stackage->guix-package
+  #:export (%stackage-url
+            stackage->guix-package
             stackage-recursive-import
             %stackage-updater))
 
@@ -39,7 +40,8 @@
 ;;; Stackage info fetcher and access functions
 ;;;
 
-(define %stackage-url "https://www.stackage.org")
+(define %stackage-url
+  (make-parameter "https://www.stackage.org"))
 
 ;; Latest LTS version compatible with GHC 8.6.5.
 (define %default-lts-version "14.27")
@@ -55,7 +57,7 @@
   ;; "Retrieve the information about the LTS Stackage release VERSION."
   (memoize
    (lambda* (#:optional (version ""))
-     (let* ((url (string-append %stackage-url
+     (let* ((url (string-append (%stackage-url)
                                 "/lts-" (if (string-null? version)
                                             %default-lts-version
                                             version)))

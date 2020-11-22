@@ -123,6 +123,13 @@ directory = '" port)
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
   (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
   (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+  (when (assoc-ref inputs "openssl")
+    (setenv "OPENSSL_DIR" (assoc-ref inputs "openssl")))
+  (when (assoc-ref inputs "gettext")
+    (setenv "GETTEXT_SYSTEM" (assoc-ref inputs "gettext")))
+  (when (assoc-ref inputs "clang")
+    (setenv "LIBCLANG_PATH"
+            (string-append (assoc-ref inputs "clang") "/lib")))
 
   ;; We don't use the Cargo.lock file to determine the package versions we use
   ;; during building, and in any case if one is not present it is created

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,8 +39,9 @@
                              #:key
                              (compress? #t)
                              (gzip "gzip"))
-  "Write a cpio archive containing DIRECTORY to file OUTPUT.  When
-COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
+  "Write a cpio archive containing DIRECTORY to file OUTPUT, with reset
+timestamps in the archive.  When COMPRESS? is true, compress it using GZIP.
+On success, return OUTPUT."
 
   ;; Note: as per `ramfs-rootfs-initramfs.txt', always add directory entries
   ;; before the files that are inside of it: "The Linux kernel cpio
@@ -140,12 +141,6 @@ REFERENCES-GRAPHS."
     (mkdir-p "proc/self")
     (symlink (string-append guile "/bin/guile") "proc/self/exe")
     (readlink "proc/self/exe")
-
-    ;; Reset the timestamps of all the files that will make it in the initrd.
-    (for-each (lambda (file)
-                (unless (eq? 'symlink (stat:type (lstat file)))
-                  (utime file 0 0 0 0)))
-              (find-files "." ".*"))
 
     (write-cpio-archive output "." #:gzip gzip))
 

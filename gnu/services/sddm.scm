@@ -169,7 +169,7 @@ Relogin="              (if (sddm-configuration-relogin? config)
 
   (list (shepherd-service
          (documentation "SDDM display manager.")
-         (requirement '(user-processes))
+         (requirement '(user-processes elogind))
          (provision '(xorg-server display-manager))
          (start #~(make-forkexec-constructor #$sddm-command))
          (stop #~(make-kill-destructor)))))

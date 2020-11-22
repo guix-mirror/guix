@@ -444,7 +444,7 @@ sets, both THUMB and ARM mode.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/intelxed/mbuild.git")
+                   (url "https://github.com/intelxed/mbuild")
                    (commit "5304b94361fccd830c0e2417535a866b79c1c297")))
              (sha256
               (base32

@@ -180,6 +180,8 @@ COMMAND or an interactive shell in that environment.\n"))
   (newline)
   (show-build-options-help)
   (newline)
+  (show-transformation-options-help)
+  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "

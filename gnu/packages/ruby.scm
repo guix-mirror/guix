@@ -1349,7 +1349,7 @@ Prawn module.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/prawnpdf/prawn-templates.git")
+             (url "https://github.com/prawnpdf/prawn-templates")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1411,7 +1411,7 @@ loader for the file type associated with a filename extension, and it augments
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/cjheath/treetop.git")
+             (url "https://github.com/cjheath/treetop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1474,7 +1474,7 @@ for performance optimizations in Ruby code.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/searls/gimme.git")
+               (url "https://github.com/searls/gimme")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1535,7 +1535,7 @@ only what they care about.")
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/testdouble/standard.git")
+             (url "https://github.com/testdouble/standard")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1587,7 +1587,7 @@ to save time in the following ways:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wvanbergen/chunky_png.git")
+             (url "https://github.com/wvanbergen/chunky_png")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1705,7 +1705,7 @@ web pages.")
        (origin
          (method git-fetch)      ;no test suite in the distributed gem
          (uri (git-reference
-               (url "https://github.com/asciidoctor/asciidoctor-pdf.git")
+               (url "https://github.com/asciidoctor/asciidoctor-pdf")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6824,7 +6824,7 @@ inspired by the Sinatra microframework style of specifying actions:
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/rubocop-hq/rubocop-ast.git")
+             (url "https://github.com/rubocop-hq/rubocop-ast")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6868,7 +6868,7 @@ by RuboCop to deal with Ruby's Abstract Syntax Tree (AST), in particular:
      (origin
        (method git-fetch)               ;no tests in distributed gem
        (uri (git-reference
-             (url "https://github.com/ruby/rexml.git")
+             (url "https://github.com/ruby/rexml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6919,7 +6919,7 @@ better performance than @code{Regexp} and @code{String} methods from the
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/janosch-x/range_compressor.git")
+              (url "https://github.com/janosch-x/range_compressor")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -6952,7 +6952,7 @@ following: @code{[1, 2, 3, 4, 6, 8, 9, 10]} into @code{[1..4, 6..6, 8..10]}.")
      (origin
        (method git-fetch)
        (uri (git-reference              ;no test suite in distributed gem
-             (url "https://github.com/jaynetics/regexp_property_values.git")
+             (url "https://github.com/jaynetics/regexp_property_values")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6983,7 +6983,7 @@ they match.")
      (origin
        (method git-fetch)               ;bin/test missing from gem
        (uri (git-reference
-             (url "https://github.com/ammar/regexp_parser.git")
+             (url "https://github.com/ammar/regexp_parser")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7056,7 +7056,7 @@ run.")
      (origin
        (method git-fetch)               ;no tests in distributed gem
        (uri (git-reference
-             (url "https://github.com/rubocop-hq/rubocop.git")
+             (url "https://github.com/rubocop-hq/rubocop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10536,7 +10536,7 @@ custom checks.  This gem provides a set of additional checks.")
     (source (origin
               (method git-fetch)        ;no test in distributed gem archive
               (uri (git-reference
-                    (url "https://github.com/yob/pdf-reader.git")
+                    (url "https://github.com/yob/pdf-reader")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -10576,7 +10576,7 @@ access to the contents of a PDF file with a high degree of flexibility.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/prawnpdf/pdf-inspector.git")
+                      (url "https://github.com/prawnpdf/pdf-inspector")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -10639,7 +10639,7 @@ functionality from Prawn.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/prawnpdf/prawn.git")
+                      (url "https://github.com/prawnpdf/prawn")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

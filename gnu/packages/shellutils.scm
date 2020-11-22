@@ -278,7 +278,7 @@ below the current cursor position, scrolling the screen if necessary.")
 (define-public hstr
   (package
     (name "hstr")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -287,7 +287,7 @@ below the current cursor position, scrolling the screen if necessary.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07fkilqlkpygvf9kvxyvl58g3lfq0bwwdp3wczy4hk8qlbhmgihn"))))
+                "1chmfdi1dwg3sarzd01nqa82g65q7wdr6hrnj96l75vikwsg986y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

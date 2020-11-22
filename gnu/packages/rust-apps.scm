@@ -73,13 +73,7 @@
         ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.4))
        #:cargo-development-inputs
        (("rust-datetime" ,rust-datetime-0.4))
-       #:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'dont-vendor-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t))
          ;; Ignoring failing tests.
          ;; Reported in https://github.com/ogham/exa/issues/318
          (add-before 'check 'disable-failing-tests
@@ -393,18 +387,12 @@ gitignore rules.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-tempfile" ,rust-tempfile-3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'unvendor-libraries-from-crates
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
      `(("libgit2" ,libgit2)
        ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
     (home-page "https://tokei.rs")
     (synopsis "Count code, quickly")

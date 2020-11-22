@@ -4131,7 +4131,7 @@ entries, providing commands to add, remove, comment, and search.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/jclehner/nmrpflash.git")
+         (url "https://github.com/jclehner/nmrpflash")
          (commit (string-append "v" version))))
        (sha256
         (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))

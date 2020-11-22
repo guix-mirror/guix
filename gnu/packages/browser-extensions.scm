@@ -53,7 +53,7 @@ supported content to the Kodi media center.")
     (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/uBlockOrigin/uAssets.git")
+            (url "https://github.com/uBlockOrigin/uAssets")
             (commit commit)))
       (file-name (git-file-name "uAssets" (string-take commit 9)))
       (sha256
@@ -63,7 +63,7 @@ supported content to the Kodi media center.")
 (define ublock-origin
   (package
     (name "ublock-origin")
-    (version "1.30.6")
+    (version "1.31.0")
     (home-page "https://github.com/gorhill/uBlock")
     (source (origin
               (method git-fetch)
@@ -71,7 +71,7 @@ supported content to the Kodi media center.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10arx4r4s8125g9zlh3bcjpcb4qh2wzfmvqc2x8nly5fbxvxvns3"))))
+                "1wfg1g061l83fqwllp8q1jr1kvwxy2kbbzfk6ynlf18kjng9v3h5"))))
     (build-system gnu-build-system)
     (outputs '("xpi" "firefox" "chromium"))
     (arguments

@@ -28,6 +28,7 @@
 (define-module (gnu packages python-check)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web)
@@ -81,6 +82,39 @@
 This package provides seamless integration with coverage.py (and thus pytest,
 nosetests, etc...) in Python projects.")
     (license license:expat)))
+
+(define-public python-junit-xml
+  ;; XXX: There are no tags or PyPI releases, so take the latest commit
+  ;; and use the version defined in setup.py.
+  (let ((version "1.9")
+        (commit "4bd08a272f059998cedf9b7779f944d49eba13a6")
+        (revision "0"))
+    (package
+      (name "python-junit-xml")
+      (version (git-version version revision commit))
+      (home-page "https://github.com/kyrus/python-junit-xml")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0b8kbjhk3j10rk0vcniy695m3h43yip6y93h1bd6jjh0cp7s09c7"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'check
+                      (lambda _
+                        (invoke "pytest" "-vv"))))))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)))
+      (propagated-inputs
+       `(("python-six" ,python-six)))
+      (synopsis "Create JUnit XML test results")
+      (description
+       "This package provides a Python module for creating JUnit XML test
+result documents that can be read by tools such as Jenkins or Bamboo.")
+      (license license:expat))))
 
 (define-public python-vcrpy
   (package
@@ -1078,3 +1112,36 @@ any Python VM with basically no runtime overhead.")
     (description "Robber is a Python assertion library for test-driven and
 behavior-driven development (TDD and BDD).")
     (license license:expat)))
+
+(define-public python-stestr
+  (package
+    (name "python-stestr")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stestr" version))
+       (sha256
+        (base32
+         "0adhqp9c9338wlvlq776k57k04lyxp38bv591afdm9gjsn2qn1zm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;to avoid circular dependencies
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
+    (propagated-inputs
+     `(("python-cliff" ,python-cliff)
+       ("python-fixtures" ,python-fixtures)
+       ("python-future" ,python-future)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)
+       ("python-voluptuous" ,python-voluptuous)))
+    (home-page "https://stestr.readthedocs.io/en/latest/")
+    (synopsis "Parallel Python test runner")
+    (description "This package provides the @command{stestr} command, a
+parallel Python test runner built around @code{subunit}.  It is designed to
+execute @code{unittest} test suites using multiple processes to split up
+execution of a test suite.  It will also store a history of all test runs to
+help in debugging failures and optimizing the scheduler to improve speed.")
+    (license license:asl2.0)))

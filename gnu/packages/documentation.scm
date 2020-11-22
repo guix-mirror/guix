@@ -63,7 +63,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/latex2html/latex2html.git")
+         (url "https://github.com/latex2html/latex2html")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

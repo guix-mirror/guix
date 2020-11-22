@@ -743,7 +743,8 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))))
+        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))
+       (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:imported-modules
@@ -756,16 +757,6 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'add-plugin-dirs
-           (lambda _
-             (substitute* "gajim/common/configpaths.py"
-               (("_paths\\['PLUGINS_USER'\\]\\]")
-                "_paths['PLUGINS_USER']] + \
-([os.getenv('GAJIM_PLUGIN_PATH')] \
-if os.getenv('GAJIM_PLUGIN_PATH') \
-and Path(os.getenv('GAJIM_PLUGIN_PATH')).is_dir() \
-else [])"))
-             #t))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
@@ -859,7 +850,7 @@ and OpenPGP) and available in 29 languages.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.7.9")
+    (version "2.6.80")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -868,7 +859,7 @@ and OpenPGP) and available in 29 languages.")
          "https://ftp.gajim.org/plugins_releases/omemo_"
          version ".zip"))
        (sha256
-        (base32 "19si2v5yrxpn2m0f684npsg0iiyl2h3r5hbxyrxv4k3acmfmhb3z"))))
+        (base32 "179hgx091c12258335znn1540jhp4z3n3wv5ksrgqq7l3jgc93d7"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -897,7 +888,7 @@ multi-client end-to-end encryption.")
 (define-public gajim-openpgp
   (package
     (name "gajim-openpgp")
-    (version "1.3.5")
+    (version "1.2.14")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -906,7 +897,7 @@ multi-client end-to-end encryption.")
          "https://ftp.gajim.org/plugins_releases/openpgp_"
          version ".zip"))
        (sha256
-        (base32 "1jvpl2gjl5xxvsgxpmvh3mn2mm142dg2hknakkc32swb7l1fqx5m"))))
+        (base32 "0wdjpf1i4pvl4ha4plfpywwi9aw5n2mhrpv8mmbidpawxqfbd94b"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -932,19 +923,19 @@ Encryption to Gajim.")
   (package
     (name "dino")
     (version "0.2.0")
-    (outputs '("out" "debug"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/dino/dino/releases/download/v"
-                           version "/dino-" version ".tar.gz"))
+       (uri
+        (string-append "https://github.com/dino/dino/releases/download/v"
+                       version "/dino-" version ".tar.gz"))
        (sha256
-        (base32
-         "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
+        (base32 "0iigh7bkil6prf02dqcl6lmd89jxz685h8lqr3ni4x39zkcransn"))))
     (build-system cmake-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(#:tests? #f
-       #:parallel-build? #f ; not supported
+       #:parallel-build? #f             ; not supported
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   (guix build utils))
@@ -955,10 +946,21 @@ Encryption to Gajim.")
        (modify-phases %standard-phases
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (inputs
-     `(("libgee" ,libgee)
-       ("libsignal-protocol-c" ,libsignal-protocol-c)
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gpgme" ,gpgme)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
        ("libgcrypt" ,libgcrypt)
+       ("libgee" ,libgee)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("libsoup" ,libsoup)
        ("qrencode" ,qrencode)
        ("sqlite" ,sqlite)
@@ -966,15 +968,11 @@ Encryption to Gajim.")
        ("gtk+" ,gtk+)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
-       ("vala" ,vala)
-       ("gettext" ,gettext-minimal)))
+    (synopsis "Graphical Jabber/XMPP Client using GTK+/Vala")
+    (description "Dino is a chat client for the desktop.  It focuses on providing
+a minimal yet reliable Jabber/XMPP experience and having encryption enabled by
+default.")
     (home-page "https://dino.im")
-    (synopsis "Graphical Jabber (XMPP) client")
-    (description "Dino is a Jabber (XMPP) client which aims to fit well into
-a graphical desktop environment like GNOME.")
     (license license:gpl3+)))
 
 (define-public prosody

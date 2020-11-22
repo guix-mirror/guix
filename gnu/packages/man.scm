@@ -83,7 +83,7 @@ as description, options, see also, etc.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/rtomayko/ronn.git")
+         (url "https://github.com/rtomayko/ronn")
          (commit version)))
        (file-name
         (git-file-name name version))

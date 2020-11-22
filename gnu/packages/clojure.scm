@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +22,7 @@
 
 (define-module (gnu packages clojure)
   #:use-module (gnu packages)
+  #:use-module (gnu packages java)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -78,6 +80,8 @@
                   (sha256
                    (base32 "1kcyv2836acs27vi75hvf3r773ahv2nlh9b3j9xa9m9sdanz1h83")))))
       (build-system ant-build-system)
+      (inputs
+       `(("jre" ,icedtea)))
       (arguments
        `(#:imported-modules ((guix build clojure-utils)
                              (guix build guile-build-system)
@@ -114,7 +118,23 @@
            (add-after 'install-license-files 'install-doc
              (cut install-doc #:doc-dirs '("doc/clojure/") <...>))
            (add-after 'install-doc 'install-javadoc
-             (install-javadoc "target/javadoc/")))))
+             (install-javadoc "target/javadoc/"))
+           (add-after 'install 'make-wrapper
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (wrapper (string-append out "/bin/clojure")))
+                 (mkdir-p (string-append out "/bin"))
+                 (with-output-to-file wrapper
+                   (lambda _
+                     (display
+                      (string-append
+                       "#!"
+                       (which "sh")
+                       "\n\n"
+                       (assoc-ref inputs "jre") "/bin/java -jar "
+                       out "/share/java/clojure.jar \"$@\"\n"))))
+                 (chmod wrapper #o555))
+               #t)))))
       (native-inputs libraries)
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")

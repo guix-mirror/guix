@@ -1,0 +1,11 @@
+--- a/gajim/common/configpaths.py	2020-11-19 12:12:02.004414323 +0100
++++ a/gajim/common/configpaths.py	2020-11-19 15:34:52.211476895 +0100
+@@ -47,7 +47,7 @@
+         return [Path(_paths['PLUGINS_BASE']),
+                 Path('/app/plugins')]
+     return [Path(_paths['PLUGINS_BASE']),
+-            Path(_paths['PLUGINS_USER'])]
++            Path(_paths['PLUGINS_USER'])] + ([Path(os.getenv('GAJIM_PLUGIN_PATH'))] if os.getenv('GAJIM_PLUGIN_PATH') and Path(os.getenv('GAJIM_PLUGIN_PATH')).is_dir() else [])
+ 
+ 
+ def get_paths(type_: PathType) -> Generator[str, None, None]:

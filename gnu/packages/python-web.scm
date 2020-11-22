@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -68,6 +68,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -76,6 +77,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
@@ -276,6 +278,158 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
     ;; looks like the user can choose a license.
     (license (list license:gpl3+ license:lgpl3+ license:expat))))
 
+(define-public python-aws-sam-translator
+  (package
+    (name "python-aws-sam-translator")
+    (version "1.30.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "aws-sam-translator" version))
+              (sha256
+               (base32
+                "0d9ppd94x2kw404m49ajswmmxgdngbs4p5ajyrdvnlivfzqbv7dx"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; XXX: Tests are not distributed with the PyPI archive, and would
+       ;; introduce a circular dependency on python-cfn-lint.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      ;; The package needlessly specifies exact versions
+                      ;; of dependencies, when it works fine with others.
+                      (substitute* "requirements/base.txt"
+                        (("(.*)(~=[0-9\\.]+)" all package version)
+                         package))
+                      #t)))))
+    (propagated-inputs
+     `(("python-boto3" ,python-boto3)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/awslabs/serverless-application-model")
+    (synopsis "Transform AWS SAM templates into AWS CloudFormation templates")
+    (description
+     "AWS SAM Translator is a library that transform @dfn{Serverless Application
+Model} (SAM) templates into AWS CloudFormation templates.")
+    (license license:asl2.0)))
+
+(define-public python-aws-xray-sdk
+  (package
+    (name "python-aws-xray-sdk")
+    (version "2.6.0")
+    (home-page "https://github.com/aws/aws-xray-sdk-python")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12fzr0ylpa1lx3xr1x2f1jx8iiyzcr6g57fb9jign0j0lxdlbzpv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-tests
+                    (lambda _
+                      (for-each delete-file
+                                '(;; These tests require packages not yet in Guix.
+                                  "tests/ext/aiobotocore/test_aiobotocore.py"
+                                  "tests/ext/aiohttp/test_middleware.py"
+                                  "tests/ext/pg8000/test_pg8000.py"
+                                  "tests/ext/psycopg2/test_psycopg2.py"
+                                  "tests/ext/pymysql/test_pymysql.py"
+                                  "tests/ext/pynamodb/test_pynamodb.py"
+                                  "tests/test_async_recorder.py"
+
+                                  ;; FIXME: Why is this failing?
+                                  "tests/test_patcher.py"
+
+                                  ;; TODO: How to configure Django for these tests.
+                                  "tests/ext/django/test_db.py"
+                                  "tests/ext/django/test_middleware.py"
+
+                                  ;; These tests want to access httpbin.org.
+                                  "tests/ext/requests/test_requests.py"
+                                  "tests/ext/httplib/test_httplib.py"
+                                  "tests/ext/aiohttp/test_client.py"))))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:.:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv" "tests"))))))
+    (native-inputs
+     `(;; These are required for the test suite.
+       ("python-bottle" ,python-bottle)
+       ("python-flask" ,python-flask)
+       ("python-flask-sqlalchemy" ,python-flask-sqlalchemy)
+       ("python-pymysql" ,python-pymysql)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
+       ("python-requests" ,python-requests)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-webtest" ,python-webtest)))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-botocore" ,python-botocore)
+       ("python-future" ,python-future)
+       ("python-jsonpickle" ,python-jsonpickle)
+       ("python-urllib3" ,python-urllib3)
+       ("python-wrapt" ,python-wrapt)))
+    (synopsis "Profile applications on AWS X-Ray")
+    (description
+     "The AWS X-Ray SDK for Python enables Python developers to record and
+emit information from within their applications to the AWS X-Ray service.")
+    (license license:asl2.0)))
+
+(define-public python-cfn-lint
+  (package
+    (name "python-cfn-lint")
+    (version "0.41.0")
+    (home-page "https://github.com/aws-cloudformation/cfn-python-lint")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nqs0fmj3hd7pnd9hkb4z57jvi2iv82hh6n3xxba6i6p8zgx75q4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; Remove test for the documentation update scripts
+                        ;; to avoid a dependency on 'git'.
+                        (delete-file
+                         "test/unit/module/maintenance/test_update_documentation.py")
+                        (setenv "PYTHONPATH"
+                                (string-append "./build/lib:"
+                                               (getenv "PYTHONPATH")))
+                        (setenv "PATH" (string-append out "/bin:"
+                                                      (getenv "PATH")))
+                        (invoke "python" "-m" "unittest" "discover"
+                                "-s" "test")))))))
+    (native-inputs
+     `(("python-pydot" ,python-pydot)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-aws-sam-translator" ,python-aws-sam-translator)
+       ("python-jsonpatch" ,python-jsonpatch)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-junit-xml" ,python-junit-xml)
+       ("python-networkx" ,python-networkx)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)))
+    (synopsis "Validate CloudFormation templates")
+    (description
+     "This package lets you validate CloudFormation YAML/JSON templates against
+the CloudFormation spec and additional checks.  Includes checking valid values
+for resource properties and best practices.")
+    (license license:expat)))
+
 (define-public python-falcon
   (package
     (name "python-falcon")
@@ -460,14 +614,14 @@ HTTP servers, RESTful APIs, and web services.")
 (define-public python-html2text
   (package
     (name "python-html2text")
-    (version "2019.8.11")
+    (version "2020.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "html2text" version))
        (sha256
         (base32
-         "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm"))))
+         "1fvv4z6dblii2wk1x82981ag8yhxbim1v2ksgywxsndh2s7335p2"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -485,7 +639,94 @@ Swartz.")
     (license license:gpl3+)))
 
 (define-public python2-html2text
-  (package-with-python2 python-html2text))
+  (let ((base (package-with-python2 python-html2text)))
+    (package
+      (inherit base)
+      ;; This is the last version with support for Python 2.
+      (version "2019.8.11")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "html2text" version))
+                (sha256
+                 (base32
+                  "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm")))))))
+
+(define-public python-jose
+  (package
+    (name "python-jose")
+    (version "3.2.0")
+    (home-page "http://github.com/mpdavis/python-jose")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xmnf8whzv2gnkkdv0fqcn9qwmcc7y647p4kw9fi3lvcp9kch8vi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-vv")
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (native-inputs
+     `(;; All native inputs are for tests.
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-rsa" ,python-rsa)
+       ("python-six" ,python-six)))
+    (synopsis "JOSE implementation in Python")
+    (description
+     "The @dfn{JavaScript Object Signing and Encryption} (JOSE) technologies
+- JSON Web Signature (JWS), JSON Web Encryption (JWE), JSON Web Key (JWK), and
+JSON Web Algorithms (JWA) - collectively can be used to encrypt and/or sign
+content using a variety of algorithms.")
+    (license license:expat)))
+
+(define-public python-jsonpickle
+  (package
+    (name "python-jsonpickle")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jsonpickle" version))
+              (sha256
+               (base32
+                "1fn86z468hamw8njh2grw2xdhsm7g48dyxs3lw0n10nn1g6vgm78"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"
+                              ;; Prevent running the flake8 and black
+                              ;; pytest plugins, which only tests style
+                              ;; and frequently causes harmless failures.
+                              "-o" "addopts=''"))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)  ;XXX: for setuptools_scm[toml]
+       ;; For tests.
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://jsonpickle.github.io/")
+    (synopsis "Serialize object graphs into JSON")
+    (description
+     "This package provides a Python library for serializing any arbitrary
+object graph to and from JSON.")
+    (license license:bsd-3)))
 
 (define-public python-mechanicalsoup
   (package
@@ -712,6 +953,30 @@ both of which are installed automatically if you install this library.")
 (define-public python2-flask-babel
   (package-with-python2 python-flask-babel))
 
+(define-public python-flask-cors
+  (package
+    (name "python-flask-cors")
+    (version "3.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask-Cors" version))
+              (sha256
+               (base32
+                "1f36hkaxc92zn12f88fkzwifdvlvsnmlp1dv3p5inpcc500c3kvb"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-nose" ,python-nose)
+       ("python-packaging" ,python-packaging)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://flask-cors.readthedocs.io/en/latest/")
+    (synopsis "Handle Cross-Origin Resource Sharing with Flask")
+    (description
+     "This package provides a Flask extension for handling @acronym{CORS,Cross
+Origin Resource Sharing}, making cross-origin AJAX possible.")
+    (license license:expat)))
+
 (define-public python-html5lib
   (package
     (name "python-html5lib")
@@ -787,6 +1052,41 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 
 (define-public python2-html5-parser
   (package-with-python2 python-html5-parser))
+
+(define-public python-minio
+  (package
+    (name "python-minio")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "minio" version))
+              (sha256
+               (base32
+                "1cxpa0m7mdvpdbc1g6wlihq6ja4g4paxkl6f3q84bbnx07zpbllp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-failing-tests
+                    (lambda _
+                      ;; This test requires network access.
+                      (delete-file "tests/unit/credentials_test.py")
+                      #t)))))
+    (native-inputs
+     `(("python-faker" ,python-faker)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-configparser" ,python-configparser)
+       ("python-dateutil" ,python-dateutil)
+       ("python-pytz" ,python-pytz)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/minio/minio-py")
+    (synopsis "Programmatically access Amazon S3 from Python")
+    (description
+     "This package provides a Python library for interacting with any
+Amazon S3 compatible object storage server.")
+    (license license:asl2.0)))
 
 (define-public python-pycurl
   (package
@@ -1013,6 +1313,49 @@ another XPath engine to find the matching elements in an XML or HTML document.")
 (define-public python2-cssselect
   (package-with-python2 python-cssselect))
 
+(define-public python-databricks-cli
+  (package
+    (name "python-databricks-cli")
+    (version "0.14.0")
+    (home-page "https://github.com/databricks/databricks-cli")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0imwpfda2pxix1rx0nlqs48v58icfw065nsv53rpg0dw4bw9x2wi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "tests" "-vv"
+                              ;; XXX: This fails with newer Pytest
+                              ;; (upstream uses Pytest 3..).
+                              "-k" "not test_get_request_with_list"))))))
+    (native-inputs
+     `(;; For tests.
+       ("python-decorator" ,python-decorator)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-requests-mock" ,python-requests-mock)))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-configparser" ,python-configparser)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-tabulate" ,python-tabulate)))
+    (synopsis "Command line interface for Databricks")
+    (description
+     "The Databricks Command Line Interface is a tool which provides an easy
+to use interface to the Databricks platform.  The CLI is built on top of the
+Databricks REST APIs.")
+    (license license:asl2.0)))
+
 (define-public python-openid-cla
   (package
     (name "python-openid-cla")
@@ -1161,6 +1504,37 @@ RFC6455, regardless of your programming paradigm.")
 wsproto libraries and inspired by Gunicorn.  It supports HTTP/1, HTTP/2,
 WebSockets (over HTTP/1 and HTTP/2), ASGI/2, and ASGI/3 specifications.  It can
 utilise asyncio, uvloop, or trio worker types.")
+    (license license:expat)))
+
+(define-public python-querystring-parser
+  (package
+    (name "python-querystring-parser")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "querystring_parser" version))
+              (sha256
+               (base32
+                "0qlar8a0wa003hm2z6wcpb625r6vjj0a70rsni9h8lz0zwfcwkv4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; XXX FIXME: This test is broken with Python 3.7:
+                      ;; https://github.com/bernii/querystring-parser/issues/35
+                      (substitute* "querystring_parser/tests.py"
+                        (("self\\.assertEqual\\(self\\.knownValuesNormalized, result\\)")
+                         "True"))
+                      (invoke "python" "querystring_parser/tests.py"))))))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/bernii/querystring-parser")
+    (synopsis "QueryString parser that correctly handles nested dictionaries")
+    (description
+     "This package provides a query string parser for Python and Django
+projects that correctly creates nested dictionaries from sent form/querystring
+data.")
     (license license:expat)))
 
 (define-public python-tornado
@@ -2283,15 +2657,16 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public awscli
   (package
+    ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.18.6")
+    (version "1.18.183")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0p479mfs9r0m82a217pap8156ijwvhv6r3kqa4k267gd05wgvygm"))))
+         "0n1pmdl33r1v8qnrcg08ihvri9zm4fvsp14605vwmlkxvs8nb7s5"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
@@ -2789,13 +3164,13 @@ Betamax.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.2.0")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "08fhj73b1ai52hrs2q3nggshq3pswn1gq8ch3m009cb2v2vmqggj"))))
+                "1nzp5kwmy9669334shcz9ipg89jgpdqhrmbkgdg18r7wmvi3f6lj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

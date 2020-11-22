@@ -1330,7 +1330,7 @@ like @command{tar} and @command{zip}.")
         (origin
           (method git-fetch)
           (uri (git-reference
-            (url (string-append "https://github.com/lxqt/" name ".git"))
+            (url (string-append "https://github.com/lxqt/" name))
             (commit commit)))
           (file-name (git-file-name name version))
           (sha256 (base32 "0br4bxfrl8k7lq84aq4grznlk8xzzjgkmd19bf9mwjr0a87gg72v"))))

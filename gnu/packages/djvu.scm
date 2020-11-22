@@ -27,12 +27,17 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -51,6 +56,9 @@
                (base32
                 "0psh3zl9dj4n4r3lx25390nx34xz0bg0ql48zdskhq354ljni5p6"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'reproducible
@@ -159,4 +167,108 @@ It is able to extract:
 @item metadata (including XMP metadata).
 @end itemize\n")
     (home-page "https://jwilk.net/software/pdf2djvu")
+    (license license:gpl2)))
+
+(define-public djvu2pdf
+  (package
+    (name "djvu2pdf")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://0x2a.at/site/projects/djvu2pdf/djvu2pdf-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0v2ax30m7j1yi4m02nzn9rc4sn4vzqh5vywdh96r64j4pwvn5s5g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("gawk" ,gawk)
+       ("ghostscript" ,ghostscript)
+       ("grep" ,grep)
+       ("ncurses" ,ncurses)
+       ("which" ,which)))
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((djvulibre (assoc-ref inputs "djvulibre"))
+                   (gawk (assoc-ref inputs "gawk"))
+                   (ghostscript (assoc-ref inputs "ghostscript"))
+                   (grep (assoc-ref inputs "grep"))
+                   (ncurses (assoc-ref inputs "ncurses"))
+                   (which (assoc-ref inputs "which")))
+               (substitute* "djvu2pdf"
+                 (("awk")
+                  (string-append gawk "/bin/awk"))
+                 (("ddjvu")
+                  (string-append djvulibre "/bin/ddjvu"))
+                 (("djvudump")
+                  (string-append djvulibre "/bin/djvudump"))
+                 (("grep")
+                  (string-append grep "/bin/grep"))
+                 (("gs")
+                  (string-append ghostscript "/bin/gs"))
+                 (("tput ")
+                  (string-append ncurses "/bin/tput "))
+                 (("which")
+                  (string-append which "/bin/which"))))
+             #t))
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref %outputs "out")))
+               (install-file "djvu2pdf"
+                             (string-append out "/bin"))
+               (install-file "djvu2pdf.1.gz"
+                             (string-append out "/share/man/man1"))
+               #t))))))
+    (synopsis "DjVu to PDF converter")
+    (description "This is a small tool to convert DjVu files to PDF files.")
+    (home-page "https://0x2a.at/site/projects/djvu2pdf/")
+    (license license:gpl2+)))
+
+(define-public minidjvu
+  (package
+    (name "minidjvu")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/minidjvu/minidjvu/"
+                           version "/minidjvu-" version ".tar.gz"))
+       (sha256
+        (base32 "0jmpvy4g68k6xgplj9zsl6brg6vi81mx3nx2x9hfbr1f4zh95j79"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:configure-flags '("--disable-static")
+       #:parallel-build? #f
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda _
+             (substitute* "Makefile.in"
+               (("/usr/bin/gzip")
+                "gzip"))
+             #t))
+         (add-before 'install 'make-lib-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+             #t)))))
+    (synopsis "Black and white DjVu encoder")
+    (description
+     "@code{minidjvu} is a multipage DjVu encoder and single page
+encoder/decoder.  It doesn't support colors or grayscales, just black
+and white.")
+    (home-page "https://sourceforge.net/projects/minidjvu/")
     (license license:gpl2)))

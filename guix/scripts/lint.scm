@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,11 +48,15 @@
   ;; provided MESSAGE.
   (for-each
    (lambda (lint-warning)
-     (let ((package (lint-warning-package lint-warning))
-           (loc     (lint-warning-location lint-warning)))
-       (info loc (G_ "~a@~a: ~a~%")
-             (package-name package) (package-version package)
-             (lint-warning-message lint-warning))))
+     (let* ((package (lint-warning-package lint-warning))
+            (name    (package-name package))
+            (version (package-version package))
+            (loc     (lint-warning-location lint-warning))
+            (message (lint-warning-message lint-warning)))
+       (parameterize
+           ((guix-warning-port (current-output-port)))
+         (info loc (G_ "~a@~a: ~a~%")
+               name version message))))
    warnings))
 
 (define* (run-checkers package checkers #:key store)

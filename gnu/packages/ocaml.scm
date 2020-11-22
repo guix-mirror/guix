@@ -5802,7 +5802,9 @@ convenience functions for vectors and matrices.")
                 "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
     (build-system dune-build-system)
     (arguments
-     `(;; FIXME: (got signal SEGV) #44725
+     `(;; NOTE: GC reclaims bigarrays packed into a custom structure
+       ;; regardless of their refcounts. Affects OCaml >= 4.10.x
+       ;; https://github.com/ocaml/ocaml/issues/9360
        #:tests? #f
        #:test-target "tests"))
     (inputs
@@ -5822,7 +5824,7 @@ and SVG file output.")
 (define-public lablgtk3
   (package
     (name "lablgtk")
-    (version "3.0.beta8")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5831,7 +5833,7 @@ and SVG file output.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08pgwnia240i2rw1rbgiahg673kwa7b6bvhsg3z4b47xr5sh9pvz"))))
+                "11qfc39cmwfwfpwmjh6wh98zwdv6p73bv8hqwcsss869vs1r7gmn"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #t

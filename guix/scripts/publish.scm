@@ -63,10 +63,14 @@
   #:use-module ((guix build utils)
                 #:select (dump-port mkdir-p find-files))
   #:use-module ((guix build syscalls) #:select (set-thread-name))
-  #:export (%public-key
+  #:export (%default-gzip-compression
+
+            %public-key
             %private-key
             signed-string
 
+            open-server-socket
+            run-publish-server
             guix-publish))
 
 (define (show-help)

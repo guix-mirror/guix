@@ -286,7 +286,7 @@ video and audio streams from a DVD.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/OpenVisualCloud/SVT-HEVC.git")
+         (url "https://github.com/OpenVisualCloud/SVT-HEVC")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -314,7 +314,7 @@ efficiency.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Intel-Media-SDK/MediaSDK.git")
+         (url "https://github.com/Intel-Media-SDK/MediaSDK")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -490,7 +490,7 @@ and mmsh protocols.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/farindk/libvideogfx.git")
+         (url "https://github.com/farindk/libvideogfx")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -534,7 +534,7 @@ applications by providing high-level classes for commonly required tasks.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/strukturag/libde265.git")
+         (url "https://github.com/strukturag/libde265")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -575,7 +575,7 @@ other software.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/libts/tslib.git")
+         (url "https://github.com/libts/tslib")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2188,14 +2188,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.17")
+    (version "2020.11.21.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0b0vsmvnm2jn1k66jmymzly0nb34nk79z97msns0sw0cqhbld1b2"))))
+                "0a9livib328z5j3kfndxys2193dvfs4hh38krx0idg0k26xp7cfl"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -3799,7 +3799,7 @@ iTunes-style metadata.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2020.11.05")
+    (version "2020.11.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3807,7 +3807,7 @@ iTunes-style metadata.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1dx5imjil5yiya5dqlvbqkvzgic5pybsfilx5jz1cpi1znkzpgc9"))))
+                "16w6yxdbmjdhvffnrb752dn4llf3l0wb00dgdkyia0vqsv2qqyn7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

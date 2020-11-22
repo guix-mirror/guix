@@ -744,10 +744,10 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (license (list license:expat        ; icc2ps/*.[ch]
                    license:gpl2+))))    ; everything else
 
-(define-public escpr
+(define-public epson-inkjet-printer-escpr
   (package
-    (name "escpr")
-    (version "1.7.7")
+    (name "epson-inkjet-printer-escpr")
+    (version "1.7.8")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -755,15 +755,19 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/10/49/18/"
-                           "f3016be6120a7271a6d9cb64872f817bce1920b8/"
-                           "epson-inkjet-printer-escpr-1.7.7-1lsb3.2.tar.gz"))
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/04/32/"
+                           "1a455ef8618def65700ca4e446311c2fb43cd839/"
+                           "epson-inkjet-printer-escpr-1.7.8-1lsb3.2.tar.gz"))
        (sha256
-        (base32 "0khdf2a9iwh9aplj2gzyzl53yyfnfv0kszk3p018jnirl5l475ld"))))
+        (base32 "1pygg2bd2gh27dc65h3dzwrpvi6bq5c87wl0ldchqlc2b3blsx6p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       `(,(string-append "--prefix="
+     `(#:modules
+       ((srfi srfi-26)
+        ,@%gnu-build-system-modules)
+       #:configure-flags
+       `("--disable-static"
+         ,(string-append "--prefix="
                          (assoc-ref %outputs "out"))
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
@@ -781,7 +785,13 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
                 (string-append match "aclocal"))
                (("^(AUTOMAKE=).*" _ match)
                 (string-append match "automake")))
-             #t)))))
+             #t))
+         (add-after 'install 'compress-PPDs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion out
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files "share/cups" "\\.ppd$")))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -793,8 +803,11 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 System} that offers high-quality printing with Seiko@tie{}Epson color ink jet
 printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
-    (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (home-page "http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX")
     (license license:gpl2+)))
+
+(define-public escpr
+  (deprecated-package "escpr" epson-inkjet-printer-escpr))
 
 (define-public splix
   ;; Last released in 2009 <https://sourceforge.net/projects/splix/files/>.

@@ -119,7 +119,7 @@ modify some aspects of this style through the use of regular expressions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/ebassi/mutest.git")
+         (url "https://github.com/ebassi/mutest")
          (commit "e6246c9")))
        (file-name (git-file-name name version))
        (sha256
@@ -1427,14 +1427,14 @@ use of resources by test cases.")))
 (define-public python-subunit-bootstrap
   (package
     (name "python-subunit-bootstrap")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
-         "1fsw8rsn1s3nklx06mayrg5rn2zbky6wwjc5z07s7rf1wjzfs1wn"))))
+         "0j0ymmnc5nfxi1qzvy59j27viqca7l7xd0y9x29g7yr0h693j804"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)

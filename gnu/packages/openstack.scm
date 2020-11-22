@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -45,47 +47,64 @@
 (define-public python-bandit
   (package
     (name "python-bandit")
-    (version "1.4.0")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bandit" version))
        (sha256
         (base32
-         "1m5bm42120zyazky4k0lp3d9r0jwhjmp6sb108xfr0vz952p15yb"))))
+         "0rb034c99pyhb4a60z7f2kz40cjydhm8m9v2blaal1rmhlam7rs1"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'check)
-                  (add-after 'install 'check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Tests require the 'bandit' executable in PATH.
-                      ;; It's only built during install time.
-                      (add-installed-pythonpath inputs outputs)
-                      (setenv "PATH" (string-append (assoc-ref outputs "out")
-                                                    "/bin:" (getenv "PATH")))
-                      (invoke "python" "setup.py" "testr"))))))
+     ;; The tests are disabled to avoid a circular dependency with
+     ;; python-stestr.
+     `(#:tests? #f))
     (propagated-inputs
-      `(("python-gitpython" ,python-gitpython)
-        ("python-pyyaml" ,python-pyyaml)
-        ("python-six" ,python-six)
-        ("python-stevedore" ,python-stevedore)))
+     `(("python-gitpython" ,python-gitpython)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)))
     (native-inputs
-      `(;; Tests.
-        ("python-beautifulsoup4" ,python-beautifulsoup4)
-        ("python-fixtures" ,python-fixtures)
-        ("python-mock" ,python-mock)
-        ("python-subunit" ,python-subunit)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)))
+     `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/PyCQA/bandit")
     (synopsis "Security oriented static analyser for python code")
-    (description
-      "Bandit is a tool designed to find common security issues in Python code.
-To do this Bandit processes each file, builds an AST from it, and runs
-appropriate plugins against the AST nodes.  Once Bandit has finished scanning
-all the files it generates a report.")
+    (description "Bandit is a tool designed to find common security issues in
+Python code.  To do this Bandit processes each file, builds an AST from it,
+and runs appropriate plugins against the AST nodes.  Once Bandit has finished
+scanning all the files it generates a report.")
+    (license asl2.0)))
+
+(define-public python-cliff
+  (package
+    (name "python-cliff")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cliff" version))
+       (sha256
+        (base32
+         "0n8pzr0mnn9lq2mykds69ij2xrn0fsirh4ndmkx0mzydbx5niysv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
+    (propagated-inputs
+     `(("python-cmd2" ,python-cmd2)
+       ("python-prettytable" ,python-prettytable)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-bandit" ,python-bandit)
+       ("python-stevedore" ,python-stevedore)))
+    (home-page "https://opendev.org/openstack/cliff")
+    (synopsis "Framework for building command line programs")
+    (description "The @code{cliff} framework allows creating multi-level
+commands such as those of @command{subversion} and @command{git}, where the
+main program handles some basic argument parsing and then invokes a
+sub-command to do the work.  It uses plugins to define sub-commands, output
+formatters, and other extensions.")
     (license asl2.0)))
 
 (define-public python-debtcollector
@@ -131,39 +150,30 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "1.1.0")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "1vlgh81v4vsw3q3cf7qggsp043vq16knp203lrll82h7l7rhd8r3"))))
+         "062rvbkvbavqqz55f7q00ikwipkn5j0rdls1rrajdbfwgckjcrsm"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-test
-           (lambda _
-             ;; TODO: Just one test fails:
-             ;; hacking.tests.test_doctest.HackingTestCase.test_pycodestyle
-             ;;   (H403-hacking_docstring_multiline_end-line-5)
-             (delete-file "hacking/tests/test_doctest.py")
-             #t)))))
-    (propagated-inputs
-     `(("python-flake8" ,python-flake8-2.6)
-       ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
-       ("python-pbr" ,python-pbr)
-       ("python-pep8-1.5.7" ,python-pep8-1.5.7)
-       ("python-pyflakes-1.2" ,python-pyflakes-1.2)
-       ("python-six" ,python-six)))
+     (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
     (native-inputs
      `( ;; Tests
+       ("python-coverage" ,python-coverage)
+       ("python-ddt" ,python-ddt)
+       ("python-dnspython" ,python-dnspython)
+       ("python-fixtures" ,python-fixtures)
        ("python-eventlet" ,python-eventlet)
        ("python-mock" ,python-mock)
-       ("python-reno" ,python-reno)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testscenarios" ,python-testscenarios)))
+       ("python-monotonic" ,python-monotonic)
+       ("python-subunit" ,python-subunit)
+       ("python-stestr" ,python-stestr)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
     (description
@@ -171,9 +181,6 @@ manner.")
 @uref{http://docs.openstack.org/developer/hacking/, OpenStack style
 guidelines}.")
     (license asl2.0)))
-
-(define-public python2-hacking
-  (package-with-python2 python-hacking))
 
 (define-public python-mox3
   (package
@@ -310,22 +317,21 @@ to docs.openstack.org and developer.openstack.org.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.28.0")
+    (version "3.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
         (base32
-         "02ynfgwma84g59834dmvzr39mcppy5s229zf1w23c0qngf753izi"))))
+         "1w11lm293afzb73iq0ba9wnmr2rjwymnhr92km4a4xrs7a5qcigq"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-six" ,python-six)))
+    (arguments
+     ;; The tests are disabled to avoid a circular dependency with
+     ;; python-stestr.
+     `(#:tests? #f))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)))
+     `(("python-pbr" ,python-pbr)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
@@ -427,22 +433,33 @@ common features used in Tempest.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "2.20.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "0iiq9rpwg6wrdqnhf3d8z8g0g7fjhs5zn6qw6igvxplz2c3rbvvx"))))
+         "1l2z186rkd9acrb2ygf53yrdc1lgf7cy1akbhm21kgkzind4p2r6"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-requirements
+                    (lambda _
+                      (substitute* "test-requirements.txt"
+                        (("hacking>=3.0.1,<3.1.0")
+                         "hacking>=3.0.1"))
+                      #t)))))
     (propagated-inputs
-     `(("python-debtcollector" ,python-debtcollector)
-       ("python-pbr" ,python-pbr)))
+     `(("python-debtcollector" ,python-debtcollector)))
     (native-inputs
-     `(("python-fixtures" ,python-fixtures)
+     `(("python-bandit" ,python-bandit)
+       ("python-coverage" ,python-coverage)
+       ("python-fixtures" ,python-fixtures)
        ("python-hacking" ,python-hacking)
-       ("python-oslotest" ,python-oslotest)))
+       ("python-oslotest" ,python-oslotest)
+       ("python-pbr" ,python-pbr)
+       ("python-stestr" ,python-stestr)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
@@ -600,70 +617,62 @@ and building documentation from them.")
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
-    (version "4.10.0")
+    (version "4.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslosphinx" version))
        (sha256
         (base32
-         "09mxqyabi68f3s3arvdhlhq0mn38vf74jbsfcg84151hcj6czhnl"))))
+         "1xm41857vzrzjmnyi6bqirg4i5qa61v7wxcsdc4q1nzgr3ndgz5k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
+         (add-after 'unpack 'relax-requirements
            (lambda _
-             ;; Note: Upstream tests would have also built the release notes.
-             ;; That only would work if we were in a git checkout.
-             ;; Therefore, we don't do it here.
-             (invoke "python" "setup.py" "build_sphinx"))))))
+             (substitute* "test-requirements.txt"
+               (("hacking!=0.13.0,<0.14,>=0.12.0")
+                "hacking!=0.13.0,>=0.12.0"))
+             #t)))))
     (propagated-inputs
-      `(("python-requests" ,python-requests)))
+     `(("python-requests" ,python-requests)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-docutils" ,python-docutils)
-        ("python-hacking" ,python-hacking)
-        ("python-sphinx" ,python-sphinx)))
+     `(("python-hacking" ,python-hacking)
+       ("python-openstackdocstheme" ,python-openstackdocstheme)
+       ("python-pbr" ,python-pbr)
+       ("python-reno" ,python-reno)
+       ("python-sphinx" ,python-sphinx)))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
-    (description
-      "This package provides themes and extensions for Sphinx documentation
-from the OpenStack project.")
+    (description "This package provides themes and extensions for Sphinx
+documentation from the OpenStack project.")
     (license asl2.0)))
-
-(define-public python2-oslosphinx
-  (package-with-python2 python-oslosphinx))
 
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "3.4.0")
+    (version "4.4.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "oslotest" version))
-        (sha256
-          (base32
-            "1pp8lq61d548cxcqi451czvrz5i5b3hyi2ry00wmngdgiswcqj1h"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oslotest" version))
+       (sha256
+        (base32
+         "0r50sz55m8ljv2vk1k7sp88iz1iqq4p9w6kb8hn8g8c50r9zdi5i"))))
     (build-system python-build-system)
+    (arguments
+     ;; The tests are disabled to avoid a circular dependency with oslo.config.
+     `(#:tests? #f))
     (propagated-inputs
-      `(("python-fixtures" ,python-fixtures)
-        ("python-mock" ,python-mock)
-        ("python-mox3" ,python-mox3)
-        ("python-os-client-config" ,python-os-client-config)
-        ("python-six" ,python-six)
-        ("python-subunit" ,python-subunit)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testtools" ,python-testtools)))
-    (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-testscenarios" ,python-testscenarios)))
+     `(("python-fixtures" ,python-fixtures)
+       ("python-six" ,python-six)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
-    (description
-      "The Oslo Test framework provides common fixtures, support for debugging,
-and better support for mocking results.")
+    (description "The Oslo Test framework provides common fixtures, support
+for debugging, and better support for mocking results.")
     (license asl2.0)))
 
 (define-public python2-oslotest

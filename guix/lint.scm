@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,8 @@
   #:use-module (guix http-client)
   #:use-module (guix packages)
   #:use-module (guix i18n)
+  #:use-module ((guix gexp)
+                #:select (local-file? local-file-absolute-file-name))
   #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix grafts)
@@ -50,6 +53,7 @@
   #:use-module ((guix swh) #:hide (origin?))
   #:autoload   (guix git-download) (git-reference?
                                     git-reference-url git-reference-commit)
+  #:use-module (guix import stackage)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -73,6 +77,7 @@
             check-inputs-should-be-native
             check-inputs-should-not-be-an-input-at-all
             check-patch-file-names
+            check-patch-headers
             check-synopsis-style
             check-derivation
             check-home-page
@@ -87,6 +92,7 @@
             check-formatting
             check-archival
             check-profile-collisions
+            check-haskell-stackage
 
             lint-warning
             lint-warning?
@@ -712,6 +718,54 @@ patch could not be found."
                      (_ #f))
                    patches)))))
 
+(define (check-patch-headers package)
+  "Check that PACKAGE's patches start with a comment.  Return a list of
+warnings."
+  (define (blank? str)
+    (string-every char-set:blank str))
+
+  (define (patch-header-warnings patch)
+    (call-with-input-file patch
+      (lambda (port)
+        ;; Read from PORT until a non-blank line is found or EOF is reached.
+        (let loop ()
+          (let ((line (read-line port)))
+            (cond ((eof-object? line)
+                   (list (make-warning package
+                                       (G_ "~a: empty patch")
+                                       (list (basename patch))
+                                       #:field 'source)))
+                  ((blank? line)
+                   (loop))
+                  ((or (string-prefix? "--- " line)
+                       (string-prefix? "+++ " line))
+                   (list (make-warning package
+                                       (G_ "~a: patch lacks comment and \
+upstream status")
+                                       (list (basename patch))
+                                       #:field 'source)))
+                  (else
+                   '())))))))
+
+  (guard (c ((formatted-message? c)               ;raised by 'search-patch'
+             (list (%make-warning package
+                                  (formatted-message-string c)
+                                  (formatted-message-arguments c)
+                                  #:field 'source))))
+   (let ((patches (if (origin? (package-source package))
+                      (origin-patches (package-source package))
+                      '())))
+     (append-map (lambda (patch)
+                   ;; Dismiss PATCH if it's an origin or similar.
+                   (cond ((string? patch)
+                          (patch-header-warnings patch))
+                         ((local-file? patch)
+                          (patch-header-warnings
+                           (local-file-absolute-file-name patch)))
+                         (else
+                          '())))
+                 patches))))
+
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
   (list->string
@@ -1234,6 +1288,25 @@ Heritage")
               '()
               (apply throw key args))))))))
 
+(define (check-haskell-stackage package)
+  "Check whether PACKAGE is a Haskell package ahead of the current
+Stackage LTS version."
+  (match (with-networking-fail-safe
+          (format #f (G_ "while retrieving upstream info for '~a'")
+                  (package-name package))
+          #f
+          (package-latest-release package (list %stackage-updater)))
+    ((? upstream-source? source)
+     (if (version>? (package-version package)
+                    (upstream-source-version source))
+         (list
+          (make-warning package
+                        (G_ "ahead of Stackage LTS version ~a")
+                        (list (upstream-source-version source))
+                        #:field 'version))
+         '()))
+    (#f '())))
+
 
 ;;;
 ;;; Source code formatting.
@@ -1418,6 +1491,10 @@ or a list thereof")
     (description "Validate file names and availability of patches")
     (check       check-patch-file-names))
    (lint-checker
+    (name        'patch-headers)
+    (description "Validate patch headers")
+    (check       check-patch-headers))
+   (lint-checker
      (name        'formatting)
      (description "Look for formatting issues in the source")
      (check       check-formatting))))
@@ -1456,7 +1533,11 @@ or a list thereof")
    (lint-checker
      (name        'archival)
      (description "Ensure source code archival on Software Heritage")
-     (check       check-archival))))
+     (check       check-archival))
+   (lint-checker
+     (name        'haskell-stackage)
+     (description "Ensure Haskell packages use Stackage LTS versions")
+     (check       check-haskell-stackage))))
 
 (define %all-checkers
   (append %local-checkers

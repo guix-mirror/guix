@@ -62,7 +62,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/liblouis/liblouis.git")
+         (url "https://github.com/liblouis/liblouis")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -115,7 +115,7 @@ Marburg.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/liblouis/liblouisutdml.git")
+         (url "https://github.com/liblouis/liblouisutdml")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

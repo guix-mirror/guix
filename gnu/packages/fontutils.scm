@@ -283,7 +283,7 @@ work with most software requiring Type 1 fonts.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/google/woff2.git")
+         (url "https://github.com/google/woff2")
          (commit (string-append "v" version))))
        (file-name
         (git-file-name name version))

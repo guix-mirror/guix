@@ -349,7 +349,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Haivision/srt.git")
+         (url "https://github.com/Haivision/srt")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -386,7 +386,7 @@ performance across unpredictable networks, such as the Internet.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Haivision/srt.git")
+         (url "https://github.com/Haivision/srt")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -402,7 +402,7 @@ performance across unpredictable networks, such as the Internet.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/sctp/lksctp-tools.git")
+         (url "https://github.com/sctp/lksctp-tools")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -458,7 +458,7 @@ at the link-layer level.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nanomsg/nng.git")
+             (url "https://github.com/nanomsg/nng")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -501,7 +501,7 @@ publish/subscribe, RPC-style request/reply, or service discovery.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/nanomsg/nanomsg.git")
+         (url "https://github.com/nanomsg/nanomsg")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256

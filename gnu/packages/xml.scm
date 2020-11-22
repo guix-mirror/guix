@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,7 +85,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hughsie/libxmlb.git")
+         (url "https://github.com/hughsie/libxmlb")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -218,7 +219,7 @@ project (but it is usable outside of the Gnome platform).")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -278,7 +279,7 @@ It uses libxml2 to access the XML files.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -1260,7 +1261,15 @@ C++ programming language.")
            (substitute* "Makefile"
              (("^examples/schema1\\\\") "\\")
              (("^examples/valid1\\\\") "\\"))
-           #t)))))
+           #t))
+       (add-after 'install 'symlink-xmlstarlet
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Other distros usually either rename or symlink the `xml' binary
+           ;; as `xmlstarlet', let's do it as well for compatibility.
+           (let* ((out (assoc-ref outputs "out"))
+                  (bin (string-append out "/bin")))
+             (symlink "xml" (string-append bin "/xmlstarlet"))
+             #t))))))
    (inputs
     `(("libxslt" ,libxslt)
       ("libxml2" ,libxml2)))

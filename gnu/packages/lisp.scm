@@ -1011,3 +1011,40 @@ including a built-in database engine and a GUI system.")
      (package
        (inherit picolisp32)
        (name "picolisp")))))
+
+(define-public janet
+  (package
+    (name "janet")
+    (version "1.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/janet-lang/janet")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0if514zdmbjvvrsa9x5yfvg2b14sz53yaka12g3yhwkq8ls3qk0c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list
+                     (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                     (string-append "PREFIX=")
+                     (string-append "CC=" (assoc-ref %build-inputs "gcc")
+                                    "/bin/gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           (lambda _
+             (invoke "make" "test"))))))
+    (home-page "https://janet-lang.org/")
+    (synopsis "Functional, imperative and embeddable programming language")
+    (description
+     "Janet is a functional and imperative programming language.  It can be
+used for rapid prototyping, dynamic systems, and other domains where dynamic
+languages shine.  You can also add Janet scripting to an application by
+embedding a single C file and two headers.  It can be easily ported to new
+platforms.  The entire language (core library, interpreter, compiler,
+assembler, PEG) is less than 1MB.")
+    (license license:expat)))

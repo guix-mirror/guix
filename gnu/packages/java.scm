@@ -2723,7 +2723,7 @@ debugging, etc.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
+                    (url "https://github.com/javacc/javacc")
                     (commit "release_32")))
               (file-name (string-append "javacc-" version "-checkout"))
               (sha256

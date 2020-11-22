@@ -1379,7 +1379,7 @@ debugging them, and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/john30/ebusd.git")
+                     (url "https://github.com/john30/ebusd")
                      (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -1407,7 +1407,7 @@ debugging them, and more.")
         ,(origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/john30/ebusd-configuration.git")
+                     (url "https://github.com/john30/ebusd-configuration")
                      (commit "666c0f6b9c4d7545eff7f43ab28a1c7baeab7913")))
               (file-name "config-checkout")
               (sha256

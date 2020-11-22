@@ -1145,7 +1145,7 @@ optimized for performance yet simple to use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tv42/httpunix.git")
+               (url "https://github.com/tv42/httpunix")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1714,7 +1714,7 @@ finding resources located relative to the executable file.")
          (method git-fetch)
          (uri (git-reference
                (url
-                "https://github.com/ayufan/golang-kardianos-service.git")
+                "https://github.com/ayufan/golang-kardianos-service")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

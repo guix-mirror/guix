@@ -352,15 +352,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.9-version "5.9.8")
+(define-public linux-libre-5.9-version "5.9.9")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
    (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "0wp0mx5d2qhv7brc595qj34phiaxz9z5gf26w5369nh9mll5cbw6")))
+   (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "19l67gzk97higd2cbggipcb0wi21pv0ag0mc4qh6cqk564xp6mkn")))
+        (hash (base32 "1b8zysy0br131ydhc7ycxhh8d88r44xrmkf2q2lffy0jmy3d60m3")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,7 +368,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.77")
+(define-public linux-libre-5.4-version "5.4.78")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +376,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1xyvml0mps7bsa11bgpa4l0w8x6pasdz9yab2z4ds394f1lkxq53")))
+        (hash (base32 "0z8skj0w9jfrz9pfxaqfzqh82l13bz5lhza2wjsxk02cyhhnm226")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.157")
+(define-public linux-libre-4.19-version "4.19.158")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0mgpgv2ny49bb7kgaygy2ay6ckjgw7mg091viivi66jw4mjs7p3n")))
+        (hash (base32 "0p5pim9izcscnk1a1kdlxbvyvxnnq9lqr1kwl86kfskr7yqy8n6n")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.206")
+(define-public linux-libre-4.14-version "4.14.207")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1b46f0s15xnlam43cmw8w41rrvcwrhm6km0278lq6f86lpx3w8qw")))
+        (hash (base32 "0a804hwh7cwbdd2gnr5n9i32b4s6gppd8iqihah4sn4q1nbm79vq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.243")
+(define-public linux-libre-4.9-version "4.9.244")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "111rlzx6z4kf8zwxncib96d9wy6qmkbs0cq3dhnybipwlyf1iank")))
+        (hash (base32 "02givxp0y04qma5nlqbpyxdcl7xdb41p3gw7kgj2rmwdanhzaylr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.243")
+(define-public linux-libre-4.4-version "4.4.244")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1daqbmj9ka9wdkkym625hqwqaxq5n11y7c4yc9ln3xkjpnv4dplm")))
+        (hash (base32 "0brdj6z7flchig80ja0dhzcrpl743lh74s4r4r6prbgkksif9ahp")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1043,39 +1043,45 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 
 (define-public acpi-call-linux-module
-  (let ((commit "70b9c80bd700e6a4d10797eaac9fd34b7e8cbd4a")
-        (revision "0"))
-    (package
-      (name "acpi-call-linux-module")
-      (version (git-version "3.17" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/teleshoes/acpi_call")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "09c1vw6vcrkqxbwhpgfgpj4d1grzn4qq6ka8pwwzm7cvm405xj7x"))))
-      (build-system linux-module-build-system)
-      (arguments
-       `(#:tests? #f                    ; no tests
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-documentation
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (string-append out "/share/doc/" ,name "-" ,version)))
-                 (for-each (lambda (file)
-                             (let ((target (string-append doc "/" file)))
-                               (mkdir-p (dirname target))
-                               (copy-recursively file target)))
-                           (list "README.md" "examples"))
-                 #t))))))
-      (home-page "https://github.com/teleshoes/acpi_call")
-      (synopsis "Linux kernel module to perform ACPI method calls")
-      (description
-       "This simple Linux kernel module allows calls from user space to any
+  (package
+    (name "acpi-call-linux-module")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nix-community/acpi_call")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mr4rjbv6fj4phf038addrgv32940bphghw2v9n1z4awvw7wzkbg"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-shebangs-harder
+           ;; The (only) shebangs in examples/ don't justify a reference.
+           ;; However, do substitute a more portable one than the original.
+           (lambda _
+             (substitute* (find-files "examples" ".")
+               (("^(#! *)/[^ ]*/" _ shebang)
+                (string-append shebang "/usr/bin/env ")))
+             #t))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "README.md" "examples"))
+               #t))))))
+    (home-page "https://github.com/teleshoes/acpi_call")
+    (synopsis "Linux kernel module to perform ACPI method calls")
+    (description
+     "This simple Linux kernel module allows calls from user space to any
 @acronym{ACPI, Advanced Configuration and Power Interface} method provided by
 your computer's firmware, by writing to @file{/proc/acpi/call}.  You can pass
 any number of parameters of types @code{ACPI_INTEGER}, @code{ACPI_STRING},
@@ -1083,7 +1089,7 @@ and @code{ACPI_BUFFER}.
 
 It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
-      (license license:gpl3+))))        ; see README.md (no licence headers)
+    (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
   (let ((commit "df2b8dfd8cb7d9f6cfeb55abaeab8a5372011fc9")
@@ -1367,7 +1373,7 @@ at login.  Local and dynamic reconfiguration are its key features.")
         ;; Tests not distributed in pypi release.
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/minrk/pamela.git")
+               (url "https://github.com/minrk/pamela")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -5822,7 +5828,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -5830,7 +5836,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "1wql62cg8f95cwpy057cl764nni9g4sdn5lqj68x22kjs8w71yhz"))))
+                "0m8dlg1v7kflcxvajs4p76p275qwsm2abbf5mfapkakp7hw7wc7f"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
@@ -7523,7 +7529,7 @@ and above.")
 (define-public bpftrace
   (package
     (name "bpftrace")
-    (version "0.10.0")
+    (version "0.11.4")
     (source
      (origin
        (method git-fetch)
@@ -7532,8 +7538,7 @@ and above.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "023ardywbw5w8815j2ny9rrp2xlpxndqaa7v2njjm8109p7ilsdn"))
+        (base32 "0y4qgm2cpccrsm20rnh92hqplddqsc5q5zhw9nqn2igm3h9i0z7h"))
        (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -7575,7 +7580,7 @@ created by Alastair Robertson.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/eBUS/ttyebus.git")
+               (url "https://github.com/eBUS/ttyebus")
                (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f")))
          (file-name (git-file-name name version))
          (sha256

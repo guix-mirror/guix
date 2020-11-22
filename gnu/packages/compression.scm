@@ -1302,7 +1302,7 @@ or junctions, and always follows hard links.")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                    (url "http://github.com/twogood/unshield.git")
+                    (url "http://github.com/twogood/unshield")
                     (commit version)))
              (file-name (git-file-name name version))
              (sha256

@@ -508,9 +508,17 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
           (option '("with-debug-info") #t #f
                   (parser 'with-debug-info))
           (option '("without-tests") #t #f
-                  (parser 'without-tests)))))
+                  (parser 'without-tests))
 
-(define (show-transformation-options-help)
+          (option '("help-transform") #f #f
+                  (lambda _
+                    (format #t
+                            (G_ "Available package transformation options:~%"))
+                    (show-transformation-options-help/detailed)
+                    (newline)
+                    (exit 0))))))
+
+(define (show-transformation-options-help/detailed)
   (display (G_ "
       --with-source=[PACKAGE=]SOURCE
                          use SOURCE when building the corresponding package"))
@@ -539,6 +547,10 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
       --without-tests=PACKAGE
                          build PACKAGE without running its tests")))
 
+(define (show-transformation-options-help)
+  "Show basic help for package transformation options."
+  (display (G_ "
+      --help-transform   list package transformation options not shown here")))
 
 (define (options->transformation opts)
   "Return a procedure that, when passed an object to build (package,
