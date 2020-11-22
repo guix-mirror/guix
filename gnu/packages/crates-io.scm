@@ -10030,14 +10030,7 @@ retrieving random data from system source.")
     (arguments
      `(#:cargo-inputs
        (("rust-gettext-sys" ,rust-gettext-sys-0.19)
-        ("rust-locale-config" ,rust-locale-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'use-system-gettext
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gettext (assoc-ref inputs "gettext")))
-               (setenv "GETTEXT_SYSTEM" gettext)
-               #t))))))
+        ("rust-locale-config" ,rust-locale-config-0.3))))
     (inputs
      `(("gettext" ,gettext-minimal)))
     (home-page "https://github.com/Koka/gettext-rs")
@@ -10062,14 +10055,7 @@ retrieving random data from system source.")
     (arguments
      `(#:cargo-inputs
        (("rust-gettext-sys" ,rust-gettext-sys-0.19)
-        ("rust-locale-config" ,rust-locale-config-0.2))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'use-system-gettext
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gettext (assoc-ref inputs "gettext")))
-               (setenv "GETTEXT_SYSTEM" gettext)
-               #t))))))))
+        ("rust-locale-config" ,rust-locale-config-0.2))))))
 
 (define-public rust-gettext-sys-0.19
   (package
@@ -10090,14 +10076,7 @@ retrieving random data from system source.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cc" ,rust-cc-1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'use-system-gettext
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gettext (assoc-ref inputs "gettext")))
-               (setenv "GETTEXT_SYSTEM" gettext)
-               #t))))))
+       (("rust-cc" ,rust-cc-1))))
     (inputs
      `(("gettext" ,gettext-minimal)))
     (home-page "https://github.com/Koka/gettext-rs")
