@@ -6770,6 +6770,29 @@ marginal benefit compared to the additional complexity of a new
 interface.")
     (license license:expat)))
 
+(define-public emacs-orderless
+  (package
+    (name "emacs-orderless")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oantolin/orderless")
+             (commit version)))
+       (sha256
+        (base32 "032lfwflkpaxbcxl4jf438vapswsdagipjczcn30sc4dfdh3p42c"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/oantolin/orderless")
+    (synopsis "Emacs completion style that matches multiple regexps in any order")
+    (description "This package provides an orderless completion style that
+divides the pattern into space-separated components, and matches candidates
+that match all of the components in any order.  Each component can match in
+any one of several ways: literally, as a regexp, as an initialism, in the flex
+style, or as multiple word prefixes.")
+    (license license:gpl3+)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
