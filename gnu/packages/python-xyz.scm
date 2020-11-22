@@ -8892,6 +8892,32 @@ Supported netlink families and protocols include:
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
 
+(define-public python-commonmark
+  (package
+    (name "python-commonmark")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "commonmark" version))
+       (sha256
+        (base32 "0q7d39lm8kcingpmykk5r959hrwwj6v2icyw3mihczxyb749sbs5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "setup.py" "test"))))))
+    (home-page "https://github.com/readthedocs/commonmark.py")
+    (synopsis "Python parser for the CommonMark Markdown spec")
+    (description
+     "This module is a pure Python port of jgm's @code{commonmark.js}, a
+Markdown parser and renderer for the CommonMark specification, using only
+native modules.")
+    (license license:bsd-3)))
+
 (define-public python-xlrd
   (package
     (name "python-xlrd")
