@@ -1042,39 +1042,37 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 
 (define-public acpi-call-linux-module
-  (let ((commit "70b9c80bd700e6a4d10797eaac9fd34b7e8cbd4a")
-        (revision "0"))
-    (package
-      (name "acpi-call-linux-module")
-      (version (git-version "3.17" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/teleshoes/acpi_call")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "09c1vw6vcrkqxbwhpgfgpj4d1grzn4qq6ka8pwwzm7cvm405xj7x"))))
-      (build-system linux-module-build-system)
-      (arguments
-       `(#:tests? #f                    ; no tests
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-documentation
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (string-append out "/share/doc/" ,name "-" ,version)))
-                 (for-each (lambda (file)
-                             (let ((target (string-append doc "/" file)))
-                               (mkdir-p (dirname target))
-                               (copy-recursively file target)))
-                           (list "README.md" "examples"))
-                 #t))))))
-      (home-page "https://github.com/teleshoes/acpi_call")
-      (synopsis "Linux kernel module to perform ACPI method calls")
-      (description
-       "This simple Linux kernel module allows calls from user space to any
+  (package
+    (name "acpi-call-linux-module")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nix-community/acpi_call")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mr4rjbv6fj4phf038addrgv32940bphghw2v9n1z4awvw7wzkbg"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "README.md" "examples"))
+               #t))))))
+    (home-page "https://github.com/teleshoes/acpi_call")
+    (synopsis "Linux kernel module to perform ACPI method calls")
+    (description
+     "This simple Linux kernel module allows calls from user space to any
 @acronym{ACPI, Advanced Configuration and Power Interface} method provided by
 your computer's firmware, by writing to @file{/proc/acpi/call}.  You can pass
 any number of parameters of types @code{ACPI_INTEGER}, @code{ACPI_STRING},
@@ -1082,7 +1080,7 @@ and @code{ACPI_BUFFER}.
 
 It grants direct and undocumented access to your hardware that may cause damage
 and should be used with caution, especially on untested models.")
-      (license license:gpl3+))))        ; see README.md (no licence headers)
+    (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
   (let ((commit "df2b8dfd8cb7d9f6cfeb55abaeab8a5372011fc9")
