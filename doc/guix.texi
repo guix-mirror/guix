@@ -829,6 +829,7 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 or later;
 @item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
+@item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0

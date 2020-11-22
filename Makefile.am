@@ -73,6 +73,7 @@ include gnu/local.mk
 include po/doc/local.mk
 
 MODULES =					\
+  guix/avahi.scm				\
   guix/base16.scm				\
   guix/base32.scm				\
   guix/base64.scm				\

@@ -161,6 +161,12 @@ if test "x$have_guile_lzlib" != "xyes"; then
   AC_MSG_ERROR([Guile-lzlib is missing; please install it.])
 fi
 
+dnl Check for Guile-Avahi.
+GUILE_MODULE_AVAILABLE([have_guile_avahi], [(avahi)])
+if test "x$have_guile_avahi" != "xyes"; then
+  AC_MSG_ERROR([Guile-Avahi is missing; please install it.])
+fi
+
 dnl Guile-newt is used by the graphical installer.
 GUILE_MODULE_AVAILABLE([have_guile_newt], [(newt)])
 

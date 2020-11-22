@@ -294,6 +294,7 @@ $(prefix)/etc/init.d\n")))
                                (guile  ,@(if (%current-target-system)
                                              '((assoc-ref native-inputs "guile"))
                                              '((assoc-ref inputs "guile"))))
+                               (avahi  (assoc-ref inputs "guile-avahi"))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
@@ -305,7 +306,7 @@ $(prefix)/etc/init.d\n")))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
-                               (deps   (list gcrypt json sqlite gnutls
+                               (deps   (list avahi gcrypt json sqlite gnutls
                                              git bs ssh zlib lzlib))
                                (effective
                                 (read-line
@@ -349,6 +350,7 @@ $(prefix)/etc/init.d\n")))
                        ;; cross-compilation.
                        ("guile" ,guile-3.0-latest) ;for faster builds
                        ("gnutls" ,gnutls)
+                       ("guile-avahi" ,guile-avahi)
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-4)
                        ("guile-sqlite3" ,guile-sqlite3)
@@ -399,6 +401,7 @@ $(prefix)/etc/init.d\n")))
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
        `(("gnutls" ,(if (%current-target-system) gnutls-3.6.14 gnutls))
+         ("guile-avahi" ,guile-avahi)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)

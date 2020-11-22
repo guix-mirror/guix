@@ -50,6 +50,7 @@
                (module-ref (resolve-interface module) variable))))
     (match-lambda
       ("guile"      (ref '(gnu packages guile) 'guile-3.0/libgc-7))
+      ("guile-avahi" (ref '(gnu packages guile) 'guile-avahi))
       ("guile-json" (ref '(gnu packages guile) 'guile-json-4))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
@@ -784,6 +785,9 @@ Info manual."
                         (xz (specification->package "xz"))
                         (guix (specification->package "guix")))
   "Return a file-like object that contains a compiled Guix."
+  (define guile-avahi
+    (specification->package "guile-avahi"))
+
   (define guile-json
     (specification->package "guile-json"))
 
@@ -812,8 +816,9 @@ Info manual."
     (match (append-map (lambda (package)
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
-                       (list guile-gcrypt gnutls guile-git guile-json
-                             guile-ssh guile-sqlite3 guile-zlib guile-lzlib))
+                       (list guile-gcrypt gnutls guile-git guile-avahi
+                             guile-json guile-ssh guile-sqlite3 guile-zlib
+                             guile-lzlib))
       (((labels packages _ ...) ...)
        packages)))
 
