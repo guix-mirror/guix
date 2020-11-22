@@ -73,6 +73,7 @@
         ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.4))
        #:cargo-development-inputs
        (("rust-datetime" ,rust-datetime-0.4))
+       #:phases
        (modify-phases %standard-phases
          ;; Ignoring failing tests.
          ;; Reported in https://github.com/ogham/exa/issues/318
