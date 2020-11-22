@@ -26169,32 +26169,6 @@ data type.")
             license:expat
             license:asl2.0))))
 
-(define-public rust-slog-2.4
-  (package
-    (name "rust-slog")
-    (version "2.4.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "slog" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "13jh74jlckzh5cygkhs0k4r82wnmw8ha2km829xwslhr83n2w6hy"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-erased-serde" ,rust-erased-serde-0.3))))
-    (home-page "https://github.com/slog-rs/slog")
-    (synopsis "Structured, extensible, composable logging for Rust")
-    (description
-     "Structured, extensible, composable logging for Rust.")
-    (license (list license:mpl2.0
-                   license:expat
-                   license:asl2.0))))
-
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
@@ -31845,7 +31819,7 @@ Unix users and groups.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde" ,rust-serde-1)
         ("rust-sha1" ,rust-sha1-0.6)
-        ("rust-slog" ,rust-slog-2.4)
+        ("rust-slog" ,rust-slog-2.5)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1)
