@@ -30486,7 +30486,7 @@ automatically instrumenting functions.")
 (define-public rust-tracing-log-0.1
   (package
     (name "rust-tracing-log")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -30495,11 +30495,12 @@ automatically instrumenting functions.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qsinlbk2knrqgx1k2zq8kjxs71x44vzpma2rin1sm462agcjav5"))))
+         "1fdr0az98q9m5kiybvdvsb2m9mg86fdidgb5czzq2d71g1qqq3sy"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-tracing-core" ,rust-tracing-core-0.1))
        #:cargo-development-inputs
