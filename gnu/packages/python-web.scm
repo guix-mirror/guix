@@ -1010,6 +1010,30 @@ Origin Resource Sharing}, making cross-origin AJAX possible.")
 into Jinja2 by default.")
     (license license:bsd-3)))
 
+(define-public python-flask-session
+  (package
+    (name "python-flask-session")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-Session" version))
+       (sha256
+        (base32
+         "08s4msg8jzb8vgb9bd491zvrzhrdldxdw6vimb0kx5kgy2xy4s07"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Tests require the various storage backends to be present
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (home-page "https://github.com/fengsp/flask-session")
+    (synopsis "Adds server-side session support to your Flask application")
+    (description
+     "Flask-Session is an extension for Flask that adds support for
+Server-side sessions, with a variety of different backends for session
+storage.")
+    (license license:bsd-3)))
+
 (define-public python-html5lib
   (package
     (name "python-html5lib")
