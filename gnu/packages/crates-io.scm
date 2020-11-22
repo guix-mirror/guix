@@ -22282,6 +22282,29 @@ functionality as retain but gives mutable borrow to the predicate.")
     (description "This package provided safe, fast, small crypto using Rust.")
     (license (list license:isc license:openssl))))
 
+(define-public rust-ring-0.14
+  (package
+    (inherit rust-ring-0.16)
+    (name "rust-ring")
+    (version "0.14.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ring" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0g091akf4dpg9qj05z3gc4nlrs57mjj2bqab98gaqp79wf3c2ss2"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-spin" ,rust-spin-0.5)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-cc" ,rust-cc-1))))))
+
 (define-public rust-ring-0.13
   (package/inherit rust-ring-0.16
     (name "rust-ring")
