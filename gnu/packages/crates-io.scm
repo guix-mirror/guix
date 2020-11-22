@@ -5914,14 +5914,7 @@ use with bindgen.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
-       #:phases
-       (modify-phases %standard-phases
-        (add-after 'unpack 'find-openssl
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((openssl (assoc-ref inputs "openssl")))
-              (setenv "OPENSSL_DIR" openssl))
-            #t)))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -10362,10 +10355,11 @@ DWARF debugging format.")
         ("rust-thread-id" ,rust-thread-id-3)
         ("rust-time" ,rust-time-0.1))))
     (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
      `(("libgit2" ,libgit2)
        ("libssh2" ,libssh2)
        ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Rust bindings to libgit2")
@@ -13602,18 +13596,12 @@ algorithm and related formats (ZLIB, GZIP).")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'dont-vendor-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
      `(("libgit2" ,libgit2)
        ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Native bindings to the libgit2 library")
@@ -13896,7 +13884,6 @@ allocator.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-missing-env-vars
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "OPENSSL_DIR" (assoc-ref inputs "openssl"))
              (setenv "LIBCLANG_PATH"
                      (string-append (assoc-ref inputs "clang") "/lib"))
              #t)))))
@@ -14139,18 +14126,12 @@ pairs in insertion order.")
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'dont-vendor-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
      `(("libssh2" ,libssh2)
        ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
     (home-page "https://github.com/alexcrichton/ssh2-rs")
     (synopsis "Native bindings to the libssh2 library")
@@ -16040,17 +16021,11 @@ IO of Windows's named pipes.")
         ("rust-security-framework-sys" ,rust-security-framework-sys-0.3)
         ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
-       (("rust-hex" ,rust-hex-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'find-openssl
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))
+       (("rust-hex" ,rust-hex-0.3))))
     (native-inputs
-     `(("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://github.com/sfackler/rust-native-tls")
     (synopsis
      "Wrapper over a platform's native TLS implementation")
@@ -17633,7 +17608,7 @@ You probably don't want to link to this crate directly; instead check out the
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
              #t)))))
-    (native-inputs
+    (inputs
      `(("openssl" ,openssl-1.0))))) ; for openssl-sys-extras
 
 (define-public rust-openssl-probe-0.1
@@ -17677,17 +17652,11 @@ system for OpenSSL.")
         ("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'find-openssl
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://github.com/sfackler/rust-openssl")
     (synopsis "FFI bindings to OpenSSL")
     (description
@@ -17721,14 +17690,7 @@ system for OpenSSL.")
        (("rust-gdi32-sys" ,rust-gdi32-sys-0.2)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-user32-sys" ,rust-user32-sys-0.2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'find-openssl
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-openssl-sys-extras-0.7
   (package
@@ -17756,7 +17718,7 @@ system for OpenSSL.")
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
              #t)))))
-    (native-inputs
+    (inputs
      `(("openssl" ,openssl-1.0)))   ; openssl-1.0 specifically
     (home-page "https://github.com/sfackler/rust-openssl")
     (synopsis
@@ -25752,7 +25714,7 @@ functionality and without weak references.")
              (substitute* "Cargo.toml"
                ((", path =.*}") "}"))
              #t)))))
-    (native-inputs
+    (inputs
      `(("openssl" ,openssl-1.0))))) ; for openssl-sys-extras
 
 (define-public rust-sha1-asm-0.4
@@ -31008,8 +30970,9 @@ extension for the Trust-DNS client to use rustls for TLS.")
         (base32
          "0vbh2y7w2s5gcw33fn4hb5f927kgjm6603vw63slg9riikmsiq43"))))
     (native-inputs
-     `(("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (arguments
      `(#:cargo-test-flags
        '("--release" "--" "--skip=tests::test_tls_client_stream_ipv4")
@@ -31023,14 +30986,7 @@ extension for the Trust-DNS client to use rustls for TLS.")
         ("rust-webpki" ,rust-webpki-0.19))
        #:cargo-development-inputs
        (("rust-openssl" ,rust-openssl-0.10)
-        ("rust-tokio" ,rust-tokio-0.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'find-openssl
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openssl (assoc-ref inputs "openssl")))
-               (setenv "OPENSSL_DIR" openssl))
-             #t)))))))
+        ("rust-tokio" ,rust-tokio-0.1))))))
 
 (define-public rust-try-from-0.3
   (package
