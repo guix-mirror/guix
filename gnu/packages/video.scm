@@ -1625,7 +1625,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-librav1e" ,flags))))))
+        `(delete "--enable-librav1e" ,flags))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("rav1e")))))
 
 (define-public ffmpeg-3.4
   (package
