@@ -26142,7 +26142,7 @@ data type.")
      "Rust FFI bindings to the SLEEF Vectorized Math Library.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-slog-2.5
+(define-public rust-slog-2
   (package
     (name "rust-slog")
     (version "2.5.2")
@@ -31790,7 +31790,7 @@ Unix users and groups.")
         ("rust-md5" ,rust-md5-0.6)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-serde" ,rust-serde-1)
-        ("rust-slog" ,rust-slog-2.5))))
+        ("rust-slog" ,rust-slog-2))))
     (home-page "https://github.com/uuid-rs/uuid")
     (synopsis "Library to generate and parse UUIDs")
     (description
@@ -31819,7 +31819,7 @@ Unix users and groups.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde" ,rust-serde-1)
         ("rust-sha1" ,rust-sha1-0.6)
-        ("rust-slog" ,rust-slog-2.5)
+        ("rust-slog" ,rust-slog-2)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1)
