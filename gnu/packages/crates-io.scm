@@ -30636,6 +30636,48 @@ extension for the Trust-DNS client to use tokio-openssl for TLS.")
 foundational DNS protocol library for all Trust-DNS projects.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-proto-0.7
+  (package
+    (inherit rust-trust-dns-proto-0.19)
+    (name "rust-trust-dns-proto")
+    (version "0.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "trust-dns-proto" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0099dm57nnizx4apik9sh3mnvr7rp9mivc903v8xss13dkgynnam"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-enum-as-inner" ,rust-enum-as-inner-0.2)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-idna" ,rust-idna-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-ring" ,rust-ring-0.14)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-tokio-udp" ,rust-tokio-udp-0.1)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-url" ,rust-url-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-tokio" ,rust-tokio-0.1))))))
+
 (define-public rust-trust-dns-resolver-0.19
   (package
     (name "rust-trust-dns-resolver")
