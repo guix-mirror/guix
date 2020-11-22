@@ -912,6 +912,28 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 non-linear editors.")
     (license license:gpl2+)))
 
+(define-public gst-plugins/selection
+  (lambda* (pkg #:key plugins configure-flags)
+    "Build PKG with only PLUGINS enabled.  Optionally, if CONFIGURE-FLAGS are
+given, also pass them to the build system instead of the ones used by PKG."
+    (package/inherit pkg
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:configure-flags flags `(,@(or configure-flags '())))
+          `(append
+            (list
+             ,@(map (lambda (plugin)
+                      (string-append "-D" plugin "=enabled"))
+                    plugins))
+            (list ,@(or configure-flags flags))))
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'disable-auto-plugins
+                (lambda _
+                  (substitute* "meson_options.txt"
+                    (("'auto'") "'disabled'"))
+                  #t)))))))))
+
 (define-public python-gst
   (package
     (name "python-gst")
