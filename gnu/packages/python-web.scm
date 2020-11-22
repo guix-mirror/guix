@@ -984,6 +984,32 @@ both of which are installed automatically if you install this library.")
 Origin Resource Sharing}, making cross-origin AJAX possible.")
     (license license:expat)))
 
+(define-public python-flask-markdown
+  (package
+    (name "python-flask-markdown")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-Markdown" version))
+       (sha256
+        (base32
+         "0l32ikv4f7va926jlq4f7gx0xid247bhlxl6bd9av5dk8ljz1hyq"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))        ; Tests seem to be incompatible with latest python
+    (propagated-inputs
+     `(("python-markdown" ,python-markdown)
+       ("python-flask" ,python-flask)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/dcolish/flask-markdown")
+    (synopsis "Small extension to help with using Markdown in Flask")
+    (description
+     "Flask-Markdown supports several extensions for Markdown and integrates
+into Jinja2 by default.")
+    (license license:bsd-3)))
+
 (define-public python-html5lib
   (package
     (name "python-html5lib")
