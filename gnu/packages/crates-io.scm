@@ -29742,6 +29742,33 @@ using Rustls.")
         ("rust-webpki-roots" ,rust-webpki-roots-0.18))))
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tokio-rustls-0.9
+  (package
+    (inherit rust-tokio-rustls-0.12)
+    (name "rust-tokio-rustls")
+    (version "0.9.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tokio-rustls" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1jd63sl177sxacnksaxhazzmamwds98xk3niprh2qib75a1rk8cm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-webpki" ,rust-webpki-0.19))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tokio" ,rust-tokio-0.1))))))
+
 (define-public rust-tokio-signal-0.2
   (package
     (name "rust-tokio-signal")
