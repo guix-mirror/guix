@@ -55,6 +55,9 @@
                (base32
                 "0psh3zl9dj4n4r3lx25390nx34xz0bg0ql48zdskhq354ljni5p6"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'reproducible
