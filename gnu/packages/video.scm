@@ -4004,34 +4004,6 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
-(define-public gst-transcoder
-  (package
-    (name "gst-transcoder")
-    (version "1.12.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pitivi/gst-transcoder")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0nw1zykqc6c8xs3ri55pm00pwyz93z4y4nd880apfiwj7yv5p3az"))))
-    (build-system meson-build-system)
-    (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
-    (native-inputs
-     `(("python" ,python)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/pitivi/gst-transcoder/")
-    (synopsis "GStreamer Transcoding API")
-    (description "GStreamer Transcoding API")
-    (license license:lgpl2.1)))
-
 (define-public gavl
   (package
     (name "gavl")

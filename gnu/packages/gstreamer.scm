@@ -934,6 +934,13 @@ given, also pass them to the build system instead of the ones used by PKG."
                     (("'auto'") "'disabled'"))
                   #t)))))))))
 
+(define-public gst-transcoder
+  (deprecated-package
+   "gst-transcoder"
+   (gst-plugins/selection gst-plugins-bad
+                          #:plugins '("transcoder")
+                          #:configure-flags '("-Dintrospection=enabled"))))
+
 (define-public python-gst
   (package
     (name "python-gst")
