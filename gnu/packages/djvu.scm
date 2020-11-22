@@ -29,6 +29,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -229,3 +230,45 @@ It is able to extract:
     (description "This is a small tool to convert DjVu files to PDF files.")
     (home-page "https://0x2a.at/site/projects/djvu2pdf/")
     (license license:gpl2+)))
+
+(define-public minidjvu
+  (package
+    (name "minidjvu")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/minidjvu/minidjvu/"
+                           version "/minidjvu-" version ".tar.gz"))
+       (sha256
+        (base32 "0jmpvy4g68k6xgplj9zsl6brg6vi81mx3nx2x9hfbr1f4zh95j79"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:configure-flags '("--disable-static")
+       #:parallel-build? #f
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda _
+             (substitute* "Makefile.in"
+               (("/usr/bin/gzip")
+                "gzip"))
+             #t))
+         (add-before 'install 'make-lib-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+             #t)))))
+    (synopsis "Black and white DjVu encoder")
+    (description
+     "@code{minidjvu} is a multipage DjVu encoder and single page
+encoder/decoder.  It doesn't support colors or grayscales, just black
+and white.")
+    (home-page "https://sourceforge.net/projects/minidjvu/")
+    (license license:gpl2)))
