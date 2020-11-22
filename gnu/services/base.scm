@@ -1744,6 +1744,8 @@ proxy of 'guix-daemon'...~%")
            (default 80))
   (host    guix-publish-configuration-host        ;string
            (default "localhost"))
+  (advertise? guix-publish-advertise?       ;boolean
+              (default #f))
   (compression       guix-publish-configuration-compression
                      (thunked)
                      (default (default-compression this-record
@@ -1790,7 +1792,8 @@ raise a deprecation warning if the 'compression-level' field was used."
                    lst))))
 
   (match-record config <guix-publish-configuration>
-    (guix port host nar-path cache workers ttl cache-bypass-threshold)
+    (guix port host nar-path cache workers ttl cache-bypass-threshold
+          advertise?)
     (list (shepherd-service
            (provision '(guix-publish))
            (requirement '(guix-daemon))
@@ -1801,6 +1804,9 @@ raise a deprecation warning if the 'compression-level' field was used."
                            #$@(config->compression-options config)
                            (string-append "--nar-path=" #$nar-path)
                            (string-append "--listen=" #$host)
+                           #$@(if advertise?
+                                  #~("--advertise")
+                                  #~())
                            #$@(if workers
                                   #~((string-append "--workers="
                                                     #$(number->string

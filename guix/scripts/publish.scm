@@ -42,6 +42,7 @@
   #:use-module (web server)
   #:use-module (web uri)
   #:autoload   (sxml simple) (sxml->xml)
+  #:use-module (guix avahi)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix config)
@@ -70,6 +71,7 @@
             signed-string
 
             open-server-socket
+            publish-service-type
             run-publish-server
             guix-publish))
 
@@ -82,6 +84,8 @@ Publish ~a over HTTP.\n") %store-directory)
       --listen=HOST      listen on the network interface for HOST"))
   (display (G_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (G_ "
+  -a, --advertise        advertise on the local network"))
   (display (G_ "
   -C, --compression[=METHOD:LEVEL]
                          compress archives with METHOD at LEVEL"))
@@ -157,6 +161,9 @@ usage."
         (option '(#\V "version") #f #f
                 (lambda _
                   (show-version-and-exit "guix publish")))
+        (option '(#\a "advertise") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'advertise? #t result)))
         (option '(#\u "user") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'user arg result)))
@@ -1069,11 +1076,29 @@ methods, return the applicable compression."
           (x (not-found request)))
         (not-found request))))
 
+(define (service-name)
+  "Return the Avahi service name of the server."
+  (string-append "guix-publish-" (gethostname)))
+
+(define publish-service-type
+  ;; Return the Avahi service type of the server.
+  "_guix_publish._tcp")
+
 (define* (run-publish-server socket store
                              #:key
+                             advertise? port
                              (compressions (list %no-compression))
                              (nar-path "nar") narinfo-ttl
                              cache pool)
+  (when advertise?
+    (let ((name (service-name)))
+      ;; XXX: Use a callback from Guile-Avahi here, as Avahi can pick a
+      ;; different name to avoid name clashes.
+      (info (G_ "Advertising ~a~%.") name)
+      (avahi-publish-service-thread name
+                                    #:type publish-service-type
+                                    #:port port)))
+
   (run-server (make-request-handler store
                                     #:cache cache
                                     #:pool pool
@@ -1119,9 +1144,10 @@ methods, return the applicable compression."
                                 (lambda (arg result)
                                   (leave (G_ "~A: extraneous argument~%") arg))
                                 %default-options))
-           (user    (assoc-ref opts 'user))
-           (port    (assoc-ref opts 'port))
-           (ttl     (assoc-ref opts 'narinfo-ttl))
+           (advertise?  (assoc-ref opts 'advertise?))
+           (user        (assoc-ref opts 'user))
+           (port        (assoc-ref opts 'port))
+           (ttl         (assoc-ref opts 'narinfo-ttl))
            (compressions (match (filter-map (match-lambda
                                               (('compression . compression)
                                                compression)
@@ -1179,6 +1205,8 @@ consider using the '--user' option!~%")))
 
         (with-store store
           (run-publish-server socket store
+                              #:advertise? advertise?
+                              #:port port
                               #:cache cache
                               #:pool (and cache (make-pool workers
                                                            #:thread-name

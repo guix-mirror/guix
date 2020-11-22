@@ -12159,6 +12159,11 @@ The signing key pair must be generated before @command{guix publish} is
 launched, using @command{guix archive --generate-key} (@pxref{Invoking
 guix archive}).
 
+When the @option{--advertise} option is passed, the server advertises
+its availability on the local network using multicast DNS (mDNS) and DNS
+service discovery (DNS-SD), currently @i{via} Guile-Avahi (@pxref{Top,,,
+guile-avahi, Using Avahi in Guile Scheme Programs}).
+
 The general syntax is:
 
 @example
