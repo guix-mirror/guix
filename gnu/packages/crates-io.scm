@@ -1749,11 +1749,6 @@ that uses Serde for transforming structs into bytes and vice versa!")
          (add-after 'unpack 'enable-unstable-features
            (lambda _
              (setenv "RUSTC_BOOTSTRAP" "1")
-             #t))
-         (add-before 'configure 'configure-clang
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "LIBCLANG_PATH" (string-append (assoc-ref inputs "clang")
-                                                    "/lib"))
              #t)))))
     (home-page "https://rust-lang.github.io/rust-bindgen/")
     (synopsis "Generate Rust FFI bindings to C and C++ libraries.")
@@ -1798,17 +1793,9 @@ bindings to C and C++ libraries.")
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
-        ("rust-shlex" ,rust-shlex-0.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))
+        ("rust-shlex" ,rust-shlex-0.1))))
     (inputs
-     `(("libclang" ,clang)))))
+     `(("clang" ,clang)))))
 
 (define-public rust-bindgen-0.53
   (package
@@ -1845,15 +1832,7 @@ bindings to C and C++ libraries.")
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
-        ("rust-shlex" ,rust-shlex-0.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-shlex" ,rust-shlex-0.1))))))
 
 (define-public rust-bindgen-0.52
   (package
@@ -1891,15 +1870,7 @@ bindings to C and C++ libraries.")
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
-        ("rust-shlex" ,rust-shlex-0.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-shlex" ,rust-shlex-0.1))))))
 
 (define-public rust-bindgen-0.51
   (package
@@ -3530,17 +3501,9 @@ archive to be linked into Rustcode.")
      `(#:cargo-inputs
        (("rust-nom" ,rust-nom-5))
        #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.28))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))
+       (("rust-clang-sys" ,rust-clang-sys-0.28))))
     (inputs
-     `(("libclang" ,clang)))
+     `(("clang" ,clang)))
     (home-page "https://github.com/jethrogb/rust-cexpr")
     (synopsis "C expression parser and evaluator")
     (description
@@ -3565,15 +3528,7 @@ archive to be linked into Rustcode.")
      `(#:cargo-inputs
        (("rust-nom" ,rust-nom-4.2))
        #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.28))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+       (("rust-clang-sys" ,rust-clang-sys-0.28))))))
 
 (define-public rust-cexpr-0.2
   (package
@@ -3594,15 +3549,7 @@ archive to be linked into Rustcode.")
      `(#:cargo-inputs
        (("rust-nom" ,rust-nom-3))
        #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.11))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+       (("rust-clang-sys" ,rust-clang-sys-0.11))))))
 
 (define-public rust-cfg-if-0.1
   (package
@@ -3705,20 +3652,12 @@ depending on a large number of #[cfg] parameters.  Structured like an
          "0695kfrqx7n091fzm6msbqg2q2kyhka64q08lm63f3l9d964i8cx"))))
     (build-system cargo-build-system)
     (inputs
-     `(("libclang" ,clang)))
+     `(("clang" ,clang)))
     (arguments
      `(#:cargo-inputs
        (("rust-glob" ,rust-glob-0.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libloading" ,rust-libloading-0.6))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'configure-clang
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "LIBCLANG_PATH"
-                     (string-append (assoc-ref inputs "libclang")
-                                    "/lib"))
-             #t)))))
+        ("rust-libloading" ,rust-libloading-0.6))))
     (home-page "https://github.com/KyleMayes/clang-sys")
     (synopsis "Rust bindings for libclang")
     (description "This package provides Rust bindings for libclang.")
@@ -3742,15 +3681,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
      `(#:cargo-inputs
        (("rust-glob" ,rust-glob-0.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libloading" ,rust-libloading-0.5))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-libloading" ,rust-libloading-0.5))))))
 
 (define-public rust-clang-sys-0.28
   (package
@@ -3783,15 +3714,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
      `(#:cargo-inputs
        (("rust-glob" ,rust-glob-0.2)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libloading" ,rust-libloading-0.5))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-libloading" ,rust-libloading-0.5))))))
 
 (define-public rust-clang-sys-0.23
   (package
@@ -3828,15 +3751,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-glob" ,rust-glob-0.2)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libloading" ,rust-libloading-0.5))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-libloading" ,rust-libloading-0.5))))))
 
 (define-public rust-clang-sys-0.11
   (package
@@ -3860,15 +3775,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
         ("rust-glob" ,rust-glob-0.2)
         ("rust-lazy-static" ,rust-lazy-static-0.2)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libloading" ,rust-libloading-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))))
+        ("rust-libloading" ,rust-libloading-0.3))))))
 
 (define-public rust-clap-2
   (package
@@ -13879,14 +13786,7 @@ allocator.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-toml" ,rust-toml-0.4))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-missing-env-vars
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "LIBCLANG_PATH"
-                     (string-append (assoc-ref inputs "clang") "/lib"))
-             #t)))))
+        ("rust-toml" ,rust-toml-0.4))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -16108,15 +16008,7 @@ types as proposed in RFC 1158.")
         ("rust-thiserror" ,rust-thiserror-1))
        #:cargo-development-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-missing-env-vars
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; FIXME: why do we need to set this?
-             (setenv "LIBCLANG_PATH"
-                     (string-append (assoc-ref inputs "clang") "/lib"))
-             #t)))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://gitlab.com/sequoia-pgp/nettle-rs")
   (synopsis "Rust bindings for the Nettle cryptographic library")
   (description "This package provides Rust bindings for the Nettle
@@ -16158,15 +16050,7 @@ cryptographic library.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "clang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://gitlab.com/sequoia-pgp/nettle-sys")
     (synopsis "Low-level Rust bindings for the Nettle cryptographic library")
     (description "This package provides low-level Rust bindings for the Nettle
@@ -24774,14 +24658,7 @@ comparison.")
         ("rust-sequoia-rfc2822" ,rust-sequoia-rfc2822-0.9)
         ("rust-time" ,rust-time-0.1))
        #:cargo-development-inputs
-       (("rust-rpassword" ,rust-rpassword-3))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-missing-env-vars
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "LIBCLANG_PATH"
-                     (string-append (assoc-ref inputs "clang") "/lib"))
-             #t)))))
+       (("rust-rpassword" ,rust-rpassword-3))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
