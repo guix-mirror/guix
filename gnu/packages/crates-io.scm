@@ -23631,6 +23631,35 @@ Rust.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-webpki-roots" ,rust-webpki-roots-0.17))))))
 
+(define-public rust-rustls-0.15
+  (package
+    (inherit rust-rustls-0.16)
+    (name "rust-rustls")
+    (version "0.15.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustls" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vh93fhqfbn4ysw4xzkpkpqdz36xixz4mhs1qllgldfq5iay6wgj"))))
+    (arguments
+     `(#:tests? #f ;; 1/111 tests fail (test file not found)
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.14)
+        ("rust-sct" ,rust-sct-0.5)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-webpki" ,rust-webpki-0.19))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))))))
+
 (define-public rust-rustls-0.12
   (package/inherit rust-rustls-0.16
     (name "rust-rustls")
