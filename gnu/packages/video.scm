@@ -4004,6 +4004,73 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
+(define-public pitivi
+  ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
+  (let ((latest-semver "0.999.0")
+        (%version "2020.09.2"))
+   (package
+     (name "pitivi")
+     (version (string-append latest-semver "-" %version))
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnome/sources/" name "/"
+                                   (version-major+minor %version) "/"
+                                   name "-" %version ".tar.xz"))
+               (sha256
+                (base32
+                 "0hzvv4wia4rk0kvq16y27imq2qd4q5lg3vx99hdcjdb1x3zqqfg0"))))
+     (build-system meson-build-system)
+     (inputs
+      `(("glib" ,glib)
+        ("gst-editing-services" ,gst-editing-services)
+        ("gstreamer" ,gstreamer)
+        ("gst-plugins-base" ,gst-plugins-base)
+        ("gst-plugins-good" ,gst-plugins-good)
+        ("gst-plugins-bad"
+         ,(gst-plugins/selection gst-plugins-bad
+                                 #:plugins '("debugutils" "transcoder")
+                                 #:configure-flags '("-Dintrospection=enabled")))
+        ("gst-libav" ,gst-libav)
+        ("gsound" ,gsound)
+        ("gtk+" ,gtk+)
+        ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
+        ("libpeas" ,libpeas)
+        ("libnotify" ,libnotify)
+        ("pango" ,pango)
+        ("python-gst" ,python-gst)
+        ("python-numpy" ,python-numpy)
+        ("python-matplotlib" ,python-matplotlib)
+        ("python-pycairo" ,python-pycairo)
+        ("python-pygobject" ,python-pygobject)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+     (arguments
+      `(#:glib-or-gtk? #t
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'glib-or-gtk-wrap 'wrap-other-dependencies
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((prog (string-append (assoc-ref outputs "out")
+                                         "/bin/pitivi")))
+                (wrap-program prog
+                  `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                  ;; We've only added inputs for what Pitivi deems either
+                  ;; necessary or optional.  Let the user's packages take
+                  ;; precedence in case they have e.g. the full gst-plugins-bad.
+                  `("GST_PLUGIN_SYSTEM_PATH" suffix
+                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))))
+                #t)))))
+     (home-page "http://www.pitivi.org")
+     (synopsis "Video editor based on GStreamer Editing Services")
+     (description "Pitivi is a video editor built upon the GStreamer Editing
+Services.  It aims to be an intuitive and flexible application that can appeal
+to newbies and professionals alike.")
+     (license license:lgpl2.1+))))
+
 (define-public gavl
   (package
     (name "gavl")
