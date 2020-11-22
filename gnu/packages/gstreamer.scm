@@ -898,6 +898,8 @@ decoders, muxers, and demuxers provided by FFmpeg.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("flex" ,flex)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gst-plugins-good" ,gst-plugins-good)
        ("perl" ,perl)
