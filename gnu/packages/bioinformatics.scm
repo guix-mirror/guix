@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -66,6 +66,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cran)
@@ -82,6 +83,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graph)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
@@ -91,6 +93,7 @@
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
@@ -11169,23 +11172,44 @@ programs for inferring phylogenies (evolutionary trees).")
          "1z1vcpwbylixk0zywngg5iw0jv083jj1bqphi817jpg3fb9fx2jj"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; FIXME: Some tests fail because they produce warnings, others fail
-       ;; because the PYTHONPATH does not include the modeller's directory.
-       #:tests? #f))
+     `( ;; CMake 3.17 or newer is required for the CMAKE_TEST_ARGUMENTS used
+       ;; below to have an effect.
+       #:cmake ,cmake
+       #:configure-flags
+       (let ((disabled-tests
+              '("expensive"                 ;exclude expensive tests
+                "IMP.modeller"              ;fail to import its own modules
+                "IMP.parallel-test_sge.py"  ;fail in build container
+                ;; The following test fails non-reproducibly on
+                ;; an inexact numbers assertion.
+                "IMP.em-medium_test_local_fitting.py")))
+         (list
+          (string-append
+           "-DCMAKE_CTEST_ARGUMENTS="
+           (string-join
+            (list "-L" "-tests?-"       ;select only tests
+                  "-E" (format #f "'(~a)'" (string-join disabled-tests "|")))
+            ";"))))))
+    (native-inputs
+     `(("python" ,python-wrapper)
+       ("swig" ,swig)))
     (inputs
      `(("boost" ,boost)
+       ("cgal" ,cgal)
        ("gsl" ,gsl)
-       ("swig" ,swig)
        ("hdf5" ,hdf5)
        ("fftw" ,fftw)
        ("eigen" ,eigen)
-       ("python" ,python-2)))
+       ;; Enabling MPI causes the build to use all the available memory and
+       ;; fail (tested on a machine with 32 GiB of RAM).
+       ;;("mpi" ,openmpi)
+       ("opencv" ,opencv)))
     (propagated-inputs
-     `(("python2-numpy" ,python2-numpy)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-pandas" ,python2-pandas)
-       ("python2-scikit-learn" ,python2-scikit-learn)
-       ("python2-networkx" ,python2-networkx)))
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-pandas" ,python-pandas)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-networkx" ,python-networkx)))
     (home-page "https://integrativemodeling.org")
     (synopsis "Integrative modeling platform")
     (description "IMP's broad goal is to contribute to a comprehensive
