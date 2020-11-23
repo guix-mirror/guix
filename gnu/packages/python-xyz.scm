@@ -168,6 +168,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
@@ -16277,6 +16278,34 @@ and integration into other projects.")
 with BagIt style packages.  BagIt is a minimalist packaging format for digital
 preservation.")
     (license license:cc0)))
+
+(define-public python-prov
+  (package
+    (name "python-prov")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "prov" version))
+        (sha256
+         (base32
+          "1vi2fj31vygfcqrkimdmk52q2ldw08g9fn4v4zlgdfgcjlhqyhxn"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-lxml" ,python-lxml)
+       ("python-networkx" ,python-networkx)
+       ("python-rdflib" ,python-rdflib)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("python-pydot" ,python-pydot)))
+    (home-page "https://github.com/trungdong/prov")
+    (synopsis
+     "W3C Provenance Data Model supporting PROV-JSON, PROV-XML and PROV-O (RDF)")
+    (description
+     "This package provides a library for W3C Provenance Data Model supporting
+PROV-O (RDF), PROV-XML, PROV-JSON import/export.")
+    (license license:expat)))
 
 (define-public python-validators
   (package
