@@ -14,7 +14,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 André <eu@euandre.org>
+;;; Copyright © 2017, 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages golang)
@@ -2716,6 +2717,40 @@ interrupted, published, and collaborated on while in progress.")
      "Git Large File Storage (LFS) replaces large files such as audio samples,
 videos, datasets, and graphics with text pointers inside Git, while storing the
 file contents on a remote server.")
+    (license license:expat)))
+
+(define-public git-open
+  (package
+    (name "git-open")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/paulirish/git-open")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11n46bngvca5wbdbfcxzjhjbfdbad7sgf7h9gf956cb1q8swsdm0"))))
+    (build-system trivial-build-system)
+    (propagated-inputs
+     `(("xdg-utils" ,xdg-utils)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (out    (assoc-ref %outputs "out")))
+           (mkdir-p (string-append out "/bin"))
+           (copy-file (string-append source "/git-open")
+                      (string-append out "/bin/git-open"))
+           #t))))
+    (home-page "https://github.com/paulirish/git-open")
+    (synopsis "Open a Git repository's homepage from the command-line")
+    (description
+     "@code{git open} opens the repository's website from the command-line,
+guessing the URL pattern from the @code{origin} remote.")
     (license license:expat)))
 
 (define-public tla
