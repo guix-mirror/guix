@@ -103,6 +103,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages parallel)
@@ -2616,6 +2617,96 @@ Salad supports rich data modeling with inheritance, template specialization,
 object identifiers, object references, documentation generation, code
 generation, and transformation to RDF.  Salad provides a bridge between document
 and record oriented data modeling and the Semantic Web.")
+    (license license:asl2.0)))
+
+(define-public cwltool
+  (package
+    (name "cwltool")
+    (version "3.0.20201121085451")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/common-workflow-language/cwltool")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1awf99n7aglxc5zszrlrv6jxp355jp45ws7wpsgjlgcdv7advn0w"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-version-restrictions
+           (lambda _
+             (substitute* "setup.py"
+               (("== 1.5.1") ">=1.5.1") ; prov
+               ((", < 3.5") ""))        ; shellescape
+             #t))
+         (add-after 'unpack 'dont-use-git
+           (lambda _
+             (substitute* "gittaggers.py"
+               (("self.git_timestamp_tag\\(\\)")
+                (string-append "time.strftime('.%Y%m%d%H%M%S', time.gmtime(int("
+                               (string-drop ,version 4) ")))")))
+             #t))
+         (add-after 'unpack 'modify-tests
+           (lambda _
+             ;; Tries to connect to the internet.
+             (delete-file "tests/test_udocker.py")
+             (delete-file "tests/test_http_input.py")
+             (substitute* "tests/test_load_tool.py"
+               (("def test_load_graph_fragment_from_packed")
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               "def test_load_graph_fragment_from_packed")))
+             (substitute* "tests/test_examples.py"
+               (("def test_env_filtering")
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               "def test_env_filtering")))
+             ;; Tries to use cwl-runners.
+             (substitute* "tests/test_examples.py"
+               (("def test_v1_0_arg_empty_prefix_separate_false")
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               "def test_v1_0_arg_empty_prefix_separate_false")))
+             #t)))))
+    (propagated-inputs
+     `(("python-argcomplete" ,python-argcomplete)
+       ("python-bagit" ,python-bagit)
+       ("python-coloredlogs" ,python-coloredlogs)
+       ("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-prov" ,python-prov)
+       ("python-pydot" ,python-pydot)
+       ("python-psutil" ,python-psutil)
+       ("python-rdflib" ,python-rdflib)
+       ("python-requests" ,python-requests)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-schema-salad" ,python-schema-salad)
+       ("python-shellescape" ,python-shellescape)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ;; Not listed as needed but still necessary:
+       ("node" ,node)))
+    (native-inputs
+     `(("python-arcp" ,python-arcp)
+       ("python-humanfriendly" ,python-humanfriendly)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-rdflib-jsonld" ,python-rdflib-jsonld)))
+    (home-page
+     "https://github.com/common-workflow-language/common-workflow-language")
+    (synopsis "Common Workflow Language reference implementation")
+    (description
+     "This is the reference implementation of the @acronym{CWL, Common Workflow
+Language} standards.  The CWL open standards are for describing analysis
+workflows and tools in a way that makes them portable and scalable across a
+variety of software and hardware environments, from workstations to cluster,
+cloud, and high performance computing (HPC) environments.  CWL is designed to
+meet the needs of data-intensive science, such as Bioinformatics, Medical
+Imaging, Astronomy, Physics, and Chemistry.  The @acronym{cwltool, CWL reference
+implementation} is intended to be feature complete and to provide comprehensive
+validation of CWL files as well as provide other tools related to working with
+CWL descriptions.")
     (license license:asl2.0)))
 
 (define-public python-dendropy
