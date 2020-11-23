@@ -1802,43 +1802,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
     (license license:gpl3+)))
 
 (define-public guile3.0-chickadee
-  (package
-    (inherit guile-chickadee)
-    (name "guile3.0-chickadee")
-    (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://files.dthompson.us/chickadee/"
-                                  "chickadee-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
-    (build-system gnu-build-system)
-    (propagated-inputs
-     `(("guile-opengl" ,guile3.0-opengl)
-       ("guile-sdl2" ,guile3.0-sdl2)))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("libvorbis" ,libvorbis)
-       ("mpg123" ,mpg123)
-       ("openal" ,openal)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (home-page "https://dthompson.us/projects/chickadee.html")
-    (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
-    (description "Chickadee is a game development toolkit for Guile Scheme
-built on top of SDL2 and OpenGL.  Chickadee aims to provide all the features
-that parenthetically inclined game developers need to make 2D (and eventually
-3D) games in Scheme, such as:
-
-@enumerate
-@item extensible, fixed-timestep game loop
-@item OpenGL-based rendering engine
-@item keyboard, mouse, controller input
-@item REPL-driven development model
-@end enumerate\n")
-    (license license:gpl3+)))
+  (deprecated-package "guile3.0-chickadee" guile-chickadee))
 
 (define-public bennu-game-development
   (package
