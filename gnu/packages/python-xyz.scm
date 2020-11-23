@@ -16307,6 +16307,38 @@ preservation.")
 PROV-O (RDF), PROV-XML, PROV-JSON import/export.")
     (license license:expat)))
 
+(define-public python-arcp
+  (package
+    (name "python-arcp")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "arcp" version))
+        (sha256
+         (base32
+          "1p8mfyjssa6pbn5dp6pyzv9yy6kwm2rz5jn2kjbq5vy9f9wsq5sw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://arcp.readthedocs.io/")
+    (synopsis
+     "Archive and Package URI parser and generator")
+    (description
+     "@acronym{arcp, Archive and Package} provides functions for creating
+@code{arcp_} URIs, which can be used for identifying or parsing hypermedia files
+packaged in an archive or package, like a ZIP file.  arcp URIs can be used to
+consume or reference hypermedia resources bundled inside a file archive or an
+application package, as well as to resolve URIs for archive resources within a
+programmatic framework.  This URI scheme provides mechanisms to generate a
+unique base URI to represent the root of the archive, so that relative URI
+references in a bundled resource can be resolved within the archive without
+having to extract the archive content on the local file system.  An arcp URI can
+be used for purposes of isolation (e.g. when consuming multiple archives),
+security constraints (avoiding \"climb out\" from the archive), or for
+externally identiyfing sub-resources referenced by hypermedia formats.")
+    (license license:asl2.0)))
+
 (define-public python-validators
   (package
     (name "python-validators")
