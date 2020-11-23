@@ -352,7 +352,7 @@ can be used either as a standalone application, or as a Python library.")
        ("python-chardet" ,python-chardet)))
     (propagated-inputs
      `(("python-pyparsing" ,python-pyparsing)))
-    (home-page "https://github.com/erocarrera/pydot")
+    (home-page "https://github.com/pydot/pydot")
     (synopsis "Python interface to Graphviz's DOT language")
     (description
      "Pydot provides an interface to create, handle, modify and process
