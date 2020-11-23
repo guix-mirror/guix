@@ -15353,14 +15353,14 @@ builds partial trees by inspecting living objects.")
 (define-public python-isbnlib
   (package
     (name "python-isbnlib")
-    (version "3.10.3")
+    (version "3.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "isbnlib" version))
        (sha256
         (base32
-         "07qhykv0x60d5rsx5pj6s4q15ri4znczscll3xmpf6gyclac1592"))))
+         "0iin0x2xqwyphyyzd0mzrq5v5xm7b6dlbb294k4dywra5qvbrgzm"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; No test
     (home-page "https://github.com/xlcnd/isbnlib")
