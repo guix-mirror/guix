@@ -15457,13 +15457,13 @@ in other versions.")
 (define-public python-mamba
   (package
     (name "python-mamba")
-    (version "0.11.1")
+    (version "0.11.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mamba" version))
               (sha256
                (base32
-                "1jxy3bva94ac02a0wjsms79rp5104zmalxh8rhqqg6mw95cp6xpr"))))
+                "15m4dpnpv9m60pdaygvwgi43fwqaivs3qxfxhspwrp47sbgwdkvm"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))  ; No test
     (propagated-inputs
