@@ -1764,14 +1764,14 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
+                "1jv4jkc35b7rizz8iflh74hhk9qy665isn1xa6gqz0qp9grwb019"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
@@ -1779,7 +1779,8 @@ a 2D editor view.")
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("freetype" ,freetype)
+       ("guile" ,guile-2.2)
        ("libvorbis" ,libvorbis)
        ("mpg123" ,mpg123)
        ("openal" ,openal)))
