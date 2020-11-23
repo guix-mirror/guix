@@ -138,14 +138,15 @@
                     ;; These variables need to be set to the native versions
                     ;; of the dependencies because they are used to build
                     ;; programs which are executed during build time.
-                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                      (let ((freetype (assoc-ref (or native-inputs inputs) "freetype")))
-                        (setenv "BUILD_FREETYPE_LIBS"
-                                (string-append "-L" freetype
-                                               "/lib -lfreetype"))
-                        (setenv "BUILD_FREETYPE_CFLAGS"
-                                (string-append "-I" freetype
-                                               "/include/freetype2")))
+                    (lambda* (#:key native-inputs #:allow-other-keys)
+                      (when (assoc-ref native-inputs "freetype")
+                        (let ((freetype (assoc-ref native-inputs "freetype")))
+                          (setenv "BUILD_FREETYPE_LIBS"
+                                  (string-append "-L" freetype
+                                                 "/lib -lfreetype"))
+                          (setenv "BUILD_FREETYPE_CFLAGS"
+                                  (string-append "-I" freetype
+                                                 "/include/freetype2"))))
                      #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
