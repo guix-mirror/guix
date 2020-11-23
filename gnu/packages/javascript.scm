@@ -32,7 +32,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
-  #:use-module (guix build-system minify))
+  #:use-module (guix build-system minify)
+  #:use-module (guix utils))
 
 (define-public font-mathjax
   (package
@@ -435,7 +436,7 @@ external server.")
              (apply invoke "make" "install-shared" make-flags))))
        #:make-flags
        (list ,(string-append "VERSION=" version)
-             (string-append "CC=gcc")
+             ,(string-append "CC=" (cc-for-target))
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no tests
     (inputs
