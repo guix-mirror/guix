@@ -56,6 +56,7 @@
 ;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2018 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
@@ -16253,6 +16254,29 @@ and integration into other projects.")
       (inherit base)
       (propagated-inputs
        `(("python2-selectors2" ,python2-selectors2))))))
+
+(define-public python-bagit
+  (package
+    (name "python-bagit")
+    (version "1.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "bagit" version))
+        (sha256
+         (base32
+          "1m6y04qmig0b5hzb35lnaw3d2yfydb7alyr1579yblvgs3da6j7j"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)))
+    (home-page "https://libraryofcongress.github.io/bagit-python/")
+    (synopsis "Create and validate BagIt packages")
+    (description "Bagit is a Python library and command line utility for working
+with BagIt style packages.  BagIt is a minimalist packaging format for digital
+preservation.")
+    (license license:cc0)))
 
 (define-public python-validators
   (package
