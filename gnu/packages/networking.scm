@@ -144,7 +144,7 @@
 (define-public axel
   (package
     (name "axel")
-    (version "2.17.9")
+    (version "2.17.10")
     (source
      (origin
        (method url-fetch)
@@ -152,7 +152,7 @@
                            "releases/download/v" version "/"
                            "axel-" version ".tar.xz"))
        (sha256
-        (base32 "0m1smb9rmw9w2fcfcf0162qyffx6a1x0j612sg3fydflandlsdpi"))))
+        (base32 "0kmlqk04sgkshsll4r9w3k0rvrgz0gpk987618r50khwl484zss6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
