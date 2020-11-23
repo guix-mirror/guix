@@ -32,6 +32,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -331,11 +332,24 @@ can be used either as a standalone application, or as a Python library.")
        (uri (pypi-uri "pydot" version))
        (sha256
         (base32
-         "00az4cbf8bv447lkk9xi6pjm7gcc7ia33y4pm71fwfwis56rv76l"))))
+         "00az4cbf8bv447lkk9xi6pjm7gcc7ia33y4pm71fwfwis56rv76l"))
+       (patches (search-patches "python-pydot-regression-test.patch"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Taken from .travis.yaml
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "test"
+                 (invoke "python" "pydot_unittest.py")))
+             #t)))))
     (native-inputs
      ;; For tests.
-     `(("python-chardet" ,python-chardet)))
+     `(("graphviz" ,graphviz)
+       ("python-chardet" ,python-chardet)))
     (propagated-inputs
      `(("python-pyparsing" ,python-pyparsing)))
     (home-page "https://github.com/erocarrera/pydot")
