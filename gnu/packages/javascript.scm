@@ -431,7 +431,7 @@ external server.")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)  ; no configure script
-         (add-after 'install 'install-shared-library
+         (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (apply invoke "make" "install-shared" make-flags))))
        #:make-flags
