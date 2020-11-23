@@ -540,7 +540,7 @@ of libraries.")
                           version "/racket-minimal-" version "-src.tgz")))
               (sha256
                (base32
-                "0xvnd7afx058sg7j51bmbikqgn4sl0246nkhr8zlqcrbr3nqi6p4"))
+                "0yc5zkpq1bavj64h67pllw6mfjhmdp65fgdpyqcaan3syy6b5cia"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (synopsis "Racket without bundled packages such as Dr. Racket")
