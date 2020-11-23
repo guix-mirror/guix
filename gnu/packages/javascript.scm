@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -416,23 +416,27 @@ external server.")
   (package
     (name "mujs")
     (version "1.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://mujs.com/downloads/mujs-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1ilhay15z4k7mlzs6g2d00snivin7vp72dfw5wwpmc0x70jr31l2"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ccxvii/mujs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08cm3w51xx1bznlglys9wl76vmbdf6jbd3cq504wzrqh10vgdfbv"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)  ; no configure
+         (delete 'configure)  ; no configure script
          (add-after 'install 'install-shared-library
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (apply invoke "make" "install-shared" make-flags))))
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
-                          (string-append "CC=gcc"))
+       #:make-flags
+       (list ,(string-append "VERSION=" version)
+             (string-append "CC=gcc")
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no tests
     (inputs
      `(("readline" ,readline)))
