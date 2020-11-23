@@ -3198,7 +3198,7 @@ from the module-init-tools project.")
 (define-public earlyoom
   (package
     (name "earlyoom")
-    (version "1.3.1")
+    (version "1.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3207,23 +3207,23 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06sd3jpkdrwqbphsf8jrgs5rxfi7j3xjmygjjvj4xjk4gncz7r2i"))))
+                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'check 'set-home
-                    (lambda _
-                      (setenv "HOME" (getcwd))
-                      #t))
-                  (add-after 'build 'install-contribs
-                    ;; Install what seems useful from the contrib directory.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (contrib (string-append
-                                       out "/share/earlyoom/contrib")))
-                        (install-file "contrib/notify_all_users.py" contrib)
-                        #t))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'set-go-HOME
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t))
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; This test relies on writing to /proc/%d/oom_score_adj.
+             (substitute* "testsuite_cli_test.go"
+               (("TestI" match)
+                (string-append "skipped" match)))
+             #t)))
        #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
                       (list ,(string-append "CC=" (cc-for-target))
                             (string-append "VERSION=v" ,version)
