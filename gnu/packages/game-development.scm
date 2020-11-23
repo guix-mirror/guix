@@ -1776,11 +1776,11 @@ a 2D editor view.")
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (propagated-inputs
-     `(("guile-opengl" ,guile-opengl)
-       ("guile-sdl2" ,guile-sdl2)))
+     `(("guile-opengl" ,guile3.0-opengl)
+       ("guile-sdl2" ,guile3.0-sdl2)))
     (inputs
      `(("freetype" ,freetype)
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("libvorbis" ,libvorbis)
        ("mpg123" ,mpg123)
        ("openal" ,openal)))
