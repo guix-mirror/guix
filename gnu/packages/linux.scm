@@ -352,7 +352,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.9-version "5.9.9")
+(define-public linux-libre-5.9-version "5.9.10")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
@@ -360,7 +360,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "1b8zysy0br131ydhc7ycxhh8d88r44xrmkf2q2lffy0jmy3d60m3")))
+        (hash (base32 "0c7hcqn1ld0axlipzpwmjr1jwizrhz5w6bdfbk9npbirx7rb54gm")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,7 +368,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.78")
+(define-public linux-libre-5.4-version "5.4.79")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +376,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0z8skj0w9jfrz9pfxaqfzqh82l13bz5lhza2wjsxk02cyhhnm226")))
+        (hash (base32 "09ffj66wlp27vx799lnixq4zdkin3y4pqaw4lx2a6rpz13xr3455")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.158")
+(define-public linux-libre-4.19-version "4.19.159")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0p5pim9izcscnk1a1kdlxbvyvxnnq9lqr1kwl86kfskr7yqy8n6n")))
+        (hash (base32 "195hlvr9zsa2km80rk71na1gl0222r2mk76rsqx0cxpgg7dhpjv0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.207")
+(define-public linux-libre-4.14-version "4.14.208")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0a804hwh7cwbdd2gnr5n9i32b4s6gppd8iqihah4sn4q1nbm79vq")))
+        (hash (base32 "0vzn5kprjlgpgnjr1drjq97x9xbyfgigpgs42xsfw61h2qjy3b1q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.244")
+(define-public linux-libre-4.9-version "4.9.245")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "02givxp0y04qma5nlqbpyxdcl7xdb41p3gw7kgj2rmwdanhzaylr")))
+        (hash (base32 "1vxsd3g96vbykrmfnj9qali0p868h678qzcqvf4yrhya47k6pnnb")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.244")
+(define-public linux-libre-4.4-version "4.4.245")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0brdj6z7flchig80ja0dhzcrpl743lh74s4r4r6prbgkksif9ahp")))
+        (hash (base32 "0g1cnis8496kp1ln922gxa7skfr096mdvv89la6676yw7dd4lhyi")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4083,14 +4083,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.58")
+    (version "9.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hdparm/hdparm/"
                                   "hdparm-" version ".tar.gz"))
               (sha256
                (base32
-                "03z1qm8zbgpxagk3994lvp24yqsshjibkwg05v9p3q1w7y48xrws"))))
+                "1k1mcv7naiacw1y6bdd1adnjfiq1kkx2ivsadjwmlkg4fff775w3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -7600,13 +7600,13 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.7")
+    (version "7.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ipset.netfilter.org/ipset-" version ".tar.bz2"))
+              (uri (string-append "https://ipset.netfilter.org/ipset-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ckc678l1431mb0q5ilfgy0ajjwi8n135c72h606imm43dc0v9a5"))))
+                "02mkp7vmsh609dcp02xi290sxmsgq2fsch3875dxkwfxkrl16p5p"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))
@@ -7614,7 +7614,7 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags '("--with-kmod=no")))
-    (home-page "http://ipset.netfilter.org/")
+    (home-page "https://ipset.netfilter.org/")
     (synopsis "Administration tool for IP sets")
     (description "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which
 can be administered by the ipset utility.  Depending on the type,

@@ -934,6 +934,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ecl-16-format-directive-limit.patch	\
   %D%/packages/patches/ecl-16-ignore-stderr-write-error.patch	\
   %D%/packages/patches/ecl-16-libffi.patch			\
+  %D%/packages/patches/eigen-remove-openmp-error-counting.patch	\
   %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
@@ -1312,6 +1313,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lsh-fix-x11-forwarding.patch		\
+  %D%/packages/patches/lsof-fatal-test-failures.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
   %D%/packages/patches/lua51-liblua-so.patch                    \
@@ -1389,6 +1391,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/nyacc-binary-literals.patch		\
   %D%/packages/patches/ocaml-bitstring-fix-configure.patch \
+  %D%/packages/patches/ocaml-cairo2-caml_ba_array-fix.patch     \
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-enable-ocamldoc-reproducibility.patch	\
@@ -1526,6 +1529,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python-pycrypto-time-clock.patch		\
+  %D%/packages/patches/python-pydot-regression-test.patch	\
   %D%/packages/patches/python2-pygobject-2-deprecation.patch	\
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python-robotframework-source-date-epoch.patch \

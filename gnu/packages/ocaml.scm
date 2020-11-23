@@ -5797,16 +5797,18 @@ convenience functions for vectors and matrices.")
                     (url "https://github.com/Chris00/ocaml-cairo")
                     (commit version)))
               (file-name (git-file-name name version))
+              (patches
+               (search-patches
+                ;; NOTE: This patch will be obsolete on the
+                ;; next tagged release. Remove it at that
+                ;; point.
+                "ocaml-cairo2-caml_ba_array-fix.patch"))
               (sha256
                (base32
                 "0wzysis9fa850s68qh8vrvqc6svgllhwra3kzll2ibv0wmdqrich"))))
     (build-system dune-build-system)
     (arguments
-     `(;; NOTE: GC reclaims bigarrays packed into a custom structure
-       ;; regardless of their refcounts. Affects OCaml >= 4.10.x
-       ;; https://github.com/ocaml/ocaml/issues/9360
-       #:tests? #f
-       #:test-target "tests"))
+     `(#:test-target "tests"))
     (inputs
      `(("cairo" ,cairo)
        ("gtk+-2" ,gtk+-2)

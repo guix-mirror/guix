@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: guix-commit-message-add-package
-# key: add
+# name: guix-commit-message-add-cl-package
+# key: addcl
 # condition: git-commit-mode
 # --
 gnu: Add ${1:`(with-temp-buffer
@@ -10,4 +10,4 @@ gnu: Add ${1:`(with-temp-buffer
                 (when (search-forward "+(define-public " nil 'noerror)
                   (thing-at-point 'sexp 'no-properties)))`}.
 
-* `(car (magit-staged-files))` ($1): New variable.
+* `(car (magit-staged-files))` (${1:$(replace-regexp-in-string (rx line-start "sbcl" (optional "-cl")) "cl" yas-text)}, ${1:$(replace-regexp-in-string "^sbcl" "ecl" yas-text)}, $1): New variables.

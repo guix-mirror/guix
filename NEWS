@@ -69,8 +69,19 @@ guix-build-coordinator-agent, guix-build-coordinator-queue-builds, hostapd,
 hurd-console, hurd-getty, hurd-vm, lxqt, rshiny, secret-service,
 simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
 
-*** XXX new packages
-*** XXX package updates
+*** 1999 new packages
+*** 3652 package updates
+
+Noteworthy updates:
+bash 5.0.16, binutils 2.34, cups 2.3.3, emacs 27.1, enlightenment 0.24.2,
+gcc-toolchain 10.2.0, gdb 10.1, ghc 8.8.3, gimp 2.10.22, glibc 2.31,
+gnome 3.34.2, gnupg 2.2.23, go 1.14.10, guile 3.0.4,
+icecat 78.4.0-guix0-preview1, inkscape 1.0.1, julia 1.5.2,
+libreoffice 6.4.6.2, linux-libre 5.9.3, mate 1.24.1, ocaml 4.09.0,
+openjdk 14.0, perl 5.30.2, python2 2.7.17, python 3.8.2, racket 7.8,
+rust 1.46.0, r 4.0.3, sbcl 2.0.10, shepherd 0.8.1, xfce 4.14.2,
+xorg-server 1.20.8
+
 
 ** Programming interfaces
 *** New ‘maven-build-system’, for packages built with Maven
@@ -144,7 +155,15 @@ simulated-wifi, udev-rules, unattended-upgrade, webssh, zram
     (<https://bugs.gnu.org/43744>)
 
 ** Native language support
-*** TODO populate
+*** Updated translations of the manual
+
+The manual is fully translated into French, German, and Spanish, and has
+preliminary translations into Chinese and Russian.
+
+*** Updated translations of messages
+
+This version of Guix is fully translated in French, German, and Spanish, and
+partially translated in 11 other languages.
 
 * Changes in 1.1.0 (since 1.0.1)
 ** Package management

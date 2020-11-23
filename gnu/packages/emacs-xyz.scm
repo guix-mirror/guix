@@ -3074,6 +3074,40 @@ adding convenient undo/redo without losing access to the full undo history,
 allowing you to visit all previous states of the document if you need.")
       (license license:gpl3+))))
 
+(define-public emacs-undo-fu-session
+  ;; There are no tagged releases upstream on gitlab, instead we are using the
+  ;; most recent commit.
+  (let ((commit "56cdd3538a058c6916bdf2d9010c2179f2505829")
+        (revision "0"))
+    (package
+      (name "emacs-undo-fu-session")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ideasman42/emacs-undo-fu-session")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04wq1alrzzlidcb4mjb5j7pg68pks1vgv7kvvmi6dzb3l602mb2a"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch" "-l" "undo-fu-session.el"
+                          "-l" "undo-fu-session-test.el")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'set-home
+             (lambda _
+               (setenv "HOME" "/tmp")
+               #t)))))
+      (home-page "https://gitlab.com/ideasman42/emacs-undo-fu-session")
+      (synopsis "Save & recover undo steps between Emacs sessions")
+      (description "This package writes undo/redo information upon file save
+which is restored where possible when the file is loaded again.")
+      (license license:gpl3+))))
+
 (define-public emacs-s
   (package
     (name "emacs-s")
@@ -6719,6 +6753,33 @@ background of file-visiting buffers (and certain aspects of the UI) to make
 them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
+(define-public emacs-embark
+  ;; There are no tagged releases upstream on GitHub, instead we are using the
+  ;; most recent commit.
+  (let ((commit "dc20b4e53c4ce1ad91100dfeb093115f2cc0b210")
+        (revision "0"))
+    (package
+      (name "emacs-embark")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oantolin/embark")
+               (commit commit)))
+         (sha256
+          (base32 "1jrvdlwip7zll5ixlnk9l0apr8hj60ysqfc47q3k4hhfyl9rawbq"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-avy" ,emacs-avy)))
+      (home-page "https://github.com/oantolin/embark")
+      (synopsis "Emacs mini-buffer actions rooted in keymaps")
+      (description "This package provides a command embark-act (and a variant
+embark-act-noexit), to execute actions on the top minibuffer completion
+canidate: the one that would be chosen by minibuffer-force-complete.")
+      (license license:gpl3+))))
+
 (define-public emacs-prescient
   (package
     (name "emacs-prescient")
@@ -6769,6 +6830,29 @@ and are reasonable, and it declines to implement features which have
 marginal benefit compared to the additional complexity of a new
 interface.")
     (license license:expat)))
+
+(define-public emacs-orderless
+  (package
+    (name "emacs-orderless")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oantolin/orderless")
+             (commit version)))
+       (sha256
+        (base32 "032lfwflkpaxbcxl4jf438vapswsdagipjczcn30sc4dfdh3p42c"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/oantolin/orderless")
+    (synopsis "Emacs completion style that matches multiple regexps in any order")
+    (description "This package provides an orderless completion style that
+divides the pattern into space-separated components, and matches candidates
+that match all of the components in any order.  Each component can match in
+any one of several ways: literally, as a regexp, as an initialism, in the flex
+style, or as multiple word prefixes.")
+    (license license:gpl3+)))
 
 (define-public emacs-smartparens
   (package

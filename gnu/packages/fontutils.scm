@@ -937,7 +937,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
 (define-public libraqm
   (package
     (name "libraqm")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -945,7 +945,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
                            "releases/download/v" version "/"
                            "raqm-" version ".tar.gz"))
        (sha256
-        (base32 "0hgry3fj2y3qaq2fnmdgd93ixkk3ns5jds4vglkiv2jfvpn7b1g2"))))
+        (base32 "0a4q9dziirb85sa9rmkamg2krdhd009di2vlz91njwxcp3q8qj46"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-static")))

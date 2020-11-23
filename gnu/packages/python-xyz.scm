@@ -56,6 +56,7 @@
 ;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2015, 2018 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
@@ -123,6 +124,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages docker)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
@@ -166,6 +168,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
@@ -16264,6 +16267,125 @@ and integration into other projects.")
       (propagated-inputs
        `(("python2-selectors2" ,python2-selectors2))))))
 
+(define-public python-bagit
+  (package
+    (name "python-bagit")
+    (version "1.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "bagit" version))
+        (sha256
+         (base32
+          "1m6y04qmig0b5hzb35lnaw3d2yfydb7alyr1579yblvgs3da6j7j"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)))
+    (home-page "https://libraryofcongress.github.io/bagit-python/")
+    (synopsis "Create and validate BagIt packages")
+    (description "Bagit is a Python library and command line utility for working
+with BagIt style packages.  BagIt is a minimalist packaging format for digital
+preservation.")
+    (license license:cc0)))
+
+(define-public python-prov
+  (package
+    (name "python-prov")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "prov" version))
+        (sha256
+         (base32
+          "1vi2fj31vygfcqrkimdmk52q2ldw08g9fn4v4zlgdfgcjlhqyhxn"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-lxml" ,python-lxml)
+       ("python-networkx" ,python-networkx)
+       ("python-rdflib" ,python-rdflib)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("python-pydot" ,python-pydot)))
+    (home-page "https://github.com/trungdong/prov")
+    (synopsis
+     "W3C Provenance Data Model supporting PROV-JSON, PROV-XML and PROV-O (RDF)")
+    (description
+     "This package provides a library for W3C Provenance Data Model supporting
+PROV-O (RDF), PROV-XML, PROV-JSON import/export.")
+    (license license:expat)))
+
+(define-public python-arcp
+  (package
+    (name "python-arcp")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "arcp" version))
+        (sha256
+         (base32
+          "1p8mfyjssa6pbn5dp6pyzv9yy6kwm2rz5jn2kjbq5vy9f9wsq5sw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://arcp.readthedocs.io/")
+    (synopsis
+     "Archive and Package URI parser and generator")
+    (description
+     "@acronym{arcp, Archive and Package} provides functions for creating
+@code{arcp_} URIs, which can be used for identifying or parsing hypermedia files
+packaged in an archive or package, like a ZIP file.  arcp URIs can be used to
+consume or reference hypermedia resources bundled inside a file archive or an
+application package, as well as to resolve URIs for archive resources within a
+programmatic framework.  This URI scheme provides mechanisms to generate a
+unique base URI to represent the root of the archive, so that relative URI
+references in a bundled resource can be resolved within the archive without
+having to extract the archive content on the local file system.  An arcp URI can
+be used for purposes of isolation (e.g. when consuming multiple archives),
+security constraints (avoiding \"climb out\" from the archive), or for
+externally identiyfing sub-resources referenced by hypermedia formats.")
+    (license license:asl2.0)))
+
+(define-public python-shellescape
+  (package
+    (name "python-shellescape")
+    (version "3.8.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/chrissimpkins/shellescape")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0wzccxk139qx1lb2g70f5b2yh9zq15nr2mgvqdbfabg5zm0vf1qw"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/test_shellescape.py"))
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/chrissimpkins/shellescape")
+    (synopsis
+     "Shell escape a string to safely use it as a token in a shell command")
+    (description
+     "The shellescape Python module defines the @code{shellescape.quote()}
+function that returns a shell-escaped version of a Python string.  This is a
+backport of the @code{shlex.quote()} function from Python 3.8 that makes it
+accessible to users of Python 3 versions < 3.3 and all Python 2.x versions.")
+    (license license:expat)))
+
 (define-public python-validators
   (package
     (name "python-validators")
@@ -16352,14 +16474,14 @@ address is valid and really exists.")
 (define-public python-marshmallow
   (package
     (name "python-marshmallow")
-    (version "3.0.0b14")
+    (version "3.9.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "marshmallow" version))
       (sha256
        (base32
-        "1digk3f5cfk7wmlka65mc7bzsd96pbsgcsvp6pimd5b4ff9zb5p3"))))
+        "0kizhh3mnhpa08wfnsv1gagy22bpxzxszgbiylkhpz1d8qvwrykk"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -22872,3 +22994,38 @@ applications with variable CPU loads).")
 
 (define-public python2-parallel
   (package-with-python2 python-parallel))
+
+(define-public python-djvulibre
+  (package
+    (name "python-djvulibre")
+    (version "0.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-djvulibre" version))
+       (sha256
+        (base32 "1c0lvpg7j2525cv52s3q5sg7hfnakkb8rmghg0jc02gshsxmrj4f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("ghostscript" ,ghostscript)
+       ("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("python-cython" ,python-cython)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Unit tests try to load the 'dllpath.py' and fail, because it
+             ;; doesn't make sense on GNU/Linux.
+             (delete-file "djvu/dllpath.py")
+             #t)))))
+    (synopsis "Python bindings for DjVuLibre")
+    (description "This is a set of Python bindings for the DjVuLibre library.")
+    (home-page "https://jwilk.net/software/python-djvulibre")
+    (license license:gpl2)))
+
+(define-public python2-djvulibre
+  (package-with-python2 python-djvulibre))

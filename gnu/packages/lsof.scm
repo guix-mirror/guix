@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,52 +22,37 @@
 (define-module (gnu packages lsof)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages perl))
 
 (define-public lsof
   (package
    (name "lsof")
-   (version "4.91")
+   (version "4.94.0")
    (source
     (origin
-      (method url-fetch)
-      (uri
-       (apply append
-              (map
-               (lambda (mirror-uri)
-                 (let ((tarball (string-append name "_" version ".tar.bz2")))
-                   (list
-                    (string-append mirror-uri "/" tarball)
-                    ;; Upon every new release, the previous one is moved here:
-                    (string-append mirror-uri "/OLD/" tarball))))
-               (list
-                "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/"
-
-                ;; Add mirrors because the canonical FTP server at purdue.edu
-                ;; bails out when it cannot do a reverse DNS lookup, as noted
-                ;; at <https://people.freebsd.org/~abe/>.
-                "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/"
-                (string-append "http://www.mirrorservice.org/sites/"
-                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")
-                (string-append "ftp://ftp.mirrorservice.org/sites/"
-                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/lsof-org/lsof")
+            (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "18sh4hbl9jw2szkf0gvgan8g13f3g4c6s2q9h3zq5gsza9m99nn9"))))
+       (base32 "0yxv2jg6rnzys49lyrz9yjb4knamah4xvlqj596y6ix3vm4k3chp"))
+      (patches (search-patches "lsof-fatal-test-failures.patch"))))
    (build-system gnu-build-system)
-   (native-inputs `(("perl" ,perl)))
+   (native-inputs
+    `(("groff" ,groff)                  ; for soelim
+      ("perl" ,perl)))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (replace 'unpack
-          (lambda* (#:key source #:allow-other-keys)
-            (let ((unpack (assoc-ref %standard-phases 'unpack)))
-              (unpack #:source source)
-              (unpack #:source (car (find-files "." "\\.tar$"))))))
         (replace 'configure
           (lambda _
-            (setenv "LSOF_CC" "gcc")
+            (setenv "LSOF_CC" ,(cc-for-target))
             (setenv "LSOF_MAKE" "make")
 
             ;; By default, the makefile captures the output of 'uname -a'.
@@ -83,14 +68,13 @@
             (substitute* "Makefile"
               (("`date`") "`date --date=@1`"))
             #t))
+        (add-after 'build 'build-man-page
+          (lambda _
+            (with-output-to-file "lsof.8"
+              (lambda _ (invoke "soelim" "Lsof.8")))
+            #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
-            ;; In libc 2.28, the 'major' and 'minor' macros are provided by
-            ;; <sys/sysmacros.h> only so include it.
-            (substitute* "tests/LTlib.c"
-              (("#ifndef lint")
-               "#include <sys/sysmacros.h>\n\n#ifndef lint"))
-
             (substitute* "tests/Makefile"
               ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
               (("(STDTST=.*) LTsock" _ prefix) prefix)
@@ -98,15 +82,16 @@
               (("(OPTTST=.*) LTnfs"  _ prefix) prefix))
             #t))
         (replace 'check
-          (lambda _
-            (with-directory-excursion "tests"
-              ;; Tests refuse to run on ‘unvalidated’ platforms.
-              (make-file-writable "TestDB")
-              (invoke "./Add2TestDB")
+          (lambda* (#:key tests? #:allow-other-keys)
+            (when tests?
+              (with-directory-excursion "tests"
+                ;; Tests refuse to run on ‘unvalidated’ platforms.
+                (make-file-writable "TestDB")
+                (invoke "./Add2TestDB")
 
-              ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
-              (invoke "make" "standard" "optional")
-              #t)))
+                ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
+                (invoke "make" "standard" "optional")))
+            #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))

@@ -1399,8 +1399,9 @@ When a handler is installed with 'with-build-handler', it is called any time
                                          (status  1))))))))))))
 
 (define-operation (ensure-path (store-path path))
-  "Make PATH a temporary root for the duration of the current session.
-Return #t."
+  "Ensure that a path is valid.  If it is not valid, it may be made valid by
+running a substitute.  As a GC root is not created by the daemon, you may want
+to call ADD-TEMP-ROOT on that store path."
   boolean)
 
 (define-operation (add-temp-root (store-path path))
