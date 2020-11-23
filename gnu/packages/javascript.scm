@@ -415,7 +415,7 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.7")
+    (version "1.0.9")
     (source
      (origin
        (method git-fetch)
@@ -424,7 +424,7 @@ external server.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08cm3w51xx1bznlglys9wl76vmbdf6jbd3cq504wzrqh10vgdfbv"))))
+        (base32 "146lmmigqlvx36d3fzb9kk7sy6y4ddv0ih4pkjz4zyj30zl84gy2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
