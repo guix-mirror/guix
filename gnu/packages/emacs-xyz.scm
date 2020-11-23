@@ -10358,6 +10358,31 @@ Flx has support for ido (interactively do things) through flx-ido.")
 known loosely as deftheme.  Many mode-specific customizations are included.")
     (license license:gpl3+)))
 
+(define-public emacs-dart-mode
+  (package
+    (name "emacs-dart-mode")
+    (version "1.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bradyt/dart-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qmdlwjmmqyyb65sqvfpygifai5m0llc815vp0jqwp8ldd8ls172"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/bradyt/dart-mode")
+    (synopsis "Emacs mode for the Dart programming language")
+    (description
+     "Dart mode is an Emacs major mode for editing Dart files.  It provides
+basic syntax highlighting and indentation.")
+    (license license:gpl3+)))
+
 (define-public emacs-danneskjold-theme
   (let* ((commit "8733d2fe8743e8a01826ea6d4430ef376c727e57")
          (revision "1"))
