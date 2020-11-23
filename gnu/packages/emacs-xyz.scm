@@ -85,6 +85,7 @@
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10601,6 +10602,28 @@ provides functions to convert hash tables from and to alists and plists.")
      "This package provides a logging framework for elisp.  It allows
 you to deal with multiple log levels.")
     (license license:gpl3+)))
+
+(define-public emacs-gn-mode
+  (package
+    (name "emacs-gn-mode")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lashtear/gn-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dz5kgzbgsssr38z2kg6m915cvfys42ag1k42bsra3la2pixywfx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/lashtear/gn-mode")
+    (synopsis "Emacs major mode for editing GN (ninja generator) config files")
+    (description
+     "GN mode is a major mode for editing @acronym{GN,Ninja Generator} config
+files in Emacs.  Files of this type (e.g., @file{BUILD.gn} or @file{*.gni})
+are common in Chromium-derived projects.")
+    (license license:bsd-3)))
 
 (define-public emacs-gntp
   (package
