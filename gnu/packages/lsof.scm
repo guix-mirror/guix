@@ -79,15 +79,16 @@
               (("(OPTTST=.*) LTnfs"  _ prefix) prefix))
             #t))
         (replace 'check
-          (lambda _
-            (with-directory-excursion "tests"
-              ;; Tests refuse to run on ‘unvalidated’ platforms.
-              (make-file-writable "TestDB")
-              (invoke "./Add2TestDB")
+          (lambda* (#:key tests? #:allow-other-keys)
+            (when tests?
+              (with-directory-excursion "tests"
+                ;; Tests refuse to run on ‘unvalidated’ platforms.
+                (make-file-writable "TestDB")
+                (invoke "./Add2TestDB")
 
-              ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
-              (invoke "make" "standard" "optional")
-              #t)))
+                ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
+                (invoke "make" "standard" "optional")))
+            #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
