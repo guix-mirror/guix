@@ -1017,7 +1017,8 @@ Optional thin wrappers allow usage of the library from other languages.")
                (base32
                 "1vxrsncfnkyq6gwxpsannpryp12mk7lc8f42ybvz3saf7icwc582"))
               (file-name (string-append name "-" version ".tar.bz2"))
-              (patches (search-patches "eigen-stabilise-sparseqr-test.patch"))
+              (patches (search-patches "eigen-remove-openmp-error-counting.patch"
+                                       "eigen-stabilise-sparseqr-test.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
