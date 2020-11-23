@@ -123,6 +123,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages docker)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
@@ -22861,3 +22862,38 @@ applications with variable CPU loads).")
 
 (define-public python2-parallel
   (package-with-python2 python-parallel))
+
+(define-public python-djvulibre
+  (package
+    (name "python-djvulibre")
+    (version "0.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-djvulibre" version))
+       (sha256
+        (base32 "1c0lvpg7j2525cv52s3q5sg7hfnakkb8rmghg0jc02gshsxmrj4f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("ghostscript" ,ghostscript)
+       ("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("python-cython" ,python-cython)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Unit tests try to load the 'dllpath.py' and fail, because it
+             ;; doesn't make sense on GNU/Linux.
+             (delete-file "djvu/dllpath.py")
+             #t)))))
+    (synopsis "Python bindings for DjVuLibre")
+    (description "This is a set of Python bindings for the DjVuLibre library.")
+    (home-page "https://jwilk.net/software/python-djvulibre")
+    (license license:gpl2)))
+
+(define-public python2-djvulibre
+  (package-with-python2 python-djvulibre))
