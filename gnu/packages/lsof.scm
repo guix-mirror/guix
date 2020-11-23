@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages perl))
@@ -51,7 +52,7 @@
       (modify-phases %standard-phases
         (replace 'configure
           (lambda _
-            (setenv "LSOF_CC" "gcc")
+            (setenv "LSOF_CC" ,(cc-for-target))
             (setenv "LSOF_MAKE" "make")
 
             ;; By default, the makefile captures the output of 'uname -a'.
