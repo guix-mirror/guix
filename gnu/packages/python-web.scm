@@ -3106,6 +3106,19 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python2-cachecontrol
   (package-with-python2 python-cachecontrol))
 
+(define-public python-cachecontrol-0.11
+  (package
+    (inherit python-cachecontrol)
+    (name "python-cachecontrol")
+    (version "0.11.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "CacheControl" version))
+        (sha256
+         (base32
+          "07jsfhlbcwgqg6ayz8nznzaqg5rmxqblbzxz1qvg5wc44pcjjy4g"))))))
+
 (define-public python-betamax
   (package
     (name "python-betamax")
