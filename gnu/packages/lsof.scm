@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages perl))
 
@@ -39,7 +40,8 @@
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0yxv2jg6rnzys49lyrz9yjb4knamah4xvlqj596y6ix3vm4k3chp"))))
+       (base32 "0yxv2jg6rnzys49lyrz9yjb4knamah4xvlqj596y6ix3vm4k3chp"))
+      (patches (search-patches "lsof-fatal-test-failures.patch"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("groff" ,groff)                  ; for soelim
