@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
@@ -41,7 +42,9 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xorg))
 
 (define-public djvulibre
@@ -271,4 +274,37 @@ It is able to extract:
 encoder/decoder.  It doesn't support colors or grayscales, just black
 and white.")
     (home-page "https://sourceforge.net/projects/minidjvu/")
+    (license license:gpl2)))
+
+(define-public djvusmooth
+  (package
+    (name "djvusmooth")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwilk/djvusmooth/releases/download/" version
+             "/djvusmooth-" version ".tar.gz"))
+       (sha256
+        (base32 "0z403cklvxzz0qaczgv83ax0nknrd9h8micp04j9kjfdxk2sgval"))))
+    (build-system python-build-system)
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("python2-djvulibre" ,python2-djvulibre)
+       ("python2-subprocess32" ,python2-subprocess32)
+       ("python2-wxpython" ,python2-wxpython)))
+    (arguments
+     `(#:python ,python-2))
+    (synopsis "Graphical editor for DjVu documents")
+    (description
+     "@code{djvusmooth} is a graphical editor for DjVu_ documents.
+It is able to:
+@itemize
+@item edit document metadata,
+@item edit document outline (bookmarks),
+@item add, remove or edit hyperlinks,
+@item correct occasional errors in the hidden text layer.
+@end itemize\n")
+    (home-page "https://jwilk.net/software/djvusmooth")
     (license license:gpl2)))
