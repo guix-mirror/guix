@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -323,14 +324,14 @@ can be used either as a standalone application, or as a Python library.")
 (define-public python-pydot
   (package
     (name "python-pydot")
-    (version "1.2.4")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pydot" version))
        (sha256
         (base32
-         "1dhy4jpp646jslh2yks6klwwbaxcs905byyny880gl1iap8y5llj"))))
+         "00az4cbf8bv447lkk9xi6pjm7gcc7ia33y4pm71fwfwis56rv76l"))))
     (build-system python-build-system)
     (native-inputs
      ;; For tests.
