@@ -7587,7 +7587,7 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
     (version "7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ipset.netfilter.org/ipset-" version ".tar.bz2"))
+              (uri (string-append "https://ipset.netfilter.org/ipset-" version ".tar.bz2"))
               (sha256
                (base32
                 "0ckc678l1431mb0q5ilfgy0ajjwi8n135c72h606imm43dc0v9a5"))))
@@ -7598,7 +7598,7 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags '("--with-kmod=no")))
-    (home-page "http://ipset.netfilter.org/")
+    (home-page "https://ipset.netfilter.org/")
     (synopsis "Administration tool for IP sets")
     (description "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which
 can be administered by the ipset utility.  Depending on the type,
