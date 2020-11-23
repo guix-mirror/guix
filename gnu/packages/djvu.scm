@@ -80,7 +80,7 @@ utilities.")
 (define-public djview
   (package
     (name "djview")
-    (version "4.11")
+    (version "4.12")
     (source
      (origin
        (method git-fetch)
@@ -88,7 +88,7 @@ utilities.")
              (url "https://git.code.sf.net/p/djvu/djview-git")
              (commit (string-append "release." version))))
        (sha256
-        (base32 "0qlhd0xlxn8i869m0hwdjvwivi2vigqm88wliyr1h7s84zl3qhsy"))
+        (base32 "0mn9ywjbc7iga50lbjclrk892g0x0rap0dmb6ybzjyarybdhhcxp"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
