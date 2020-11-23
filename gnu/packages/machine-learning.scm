@@ -65,6 +65,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -868,6 +869,32 @@ data analysis.")
                 (sha256
                  (base32
                   "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
+
+(define-public python-pynndescent
+  (package
+    (name "python-pynndescent")
+    (version "0.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pynndescent" version))
+       (sha256
+        (base32 "0li1fclif50v6xrq7wh3lif9vv5jpj7xhrb0z6g89wwjnp9b9833"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-joblib" ,python-joblib)
+       ("python-llvmlite" ,python-llvmlite)
+       ("python-numba" ,python-numba)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/lmcinnes/pynndescent")
+    (synopsis "Nearest neighbor descent for approximate nearest neighbors")
+    (description
+     "PyNNDescent provides a Python implementation of Nearest Neighbor Descent
+for k-neighbor-graph construction and approximate nearest neighbor search.")
+    (license license:bsd-2)))
 
 (define-public python-scikit-rebate
   (package
