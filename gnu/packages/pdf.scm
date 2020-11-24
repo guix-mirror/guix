@@ -724,8 +724,8 @@ extracting content or merging files.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      '(#:tests? #f                     ; no check target
-        #:make-flags (list "CC=gcc"
+      `(#:tests? #f                     ; no check target
+        #:make-flags (list (string-append "CC=" ,(cc-for-target))
                            "XCFLAGS=-fpic"
                            "USE_SYSTEM_LIBS=yes"
                            "USE_SYSTEM_MUJS=yes"
