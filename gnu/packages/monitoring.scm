@@ -456,7 +456,7 @@ written in Go with pluggable metric collectors.")
 (define-public collectd
   (package
     (name "collectd")
-    (version "5.11.0")
+    (version "5.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -465,7 +465,7 @@ written in Go with pluggable metric collectors.")
                     ".tar.bz2"))
               (sha256
                (base32
-                "1cjxksxdqcqdccz1nbnc2fp6yy84qq361ynaq5q8bailds00mc9p"))
+                "1mh97afgq6qgmpvpr84zngh58m0sl1b4wimqgvvk376188q09bjv"))
               (patches (search-patches "collectd-5.11.0-noinstallvar.patch"))))
     (build-system gnu-build-system)
     (arguments
