@@ -257,6 +257,7 @@ MODULES =					\
   guix/import/texlive.scm   			\
   guix/import/utils.scm				\
   guix/scripts.scm				\
+  guix/scripts/discover.scm			\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
   guix/scripts/build.scm			\

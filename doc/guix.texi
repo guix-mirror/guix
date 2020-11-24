@@ -1579,6 +1579,28 @@ Unless @option{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
 them with Bzip2 by default.
 
+@item --discover[=yes|no]
+Whether to discover substitute servers on the local network using mDNS
+and DNS-SD.
+
+This feature is still experimental. However, here are a few
+considerations.
+
+@enumerate
+@item
+It might be faster/less expensive than fetching from remote servers;
+@item
+There are no security risks, only genuine substitutes will be used
+(@pxref{Substitute Authentication});
+@item
+An attacker advertising @command{guix publish} on your LAN cannot serve
+you malicious binaries, but they can learn what software you’re
+installing;
+@item
+Servers may serve substitute over HTTP, unencrypted, so anyone on the
+LAN can see what software you’re installing.
+@end enumerate
+
 @item --disable-deduplication
 @cindex deduplication
 Disable automatic file ``deduplication'' in the store.
@@ -15015,6 +15037,10 @@ disables the timeout.
 @item @code{log-compression} (default: @code{'bzip2})
 The type of compression used for build logs---one of @code{gzip},
 @code{bzip2}, or @code{none}.
+
+@item @code{discover} (default: @code{#f})
+Whether to discover substitute servers on the local network using mDNS
+and DNS-SD.
 
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.

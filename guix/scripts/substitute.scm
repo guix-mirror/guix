@@ -27,6 +27,7 @@
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module ((guix serialization) #:select (restore-file))
+  #:use-module (guix scripts discover)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix base64)
@@ -1078,9 +1079,38 @@ found."
      ;; daemon.
      '("http://ci.guix.gnu.org"))))
 
+;; In order to prevent using large number of discovered local substitute
+;; servers, limit the local substitute urls list size.
+(define %max-substitute-urls 50)
+
+(define* (randomize-substitute-urls urls
+                                    #:key
+                                    (max %max-substitute-urls))
+  "Return a list containing MAX urls from URLS, picked randomly. If URLS list
+is shorter than MAX elements, then it is directly returned."
+  (define (random-item list)
+    (list-ref list (random (length list))))
+
+  (if (<= (length urls) max)
+      urls
+      (let loop ((res '())
+                 (urls urls))
+        (if (eq? (length res) max)
+            res
+            (let ((url (random-item urls)))
+              (loop (cons url res) (delete url urls)))))))
+
+(define %local-substitute-urls
+  ;; If the following option is passed to the daemon, use the substitutes list
+  ;; provided by "guix discover" process.
+  (if (find-daemon-option "discover")
+      (randomize-substitute-urls (read-substitute-urls))
+      '()))
+
 (define substitute-urls
   ;; List of substitute URLs.
-  (make-parameter %default-substitute-urls))
+  (make-parameter (append %local-substitute-urls
+                          %default-substitute-urls)))
 
 (define (client-terminal-columns)
   "Return the number of columns in the client's terminal, if it is known, or a

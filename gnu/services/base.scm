@@ -1530,6 +1530,8 @@ archive' public keys, with GUIX."
                     (default 0))
   (log-compression  guix-configuration-log-compression
                     (default 'bzip2))
+  (discover?        guix-configuration-discover?
+                    (default #f))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (log-file         guix-configuration-log-file   ;string
@@ -1571,8 +1573,8 @@ proxy of 'guix-daemon'...~%")
   (match-record config <guix-configuration>
     (guix build-group build-accounts authorize-key? authorized-keys
           use-substitutes? substitute-urls max-silent-time timeout
-          log-compression extra-options log-file http-proxy tmpdir
-          chroot-directories)
+          log-compression discover? extra-options log-file
+          http-proxy tmpdir chroot-directories)
     (list (shepherd-service
            (documentation "Run the Guix daemon.")
            (provision '(guix-daemon))
@@ -1606,6 +1608,9 @@ proxy of 'guix-daemon'...~%")
                           #$@(if use-substitutes?
                                  '()
                                  '("--no-substitutes"))
+                          #$@(if discover?
+                                 '("--discover=yes")
+                                 '())
                           "--substitute-urls" #$(string-join substitute-urls)
                           #$@extra-options
 

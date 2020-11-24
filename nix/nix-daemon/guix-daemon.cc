@@ -89,6 +89,7 @@ builds derivations on behalf of its clients.");
 #define GUIX_OPT_TIMEOUT 18
 #define GUIX_OPT_MAX_SILENT_TIME 19
 #define GUIX_OPT_LOG_COMPRESSION 20
+#define GUIX_OPT_DISCOVER 21
 
 static const struct argp_option options[] =
   {
@@ -129,6 +130,8 @@ static const struct argp_option options[] =
       n_("disable compression of the build logs") },
     { "log-compression", GUIX_OPT_LOG_COMPRESSION, "TYPE", 0,
       n_("use the specified compression type for build logs") },
+    { "discover", GUIX_OPT_DISCOVER, "yes/no", OPTION_ARG_OPTIONAL,
+      n_("use substitute servers discovered on the local network") },
 
     /* '--disable-deduplication' was known as '--disable-store-optimization'
        up to Guix 0.7 included, so keep the alias around.  */
@@ -166,6 +169,8 @@ to live outputs") },
 
 /* List of '--listen' options.  */
 static std::list<std::string> listen_options;
+
+static bool useDiscover = false;
 
 /* Convert ARG to a Boolean value, or throw an error if it does not denote a
    Boolean.  */
@@ -260,6 +265,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_NO_BUILD_HOOK:
       settings.useBuildHook = false;
+      break;
+    case GUIX_OPT_DISCOVER:
+      useDiscover = string_to_bool (arg);
+      settings.set("discover", arg);
       break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
@@ -505,6 +514,18 @@ using `--build-users-group' is highly recommended\n"));
 	  printMsg (lvlDebug,
 		    format ("extra chroot directories: '%1%'") % chroot_dirs);
 	}
+
+      if (useDiscover)
+      {
+        Strings args;
+
+        args.push_back("guix");
+        args.push_back("discover");
+
+        startProcess([&]() {
+          execv(settings.guixProgram.c_str(), stringsToCharPtrs(args).data());
+        });
+      }
 
       printMsg (lvlDebug,
 		format ("automatic deduplication set to %1%")
