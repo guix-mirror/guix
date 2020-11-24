@@ -476,7 +476,8 @@ precision floating point numbers.")
     (build-system gnu-build-system)
     (arguments
      (let ((system (%current-system)))
-       `(#:phases
+       `(#:configure-flags (list "--disable-static") ;halves package size
+         #:phases
          (modify-phases %standard-phases
            ,@(cond
               ((or (string-prefix? "aarch64" system)
