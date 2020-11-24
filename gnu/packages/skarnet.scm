@@ -312,6 +312,7 @@ systems and other constrained environments, but they work everywhere.")))
     (arguments
      '(#:configure-flags
        (list
+        "--disable-static"
         (string-append "--with-lib="
                        (assoc-ref %build-inputs "skalibs")
                        "/lib/skalibs")
