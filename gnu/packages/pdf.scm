@@ -526,6 +526,12 @@ using the DjVuLibre library.")
                                "-Dlink-external=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-libmupdfthird.a-requirement
+           (lambda _
+             ;; Ignore a missing (apparently superfluous) static library.
+             (substitute* "meson.build"
+               ((".*mupdfthird.*") ""))
+             #t))
          (add-before 'configure 'add-mujs-to-dependencies
            (lambda _
              ;; Add mujs to the 'build_dependencies'.
@@ -692,6 +698,7 @@ extracting content or merging files.")
                            "mupdf-" version "-source.tar.xz"))
        (sha256
         (base32 "16m5sksil22sshxy70xkslsb2qhvcqb1d95i9savnhds1xn4ybar"))
+       (patches (search-patches "mupdf-fix-linkage.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -730,6 +737,10 @@ extracting content or merging files.")
                            "XCFLAGS=-fpic"
                            "USE_SYSTEM_LIBS=yes"
                            "USE_SYSTEM_MUJS=yes"
+                           "shared=yes"
+                           ;; Even with the linkage patch we must fix RUNPATH.
+                           (string-append "LDFLAGS=-Wl,-rpath="
+                                          (assoc-ref %outputs "out") "/lib")
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
                    (delete 'configure)))) ; no configure script
