@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
@@ -57,8 +57,7 @@
   "Set the 'SOURCE_DATE_EPOCH' environment variable.  This is used by tools
 that incorporate timestamps as a way to tell them to use a fixed timestamp.
 See https://reproducible-builds.org/specs/source-date-epoch/."
-  (setenv "SOURCE_DATE_EPOCH" "1")
-  #t)
+  (setenv "SOURCE_DATE_EPOCH" "1"))
 
 (define (first-subdirectory directory)
   "Return the file name of the first sub-directory of DIRECTORY."
@@ -113,9 +112,7 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
                                                #:separator separator
                                                #:type type
                                                #:pattern pattern)))
-              native-search-paths))
-
-  #t)
+              native-search-paths)))
 
 (define* (install-locale #:key
                          (locale "en_US.utf8")
@@ -134,15 +131,13 @@ chance to be set."
       (setenv (locale-category->string locale-category) locale)
 
       (format (current-error-port) "using '~a' locale for category ~s~%"
-              locale (locale-category->string locale-category))
-      #t)
+              locale (locale-category->string locale-category)))
     (lambda args
       ;; This is known to fail for instance in early bootstrap where locales
       ;; are not available.
       (format (current-error-port)
               "warning: failed to install '~a' locale: ~a~%"
-              locale (strerror (system-error-errno args)))
-      #t)))
+              locale (strerror (system-error-errno args))))))
 
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE in the working directory, and change directory within the
@@ -161,8 +156,7 @@ working directory."
         (if (string-suffix? ".zip" source)
             (invoke "unzip" source)
             (invoke "tar" "xvf" source))
-        (chdir (first-subdirectory "."))))
-  #t)
+        (chdir (first-subdirectory ".")))))
 
 (define %bootstrap-scripts
   ;; Typical names of Autotools "bootstrap" scripts.
@@ -205,8 +199,7 @@ working directory."
                 (invoke "autoreconf" "-vif")
                 (format #t "no 'configure.ac' or anything like that, \
 doing nothing~%"))))
-      (format #t "GNU build system bootstrapping not needed~%"))
-  #t)
+      (format #t "GNU build system bootstrapping not needed~%")))
 
 ;; See <http://bugs.gnu.org/17840>.
 (define* (patch-usr-bin-file #:key native-inputs inputs
@@ -220,8 +213,7 @@ things like the ABI being used."
     (for-each (lambda (file)
                 (when (executable-file? file)
                   (patch-/usr/bin/file file)))
-              (find-files "." "^configure$")))
-  #t)
+              (find-files "." "^configure$"))))
 
 (define* (patch-source-shebangs #:key source #:allow-other-keys)
   "Patch shebangs in all source files; this includes non-executable
@@ -233,8 +225,7 @@ $CONFIG_SHELL, but some don't, such as `mkinstalldirs' or Automake's
                         (lambda (file stat)
                           ;; Filter out symlinks.
                           (eq? 'regular (stat:type stat)))
-                        #:stat lstat))
-  #t)
+                        #:stat lstat)))
 
 (define (patch-generated-file-shebangs . rest)
   "Patch shebangs in generated files, including `SHELL' variables in
@@ -249,9 +240,7 @@ makefiles."
                         #:stat lstat))
 
   ;; Patch `SHELL' in generated makefiles.
-  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$"))
-
-  #t)
+  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
 
 (define* (configure #:key build target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
@@ -381,8 +370,7 @@ makefiles."
                        `("-j" ,(number->string (parallel-job-count)))
                        '())
                  ,@make-flags)))
-      (format #t "test suite not run~%"))
-  #t)
+      (format #t "test suite not run~%")))
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (apply invoke "make" "install" make-flags))
@@ -415,8 +403,7 @@ makefiles."
       (for-each (lambda (dir)
                   (let ((files (list-of-files dir)))
                     (for-each (cut patch-shebang <> path) files)))
-                output-bindirs)))
-  #t)
+                output-bindirs))))
 
 (define* (strip #:key target outputs (strip-binaries? #t)
                 (strip-command (if target
@@ -514,8 +501,7 @@ makefiles."
                                   (let ((sub (string-append dir "/" d)))
                                     (and (directory-exists? sub) sub)))
                                 strip-directories)))
-                 outputs)))
-  #t)
+                 outputs))))
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
@@ -560,9 +546,7 @@ phase after stripping."
                               outputs)))
         (unless (every* validate dirs)
           (error "RUNPATH validation failed")))
-      (format (current-error-port) "skipping RUNPATH validation~%"))
-
-  #t)
+      (format (current-error-port) "skipping RUNPATH validation~%")))
 
 (define* (validate-documentation-location #:key outputs
                                           #:allow-other-keys)
@@ -582,8 +566,7 @@ and 'man/'.  This phase moves directories to the right place if needed."
 
   (match outputs
     (((names . directories) ...)
-     (for-each validate-output directories)))
-  #t)
+     (for-each validate-output directories))))
 
 (define* (reset-gzip-timestamps #:key outputs #:allow-other-keys)
   "Reset embedded timestamps in gzip files found in OUTPUTS."
@@ -599,8 +582,7 @@ and 'man/'.  This phase moves directories to the right place if needed."
 
   (match outputs
     (((names . directories) ...)
-     (for-each process-directory directories)))
-  #t)
+     (for-each process-directory directories))))
 
 (define* (compress-documentation #:key outputs
                                  (compress-documentation? #t)
@@ -679,8 +661,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
       (match outputs
         (((names . directories) ...)
          (for-each maybe-compress directories)))
-      (format #t "not compressing documentation~%"))
-  #t)
+      (format #t "not compressing documentation~%")))
 
 (define* (delete-info-dir-file #:key outputs #:allow-other-keys)
   "Delete any 'share/info/dir' file from OUTPUTS."
@@ -689,8 +670,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
            (let ((info-dir-file (string-append directory "/share/info/dir")))
              (when (file-exists? info-dir-file)
                (delete-file info-dir-file)))))
-            outputs)
-  #t)
+            outputs))
 
 
 (define* (patch-dot-desktop-files #:key outputs inputs #:allow-other-keys)
@@ -730,8 +710,7 @@ which cannot be found~%"
                          (("^TryExec=([^/[:blank:]\r\n]*)(.*)$" _ binary rest)
                           (string-append "TryExec="
                                          (which binary) rest)))))))))
-            outputs)
-  #t)
+            outputs))
 
 (define %license-file-regexp
   ;; Regexp matching license files.
@@ -796,8 +775,7 @@ which cannot be found~%"
                                                         package))
                     (map (cut string-append source "/" <>) files)))
         (format (current-error-port)
-                "failed to find license files~%"))
-    #t))
+                "failed to find license files~%"))))
 
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
@@ -840,26 +818,17 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
              (exit 1)))
     ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
     ;; PHASES can pick the keyword arguments it's interested in.
-    (every (match-lambda
-             ((name . proc)
-              (let ((start (current-time time-monotonic)))
-                (format #t "starting phase `~a'~%" name)
-                (let ((result (apply proc args))
-                      (end    (current-time time-monotonic)))
-                  (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                          name result
-                          (elapsed-time end start))
+    (for-each (match-lambda
+                ((name . proc)
+                 (let ((start (current-time time-monotonic)))
+                   (format #t "starting phase `~a'~%" name)
+                   (let ((result (apply proc args))
+                         (end    (current-time time-monotonic)))
+                     (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                             name result
+                             (elapsed-time end start))
 
-                  ;; Issue a warning unless the result is #t.
-                  (unless (eqv? result #t)
-                    (format (current-error-port) "\
-## WARNING: phase `~a' returned `~s'.  Return values other than #t
-## are deprecated.  Please migrate this package so that its phase
-## procedures report errors by raising an exception, and otherwise
-## always return #t.~%"
-                            name result))
-
-                  ;; Dump the environment variables as a shell script, for handy debugging.
-                  (system "export > $NIX_BUILD_TOP/environment-variables")
-                  result))))
-           phases)))
+                     ;; Dump the environment variables as a shell script, for handy debugging.
+                     (system "export > $NIX_BUILD_TOP/environment-variables")
+                     result))))
+              phases)))
