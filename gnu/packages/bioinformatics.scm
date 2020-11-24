@@ -66,6 +66,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages commencement)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
@@ -11227,7 +11228,7 @@ applications for tackling some common problems in a user-friendly way.")
 (define-public tadbit
   (package
     (name "tadbit")
-    (version "0.2.0")
+    (version "1.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11236,21 +11237,13 @@ applications for tackling some common problems in a user-friendly way.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07g3aj648prmsvxp9caz5yl41k0y0647vxh0f5p3w8376mfiljd0"))))
+                "0hqrlymh2a2bimcfdvlssy1x5h1lp3h1c5a7jj11hmcqczzqn3ni"))))
     (build-system python-build-system)
     (arguments
-     `(;; Tests are included and must be run after installation, but
-       ;; they are incomplete and thus cannot be run.
-       #:tests? #f
-       #:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-problems-with-setup.py
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; setup.py opens these files for writing
-             (chmod "_pytadbit/_version.py" #o664)
-             (chmod "README.rst" #o664)
-
              ;; Don't attempt to install the bash completions to
              ;; the home directory.
              (rename-file "extras/.bash_completion"
@@ -11262,15 +11255,25 @@ applications for tackling some common problems in a user-friendly way.")
                                "/etc/bash_completion.d\""))
                (("extras/\\.bash_completion")
                 "extras/tadbit"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python3" "test/test_all.py")
              #t)))))
+    (native-inputs
+     `(("glib" ,glib "bin")             ;for gtester
+       ("pkg-config" ,pkg-config)))
     (inputs
      ;; TODO: add Chimera for visualization
      `(("imp" ,imp)
        ("mcl" ,mcl)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-numpy" ,python2-numpy)
-       ("python2-matplotlib" ,python2-matplotlib)
-       ("python2-pysam" ,python2-pysam)))
+       ("python-future" ,python-future)
+       ("python-h5py" ,python-h5py)
+       ("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pysam" ,python-pysam)))
     (home-page "https://3dgenomes.github.io/TADbit/")
     (synopsis "Analyze, model, and explore 3C-based data")
     (description
