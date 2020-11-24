@@ -685,23 +685,26 @@ extracting content or merging files.")
     (name "mupdf")
     (version "1.16.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://mupdf.com/downloads/archive/"
-                            "mupdf-" version "-source.tar.xz"))
-        (sha256
-         (base32
-          "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))
-        (modules '((guix build utils)))
-        (snippet
-         ;; We keep lcms2 since it is different than our lcms.
-         '(begin
-            (for-each
-              (lambda (dir)
-                (delete-file-recursively (string-append "thirdparty/" dir)))
-              '("freeglut" "freetype" "harfbuzz" "jbig2dec"
-                "libjpeg" "mujs" "openjpeg" "zlib"))
-                #t))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mupdf.com/downloads/archive/"
+                           "mupdf-" version "-source.tar.xz"))
+       (sha256
+        (base32 "16m5sksil22sshxy70xkslsb2qhvcqb1d95i9savnhds1xn4ybar"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled software.
+           (let* ((keep (list "lcms2")) ; different from our lcms2 package
+                  (from "thirdparty")
+                  (kept (string-append from "~temp")))
+             (mkdir-p kept)
+             (for-each (lambda (file) (rename-file (string-append from "/" file)
+                                              (string-append kept "/" file)))
+                       keep)
+             (delete-file-recursively from)
+             (rename-file kept from))
+           #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
