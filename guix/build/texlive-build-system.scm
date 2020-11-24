@@ -66,13 +66,12 @@
     (setenv "error_line" "254") ; must be less than 255
     (setenv "half_error_line" "238") ; must be less than error_line - 15
     (setenv "max_print_line" "1000"))
-  (mkdir "build")
-  #t)
+  (mkdir "build"))
 
 (define* (build #:key inputs build-targets tex-format #:allow-other-keys)
-  (every (cut compile-with-latex tex-format <>)
-         (if build-targets build-targets
-             (scandir "." (cut string-suffix? ".ins" <>)))))
+  (for-each (cut compile-with-latex tex-format <>)
+            (if build-targets build-targets
+                (scandir "." (cut string-suffix? ".ins" <>)))))
 
 (define* (install #:key outputs tex-directory #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
@@ -81,8 +80,7 @@
     (mkdir-p target)
     (for-each delete-file (find-files "." "\\.(log|aux)$"))
     (for-each (cut install-file <> target)
-              (find-files "build" ".*"))
-    #t))
+              (find-files "build" ".*"))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
