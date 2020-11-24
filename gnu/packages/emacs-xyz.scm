@@ -19796,7 +19796,7 @@ too ambiguous and navigation in the result buffer.")
       (home-page "https://github.com/sebastiencs/frame-local")
       (synopsis "Access variables local to an Emacs frame")
       (description
-       "This packages allows setting and accessing variables local to
+       "This package allows setting and accessing variables local to
 an Emacs frame.  Note that the variables created with this package do
 not have any relation with variables defined by @code{defvar},
 @code{defconst}, etc.")
