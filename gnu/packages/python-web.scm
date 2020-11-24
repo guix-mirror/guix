@@ -1316,7 +1316,7 @@ another XPath engine to find the matching elements in an XML or HTML document.")
 (define-public python-databricks-cli
   (package
     (name "python-databricks-cli")
-    (version "0.14.0")
+    (version "0.14.1")
     (home-page "https://github.com/databricks/databricks-cli")
     (source (origin
               (method git-fetch)
@@ -1324,7 +1324,7 @@ another XPath engine to find the matching elements in an XML or HTML document.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0imwpfda2pxix1rx0nlqs48v58icfw065nsv53rpg0dw4bw9x2wi"))))
+                "03w19rzh72jll9phai23wp0c2mlv39qsrv50mhckziy39z60yxh8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
