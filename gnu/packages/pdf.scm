@@ -218,17 +218,17 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler-data
   (package
     (name "poppler-data")
-    (version "0.4.9")
+    (version "0.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://poppler.freedesktop.org/poppler-data"
                                   "-" version ".tar.gz"))
               (sha256
                (base32
-                "04i0wgdkn5lhda8cyxd1ll4a2p41pwqrwd47n9mdpl7cx5ypx70z"))))
+                "0c3vjs3p7rjc4yfacnhd865r27czmzwcr4j2z4jldi68dvvcwbvf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
