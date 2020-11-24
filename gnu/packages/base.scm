@@ -1335,11 +1335,9 @@ and daylight-saving rules.")
               (snippet
                ;; Work around "declared gets" error on glibc systems (fixed by
                ;; Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348.)
-               '(begin
-                  (substitute* "srclib/stdio.in.h"
-                    (("^#undef gets") "")
-                    (("^_GL_WARN_ON_USE \\(gets.*") ""))
-                  #t))))
+               '(substitute* "srclib/stdio.in.h"
+                  (("^#undef gets") "")
+                  (("^_GL_WARN_ON_USE \\(gets.*") "")))))
     (build-system gnu-build-system)
     (synopsis "Character set conversion library")
     (description
