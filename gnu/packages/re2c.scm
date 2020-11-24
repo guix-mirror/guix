@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
+;;; Copyright © 2017, 2020 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
