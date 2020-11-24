@@ -88,6 +88,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -683,7 +684,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.16.1")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -710,6 +711,7 @@ extracting content or merging files.")
       `(("curl" ,curl)
         ("freeglut" ,freeglut)
         ("freetype" ,freetype)
+        ("gumbo-parser" ,gumbo-parser)
         ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)
         ("libjpeg" ,libjpeg-turbo)
@@ -722,14 +724,14 @@ extracting content or merging files.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      '(#:tests? #f ; no check target
+      '(#:tests? #f                     ; no check target
         #:make-flags (list "CC=gcc"
                            "XCFLAGS=-fpic"
                            "USE_SYSTEM_LIBS=yes"
                            "USE_SYSTEM_MUJS=yes"
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                   (delete 'configure)))) ; no configure script
     (home-page "https://mupdf.com")
     (synopsis "Lightweight PDF viewer and toolkit")
     (description
