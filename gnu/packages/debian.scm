@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
@@ -28,10 +28,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages wget)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages wget))
 
 (define-public debian-archive-keyring
   (package
@@ -275,3 +278,56 @@ debian/copyright for more information.")))))
 selectively mirror Debian and Ubuntu GNU/Linux distributions or any
 other apt sources typically provided by open source developers.")
       (license license:gpl2))))
+
+(define-public dpkg
+  (package
+    (name "dpkg")
+    (version "1.20.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.dpkg.org/git/dpkg/dpkg")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "190q968g1vdz07byvfvc2gladhpq3yl765mfiacglyix3nkisy0j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'patch-version
+           (lambda _
+             (patch-shebang "get-version")
+             (with-output-to-file ".dist-version"
+               (lambda () (display ,version)))
+             #t))
+         (add-after 'unpack 'set-perl-libdir
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out  (assoc-ref outputs "out"))
+                   (perl (assoc-ref inputs "perl")))
+               (setenv "PERL_LIBDIR"
+                       (string-append out
+                                      "/lib/perl5/site_perl/"
+                                      ,(package-version perl)))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("perl-io-string" ,perl-io-string)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("libmd" ,libmd)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "https://wiki.debian.org/Teams/Dpkg")
+    (synopsis "Debian package management system")
+    (description "This package provides the low-level infrastructure for
+handling the installation and removal of Debian software packages.")
+    (license license:gpl2+)))
