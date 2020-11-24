@@ -19,6 +19,7 @@
 ;;; Copyright © 2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages fontutils)
@@ -805,6 +808,53 @@ program capable of converting PDF into other formats.")
    ;; Users can still choose to use the old license at their option.
    (license (list license:asl2.0 license:clarified-artistic))
    (home-page "http://qpdf.sourceforge.net/")))
+
+(define-public qpdfview
+  (package
+    (name "qpdfview")
+    (version "0.4.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/qpdfview/"
+                           "trunk/" version "/+download/"
+                           "qpdfview-" version ".tar.gz"))
+       (sha256
+        (base32 "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cups" ,cups)
+       ("djvulibre" ,djvulibre)
+       ("libspectre" ,libspectre)
+       ("poppler-qt5" ,poppler-qt5)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:imported-modules ((guix build qt-build-system)
+                           (guix build cmake-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  ((guix build qt-build-system) #:prefix qt:))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "qpdfview.pri"
+               (("/usr") (assoc-ref %outputs "out")))
+             (invoke "qmake" "qpdfview.pro")))
+         ;; Otherwise, the user interface will not display any icons.
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (home-page "https://launchpad.net/qpdfview")
+    (synopsis "Tabbed document viewer")
+    (description "@command{qpdfview} is a document viewer for PDF, PS and DJVU
+files.  It uses the Qt toolkit and features persistent per-file settings,
+configurable toolbars and shortcuts, continuous and multi‐page layouts,
+SyncTeX support, and rudimentary support for annotations and forms.")
+    (license license:gpl2+)))
 
 (define-public xournal
   (package
