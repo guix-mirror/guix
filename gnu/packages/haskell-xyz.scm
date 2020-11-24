@@ -9167,7 +9167,7 @@ require aeson
     (home-page "https://hackage.haskell.org/package/text-short")
     (synopsis "Memory-efficient representation of Unicode text strings")
     (description "This package provides the @code{ShortText} type which
-is suitable for keeping many short strings in memory.  This is similiar
+is suitable for keeping many short strings in memory.  This is similar
 to how @code{ShortByteString} relates to @code{ByteString}.
 
 The main difference between @code{Text} and @code{ShortText} is that
