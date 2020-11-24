@@ -14159,15 +14159,14 @@ Anzu.zim.")
 (define-public emacs-ascii-art-to-unicode
   (package
     (name "emacs-ascii-art-to-unicode")
-    (version "1.12")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/ascii-art-to-unicode-"
                            version ".el"))
        (sha256
-        (base32
-         "1w9h2lyriafxj71r79774gh822cz8mry3gdfzyj6ym6v9mvqypna"))))
+        (base32 "1c0jva3amhl9c5xc5yzdpi58c8m1djym4ccj31z6wmakq7npy07p"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/ascii-art-to-unicode.html")
     (synopsis "ASCII to Unicode art converter for Emacs")
