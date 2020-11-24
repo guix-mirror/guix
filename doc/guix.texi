@@ -16718,7 +16718,7 @@ Connection policy.  @var{reject} policy requires to specify @var{known-hosts}.
 List of hosts which allowed for SSH connection from @command{webssh}.
 
 @item @code{log-file} (default: @file{"/var/log/webssh.log"})
-Name of the file where @command{rsync} writes its log file.
+Name of the file where @command{webssh} writes its log file.
 
 @item @code{log-level} (default: @var{#f})
 Logging level.
