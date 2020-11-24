@@ -725,7 +725,8 @@ extracting content or merging files.")
       `(("pkg-config" ,pkg-config)))
     (arguments
       `(#:tests? #f                     ; no check target
-        #:make-flags (list (string-append "CC=" ,(cc-for-target))
+        #:make-flags (list "verbose=yes"
+                           (string-append "CC=" ,(cc-for-target))
                            "XCFLAGS=-fpic"
                            "USE_SYSTEM_LIBS=yes"
                            "USE_SYSTEM_MUJS=yes"
