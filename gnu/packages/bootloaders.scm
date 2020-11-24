@@ -258,21 +258,25 @@ menu to select one of the installed operating systems.")
      (fold alist-delete (package-native-inputs grub)
            '("help2man" "texinfo" "parted" "qemu" "xorriso")))
     (arguments
-     `(#:configure-flags (list "PYTHON=true")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-stuff
-                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                     (substitute* "grub-core/Makefile.in"
-                       (("/bin/sh") (which "sh")))
+     (substitute-keyword-arguments (package-arguments grub)
+       ((#:configure-flags _ ''())
+        '(list "PYTHON=true"))
+       ((#:tests? _ #t)
+        #f)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'patch-stuff
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (substitute* "grub-core/Makefile.in"
+                 (("/bin/sh") (which "sh")))
 
-                     ;; Make the font visible.
-                     (copy-file (assoc-ref (or native-inputs inputs)
-                                           "unifont")
-                                "unifont.bdf.gz")
-                     (system* "gunzip" "unifont.bdf.gz")
+               ;; Make the font visible.
+               (copy-file (assoc-ref (or native-inputs inputs)
+                                     "unifont")
+                          "unifont.bdf.gz")
+               (system* "gunzip" "unifont.bdf.gz")
 
-                     #t)))
-       #:tests? #f))))
+               #t))))))))
 
 (define-public grub-efi
   (package
