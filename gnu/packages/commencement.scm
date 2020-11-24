@@ -115,8 +115,7 @@
                       (guile-dir (assoc-ref inputs "guile"))
                       (guile (string-append guile-dir "/bin/guile")))
                  (invoke guile "--no-auto-compile" source)
-                 (chdir "bootar")
-                 #t)))
+                 (chdir "bootar"))))
            (replace 'configure (bootstrap-configure ,version "." "scripts"))
            (replace 'build (bootstrap-build "."))
            (replace 'install (bootstrap-install "." "scripts"))))))
@@ -162,8 +161,7 @@ pure Scheme to Tar and decompression in one easy step.")
                  (symlink (string-append out "/bin/gash")
                           (string-append out "/bin/sh"))
                  (symlink (string-append out "/bin/gash")
-                          (string-append out "/bin/bash"))
-                 #t)))))))
+                          (string-append out "/bin/bash")))))))))
     (inputs `(("guile" ,%bootstrap-guile)))
     (native-inputs `(("bootar" ,bootar)))))
 
@@ -189,8 +187,7 @@ pure Scheme to Tar and decompression in one easy step.")
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((gash (assoc-ref inputs "gash")))
                  (add-to-load-path (string-append gash "/share/guile/site/"
-                                                  (effective-version))))
-               #t))
+                                                  (effective-version))))))
            (add-before 'configure 'pre-configure
              (lambda _
                (format #t "Creating gash/commands/testb.scm~%")
@@ -216,8 +213,7 @@ pure Scheme to Tar and decompression in one easy step.")
                (copy-file "scripts/template.in" "scripts/[.in")
                (substitute* "scripts/[.in"
                  (("@UTILITY@") "testb"))
-               (delete-file "scripts/template.in")
-               #t))
+               (delete-file "scripts/template.in")))
            (replace 'configure
              (bootstrap-configure ,(package-version gash-utils)
                                   "gash" "scripts"))
@@ -246,8 +242,7 @@ pure Scheme to Tar and decompression in one easy step.")
                  (copy-file (string-append gash-godir "/gash/compat.go")
                             (string-append godir "/gash/compat.go"))
                  (copy-recursively (string-append gash-godir "/gash/compat")
-                                   (string-append godir "/gash/compat"))
-                 #t)))))))
+                                   (string-append godir "/gash/compat")))))))))
     (inputs `(("gash" ,gash-boot)
               ("guile" ,%bootstrap-guile)))
     (native-inputs `(("bootar" ,bootar)))))
@@ -437,8 +432,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                                         (string-suffix? ".s" name))))))
                (for-each (lambda (x) (install-file x cache))
                          (append (objects-in-dir ".")
-                                 (objects-in-dir "mescc-lib"))))
-             #t)))))
+                                 (objects-in-dir "mescc-lib")))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -572,8 +566,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          (add-after 'unpack 'scripted-patch
            (lambda _
              (substitute* "util.c"
-               (("^char [*]strlwr" all) (string-append all "_tcc_cannot_handle_dupe")))
-             #t))
+               (("^char [*]strlwr" all) (string-append all "_tcc_cannot_handle_dupe")))))
          (replace 'build
            (lambda _
              (let ((files '("bits" "crypt" "deflate" "getopt" "gzip"
@@ -635,13 +628,11 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
            (lambda _
              (substitute* "build.sh.in"
                (("@LIBOBJS@") "getloadavg.o")
-               (("@REMOTE@") "stub"))
-             #t))
+               (("@REMOTE@") "stub"))))
          (add-after 'configure 'configure-fixup
            (lambda _
              (substitute* "make.h"
-               (("^extern long int lseek.*" all) (string-append "// " all)))
-             #t))
+               (("^extern long int lseek.*" all) (string-append "// " all)))))
          (replace 'build
            (lambda _
              (invoke "sh" "./build.sh")))
@@ -693,16 +684,14 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (("uTimBuf[.]" all)
                 (string-append "// " all))
                (("retVal = utime [(] dstName, &uTimBuf [)];" all)
-                (string-append "retVal = 0; // " all)))
-             #t))
+                (string-append "retVal = 0; // " all)))))
          (replace 'configure
            (lambda _
              (with-output-to-file "utime.h"
                (lambda _ (display "
 #define fchown(filedes, owner, group) 0
 #define fchmod(filedes, mode) 0
-")))
-             #t))
+")))))
          (replace 'check
            (lambda _
              (invoke "./bzip2" "--help")))
@@ -758,8 +747,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (setenv "CC" "tcc")
                (setenv "LD" "tcc")
                (setenv "AR" "tcc -ar")
-               (setenv "CFLAGS" "-D _POSIX_VERSION=1")
-               #t)))
+               (setenv "CFLAGS" "-D _POSIX_VERSION=1"))))
          (add-after 'unpack 'scripted-patch
            (lambda _
              (substitute* "Makefile.in"
@@ -772,8 +760,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              (substitute* "lib/sh/snprintf.c"
                (("^#if (defined [(]HAVE_LOCALE_H[)])" all define) (string-append "#if 0 //" define)))
              (substitute* "configure"
-               ((" egrep") " grep"))
-             #t))
+               ((" egrep") " grep"))))
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (let ((configure-flags (filter (lambda (x)
@@ -797,8 +784,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
 #define endpwent(x) 0
 "
                         config.h)
-               (close config.h))
-             #t))
+               (close config.h))))
          (replace 'check
            (lambda _
              (invoke "./bash" "--version")))
@@ -808,8 +794,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                     (bin (string-append out "/bin")))
                (mkdir-p bin)
                (copy-file "bash" (string-append bin "/bash"))
-               (copy-file "bash" (string-append bin "/sh"))
-               #t))))))))
+               (copy-file "bash" (string-append bin "/sh"))))))))))
 
 (define tcc-boot
   ;; The final tcc.
@@ -842,8 +827,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              (copy-file source "tarball.tar.bz2")
              (invoke "bzip2" "-d" "tarball.tar.bz2")
              (invoke "tar" "xvf" "tarball.tar")
-             (chdir (string-append "tcc-" ,version))
-             #t))
+             (chdir (string-append "tcc-" ,version))))
          ;; no patch yet
          ;; (add-after 'unpack 'apply-boot-patch
          ;;   (lambda* (#:key inputs #:allow-other-keys)
@@ -854,8 +838,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              (substitute* "libtcc.c"
                (("s->alacarte_link = 1;" all)
                 (string-append all "
-    s->static_link = 1;")))
-             #t))
+    s->static_link = 1;")))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
@@ -915,8 +898,8 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                 (invoke "tcc" "-ar" "rc" "libtcc1.a" "libtcc1.o")
                 (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
                 (delete-file (string-append out "/lib/tcc/libtcc1.a"))
-                (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
-                #t)))))))))
+                (copy-file "libtcc1.a"
+                           (string-append out "/lib/tcc/libtcc1.a")))))))))))
 
 (define diffutils-mesboot
   ;; The initial diffutils.
@@ -964,8 +947,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                     (bin (string-append out "/bin")))
                (mkdir-p bin)
                (install-file "cmp" bin)
-               (install-file "diff" bin)
-               #t))))))))
+               (install-file "diff" bin)))))))))
 
 (define patch-mesboot
   ;; The initial patch.
@@ -998,8 +980,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              ;; avoid another segfault
              (substitute* "pch.c"
                (("while [(]p_end >= 0[)]" all)
-                "p_end = -1;\nwhile (0)"))
-             #t))
+                "p_end = -1;\nwhile (0)"))))
          ;; FIXME: no compressing gzip yet
          (delete 'compress-documentation))))))
 
@@ -1035,8 +1016,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                     (bash (assoc-ref %build-inputs "bash"))
                     (shell (string-append bash "/bin/bash")))
                (substitute* "configure"
-                 (("/bin/sh") shell))
-               #t)))
+                 (("/bin/sh") shell)))))
          (replace 'check
            (lambda _
              (invoke "./sed" "--version")))
@@ -1044,8 +1024,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
            (lambda _
              (let* ((out (assoc-ref %outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "sed" bin)
-               #t))))))))
+               (install-file "sed" bin)))))))))
 
 (define (%boot-tcc-inputs)
   `(("bash" ,bash-mesboot0)
@@ -1101,14 +1080,12 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (setenv "SHELL" shell)
                (setenv "AR" "tcc -ar")
                (setenv "RANLIB" "true")
-               (setenv "CC" "tcc -D __GLIBC_MINOR__=6")
-               #t)))
+               (setenv "CC" "tcc -D __GLIBC_MINOR__=6"))))
          (add-after 'unpack 'scripted-patch
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "bfd/configure"
                (("^sed -e '/SRC-POTFILES.*" all)
-                "echo -e 'all:\\n\\ttrue\\n\\ninstall:\\n\\ttrue\\n' > po/Makefile\n"))
-             #t))
+                "echo -e 'all:\\n\\ttrue\\n\\ninstall:\\n\\ttrue\\n' > po/Makefile\n"))))
          (replace 'configure           ; needs classic invocation of configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format (current-error-port)
@@ -1180,8 +1157,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          (add-after 'unpack 'apply-boot-patch
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((patch-file (assoc-ref inputs "boot-patch")))
-               (system* "patch" "--force" "-p1" "-i" patch-file)
-               #t)))
+               (system* "patch" "--force" "-p1" "-i" patch-file))))
          (add-before 'configure 'setenv
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1229,8 +1205,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (invoke "ar" "x" (string-append tcc "/lib/libtcc1.a"))
                (invoke "ar" "x" (string-append tcc "/lib/libc.a"))
                (invoke "ar" "r" (string-append gcc-dir "/libc.a")
-                       "libc.o" "libtcc1.o")
-               #t))))))
+                       "libc.o" "libtcc1.o")))))))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -1273,8 +1248,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                     (headers (assoc-ref %build-inputs "kernel-headers")))
                (mkdir-p include)
                (copy-recursively "include" out)
-               (copy-recursively headers out)
-               #t))))))))
+               (copy-recursively headers out)))))))))
 
 (define gawk-mesboot0
   ;; The initial Gawk.
@@ -1325,8 +1299,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (setenv "CPP" "tcc -E")
                (setenv "LD" "tcc")
                (setenv "ac_cv_func_getpgrp_void" "yes")
-               (setenv "ac_cv_func_tzset" "yes"))
-             #t))
+               (setenv "ac_cv_func_tzset" "yes"))))
          (replace 'configure           ; needs classic invocation of configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
@@ -1341,8 +1314,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "gawk" bin)
-               (symlink "gawk" (string-append bin "/awk"))
-               #t))))))))
+               (symlink "gawk" (string-append bin "/awk"))))))))))
 
 (define glibc-mesboot0
   ;; GNU C Library 2.2.5 is the most recent glibc that we managed to build
@@ -1419,8 +1391,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (setenv "CONFIG_SHELL" shell)
                (setenv "SHELL" shell)
                (setenv "CPP" (string-append gcc "/bin/gcc -E " cppflags))
-               (setenv "CC" (string-append gcc "/bin/gcc " cppflags cflags))
-               #t)))
+               (setenv "CC" (string-append gcc "/bin/gcc " cppflags cflags)))))
          (replace 'configure           ; needs classic invocation of configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format (current-error-port)
@@ -1437,8 +1408,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                           (("INSTALL = scripts/") "INSTALL = $(..)./scripts/")
                           (("BASH = ") (string-append
                                         "SHELL = " shell "
-         BASH = ")))
-                        #t))))))))
+         BASH = ")))))))))))
 
 (define gcc-mesboot0
   (package
@@ -1461,8 +1431,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                  (lambda _
                    (display "
 ac_cv_c_float_format='IEEE (little-endian)'
-")))
-               #t))
+")))))
            (replace 'install2
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -1539,14 +1508,12 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (substitute* "configure"
                  ((" /bin/sh") shell)))
              (substitute* "Makefile.in"
-               (("^SUBDIRS = doc") "SUBDIRS ="))
-             #t))
+               (("^SUBDIRS = doc") "SUBDIRS ="))))
          (replace 'install
            (lambda _
              (let* ((out (assoc-ref %outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "src/tar" bin)
-               #t))))))))
+               (install-file "src/tar" bin)))))))))
 
 (define grep-mesboot
   ;; The initial grep.
@@ -1583,8 +1550,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                     (bin (string-append out "/bin")))
                (install-file "grep" bin)
                (symlink "grep" (string-append bin "/egrep"))
-               (symlink "grep" (string-append bin "/fgrep"))
-               #t))))))))
+               (symlink "grep" (string-append bin "/fgrep"))))))))))
 
 (define binutils-mesboot1
   (package
@@ -1609,8 +1575,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (let* ((out (assoc-ref %outputs "out"))
                       (bash (assoc-ref %build-inputs "bash"))
                       (shell (string-append bash "/bin/bash")))
-                 (setenv "CONFIG_SHELL" shell)
-                 #t)))))))))
+                 (setenv "CONFIG_SHELL" shell))))))))))
 
 (define coreutils-mesboot0
   (package
@@ -1673,8 +1638,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "make" bin)
-               #t))))))))
+               (install-file "make" bin)))))))))
 
 (define gawk-mesboot
   (package
@@ -1709,8 +1673,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "gawk" bin)
-               (symlink "gawk" (string-append bin "/awk"))
-               #t))))))))
+               (symlink "gawk" (string-append bin "/awk"))))))))))
 
 (define sed-mesboot
   (package
@@ -1741,8 +1704,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                     (shell (string-append bash "/bin/bash")))
                (substitute* "testsuite/Makefile.tests"
                  (("^SHELL = /bin/sh")
-                  (string-append "SHELL = " shell)))
-               #t))))))))
+                  (string-append "SHELL = " shell)))))))))))
 
 (define bash-mesboot
   (package
@@ -1785,14 +1747,12 @@ ac_cv_c_float_format='IEEE (little-endian)'
          (add-after 'unpack 'scripted-patch
            (lambda _
              (substitute* "shell.c"
-               ((";;") ";"))
-             #t))
+               ((";;") ";"))))
          (add-before 'configure 'setenv
            (lambda _
              (setenv "AWK" "gawk")
              (setenv "LIBS" "-lc -lnss_files -lnss_dns -lresolv")
-             (setenv "gl_cv_func_rename_dest_works" "yes")
-             #t))
+             (setenv "gl_cv_func_rename_dest_works" "yes")))
          (add-after 'configure 'configure-fixups
            (lambda _
              (let ((config.h (open-file "config.h" "a")))
@@ -1800,8 +1760,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
 #define enable_hostname_completion(on_or_off) 0
 ")
                         config.h)
-               (close config.h))
-             #t))
+               (close config.h))))
          (replace 'check
            (lambda _
              (invoke "./bash" "--version")))
@@ -1811,8 +1770,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                     (bin (string-append out "/bin")))
                (mkdir-p bin)
                (copy-file "bash" (string-append bin "/bash"))
-               (copy-file "bash" (string-append bin "/sh"))
-               #t))))))))
+               (copy-file "bash" (string-append bin "/sh"))))))))))
 
 (define (%boot-mesboot1-inputs)
   `(("bash" ,bash-mesboot)
@@ -1938,8 +1896,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((patch-file (assoc-ref inputs "boot-patch")))
                (format (current-error-port) "patch file=~s\n" patch-file)
-               (system* "patch" "--force" "-p1" "-i" patch-file))
-             #t))
+               (system* "patch" "--force" "-p1" "-i" patch-file))))
          ;; c&p from commencement.scm:gcc-boot0
          (add-after 'unpack 'unpack-gmp&co
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1963,8 +1920,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                                     (package-full-name lib "-")
                                     char-set:letter)
                                   ,(package-name lib)))
-                      (list gmp-boot mpfr-boot mpc-boot))
-               #t)))
+                      (list gmp-boot mpfr-boot mpc-boot)))))
          (add-before 'configure 'setenv
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1982,8 +1938,8 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (setenv "LIBRARY_PATH" (string-append glibc "/lib"
                                                      ":" gcc "/lib"))
                (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
-               (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-               #t))))))))
+               (format (current-error-port) "LIBRARY_PATH=~a\n"
+                       (getenv "LIBRARY_PATH"))))))))))
 
 (define gcc-mesboot1
   (package
@@ -2013,8 +1969,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (add-before 'unpack 'unpack-g++
              (lambda _
                (let ((source-g++ (assoc-ref %build-inputs "gcc-g++")))
-                 (invoke "tar" "xvf" source-g++))
-               #t))
+                 (invoke "tar" "xvf" source-g++))))
            (replace 'setenv
              (lambda _
                (setenv "CONFIG_SHELL" (which "sh"))
@@ -2026,8 +1981,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
 
                ;; Set the C++ search path so that C headers can be found as
                ;; libstdc++ is being compiled.
-               (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-               #t))))))))
+               (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))))))))))
 
 (define (%boot-mesboot2-inputs)
   `(("gcc" ,gcc-mesboot1)
@@ -2168,8 +2122,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
              (substitute* "gprof/Makefile.in"
                (("^SUBDIRS = po") "SUBDIRS ="))
              (substitute* "ld/Makefile.in"
-               (("^SUBDIRS = po") "SUBDIRS ="))
-             #t)))))))
+               (("^SUBDIRS = po") "SUBDIRS =")))))))))
 
 (define (%boot-mesboot3-inputs)
   `(("binutils" ,binutils-mesboot)
@@ -2221,8 +2174,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (replace 'unpack
              (lambda* (#:key source #:allow-other-keys)
                (invoke "tar" "xvf" source)
-               (chdir (string-append "glibc-" ,version))
-               #t))
+               (chdir (string-append "glibc-" ,version))))
            (replace 'setenv
              (lambda* (#:key inputs #:allow-other-keys)
                (let* ((headers  (assoc-ref inputs "headers"))
@@ -2244,15 +2196,13 @@ ac_cv_c_float_format='IEEE (little-endian)'
                  ;; avoid -fstack-protector
                  (setenv "libc_cv_ssp" "false")
                  (substitute* "configure"
-                   (("/bin/pwd") "pwd"))
-                 #t)))
+                   (("/bin/pwd") "pwd")))))
            (replace 'install
              (lambda* (#:key outputs make-flags #:allow-other-keys)
                (let ((kernel-headers (assoc-ref %build-inputs "kernel-headers"))
                      (out (assoc-ref outputs "out")))
-                 (and (apply invoke "make" make-flags)
-                      (copy-recursively kernel-headers out)
-                      #t))))
+                 (apply invoke "make" make-flags)
+                 (copy-recursively kernel-headers out))))
            (replace 'configure
              (lambda* (#:key configure-flags #:allow-other-keys)
                (format (current-error-port) "running ../configure ~a\n" (string-join configure-flags))
@@ -2281,8 +2231,7 @@ SHELL := " shell "
                  (invoke "make" (string-append (getcwd) "/sysd-sorted" ))
                  (substitute* "sysd-sorted"
                    ((" sunrpc") " ")
-                   ((" nis") " "))
-                 #t)))))))))
+                   ((" nis") " ")))))))))))
 
 (define glibc-mesboot
   (package
@@ -2303,9 +2252,8 @@ SHELL := " shell "
                    (let* ((kernel-headers (assoc-ref %build-inputs "kernel-headers"))
                           (out (assoc-ref outputs "out"))
                           (install-flags (cons "install" make-flags)))
-                     (and (apply invoke "make" install-flags)
-                          (copy-recursively kernel-headers out)
-                          #t)))))))))))
+                     (apply invoke "make" install-flags)
+                     (copy-recursively kernel-headers out)))))))))))
 
 (define (%boot-mesboot4-inputs)
   `(("libc" ,glibc-mesboot)
@@ -2360,8 +2308,7 @@ exec " gcc "/bin/" program
                   "g++"
                   "i686-unknown-linux-gnu-cpp"
                   "i686-unknown-linux-gnu-gcc"
-                  "i686-unknown-linux-gnu-g++"))
-               #t)))
+                  "i686-unknown-linux-gnu-g++")))))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2448,8 +2395,8 @@ exec " gcc "/bin/" program
                                                            ":" gcc "/lib"))
                      (format (current-error-port) "C_INCLUDE_PATH=~a\n" (getenv "C_INCLUDE_PATH"))
                      (format (current-error-port) "CPLUS_INCLUDE_PATH=~a\n" (getenv "CPLUS_INCLUDE_PATH"))
-                     (format (current-error-port) "LIBRARY_PATH=~a\n" (getenv "LIBRARY_PATH"))
-                     #t))))))))))
+                     (format (current-error-port) "LIBRARY_PATH=~a\n"
+                             (getenv "LIBRARY_PATH"))))))))))))
 
 (define gcc-mesboot-wrapper
   ;; We need this so gcc-mesboot can be used to create shared binaries that
@@ -2522,8 +2469,7 @@ exec " gcc "/bin/" program
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
                           (bin (string-append out "/bin")))
-                     (install-file "make" bin)
-                     #t))))))))
+                     (install-file "make" bin)))))))))
     (native-inputs '())                           ; no need for 'pkg-config'
     (inputs (%bootstrap-inputs+toolchain))))
 
@@ -2748,8 +2694,7 @@ exec " gcc "/bin/" program
                         (with-directory-excursion (string-append out "/bin")
                           (for-each (lambda (name)
                                       (symlink name (remove-triplet-prefix name)))
-                                    (scandir "." has-triplet-prefix?)))
-                        #t))))
+                                    (scandir "." has-triplet-prefix?)))))))
 
        ,@(substitute-keyword-arguments (package-arguments binutils)
            ((#:configure-flags cf)
@@ -2784,8 +2729,7 @@ exec " gcc "/bin/" program
                       ;; fail, which in turn confuses the configure script.
                       (lambda _
                         (substitute* "libstdc++-v3/configure"
-                          (("g\\+\\+ -v") "true"))
-                        #t))))))
+                          (("g\\+\\+ -v") "true"))))))))
              (_ (package-arguments lib)))))
       (inputs (%boot0-inputs))
       (native-inputs '()))))
@@ -2867,8 +2811,7 @@ exec " gcc "/bin/" program
                                           (package-full-name lib "-")
                                           char-set:letter)
                                         ,(package-name lib)))
-                            (list gmp-6.0 mpfr mpc))
-                     #t)))
+                            (list gmp-6.0 mpfr mpc)))))
                ,(match (%current-system)
                   ((or "i686-linux" "x86_64-linux")
                    '(add-before 'configure 'fix-libcc1
@@ -2881,8 +2824,7 @@ exec " gcc "/bin/" program
                                           (assoc-ref inputs "gcc") "/lib")))
                         ;; XXX: "g++ -v" is broken (see also libstdc++ above).
                         (substitute* "libcc1/configure"
-                          (("g\\+\\+ -v") "true"))
-                        #t)))
+                          (("g\\+\\+ -v") "true")))))
                   (_ '(add-before 'configure 'return-true
                         (lambda _ #t))))
                (add-after 'install 'symlink-libgcc_eh
@@ -2894,8 +2836,7 @@ exec " gcc "/bin/" program
                          (string-append out "/lib/gcc/"
                                         ,(boot-triplet)
                                         "/" ,(package-version gcc))
-                       (symlink "libgcc.a" "libgcc_eh.a"))
-                     #t))))))))
+                       (symlink "libgcc.a" "libgcc_eh.a"))))))))))
 
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
               ("mpfr-source" ,(bootstrap-origin (package-source mpfr)))
@@ -2936,8 +2877,7 @@ exec " gcc "/bin/" program
                  (lambda _
                    (substitute* "Configure"
                      (("^libswanted=(.*)pthread" _ before)
-                      (string-append "libswanted=" before)))
-                   #t))))
+                      (string-append "libswanted=" before)))))))
            ;; Do not configure with '-Dusethreads' since pthread
            ;; support is missing.
            ((#:configure-flags configure-flags)
@@ -3182,8 +3122,7 @@ memoized as a function of '%current-system'."
                    (delete-file-recursively "Modules/expat")
                    (substitute* "Modules/Setup.dist"
                      ;; Link Expat instead of embedding the bundled one.
-                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
-                   #t)))))
+                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n")))))))
     (inputs
      `(,@(%boot0-inputs)
        ("expat" ,expat-sans-tests)))              ;remove OpenSSL, zlib, etc.
@@ -3219,16 +3158,15 @@ memoized as a function of '%current-system'."
                      (("extensions\\.append\\(ctypes\\)") "")
                      ;; Prevent the 'ossaudiodev' extension from being
                      ;; built, since it requires Linux headers.
-                     (("'linux', ") ""))
-                   #t))
+                     (("'linux', ") ""))))
                (delete 'set-TZDIR)
                ,@(if (hurd-system?)
                      `((add-before 'build 'fix-regen
                          (lambda* (#:key inputs #:allow-other-keys)
                            (let ((libc (assoc-ref inputs "libc")))
                              (substitute* "Lib/plat-generic/regen"
-                               (("/usr/include/") (string-append libc "/include/")))
-                             #t))))
+                               (("/usr/include/")
+                                (string-append libc "/include/")))))))
                      '())))
            ((#:tests? _ #f) #f))))))
 
@@ -3289,8 +3227,7 @@ memoized as a function of '%current-system'."
                             (string-append "LDLIBS-pthread.so = "
                                            (assoc-ref %build-inputs "kernel-headers")
                                            "/lib/libihash.a\n"))))
-                       '())
-                   #t)))))))
+                       '()))))))))
     (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
     (native-inputs
      `(("bison" ,bison-boot0)
@@ -3354,9 +3291,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                            triplet "-" tool)
                                             tool))
                                  '("ar" "ranlib"))
-                       (for-each wrap-program '("gcc" "g++")))
-
-                     #t))))
+                       (for-each wrap-program '("gcc" "g++")))))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -3419,16 +3354,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                   ;; Build only the tools.
                   (add-after 'unpack 'chdir
                     (lambda _
-                      (chdir "gettext-tools")
-                      #t))
+                      (chdir "gettext-tools")))
 
                   ;; Some test programs require pthreads, which we don't have.
                   (add-before 'configure 'no-test-programs
                     (lambda _
                       (substitute* "tests/Makefile.in"
                         (("^PROGRAMS =.*$")
-                         "PROGRAMS =\n"))
-                      #t)))))))
+                         "PROGRAMS =\n")))))))))
 
 (define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
@@ -3595,8 +3528,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                            (package-full-name lib "-")
                                            char-set:letter)
                                          ,(package-name lib)))
-                             (list gmp-6.0 mpfr mpc))
-                      #t))))))))
+                             (list gmp-6.0 mpfr mpc))))))))))
 
     ;; This time we want Texinfo, so we get the manual.  Add
     ;; STATIC-BASH-FOR-GLIBC so that it's used in the final shebangs of

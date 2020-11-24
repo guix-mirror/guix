@@ -119,8 +119,7 @@ command-line arguments, multiple languages, and so on.")
               (substitute* (list (string-append bin "/egrep")
                                  (string-append bin "/fgrep"))
                 (("^exec grep")
-                 (string-append "exec " bin "/grep")))
-              #t))))))
+                 (string-append "exec " bin "/grep")))))))))
    (synopsis "Print lines matching a pattern")
    (description
      "grep is a tool for finding text inside files.  Text is found by
@@ -207,8 +206,7 @@ implementation offers several extensions over the standard utility.")
                      (let ((bash (assoc-ref inputs "bash")))
                        (substitute* "src/system.c"
                          (("/bin/sh")
-                          (string-append bash "/bin/sh")))
-                       #t))))))
+                          (string-append bash "/bin/sh")))))))))
 
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
@@ -304,8 +302,7 @@ interactive means to merge two files.")
                      (substitute* '("tests/xargs/verbose-quote.sh"
                                     "tests/find/exec-plus-last-file.sh")
                        (("#!/bin/sh")
-                        (string-append "#!" (which "sh"))))
-                     #t)))))
+                        (string-append "#!" (which "sh")))))))))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the
@@ -377,15 +374,13 @@ used to apply commands with arbitrarily long arguments.")
                      (substitute* (find-files "gnulib-tests" "\\.c$")
                        (("/bin/sh") (which "sh")))
                      (substitute* (find-files "tests" "\\.sh$")
-                       (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t))
+                       (("#!/bin/sh") (string-append "#!" (which "sh"))))))
                  ,@(if (hurd-target?)
                        `((add-after 'unpack 'remove-tests
                            (lambda _
                              (substitute* "Makefile.in"
                                ;; this test hangs
-                               (("^ *tests/misc/timeout-group.sh.*") ""))
-                             #t)))
+                               (("^ *tests/misc/timeout-group.sh.*") "")))))
                        '()))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
@@ -430,8 +425,7 @@ standard.")
                 ;; specific issue, but "env-S.pl" is not adjusted for build
                 ;; environments with long prefixes (/tmp/guix-build-...).
                 (substitute* "Makefile"
-                  (("^.*tests/misc/env-S.pl.*$") ""))
-                #t)))))))))
+                  (("^.*tests/misc/env-S.pl.*$") "")))))))))))
 
 (define-public gnu-make
   (package
@@ -463,8 +457,7 @@ standard.")
               (substitute* "src/job.c"
                 (("default_shell =.*$")
                  (format #f "default_shell = \"~a/bin/sh\";\n"
-                         bash)))
-              #t))))))
+                         bash)))))))))
    (synopsis "Remake files automatically")
    (description
     "Make is a program that is used to control the production of
@@ -498,8 +491,7 @@ change.  GNU make offers many powerful extensions over the standard utility.")
                (substitute* "job.c"
                  (("default_shell =.*$")
                   (format #f "default_shell = \"~a/bin/sh\";\n"
-                          bash)))
-               #t))))))))
+                          bash)))))))))))
 
 (define-public binutils
   (package
@@ -577,8 +569,7 @@ included.")
          (add-after 'patch-source-shebangs 'patch-more-shebangs
            (lambda _
              (substitute* "gold/Makefile.in"
-               (("/bin/sh") (which "sh")))
-             #t)))
+               (("/bin/sh") (which "sh"))))))
        ,@(substitute-keyword-arguments (package-arguments binutils)
          ; Upstream is aware of unrelocatable test failures on arm*.
          ((#:tests? _ #f)
@@ -844,9 +835,7 @@ the store.")
                          ;; "bilingual" eval/exec magic at the top of the file.
                          "")
                         (("exec @PERL@")
-                         "exec perl"))
-
-                      #t)))
+                         "exec perl")))))
 
                  (add-after 'install 'move-static-libs
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -884,8 +873,7 @@ the store.")
                                      ((out) static)))
                                  (filter linker-script?
                                          (map (cut string-append slib "/" <>)
-                                              files)))
-                       #t)))
+                                              files))))))
 
                  ,@(if (hurd-target?)
                        '((add-after 'install 'augment-libc.so
@@ -894,8 +882,7 @@ the store.")
                                (substitute* (string-append out "/lib/libc.so")
                                  (("/[^ ]+/lib/libc.so.0.3")
                                   (string-append out "/lib/libc.so.0.3"
-                                                 " libmachuser.so libhurduser.so"))))
-                             #t)))
+                                                 " libmachuser.so libhurduser.so")))))))
                        '()))))
 
    (inputs `(("static-bash" ,static-bash)))
@@ -1104,8 +1091,7 @@ to the @code{share/locale} sub-directory of this package.")
                                             (string-append (dirname directory)
                                                            "/" name "."
                                                            normalized)))))
-                             locales)
-                   #t)))
+                             locales))))
              (delete 'install)
              (delete 'move-static-libs)))
          ((#:configure-flags flags)
@@ -1233,8 +1219,7 @@ command.")
                (let ((out (assoc-ref outputs "out")))
                  (close-port
                   (open-output-file
-                   (string-append out "/include/gnu/stubs.h"))))
-               #t))
+                   (string-append out "/include/gnu/stubs.h"))))))
            (delete 'build)))))))                  ; nothing to build
 
 (define-public tzdata
@@ -1288,8 +1273,7 @@ command.")
                (copy-recursively (string-append out "/share/zoneinfo-leaps")
                                  (string-append out "/share/zoneinfo/right"))
                (delete-file-recursively
-                (string-append out "/share/zoneinfo-leaps"))
-               #t)))
+                (string-append out "/share/zoneinfo-leaps")))))
          (delete 'configure))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
