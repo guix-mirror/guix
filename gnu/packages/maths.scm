@@ -476,35 +476,37 @@ precision floating point numbers.")
     (build-system gnu-build-system)
     (arguments
      (let ((system (%current-system)))
-       (cond
-        ((or (string-prefix? "aarch64" system)
-             (string-prefix? "powerpc" system))
-         ;; Some sparse matrix tests are failing on AArch64 and PowerPC:
-         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00001.html
-         '(#:phases (modify-phases %standard-phases
-                      (add-before 'check 'disable-failing-tests
-                        (lambda _
-                          (substitute* "spmatrix/test.c"
-                            ((".*test_complex.*") "\n"))
-                          #t)))))
-        ((string-prefix? "i686" system)
-         ;; There are rounding issues with these tests on i686:
-         ;; https://lists.gnu.org/archive/html/bug-gsl/2016-10/msg00000.html
-         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00000.html
-         '(#:phases (modify-phases %standard-phases
-                      (add-before 'check 'disable-failing-tests
-                        (lambda _
-                          (substitute* "linalg/test.c"
-                            ((".*gsl_test\\(test_LU_decomp.*") "\n")
-                            ((".*gsl_test\\(test_LUc_decomp.*") "\n")
-                            ((".*gsl_test\\(test_cholesky_decomp.*") "\n")
-                            ((".*gsl_test\\(test_COD_lssolve2.*") "\n"))
-                          (substitute* "spmatrix/test.c"
-                            ((".*test_all.*") "\n")
-                            ((".*test_float.*") "\n")
-                            ((".*test_complex.*") "\n"))
-                          #t)))))
-        (else '()))))
+       `(#:phases
+         (modify-phases %standard-phases
+           ,@(cond
+              ((or (string-prefix? "aarch64" system)
+                   (string-prefix? "powerpc" system))
+               ;; Some sparse matrix tests are failing on AArch64 and PowerPC:
+               ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00001.html
+               '((add-before 'check 'disable-failing-tests
+                   (lambda _
+                     (substitute* "spmatrix/test.c"
+                       ((".*test_complex.*") "\n"))
+                     #t))))
+
+              ((string-prefix? "i686" system)
+               ;; There are rounding issues with these tests on i686:
+               ;; https://lists.gnu.org/archive/html/bug-gsl/2016-10/msg00000.html
+               ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00000.html
+               '((add-before 'check 'disable-failing-tests
+                   (lambda _
+                     (substitute* "linalg/test.c"
+                       ((".*gsl_test\\(test_LU_decomp.*") "\n")
+                       ((".*gsl_test\\(test_LUc_decomp.*") "\n")
+                       ((".*gsl_test\\(test_cholesky_decomp.*") "\n")
+                       ((".*gsl_test\\(test_COD_lssolve2.*") "\n"))
+                     (substitute* "spmatrix/test.c"
+                       ((".*test_all.*") "\n")
+                       ((".*test_float.*") "\n")
+                       ((".*test_complex.*") "\n"))
+                     #t))))
+
+              (else '()))))))
     (home-page "https://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
