@@ -1456,7 +1456,7 @@ used to validate and fix HTML data.")
      `(("golang.org/x/sys" ,go-golang-org-x-sys)))
     (native-inputs
      `(("github.com/kylelemons/godebug" ,go-github-com-kylelemons-godebug)))
-    (home-page "https://github.com/evanw/esbuild")
+    (home-page "https://esbuild.github.io/")
     (synopsis "Bundler and minifier tool for JavaScript and TypeScript")
     (description
      "The esbuild tool provides a unified bundler, transpiler and
