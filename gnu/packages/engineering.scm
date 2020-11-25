@@ -1080,11 +1080,13 @@ the 'showing the effect of'-style of operation.")
     (version "2.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.libvolk.org/releases/volk-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnuradio/volk")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1pjxz3piwy49njj5y2zk437prwkv9lfs5g48577jj3kcsg766vi3"))))
+        (base32 "1jya1v1z1mq50n5fxhs755vcdjvwiv2iqjmycn2l1bx552vzh6cg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
