@@ -4378,15 +4378,16 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://downloads.videolan.org/pub/videolan"
-                            "/dav1d/" version "/dav1d-" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://code.videolan.org/videolan/dav1d.git")
+               (commit version)))
         (sha256
          (base32
-          "1hnkfcg57bv5rib6cnj39dy1jx0q7zi5fb2fz52hf2y0bv8bad1k"))))
+          "0mjn87xjdqv0q1gj4s4f6fdmsj504mhk4qmqiyrhq2rs7yqj4csv"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
