@@ -38,6 +38,7 @@
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 # Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
+# Copyright © 2020 Vinicius Monego <monego@posteo.net>
 #
 # This file is part of GNU Guix.
 #
@@ -1090,6 +1091,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
+  %D%/packages/patches/gnash-fix-giflib-version.patch	        \
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-shell-disable-test.patch		\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\

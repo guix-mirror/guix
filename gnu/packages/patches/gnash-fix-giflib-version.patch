@@ -1,0 +1,17 @@
+Description: Change GIFLIB_MINOR to allow matching with v5.2+
+Source: https://savannah.gnu.org/patch/index.php?9873
+Author: marius851000
+
+diff --git a/libbase/GnashImageGif.cpp b/libbase/GnashImageGif.cpp
+index 2ae5ddb..b87b1e7 100644
+--- a/libbase/GnashImageGif.cpp
++++ b/libbase/GnashImageGif.cpp
+@@ -120,7 +120,7 @@ GifInput::GifInput(std::shared_ptr<IOChannel> in)
+ GifInput::~GifInput()
+ {
+     // Clean up allocated data.
+-#if GIFLIB_MAJOR==5 && GIFLIB_MINOR==1
++#if GIFLIB_MAJOR==5 && GIFLIB_MINOR!=0
+ 	DGifCloseFile(_gif, 0);
+ #else
+ 	DGifCloseFile(_gif);
