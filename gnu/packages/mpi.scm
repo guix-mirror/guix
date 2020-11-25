@@ -69,6 +69,7 @@
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
+               "doc"           ;400+ section 3 man pages
                "debug"))
     (inputs
      `(("libx11" ,libx11)
@@ -114,6 +115,15 @@
                (substitute* (string-append lib "/lib/pkgconfig/hwloc.pc")
                  (("^.*prefix=.*$")
                   ""))
+               #t)))
+         (add-after 'install 'move-man3-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move section 3 man pages to the "doc" output.
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (copy-recursively (string-append out "/share/man/man3")
+                                 (string-append doc "/share/man/man3"))
+               (delete-file-recursively (string-append out "/share/man/man3"))
                #t))))))
     (home-page "https://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
