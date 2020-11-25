@@ -68,7 +68,8 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-external-glpk"
+       (list "--disable-static"
+             "--with-external-glpk"
              "--with-external-blas"
              "--with-external-lapack")))
     (inputs
