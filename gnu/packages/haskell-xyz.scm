@@ -13054,7 +13054,7 @@ increasing type safety.")
 (define-public ghc-tabular
   (package
     (name "ghc-tabular")
-    (version "0.2.2.8")
+    (version "0.2.2.7")
     (source
      (origin
        (method url-fetch)
@@ -13064,7 +13064,7 @@ increasing type safety.")
              ".tar.gz"))
        (sha256
         (base32
-         "0z936gh8n8i8qdkagyxwd9gqq13skd5fv013vdvwsibrxkm0czfb"))))
+         "1ysgq7rrks7f98nnvxil8xz1q27hxdgz4szbjhqwzbwd209dmy0k"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-csv" ,ghc-csv)
