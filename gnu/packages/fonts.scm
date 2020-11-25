@@ -716,7 +716,7 @@ for use at smaller text sizes")))
      (origin
        (method url-fetch)
        (uri (list
-             (string-append "http://unifoundry.com/pub/unifont/unifont-"
+             (string-append "https://unifoundry.com/pub/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
