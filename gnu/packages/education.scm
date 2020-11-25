@@ -214,7 +214,8 @@ Currently available boards include:
 @item reading practice
 @item small games (memory games, jigsaw puzzles, ...)
 @end enumerate\n")
-    (license license:gpl3+)))
+    (license (list license:silofl1.1    ; bundled fonts
+                   license:gpl3+))))
 
 (define-public tipp10
   (package
