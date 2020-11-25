@@ -58,6 +58,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -4713,7 +4714,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
       (origin
         (method git-fetch)
@@ -4723,11 +4724,13 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "04hw61db8wscj28qjyiaiafx8xl87njgmvqszxyhs4gmg8xgjip7"))))
+            "1570m2dfia17dbkhd2qhx8jjihrpm7g8nnyg6n4wif4vv229s7dz"))))
    (build-system meson-build-system)
    (arguments
-     ;; Compile tests.
-    `(#:configure-flags `("-Dtests=true")))
+    `(#:meson ,meson-0.55
+      #:configure-flags
+      ;; Build the tests.
+      `("-Dtests=true")))
    (inputs
     `(("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)))
