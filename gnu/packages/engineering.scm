@@ -1092,6 +1092,14 @@ the 'showing the effect of'-style of operation.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'install 'remove-static-libraries
+           ;; Remove libcpu_features.a (and any others that might appear).
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"
+                                                 #:fail-on-error? #t))
+               #t)))
          (add-after 'install 'wrap-pythonpath
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
