@@ -372,6 +372,9 @@
   (allow guix_daemon_t
          self
          (unix_stream_socket (connectto)))
+  (allow guix_daemon_t
+         self
+         (unix_dgram_socket (create bind connect sendto read write)))
 
   (allow guix_daemon_t
          node_t
