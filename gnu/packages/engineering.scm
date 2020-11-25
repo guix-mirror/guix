@@ -1077,16 +1077,17 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/gnuradio/volk")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             (recursive? #t)))          ; for cpu_features git submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jya1v1z1mq50n5fxhs755vcdjvwiv2iqjmycn2l1bx552vzh6cg"))))
+        (base32 "14y0988r5qi1h3yvkivx5ihccn8r15910lq30r8iy71ih190r5m9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
