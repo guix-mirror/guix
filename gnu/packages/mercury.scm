@@ -56,7 +56,7 @@
 (define-public mercury-minimal
   (package
     (name "mercury-minimal")
-    (version "20.06")
+    (version "20.06.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -64,7 +64,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gkr9w8lsdzqykqwd3f1a1phsqv090648i14ilhv8jdg85frdimr"))))
+                "07qwkk871yxd4q1sw5xv26g8jrpvnpprmzvfd7zg7i142kl3l2gg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
