@@ -1312,6 +1312,40 @@ to DeRemer and Pennello, which is used by Bison and lalr.scm (not lalr.cl).")
 (define-public ecl-cl-yacc
   (sbcl-package->ecl-package sbcl-cl-yacc))
 
+(define-public sbcl-eager-future2
+  (let ((commit "54df8effd9d9eccac917509590286b5ac5f9cb30"))
+    (package
+      (name "sbcl-eager-future2")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/vsedach/eager-future2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qs1bv3m0ki8l5czhsflxcryh22r9d9g9a3a3b0cr0pl954q5rld"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (synopsis "Futures promises synchronization mechanism for Common Lisp")
+      (description
+       "Eager Future2 is a Common Lisp library that provides composable
+concurrency primitives that unify parallel and lazy evaluation, are integrated
+with the Common Lisp condition system, and have automatic resource
+management.")
+      (home-page "https://gitlab.common-lisp.net/vsedach/eager-future2")
+      (license license:lgpl3+))))
+
+(define-public cl-eager-future2
+  (sbcl-package->cl-source-package sbcl-eager-future2))
+
+(define-public ecl-eager-future2
+  (sbcl-package->ecl-package sbcl-eager-future2))
+
 (define-public sbcl-jpl-util
   (let ((commit "0311ed374e19a49d43318064d729fe3abd9a3b62"))
     (package
