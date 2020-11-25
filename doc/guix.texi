@@ -1955,9 +1955,6 @@ following noteworthy limitations applicable to version @value{VERSION}:
 
 @itemize
 @item
-Support for the Logical Volume Manager (LVM) is missing.
-
-@item
 More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
@@ -13806,9 +13803,12 @@ module for the appropriate RAID level to be loaded, such as @code{raid456}
 for RAID-4, RAID-5 or RAID-6, or @code{raid10} for RAID-10.
 @end defvr
 
+@cindex LVM, logical volume manager
 @defvr {Scheme Variable} lvm-device-mapping
-This defines LVM logical volume(s). Volume group is activated by
-@command{vgchange} command from the package @code{lvm2}.
+This defines one or more logical volumes for the Linux
+@uref{https://www.sourceware.org/lvm2/, Logical Volume Manager (LVM)}.
+The volume group is activated by the @command{vgchange} command from the
+@code{lvm2} package.
 @end defvr
 
 @cindex disk encryption
