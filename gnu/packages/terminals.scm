@@ -1081,6 +1081,36 @@ while also supporting native scrolling and @command{tmux} control mode
 (@code{tmux -CC}).")
     (license license:asl2.0)))
 
+(define-public et
+  (package
+    (name "et")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MisterTea/EternalTCP")
+             (commit (string-append "et-v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1m5caxckn2ihwp9s2pbyh5amxlpwr7yc54q8s0kb10fr52w2vfnm"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs `(("glog" ,glog)
+              ("gflags" ,gflags)
+              ("libsodium" ,libsodium)
+              ("protobuf" ,protobuf)))
+    (synopsis "Remote shell that automatically reconnects")
+    (description
+     "Eternal Terminal (ET) is a remote shell that automatically reconnects
+without interrupting the session.  Unlike SSH sessions, ET sessions will
+survive even network outages and IP changes.  ET uses a custom protocol over
+TCP, not the SSH protocol.")
+    (home-page "https://eternalterminal.dev/")
+    (license license:asl2.0)))
+
 (define-public wterm
   (package
     (name "wterm")
