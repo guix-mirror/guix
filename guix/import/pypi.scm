@@ -229,8 +229,8 @@ the input field."
        '("test" "dev")))
 
 (define (parse-requires.txt requires.txt)
-  "Given REQUIRES.TXT, a Setuptools requires.txt file, return a list of lists
-of requirements.
+  "Given REQUIRES.TXT, a path to a Setuptools requires.txt file, return a list
+of lists of requirements.
 
 The first list contains the required dependencies while the second the
 optional test dependencies.  Note that currently, optional, non-test
