@@ -1201,6 +1201,8 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                (base32
                 "0cz8v6kh3f2j5rdjrra2z0h715fa16vjm7kambvqx9hak86262cz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("nasm" ,nasm)))
