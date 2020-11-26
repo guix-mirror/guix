@@ -23022,3 +23022,26 @@ applications with variable CPU loads).")
 
 (define-public python2-djvulibre
   (package-with-python2 python-djvulibre))
+
+(define-public python-versioneer
+  (package
+    (name "python-versioneer")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "versioneer" version))
+       (sha256
+        (base32
+         "1bmg8y78am371rd9b4clf11b8g1h7xvq8q58z03jvgdwpsdx7zm4"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/python-versioneer/python-versioneer")
+    (synopsis
+     "Version-string management for VCS-controlled trees")
+    (description
+     "@code{versioneer} is a tool for managing a recorded version number in
+distutils-based python projects.  The goal is to remove the tedious and
+error-prone \"update the embedded version string\" step from your release
+process.")
+    (license license:public-domain)))
