@@ -26,6 +26,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +92,7 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
@@ -1792,33 +1794,26 @@ parsing, viewing, modifying, and saving this metadata.")
 (define-public flameshot
   (package
     (name "flameshot")
-    (version "0.5.1")
+    (version "0.8.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lupoDharkael/flameshot")
+             (url "https://github.com/flameshot-org/flameshot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "13h77np93r796jf289v4r687cmnpqkyqs34dm9gif4akaig74ky0"))))
-    (build-system gnu-build-system)
+         "1z77igs60lz106vsf6wsayxjafxm3llf2lm4dpvsqyyrxybfq191"))))
+    (build-system qt-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "qmake"
-                     "CONFIG+=packaging"
-                     (string-append "BASEDIR=" (assoc-ref outputs "out"))
-                     "PREFIX=/"))))))
-    (home-page "https://github.com/lupoDharkael/flameshot")
+     `(#:tests? #f))                    ;no tests
+    (home-page "https://github.com/flameshot-org/flameshot")
     (synopsis "Powerful yet simple to use screenshot software")
     (description "Flameshot is a screenshot program.
 Features:

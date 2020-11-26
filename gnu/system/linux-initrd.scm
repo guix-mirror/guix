@@ -195,11 +195,11 @@ upon error."
   (define device-mapping-commands
     ;; List of gexps to open the mapped devices.
     (map (lambda (md)
-           (let* ((source (mapped-device-source md))
-                  (target (mapped-device-target md))
-                  (type   (mapped-device-type md))
-                  (open   (mapped-device-kind-open type)))
-             (open source target)))
+           (let* ((source  (mapped-device-source md))
+                  (targets (mapped-device-targets md))
+                  (type    (mapped-device-type md))
+                  (open    (mapped-device-kind-open type)))
+             (open source targets)))
          mapped-devices))
 
   (define kodir
@@ -217,6 +217,7 @@ upon error."
                       (gnu system file-systems)
                       ((guix build utils) #:hide (delete))
                       (guix build bournish)   ;add the 'bournish' meta-command
+                      (srfi srfi-1)           ;for lvm-device-mapping
                       (srfi srfi-26)
 
                       ;; FIXME: The following modules are for

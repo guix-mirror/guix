@@ -28,6 +28,7 @@
                           formatted-message
                           &fix-hint
                           &error-location))
+  #:use-module (guix deprecation)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system uuid)
@@ -35,17 +36,19 @@
   #:autoload   (gnu build linux-modules)
                  (missing-modules)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
-  #:autoload   (gnu packages linux) (mdadm-static)
+  #:autoload   (gnu packages linux) (mdadm-static lvm2-static)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (mapped-device
+  #:export (%mapped-device
+            mapped-device
             mapped-device?
             mapped-device-source
             mapped-device-target
+            mapped-device-targets
             mapped-device-type
             mapped-device-location
 
@@ -61,7 +64,8 @@
             check-device-initrd-modules           ;XXX: needs a better place
 
             luks-device-mapping
-            raid-device-mapping))
+            raid-device-mapping
+            lvm-device-mapping))
 
 ;;; Commentary:
 ;;;
@@ -70,14 +74,35 @@
 ;;;
 ;;; Code:
 
-(define-record-type* <mapped-device> mapped-device
+(define-record-type* <mapped-device> %mapped-device
   make-mapped-device
   mapped-device?
   (source    mapped-device-source)                ;string | list of strings
-  (target    mapped-device-target)                ;string
+  (targets   mapped-device-targets)               ;list of strings
   (type      mapped-device-type)                  ;<mapped-device-kind>
   (location  mapped-device-location
              (default (current-source-location)) (innate)))
+
+(define-syntax mapped-device-compatibility-helper
+  (syntax-rules (target)
+    ((_ () (fields ...))
+     (%mapped-device fields ...))
+    ((_ ((target exp) rest ...) (others ...))
+     (%mapped-device others ...
+                      (targets (list exp))
+                      rest ...))
+    ((_ (field rest ...) (others ...))
+     (mapped-device-compatibility-helper (rest ...)
+                                         (others ... field)))))
+
+(define-syntax-rule (mapped-device fields ...)
+  "Build an <mapped-device> record, automatically converting 'target' field
+specifications to 'targets'."
+  (mapped-device-compatibility-helper (fields ...) ()))
+
+(define-deprecated (mapped-device-target md)
+  mapped-device-targets
+  (car (mapped-device-targets md)))
 
 (define-record-type* <mapped-device-type> mapped-device-kind
   make-mapped-device-kind
@@ -97,14 +122,14 @@
   (shepherd-service-type
    'device-mapping
    (match-lambda
-     (($ <mapped-device> source target
+     (($ <mapped-device> source targets
                          ($ <mapped-device-type> open close))
       (shepherd-service
-       (provision (list (symbol-append 'device-mapping- (string->symbol target))))
+       (provision (list (symbol-append 'device-mapping- (string->symbol (string-join targets "-")))))
        (requirement '(udev))
        (documentation "Map a device node using Linux's device mapper.")
-       (start #~(lambda () #$(open source target)))
-       (stop #~(lambda _ (not #$(close source target))))
+       (start #~(lambda () #$(open source targets)))
+       (stop #~(lambda _ (not #$(close source targets))))
        (respawn? #f))))))
 
 (define (device-mapping-service mapped-device)
@@ -162,48 +187,52 @@ option of @command{guix system}.\n")
 ;;; Common device mappings.
 ;;;
 
-(define (open-luks-device source target)
+(define (open-luks-device source targets)
   "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
 'cryptsetup'."
   (with-imported-modules (source-module-closure
                           '((gnu build file-systems)))
-    #~(let ((source #$(if (uuid? source)
-                          (uuid-bytevector source)
-                          source)))
-        ;; XXX: 'use-modules' should be at the top level.
-        (use-modules (rnrs bytevectors)           ;bytevector?
-                     ((gnu build file-systems)
-                      #:select (find-partition-by-luks-uuid)))
+    (match targets
+      ((target)
+       #~(let ((source #$(if (uuid? source)
+                             (uuid-bytevector source)
+                             source)))
+           ;; XXX: 'use-modules' should be at the top level.
+           (use-modules (rnrs bytevectors) ;bytevector?
+                        ((gnu build file-systems)
+                         #:select (find-partition-by-luks-uuid)))
 
-        ;; Use 'cryptsetup-static', not 'cryptsetup', to avoid pulling the
-        ;; whole world inside the initrd (for when we're in an initrd).
-        (zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
-                        "open" "--type" "luks"
+           ;; Use 'cryptsetup-static', not 'cryptsetup', to avoid pulling the
+           ;; whole world inside the initrd (for when we're in an initrd).
+           (zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
+                           "open" "--type" "luks"
 
-                        ;; Note: We cannot use the "UUID=source" syntax here
-                        ;; because 'cryptsetup' implements it by searching the
-                        ;; udev-populated /dev/disk/by-id directory but udev may
-                        ;; be unavailable at the time we run this.
-                        (if (bytevector? source)
-                            (or (let loop ((tries-left 10))
-                                  (and (positive? tries-left)
-                                       (or (find-partition-by-luks-uuid source)
-                                           ;; If the underlying partition is
-                                           ;; not found, try again after
-                                           ;; waiting a second, up to ten
-                                           ;; times.  FIXME: This should be
-                                           ;; dealt with in a more robust way.
-                                           (begin (sleep 1)
-                                                  (loop (- tries-left 1))))))
-                                (error "LUKS partition not found" source))
-                            source)
+                           ;; Note: We cannot use the "UUID=source" syntax here
+                           ;; because 'cryptsetup' implements it by searching the
+                           ;; udev-populated /dev/disk/by-id directory but udev may
+                           ;; be unavailable at the time we run this.
+                           (if (bytevector? source)
+                               (or (let loop ((tries-left 10))
+                                     (and (positive? tries-left)
+                                          (or (find-partition-by-luks-uuid source)
+                                              ;; If the underlying partition is
+                                              ;; not found, try again after
+                                              ;; waiting a second, up to ten
+                                              ;; times.  FIXME: This should be
+                                              ;; dealt with in a more robust way.
+                                              (begin (sleep 1)
+                                                     (loop (- tries-left 1))))))
+                                   (error "LUKS partition not found" source))
+                               source)
 
-                        #$target)))))
+                           #$target)))))))
 
-(define (close-luks-device source target)
+(define (close-luks-device source targets)
   "Return a gexp that closes TARGET, a LUKS device."
-  #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
-                    "close" #$target)))
+  (match targets
+    ((target)
+     #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
+                       "close" #$target)))))
 
 (define* (check-luks-device md #:key
                             needed-for-boot?
@@ -235,41 +264,65 @@ option of @command{guix system}.\n")
    (close close-luks-device)
    (check check-luks-device)))
 
-(define (open-raid-device sources target)
+(define (open-raid-device sources targets)
   "Return a gexp that assembles SOURCES (a list of devices) to the RAID device
 TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
-  #~(let ((sources '#$sources)
+  (match targets
+    ((target)
+     #~(let ((sources '#$sources)
 
-          ;; XXX: We're not at the top level here.  We could use a
-          ;; non-top-level 'use-modules' form but that doesn't work when the
-          ;; code is eval'd, like the Shepherd does.
-          (every   (@ (srfi srfi-1) every))
-          (format  (@ (ice-9 format) format)))
-      (let loop ((attempts 0))
-        (unless (every file-exists? sources)
-          (when (> attempts 20)
-            (error "RAID devices did not show up; bailing out"
-                   sources))
+             ;; XXX: We're not at the top level here.  We could use a
+             ;; non-top-level 'use-modules' form but that doesn't work when the
+             ;; code is eval'd, like the Shepherd does.
+             (every   (@ (srfi srfi-1) every))
+             (format  (@ (ice-9 format) format)))
+         (let loop ((attempts 0))
+           (unless (every file-exists? sources)
+             (when (> attempts 20)
+               (error "RAID devices did not show up; bailing out"
+                      sources))
 
-          (format #t "waiting for RAID source devices~{ ~a~}...~%"
-                  sources)
-          (sleep 1)
-          (loop (+ 1 attempts))))
+             (format #t "waiting for RAID source devices~{ ~a~}...~%"
+                     sources)
+             (sleep 1)
+             (loop (+ 1 attempts))))
 
-      ;; Use 'mdadm-static' rather than 'mdadm' to avoid pulling its whole
-      ;; closure (80 MiB) in the initrd when a RAID device is needed for boot.
-      (zero? (apply system* #$(file-append mdadm-static "/sbin/mdadm")
-                    "--assemble" #$target sources))))
+         ;; Use 'mdadm-static' rather than 'mdadm' to avoid pulling its whole
+         ;; closure (80 MiB) in the initrd when a RAID device is needed for boot.
+         (zero? (apply system* #$(file-append mdadm-static "/sbin/mdadm")
+                       "--assemble" #$target sources))))))
 
-(define (close-raid-device sources target)
+(define (close-raid-device sources targets)
   "Return a gexp that stops the RAID device TARGET."
-  #~(zero? (system* #$(file-append mdadm-static "/sbin/mdadm")
-                    "--stop" #$target)))
+  (match targets
+    ((target)
+     #~(zero? (system* #$(file-append mdadm-static "/sbin/mdadm")
+                       "--stop" #$target)))))
 
 (define raid-device-mapping
   ;; The type of RAID mapped devices.
   (mapped-device-kind
    (open open-raid-device)
    (close close-raid-device)))
+
+(define (open-lvm-device source targets)
+  #~(and
+     (zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                     "vgchange" "--activate" "ay" #$source))
+     ; /dev/mapper nodes are usually created by udev, but udev may be unavailable at the time we run this. So we create them here.
+     (zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                     "vgscan" "--mknodes"))
+     (every file-exists? (map (lambda (file) (string-append "/dev/mapper/" file))
+                              '#$targets))))
+
+
+(define (close-lvm-device source targets)
+  #~(zero? (system* #$(file-append lvm2-static "/sbin/lvm")
+                    "vgchange" "--activate" "n" #$source)))
+
+(define lvm-device-mapping
+  (mapped-device-kind
+   (open open-lvm-device)
+   (close close-lvm-device)))
 
 ;;; mapped-devices.scm ends here

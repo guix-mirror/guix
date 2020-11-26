@@ -997,6 +997,32 @@ Users wishing to have an improved Prelude can use BasicPrelude.  Developers
 wishing to create a new prelude should use CorePrelude.")
     (license license:expat)))
 
+(define-public ghc-bencode
+  (package
+    (name "ghc-bencode")
+    (version "0.6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/bencode/bencode-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0znv0y3b3zm5jvhlvj5f5s7y93db67j9yd59w1bnrw2pqv30gqaq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/bencode")
+    (synopsis "Parsers and printers for bencoded data")
+    (description
+     "This library provides parsers and printers for bencoded data.  Bencode
+is the encoding used by the peer-to-peer file sharing system BitTorrent for
+storing and transmitting loosely structured data.")
+    (license license:bsd-3)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
@@ -4414,7 +4440,7 @@ file contents, and more.")
 (define-public ghc-filepath-bytestring
   (package
     (name "ghc-filepath-bytestring")
-    (version "1.4.2.1.1")
+    (version "1.4.2.1.6")
     (source
      (origin
        (method url-fetch)
@@ -4423,7 +4449,7 @@ file contents, and more.")
               "filepath-bytestring-" version ".tar.gz"))
        (sha256
         (base32
-         "06shdskjj391hb9295slm9gg2rbn5fdq5v6fg0mgn3yl5dv8q5dx"))))
+         "11xrrzdkm5i96dazbz0gi1qp8nnj2lwbnxzwy7f4cnahskz4f4g7"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
@@ -9167,7 +9193,7 @@ require aeson
     (home-page "https://hackage.haskell.org/package/text-short")
     (synopsis "Memory-efficient representation of Unicode text strings")
     (description "This package provides the @code{ShortText} type which
-is suitable for keeping many short strings in memory.  This is similiar
+is suitable for keeping many short strings in memory.  This is similar
 to how @code{ShortByteString} relates to @code{ByteString}.
 
 The main difference between @code{Text} and @code{ShortText} is that
@@ -13795,6 +13821,28 @@ objects from the timezone-series package.")
 Haskell client library allowing users to update and view @code{tldr} pages
 from a shell.  The @code{tldr} pages are a community effort to simplify the
 man pages with practical examples.")
+    (license license:bsd-3)))
+
+(define-public ghc-torrent
+  (package
+    (name "ghc-torrent")
+    (version "10000.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/torrent/torrent-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0m7s0q7f8c7glxzqhf2j86ch5xhk6jnzwwsa4mkywag22119c290"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bencode" ,ghc-bencode)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page "https://hackage.haskell.org/package/torrent")
+    (synopsis "BitTorrent file parser and generator")
+    (description "This library provides support for parsing and generating
+BitTorrent files.")
     (license license:bsd-3)))
 
 (define-public ghc-transformers

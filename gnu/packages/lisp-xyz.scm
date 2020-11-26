@@ -1121,6 +1121,40 @@ to DeRemer and Pennello, which is used by Bison and lalr.scm (not lalr.cl).")
 (define-public ecl-cl-yacc
   (sbcl-package->ecl-package sbcl-cl-yacc))
 
+(define-public sbcl-eager-future2
+  (let ((commit "54df8effd9d9eccac917509590286b5ac5f9cb30"))
+    (package
+      (name "sbcl-eager-future2")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/vsedach/eager-future2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qs1bv3m0ki8l5czhsflxcryh22r9d9g9a3a3b0cr0pl954q5rld"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (synopsis "Futures promises synchronization mechanism for Common Lisp")
+      (description
+       "Eager Future2 is a Common Lisp library that provides composable
+concurrency primitives that unify parallel and lazy evaluation, are integrated
+with the Common Lisp condition system, and have automatic resource
+management.")
+      (home-page "https://gitlab.common-lisp.net/vsedach/eager-future2")
+      (license license:lgpl3+))))
+
+(define-public cl-eager-future2
+  (sbcl-package->cl-source-package sbcl-eager-future2))
+
+(define-public ecl-eager-future2
+  (sbcl-package->ecl-package sbcl-eager-future2))
+
 (define-public sbcl-jpl-util
   (let ((commit "0311ed374e19a49d43318064d729fe3abd9a3b62"))
     (package
@@ -1196,6 +1230,62 @@ several blockable channels.)")
 
 (define-public ecl-jpl-queues
   (sbcl-package->ecl-package sbcl-jpl-queues))
+
+(define-public sbcl-calispel
+  (let ((commit "e9f2f9c1af97f4d7bb4c8ac25fb2a8f3e8fada7a"))
+    (package
+      (name "sbcl-calispel")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; This fork replaces the dependency on the obsolete
+               ;; eager-future with eager-future2.
+               (url "https://github.com/hawkir/calispel")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "08bmf3pi7n5hadpmqqkg65cxcj6kbvm997wcs1f53ml1nb79d9z8"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("jpl-queues" ,sbcl-jpl-queues)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (native-inputs
+       `(("eager-future2" ,sbcl-eager-future2)))
+      (synopsis "Thread-safe message-passing channels in Common Lisp")
+      (description
+       "Calispel is a Common Lisp library for thread-safe message-passing
+channels, in the style of the occam programming language, also known as
+communicating sequential processes (CSP).  See
+@url{https://en.wikipedia.org/wiki/Communicating_sequential_processes}.
+
+Calispel channels let one thread communicate with another, facilitating
+unidirectional communication of any Lisp object.  Channels may be unbuffered,
+where a sender waits for a receiver (or vice versa) before either operation can
+continue, or channels may be buffered with flexible policy options.
+
+Because sending and receiving on a channel may block, either operation can time
+out after a specified amount of time.
+
+A syntax for alternation is provided (like @code{ALT} in occam, or Unix
+@code{select()}): given a sequence of operations, any or all of which may
+block, alternation selects the first operation that doesn't block and executes
+associated code.  Alternation can also time out, executing an \"otherwise\"
+clause if no operation becomes available within a set amount of time.
+
+Calispel is a message-passing library, and as such leaves the role of
+threading abstractions and utilities left to be filled by complementary
+libraries such as Bordeaux-Threads and Eager Future.")
+      (home-page "https://www.thoughtcrime.us/software/jpl-queues/")
+      (license license:isc))))
+
+(define-public cl-calispel
+  (sbcl-package->cl-source-package sbcl-calispel))
+
+(define-public ecl-calispel
+  (sbcl-package->ecl-package sbcl-calispel))
 
 (define-public sbcl-eos
   (let ((commit "b4413bccc4d142cbe1bf49516c3a0a22c9d99243")

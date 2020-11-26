@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -1076,18 +1077,29 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.libvolk.org/releases/volk-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnuradio/volk")
+             (commit (string-append "v" version))
+             (recursive? #t)))          ; for cpu_features git submodule
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1pjxz3piwy49njj5y2zk437prwkv9lfs5g48577jj3kcsg766vi3"))))
+        (base32 "14y0988r5qi1h3yvkivx5ihccn8r15910lq30r8iy71ih190r5m9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'install 'remove-static-libraries
+           ;; Remove libcpu_features.a (and any others that might appear).
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"
+                                                 #:fail-on-error? #t))
+               #t)))
          (add-after 'install 'wrap-pythonpath
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2836,3 +2848,39 @@ GUI.")
   provides a full-fledged procedural, interactive programming language designed
   to describe data structures and to operate on them.")
       (license license:gpl3+))))
+
+(define-public pcb2gcode
+    (package
+     (name "pcb2gcode")
+     (version "2.1.0")
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pcb2gcode/pcb2gcode")
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nzglcyh6ban27cc73j4l7w7r9k38qivq0jz8iwnci02pfalw4ry"))))
+     (build-system gnu-build-system)
+     (inputs
+      `(("boost" ,boost)
+        ("geos" ,geos)
+        ("gerbv" ,gerbv)
+        ("glibmm" ,glibmm)
+        ("gtkmm" ,gtkmm-2)
+        ("librsvg" ,librsvg)))
+     (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("libtool" ,libtool)
+        ("pkg-config" ,pkg-config)))
+     (home-page "https://github.com/pcb2gcode/pcb2gcode")
+     (synopsis "Generate G-code for milling PCBs")
+     (description "pcb2gcode is a command-line program for isolation routing
+and drilling of PCBs.  It takes Gerber files as input and outputs G-code files
+for the milling of PCBs.  It also includes an autoleveller for the automatic
+dynamic calibration of the milling depth.")
+     (license license:gpl3+)))

@@ -18,6 +18,23 @@
 (channel-news
  (version 0)
 
+ (entry (commit "a9a2fdaabcc78e7a54d9a6bcfa4ee3de308e9a90")
+        (title (en "Logical Volume Manager (LVM) now supported on Guix System"))
+        (body
+         (en "On Guix System, the new @code{lvm-device-mapping} variable
+allows you to declare ``mapped devices'' for LVM, the Linux Logical Volume
+Manager.  For example, LVM logical volumes ``alpha'' and ``beta'' from volume
+group ``vg0'' can be declared as follows:
+
+@lisp
+(mapped-device
+  (source \"vg0\")
+  (target (list \"vg0-alpha\" \"vg0-beta\"))
+  (type lvm-device-mapping))
+@end lisp
+
+See @command{info \"(guix) Mapped Devices\"} for more information.")))
+
  (entry (commit "3b6e4e5fd05e72b8a32ff1a2d5e21464260e21e6")
         (title (en "List of substitute keys is now declarative on Guix System")
                (de "Liste der Substitutschlüssel auf Guix System ist jetzt deklarativ")

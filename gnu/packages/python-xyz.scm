@@ -8903,6 +8903,32 @@ Supported netlink families and protocols include:
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
 
+(define-public python-commonmark
+  (package
+    (name "python-commonmark")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "commonmark" version))
+       (sha256
+        (base32 "0q7d39lm8kcingpmykk5r959hrwwj6v2icyw3mihczxyb749sbs5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "setup.py" "test"))))))
+    (home-page "https://github.com/readthedocs/commonmark.py")
+    (synopsis "Python parser for the CommonMark Markdown spec")
+    (description
+     "This module is a pure Python port of jgm's @code{commonmark.js}, a
+Markdown parser and renderer for the CommonMark specification, using only
+native modules.")
+    (license license:bsd-3)))
+
 (define-public python-xlrd
   (package
     (name "python-xlrd")
@@ -15364,14 +15390,14 @@ builds partial trees by inspecting living objects.")
 (define-public python-isbnlib
   (package
     (name "python-isbnlib")
-    (version "3.10.3")
+    (version "3.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "isbnlib" version))
        (sha256
         (base32
-         "07qhykv0x60d5rsx5pj6s4q15ri4znczscll3xmpf6gyclac1592"))))
+         "0iin0x2xqwyphyyzd0mzrq5v5xm7b6dlbb294k4dywra5qvbrgzm"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; No test
     (home-page "https://github.com/xlcnd/isbnlib")
@@ -15468,13 +15494,13 @@ in other versions.")
 (define-public python-mamba
   (package
     (name "python-mamba")
-    (version "0.11.1")
+    (version "0.11.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "mamba" version))
               (sha256
                (base32
-                "1jxy3bva94ac02a0wjsms79rp5104zmalxh8rhqqg6mw95cp6xpr"))))
+                "15m4dpnpv9m60pdaygvwgi43fwqaivs3qxfxhspwrp47sbgwdkvm"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))  ; No test
     (propagated-inputs

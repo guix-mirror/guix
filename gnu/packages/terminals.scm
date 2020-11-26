@@ -16,7 +16,7 @@
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -1044,7 +1044,7 @@ comfortably in a pager or editor.
 (define-public eternalterminal
   (package
     (name "eternalterminal")
-    (version "6.0.7")
+    (version "6.0.13")
     (source
       (origin
         (method git-fetch)
@@ -1053,7 +1053,7 @@ comfortably in a pager or editor.
                (commit (string-append "et-v" version))))
         (file-name (git-file-name name version))
        (sha256
-        (base32 "03pdspggqxkmz95qb96pig5x0xw18hy9a7ivszydr32ry6kxxx1h"))))
+        (base32 "0sb1hypg2276y8c2a5vivrkcxp70swddvhnd9h273if3kv6j879r"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TEST=ON")
@@ -1080,6 +1080,9 @@ and IP roaming.  ET provides the same core functionality as @command{mosh},
 while also supporting native scrolling and @command{tmux} control mode
 (@code{tmux -CC}).")
     (license license:asl2.0)))
+
+(define-public et
+  (deprecated-package "et" eternalterminal))
 
 (define-public wterm
   (package

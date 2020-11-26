@@ -67,6 +67,7 @@
             %test-btrfs-root-on-subvolume-os
             %test-jfs-root-os
             %test-f2fs-root-os
+            %test-lvm-separate-home-os
 
             %test-gui-installed-os
             %test-gui-installed-os-encrypted
@@ -795,6 +796,92 @@ build (current-guix) and then store a couple of full system images.")
                          (command (qemu-command/writable-image image)))
       (run-basic-test %encrypted-root-os command "encrypted-root-os"
                       #:initialization enter-luks-passphrase)))))
+
+
+;;;
+;;; Separate /home on LVM
+;;;
+
+;; Since LVM support in guix currently doesn't allow root-on-LVM we use /home on LVM
+(define-os-with-source (%lvm-separate-home-os %lvm-separate-home-os-source)
+  (use-modules (gnu) (gnu tests))
+
+  (operating-system
+    (host-name "separate-home-on-lvm")
+    (timezone "Europe/Paris")
+    (locale "en_US.utf8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+
+    (mapped-devices (list (mapped-device
+                           (source "vg0")
+                           (target "vg0-home")
+                           (type lvm-device-mapping))))
+    (file-systems (cons* (file-system
+                           (device (file-system-label "root-fs"))
+                           (mount-point "/")
+                           (type "ext4"))
+                         (file-system
+                           (device "/dev/mapper/vg0-home")
+                           (mount-point "/home")
+                           (type "ext4")
+                           (dependencies mapped-devices))
+                        %base-file-systems))
+    (users %base-user-accounts)
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %lvm-separate-home-installation-script
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 1.6G \\
+  mkpart primary 1.6G 3.2G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+pvcreate /dev/vdb3
+vgcreate vg0 /dev/vdb3
+lvcreate -L 1.6G -n home vg0
+vgchange -ay
+mkfs.ext4 -L root-fs /dev/vdb2
+mkfs.ext4 /dev/mapper/vg0-home
+mount /dev/vdb2 /mnt
+mkdir /mnt/home
+mount /dev/mapper/vg0-home /mnt/home
+df -h /mnt /mnt/home
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-lvm-separate-home-os
+  (system-test
+   (name "lvm-separate-home-os")
+   (description
+    "Test functionality of an OS installed with a LVM /home partition")
+   (value
+    (mlet* %store-monad ((image   (run-install %lvm-separate-home-os
+                                               %lvm-separate-home-os-source
+                                               #:script
+                                               %lvm-separate-home-installation-script
+                                               #:packages (list lvm2-static)
+                                               #:target-size (* 3200 MiB)))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %lvm-separate-home-os
+                      `(,@command) "lvm-separate-home-os")))))
 
 
 ;;;

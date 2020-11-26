@@ -352,7 +352,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.9-version "5.9.10")
+(define-public linux-libre-5.9-version "5.9.11")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
@@ -360,7 +360,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "0c7hcqn1ld0axlipzpwmjr1jwizrhz5w6bdfbk9npbirx7rb54gm")))
+        (hash (base32 "0q6jlnigyjjnnxw6l724zv8acgs95s3pafabz4l9jrhhlijhmcjy")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,7 +368,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.79")
+(define-public linux-libre-5.4-version "5.4.80")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +376,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "09ffj66wlp27vx799lnixq4zdkin3y4pqaw4lx2a6rpz13xr3455")))
+        (hash (base32 "1iv4rsc9mr13xqzayzwz8mpdrdpnc425mn1izz9hylrw3xf45nj9")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.159")
+(define-public linux-libre-4.19-version "4.19.160")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "195hlvr9zsa2km80rk71na1gl0222r2mk76rsqx0cxpgg7dhpjv0")))
+        (hash (base32 "118maapizgqgrgawnw7xmbcz26c61g5d012jzbd8l7n6z4354d0q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.208")
+(define-public linux-libre-4.14-version "4.14.209")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0vzn5kprjlgpgnjr1drjq97x9xbyfgigpgs42xsfw61h2qjy3b1q")))
+        (hash (base32 "171b31c4rz9sn95s4s4yqchd4s46kivmvch78z0jr5zir1f4c0nb")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.245")
+(define-public linux-libre-4.9-version "4.9.246")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1vxsd3g96vbykrmfnj9qali0p868h678qzcqvf4yrhya47k6pnnb")))
+        (hash (base32 "1xd9vgc4yj2vrr5r76cy3fp9a1fc3086lj5aws68wf1dsz3ndqj9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.245")
+(define-public linux-libre-4.4-version "4.4.246")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0g1cnis8496kp1ln922gxa7skfr096mdvv89la6676yw7dd4lhyi")))
+        (hash (base32 "15xd1dqw53kwqvsa71nr1ymp0jp22pkl4h2yks4hqbd132zxw2wy")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -3215,7 +3215,7 @@ from the module-init-tools project.")
 (define-public earlyoom
   (package
     (name "earlyoom")
-    (version "1.3.1")
+    (version "1.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3224,23 +3224,23 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06sd3jpkdrwqbphsf8jrgs5rxfi7j3xjmygjjvj4xjk4gncz7r2i"))))
+                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'check 'set-home
-                    (lambda _
-                      (setenv "HOME" (getcwd))
-                      #t))
-                  (add-after 'build 'install-contribs
-                    ;; Install what seems useful from the contrib directory.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (contrib (string-append
-                                       out "/share/earlyoom/contrib")))
-                        (install-file "contrib/notify_all_users.py" contrib)
-                        #t))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'check 'set-go-HOME
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t))
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; This test relies on writing to /proc/%d/oom_score_adj.
+             (substitute* "testsuite_cli_test.go"
+               (("TestI" match)
+                (string-append "skipped" match)))
+             #t)))
        #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
                       (list ,(string-append "CC=" (cc-for-target))
                             (string-append "VERSION=v" ,version)
@@ -5980,14 +5980,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
-                                  "sysstat-" version ".tar.xz"))
-              (sha256
-               (base32
-                "05idnvkhvzaynj9awx7q54x1v42jblzrxq0fn5zd1v4mjwrnqmbq"))))
+    (version "12.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
+                           "sysstat-" version ".tar.xz"))
+       (sha256
+        (base32 "02yf2c9n56c3ic72r4p4kb99zjxr8fldvsnmcy7s262izx78vbr4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.

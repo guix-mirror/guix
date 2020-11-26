@@ -1424,7 +1424,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.11")
+    (version "0.8.14")
     (source
      (origin
        (method git-fetch)
@@ -1433,8 +1433,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "18cp68jds8cq58hpcwh85cgvh5vlkjfdcpwqp5h754065j896rr3"))
+        (base32 "0hv6qgkdp5jhb3s3088xgahgddnivb6gc13gjsvjqz5clhscy81d"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1457,7 +1456,7 @@ used to validate and fix HTML data.")
      `(("golang.org/x/sys" ,go-golang-org-x-sys)))
     (native-inputs
      `(("github.com/kylelemons/godebug" ,go-github-com-kylelemons-godebug)))
-    (home-page "https://github.com/evanw/esbuild")
+    (home-page "https://esbuild.github.io/")
     (synopsis "Bundler and minifier tool for JavaScript and TypeScript")
     (description
      "The esbuild tool provides a unified bundler, transpiler and

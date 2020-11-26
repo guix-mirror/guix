@@ -8,6 +8,8 @@ gnu: Add ${1:`(with-temp-buffer
                   "diff" "--staged")
                 (beginning-of-buffer)
                 (when (search-forward "+(define-public " nil 'noerror)
-                  (thing-at-point 'sexp 'no-properties)))`}.
+                  (replace-regexp-in-string
+		   "^sbcl-" ""
+		   (thing-at-point 'sexp 'no-properties))))`}.
 
-* `(car (magit-staged-files))` (${1:$(replace-regexp-in-string (rx line-start "sbcl" (optional "-cl")) "cl" yas-text)}, ${1:$(replace-regexp-in-string "^sbcl" "ecl" yas-text)}, $1): New variables.
+* `(car (magit-staged-files))` (cl-${1:$(replace-regexp-in-string "^cl-" "" yas-text)}, ecl-$1, sbcl-$1): New variables.

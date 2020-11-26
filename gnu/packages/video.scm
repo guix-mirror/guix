@@ -528,7 +528,7 @@ applications by providing high-level classes for commonly required tasks.")
 (define-public libde265
   (package
     (name "libde265")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method git-fetch)
@@ -538,7 +538,7 @@ applications by providing high-level classes for commonly required tasks.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x7g9771457z49qvzpk4iswfhq018i0mzsflv9gg8if5hjqhfdp0"))))
+        (base32 "1dzflqbk248lz5ws0ni5acmf32b3rmnq5gsfaz7691qqjxkl1zml"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2188,14 +2188,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.21.1")
+    (version "2020.11.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0a9livib328z5j3kfndxys2193dvfs4hh38krx0idg0k26xp7cfl"))))
+                "0zvgb1b5kzd2y97rvynxf7qvz3narllf1m26xsph1zll1zb6q47v"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -4378,15 +4378,17 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://downloads.videolan.org/pub/videolan"
-                            "/dav1d/" version "/dav1d-" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://code.videolan.org/videolan/dav1d.git")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1hnkfcg57bv5rib6cnj39dy1jx0q7zi5fb2fz52hf2y0bv8bad1k"))))
+          "0mjn87xjdqv0q1gj4s4f6fdmsj504mhk4qmqiyrhq2rs7yqj4csv"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

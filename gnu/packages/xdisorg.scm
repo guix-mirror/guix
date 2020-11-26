@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,6 +110,38 @@
   #:use-module (ice-9 match))
 
 ;; packages outside the x.org system proper
+
+(define-public xtitle
+  (package
+    (name "xtitle")
+    (version "0.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/xtitle")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0f5070k2bwarghl1vq886pl52xck1x5p7x3qhlfchsc2y3dcqms9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (home-page "https://github.com/baskerville/xtitle")
+    (synopsis "Output X window titles")
+    (description
+     "If arguments are given, @code{xtitle} outputs the title of each
+specified window, otherwise it outputs the title of the active window.  With
+@emph{snoop} mode on, it continuously monitors the specified windows and
+outputs when titles change.")
+    (license license:unlicense)))
 
 (define-public arandr
   (package
@@ -1458,7 +1491,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1466,7 +1499,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "0566b499lbpfb1gk4p17iw78ywmk9l2jww1kqjbdanrl22hai1y4"))))
+                "12p9z8bl1gg8k024m4a6zfz7gf1zbyffardh98raqgabn6knwk22"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)

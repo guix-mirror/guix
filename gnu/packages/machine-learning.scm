@@ -65,6 +65,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -868,6 +869,77 @@ data analysis.")
                 (sha256
                  (base32
                   "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
+
+(define-public python-pynndescent
+  (package
+    (name "python-pynndescent")
+    (version "0.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pynndescent" version))
+       (sha256
+        (base32 "0li1fclif50v6xrq7wh3lif9vv5jpj7xhrb0z6g89wwjnp9b9833"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-joblib" ,python-joblib)
+       ("python-llvmlite" ,python-llvmlite)
+       ("python-numba" ,python-numba)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/lmcinnes/pynndescent")
+    (synopsis "Nearest neighbor descent for approximate nearest neighbors")
+    (description
+     "PyNNDescent provides a Python implementation of Nearest Neighbor Descent
+for k-neighbor-graph construction and approximate nearest neighbor search.")
+    (license license:bsd-2)))
+
+(define-public python-opentsne
+  (package
+    (name "python-opentsne")
+    (version "0.4.4")
+    (source
+     (origin
+       ;; No tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pavlin-policar/openTSNE")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "08wamsssmyf6511cbmglm67dp48i6xazs89m1cskdk219v90bc76"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Benchmarks require the 'macosko2015' data files.
+         (add-after 'unpack 'delete-benchmark
+           (lambda _
+             (delete-file-recursively "benchmarks")
+             #t))
+         ;; Numba needs a writable dir to cache functions.
+         (add-before 'check 'set-numba-cache-dir
+           (lambda _
+             (setenv "NUMBA_CACHE_DIR" "/tmp")
+             #t)))))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (inputs
+     `(("fftw" ,fftw)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pynndescent" ,python-pynndescent)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/pavlin-policar/openTSNE")
+    (synopsis "Extensible, parallel implementations of t-SNE")
+    (description
+     "This is a modular Python implementation of t-Distributed Stochastic
+Neighbor Embedding (t-SNE), a popular dimensionality-reduction algorithm for
+visualizing high-dimensional data sets.")
+    (license license:bsd-3)))
 
 (define-public python-scikit-rebate
   (package

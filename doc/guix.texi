@@ -1955,9 +1955,6 @@ following noteworthy limitations applicable to version @value{VERSION}:
 
 @itemize
 @item
-Support for the Logical Volume Manager (LVM) is missing.
-
-@item
 More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
@@ -13755,7 +13752,6 @@ Guix extends this notion by considering any device or set of devices that
 are @dfn{transformed} in some way to create a new device; for instance,
 RAID devices are obtained by @dfn{assembling} several other devices, such
 as hard disks or partitions, into a new one that behaves as one partition.
-Other examples, not yet implemented, are LVM logical volumes.
 
 Mapped devices are declared using the @code{mapped-device} form,
 defined as follows; for examples, see below.
@@ -13768,7 +13764,8 @@ the system boots up.
 @item source
 This is either a string specifying the name of the block device to be mapped,
 such as @code{"/dev/sda3"}, or a list of such strings when several devices
-need to be assembled for creating a new one.
+need to be assembled for creating a new one. In case of LVM this is a
+string specifying name of the volume group to be mapped.
 
 @item target
 This string specifies the name of the resulting mapped device.  For
@@ -13777,6 +13774,12 @@ specifying @code{"my-partition"} leads to the creation of
 the @code{"/dev/mapper/my-partition"} device.
 For RAID devices of type @code{raid-device-mapping}, the full device name
 such as @code{"/dev/md0"} needs to be given.
+LVM logical volumes of type @code{lvm-device-mapping} need to
+be specified as @code{"VGNAME-LVNAME"}.
+
+@item targets
+This list of strings specifies names of the resulting mapped devices in case
+there are several. The format is identical to @var{target}.
 
 @item type
 This must be a @code{mapped-device-kind} object, which specifies how
@@ -13795,6 +13798,14 @@ This defines a RAID device, which is assembled using the @code{mdadm}
 command from the package with the same name.  It requires a Linux kernel
 module for the appropriate RAID level to be loaded, such as @code{raid456}
 for RAID-4, RAID-5 or RAID-6, or @code{raid10} for RAID-10.
+@end defvr
+
+@cindex LVM, logical volume manager
+@defvr {Scheme Variable} lvm-device-mapping
+This defines one or more logical volumes for the Linux
+@uref{https://www.sourceware.org/lvm2/, Logical Volume Manager (LVM)}.
+The volume group is activated by the @command{vgchange} command from the
+@code{lvm2} package.
 @end defvr
 
 @cindex disk encryption
@@ -13854,6 +13865,19 @@ Note that the RAID level need not be given; it is chosen during the
 initial creation and formatting of the RAID device and is determined
 automatically later.
 
+LVM logical volumes ``alpha'' and ``beta'' from volume group ``vg0'' can
+be declared as follows:
+
+@lisp
+(mapped-device
+  (source "vg0")
+  (target (list "vg0-alpha" "vg0-beta"))
+  (type lvm-device-mapping))
+@end lisp
+
+Devices @file{/dev/mapper/vg0-alpha} and @file{/dev/mapper/vg0-beta} can
+then be used as the @code{device} of a @code{file-system} declaration
+(@pxref{File Systems}).
 
 @node User Accounts
 @section User Accounts
@@ -16715,7 +16739,7 @@ Connection policy.  @var{reject} policy requires to specify @var{known-hosts}.
 List of hosts which allowed for SSH connection from @command{webssh}.
 
 @item @code{log-file} (default: @file{"/var/log/webssh.log"})
-Name of the file where @command{rsync} writes its log file.
+Name of the file where @command{webssh} writes its log file.
 
 @item @code{log-level} (default: @var{#f})
 Logging level.

@@ -326,52 +326,6 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
-(define-public gnupg-2.0
-  (package (inherit gnupg)
-    (version "2.0.30")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                                  ".tar.bz2"))
-              (sha256
-               (base32
-                "0wax4cy14hh0h7kg9hj0hjn9424b71z8lrrc5kbsasrn9xd7hag3"))))
-    (native-inputs '())
-    (inputs
-     `(("adns" ,adns)
-       ("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("libassuan" ,libassuan)
-       ("libgcrypt" ,libgcrypt)
-       ("libgpg-error" ,libgpg-error)
-       ("libksba" ,libksba)
-       ("pth" ,pth)
-       ("openldap" ,openldap)
-       ("zlib" ,zlib)
-       ("readline" ,readline)))
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'patch-config-files
-          (lambda _
-            (substitute* "tests/openpgp/Makefile.in"
-              (("/bin/sh") (which "sh")))
-            #t))
-        (add-after 'install 'rename-v2-commands
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Upstream suggests removing the trailing '2' from command names:
-            ;; <http://debbugs.gnu.org/cgi/bugreport.cgi?bug=22883#58>.
-            (let ((out (assoc-ref outputs "out")))
-              (with-directory-excursion (string-append out "/bin")
-                (rename-file "gpgv2" "gpgv")
-                (rename-file "gpg2" "gpg")
-
-                ;; Keep the old name around to ease transition.
-                (symlink "gpgv" "gpgv2")
-                (symlink "gpg" "gpg2")
-                #t)))))))
-   (properties `((superseded . ,gnupg)))))
-
 (define-public gnupg-1
   (package (inherit gnupg)
     (version "1.4.23")

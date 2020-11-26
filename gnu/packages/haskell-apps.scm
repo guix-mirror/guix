@@ -339,14 +339,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20201103")
+    (version "8.20201116")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1z9ikpsz3by48yfw87qav5dy7j4k9ky4a7nqnasl15kdm3lav9pl"))))
+        (base32 "0xv7n9f6l90l4k964675v0lgs22gcy97ic86mbfb40rl0fk0jalr"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -487,6 +487,7 @@ to @code{cabal repl}).")
        ("ghc-split" ,ghc-split)
        ("ghc-stm-chans" ,ghc-stm-chans)
        ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-torrent" ,ghc-torrent)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)

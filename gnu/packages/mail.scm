@@ -444,7 +444,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.14.7")
+    (version "2.0.2")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -454,7 +454,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0r58xnjgkw0kmnnzhb32mk5gkkani5kbi5krybpbag156fqhgxg4"))
+               "1j0i2jmlk5sc78af9flj3ynj0iiwa8biw7jgf12qm5lppsx1h4j7"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1228,14 +1228,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.31.1")
+    (version "0.31.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0pmvwynd4f4kr38agd5m1ml20lq854knc9da7yiqfi776j8fg2rj"))))
+                "1vzv9imd0ba51y5zw8h358wikm1fh52rlvvyzvp98w330hzbcmhl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -2604,7 +2604,7 @@ converts them to maildir format directories.")
 (define-public mblaze
   (package
     (name "mblaze")
-    (version "0.2")
+    (version "1.0")
     (source
      (origin
        (method git-fetch)
@@ -2613,7 +2613,7 @@ converts them to maildir format directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0p97zfl35ilrnrx9ynj82igsb698m9klikfaicw5jhjpf6qp2n3y"))))
+        (base32 "0hxy3mjjv4hg856sl1r15fdmqaw4s9c26b3lidsd5x0kpqy601ai"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))

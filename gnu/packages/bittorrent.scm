@@ -312,7 +312,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
 (define-public uget
   (package
     (name "uget")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -320,7 +320,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
                            "uget%20%28stable%29/" version "/uget-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0rg2mr2cndxvnjib8zm5dp7y2hgbvnqkz2j2jmg0xlzfh9d34b2m"))))
+        (base32 "0dlrjhnm1pg2vwmp7nl2xv1aia5hyirb3021rl46x859k63zap24"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)

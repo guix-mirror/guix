@@ -140,7 +140,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.98")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -148,22 +148,19 @@ of categories with some of the activities available in that category.
              "https://gcompris.net/download/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "1jmjykn0lpk0v6hs2flmch8v4da5bgxl891nav7szxw9l7aqnf4y"))))
+        (base32 "08dw1q0h4qz2q0ksa5pbmb9v60hr1zv9skx6z8dlq9b1i7harnds"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-test
-           (lambda _
-             (substitute* "tests/core/CMakeLists.txt"
-               (("DownloadManagerTest\\.cpp") "#"))
-             #t))
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server.
              (system (string-append (assoc-ref inputs "xorg-server")
                                     "/bin/Xvfb :1 &"))
              (setenv "DISPLAY" ":1")
+             ;; The test suite wants to write to /homeless-shelter
+             (setenv "HOME" (getcwd))
              #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -192,7 +189,7 @@ of categories with some of the activities available in that category.
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("openssl" ,openssl)
-       ("python-2" ,python-2)
+       ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -217,7 +214,8 @@ Currently available boards include:
 @item reading practice
 @item small games (memory games, jigsaw puzzles, ...)
 @end enumerate\n")
-    (license license:gpl3+)))
+    (license (list license:silofl1.1    ; bundled fonts
+                   license:gpl3+))))
 
 (define-public tipp10
   (package

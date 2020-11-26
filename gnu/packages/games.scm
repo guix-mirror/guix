@@ -689,7 +689,7 @@ card, or paper tape, or Morse codes), caesar & rot13 (ciphers and deciphers
 the input), factor (factorizes a number), number (translates numbers into
 text), pig (translates from English to Pig Latin), pom (should print the
 Moon's phase), primes (generates primes), rain & worms (plays an screen-saver
-in terminal), random (prints randomly choosen lines from files, or returns a
+in terminal), random (prints randomly chosen lines from files, or returns a
 random exit-code), and wtf (explains what do some acronyms mean).
 
 Board: backgammon (lead the men out of board faster than the friend do),

@@ -317,7 +317,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.8")
+    (version "9.16.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -325,7 +325,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "0ccdbqmpvnxlbrxjsx2w8ir4xh961svzcw7n87n8dglj6rb9r6wy"))))
+                "0nja60jxb8d2m5fi6xd55xjpfkzmxhjsmbxqphy6x91qsz295cmw"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs

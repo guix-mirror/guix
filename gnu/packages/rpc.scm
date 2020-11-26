@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,12 +39,13 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages tls))
 
 (define-public grpc
   (package
     (name "grpc")
-    (version "1.27.3")
+    (version "1.33.2")
     (outputs '("out" "static"))
     (source (origin
               (method git-fetch)
@@ -53,7 +55,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0czmbwnafc7jnrrq2fnac2av83vs2q7q0wy4k11w9zbpld7j5h6d"))))
+                "09xd9pkyp10gh051kf8kwxn4myw42zv8kngr9z8wpm6mjy0j4ylw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -63,6 +65,7 @@
              "-DgRPC_CARES_PROVIDER=package"
              "-DgRPC_SSL_PROVIDER=package"
              "-DgRPC_PROTOBUF_PROVIDER=package"
+             "-DgRPC_RE2_PROVIDER=package"
              (string-append "-DCMAKE_INSTALL_PREFIX="
                             (assoc-ref %outputs "out"))
              "-DCMAKE_INSTALL_LIBDIR=lib"
@@ -102,9 +105,11 @@
      `(("abseil-cpp" ,abseil-cpp)
        ("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
+       ("re2" ,re2)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("protobuf" ,protobuf)
+     `(("pkg-config" ,pkg-config)
+       ("protobuf" ,protobuf)
        ("python" ,python-wrapper)))
     (home-page "https://grpc.io")
     (synopsis "High performance universal RPC framework")
