@@ -4385,6 +4385,7 @@ transitions, and effects and then export your film to many common formats.")
         (uri (git-reference
                (url "https://code.videolan.org/videolan/dav1d.git")
                (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
           "0mjn87xjdqv0q1gj4s4f6fdmsj504mhk4qmqiyrhq2rs7yqj4csv"))))
