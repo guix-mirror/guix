@@ -491,7 +491,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20200313")
+    (version "20201120")
     (source
      (origin
        (method git-fetch)
@@ -500,7 +500,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k4k07l6h5krc3fx928qvdq3ssw9fxn95aj7k885xlckd2i1lnb5"))))
+        (base32 "0z6xavgd0zv9pqvfsdyvhhi1q3y7zxhgg24isbnn9r6mldafqwna"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -523,7 +523,19 @@ operating systems.")
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml-4.2)
        ("w3m" ,w3m)
-       ("tcl" ,tcl)))
+       ("tcl" ,tcl)
+
+       ;; Test file data for the unit tests included in the neomutt source.
+       ("neomutt-test-files"
+        ,(let ((commit "8629adab700a75c54e8e28bf05ad092503a98f75"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/neomutt/neomutt-test-files")
+                   (commit commit)))
+             (file-name (git-file-name "neomutt-test-files" commit))
+             (sha256
+              (base32 "1ci04nqkab9mh60zzm66sd6mhsr6lya8wp92njpbvafc86vvwdlr")))))))
     (arguments
      `(#:test-target "test"
        #:configure-flags
@@ -574,7 +586,14 @@ operating systems.")
                (setenv "CONFIG_SHELL" bash)
                (apply invoke bash
                       (string-append (getcwd) "/configure")
-                      flags)))))))
+                      flags))))
+         (add-before 'check 'prepare-test-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "neomutt-test-files") "tests")
+             (with-directory-excursion "tests"
+               (setenv "NEOMUTT_TEST_DIR" (getcwd)) ; must be absolute
+               (invoke "bash" "setup.sh")
+               #t))))))
     (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
