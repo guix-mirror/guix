@@ -564,7 +564,7 @@ devices.")
 (define-public hidapi
   (package
     (name "hidapi")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -573,7 +573,7 @@ devices.")
              (commit (string-append "hidapi-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n3xn1zvxgyzb84cjpw3i5alw0gkbrps11r4ijxzyqxqym0khagr"))))
+        (base32 "1nr4z4b10vpbh3ss525r7spz4i43zim2ba5qzfl15dgdxshxxivb"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
