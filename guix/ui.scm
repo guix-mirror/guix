@@ -101,6 +101,7 @@
             show-what-to-build
             show-what-to-build*
             show-manifest-transaction
+            guard*
             call-with-error-handling
             with-error-handling
             with-unbound-variable-handling
