@@ -20622,9 +20622,6 @@ register custom encoders and decoders.")
 bindings for Python 3.")
     (license license:bsd-3)))
 
-(define-public python2-ujson-1
-  (package-with-python2 python-ujson-1))
-
 (define-public python-iocapture
   ;; The latest release is more than a year older than this commit.
   (let ((commit "fdc021c431d0840303908dfc3ca8769db383595c")
