@@ -3745,7 +3745,7 @@ PGP handling, multiple servers, and secure connections.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
-    (native-inputs
+    (inputs
      `(("lua" ,lua)
        ("pcre" ,pcre)
        ("openssl" ,openssl)))
