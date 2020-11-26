@@ -189,7 +189,8 @@ a server that supports the SSH-2 protocol.")
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  "openssh-" version ".tar.gz"))
-             (patches (search-patches "openssh-hurd.patch"))
+             (patches (search-patches "openssh-hurd.patch"
+                                      "openssh-fix-ssh-copy-id.patch"))
              (sha256
               (base32
                "091b3pxdlj47scxx6kkf4agkx8c8sdacdxx8m1dw1cby80pd40as"))))
