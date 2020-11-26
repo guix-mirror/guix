@@ -50,26 +50,40 @@
 (define-public djvulibre
   (package
     (name "djvulibre")
-    (version "3.5.27")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/djvu/DjVuLibre/"
-                                  version "/djvulibre-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0psh3zl9dj4n4r3lx25390nx34xz0bg0ql48zdskhq354ljni5p6"))))
+    (version "3.5.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/djvu/DjVuLibre/"
+                           (string-replace-substring version "." ",")
+                           "/djvulibre-" version ".tar.gz"))
+       (sha256
+        (base32 "0manxn1ly5n8nqamv47hz7akxi6v0rzwc9j1c3x99vngrjlr5qw2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This bundles software (e.g., zlib) and is entirely superfluous.
+           (delete-file-recursively "win32")
+           #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     ;; The 3.5.28 release tarball isn't bootstrapped.
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)))
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'reproducible
-                    (lambda _
-                      ;; Ensure there are no timestamps in .svgz files.
-                      (substitute* "desktopfiles/Makefile.in"
-                        (("gzip") "gzip -n"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'bootstrap 'make-reproducible
+           (lambda _
+             ;; Ensure there are no timestamps in .svgz files.
+             (substitute* "desktopfiles/Makefile.am"
+               (("gzip") "gzip -n"))
+             #t)))))
     (home-page "http://djvu.sourceforge.net/")
     (synopsis "Implementation of DjVu, the document format")
     (description "DjVuLibre is an implementation of DjVu,
@@ -295,7 +309,16 @@ and white.")
        ("python2-subprocess32" ,python2-subprocess32)
        ("python2-wxpython" ,python2-wxpython)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/djvused.py"
+               (("djvused_path = 'djvused'")
+                (string-append "djvused_path = '"
+                               (assoc-ref inputs "djvulibre")
+                               "/bin/djvused'"))))))))
     (synopsis "Graphical editor for DjVu documents")
     (description
      "@code{djvusmooth} is a graphical editor for DjVu_ documents.

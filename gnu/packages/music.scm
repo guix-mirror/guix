@@ -159,6 +159,123 @@
   #:use-module (gnu packages lua)
   #:use-module ((srfi srfi-1) #:select (last)))
 
+(define-public audacious
+  (package
+    (name "audacious")
+    (version "4.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://distfiles.audacious-media-player.org/"
+                           "audacious-" version ".tar.bz2"))
+       (sha256
+        (base32 "028zjgz0p7ys15lk2a30m5zcv9xrx3ga50wjsh4m4zxilgkakbji"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'unpack-plugins
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((plugins (assoc-ref inputs "audacious-plugins")))
+               (invoke "tar" "xvf" plugins)
+               #t)))
+         (add-after 'unpack-plugins 'configure-plugins
+           (lambda* (#:key configure-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion
+                   (string-append "audacious-plugins-" ,version)
+                 (substitute* "configure"
+                   (("/bin/sh") (which "sh")))
+                 (apply invoke "./configure"
+                        (append configure-flags
+                                ;; audacious-plugins requires audacious to build.
+                                (list (string-append "PKG_CONFIG_PATH="
+                                                     out "/lib/pkgconfig:"
+                                                     (getenv "PKG_CONFIG_PATH"))
+                                      (string-append "--prefix=" out))))))))
+         (add-after 'configure-plugins 'build-plugins
+           (lambda _
+             (with-directory-excursion
+                 (string-append "audacious-plugins-" ,version)
+               (invoke "make" "-j" (number->string (parallel-job-count))))))
+         (add-after 'build-plugins 'install-plugins
+           (lambda _
+             (with-directory-excursion
+                 (string-append "audacious-plugins-" ,version)
+               (invoke "make" "install")))))))
+    (native-inputs
+     `(("audacious-plugins"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://distfiles.audacious-media-player.org/"
+                               "audacious-plugins-" version ".tar.bz2"))
+           (sha256
+            (base32 "0ny5w1agr9jaz5w3wyyxf1ygmzmd1sivaf97lcm4z4w6529520lz"))))
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")         ; for gdbus-codegen
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ;; Plugin dependencies
+       ("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("fluidsynth" ,fluidsynth)
+       ("lame" ,lame)
+       ("libbs2b" ,libbs2b)
+       ("libcddb" ,libcddb)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libcue" ,libcue)
+       ("libmodplug" ,libmodplug)
+       ("libnotify" ,libnotify)
+       ("libogg" ,libogg)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libvorbis" ,libvorbis)
+       ("libxcomposite" ,libxcomposite)
+       ("libxml2" ,libxml2)
+       ("libxrender" ,libxrender)
+       ("lirc" ,lirc)
+       ("jack" ,jack-1)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("neon" ,neon)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl2" ,sdl2)
+       ("soxr" ,soxr)
+       ("wavpack" ,wavpack)))
+    (home-page "https://audacious-media-player.org")
+    (synopsis "Modular and skinnable audio player")
+    (description
+     "Audacious is an audio player descended from XMMS.  Drag and drop
+folders and individual song files, search for artists and albums in
+your entire music library, or create and edit your own custom
+playlists.  Listen to CD’s or stream music from the Internet.  Tweak
+the sound with the graphical equalizer or experiment with LADSPA
+effects.  Enjoy the modern GTK-themed interface or change things up
+with Winamp Classic skins.  Use the plugins included with Audacious to
+fetch lyrics for your music, to set an alarm in the morning, and
+more.")
+    ;; According to COPYING, Audacious and its plugins are licensed
+    ;; under the BSD 2-clause license and libguess is licensed under
+    ;; the BSD 3-clause license.
+    (license (list license:bsd-2
+                   license:bsd-3
+                   ;; Plugin licenses that aren't BSD 2- or 3-clause.
+                   license:lgpl2.1
+                   license:gpl2
+                   license:gpl3
+                   license:expat
+                   license:isc
+                   license:lgpl2.0))))
+
 (define-public aria-maestosa
   (package
     (name "aria-maestosa")

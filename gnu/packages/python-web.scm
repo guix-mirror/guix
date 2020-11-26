@@ -92,14 +92,13 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.6.3")
+    (version "3.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "0i9n7h8n06m2d8ryqyk4fv1si1m44ibq7blbfaxq46vx7jydg339"))
-       (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
+        (base32 "1i3p4yrfgrf1zpbgnywqmb33ps4k51wylcxykhf2cwky0spq26lw"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -112,33 +111,41 @@
                 "    @pytest.mark.xfail\n    async def test_feed_eof_no_err_brotli"))
              ;; make sure the timestamp of this file is > 1990, because a few
              ;; tests like test_static_file_if_modified_since_past_date depend on it
-             (invoke "touch" "-d" "2020-01-01" "tests/data.unknown_mime_type")
+             (let ((late-90s (* 60 60 24 365 30)))
+               (utime "tests/data.unknown_mime_type" late-90s late-90s))
 
-             ;; FIXME: These tests are failing due to deprecation warnings
-             ;; in Python 3.8.  Remove this when updating to aiohttp >= 3.7.
-             ;; https://github.com/aio-libs/aiohttp/issues/4477
-             ;; https://github.com/aio-libs/aiohttp/issues/4525
-             (with-directory-excursion "tests"
-               (for-each delete-file '("test_client_session.py"
-                                       "test_multipart.py"
-                                       "test_web_middleware.py"
-                                       "test_web_protocol.py"
-                                       "test_web_urldispatcher.py")))
-             #t)))))
+             ;; Disable test that attempts to access httpbin.org.
+             (substitute* "tests/test_formdata.py"
+               (("async def test_mark_formdata_as_processed.*" all)
+                (string-append "@pytest.mark.xfail\n" all)))
+
+             ;; Don't test the aiohttp pytest plugin to avoid a dependency loop.
+             (delete-file "tests/test_pytest_plugin.py")
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (setenv "PYTHONPATH"
+                     (string-append ".:" (getenv "PYTHONPATH")))
+             (if tests?
+                 (invoke "pytest" "-vv"
+                         ;; Disable loading the aiohttp coverage plugin
+                         ;; to avoid a circular dependency (code coverage
+                         ;; is not very interesting to us anyway).
+                         "-o" "addopts=''")
+                 (format #t "test suite not run~%")))))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
-       ("python-attrs" ,python-attrs)
+       ("python-attrs" ,python-attrs)   ;note: remove for > 3.7
        ("python-chardet" ,python-chardet)
        ("python-idna-ssl" ,python-idna-ssl)
        ("python-multidict" ,python-multidict)
+       ("python-typing-extensions" ,python-typing-extensions)
        ("python-yarl" ,python-yarl)))
     (native-inputs
-     `(("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-xdit" ,python-pytest-xdist)
-       ("python-pytest-timeout" ,python-pytest-timeout)
-       ("python-pytest-forked" ,python-pytest-forked)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)
+       ("python-re-assert" ,python-re-assert)
        ("gunicorn" ,gunicorn-bootstrap)
        ("python-freezegun" ,python-freezegun)
        ("python-async-generator" ,python-async-generator)))

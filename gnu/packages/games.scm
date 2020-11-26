@@ -6529,71 +6529,67 @@ at their peak of economic growth and military prowess.
                    license:mpl2.0
                    license:zlib))))
 
-;; There have been no official releases.
 (define-public open-adventure
-  (let* ((commit "d43854f0f6bb8e9eea7fbce80348150e7e7fc34d")
-         (revision "2"))
-    (package
-      (name "open-adventure")
-      (version (string-append "2.5-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/esr/open-adventure")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "08bwrvf4axb1rsfd6ia1fddsky9pc1p350vjskhaakg2czc6dsk0"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc")
-         #:parallel-build? #f ; not supported
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; Linenoise is meant to be included, so we have to
-               ;; copy it into the working directory.
-               (let* ((linenoise (assoc-ref inputs "linenoise"))
-                      (noisepath (string-append linenoise "/include/linenoise"))
-                      (out (assoc-ref outputs "out")))
-                 (copy-recursively noisepath "linenoise"))
-               #t))
-           (add-before 'build 'use-echo
-             (lambda _
-               (substitute* "tests/Makefile"
-                 (("/bin/echo") (which "echo")))
-               #t))
-           (add-after 'build 'build-manpage
-             (lambda _
-               ;; This target is missing a dependency
-               (substitute* "Makefile"
-                 ((".adoc.6:" line)
-                  (string-append line " advent.adoc")))
-               (invoke "make" ".adoc.6")))
-           ;; There is no install target
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (man (string-append out "/share/man/man6")))
-                 (install-file "advent" bin)
-                 (install-file "advent.6" man))
-               #t)))))
-      (native-inputs
-       `(("asciidoc" ,asciidoc)
-         ("linenoise" ,linenoise)
-         ("python" ,python)
-         ("python-pyyaml" ,python-pyyaml)))
-      (home-page "https://gitlab.com/esr/open-adventure")
-      (synopsis "Colossal Cave Adventure")
-      (description "The original Colossal Cave Adventure from 1976 was the
-origin of all text adventures, dungeon-crawl (computer) games, and
-computer-hosted roleplaying games.  This is the last version released by
+  (package
+    (name "open-adventure")
+    (version "1.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/esr/open-adventure")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "123svzy7xczdklx6plbafp22yv9bcvwfibjk0jv2c9i22dfsr07f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'build 'use-echo
+           (lambda _
+             (substitute* "tests/Makefile"
+               (("/bin/echo") (which "echo")))
+             #t))
+         (add-after 'build 'build-manpage
+           (lambda _
+             ;; This target is missing a dependency
+             (substitute* "Makefile"
+               ((".adoc.6:" line)
+                (string-append line " advent.adoc")))
+             (invoke "make" ".adoc.6")))
+         ;; There is no install target.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "advent" bin)
+               (install-file "advent.6" man))
+             #t)))))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("libedit" ,libedit)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://gitlab.com/esr/open-adventure")
+    (synopsis "Colossal Cave Adventure")
+    (description
+     "The original Colossal Cave Adventure from 1976 was the origin of all
+text adventures, dungeon-crawl (computer) games, and computer-hosted
+roleplaying games.  This is a forward port of the last version released by
 Crowther & Woods, its original authors, in 1995.  It has been known as
-\"adventure 2.5\" and \"430-point adventure\".")
-      (license license:bsd-2))))
+``adventure 2.5'' and ``430-point adventure''.")
+    (license license:bsd-2)))
+
+(define-public open-adventure-2.5
+  (package
+    (inherit open-adventure)
+    (version "2.5")
+    (properties `((superseded . ,open-adventure)))))
 
 (define-public tome4
   (package

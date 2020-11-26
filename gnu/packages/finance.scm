@@ -186,7 +186,7 @@ line client and a client based on Qt.")
 (define-public hledger
   (package
     (name "hledger")
-    (version "1.19.1")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
@@ -196,22 +196,22 @@ line client and a client based on Qt.")
              ".tar.gz"))
        (sha256
         (base32
-         "0wfsyf2q1kf90mj3lxs0m5ghj153axmpkc8xfy12vkz5imnyphfm"))))
+         "1si9zqparkdq77yji87lhcsrf11fr3gisqwsv82cabhrhc36x6l4"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-decimal" ,ghc-decimal)
-       ("ghc-diff" ,ghc-diff)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
        ("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-data-default" ,ghc-data-default)
-       ("ghc-extra" ,ghc-extra)
+       ("ghc-decimal" ,ghc-decimal)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-easytest" ,ghc-easytest)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-hledger-lib" ,ghc-hledger-lib)
        ("ghc-lucid" ,ghc-lucid)
        ("ghc-math-functions" ,ghc-math-functions)
        ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-mtl-compat" ,ghc-mtl-compat)
        ("ghc-old-time" ,ghc-old-time)
        ("ghc-pretty-show" ,ghc-pretty-show)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
@@ -219,13 +219,14 @@ line client and a client based on Qt.")
        ("ghc-shakespeare" ,ghc-shakespeare)
        ("ghc-split" ,ghc-split)
        ("ghc-tabular" ,ghc-tabular)
-       ("ghc-tasty" ,ghc-tasty)
        ("ghc-temporary" ,ghc-temporary)
-       ("ghc-timeit" ,ghc-timeit)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-utility-ht" ,ghc-utility-ht)
        ("ghc-wizards" ,ghc-wizards)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://hledger.org")
     (synopsis "Command-line interface for the hledger accounting system")
     (description
@@ -550,7 +551,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.1.1")
+    (version "4.2.2")
     (source
      (origin
        (method git-fetch)
@@ -559,7 +560,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fllz2s20lg4hrppzmnlgjy9mrq7gaq66l2apb3vz1avzvsjw3gm"))))
+        (base32 "1zk40zbf67wid2s5wg1fknb71409wg0qlvznk44q571v9risrdy7"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -594,20 +595,17 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
          (add-after 'unpack 'create-output-directories
            (lambda* (#:key outputs #:allow-other-keys)
              ;; setup.py installs to ~/.local/share if this doesn't exist.
-             (mkdir-p (string-append (assoc-ref outputs "out") "/share"))
-             #t))
+             (mkdir-p (string-append (assoc-ref outputs "out") "/share"))))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "lib/secp256k1.py"
+             (substitute* "electroncash/secp256k1.py"
                (("library_paths = .* 'libsecp256k1.so.0'.")
                 (string-append "library_paths = ('"
                                (assoc-ref inputs "libsecp256k1")
-                               "/lib/libsecp256k1.so.0'")))
-             #t))
+                               "/lib/libsecp256k1.so.0'")))))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "electron-cash")
-             #t)))))
+             (wrap-qt-program (assoc-ref outputs "out") "electron-cash"))))))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
@@ -625,7 +623,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.3")
+    (version "0.17.1.5")
     (source
      (origin
        (method git-fetch)
@@ -645,7 +643,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "1ddkdfd8i5q509qziwcx1f6nm8axs4a1ppzv2y5lgsqpq375if6j"))))
+        (base32 "0yy9n2qng02j314h8fh5n0mcy6vpdks0yk4d8ifn8hj03f3g2c8b"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -735,7 +733,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.4")
+    (version "0.17.1.5")
     (source
      (origin
        (method git-fetch)
@@ -744,7 +742,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ixjfdlvwr2an2s9jaql240bk7jpq5hhm5c4hww0bicyy3fp12ng"))))
+        (base32 "0qlcqli0wvrjfy89mbgh1hpmk60dxgn5sws93h8lhgyfwx557iw0"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -766,8 +764,7 @@ the Monero command line client and daemon.")
        (list "-DARCH=default"
              "-DENABLE_PASS_STRENGTH_METER=ON"
              (string-append "-DReadline_ROOT_DIR="
-                            (assoc-ref %build-inputs "readline"))
-             "-DCMAKE_PREFIX_PATH=\"\"")
+                            (assoc-ref %build-inputs "readline")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
@@ -776,16 +773,14 @@ the Monero command line client and daemon.")
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
-                     "-f" (assoc-ref inputs "monero-source"))
-             #t))
+                     "-f" (assoc-ref inputs "monero-source"))))
          (add-after 'extract-monero-sources 'fix-build
            (lambda _
              (substitute* "src/version.js.in"
                (("@VERSION_TAG_GUI@")
                 ,version))
              (substitute* "src/zxcvbn-c/makefile"
-               (("\\?=") "="))
-             #t))
+               (("\\?=") "="))))
          (add-before 'configure 'generate-zxcvbn-c-header
            (lambda _
              (invoke "make" "-C" "src/zxcvbn-c" "dict-src.h")))
@@ -793,8 +788,7 @@ the Monero command line client and daemon.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
-               (install-file "../build/bin/monero-wallet-gui" bin))
-             #t))
+               (install-file "../build/bin/monero-wallet-gui" bin))))
          (add-after 'qt-wrap 'install-monerod-link
            ;; The monerod program must be available so that monero-wallet-gui
            ;; can start a Monero daemon if necessary.
@@ -802,8 +796,7 @@ the Monero command line client and daemon.")
              (symlink (string-append (assoc-ref inputs "monero")
                                      "/bin/monerod")
                       (string-append (assoc-ref outputs "out")
-                                     "/bin/monerod"))
-             #t)))))
+                                     "/bin/monerod")))))))
     (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description

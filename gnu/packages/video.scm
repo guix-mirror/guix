@@ -1191,7 +1191,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1199,8 +1199,10 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "18iqznl4mabhj9ywfsz4kwvbsplcv1jjxq50nxssvbj8my1267w8"))))
+                "0cz8v6kh3f2j5rdjrra2z0h715fa16vjm7kambvqx9hak86262cz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("nasm" ,nasm)))
@@ -1208,8 +1210,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
      `(("freetype" ,freetype)
        ("fribidi" ,fribidi)
        ("fontconfig" ,fontconfig)
-       ("harfbuzz" ,harfbuzz)
-       ("enca" ,enca)))
+       ("harfbuzz" ,harfbuzz)))
     (home-page "https://github.com/libass/libass")
     (synopsis "Subtitle rendering library for the ASS/SSA format")
     (description "libass is a subtitle rendering library for the

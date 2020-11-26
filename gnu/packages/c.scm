@@ -184,6 +184,8 @@ language with thin bindings for other languages.")
 (define-public udunits
   (package
     (name "udunits")
+    ;; Four-part version numbers are development snapshots, not releases.  See
+    ;; <https://github.com/Unidata/UDUNITS-2/issues/99#issuecomment-732323472>.
     (version "2.2.26")
     (source (origin
               (method url-fetch)

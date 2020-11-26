@@ -2818,6 +2818,12 @@ exec " gcc "/bin/" program
                            "--disable-shared"
                            "--enable-languages=c,c++"
 
+                           ,@(if (equal? "powerpc64le-linux-gnu" (boot-triplet))
+                                 ;; On POWER9 (little endian) glibc needs the
+                                 ;; 128-bit long double type.
+                                 '("--with-long-double-128")
+                                 '())
+
                            ;; libstdc++ cannot be built at this stage
                            ;; ("Link tests are not allowed after
                            ;; GCC_NO_EXECUTABLES.").

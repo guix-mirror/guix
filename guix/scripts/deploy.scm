@@ -120,17 +120,28 @@ Perform the deployment specified by FILE.\n"))
   (info (G_ "deploying to ~a...~%")
         (machine-display-name machine))
 
-  (guard (c ((message-condition? c)
-             (report-error (G_ "failed to deploy ~a: ~a~%")
-                           (machine-display-name machine)
-                           (condition-message c)))
-            ((deploy-error? c)
-             (when (deploy-error-should-roll-back c)
-               (info (G_ "rolling back ~a...~%")
-                     (machine-display-name machine))
-               (run-with-store store (roll-back-machine machine)))
-             (apply throw (deploy-error-captured-args c))))
-    (run-with-store store (deploy-machine machine))
+  (guard* (c
+           ;; On Guile 3.0, exceptions such as 'unbound-variable' are compound
+           ;; and include a '&message'.  However, that message only contains
+           ;; the format string.  Thus, special-case it here to avoid
+           ;; displaying a bare format string.
+           ((cond-expand
+              (guile-3
+               ((exception-predicate &exception-with-kind-and-args) c))
+              (else #f))
+            (raise c))
+
+           ((message-condition? c)
+            (report-error (G_ "failed to deploy ~a: ~a~%")
+                          (machine-display-name machine)
+                          (condition-message c)))
+           ((deploy-error? c)
+            (when (deploy-error-should-roll-back c)
+              (info (G_ "rolling back ~a...~%")
+                    (machine-display-name machine))
+              (run-with-store store (roll-back-machine machine)))
+            (apply throw (deploy-error-captured-args c))))
+      (run-with-store store (deploy-machine machine))
 
     (info (G_ "successfully deployed ~a~%")
           (machine-display-name machine))))

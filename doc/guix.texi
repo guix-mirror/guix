@@ -27951,7 +27951,7 @@ over HTTP.
 @deftp {Data Type} git-http-configuration
 Data type representing the configuration for a future
 @code{git-http-service-type}; can currently be used to configure Nginx
-trough @code{git-http-nginx-location-configuration}.
+through @code{git-http-nginx-location-configuration}.
 
 @table @asis
 @item @code{package} (default: @var{git})

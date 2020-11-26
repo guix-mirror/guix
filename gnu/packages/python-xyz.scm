@@ -4020,19 +4020,19 @@ Language (TOML) configuration files.")
 (define-public python-jsonrpc-server
   (package
     (name "python-jsonrpc-server")
-    (version "0.3.4")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-jsonrpc-server" version))
        (sha256
         (base32
-         "0dzya99nbi4mw7q85vmyw1wfgbx5dpmysnvm0bwx5m4xbi4zafy7"))))
+         "1585ybn3djvx5r5zbxkzlhz2wb1d47y4wrfwaxdyq0gi87jl7ib2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-ujson" ,python-ujson-1)))
+       ("python-ujson" ,python-ujson)))
     (home-page
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
@@ -4103,28 +4103,39 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.34.1")
+    (version "0.36.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "0gfjjlj7yg2nf8wkbrshwaljkwlqja4n7s1x949f495anmkg8vxr"))))
+         "0ljzc50z5v08is8fis1fg2dk9sb6275jlvzxb6nij0w6ys772pf8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pluggy" ,python-pluggy)
-       ("python-jsonrpc-server" ,python-jsonrpc-server)
-       ("python-jedi" ,python-jedi)
-       ("python-yapf" ,python-yapf)
-       ("python-pyflakes" ,python-pyflakes)
+     `(("python-autopep8" ,python-autopep8)
+       ("python-configparser" ,python-configparser)
        ("python-pydocstyle" ,python-pydocstyle)
+       ("python-future" ,python-future)
+       ("python-jedi" ,python-jedi)
+       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-pluggy" ,python-pluggy)
        ("python-pycodestyle" ,python-pycodestyle)
-       ("python-mccabe" ,python-mccabe)
+       ("python-pyflakes" ,python-pyflakes)
        ("python-rope" ,python-rope)
-       ("python-autopep8" ,python-autopep8)
-       ("python-flake8" ,python-flake8)
-       ("python-pylint" ,python-pylint)))
+       ("python-ujson" ,python-ujson)
+       ("python-yapf" ,python-yapf)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flaky" ,python-flaky)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-mock" ,python-mock)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pylint" ,python-pylint)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-versioneer" ,python-versioneer)))
     (home-page "https://github.com/palantir/python-language-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
@@ -5902,6 +5913,28 @@ a front-end for C compilers or analysis tools.")
 
 (define-public python2-pycparser
   (package-with-python2 python-pycparser))
+
+(define-public python-xlsxwriter
+  (package
+    (name "python-xlsxwriter")
+    (version "1.3.7")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmcnamara/XlsxWriter")
+             (commit (string-append "RELEASE_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qg40r2mwrqfmhaxnary1cfgi0dwwazp5qga7c9p2cdji2v0x5rm"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jmcnamara/XlsxWriter")
+    (synopsis "Python module for creating Excel XLSX files")
+    (description
+     "XlsxWriter is a Python module that can be used to write text, numbers,
+formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
+    (license license:bsd-2)))
 
 (define-public python-pywavelets
   (package
@@ -20592,14 +20625,14 @@ register custom encoders and decoders.")
 (define-public python-ujson
   (package
     (name "python-ujson")
-    (version "2.0.3")
+    (version "4.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ujson" version))
         (sha256
          (base32
-          "18z9gb9ggy1r464b9q1gqs078mqgrkj6dys5a47529rqk3yfybdx"))
+          "1lr9lbm76y3ah1463jggwg2hjcb709mpns5f752wxxbgnd0n5kr6"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "deps") #t))))
@@ -20632,28 +20665,6 @@ register custom encoders and decoders.")
      "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
 bindings for Python 3.")
     (license license:bsd-3)))
-
-(define-public python-ujson-1
-  (package
-    (inherit python-ujson)
-    (version "1.35")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ujson" version))
-       (sha256
-        (base32
-         "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
-    (arguments
-     '(#:phases %standard-phases))
-    (native-inputs '())
-    (home-page "http://www.esn.me")
-    (description
-     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
-bindings for Python 2.5+ and 3.")))
-
-(define-public python2-ujson-1
-  (package-with-python2 python-ujson-1))
 
 (define-public python-iocapture
   ;; The latest release is more than a year older than this commit.
@@ -22178,13 +22189,13 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.11.0")
+    (version "4.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzo" version))
        (sha256
-        (base32 "0vzsk6rchavlvy7ciq1z9qh3qrj9q213v2nn491fgjq3g19glj53"))))
+        (base32 "1jk5f79lj09vnsdk9h01w21p9h49z2hhf8xhkx8471pjbg9vrlzr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -23055,3 +23066,26 @@ applications with variable CPU loads).")
 
 (define-public python2-djvulibre
   (package-with-python2 python-djvulibre))
+
+(define-public python-versioneer
+  (package
+    (name "python-versioneer")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "versioneer" version))
+       (sha256
+        (base32
+         "1bmg8y78am371rd9b4clf11b8g1h7xvq8q58z03jvgdwpsdx7zm4"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/python-versioneer/python-versioneer")
+    (synopsis
+     "Version-string management for VCS-controlled trees")
+    (description
+     "@code{versioneer} is a tool for managing a recorded version number in
+distutils-based python projects.  The goal is to remove the tedious and
+error-prone \"update the embedded version string\" step from your release
+process.")
+    (license license:public-domain)))

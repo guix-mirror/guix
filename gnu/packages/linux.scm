@@ -1092,8 +1092,8 @@ and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "df2b8dfd8cb7d9f6cfeb55abaeab8a5372011fc9")
-        (revision "1"))
+  (let ((commit "e9fbf5c051453941bbc029810b893a6c010714e6")
+        (revision "2"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1105,7 +1105,7 @@ and should be used with caution, especially on untested models.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1qcr0j8yhg8l9l0f5y55zcsk1mgf3qd46yh9xfqgg91szxa3yvca"))
+          (base32 "0y71q7ajwz1w38gdmxd4p05hhkqndq504nndy6vfa16fxz6pqxhn"))
          (modules '((guix build utils)))
          (snippet
           '(begin

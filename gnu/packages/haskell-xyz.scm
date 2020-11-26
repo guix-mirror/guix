@@ -1663,7 +1663,7 @@ very simple example of encoding CSV data:
 (define-public ghc-cassava-megaparsec
   (package
     (name "ghc-cassava-megaparsec")
-    (version "2.0.2")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1674,7 +1674,7 @@ very simple example of encoding CSV data:
              ".tar.gz"))
        (sha256
         (base32
-         "03x1462agrfdagklp8c89b8p4z2hd8nbf6d3895sz770zjkawda7"))))
+         "0q4skw98nzy6icmgpwqvgw0c5pqcgi25rf7nmwh2pksvv94pi3p3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cassava" ,ghc-cassava)
@@ -3551,7 +3551,7 @@ Writer monad), where list append quickly becomes too expensive.")
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
-    (version "0.16.3")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
@@ -3561,7 +3561,7 @@ Writer monad), where list append quickly becomes too expensive.")
              ".tar.gz"))
        (sha256
         (base32
-         "1y1l7aa80qkib1z8lsizgg7fpfdmdwhxvi5m255a42jdkjgn5sfg"))))
+         "0lk4cjfzi5bx2snfzw1zi06li0gvgz3ckfh2kwa98l7nxfdl39ag"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
     (inputs
@@ -3573,7 +3573,6 @@ Writer monad), where list append quickly becomes too expensive.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-core" ,ghc-hspec-core)
        ("ghc-mockery" ,ghc-mockery)
        ("ghc-setenv" ,ghc-setenv)
        ("ghc-silently" ,ghc-silently)
@@ -5867,7 +5866,7 @@ accessed or modified.")
 (define-public ghc-hledger-lib
   (package
     (name "ghc-hledger-lib")
-    (version "1.19.1")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -5877,14 +5876,10 @@ accessed or modified.")
              ".tar.gz"))
        (sha256
         (base32
-         "0py11011r358nmnvwwkc8mlx6mpy36jm8sqlr4i8ihx3x0zjdgya"))))
+         "1w6qp01cak6spnpldm01czlm6i5a2alw47w76875l2nagrc4rfp2"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-decimal" ,ghc-decimal)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-call-stack" ,ghc-call-stack)
@@ -5892,11 +5887,14 @@ accessed or modified.")
        ("ghc-cassava-megaparsec" ,ghc-cassava-megaparsec)
        ("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-decimal" ,ghc-decimal)
+       ("ghc-easytest" ,ghc-easytest)
        ("ghc-extra" ,ghc-extra)
-       ("ghc-fgl" ,ghc-fgl)
        ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-glob" ,ghc-glob)
        ("ghc-hashtables" ,ghc-hashtables)
        ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-mtl-compat" ,ghc-mtl-compat)
        ("ghc-old-time" ,ghc-old-time)
        ("ghc-parser-combinators" ,ghc-parser-combinators)
        ("ghc-pretty-show" ,ghc-pretty-show)
@@ -5904,14 +5902,9 @@ accessed or modified.")
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
        ("ghc-tabular" ,ghc-tabular)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-timeit" ,ghc-timeit)
        ("ghc-uglymemo" ,ghc-uglymemo)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)))
-    (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)))
+    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
     (home-page "https://hledger.org")
     (synopsis "Reusable library providing the core functionality of hledger")
     (description
@@ -13054,7 +13047,7 @@ increasing type safety.")
 (define-public ghc-tabular
   (package
     (name "ghc-tabular")
-    (version "0.2.2.8")
+    (version "0.2.2.7")
     (source
      (origin
        (method url-fetch)
@@ -13064,7 +13057,7 @@ increasing type safety.")
              ".tar.gz"))
        (sha256
         (base32
-         "0z936gh8n8i8qdkagyxwd9gqq13skd5fv013vdvwsibrxkm0czfb"))))
+         "1ysgq7rrks7f98nnvxil8xz1q27hxdgz4szbjhqwzbwd209dmy0k"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-csv" ,ghc-csv)
