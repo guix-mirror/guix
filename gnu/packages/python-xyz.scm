@@ -20581,14 +20581,14 @@ register custom encoders and decoders.")
 (define-public python-ujson
   (package
     (name "python-ujson")
-    (version "2.0.3")
+    (version "4.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ujson" version))
         (sha256
          (base32
-          "18z9gb9ggy1r464b9q1gqs078mqgrkj6dys5a47529rqk3yfybdx"))
+          "1lr9lbm76y3ah1463jggwg2hjcb709mpns5f752wxxbgnd0n5kr6"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "deps") #t))))
