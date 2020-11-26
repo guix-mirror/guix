@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -297,7 +297,7 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.19.0")
+    (version "3.19.1")
     ;; TODO: Move the following source field to the cmake-bootstrap package in
     ;; the next rebuild cycle.
     (source (origin
@@ -307,7 +307,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "14zlrb7awiazxc5wlvgah9rw1dm4ziczbxiyqsvp4zmaan0ninpx"))
+                "1fisi9rlijw9wd0yjzk1c6j7ljnb2yiq5iqnrz6m1xkflyinw9hx"))
               (snippet
                (match (origin-snippet (package-source cmake-bootstrap))
                  ((_ _ exp ...)
