@@ -58,7 +58,13 @@
                            (string-replace-substring version "." ",")
                            "/djvulibre-" version ".tar.gz"))
        (sha256
-        (base32 "0manxn1ly5n8nqamv47hz7akxi6v0rzwc9j1c3x99vngrjlr5qw2"))))
+        (base32 "0manxn1ly5n8nqamv47hz7akxi6v0rzwc9j1c3x99vngrjlr5qw2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This bundles software (e.g., zlib) and is entirely superfluous.
+           (delete-file-recursively "win32")
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      ;; The 3.5.28 release tarball isn't bootstrapped.
