@@ -736,7 +736,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.4")
+    (version "0.17.1.5")
     (source
      (origin
        (method git-fetch)
@@ -745,7 +745,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ixjfdlvwr2an2s9jaql240bk7jpq5hhm5c4hww0bicyy3fp12ng"))))
+        (base32 "0qlcqli0wvrjfy89mbgh1hpmk60dxgn5sws93h8lhgyfwx557iw0"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -767,8 +767,7 @@ the Monero command line client and daemon.")
        (list "-DARCH=default"
              "-DENABLE_PASS_STRENGTH_METER=ON"
              (string-append "-DReadline_ROOT_DIR="
-                            (assoc-ref %build-inputs "readline"))
-             "-DCMAKE_PREFIX_PATH=\"\"")
+                            (assoc-ref %build-inputs "readline")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
@@ -777,16 +776,14 @@ the Monero command line client and daemon.")
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
-                     "-f" (assoc-ref inputs "monero-source"))
-             #t))
+                     "-f" (assoc-ref inputs "monero-source"))))
          (add-after 'extract-monero-sources 'fix-build
            (lambda _
              (substitute* "src/version.js.in"
                (("@VERSION_TAG_GUI@")
                 ,version))
              (substitute* "src/zxcvbn-c/makefile"
-               (("\\?=") "="))
-             #t))
+               (("\\?=") "="))))
          (add-before 'configure 'generate-zxcvbn-c-header
            (lambda _
              (invoke "make" "-C" "src/zxcvbn-c" "dict-src.h")))
@@ -794,8 +791,7 @@ the Monero command line client and daemon.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
-               (install-file "../build/bin/monero-wallet-gui" bin))
-             #t))
+               (install-file "../build/bin/monero-wallet-gui" bin))))
          (add-after 'qt-wrap 'install-monerod-link
            ;; The monerod program must be available so that monero-wallet-gui
            ;; can start a Monero daemon if necessary.
@@ -803,8 +799,7 @@ the Monero command line client and daemon.")
              (symlink (string-append (assoc-ref inputs "monero")
                                      "/bin/monerod")
                       (string-append (assoc-ref outputs "out")
-                                     "/bin/monerod"))
-             #t)))))
+                                     "/bin/monerod")))))))
     (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description
