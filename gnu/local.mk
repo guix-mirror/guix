@@ -1185,6 +1185,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jfsutils-include-systypes.patch		\
   %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libffi-float128-powerpc64le.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
