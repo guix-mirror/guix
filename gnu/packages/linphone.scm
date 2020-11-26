@@ -194,7 +194,7 @@ tracks in one file. ")
 (define-public bcg729
   (package
     (name "bcg729")
-    (version "1.0.4")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -203,7 +203,7 @@ tracks in one file. ")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05s0c5ps3a763y0v34wg5zghj0cdjnq4ch7g81848xxry7q90fwa"))))
+        (base32 "1hal6b3w6f8y5r1wa0xzj8sj2jjndypaxyw62q50p63garp2h739"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
