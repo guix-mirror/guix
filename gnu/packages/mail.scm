@@ -3726,7 +3726,7 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.16")
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
@@ -3735,7 +3735,7 @@ PGP handling, multiple servers, and secure connections.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0f65sg6hhv6778fxwsz4hvarbm97dsb8jj0mg7a9qs273r35pqck"))))
+        (base32 "0nb0ysdp91r6dr3jgx24halbf4f56g4imx9112hkbz1abzgrmxs3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -3747,7 +3747,7 @@ PGP handling, multiple servers, and secure connections.")
          (delete 'configure))))         ; no configure script
     (inputs
      `(("lua" ,lua)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("openssl" ,openssl)))
     (home-page "https://github.com/lefcha/imapfilter")
     (synopsis "IMAP mail filtering utility")
