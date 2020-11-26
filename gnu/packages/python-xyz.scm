@@ -22156,13 +22156,13 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.11.0")
+    (version "4.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzo" version))
        (sha256
-        (base32 "0vzsk6rchavlvy7ciq1z9qh3qrj9q213v2nn491fgjq3g19glj53"))))
+        (base32 "1jk5f79lj09vnsdk9h01w21p9h49z2hhf8xhkx8471pjbg9vrlzr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
