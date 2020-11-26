@@ -55,6 +55,7 @@
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
+;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11955,6 +11956,33 @@ computer opponents or against real players online.")
      "Pilot your ship inside a planet to find and rescue the colonists trapped
 inside the Zenith Colony.")
     (license license:gpl3+)))
+
+(define-public cgoban
+  (package
+    (name "cgoban")
+    (version "1.9.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/cgoban1/cgoban1/"
+                           version "/cgoban-" version ".tar.gz"))
+       (sha256
+        (base32 "0qlvkiaglqq0izfph3l04mp4rqqqm9ks6rcsrmzrggw9x706z2iv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxt" ,libxt)
+       ("xorgproto" ,xorgproto)))
+    (home-page "http://cgoban1.sourceforge.net/")
+    (synopsis "Go client for X11")
+    (description "Provides a large set of Go-related services for X11:
+@itemize
+@item Local games with precise implementation of the Chinese and Japanese rulesets
+@item Edition and visualization of SGF files-Connection to the NNGS or IGS Go servers
+@item Bridge to Go modem protocol, allowing to play against Go modem-capable AIs
+such as GnuGo.
+@end itemize")
+    (license license:gpl2+)))
 
 (define-public paperview
   (let ((commit "9f8538eb6734c76877b878b8f1e52587f2ae19e6")
