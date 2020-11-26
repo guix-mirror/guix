@@ -295,7 +295,16 @@ and white.")
        ("python2-subprocess32" ,python2-subprocess32)
        ("python2-wxpython" ,python2-wxpython)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/djvused.py"
+               (("djvused_path = 'djvused'")
+                (string-append "djvused_path = '"
+                               (assoc-ref inputs "djvulibre")
+                               "/bin/djvused'"))))))))
     (synopsis "Graphical editor for DjVu documents")
     (description
      "@code{djvusmooth} is a graphical editor for DjVu_ documents.
