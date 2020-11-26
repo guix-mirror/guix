@@ -3741,7 +3741,7 @@ PGP handling, multiple servers, and secure connections.")
      `(#:tests? #f
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "CC=gcc")
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
