@@ -20622,25 +20622,6 @@ register custom encoders and decoders.")
 bindings for Python 3.")
     (license license:bsd-3)))
 
-(define-public python-ujson-1
-  (package
-    (inherit python-ujson)
-    (version "1.35")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ujson" version))
-       (sha256
-        (base32
-         "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
-    (arguments
-     '(#:phases %standard-phases))
-    (native-inputs '())
-    (home-page "http://www.esn.me")
-    (description
-     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
-bindings for Python 2.5+ and 3.")))
-
 (define-public python2-ujson-1
   (package-with-python2 python-ujson-1))
 
