@@ -66,7 +66,7 @@
                #t)))
          (add-before 'configure 'chdir-to-src
            (lambda _ (chdir "src") #t)))))
-    (synopsis "The Lean theorem prover and programming language")
+    (synopsis "Theorem prover and programming language")
     (description
      "Lean is a theorem prover and programming language with a small trusted
 core based on dependent typed theory, aiming to bridge the gap between
