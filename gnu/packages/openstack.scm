@@ -476,27 +476,27 @@ pipeline and used by various modules such as logging.")
     (name "python-oslo.i18n")
     (version "3.20.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "oslo.i18n" version))
-        (sha256
-          (base32
-           "0kjcdw4bk3mi4vqmqwhhq053kxbbbj05si6nwxd1pzx33z067ky3"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oslo.i18n" version))
+       (sha256
+        (base32
+         "0kjcdw4bk3mi4vqmqwhhq053kxbbbj05si6nwxd1pzx33z067ky3"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-babel" ,python-babel)
-        ("python-six" ,python-six)))
+     `(("python-babel" ,python-babel)
+       ("python-six" ,python-six)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
-        ("python-mock" ,python-mock)
-        ("python-mox3" ,python-mox3)
-        ("python-oslotest" ,python-oslotest)
-        ("python-testscenarios" ,python-testscenarios)))
+     `(("python-pbr" ,python-pbr)
+       ;; Tests
+       ("python-mock" ,python-mock)
+       ("python-mox3" ,python-mox3)
+       ("python-oslotest" ,python-oslotest)
+       ("python-testscenarios" ,python-testscenarios)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo internationalization (i18n) library")
     (description
-      "The oslo.i18n library contain utilities for working with
+     "The oslo.i18n library contain utilities for working with
 internationalization (i18n) features, especially translation for text strings
 in an application or library.")
     (license asl2.0)))
