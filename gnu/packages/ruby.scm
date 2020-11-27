@@ -5130,15 +5130,17 @@ across multiple CPU cores.")
 (define-public ruby-parser
   (package
     (name "ruby-parser")
-    (version "2.7.1.4")
+    (version "2.7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "parser" version))
        (sha256
         (base32
-         "1030znhvhkfn39svwbj6qn4xb6hgl94gnvg57k4d3r76f9bryqmn"))))
+         "1f7gmm60yla325wlnd3qkxs59qm2y0aan8ljpg6k18rwzrrfil6z"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests not included in gem
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-cliver" ,ruby-cliver)
