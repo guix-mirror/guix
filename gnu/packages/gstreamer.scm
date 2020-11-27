@@ -452,10 +452,10 @@ the GStreamer multimedia framework.")
   '((add-after 'unpack 'increase-test-timeout
       (lambda _
         (substitute* "tests/check/meson.build"
-          (("'CK_DEFAULT_TIMEOUT', '20'")
-           "'CK_DEFAULT_TIMEOUT', '60'")
-          (("timeout ?: 3 \\* 60")
-           "timeout: 9 * 60"))
+          (("'CK_DEFAULT_TIMEOUT', '[0-9]*'")
+           "'CK_DEFAULT_TIMEOUT', '600'")
+          (("timeout ?: .*\\)")
+           "timeout: 90 * 60)"))
         #t))))
 
 (define-public gstreamer
