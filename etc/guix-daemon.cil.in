@@ -131,14 +131,16 @@
          (lnk_file (create rename setattr unlink)))
   (allow guix_daemon_t
          tmp_t
-         (file (link rename create execute execute_no_trans write unlink setattr map relabelto)))
+         (file (link
+                rename create execute execute_no_trans write
+                unlink setattr map relabelto relabelfrom)))
   (allow guix_daemon_t
          tmp_t
          (fifo_file (open read write create getattr ioctl setattr unlink)))
   (allow guix_daemon_t
          tmp_t
          (dir (create rename
-               rmdir relabelto
+               rmdir relabelto relabelfrom reparent
                add_name remove_name
                open read write
                getattr setattr
@@ -331,7 +333,7 @@
          (dir (add_name write)))
   (allow guix_daemon_t
          self
-         (netlink_route_socket (bind create getattr nlmsg_read read write)))
+         (netlink_route_socket (bind create getattr nlmsg_read read write getopt)))
 
   ;; Socket operations
   (allow guix_daemon_t
@@ -377,7 +379,10 @@
          self
          (unix_dgram_socket (create bind connect sendto read write)))
 
-  ;; For some esoteric build jobs (i.e. PostgreSQL).
+  ;; For some esoteric build jobs (i.e. running PostgreSQL, etc).
+  (allow guix_daemon_t
+         self
+         (capability (kill)))
   (allow guix_daemon_t
          node_t
          (tcp_socket (node_bind)))
@@ -389,10 +394,16 @@
          (tcp_socket (name_connect)))
   (allow guix_daemon_t
          tmpfs_t
-         (file (map read write)))
+         (file (map read write link getattr)))
+  (allow guix_daemon_t
+         usermodehelper_t
+         (file (read)))
   (allow guix_daemon_t
          hugetlbfs_t
          (file (map read write)))
+  (allow guix_daemon_t
+         proc_net_t
+         (file (read)))
   (allow guix_daemon_t
          postgresql_port_t
          (tcp_socket (name_connect name_bind)))
