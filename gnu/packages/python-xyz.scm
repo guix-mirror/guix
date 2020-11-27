@@ -16547,24 +16547,35 @@ complex datatypes to and from native Python datatypes.")
 (define-public python-apispec
   (package
     (name "python-apispec")
-    (version "0.25.3")
+    (version "4.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "apispec" version))
       (sha256
         (base32
-          "0kxa8723zbisx10363yh4mmmn4higxrspymbjfz5zq8f644zagm9"))))
+          "12n4w5zkn4drcn8izq68vmixmqvz6abviqkdn4ip0kaax3jjh3in"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-prance-tests
+                    (lambda _
+                      ;; Disable validation tests since they require the
+                      ;; optional 'prance' library which is not yet in Guix.
+                      (substitute* "tests/test_ext_marshmallow_openapi.py"
+                        (("def test_openapi_tools_validate.*" all)
+                         (string-append "@pytest.mark.xfail\n" all)))))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-flask" ,python-flask)
-       ("python-marshmallow" ,python-marshmallow)
-       ("python-tornado" ,python-tornado)
-       ("python-bottle" ,python-bottle)
-       ("python-mock" ,python-mock)))
+       ("python-marshmallow" ,python-marshmallow)))
     (home-page "https://github.com/marshmallow-code/apispec")
     (synopsis "Swagger 2.0 API specification generator")
     (description "@code{python-apispec} is a pluggable API specification
