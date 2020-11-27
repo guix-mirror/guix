@@ -16575,9 +16575,6 @@ generator. Currently supports the OpenAPI specification (f.k.a.
 Swagger 2.0).")
     (license license:expat)))
 
-(define-public python2-apispec
-  (package-with-python2 python-apispec))
-
 (define-public python-flasgger
   (package
     (name "python-flasgger")
