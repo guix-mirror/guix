@@ -1037,14 +1037,14 @@ storage.")
 (define-public python-html5lib
   (package
     (name "python-html5lib")
-    (version "1.0.1")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "html5lib" version))
         (sha256
           (base32
-            "0dipzfrycv6j1jw82v9b7d8lzggx3x8xngx6l4xrqkxwvg7hvjv6"))))
+            "0vqlhk0hgbsfkh7ybmby93xhlx8dq6pr5blf356ka3z2c41b9rdj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
