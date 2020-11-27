@@ -16577,10 +16577,10 @@ complex datatypes to and from native Python datatypes.")
      `(("python-pytest" ,python-pytest)
        ("python-marshmallow" ,python-marshmallow)))
     (home-page "https://github.com/marshmallow-code/apispec")
-    (synopsis "Swagger 2.0 API specification generator")
+    (synopsis "Swagger/OpenAPI specification generator")
     (description "@code{python-apispec} is a pluggable API specification
-generator. Currently supports the OpenAPI specification (f.k.a.
-Swagger 2.0).")
+generator.  It currently supports the OpenAPI specification, formerly known
+as Swagger.")
     (license license:expat)))
 
 (define-public python-flasgger
