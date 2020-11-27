@@ -16544,9 +16544,6 @@ Python datatypes.")
 complex datatypes to and from native Python datatypes.")
     (license license:expat)))
 
-(define-public python2-marshmallow
-  (package-with-python2 python-marshmallow))
-
 (define-public python-apispec
   (package
     (name "python-apispec")
