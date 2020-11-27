@@ -849,11 +849,6 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 version 0.13.0 or later.
 
 @item
-When @url{https://www.nongnu.org/lzip/lzlib.html, lzlib} is available, lzlib
-substitutes can be used and @command{guix publish} can compress substitutes
-with lzlib.
-
-@item
 When @url{http://www.bzip.org, libbz2} is available,
 @command{guix-daemon} can use it to compress build logs.
 @end itemize
