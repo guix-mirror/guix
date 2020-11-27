@@ -250,7 +250,7 @@ info."
       (elf-dynamic-info (parse-elf (get-bytevector-all port))))))
 
 (define (file-runpath file)
-  "Return the DT_RUNPATH dynamic entry of FILE as a list of string, or #f if
+  "Return the DT_RUNPATH dynamic entry of FILE as a list of strings, or #f if
 FILE lacks dynamic info."
   (and=> (file-dynamic-info file) elf-dynamic-info-runpath))
 
