@@ -390,7 +390,11 @@ extensions.")
 common features used in Tempest.")
     (license asl2.0)))
 
-;; Packages from the Oslo library
+
+;;;
+;;; Packages from the Oslo library
+;;;
+
 (define-public python-oslo.config
   (package
     (name "python-oslo.config")
@@ -400,8 +404,8 @@ common features used in Tempest.")
        (method url-fetch)
        (uri (pypi-uri "oslo.config" version))
        (sha256
-         (base32
-          "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
+        (base32
+         "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-debtcollector" ,python-debtcollector)
@@ -426,7 +430,7 @@ common features used in Tempest.")
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo Configuration API")
     (description
-      "The Oslo configuration API supports parsing command line arguments and
+     "The Oslo configuration API supports parsing command line arguments and
 .ini style configuration files.")
     (license asl2.0)))
 
