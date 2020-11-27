@@ -44,6 +44,7 @@
             file-dynamic-info
             file-runpath
             file-needed
+            file-needed/recursive
 
             missing-runpath-error?
             missing-runpath-error-file
@@ -258,6 +259,46 @@ FILE lacks dynamic info."
   "Return the list of DT_NEEDED dynamic entries of FILE, or #f if FILE lacks
 dynamic info."
   (and=> (file-dynamic-info file) elf-dynamic-info-needed))
+
+(define (file-needed/recursive file)
+  "Return two values: the list of absolute .so file names FILE depends on,
+recursively, and the list of .so file names that could not be found.  File
+names are resolved by searching the RUNPATH of the file that NEEDs them.
+
+This is similar to the info returned by the 'ldd' command."
+  (let loop ((files  (list file))
+             (result '())
+             (not-found '()))
+    (match files
+      (()
+       (values (reverse result)
+               (reverse (delete-duplicates not-found))))
+      ((file . rest)
+       (match (file-dynamic-info file)
+         (#f
+          (loop rest result not-found))
+         (info
+          (let ((runpath (elf-dynamic-info-runpath info))
+                (needed  (elf-dynamic-info-needed info)))
+            (if (and runpath needed)
+                (let* ((runpath  (map (cute expand-origin <> (dirname file))
+                                      runpath))
+                       (resolved (map (cut search-path runpath <>)
+                                      needed))
+                       (failed   (filter-map (lambda (needed resolved)
+                                               (and (not resolved)
+                                                    (not (libc-library? needed))
+                                                    needed))
+                                             needed resolved))
+                       (needed   (remove (lambda (value)
+                                           (or (not value)
+                                               ;; XXX: quadratic
+                                               (member value result)))
+                                         resolved)))
+                  (loop (append rest needed)
+                        (append needed result)
+                        (append failed not-found)))
+                (loop rest result not-found)))))))))
 
 (define %libc-libraries
   ;; List of libraries as of glibc 2.21 (there are more but those are

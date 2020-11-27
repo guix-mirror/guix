@@ -27,6 +27,8 @@
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match))
 
 (define %guile-executable
@@ -57,6 +59,40 @@
                 (map (lambda (lib)
                        (string-take lib (string-contains lib ".so")))
                      (elf-dynamic-info-needed dyninfo))))))
+
+(unless (and %guile-executable (not (getenv "LD_LIBRARY_PATH"))
+             (file-needed %guile-executable))     ;statically linked?
+  (test-skip 1))
+(test-assert "file-needed/recursive"
+  (let* ((needed (file-needed/recursive %guile-executable))
+         (pipe   (dynamic-wind
+                   (lambda ()
+                     ;; Tell ld.so to list loaded objects, like 'ldd' does.
+                     (setenv "LD_TRACE_LOADED_OBJECTS" "yup"))
+                   (lambda ()
+                     (open-pipe* OPEN_READ %guile-executable))
+                   (lambda ()
+                     (unsetenv "LD_TRACE_LOADED_OBJECTS")))))
+    (define ldd-rx
+      (make-regexp "^[[:blank:]]+([[:graph:]]+ => )?([[:graph:]]+) .*$"))
+
+    (define (read-ldd-output port)
+      ;; Read from PORT output in GNU ldd format.
+      (let loop ((result '()))
+        (match (read-line port)
+          ((? eof-object?)
+           (reverse result))
+          ((= (cut regexp-exec ldd-rx <>) m)
+           (if m
+               (loop (cons (match:substring m 2) result))
+               (loop result))))))
+
+    (define ground-truth
+      (remove (cut string-prefix? "linux-vdso.so" <>)
+              (read-ldd-output pipe)))
+
+    (and (zero? (close-pipe pipe))
+         (lset= string=? (pk 'truth ground-truth) (pk 'needed needed)))))
 
 (test-equal "expand-origin"
   '("OOO/../lib"
