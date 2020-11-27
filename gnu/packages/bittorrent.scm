@@ -75,12 +75,17 @@
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1wjmn96zrvmk8j1yz2ysmqd7a2x6ilvnwwapcvfzgxs2wwpnai4i"))))
+                "1wjmn96zrvmk8j1yz2ysmqd7a2x6ilvnwwapcvfzgxs2wwpnai4i"))
+              (patches (search-patches "transmission-honor-localedir.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
     (arguments
-     '(#:glib-or-gtk-wrap-excluded-outputs '("out")
+     '(#:configure-flags
+       (list (string-append "--localedir="
+                            (assoc-ref %outputs "gui")
+                            "/share/locale"))
+       #:glib-or-gtk-wrap-excluded-outputs '("out")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'move-gui
@@ -93,12 +98,11 @@
                (rename-file (string-append out "/bin/transmission-gtk")
                             (string-append gui "/bin/transmission-gtk"))
 
-               (mkdir (string-append gui "/share"))
                (for-each
                 (lambda (dir)
                   (rename-file (string-append out "/share/" dir)
                                (string-append gui "/share/" dir)))
-                '("appdata" "applications" "icons" "locale" "pixmaps"))
+                '("appdata" "applications" "icons" "pixmaps"))
 
                (mkdir-p (string-append gui "/share/man/man1"))
                (rename-file
