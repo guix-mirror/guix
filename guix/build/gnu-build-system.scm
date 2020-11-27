@@ -712,6 +712,73 @@ which cannot be found~%"
                                          (which binary) rest)))))))))
             outputs))
 
+(define* (make-dynamic-linker-cache #:key outputs
+                                    (make-dynamic-linker-cache? #t)
+                                    #:allow-other-keys)
+  "Create a dynamic linker cache under 'etc/ld.so.cache' in each of the
+OUTPUTS.  This reduces application startup time by avoiding the 'stat' storm
+that traversing all the RUNPATH entries entails."
+  (define (make-cache-for-output directory)
+    (define bin-directories
+      (filter-map (lambda (sub-directory)
+                    (let ((directory (string-append directory "/"
+                                                    sub-directory)))
+                      (and (directory-exists? directory)
+                           directory)))
+                  '("bin" "sbin" "libexec")))
+
+    (define programs
+      ;; Programs that can benefit from the ld.so cache.
+      (append-map (lambda (directory)
+                    (if (directory-exists? directory)
+                        (find-files directory
+                                    (lambda (file stat)
+                                      (and (executable-file? file)
+                                           (elf-file? file))))
+                        '()))
+                  bin-directories))
+
+    (define library-path
+      ;; Directories containing libraries that PROGRAMS depend on,
+      ;; recursively.
+      (delete-duplicates
+       (append-map (lambda (program)
+                     (map dirname (file-needed/recursive program)))
+                   programs)))
+
+    (define cache-file
+      (string-append directory "/etc/ld.so.cache"))
+
+    (define ld.so.conf
+      (string-append (or (getenv "TMPDIR") "/tmp")
+                     "/ld.so.conf"))
+
+    (unless (null? library-path)
+      (mkdir-p (dirname cache-file))
+      (guard (c ((invoke-error? c)
+                 ;; Do not treat 'ldconfig' failure as an error.
+                 (format (current-error-port)
+                         "warning: 'ldconfig' failed:~%")
+                 (report-invoke-error c (current-error-port))))
+        ;; Create a config file to tell 'ldconfig' where to look for the
+        ;; libraries that PROGRAMS need.
+        (call-with-output-file ld.so.conf
+          (lambda (port)
+            (for-each (lambda (directory)
+                        (display directory port)
+                        (newline port))
+                      library-path)))
+
+        (invoke "ldconfig" "-f" ld.so.conf "-C" cache-file)
+        (format #t "created '~a' from ~a library search path entries~%"
+                cache-file (length library-path)))))
+
+  (if make-dynamic-linker-cache?
+      (match outputs
+        (((_ . directories) ...)
+         (for-each make-cache-for-output directories)))
+      (format #t "ld.so cache not built~%")))
+
 (define %license-file-regexp
   ;; Regexp matching license files.
   "^(COPYING.*|LICEN[CS]E.*|[Ll]icen[cs]e.*|Copy[Rr]ight(\\.(txt|md))?)$")
@@ -791,6 +858,7 @@ which cannot be found~%"
             validate-documentation-location
             delete-info-dir-file
             patch-dot-desktop-files
+            make-dynamic-linker-cache
             install-license-files
             reset-gzip-timestamps
             compress-documentation)))

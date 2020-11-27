@@ -342,6 +342,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (validate-runpath? #t)
+                    (make-dynamic-linker-cache? #t)
                     (license-file-regexp %license-file-regexp)
                     (phases '%standard-phases)
                     (locale "en_US.utf8")
@@ -410,6 +411,7 @@ packages that must not be referenced."
                   #:patch-shebangs? ,patch-shebangs?
                   #:strip-binaries? ,strip-binaries?
                   #:validate-runpath? ,validate-runpath?
+                  #:make-dynamic-linker-cache? ,make-dynamic-linker-cache?
                   #:license-file-regexp ,license-file-regexp
                   #:strip-flags ,strip-flags
                   #:strip-directories ,strip-directories)))
@@ -497,6 +499,7 @@ is one of `host' or `target'."
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (validate-runpath? #t)
+                          (make-dynamic-linker-cache? #t)
                           (license-file-regexp %license-file-regexp)
                           (phases '%standard-phases)
                           (locale "en_US.utf8")
@@ -577,6 +580,7 @@ platform."
                     #:patch-shebangs? ,patch-shebangs?
                     #:strip-binaries? ,strip-binaries?
                     #:validate-runpath? ,validate-runpath?
+                    #:make-dynamic-linker-cache? ,make-dynamic-linker-cache?
                     #:license-file-regexp ,license-file-regexp
                     #:strip-flags ,strip-flags
                     #:strip-directories ,strip-directories))))
