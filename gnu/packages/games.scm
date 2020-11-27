@@ -8284,6 +8284,39 @@ and cooperative.")
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public slimevolley
+  (package
+    (name "slimevolley")
+    (version "2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.tuxfamily.org/slime/"
+                           "slimevolley_" version ".tar.gz"))
+       (sha256
+        (base32 "1pi60zjpx95mfdkrbwf4cbzy5lv4v5qrljvgck46qca78i9g9g46"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       ;; Work around build failure: "error adding symbols: DSO
+       ;; missing from command line".
+       #:configure-flags (list "-DCMAKE_EXE_LINKER_FLAGS=-lm")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-net sdl-ttf)))))
+    (home-page "https://slime.tuxfamily.org/")
+    (synopsis "Unrealistic 2D volleyball simulation")
+    (description
+     "Slime Volley is a 2D arcade-oriented volleyball simulation, in
+the spirit of some Java games of the same name.
+
+Two teams, 1-3 players each, try to be the first to get 10 points.
+This happens when the one ball touches the floor on the other side of
+the net.  There can be 1 to 8 balls in game.  Once one ball touches
+the ground, the set ends and all balls are served again.")
+    (license license:gpl3+)))
+
 (define-public slingshot
   (package
     (name "slingshot")
