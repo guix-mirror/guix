@@ -16625,9 +16625,6 @@ Swagger 2.0).")
 from your Flask project.  It is a fork of Flask-Swagger.")
     (license license:expat)))
 
-(define-public python2-flasgger
-  (package-with-python2 python-flasgger))
-
 (define-public python-swagger-spec-validator
   (package
     (name "python-swagger-spec-validator")
