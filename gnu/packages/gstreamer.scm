@@ -598,6 +598,7 @@ for the GStreamer multimedia library.")
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          (add-after 'unpack 'fix-broken-test
            (lambda _
              ;; Fix test failure on 32-bit.  Remove for > 1.18.1.
@@ -802,6 +803,7 @@ par compared to the rest.")
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
