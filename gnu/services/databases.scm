@@ -568,12 +568,8 @@ FLUSH PRIVILEGES;
                              mysql-shepherd-service)))
    (default-value (mysql-configuration))))
 
-(define* (mysql-service #:key (config (mysql-configuration)))
-  "Return a service that runs @command{mysqld}, the MySQL or MariaDB
-database server.
-
-The optional @var{config} argument specifies the configuration for
-@command{mysqld}, which should be a @code{<mysql-configuration>} object."
+(define-deprecated (mysql-service #:key (config (mysql-configuration)))
+  mysql-service-type
   (service mysql-service-type config))
 
 

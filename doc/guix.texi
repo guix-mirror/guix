@@ -19121,16 +19121,14 @@ is the key, and the remaining elements are the values.
 
 @subsubheading MariaDB/MySQL
 
-@deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
-Return a service that runs @command{mysqld}, the MySQL or MariaDB
-database server.
-
-The optional @var{config} argument specifies the configuration for
-@command{mysqld}, which should be a @code{<mysql-configuration>} object.
-@end deffn
+@defvr {Scheme Variable} mysql-service-type
+This is the service type for a MySQL or MariaDB database server.  Its value
+is a @code{mysql-configuration} object that specifies which package to use,
+as well as various settings for the @command{mysqld} daemon.
+@end defvr
 
 @deftp {Data Type} mysql-configuration
-Data type representing the configuration of @var{mysql-service}.
+Data type representing the configuration of @var{mysql-service-type}.
 
 @table @asis
 @item @code{mysql} (default: @var{mariadb})
@@ -19142,6 +19140,10 @@ For MariaDB, the root password is empty.
 
 @item @code{port} (default: @code{3306})
 TCP port on which the database server listens for incoming connections.
+
+@item @code{extra-content} (default: @code{""})
+Additional settings for the @file{my.cnf} configuration file.
+
 @end table
 @end deftp
 

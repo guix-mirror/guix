@@ -271,7 +271,7 @@
 
 (define %mysql-os
   (simple-operating-system
-   (mysql-service)))
+   (service mysql-service-type)))
 
 (define* (run-mysql-test)
   "Run tests in %MYSQL-OS."
