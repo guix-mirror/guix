@@ -15350,11 +15350,15 @@ gexps to introduce job definitions that are passed to mcron
 
 (operating-system
   ;; @dots{}
-  (services (cons (service mcron-service-type
-                           (mcron-configuration
-                            (jobs (list garbage-collector-job
-                                        updatedb-job
-                                        idutils-job))))
+
+  ;; %BASE-SERVICES already includes an instance of
+  ;; 'mcron-service-type', which we extend with additional
+  ;; jobs using 'simple-service'.
+  (services (cons (simple-service 'my-cron-jobs
+                                   mcron-service-type
+                                   (list garbage-collector-job
+                                         updatedb-job
+                                         idutils-job))
                   %base-services)))
 @end lisp
 
