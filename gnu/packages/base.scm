@@ -675,17 +675,8 @@ the store.")
             (sha256
              (base32
               "0di848ibffrnwq7g2dvgqrnn4xqhj3h96csn69q4da51ymafl9qn"))
-            (snippet
-             ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
-             ;; required on LFS distros to avoid loading the distro's libc.so
-             ;; instead of ours.
-             '(begin
-                (substitute* "sysdeps/unix/sysv/linux/configure"
-                  (("use_ldconfig=yes")
-                   "use_ldconfig=no"))
-                #t))
-            (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
+                                     "glibc-dl-cache.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
@@ -799,6 +790,11 @@ the store.")
                         ;; linking against libgcc_s is not needed with GCC
                         ;; 4.7.1.
                         ((" -lgcc_s") ""))
+
+                      ;; Tell the ld.so cache code where the store is.
+                      (substitute* "elf/dl-cache.c"
+                        (("@STORE_DIRECTORY@")
+                         (string-append "\"" (%store-directory) "\"")))
 
                       ;; Have `system' use that Bash.
                       (substitute* "sysdeps/posix/system.c"

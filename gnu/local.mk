@@ -1071,6 +1071,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-bootstrap-system-2.2.5.patch 	\
   %D%/packages/patches/glibc-bootstrap-system-2.16.0.patch 	\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
+  %D%/packages/patches/glibc-dl-cache.patch			\
   %D%/packages/patches/glibc-hidden-visibility-ldconfig.patch	\
   %D%/packages/patches/glibc-hurd-clock_gettime_monotonic.patch	\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
