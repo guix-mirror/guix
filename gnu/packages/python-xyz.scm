@@ -6056,59 +6056,70 @@ support for Python 3 and PyPy.  It is based on cffi.")
 (define-public python-cairocffi
   (package
     (name "python-cairocffi")
-    (version "0.9.0")
+    (version "1.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "cairocffi" version))
+       ;; The PyPI archive does not include the documentation, so use Git.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kozea/cairocffi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dq3k4zhqd8cwsf3nyjqvjqm8wkvrjn1wjf44rl3v0h8kqx6qf0m"))
-       (patches (search-patches "python-cairocffi-dlopen-path.patch"))))
+         "1ypw0c2lr43acn57hbmckk183zq4h477j7p4ig2zjvw0mcpvia50"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)
-       ("pango" ,pango)))
+       ("cairo" ,cairo)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("python-numpy" ,python-numpy)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)
        ("python-sphinx" ,python-sphinx)
-       ("python-docutils" ,python-docutils)))
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* (find-files "." "\\.py$")
-               (("dlopen\\(ffi, 'cairo'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "cairo")
-                               "/lib/libcairo.so.2'"))
-               (("dlopen\\(ffi, 'gdk-3'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "gtk+")
-                               "/lib/libgtk-3.so.0'"))
-               (("dlopen\\(ffi, 'gdk_pixbuf-2.0'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "gdk-pixbuf")
-                               "/lib/libgdk_pixbuf-2.0.so.0'"))
-               (("dlopen\\(ffi, 'glib-2.0'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
-                               "/lib/libglib-2.0.so.0'"))
-               (("dlopen\\(ffi, 'gobject-2.0'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
-                               "/lib/libgobject-2.0.so.0'"))
-               (("dlopen\\(ffi, 'pangocairo-1.0'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
-                               "/lib/libpangocairo-1.0.so.0'"))
-               (("dlopen\\(ffi, 'pango-1.0'")
-                (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
-                               "/lib/libpango-1.0.so.0'")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cairocffi/__init__.py"
+               ;; Hack the dynamic library loading mechanism.
+               (("find_library\\(library_name\\)")
+                "\"found\"")
+               (("filenames = \\(library_filename,\\) \\+ filenames")
+                "pass")
+               (("libcairo.so.2")
+                (string-append (assoc-ref inputs "cairo")
+                               "/lib/libcairo.so.2")))
+             (substitute* "cairocffi/pixbuf.py"
+               (("libgdk_pixbuf-2.0.so.0")
+                (string-append (assoc-ref inputs "gdk-pixbuf")
+                               "/lib/libgdk_pixbuf-2.0.so.0"))
+               (("libgobject-2.0.so.0")
+                (string-append (assoc-ref inputs "glib")
+                               "/lib/libgobject-2.0.so.0"))
+               (("libglib-2.0.so.0")
+                (string-append (assoc-ref inputs "glib")
+                               "/lib/libglib-2.0.so.0"))
+               (("libgdk-3.so.0")
+                (string-append (assoc-ref inputs "gtk+")
+                               "/lib/libgdk-3.so.0")))
+             #t))
+         (add-after 'unpack 'disable-linters
+           ;; Their check fails; none of our business.
+           (lambda _
+             (substitute* "setup.cfg"
+               ((".*pytest-flake8.*") "")
+               ((".*pytest-isort.*") "")
+               (("--flake8") "")
+               (("--isort") ""))
              #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -6123,7 +6134,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
                (for-each (lambda (file)
                            (copy-file (string-append "." file)
                                       (string-append doc file)))
-                         '("/README.rst" "/CHANGES" "/LICENSE"))
+                         '("/README.rst" "/NEWS.rst"))
                (system* "python" "setup.py" "build_sphinx")
                (copy-recursively "docs/_build/html" html)
                #t))))))
