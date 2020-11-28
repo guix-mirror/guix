@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -310,6 +311,9 @@
                    (match (assq-ref response-parts 'running)
                      ((pid) (number? pid))))))
              marionette))
+
+          (test-assert "mysql_upgrade completed"
+            (wait-for-file "/var/lib/mysql/mysql_upgrade_info" marionette))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

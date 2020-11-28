@@ -19151,6 +19151,12 @@ Socket file to use for local (non-network) connections.
 @item @code{extra-content} (default: @code{""})
 Additional settings for the @file{my.cnf} configuration file.
 
+@item @code{auto-upgrade?} (default: @code{#t})
+Whether to automatically run @command{mysql_upgrade} after starting the
+service.  This is necessary to upgrade the @dfn{system schema} after
+``major'' updates (such as switching from MariaDB 10.4 to 10.5), but can
+be disabled if you would rather do that manually.
+
 @end table
 @end deftp
 

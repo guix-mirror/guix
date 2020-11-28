@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -468,7 +469,8 @@ storage:
   (bind-address mysql-configuration-bind-address (default "127.0.0.1"))
   (port mysql-configuration-port (default 3306))
   (socket mysql-configuration-socket (default "/run/mysqld/mysqld.sock"))
-  (extra-content mysql-configuration-extra-content (default "")))
+  (extra-content mysql-configuration-extra-content (default ""))
+  (auto-upgrade? mysql-configuration-auto-upgrade? (default #t)))
 
 (define %mysql-accounts
   (list (user-group
@@ -559,6 +561,52 @@ FLUSH PRIVILEGES;
                      #:user "mysql" #:group "mysql")))
          (stop #~(make-kill-destructor)))))
 
+(define (mysql-upgrade-wrapper mysql socket-file)
+  ;; The MySQL socket and PID file may appear before the server is ready to
+  ;; accept connections.  Ensure the socket is responsive before attempting
+  ;; to run the upgrade script.
+  (program-file
+   "mysql-upgrade-wrapper"
+   #~(begin
+       (let ((mysql-upgrade #$(file-append mysql "/bin/mysql_upgrade"))
+             (timeout 10))
+         (begin
+           (let loop ((i 0))
+             (catch 'system-error
+               (lambda ()
+                 (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                   (connect sock AF_UNIX #$socket-file)
+                   (close-port sock)
+                   ;; The socket is ready!
+                   (execl mysql-upgrade mysql-upgrade
+                          (string-append "--socket=" #$socket-file))))
+                 (lambda args
+                   (if (< i timeout)
+                       (begin
+                         (sleep 1)
+                         (loop (+ 1 i)))
+                       ;; No luck, give up.
+                       (throw 'timeout-error
+                              "MySQL server did not appear in time!"))))))))))
+
+(define (mysql-upgrade-shepherd-service config)
+  (list (shepherd-service
+         (provision '(mysql-upgrade))
+         (requirement '(mysql))
+         (one-shot? #t)
+         (documentation "Upgrade MySQL database schemas.")
+         (start (let ((mysql (mysql-configuration-mysql config))
+                      (socket (mysql-configuration-socket config)))
+                  #~(make-forkexec-constructor
+                     (list #$(mysql-upgrade-wrapper mysql socket))
+                     #:user "mysql" #:group "mysql"))))))
+
+(define (mysql-shepherd-services config)
+  (if (mysql-configuration-auto-upgrade? config)
+      (append (mysql-shepherd-service config)
+              (mysql-upgrade-shepherd-service config))
+      (mysql-shepherd-service config)))
+
 (define mysql-service-type
   (service-type
    (name 'mysql)
@@ -568,7 +616,7 @@ FLUSH PRIVILEGES;
           (service-extension activation-service-type
                              %mysql-activation)
           (service-extension shepherd-root-service-type
-                             mysql-shepherd-service)))
+                             mysql-shepherd-services)))
    (default-value (mysql-configuration))))
 
 (define-deprecated (mysql-service #:key (config (mysql-configuration)))
