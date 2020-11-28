@@ -126,6 +126,50 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public silc-toolkit
+  (package
+    (name "silc-toolkit")
+    (version "1.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/silc/silc/toolkit/sources/silc-toolkit-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "0mnvf9n7qriadg0p7a8qmvcayhnns2g9fhmcymavlm0v8xrky33y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-ipv6"
+        "--enable-stack-trace")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'trigger-bootstrap
+           (lambda _
+             (delete-file "configure")
+             (delete-file "Makefile.in")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "SILC ToolKit")
+    (description "SILC (Secure Internet Live Conferencing) is a modern and secure
+conferencing protocol.  It provides all the common conferencing services like
+private messages, instant messages, channels and groups, and video and audio
+conferencing.")
+    (home-page "https://silc.github.io/info")
+    (license
+     ;; Dual-licensed
+     (list
+      license:gpl2+
+      license:bsd-2))))
+
 (define-public meanwhile
   (package
     (name "meanwhile")
