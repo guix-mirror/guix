@@ -3877,7 +3877,7 @@ manipulating graphs and datasets.")
 (define-public guile-jsonld
   (package
     (name "guile-jsonld")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method git-fetch)
@@ -3887,13 +3887,13 @@ manipulating graphs and datasets.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0zfn3nwlz6xzip1j8xbj768dc299r037cfc81bk6kwl9xhzkjbrg"))))
+          "1ryyvh71899z2inivqglb8d78zzp1sd0wv9a56kvcmrxf1966z6r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)); require network
     (propagated-inputs
      `(("guile-gnutls" ,gnutls)
-       ("guile-json" ,guile-json-3)
+       ("guile-json" ,guile-json-4)
        ("guile-rdf" ,guile-rdf)))
     (inputs
      `(("guile" ,guile-3.0)))
