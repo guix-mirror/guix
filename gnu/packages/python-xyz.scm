@@ -15536,6 +15536,31 @@ in other versions.")
 (define-public python2-configparser
   (package-with-python2 python-configparser))
 
+(define-public python-iniconfig
+  (package
+    (name "python-iniconfig")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iniconfig" version))
+       (sha256
+        (base32
+         "0ckzngs3scaa1mcfmsi1w40a1l8cxxnncscrxzjjwjyisx8z0fmw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/RonnyPfannschmidt/iniconfig")
+    (synopsis "Simple INI-file parser")
+    (description "The @code{iniconfig} package provides a small and simple
+INI-file parser module having a unique set of features; @code{iniconfig}
+@itemize
+@item maintains the order of sections and entries;
+@item supports multi-line values with or without line-continuations;
+@item supports \"#\" comments everywhere;
+@item raises errors with proper line-numbers;
+@item raises an error when two sections have the same name.
+@end itemize")
+    (license license:expat)))
+
 (define-public python-mamba
   (package
     (name "python-mamba")
