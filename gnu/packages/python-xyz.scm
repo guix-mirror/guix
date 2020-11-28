@@ -2420,6 +2420,18 @@ server.")
 code introspection, and logging.")
     (license license:expat)))
 
+(define-public python-py-next
+  (package
+    (inherit python-py)
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py" version))
+       (sha256
+        (base32
+         "0hpk0gzd4v1pcnq7zinwg5n219czi23qghcswykqskkbwly8i9lw"))))))
+
 (define-public python2-py
   (package-with-python2 python-py))
 
