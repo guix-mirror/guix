@@ -2316,7 +2316,7 @@ based on a manifest file published by servers.")
 (define-public b4
   (package
     (name "b4")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
@@ -2325,7 +2325,7 @@ based on a manifest file published by servers.")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1w11fiyspyncz2m7njrjfylgzch4azi7560ngd8i733wvjjhg3mj"))))
+        (base32 "0bnjs758blll2i70r4qh3khma7dly5lb8s6kzn5a3p54md91s8v5"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; No tests.
