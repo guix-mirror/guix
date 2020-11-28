@@ -22997,6 +22997,29 @@ contains a track position, playback will start at the specified position.")
 JIRA issue servers.")
    (license license:gpl3+)))
 
+(define-public emacs-slime-volleyball
+  (package
+    (name "emacs-slime-volleyball")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "slime-volleyball-" version ".tar"))
+       (sha256
+        (base32 "1jsx889j09jbib9v3jzn3k2hn71jzdyc5yv4f010l6fknbsfi7lr"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.svg$" "\\.b64$" "slime\\.el\\.gz$")))
+    (home-page "http://elpa.gnu.org/packages/slime-volleyball.html")
+    (synopsis "SVG slime volleyball game")
+    (description
+     "Emacs Slime Volleyball is a volleyball game.  Win points by
+making the ball land on your opponent's side of the court.  The first
+player to five points wins!  You can play against a friend, or
+challenge the three computer opponents in one player mode.  You can
+even train opponent slimes.")
+    (license license:gpl3+)))
+
 (define-public emacs-systemd-mode
   (package
     (name "emacs-systemd-mode")
