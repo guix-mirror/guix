@@ -22,6 +22,7 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages freedesktop)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -293,3 +295,79 @@ for Qt based application.")
                    ;; Files under qt4(Fcitx5Qt4DBusAddons), qt5/dbusaddons
                    ;; and qt5/platforminputcontext.
                    license:bsd-3))))
+
+(define-public fcitx5-chinese-addons
+  (package
+    (name "fcitx5-chinese-addons")
+    (version "5.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.fcitx-im.org/fcitx5"
+                           "/fcitx5-chinese-addons/fcitx5-chinese-addons-"
+                           version "_dict.tar.xz"))
+       (sha256
+        (base32 "0mf91gzwzhfci0jn6g3l516xjw8r4v40ginnbl70h1zx6vr24rfp"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "-DFEM_INCLUDE_INSTALL_DIR=" %output "/include")
+        (string-append "-DFEM_LIB_INSTALL_DIR=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-install-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (x)
+                (format #t "patch-install-prefix: Fixing install prefix in ~a~%"
+                        x)
+                (substitute* x
+                  (("\\$\\{FCITX_INSTALL_PKGDATADIR\\}")
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/fcitx5"))))
+              (find-files "." "CMakeLists\\.txt$"))))
+         (add-before 'configure 'split-outputs
+           ;; Build with GUI supports requires Qt and increase package closure
+           ;; by 800M on x86_64, so place it under another output.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "gui/pinyindictmanager/CMakeLists.txt"
+               (("\\$\\{CMAKE_INSTALL_LIBDIR\\}" _)
+                (string-append (assoc-ref outputs "gui") "/lib"))))))))
+    (inputs
+     `(("fcitx5" ,fcitx5)
+       ("fcitx5-lua" ,fcitx5-lua)
+       ("boost" ,boost)
+       ("libime",libime)
+       ("curl" ,curl)
+       ("gettext" ,gettext-minimal)
+       ("fmt" ,fmt)
+       ("libpthread-stubs" ,libpthread-stubs)
+       ("opencc" ,opencc)
+       ("qtbase" ,qtbase)
+       ("fcitx5-qt" ,fcitx5-qt)
+       ("qtwebkit" ,qtwebkit)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (outputs '("out" "gui"))
+    (home-page "https://github.com/fcitx/fcitx5-chinese-addons")
+    (synopsis "Chinese related addons for Fcitx 5")
+    (description "Fcitx5-chinese-addons provides Chinese related addons,
+including input methods previous bundled inside Fcitx 4:
+
+@itemize
+@item Bingchan
+@item Cangjie
+@item Erbi
+@item Pinyin
+@item Shuangpin
+@item Wanfeng
+@item Wubi
+@item Wubi Pinyin
+@item Ziranma
+@end itemize\n")
+    (license (list license:lgpl2.1+
+                   license:gpl2+
+                   ;; im/pinyin/emoji.txt
+                   license:unicode))))
