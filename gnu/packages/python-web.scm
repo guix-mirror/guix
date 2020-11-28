@@ -4433,26 +4433,21 @@ library to create slugs from unicode strings while keeping it DRY.")
 (define-public python-tinycss2
   (package
     (name "python-tinycss2")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tinycss2" version))
-       (patches (search-patches "python-tinycss2-flake8-compat.patch"))
        (sha256
-        (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
+        (base32 "12p16k8x8ig51gpfcwz3k3kxpxrwwkn41a1avdgvh3nn8hqarp7v"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "pytest"))))))
+     ;; Test data is missing from the PyPI archive, and the build system is
+     ;; based on Flit, which wants an unmaintained and unpackaged
+     ;; python-pytoml dependency.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)))
-    (native-inputs
-     `(("python-pytest-flake8" ,python-pytest-flake8)
-       ("python-pytest-isort" ,python-pytest-isort)
-       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://tinycss2.readthedocs.io/")
     (synopsis "Low-level CSS parser for Python")
     (description "@code{tinycss2} can parse strings, return Python objects
