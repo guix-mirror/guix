@@ -22038,6 +22038,11 @@ The prometheus-node-exporter package to use.
 @item @code{web-listen-address} (default: @code{":9100"})
 Bind the web interface to the specified address.
 
+@item @code{textfile-directory} (default: @code{"/var/lib/prometheus/node-exporter"})
+This directory can be used to export metrics specific to this machine.
+Files containing metrics in the text format, with the filename ending in
+@code{.prom} should be placed in this directory.
+
 @end table
 @end deftp
 

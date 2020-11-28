@@ -126,7 +126,9 @@ HTTP.")
   (package prometheus-node-exporter-configuration-package
            (default go-github-com-prometheus-node-exporter))
   (web-listen-address prometheus-node-exporter-web-listen-address
-                      (default ":9100")))
+                      (default ":9100"))
+  (textfile-directory prometheus-node-exporter-textfile-directory
+                      (default "/var/lib/prometheus/node-exporter")))
 
 (define %prometheus-node-exporter-accounts
   (list (user-account
@@ -143,7 +145,7 @@ HTTP.")
 (define prometheus-node-exporter-shepherd-service
   (match-lambda
     (( $ <prometheus-node-exporter-configuration>
-         package web-listen-address)
+         package web-listen-address textfile-directory)
      (list
       (shepherd-service
        (documentation "Prometheus node exporter.")
@@ -151,11 +153,28 @@ HTTP.")
        (requirement '(networking))
        (start #~(make-forkexec-constructor
                  (list #$(file-append package "/bin/node_exporter")
-                       "--web.listen-address" #$web-listen-address)
+                       "--web.listen-address" #$web-listen-address
+                       #$@(if textfile-directory
+                              (list "--collector.textfile.directory"
+                                    textfile-directory)
+                              '()))
                  #:user "prometheus-node-exporter"
                  #:group "prometheus-node-exporter"
                  #:log-file "/var/log/prometheus-node-exporter.log"))
        (stop #~(make-kill-destructor)))))))
+
+(define (prometheus-node-exporter-activation config)
+  (with-imported-modules '((guix build utils))
+    #~(let ((textfile-directory
+             #$(prometheus-node-exporter-textfile-directory config)))
+        (use-modules (guix build utils))
+
+        (when textfile-directory
+          (let ((user (getpw "prometheus-node-exporter")))
+            #t
+            (mkdir-p textfile-directory)
+            (chown textfile-directory (passwd:uid user) (passwd:gid user))
+            (chmod textfile-directory #o775))))))
 
 (define prometheus-node-exporter-service-type
   (service-type
@@ -167,6 +186,8 @@ Prometheus.")
     (list
      (service-extension account-service-type
                         (const %prometheus-node-exporter-accounts))
+     (service-extension activation-service-type
+                        prometheus-node-exporter-activation)
      (service-extension shepherd-root-service-type
                         prometheus-node-exporter-shepherd-service)))
    (default-value (prometheus-node-exporter-configuration))))
