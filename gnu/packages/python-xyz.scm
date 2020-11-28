@@ -20511,13 +20511,13 @@ information in various formats.")
 (define-public python-cairosvg
   (package
     (name "python-cairosvg")
-    (version "2.4.2")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "CairoSVG" version))
        (sha256
-        (base32 "1bb7irxbaxxb9ahm3z5wsx1q96mm5gzskc7b6q07h9ikcnb8yrjf"))))
+        (base32 "1ylsisha2cc4w0yydxwhy7idkfw1inl9fsipxsrm7vyby080vi9z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
