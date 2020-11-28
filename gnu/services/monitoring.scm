@@ -153,7 +153,8 @@ HTTP.")
                  (list #$(file-append package "/bin/node_exporter")
                        "--web.listen-address" #$web-listen-address)
                  #:user "prometheus-node-exporter"
-                 #:group "prometheus-node-exporter"))
+                 #:group "prometheus-node-exporter"
+                 #:log-file "/var/log/prometheus-node-exporter.log"))
        (stop #~(make-kill-destructor)))))))
 
 (define prometheus-node-exporter-service-type
