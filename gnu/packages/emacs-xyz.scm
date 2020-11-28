@@ -8668,7 +8668,7 @@ indentation guides in Emacs:
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.34.0")
+    (version "1.35.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8677,7 +8677,7 @@ indentation guides in Emacs:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x1z298axbh4xalssnq9nkf2z1sdgmx839vb01xz18kr9lfavx1x"))))
+                "07rdb9w3bxzfr07224awa541xdy116hyc2b3bpl3fc3ikddmbydk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
