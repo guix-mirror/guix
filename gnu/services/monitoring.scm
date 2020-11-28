@@ -128,7 +128,9 @@ HTTP.")
   (web-listen-address prometheus-node-exporter-web-listen-address
                       (default ":9100"))
   (textfile-directory prometheus-node-exporter-textfile-directory
-                      (default "/var/lib/prometheus/node-exporter")))
+                      (default "/var/lib/prometheus/node-exporter"))
+  (extra-options      prometheus-node-exporter-extra-options
+                      (default '())))
 
 (define %prometheus-node-exporter-accounts
   (list (user-account
@@ -145,7 +147,7 @@ HTTP.")
 (define prometheus-node-exporter-shepherd-service
   (match-lambda
     (( $ <prometheus-node-exporter-configuration>
-         package web-listen-address textfile-directory)
+         package web-listen-address textfile-directory extra-options)
      (list
       (shepherd-service
        (documentation "Prometheus node exporter.")
@@ -157,7 +159,8 @@ HTTP.")
                        #$@(if textfile-directory
                               (list "--collector.textfile.directory"
                                     textfile-directory)
-                              '()))
+                              '())
+                       #$@extra-options)
                  #:user "prometheus-node-exporter"
                  #:group "prometheus-node-exporter"
                  #:log-file "/var/log/prometheus-node-exporter.log"))

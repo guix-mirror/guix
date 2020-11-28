@@ -22043,6 +22043,9 @@ This directory can be used to export metrics specific to this machine.
 Files containing metrics in the text format, with the filename ending in
 @code{.prom} should be placed in this directory.
 
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass to the Prometheus node exporter.
+
 @end table
 @end deftp
 
