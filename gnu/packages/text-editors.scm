@@ -756,14 +756,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.15")
+    (version "1.99.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32 "09r88yi2k1vi9pmszw97zblw8bs79h2d5ivb6xk652zyrls2lkvd"))))
+        (base32 "118sk75k0k9pkyfyx000n2ypab8vm1lz5zxkkdmsi5nwyr3rp56s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
