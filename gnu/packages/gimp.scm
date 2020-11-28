@@ -223,7 +223,22 @@ provided, as well as a framework to add new color models and data types.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dintrospection=false")))
+       (list "-Dintrospection=false")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'extend-test-time-outs
+           (lambda _
+             ;; Multiply some poorly-chosen time-outs for busy build machines.
+             (substitute* "tests/simple/test-node-exponential.c"
+               (("G_TIME_SPAN_SECOND" match)
+                (string-append "10 * " match)))
+             (substitute* "tests/simple/test-buffer-sharing.c"
+               (("g_timeout_add_seconds\\([0-9]+" match)
+                (string-append match "0")))
+             (substitute* (find-files "tests" "^meson\\.build$")
+               (("timeout ?: [0-9]+" match)
+                (string-append match "0")))
+             #t)))))
     ;; These are propagated to satisfy 'gegl-0.4.pc'.
     (propagated-inputs
      `(("babl" ,babl)
