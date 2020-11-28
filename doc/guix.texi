@@ -19138,6 +19138,10 @@ or @var{mysql}.
 For MySQL, a temporary root password will be displayed at activation time.
 For MariaDB, the root password is empty.
 
+@item @code{bind-address} (default: @code{"127.0.0.1"})
+The IP on which to listen for network connections.  Use @code{"0.0.0.0"}
+to bind to all available network interfaces.
+
 @item @code{port} (default: @code{3306})
 TCP port on which the database server listens for incoming connections.
 

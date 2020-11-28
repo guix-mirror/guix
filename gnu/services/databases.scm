@@ -465,6 +465,7 @@ storage:
   mysql-configuration make-mysql-configuration
   mysql-configuration?
   (mysql mysql-configuration-mysql (default mariadb))
+  (bind-address mysql-configuration-bind-address (default "127.0.0.1"))
   (port mysql-configuration-port (default 3306))
   (extra-content mysql-configuration-extra-content (default "")))
 
@@ -481,10 +482,11 @@ storage:
 
 (define mysql-configuration-file
   (match-lambda
-    (($ <mysql-configuration> mysql port extra-content)
+    (($ <mysql-configuration> mysql bind-address port extra-content)
      (mixed-text-file "my.cnf" "[mysqld]
 datadir=/var/lib/mysql
 socket=/run/mysqld/mysqld.sock
+bind-address=" bind-address "
 port=" (number->string port) "
 " extra-content "
 "))))
