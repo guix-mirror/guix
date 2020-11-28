@@ -315,6 +315,45 @@
           (test-assert "mysql_upgrade completed"
             (wait-for-file "/var/lib/mysql/mysql_upgrade_info" marionette))
 
+          (test-eq "create database"
+            0
+            (marionette-eval
+             '(begin
+                (system* #$(file-append mariadb "/bin/mysql")
+                         "-e" "CREATE DATABASE guix;"))
+             marionette))
+
+          (test-eq "create table"
+            0
+            (marionette-eval
+             '(begin
+                (system*
+                 #$(file-append mariadb "/bin/mysql") "guix"
+                 "-e" "CREATE TABLE facts (id INT, data VARCHAR(12));"))
+             marionette))
+
+          (test-eq "insert data"
+            0
+            (marionette-eval
+             '(begin
+                (system* #$(file-append mariadb "/bin/mysql") "guix"
+                         "-e" "INSERT INTO facts VALUES (1, 'awesome')"))
+             marionette))
+
+          (test-equal "retrieve data"
+            "awesome\n"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 popen))
+                (let* ((port (open-pipe*
+                              OPEN_READ
+                              #$(file-append mariadb "/bin/mysql") "guix"
+                              "-NB" "-e" "SELECT data FROM facts WHERE id=1;"))
+                       (output (get-string-all port)))
+                  (close-pipe port)
+                  output))
+             marionette))
+
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
