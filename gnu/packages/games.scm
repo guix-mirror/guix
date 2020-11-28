@@ -6817,15 +6817,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
 (define-public yamagi-quake2
   (package
     (name "yamagi-quake2")
-    (version "7.10")
+    (version "7.45")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://deponie.yamagi.org/quake2/quake2-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "0psinbg25mysd58k99s1n34w31w5hj1vppb39gdjb0zqi6sl6cps"))))
+        (base32 "0rgz8x7lzd0zb0xqd0gvnf2641nr9xpfm6v14mgh99hspxklaln7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -6854,12 +6853,15 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         (string-append out "/bin/yamagi-quake2"))
                (symlink (string-append out "/lib/yamagi-quake2/q2ded")
                         (string-append out "/bin/yamagi-q2ded"))))))))
-    (inputs `(("sdl2" ,sdl2)
-              ("mesa" ,mesa)
-              ("libvorbis" ,libvorbis)
-              ("zlib" ,zlib)
-              ("openal" ,openal)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl-minimal)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
     (synopsis "First person shooter engine based on quake2")
     (description "Yamagi Quake II is an enhanced client for id Software's Quake II.
 The main focus is an unchanged single player experience like back in 1997,
