@@ -992,14 +992,14 @@ the form of functions.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
                           version "/pugixml-" version ".tar.gz"))
       (sha256
-       (base32 "02l7nllhydggf7s64d2x84kckbmwag4lsn28sc82953hnkxrkwsm"))))
+       (base32 "0b5apqiisq8yk51x0cwks4h2m0zd2zgjdy0w80qp9h5rccz3v496"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
