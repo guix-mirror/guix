@@ -2278,7 +2278,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
 (define-public grokmirror
   (package
     (name "grokmirror")
-    (version "2.0.0")
+    (version "2.0.5")
     (source
      (origin
        (method git-fetch)
@@ -2288,7 +2288,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1cs43vf87x8x5k5ncgiwiclc92a1dvxpg2z6lh6psaiip808gylp"))))
+        (base32 "006ar3kc6fw1sq300ar9np4a63qzzsdama6cv30wh65v5mqw1mnv"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -2303,7 +2303,8 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
                          (find-files "." "\\.1$")))
              #t)))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     `(("python-packaging" ,python-packaging)
+       ("python-requests" ,python-requests)))
     (home-page
      "https://git.kernel.org/pub/scm/utils/grokmirror/grokmirror.git")
     (synopsis "Framework to smartly mirror git repositories")
