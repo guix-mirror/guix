@@ -2146,7 +2146,8 @@ There is support for:
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("xdg-utils", xdg-utils)))
     (arguments
      `(#:tests? #f))                    ; no tests
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
