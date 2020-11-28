@@ -22021,13 +22021,10 @@ where monitoring these statistics is desirable.
 @defvar {Scheme variable} prometheus-node-exporter-service-type
 This is the service type for the
 @uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
-service, its value must be a @code{prometheus-node-exporter-configuration}
-record as in this example:
+service, its value must be a @code{prometheus-node-exporter-configuration}.
 
 @lisp
-(service prometheus-node-exporter-service-type
-         (prometheus-node-exporter-configuration
-           (web-listen-address ":9100")))
+(service prometheus-node-exporter-service-type)
 @end lisp
 @end defvar
 
