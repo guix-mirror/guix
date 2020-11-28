@@ -19145,6 +19145,9 @@ to bind to all available network interfaces.
 @item @code{port} (default: @code{3306})
 TCP port on which the database server listens for incoming connections.
 
+@item @code{socket} (default: @code{"/run/mysqld/mysqld.sock"})
+Socket file to use for local (non-network) connections.
+
 @item @code{extra-content} (default: @code{""})
 Additional settings for the @file{my.cnf} configuration file.
 
