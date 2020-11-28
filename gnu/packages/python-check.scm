@@ -1042,22 +1042,31 @@ supported by the MyPy typechecker.")
 (define-public python-mypy
   (package
     (name "python-mypy")
-    (version "0.782")
+    (version "0.790")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mypy" version))
-        (sha256
-         (base32
-          "030kn709515452n6gy2i1d9fg6fyrkmdz228lfpmbslybsld9xzg"))))
+     (origin
+       ;; Because of https://github.com/python/mypy/issues/9584, the
+       ;; mypyc/analysis directory is missing in the PyPI archive, leading to
+       ;; test failures.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/mypy")
+             (commit (string-append "v" version))
+             ;; Fetch git submodules otherwise typeshed is not fetched.
+             ;; Typeshed is a collection of Python sources type annotation
+             ;; (data) files.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0zq3lpdf9hphcklk40wz444h8w3dkhwa12mqba5j9lmg11klnhz7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "./runtests.py")
-             #t)))))
+             (invoke "pytest" "mypyc"))))))
     (native-inputs
      `(("python-attrs" ,python-attrs)
        ("python-flake8" ,python-flake8)
@@ -1066,8 +1075,7 @@ supported by the MyPy typechecker.")
        ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-lxml" ,python-lxml)
        ("python-psutil" ,python-psutil)
-       ("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)
+       ("python-pytest" ,python-pytest-6)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-forked" ,python-pytest-forked)
        ("python-pytest-xdist" ,python-pytest-xdist)
