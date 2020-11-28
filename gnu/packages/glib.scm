@@ -89,17 +89,16 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.12.16")
+    (version "1.13.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://dbus.freedesktop.org/releases/dbus/dbus-"
-                    version ".tar.gz"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "107ckxaff1cv4q6kmfdi2fb1nlsv03312a7kf6lb4biglhpjv8jl"))
-              (patches (search-patches "dbus-CVE-2020-12049.patch"
-                                       "dbus-helper-search-path.patch"))))
+                "0ki5yih89kvygiqf3qb7qfzcrw4fvilxj1b9w1y91arlbv1gay40"))
+              (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
