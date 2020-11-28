@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +81,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -135,7 +137,7 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "5.1.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
@@ -143,9 +145,9 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
-       (patches (search-patches "qemu-build-info-manual.patch"
-                                "qemu-CVE-2021-20203.patch"))
+         "1g0pvx4qbirpcn9mni704y03n3lvkmw2c0rbcwvydyr8ns4xh66b"))
+       (patches (search-patches "qemu-CVE-2021-20203.patch"
+                                "qemu-build-info-manual.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -161,7 +163,7 @@
              (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
               (string-append indent "target_ifreq_size = "
                              "thunk_type_size(ifreq_max_type, 0);")))))))
-    (outputs '("out" "static" "doc"))   ;4.7 MiB of HTML docs
+    (outputs '("out" "static" "doc"))   ;5.3 MiB of HTML docs
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: Disable tests on i686 to work around
@@ -214,33 +216,37 @@
                 (string-append match "9")))))
          (add-after 'unpack 'disable-unusable-tests
            (lambda _
-             (substitute* "tests/Makefile.include"
+             (substitute* "tests/meson.build"
                ;; Comment out the test-qga test, which needs /sys and
                ;; fails within the build environment.
-               (("check-unit-.* tests/test-qga" all)
+               (("tests.*test-qga.*$" all)
                 (string-append "# " all))
                ;; Comment out the test-char test, which needs networking and
                ;; fails within the build environment.
                (("check-unit-.* tests/test-char" all)
-                (string-append "# " all)))
-             (substitute* "tests/qtest/Makefile.include"
-               ;; Disable the following test, which triggers a crash on some
-               ;; x86 CPUs (see https://issues.guix.info/43048 and
-               ;; https://bugs.launchpad.net/qemu/+bug/1896263).
-               (("check-qtest-i386-y \\+= bios-tables-test" all)
                 (string-append "# " all)))))
-         (add-after 'unpack 'patch-test-shebangs
-           (lambda _
-             (substitute* "tests/qemu-iotests/check"
-               (("#!/usr/bin/env python3")
-                (string-append "#!" (which "python3"))))))
-         (add-after 'patch-source-shebangs 'patch-/bin/sh-references
+         (add-after 'patch-source-shebangs 'patch-embedded-shebangs
            (lambda _
              ;; Ensure the executables created by these source files reference
              ;; /bin/sh from the store so they work inside the build container.
              (substitute* '("block/cloop.c" "migration/exec.c"
                             "net/tap.c" "tests/qtest/libqtest.c")
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             (substitute* "Makefile"
+               (("SHELL = /usr/bin/env bash -o pipefail")
+                "SHELL = bash -o pipefail"))
+             (substitute* "tests/qemu-iotests/check"
+               (("#!/usr/bin/env python3")
+                (string-append "#!" (which "python3"))))))
+         (add-before 'configure 'fix-optionrom-makefile
+           (lambda _
+             ;; Work around the inability of the rules defined in this
+             ;; Makefile to locate the firmware files (e.g.: No rule to make
+             ;; target 'multiboot.bin') by extending the VPATH.
+             (substitute* "pc-bios/optionrom/Makefile"
+               (("^VPATH = \\$\\(SRC_DIR\\)")
+                "VPATH = $(SRC_DIR):$(TOPSRC_DIR)/pc-bios"))))
+         ;; XXX ./configure is being re-run at beginning of build phase...
          (replace 'configure
            (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              ;; The `configure' script doesn't understand some of the
@@ -249,7 +255,7 @@
                (setenv "SHELL" (which "bash"))
                ;; Ensure config.status gets the correct shebang off the bat.
                ;; The build system gets confused if we change it later and
-               ;; attempts to re-run the whole configury, and fails.
+               ;; attempts to re-run the whole configuration, and fails.
                (substitute* "configure"
                  (("#!/bin/sh")
                   (string-append "#!" (which "sh"))))
@@ -288,7 +294,7 @@
                     (bin (string-append static "/bin")))
                (with-directory-excursion "../user-static"
                  (for-each (cut install-file <> bin)
-                           (append-map (cut find-files <> "^qemu-")
+                           (append-map (cut find-files <> "^qemu-" #:stat stat)
                                        (scandir "."
                                                 (cut string-suffix?
                                                      "-linux-user" <>))))))))
@@ -345,6 +351,7 @@ exec smbd $@")))
                      ("perl" ,perl)
                      ("flex" ,flex)
                      ("bison" ,bison)
+                     ("ninja" ,ninja)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
                      ("python-sphinx" ,python-sphinx)
