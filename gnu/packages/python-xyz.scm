@@ -20546,13 +20546,13 @@ qvarious formats: PDF, PostScript, PNG and even SVG.")
 (define-public python-pyphen
   (package
     (name "python-pyphen")
-    (version "0.9.5")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pyphen" version))
        (sha256
-        (base32 "08c9y69ry9d6m4zalhnalg86lsp9v2j5n1ziw5vxfmiihx83lqrv"))))
+        (base32 "0a1iwrgs4hzwzz60q4i1813kbzimhm0i4q8grh8vqkxhnkgj36vi"))))
     (build-system python-build-system)
     ;; TODO: Use the Guix system hyphenation packages hyphen-* rather than the
     ;; embedded set provided by upstream - like Debian does.
