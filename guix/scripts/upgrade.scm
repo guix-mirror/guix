@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,15 +75,10 @@ This is an alias for 'guix package -u'.\n"))
   (synopsis "upgrade packages to their latest version")
 
   (define (handle-argument arg result arg-handler)
-    ;; Accept at most one non-option argument, and treat it as an upgrade
-    ;; regexp.
-    (match (assq-ref result 'upgrade)
-      (#f
-       (values (alist-cons 'upgrade arg
-                           (alist-delete 'upgrade result))
-               arg-handler))
-      (_
-       (leave (G_ "~A: extraneous argument~%") arg))))
+    ;; Treat non-option arguments as upgrade regexps.
+    (values (alist-cons 'upgrade arg
+                        (delete '(upgrade . #f) result))
+            arg-handler))
 
   (define opts
     (parse-command-line args %options
