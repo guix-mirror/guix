@@ -19183,7 +19183,7 @@ The Memcached package to use.
 Network interfaces on which to listen.
 
 @item @code{tcp-port} (default: @code{11211})
-Port on which to accept connections on,
+Port on which to accept connections on.
 
 @item @code{udp-port} (default: @code{11211})
 Port on which to accept UDP connections on, a value of 0 will disable
