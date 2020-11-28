@@ -126,6 +126,39 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public meanwhile
+  (package
+    (name "meanwhile")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/obriencj/meanwhile.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1k1gvmx1ikm0y1mdmm495rzkb00pl170jfaf2dy0n5aiiknkk7q3"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Library for Lotus Instant Messaging")
+    (description "Meanwhile is a library for connecting to a LIM (Lotus Instant
+Messaging, formerly Lotus Sametime, formerly VPBuddy) community.  It uses a
+protocol based in part off of the IMPP draft(*1), and in part off of traces of
+TCP sessions from existing clients.")
+    (home-page "https://github.com/obriencj/meanwhile")
+    (license license:lgpl3)))
+
 (define-public poezio
   (package
     (name "poezio")
