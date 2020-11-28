@@ -1198,14 +1198,14 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "1.25.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "1d812apvcmshh2l8f38spqwb3bpp0x43yy7lyfpxxzc99h4r7y4n"))
+         "0wh6pn66nncfs6ay0n863bgyriwsgppn8flx5l7551j1lbqkinc2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
