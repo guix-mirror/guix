@@ -3331,8 +3331,7 @@ dimensioned arrays.")
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (inputs
-     `(("mariadb" ,mariadb "lib")
-       ("mariadb-dev" ,mariadb "dev")
+     `(("mariadb-dev" ,mariadb "dev")
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-dbi" ,r-dbi)))

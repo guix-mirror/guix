@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,12 +54,14 @@
   ;; Imported build-side modules
   `((guix build asdf-build-system)
     (guix build lisp-utils)
+    (guix build union)
     ,@%gnu-build-system-modules))
 
 (define %asdf-build-modules
   ;; Used (visible) build-side modules
   '((guix build asdf-build-system)
     (guix build utils)
+    (guix build union)
     (guix build lisp-utils)))
 
 (define (default-lisp implementation)
@@ -210,7 +212,7 @@ set up using CL source package conventions."
       (define base-arguments
         (if target-is-source?
             (strip-keyword-arguments
-             '(#:tests? #:asd-file #:lisp #:asd-system-name #:test-asd-file)
+             '(#:tests? #:asd-files #:lisp #:asd-systems #:test-asd-file)
              (package-arguments pkg))
             (package-arguments pkg)))
 
@@ -278,8 +280,8 @@ set up using CL source package conventions."
   (lambda* (store name inputs
                   #:key source outputs
                   (tests? #t)
-                  (asd-file #f)
-                  (asd-system-name #f)
+                  (asd-files ''())
+                  (asd-systems ''())
                   (test-asd-file #f)
                   (phases '(@ (guix build asdf-build-system)
                               %standard-phases))
@@ -289,12 +291,17 @@ set up using CL source package conventions."
                   (imported-modules %asdf-build-system-modules)
                   (modules %asdf-build-modules))
 
-    (define system-name
-      (or asd-system-name
-          (string-drop
-           ;; NAME is the value returned from `package-full-name'.
-           (hyphen-separated-name->name+version name)
-           (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
+    ;; FIXME: The definition of 'systems' is pretty hacky.
+    ;; Is there a more elegant way to do it?
+    (define systems
+      (if (null? (cadr asd-systems))
+          `(quote
+            ,(list
+              (string-drop
+               ;; NAME is the value returned from `package-full-name'.
+               (hyphen-separated-name->name+version name)
+               (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
+          asd-systems))
 
     (define builder
       `(begin
@@ -309,8 +316,8 @@ set up using CL source package conventions."
                                     (derivation->output-path source))
                                    ((source) source)
                                    (source source))
-                       #:asd-file ,(or asd-file (string-append system-name ".asd"))
-                       #:asd-system-name ,system-name
+                       #:asd-files ,asd-files
+                       #:asd-systems ,systems
                        #:test-asd-file ,test-asd-file
                        #:system ,system
                        #:tests? ,tests?

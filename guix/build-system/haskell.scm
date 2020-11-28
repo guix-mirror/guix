@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,7 +122,9 @@ version REVISION."
                         (haddock-flags ''())
                         (tests? #t)
                         (test-target "test")
-                        (parallel-build? #t)
+                        ;; FIXME: Parallel builds lead to indeterministic
+                        ;; results, see <http://issues.guix.gnu.org/43843#3>.
+                        (parallel-build? #f)
                         (configure-flags ''())
                         (extra-directories ''())
                         (phases '(@ (guix build haskell-build-system)

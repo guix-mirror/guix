@@ -357,18 +357,19 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.10.0")
+    (version "1.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wmnl0hngn6vrqrya4r8hvimlkr4jag39yjprls4gyrqvh667hsp"))))
+               "13bcdf2xpjxwbghas0cr448z89qqki2ssgfgswc257y9859v4s5b"))))
     (build-system meson-build-system)
     (inputs
      `(("libx11" ,libx11)
        ("libxcb" ,libxcb)
+       ("libxml2" ,libxml2)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("xkeyboard-config" ,xkeyboard-config)))
@@ -534,7 +535,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.101")
+    (version "2.4.102")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -542,8 +543,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "19vqbhqljhln0lrpnv3s7y3lkhsdcp76dl8bhqj3cis9ism1pwyx"))
-              (patches (search-patches "libdrm-realpath-virtio.patch"))))
+                "0nx0bd9dhymdsd99v4ifib77yjirkvkxf5hzdkbr7qr8dhrzkjwb"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -2528,7 +2528,7 @@ using @command{dmenu}.")
 (define-public wofi
   (package
     (name "wofi")
-    (version "1.1.2")
+    (version "1.2.3")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -2537,7 +2537,7 @@ using @command{dmenu}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "086j5wshawjbwdmmmldivfagc2rr7g5a2gk11l0snqqslm294xsn"))))
+                "0glpb2gf5n78s01z3rn614ak8ibxhfr824gy6xlljbxclgds264i"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t))

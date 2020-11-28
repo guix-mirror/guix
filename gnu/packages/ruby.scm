@@ -3801,8 +3801,7 @@ specs for Ruby implementations in ruby/spec.")
                (invoke "rspec"))
              #t)))))
     (inputs
-     `(("mariadb" ,mariadb "lib")
-       ("mariadb-dev" ,mariadb "dev")
+     `(("mariadb-dev" ,mariadb "dev")
        ("zlib" ,zlib)))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)

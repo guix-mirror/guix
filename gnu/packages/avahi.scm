@@ -74,7 +74,7 @@
        ("expat" ,expat)
        ("gdbm" ,gdbm)
        ("glib" ,glib)
-       ("libcap" ,libcap)            ;to enable chroot support in avahi-daemon
+       ("libcap" ,libcap-2.31)       ;to enable chroot support in avahi-daemon
        ("libdaemon" ,libdaemon)
        ("libevent" ,libevent)))
     (native-inputs

@@ -168,7 +168,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.3")
+    (version "2.5.4")
     (source
      (origin
       (method url-fetch)
@@ -176,7 +176,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "00p7cpvzf0q3qwcgg51r9d0vbab4qga2xi8wpk2fgd36710b1g4i"))))
+        "1w7vnnycq4z7gf4bk38pi4hrb8qrrzgfpz3cd7frwldxnfbfx060"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)
@@ -196,7 +196,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.5")
+    (version "1.5.0")
     (source
      (origin
       (method url-fetch)
@@ -205,7 +205,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0h53q4sns1jz1pkmhcz5wp9qrfn9f5g9i3vjv6dafwzzlvblyi21"))))
+        "1fm0mf3wq9fmyi1rmc1vk2fafn6liiw2mgxml3g7ybbb44lz2jmf"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -255,7 +255,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.23")
+    (version "2.2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -263,7 +263,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "0p6ss4f3vlkf91pmp27bmvfr5bdxxi0pb3dmxpqljglbsx4mxd8h"))))
+                "02n3klqbyzxyil13sg4wa0pcwr7vs7zjaslis926yjxg8yr0fly5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

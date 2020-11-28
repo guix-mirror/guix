@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -148,6 +149,11 @@
                   ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
                   ("os/os_test.go" "(.+)(TestHostname.+)")
                   ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+
+                  ;; XXX: This test fails with tzdata 2020b and newer.  Later
+                  ;; Go releases work fine, so just disable this for the
+                  ;; bootstrap Go.
+                  ("time/example_test.go" "(.+)(ExampleParseInLocation.+)")
 
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")

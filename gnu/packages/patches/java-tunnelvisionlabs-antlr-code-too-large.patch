@@ -1,0 +1,87 @@
+From 56ae699a27eca52cc0bb14cbc9944b62136be52b Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Sun, 20 Sep 2020 21:07:29 +0200
+Subject: [PATCH] Separate addPropertyAliases in two methods
+
+The quantity of data used to generate addPropertyAliases creates a big
+method, that is too big for java and results in "error: code too large".
+This is most likely due to added data between the expected version of
+icu and the actual version of icu in Guix.
+---
+ .../org/antlr/v4/tool/templates/unicodedata.st | 15 ++++++++++++---
+ .../unicode/UnicodeDataTemplateController.java | 18 ++++++++++--------
+ 2 files changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/tool/resources/org/antlr/v4/tool/templates/unicodedata.st b/tool/resources/org/antlr/v4/tool/templates/unicodedata.st
+index f5052b7..125d15b 100644
+--- a/tool/resources/org/antlr/v4/tool/templates/unicodedata.st
++++ b/tool/resources/org/antlr/v4/tool/templates/unicodedata.st
+@@ -1,4 +1,4 @@
+-unicodedata(propertyCodePointRanges, propertyAliases) ::= <<
++unicodedata(propertyCodePointRanges, propertyAliasesA, propertyAliasesB) ::= <<
+ package org.antlr.v4.unicode;
+ 
+ import java.util.Arrays;
+@@ -17,7 +17,7 @@ public enum UnicodeData {
+ 	;
+ 
+ 	private static final Map\<String, IntervalSet\> propertyCodePointRanges = new HashMap\<String, IntervalSet\>(<length(propertyCodePointRanges)>);
+-	private static final Map\<String, String\> propertyAliases = new HashMap\<String, String\>(<length(propertyAliases)>);
++	private static final Map\<String, String\> propertyAliases = new HashMap\<String, String\>(<length(propertyAliasesA)> + <length(propertyAliasesB)>);
+ 
+ 	// Work around Java 64k bytecode method limit by splitting up static
+ 	// initialization into one method per Unicode property
+@@ -33,8 +33,17 @@ static private void addProperty<i>() {
+ \}}; separator="\n\n">
+ 
+ 	// Property aliases
++	static private void addPropertyAliasesA() {
++		<propertyAliasesA.keys:{ k | propertyAliases.put("<k>".toLowerCase(Locale.US), "<propertyAliasesA.(k)>".toLowerCase(Locale.US)); }; separator="\n">
++	}
++
++	static private void addPropertyAliasesB() {
++		<propertyAliasesB.keys:{ k | propertyAliases.put("<k>".toLowerCase(Locale.US), "<propertyAliasesB.(k)>".toLowerCase(Locale.US)); }; separator="\n">
++	}
++
+ 	static private void addPropertyAliases() {
+-		<propertyAliases.keys:{ k | propertyAliases.put("<k>".toLowerCase(Locale.US), "<propertyAliases.(k)>".toLowerCase(Locale.US)); }; separator="\n">
++        addPropertyAliasesA();
++        addPropertyAliasesB();
+ 	}
+ 
+ 	// Put it all together
+diff --git a/tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java b/tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java
+index 570190c..692cee0 100644
+--- a/tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java
++++ b/tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java
+@@ -74,17 +74,19 @@ public abstract class UnicodeDataTemplateController {
+ 		addTR35ExtendedPictographicPropertyCodesToCodePointRanges(propertyCodePointRanges);
+ 		addEmojiPresentationPropertyCodesToCodePointRanges(propertyCodePointRanges);
+ 
+-		Map<String, String> propertyAliases = new LinkedHashMap<String, String>();
+-		addUnicodeCategoryCodesToNames(propertyAliases);
+-		addUnicodeBinaryPropertyCodesToNames(propertyAliases);
+-		addUnicodeScriptCodesToNames(propertyAliases);
+-		addUnicodeBlocksToNames(propertyAliases);
+-		addUnicodeIntPropertyCodesToNames(propertyAliases);
+-		propertyAliases.put("EP", "Extended_Pictographic");
++		Map<String, String> propertyAliasesA = new LinkedHashMap<String, String>();
++		Map<String, String> propertyAliasesB = new LinkedHashMap<String, String>();
++		addUnicodeCategoryCodesToNames(propertyAliasesA);
++		addUnicodeBinaryPropertyCodesToNames(propertyAliasesA);
++		addUnicodeScriptCodesToNames(propertyAliasesA);
++		addUnicodeBlocksToNames(propertyAliasesB);
++		addUnicodeIntPropertyCodesToNames(propertyAliasesB);
++		propertyAliasesB.put("EP", "Extended_Pictographic");
+ 
+ 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+ 		properties.put("propertyCodePointRanges", propertyCodePointRanges);
+-		properties.put("propertyAliases", propertyAliases);
++		properties.put("propertyAliasesA", propertyAliasesA);
++		properties.put("propertyAliasesB", propertyAliasesB);
+ 		return properties;
+ 	}
+ 
+-- 
+2.28.0
+

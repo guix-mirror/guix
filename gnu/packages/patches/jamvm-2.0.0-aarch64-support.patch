@@ -1,0 +1,645 @@
+From a44154f7a18496cc3e5fc0b1b2ea69523ebc623a Mon Sep 17 00:00:00 2001
+From: Simon South <simon@simonsouth.net>
+Date: Mon, 1 Jun 2020 07:09:34 -0400
+Subject: [PATCH] Add support for aarch64 on GNU/Linux
+
+---
+ AUTHORS                           |   1 +
+ README                            |   2 +-
+ configure.ac                      |   7 +-
+ src/arch/Makefile.am              |   2 +-
+ src/arch/aarch64.h                | 147 +++++++++++++++++++++
+ src/jam.c                         |   3 +-
+ src/os/linux/Makefile.am          |   2 +-
+ src/os/linux/aarch64/Makefile.am  |  28 ++++
+ src/os/linux/aarch64/callNative.S | 212 ++++++++++++++++++++++++++++++
+ src/os/linux/aarch64/dll_md.c     |  59 +++++++++
+ src/os/linux/aarch64/init.c       |  51 +++++++
+ 11 files changed, 508 insertions(+), 6 deletions(-)
+ create mode 100644 src/arch/aarch64.h
+ create mode 100644 src/os/linux/aarch64/Makefile.am
+ create mode 100644 src/os/linux/aarch64/callNative.S
+ create mode 100644 src/os/linux/aarch64/dll_md.c
+ create mode 100644 src/os/linux/aarch64/init.c
+
+diff --git a/AUTHORS b/AUTHORS
+index e1334fe..6fd0eeb 100644
+--- a/AUTHORS
++++ b/AUTHORS
+@@ -1 +1,2 @@
+ Robert Lougher <rob@jamvm.org.uk>
++Simon South <simon@simonsouth.net>
+diff --git a/README b/README
+index c9d80bb..0e93d00 100644
+--- a/README
++++ b/README
+@@ -77,7 +77,7 @@ versions of JamVM also includes stubs for common method signatures.
+ The following platforms/architectures are recognised by configure.  Those
+ marked with * must be configured to use libffi.
+ 
+-- Linux: x86, x86_64, ARM, PowerPC, PowerPC64(*), MIPS, HPPA
++- Linux: x86, x86_64, ARM, ARM64, PowerPC, PowerPC64(*), MIPS, HPPA
+ - FreeBSD: x86, x86_64, ARM, PowerPC, PowerPC64(*), SPARC(*)
+ - OpenBSD: x86, x86_64, ARM, PowerPC, PowerPC64(*), SPARC(*)
+ - Mac OS X/Darwin: x86, x86_64, ARM, PowerPC, PowerPC64
+diff --git a/configure.ac b/configure.ac
+index 138b7e6..e7051d7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -46,6 +46,7 @@ x86_64-*-freebsd*) host_os=bsd libdl_needed=no ;;
+ arm*-*-linux*) host_cpu=arm host_os=linux interp_cflags=-marm ;;
+ arm*-*-openbsd*) host_cpu=arm host_os=bsd libdl_needed=no ;;
+ arm*-*-freebsd*) host_cpu=arm host_os=bsd libdl_needed=no ;;
++aarch64*-*-linux*) host_cpu=aarch64 host_os=linux ;;
+ powerpc*-*-linux*) host_cpu=powerpc host_os=linux ;;
+ powerpc*-*-openbsd*) host_cpu=powerpc host_os=bsd libdl_needed=no ;;
+ powerpc*-*-freebsd*) host_cpu=powerpc host_os=bsd libdl_needed=no ;;
+@@ -155,10 +156,11 @@ AC_ARG_ENABLE(runtime-reloc-checks,
+ 
+ AC_ARG_ENABLE(int-inlining,
+     [AS_HELP_STRING(--enable-int-inlining,enable inline threaded version of the interpreter
+-                   (by default enabled on x86_64, i386, powerpc, mips and arm, 
++                   (by default enabled on x86_64, i386, powerpc, mips, arm and aarch64,
+                     disabled otherwise))],,
+     [if test "$host_cpu" = x86_64 -o "$host_cpu" = i386 -o "$host_cpu" = x86 -o \
+-             "$host_cpu" = powerpc -o "$host_cpu" = arm -o "$host_cpu" = mips; then
++             "$host_cpu" = powerpc -o "$host_cpu" = arm -o "$host_cpu" = mips -o \
++             "$host_cpu" = aarch64; then
+          enable_int_inlining=yes
+        else
+          enable_int_inlining=no
+@@ -407,6 +409,7 @@ AC_CONFIG_FILES(
+     src/os/linux/x86_64/Makefile \
+     src/os/linux/parisc/Makefile \
+     src/os/linux/mips/Makefile \
++    src/os/linux/aarch64/Makefile \
+     src/os/darwin/i386/Makefile \
+     src/os/darwin/arm/Makefile \
+     src/os/darwin/powerpc/Makefile \
+diff --git a/src/arch/Makefile.am b/src/arch/Makefile.am
+index 7580a1b..4e2a4f9 100644
+--- a/src/arch/Makefile.am
++++ b/src/arch/Makefile.am
+@@ -19,4 +19,4 @@
+ ## Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ ##
+ 
+-EXTRA_DIST = powerpc.h arm.h i386.h x86_64.h parisc.h mips.h sparc.h
++EXTRA_DIST = powerpc.h arm.h i386.h x86_64.h parisc.h mips.h sparc.h aarch64.h
+diff --git a/src/arch/aarch64.h b/src/arch/aarch64.h
+new file mode 100644
+index 0000000..1912e79
+--- /dev/null
++++ b/src/arch/aarch64.h
+@@ -0,0 +1,147 @@
++/*
++ * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008
++ * Robert Lougher <rob@jamvm.org.uk>.
++ * Copyright (C) 2020 Simon South <simon@simonsouth.net>.
++ *
++ * This file is part of JamVM.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2,
++ * or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++#include <stdint.h>
++
++#define OS_ARCH "aarch64"
++
++#define HANDLER_TABLE_T static const void
++#define DOUBLE_1_BITS 0x3ff0000000000000LL
++
++#define READ_DBL(v,p,l) v = ((u8)p[0]<<56)|((u8)p[1]<<48)|((u8)p[2]<<40) \
++                            |((u8)p[3]<<32)|((u8)p[4]<<24)|((u8)p[5]<<16) \
++                            |((u8)p[6]<<8)|(u8)p[7]; p+=8
++
++/* Needed for i386 -- empty here */
++#define FPU_HACK
++
++#define COMPARE_AND_SWAP_64(addr, old_val, new_val)             \
++({                                                              \
++    int result, read_val;                                       \
++    __asm__ __volatile__ ("                                     \
++        1:      ldaxr %2, %1;                                   \
++                cmp %2, %3;                                     \
++                b.ne 2f;                                        \
++                stlxr %w0, %4, %1;                              \
++                cmp %w0, wzr;                                   \
++                b.ne 1b;                                        \
++        2:      cset %w0, eq;"                                  \
++    : "=&r" (result), "+Q" (*addr), "=&r" (read_val)            \
++    : "r" (old_val), "r" (new_val)                              \
++    : "cc");                                                    \
++    result;                                                     \
++})
++
++#define COMPARE_AND_SWAP_32(addr, old_val, new_val)             \
++({                                                              \
++    int result, read_val;                                       \
++    __asm__ __volatile__ ("                                     \
++        1:      ldaxr %w2, %1;                                  \
++                cmp %w2, %w3;                                   \
++                b.ne 2f;                                        \
++                stlxr %w0, %w4, %1;                             \
++                cmp %w0, wzr;                                   \
++                b.ne 1b;                                        \
++        2:      cset %w0, eq;"                                  \
++    : "=&r" (result), "+Q" (*addr), "=&r" (read_val)            \
++    : "r" (old_val), "r" (new_val)                              \
++    : "cc");                                                    \
++    result;                                                     \
++})
++
++#define COMPARE_AND_SWAP(addr, old_val, new_val)                \
++        COMPARE_AND_SWAP_64(addr, old_val, new_val)
++
++#define LOCKWORD_READ(addr)                                     \
++({                                                              \
++    uintptr_t result;                                           \
++    __asm__ __volatile__ ("                                     \
++                ldar %0, %1;"                                   \
++    : "=r" (result)                                             \
++    : "Q" (*addr)                                               \
++    : "cc");                                                    \
++    result;                                                     \
++})
++
++#define LOCKWORD_WRITE(addr, value)                             \
++({                                                              \
++    __asm__ __volatile__ ("                                     \
++                stlr %1, %0;"                                   \
++    : "=Q" (*addr)                                              \
++    : "r" (value)                                               \
++    : "cc");                                                    \
++})
++
++#define LOCKWORD_COMPARE_AND_SWAP(addr, old_val, new_val)       \
++        COMPARE_AND_SWAP_64(addr, old_val, new_val)
++
++#define FLUSH_CACHE(addr, length)                               \
++{                                                               \
++    uintptr_t start = (uintptr_t) (addr);                       \
++    uintptr_t end = start + length;                             \
++    uintptr_t i;                                                \
++                                                                \
++    for(i = start & aarch64_data_cache_line_mask;               \
++        i < end;                                                \
++        i += aarch64_data_cache_line_len)                       \
++        __asm__ ("dc cvau, %0" :: "r" (i));                     \
++                                                                \
++    __asm__ ("dsb ish");                                        \
++                                                                \
++    for(i = start & aarch64_instruction_cache_line_mask;        \
++        i < end;                                                \
++        i += aarch64_instruction_cache_line_len)                \
++        __asm__ ("ic ivau, %0" :: "r" (i));                     \
++                                                                \
++    __asm__ ("dsb ish; isb");                                   \
++}
++
++#define GEN_REL_JMP(target_addr, patch_addr, patch_size)        \
++({                                                              \
++    int patched = FALSE;                                        \
++                                                                \
++    if(patch_size >= 4) {                                       \
++        /* Guard against the pointer difference being           \
++           larger than the signed range */                      \
++        long long offset = (uintptr_t)(target_addr) -           \
++                           (uintptr_t)(patch_addr);             \
++                                                                \
++        if(offset >= -1<<28 && offset < 1<<28) {                \
++            *(uint32_t*)(patch_addr) = offset>>2 & 0x03ffffff   \
++                                                 | 0x14000000;  \
++            patched = TRUE;                                     \
++        }                                                       \
++    }                                                           \
++    patched;                                                    \
++})
++
++#define MBARRIER() __asm__ ("dmb ish" ::: "memory")
++#define RMBARRIER() __asm__ ("dmb ishld" ::: "memory")
++#define WMBARRIER() __asm__ ("dmb ishst" ::: "memory")
++#define JMM_LOCK_MBARRIER() __asm__ ("dmb ish" ::: "memory")
++#define JMM_UNLOCK_MBARRIER() JMM_LOCK_MBARRIER()
++
++/* Defined in src/os/linux/aarch64/init.c */
++extern unsigned char aarch64_data_cache_line_len;
++extern uintptr_t aarch64_data_cache_line_mask;
++extern unsigned char aarch64_instruction_cache_line_len;
++extern uintptr_t aarch64_instruction_cache_line_mask;
+diff --git a/src/jam.c b/src/jam.c
+index 052f84a..c97524a 100644
+--- a/src/jam.c
++++ b/src/jam.c
+@@ -98,7 +98,8 @@ void showUsage(char *name) {
+ void showVersionAndCopyright() {
+     printf("java version \"%s\"\n", JAVA_COMPAT_VERSION);
+     printf("JamVM version %s\n", VERSION);
+-    printf("Copyright (C) 2003-2014 Robert Lougher <rob@jamvm.org.uk>\n\n");
++    printf("Copyright (C) 2003-2014 Robert Lougher <rob@jamvm.org.uk>\n");
++    printf("Portions Copyright (C) 2020 Simon South <simon@simonsouth.net>\n\n");
+     printf("This program is free software; you can redistribute it and/or\n");
+     printf("modify it under the terms of the GNU General Public License\n");
+     printf("as published by the Free Software Foundation; either version 2,\n");
+diff --git a/src/os/linux/Makefile.am b/src/os/linux/Makefile.am
+index 542094e..83e7dfe 100644
+--- a/src/os/linux/Makefile.am
++++ b/src/os/linux/Makefile.am
+@@ -20,7 +20,7 @@
+ ##
+ 
+ SUBDIRS = @arch@
+-DIST_SUBDIRS = powerpc arm i386 x86_64 parisc mips
++DIST_SUBDIRS = powerpc arm i386 x86_64 parisc mips aarch64
+ 
+ noinst_LTLIBRARIES = libos.la
+ libos_la_SOURCES = os.c
+diff --git a/src/os/linux/aarch64/Makefile.am b/src/os/linux/aarch64/Makefile.am
+new file mode 100644
+index 0000000..0e5134f
+--- /dev/null
++++ b/src/os/linux/aarch64/Makefile.am
+@@ -0,0 +1,28 @@
++##
++## Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010, 2011, 2012
++## Robert Lougher <rob@jamvm.org.uk>.
++##
++## File added by Simon South <simon@simonsouth.net>.
++##
++## This file is part of JamVM.
++##
++## This program is free software; you can redistribute it and/or
++## modify it under the terms of the GNU General Public License
++## as published by the Free Software Foundation; either version 2,
++## or (at your option) any later version.
++##
++## This program is distributed in the hope that it will be useful,
++## but WITHOUT ANY WARRANTY; without even the implied warranty of
++## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++## GNU General Public License for more details.
++##
++## You should have received a copy of the GNU General Public License
++## along with this program; if not, write to the Free Software
++## Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++##
++
++noinst_LTLIBRARIES = libnative.la
++libnative_la_SOURCES = init.c dll_md.c callNative.S
++
++AM_CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
++AM_CCASFLAGS = -I$(top_builddir)/src
+diff --git a/src/os/linux/aarch64/callNative.S b/src/os/linux/aarch64/callNative.S
+new file mode 100644
+index 0000000..e067c4f
+--- /dev/null
++++ b/src/os/linux/aarch64/callNative.S
+@@ -0,0 +1,212 @@
++/*
++ * Copyright (C) 2008, 2009, 2011, 2012 Robert Lougher <rob@jamvm.org.uk>.
++ * Copyright (C) 2020 Simon South <simon@simonsouth.net>.
++ *
++ * This file is part of JamVM.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2,
++ * or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++#include "config.h"
++
++#ifndef USE_FFI
++        .text
++        .arch armv8-a
++        .align 2
++        .global callJNIMethod
++        .type callJNIMethod,function
++
++/*
++ * Arguments passed in:
++ *
++ * x0 JNIEnv
++ * x1 class or NULL
++ * x2 sig
++ * w3 extra arg
++ * x4 ostack
++ * x5 function pntr
++ * w6 args count
++ */
++
++/* Register usage:
++ *
++ * x20 ostack
++ * x19 sig pntr
++ * x16 function pntr
++ * x15 ostack pntr
++ * x14 args pntr
++ * x13 float/double handler
++ * x12 int/long handler
++ * w11 fp regs remaining
++ * w10 int regs remaining
++ * x9 scratch
++ * x2-x7 outgoing int args
++ * x1 outgoing class or this pntr
++ * x0 outgoing JNIEnv (as passed in)
++ *
++ * d0 - d7 outgoing float args
++ */
++
++callJNIMethod:
++        stp     x29, x30, [sp, #-32]!
++        mov     x29, sp
++        stp     x19, x20, [x29, #16]
++
++        sub     sp, sp, w3              /* allocate room for stacked args */
++        mov     x14, sp
++
++        mov     x20, x4                 /* preserve ostack */
++        add     x19, x2, #1             /* init sig pntr -- skipping '(' */
++
++        mov     x16, x5                 /* save function pntr */
++        mov     x15, x20                /* init ostack pntr */
++
++        adr     x13, fp_reg_handlers-8
++        adr     x12, int_reg_handlers-8
++
++        mov     w11, #8                 /* fp regs remaining */
++        mov     w10, #6                 /* int regs remaining */
++
++        cbnz    x1, scan_sig            /* is method non-static? */
++        ldr     x1, [x15], #8           /* yes, load x1 with "this" */
++
++scan_sig:
++        ldrb    w9, [x19], #1           /* get next sig char */
++
++        cmp     w9, #41                 /* ')' */
++        b.eq    done
++
++        cmp     w9, #74                 /* 'J' */
++        b.eq    long
++
++        cmp     w9, #70                 /* 'F' */
++        b.eq    float
++
++        cmp     w9, #68                 /* 'D' */
++        b.eq    double
++
++skip_brackets:
++        cmp     w9, #91                 /* '[' */
++        b.ne    1f
++        ldrb    w9, [x19], #1
++        b       skip_brackets
++1:
++        cmp     w9, #76                 /* 'L' */
++        b.ne    int
++
++skip_ref:
++        ldrb    w9, [x19], #1
++        cmp     w9, #59                 /* ';' */
++        b.ne    skip_ref
++
++int:
++        ldr     x9, [x15], #8
++        cbz     w10, stack_push
++
++load_int_reg:
++        sub     w10, w10, #1
++        add     x12, x12, #8
++        br      x12
++
++int_reg_handlers:
++        mov     x2, x9
++        b       scan_sig
++        mov     x3, x9
++        b       scan_sig
++        mov     x4, x9
++        b       scan_sig
++        mov     x5, x9
++        b       scan_sig
++        mov     x6, x9
++        b       scan_sig
++        mov     x7, x9
++        b       scan_sig
++
++long:
++        ldr     x9, [x15], #16
++        cbz     w10, stack_push
++        b       load_int_reg
++
++float:
++        ldr     w9, [x15], #8
++        cbz     w11, stack_push
++        b       load_fp_reg
++
++double:
++        ldr     x9, [x15], #16
++        cbz     w11, stack_push
++
++load_fp_reg:
++        sub     w11, w11, #1
++        add     x13, x13, #8
++        br      x13
++
++fp_reg_handlers:
++        fmov    d0, x9
++        b       scan_sig
++        fmov    d1, x9
++        b       scan_sig
++        fmov    d2, x9
++        b       scan_sig
++        fmov    d3, x9
++        b       scan_sig
++        fmov    d4, x9
++        b       scan_sig
++        fmov    d5, x9
++        b       scan_sig
++        fmov    d6, x9
++        b       scan_sig
++        fmov    d7, x9
++        b       scan_sig
++
++stack_push:
++        str     x9, [x14], #8
++        b       scan_sig
++
++done:
++        /* Call the function */
++        blr     x16
++
++        mov     sp, x29                 /* Pop argument area */
++
++        ldrb    w9, [x19]               /* Return type */
++
++        cmp     w9, #86                 /* 'V' */
++        b.eq    return
++
++        cmp     w9, #68                 /* 'D' */
++        b.ne    2f
++        str     d0, [x20], #16
++        b       return
++2:
++        cmp     w9, #70                 /* 'F' */
++        b.ne    3f
++        str     s0, [x20], #8
++        b       return
++3:
++        cmp     w9, #74                 /* 'J' */
++        b.ne    4f
++        str     x0, [x20], #16
++        b       return
++4:
++        str     x0, [x20], #8
++
++return:
++        mov     x0, x20                 /* return ostack */
++
++        ldp     x19, x20, [x29, #16]
++        ldp     x29, x30, [sp], #32
++        ret
++#endif
+diff --git a/src/os/linux/aarch64/dll_md.c b/src/os/linux/aarch64/dll_md.c
+new file mode 100644
+index 0000000..189f8a8
+--- /dev/null
++++ b/src/os/linux/aarch64/dll_md.c
+@@ -0,0 +1,59 @@
++/*
++ * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011
++ * Robert Lougher <rob@jamvm.org.uk>.
++ * Copyright (C) 2020 Simon South <simon@simonsouth.net>.
++ *
++ * This file is part of JamVM.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2,
++ * or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++#include "jam.h"
++
++#ifndef USE_FFI
++
++int nativeExtraArg(MethodBlock *mb) {
++    char *sig = mb->type;
++    int stack_args = 0;
++    int int_args = 6;
++    int fp_args = 8;
++
++    while(*++sig != ')')
++        switch(*sig) {
++        case 'F':
++        case 'D':
++            if(fp_args == 0)
++                stack_args += 8;
++            else
++                fp_args--;
++
++        default:
++            if(int_args == 0)
++                stack_args += 8;
++            else
++                int_args--;
++
++            if(*sig == '[')
++                while(*++sig == '[');
++            if(*sig == 'L')
++                while(*++sig != ';');
++            break;
++        }
++
++    /* Ensure the stack remains 16 byte aligned. */
++    return (stack_args + 15) & ~15;
++}
++
++#endif
+diff --git a/src/os/linux/aarch64/init.c b/src/os/linux/aarch64/init.c
+new file mode 100644
+index 0000000..b21dc55
+--- /dev/null
++++ b/src/os/linux/aarch64/init.c
+@@ -0,0 +1,51 @@
++/*
++ * Copyright (C) 2003, 2004, 2005, 2006, 2007
++ * Robert Lougher <rob@jamvm.org.uk>.
++ * Copyright (C) 2020 Simon South <simon@simonsouth.net>.
++ *
++ * This file is part of JamVM.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2,
++ * or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++#include "arch/aarch64.h"
++
++/* Length in bytes of the smallest line in the host system's data cache */
++unsigned char aarch64_data_cache_line_len;
++
++/* Mask used to align a virtual address to a line in the data cache */
++uintptr_t aarch64_data_cache_line_mask;
++
++/* Length in bytes of the smallest line in the host system's instruction
++   cache */
++unsigned char aarch64_instruction_cache_line_len;
++
++/* Mask used to align a virtual address to a line in the instruction cache */
++uintptr_t aarch64_instruction_cache_line_mask;
++
++void initialisePlatform() {
++    unsigned int cache_type;
++
++    /* Extract information from the cache-type register, which describes aspects
++       of the host's cache configuration */
++    __asm__ ("mrs %0, ctr_el0" : "=r" (cache_type));
++
++    aarch64_data_cache_line_len = 4 << ((cache_type >> 16) & 0x0f);
++    aarch64_data_cache_line_mask = ~(aarch64_data_cache_line_len - 1);
++
++    aarch64_instruction_cache_line_len = 4 << (cache_type & 0x0f);
++    aarch64_instruction_cache_line_mask =
++        ~(aarch64_instruction_cache_line_len - 1);
++}
+-- 
+2.26.2
+

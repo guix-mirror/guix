@@ -81,7 +81,7 @@
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
-       ("libcap" ,libcap/next)
+       ("libcap" ,libcap)
        ("libseccomp" ,libseccomp)
        ("nettle" ,nettle)))
     (home-page "https://chrony.tuxfamily.org/")
@@ -144,7 +144,7 @@ time-stamping or reference clock, sub-microsecond accuracy is possible.")
       ;; to run as non-root (when invoked with '-u'.)
       ,@(if (string-suffix? "-linux"
                             (or (%current-target-system) (%current-system)))
-            `(("libcap" ,libcap/next))
+            `(("libcap" ,libcap))
             '())))
    (arguments
     `(#:phases

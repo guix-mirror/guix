@@ -85,6 +85,7 @@
 
              (substitute* "src/options/view.rs"
                (("test!\\(across:.*") "")
+               (("test!\\(cr:.*") "")
                (("test!\\(empty:.*") "")
                (("test!\\(gracross:.*") "")
                (("test!\\(grid:.*") "")

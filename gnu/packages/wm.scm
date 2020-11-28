@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
@@ -72,6 +72,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools) ;for meson-0.55
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -1342,7 +1343,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.10.1")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -1351,32 +1352,35 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j2lh9vc92zhn44rjbia5aw3y1rpgfng1x1h17lcvj5m4i6vj0pc"))))
+        (base32 "01j38lmgs2c6fq68v8b75pkilia2wsgzgp46ivfbi9hhx47kgcfn"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
+       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "xwayland/xwayland.c"
+             (substitute* "xwayland/server.c"
                (("Xwayland") (string-append (assoc-ref inputs
                                                        "xorg-server-xwayland")
                                             "/bin/Xwayland")))
              #t)))))
-    (inputs `(("elogind" ,elogind)
-              ("eudev" ,eudev)
-              ("libinput" ,libinput)
-              ("libxkbcommon" ,libxkbcommon)
-              ("mesa" ,mesa)
-              ("pixman" ,pixman)
-              ("wayland" ,wayland)
-              ("xorg-server-xwayland" ,xorg-server-xwayland)))
-    (native-inputs `(("ffmpeg" ,ffmpeg)
-                     ("libcap" ,libcap)
-                     ("libpng" ,libpng)
-                     ("pkg-config" ,pkg-config)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (propagated-inputs
+     `(;; As required by wlroots.pc.
+       ("elogind" ,elogind)
+       ("eudev" ,eudev)
+       ("libinput" ,libinput)
+       ("libxkbcommon" ,libxkbcommon)
+       ("mesa" ,mesa)
+       ("pixman" ,pixman)
+       ("wayland" ,wayland)
+       ("xcb-util-errors" ,xcb-util-errors)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -1387,9 +1391,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
-    ;; be dropped from the grim package.
-    (version "1.4")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1398,7 +1400,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11qf89y3q92g696a6f4d23qb44gqixg6qxq740vwv2jw59ms34ja"))))
+        (base32 "1xsa3h8zhf29p0mi90baxpr76jkd9pd1gr97ky8cnjbcs4isj9j0"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1427,21 +1429,21 @@ modules for building a Wayland compositor.")
               ("swaybg" ,swaybg)
               ("wayland" ,wayland)
               ("wlroots" ,wlroots)))
-    (native-inputs `(("libcap" ,libcap)
-                     ("linux-pam" ,linux-pam)
-                     ("mesa" ,mesa)
-                     ("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("linux-pam" ,linux-pam)
+       ("mesa" ,mesa)
+       ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Wayland compositor compatible with i3")
     (description "Sway is a i3-compatible Wayland compositor.")
-    (license license:expat)))       ; MIT license
+    (license license:expat)))
 
 (define-public swayidle
   (package
     (name "swayidle")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method git-fetch)
@@ -1450,7 +1452,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05qi96j58xqxjiighay1d39rfanxcpn6vlynj23mb5dymxvlaq9n"))))
+        (base32 "1nd3v8r9549lykdwh4krldfl59lzaspmmai5k1icy7dvi6kkr18r"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")))
@@ -1467,7 +1469,7 @@ modules for building a Wayland compositor.")
 (define-public swaylock
   (package
     (name "swaylock")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -1476,7 +1478,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ii9ql1mxkk2z69dv6bg1x22nl3a46iww764wqjiv78x08xpk982"))))
+        (base32 "0r95p4w11dwm5ra614vddz83r8j7z6gd120z2vcchy7m9b0f15kf"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("gdk-pixbuf" ,gdk-pixbuf)
@@ -1558,7 +1560,7 @@ Wlroots based compositors.")
 (define-public mako
   (package
     (name "mako")
-    (version "1.4")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1567,7 +1569,7 @@ Wlroots based compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11ymiq6cr2ma0iva1mqybn3j6k73bsc6lv6pcbdq7hkhd4f9b7j9"))))
+        (base32 "0hwvibpnrximb628w9dsfjpi30b5jy7nfkm4d94z5vhp78p43vxh"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("elogind" ,elogind)
@@ -1608,10 +1610,10 @@ compositors that support the layer-shell protocol.")
               ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:asd-system-name "stumpwm"
+     '(#:asd-systems '("stumpwm")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'create-symlinks 'build-program
+         (add-after 'create-asdf-configuration 'build-program
            (lambda* (#:key outputs #:allow-other-keys)
              (build-program
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
@@ -1679,20 +1681,15 @@ productive, customizable lisp based systems.")
                       (program (string-append out "/bin/stumpwm")))
                  (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
-                                #:dependencies '("stumpwm"
-                                                 ,@(@@ (gnu packages lisp-xyz) slynk-systems))
+                                #:dependencies '("stumpwm" "slynk")
                                 #:dependency-prefixes
                                 (map (lambda (input) (assoc-ref inputs input))
                                      '("stumpwm" "slynk")))
-                 ;; Remove unneeded file.
-                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
                  #t)))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
-           (delete 'create-asd-file)
-           (delete 'cleanup)
-           (delete 'create-symlinks)))))))
+           (delete 'cleanup)))))))
 
 (define stumpwm-contrib
   (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
@@ -1757,7 +1754,7 @@ productive, customizable lisp based systems.")
      `(("stumpwm" ,stumpwm "lib")
        ("clx-truetype" ,sbcl-clx-truetype)))
     (arguments
-     '(#:asd-system-name "ttf-fonts"
+     '(#:asd-systems '("ttf-fonts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1774,7 +1771,7 @@ rendering.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-pass")
     (arguments
-     '(#:asd-system-name "pass"
+     '(#:asd-systems '("pass")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1791,7 +1788,7 @@ password-store into StumpWM.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-globalwindows")
     (arguments
-     '(#:asd-system-name "globalwindows"
+     '(#:asd-systems '("globalwindows")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1808,7 +1805,7 @@ windows in the current X session.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-swm-gaps")
     (arguments
-     '(#:asd-system-name "swm-gaps"
+     '(#:asd-systems '("swm-gaps")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1825,7 +1822,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-net")
     (arguments
-     '(#:asd-system-name "net"
+     '(#:asd-systems '("net")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1843,7 +1840,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-wifi")
     (arguments
-     '(#:asd-system-name "wifi"
+     '(#:asd-systems '("wifi")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1861,7 +1858,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-stumptray")
     (arguments
-     '(#:asd-system-name "stumptray"
+     '(#:asd-systems '("stumptray")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1883,7 +1880,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-kbd-layouts")
     (arguments
-     '(#:asd-system-name "kbd-layouts"
+     '(#:asd-systems '("kbd-layouts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases

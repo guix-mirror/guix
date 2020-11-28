@@ -48,14 +48,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "2.3.1")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "19a28nsb0w4bs6k8rdfyk6vzrcwdpvhs2wq77rgpmww59yvndrz6"))))
+         "1s70hxhddzf656kmj01lws4cbywgsinbg8750r9ilf7s2sdns79j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -99,52 +99,7 @@
 for Python projects or other documents consisting of multiple reStructuredText
 sources.")
     (license license:bsd-2)
-    (properties `((python2-variant . ,(delay python2-sphinx))))))
-
-;; Sphinx 2 does not support Python 2, so we stick with this older version here.
-;; Remove this package once python2-pbcore no longer requires it.
-(define-public python2-sphinx
-  (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
-    (package
-      (inherit base)
-      (version "1.7.7")
-      (source (origin
-                (method url-fetch)
-                (uri (pypi-uri "Sphinx" version))
-                (sha256
-                 (base32
-                  "0pkkbfj7cl157q550gcs45am5y78ps0h7q6455d64s1zmw01jlvi"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'check 'disable-broken-tests
-               (lambda _
-                 ;; These tests are broken when using Python2:
-                 ;; <https://github.com/sphinx-doc/sphinx/issues/4710>.
-                 (for-each delete-file '("tests/test_api_translator.py"
-                                         "tests/test_setup_command.py"))
-                 #t))))))
-      (native-inputs `(("python2-mock" ,python2-mock)
-                       ("python2-enum34" ,python2-enum34)
-                       ,@(package-native-inputs base)))
-      ;; Sphinx 2 has some dependencies that do not support Python 2, so
-      ;; we keep our own propagated-inputs here instead of inheriting.
-      (propagated-inputs `(("python2-pytz" ,python2-pytz)
-                           ("python2-typing" ,python2-typing)
-                           ("python2-imagesize" ,python2-imagesize)
-                           ("python2-sphinx-alabaster-theme"
-                            ,python2-sphinx-alabaster-theme)
-                           ("python2-babel" ,python2-babel-2.6)
-                           ("python2-snowballstemmer" ,python2-snowballstemmer)
-                           ("python2-docutils" ,python2-docutils-0.14)
-                           ("python2-jinja2" ,python2-jinja2)
-                           ("python2-packaging" ,python2-packaging)
-                           ("python2-pygments" ,python2-pygments)
-                           ("python2-requests" ,python2-requests)
-                           ("python2-six" ,python2-six)
-                           ("python2-sphinxcontrib-websupport"
-                            ,python2-sphinxcontrib-websupport))))))
+    (properties `((python2-variant . ,(delay python-sphinx))))))
 
 (define-public python-sphinxcontrib-applehelp
   (package
@@ -556,14 +511,14 @@ and several other projects.")
 (define-public python-breathe
   (package
     (name "python-breathe")
-    (version "4.13.1")
+    (version "4.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "breathe" version))
        (sha256
         (base32
-         "1aw749n2ry27434qd7gr99dvsrs3x3chyi9aywmhjj1g4m2j6xf6"))))
+         "0snk538xv60z4vfhl3f7v5g658za7257hddkg07cknkn33k6cjvf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)

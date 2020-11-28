@@ -3561,14 +3561,14 @@ text styles of documentation.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.5.2")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q"))))
+         "0i4gnd4q0mgkq0dp5wymn7ca8zjd8fgp63139svs6jf2c6h48wv4"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3577,10 +3577,21 @@ text styles of documentation.")
     (synopsis "Syntax highlighting")
     (description
      "Pygments is a syntax highlighting package written in Python.")
-    (license license:bsd-2)))
+    (license license:bsd-2)
+    (properties `((python2-variant . ,(delay python2-pygments))))))
 
+;; Pygments 2.6 and later does not support Python 2.
 (define-public python2-pygments
-  (package-with-python2 python-pygments))
+  (let ((base (package-with-python2 (strip-python2-variant python-pygments))))
+    (package
+      (inherit base)
+      (version "2.5.2")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "Pygments" version))
+                (sha256
+                 (base32
+                  "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q")))))))
 
 (define-public python-bumpversion
   (package
@@ -4334,14 +4345,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.17")
+    (version "0.29.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1wnaz40hdw4mg5acz5gqb6bhjhn4cvfxg0xdzfy7aa6qn665hqb3"))))
+         "1bcwpra7c6k30yvic3sw2v3rq2dr40ypc4zqif6kr52mpn4wnyp5"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -9334,14 +9345,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.9")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "1jxp2pdi8y4asi7ka1zhx3yx09kv8kzj533f0ds7viz49b0x323m"))))
+         "1xmk3s92d2vq42684p61wixfmh3qpr2mw762w0n6662vhlpqf1xk"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -11320,14 +11331,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "17bd6r9ynp4hyfckkia0bb8gpd98f42jfl5rmzdpbld59bbcaf9i"))))
+         "09ywrmhr6gdyfx6d5727wwjnz73i6rklqcb4c14m7sqc830wi5c1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -16918,14 +16929,14 @@ requirements is not met.")
 (define-public python-pysocks
   (package
     (name "python-pysocks")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PySocks" version))
        (sha256
         (base32
-         "0z4p31bpqm893cf87qqgb30k7nwd8kqfjwwjm5cvxb6zbyj1w0yr"))))
+         "184sg65mbmih6ljblfsxcmq5js5l7dj3gpn618w9q5dy3rbh921z"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (home-page "https://github.com/Anorov/PySocks")

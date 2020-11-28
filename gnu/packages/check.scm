@@ -135,7 +135,7 @@ like Jasmine or Mocha.")
 (define-public check
   (package
     (name "check")
-    (version "0.14.0")
+    (version "0.15.2")
     (source
      (origin
       (method url-fetch)
@@ -143,7 +143,7 @@ like Jasmine or Mocha.")
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "02zkfiyklckmivrfvdsrlzvzphkdsgjrz3igncw05dv5pshhq3xx"))))
+        "02m25y9m46pb6n46s51av62kpd936lkfv3b13kfpckgvmh5lxpm8"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
@@ -156,7 +156,19 @@ faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license license:lgpl2.1+)))
 
-;; Some packages require this older version.  Removed once no longer needed.
+;; Some packages require older versions.  Removed once no longer needed.
+(define-public check-0.14
+  (package
+    (inherit check)
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libcheck/check/releases"
+                                  "/download/" version "/check-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02zkfiyklckmivrfvdsrlzvzphkdsgjrz3igncw05dv5pshhq3xx"))))))
+
 (define-public check-0.12
   (package
    (inherit check)
@@ -924,13 +936,13 @@ and many external plugins.")
   (package
     (inherit (strip-python2-variant python-pytest))
     (name "python2-pytest")
-    (version "4.6.9")
+    (version "4.6.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest" version))
               (sha256
                (base32
-                "0fgkmpc31nzy97fxfrkqbzycigdwxwwmninx3qhkzp81migggs0r"))))
+                "0ls3pqr86xgif6bphsb6wrww9r2vc7p7a2naq8zcq8115wwq5yjh"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -1562,14 +1574,14 @@ have failed since the last commit or what tests are currently failing.")))
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "5.0.3")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "1vrg8panqw79pswg52ygbrff3wdnxarrd9qz6c64ah0c4h2cmbvp"))))
+         "16z8i18msgs8k74n73dj9x49wzkl0vk4vq8k5pl1bsj70y7b4k53"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.

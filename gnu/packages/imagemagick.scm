@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,14 +49,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.11-11")
+    (version "6.9.11-34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1b67rrppvm04aqr76qky5h2a0j2d161h8kwa04fv611w5xwandr2"))))
+               "0acdjkkgjgpfcwj9h9zncywjjrrgb9sh0cvfn3jamjxh5byf638s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
@@ -123,6 +124,20 @@ and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
     (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
+
+;; XXX: 'transcode' fails to detect the above ImageMagick, so we provide
+;; this newer version.
+(define-public imagemagick-next
+  (package
+    (inherit imagemagick)
+    (version "6.9.11-37")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "19r6fyhr1bycx0p6jz034mil1zh2k7hfr02is40h4g3wf9b9sdni"))))))
 
 (define-public perl-image-magick
   (package

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,9 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.15.0")
+    ;; Note: check "guix refresh -l -e '(@ (gnu packages valgrind) valgrind)'"
+    ;; when updating this package to find which branch it should go to.
+    (version "3.16.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://sourceware.org/pub/valgrind"
@@ -41,7 +44,7 @@
                                         "/valgrind-" version ".tar.bz2")))
               (sha256
                (base32
-                "1ccawxrni8brcvwhygy12iprkvz409hbr9xkk1bd03gnm2fplz21"))
+                "1jik19rcd34ip8a5c9nv5wfj8k8maqb8cyclr4xhznq2gcpkl7y9"))
               (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
@@ -70,9 +73,6 @@
                (mkdir-p dest)
                (rename-file orig dest)
                #t))))))
-    (inputs
-     ;; GDB is needed to provide a sane default for `--db-command'.
-     `(("gdb" ,gdb)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://www.valgrind.org/")
@@ -82,4 +82,15 @@
 tools.  There are Valgrind tools that can automatically detect many memory
 management and threading bugs, and profile your programs in detail.  You can
 also use Valgrind to build new tools.")
-    (license gpl2+)))
+    (license gpl2+)
+
+    ;; Hide this variant so end users get the "interactive" Valgrind below.
+    (properties '((hidden? . #t)))))
+
+(define-public valgrind/interactive
+  (package/inherit
+   valgrind
+   (inputs
+    ;; GDB is needed to provide a sane default for `--db-command'.
+    `(("gdb" ,gdb)))
+   (properties '())))

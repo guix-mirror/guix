@@ -79,7 +79,7 @@
                 "0svybbrvpf6q955y6fclxh3md64z0dgmh0x54x2j60503hhs071m"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -470,7 +470,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
            (lambda _ (setenv "HOME" "/tmp") #t)))
        #:tests? #f)) ; tests require running dbus service
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs

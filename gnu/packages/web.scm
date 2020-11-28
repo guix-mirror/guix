@@ -1348,15 +1348,15 @@ perform the opening handshake in HTTP.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.21.0")
+    (version "0.21.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
-                                  "releases/download/libpsl-" version
+                                  "releases/download/" version
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "04pfagb7ppq3yibx4lhazd1v9nwkxdfkyy2rgcrmrf3mldsirga1"))))
+                "0k0d46bbh1jj2ll369f134vciplrzbqkg7fv9m62bl6lzghy2v5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1621,15 +1621,18 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pyyaml.org/download/libyaml/yaml-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))
+        (base32
+         "1x4fcw13r3lqy8ndydr3ili87wicplw2awbcv6r21qgyfndswhn6"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "https://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
     (description
@@ -5101,7 +5104,7 @@ commenting.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("check" ,check)))               ;for tests
+       ("check" ,check-0.14)))          ;for tests
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libwapcaplet/")
     (synopsis "String internment library")
@@ -5150,6 +5153,7 @@ written in C.  It is developed as part of the NetSurf project.")
              (url "https://github.com/tlsa/libcyaml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
+       (patches (search-patches "libcyaml-libyaml-compat.patch"))
        (sha256
         (base32 "0428p0rwq71nhh5nzcbapsbrjxa0x5l6h6ns32nxv7j624f0zd93"))))
     (build-system gnu-build-system)

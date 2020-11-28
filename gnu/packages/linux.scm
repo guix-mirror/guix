@@ -157,6 +157,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix utils)
+  #:use-module (guix deprecation)    ;for libcap/next
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
@@ -1302,7 +1303,7 @@ application by hooking GStreamer into the loopback device.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
@@ -1311,7 +1312,7 @@ application by hooking GStreamer into the loopback device.")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "1nyh9kdi3knhxcbv5v4snya0g3gff0m671lnvqcbygw3rm77mx7g"))
+         "0d6hvz6lpkac08hw5wnlhfdm0fhqd0n6jf6v7fz3jhg6a6694vfd"))
        (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
@@ -2054,7 +2055,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.2")
+    (version "1.2.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2062,7 +2063,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1v5kb8jyvrpkvvq7dq8hfbmcj68lml97i4s0prxpfx2mh3c57s6q"))))
+               "05dyk856ppvqymazyk1cmpln53g88cq1wjpnsygqrvnamyvwa7z8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -2078,14 +2079,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1wz460by17rmxrcydn583rd4lhj6wlvqs6x1j5pdzxn5g3app024"))))
+               "1ai1z4kf91b1m3qrpwqkc1af5vm2fkdkknqv95xdwf19q94aw6gz"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -2417,7 +2418,7 @@ network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
       (license license:gpl2+))))
 
-(define-public libcap
+(define-public libcap-2.31
   (package
     (name "libcap")
     (version "2.31")
@@ -2456,12 +2457,13 @@ Linux-based operating systems.")
     ;; License is BSD-3 or GPLv2, at the user's choice.
     (license license:gpl2)))
 
-;; libcap 2.31 causes problems for 'fakeroot', so provide this newer variant.
+;; libcap 2.31 has problems with newer kernels, so provide this newer variant.
+;; Keep the old libcap around to avoid rebuilding 'coreutils' and 'avahi'.
 ;; To be merged with libcap on the next rebuild cycle.
-(define-public libcap/next
+(define-public libcap
   (package
-    (inherit libcap)
-    (version "2.34")
+    (inherit libcap-2.31)
+    (version "2.44")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2469,7 +2471,22 @@ Linux-based operating systems.")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "048n1gy2p48vl9hkrr9wymfxxcpwj2aslz2bv79nhl4m2lhd9kdf"))))))
+                "1qf80lifygbnxwvqjf8jz5j24n6fqqx4ixnkbf76xs2vrmcq664j"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libcap-2.31)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda _
+               ;; Add $libdir to the RUNPATH of executables.
+               (substitute* "Make.Rules"
+                 (("LDFLAGS \\?= #-g")
+                  (string-append "LDFLAGS ?= -Wl,-rpath="
+                                 %output "/lib")))
+               #t))))))))
+
+(define-deprecated libcap/next libcap)
+(export libcap/next)
 
 (define-public bridge-utils
   (package
@@ -4647,7 +4664,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.54")
+    (version "5.55")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4655,7 +4672,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1p2ncvjz6alr9n3l5wvq2arqgc7xjs6dqyar1l9jp0z8cfgapkb8"))))
+                "124v9s4y1s7s6klx5vlmzpk1jlr4x84ch7r7scm7x2f42dqp2qw8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4664,6 +4681,8 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                "--localstatedir=/var"
                "--enable-library"
                "--disable-systemd"
+               ;; TODO: is this needed?  Not installed by default since 5.55.
+               "--enable-hid2hci"
                ;; Install dbus/udev files to the correct location.
                (string-append "--with-dbusconfdir=" out "/etc")
                (string-append "--with-udevdir=" out "/lib/udev")))
@@ -6043,43 +6062,40 @@ set the screen to be pitch black at a value of 0 (or higher).
     (license license:gpl3+)))
 
 (define-public brightnessctl
-  (let ((commit "6a791e7694aeeb5d027f71c6098e5182cf03371c"))
-    (package
-      (name "brightnessctl")
-      (version (git-version "0.4" "0" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Hummer12007/brightnessctl/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1n1gb8ldgqv3vs565yhk1w4jfvrviczp94r8wqlkv5q6ab43c8w9"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f                    ; no tests
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output)
-                            (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'adjust-udev-rules
-             (lambda _
-               (substitute* "90-brightnessctl.rules"
-                 (("/bin/") "/run/current-system/profile/bin/"))
-               #t)))))
-      (home-page "https://github.com/Hummer12007/brightnessctl")
-      (synopsis "Backlight and LED brightness control")
-      (description
-       "This program allows you read and control device brightness.  Devices
+  (package
+    (name "brightnessctl")
+    (version "0.5.1")
+    (home-page "https://github.com/Hummer12007/brightnessctl")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0immxc7almmpg80n3bdn834p3nrrz7bspl2syhb04s3lawa5y2lq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output)
+                          (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'adjust-udev-rules
+           (lambda _
+             (substitute* "90-brightnessctl.rules"
+               (("/bin/") "/run/current-system/profile/bin/"))
+             #t)))))
+    (synopsis "Backlight and LED brightness control")
+    (description
+     "This program allows you read and control device brightness.  Devices
 include backlight and LEDs.  It can also preserve current brightness before
 applying the operation, such as on lid close.
 
 The appropriate permissions must be set on the backlight or LED control
 interface in sysfs, which can be accomplished with the included udev rules.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public tlp
   (package
@@ -7101,7 +7117,7 @@ the superuser to make device nodes.")
        ("xz" ,xz)))
     (inputs
      `(("acl" ,acl)
-       ("libcap" ,libcap/next)
+       ("libcap" ,libcap)
        ("util-linux" ,util-linux)
        ("sed" ,sed)
        ("coreutils" ,coreutils)))

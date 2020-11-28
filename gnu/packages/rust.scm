@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
-;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
@@ -422,7 +422,9 @@ test = { path = \"../libtest\" }
      `(("bison" ,bison) ; For the tests
        ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb)   ; For the tests
+       ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
+       ;; See <https://bugs.gnu.org/37810>.  Use it on all Rusts for simplicity.
+       ("gdb" ,gdb-8.2) ; For the tests
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rustc-bootstrap" ,mrustc)
@@ -758,6 +760,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           (patches (search-patches
                      "rust-coresimd-doctest.patch"
                      "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
+      (inputs
+       (alist-replace "openssl" (list openssl)
+                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -800,7 +805,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
                    (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
-             ;; TODO(rebuild-rust): Remove this phase in rust-1.28 when rebuilding.
              (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
                (lambda* _
                  ;; This test failed to work on "nightly" channel builds
@@ -829,11 +833,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                    "rust-bootstrap-stage0-test.patch"
                                    "rust-1.25-accept-more-detailed-gdb-lines.patch"
                                    "rust-reproducible-builds.patch"))))
-      (native-inputs
-       ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
-       ;; See <https://bugs.gnu.org/37810>.
-       (alist-replace "gdb" (list gdb-8.2)
-                      (package-native-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -885,6 +884,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/test/run-pass/issue-44056.rs"
                    (("only-x86_64") "ignore-test"))
                  #t))
+             ;; This is no longer needed as of 1.28
+             (delete 'disable-cargo-test-for-nightly-channel)
              ;; The thinlto test should pass with llvm 6.
              (delete 'disable-thinlto-test))))))))
 
@@ -1147,14 +1148,13 @@ move around."
                    (setenv "CARGO_HOME" cargo-home)
                    #t))))))))))
 
-;; TODO(rebuild-rust): Switch to LLVM 9 in 1.38 instead of 1.40.
 (define-public rust-1.38
   (let ((base-rust
          (rust-bootstrapped-package rust-1.37 "1.38.0"
            "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
     (package
       (inherit base-rust)
-      #;(inputs
+      (inputs
         (alist-replace "llvm" (list llvm-9)
                        (package-inputs base-rust)))
       (arguments
@@ -1197,9 +1197,6 @@ move around."
            "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
     (package
       (inherit base-rust)
-      (inputs
-        (alist-replace "llvm" (list llvm-9)
-                       (package-inputs base-rust)))
       (source
         (origin
           (inherit (package-source base-rust))
@@ -1254,8 +1251,6 @@ move around."
                  ,(patch-command-exec-tests-phase
                     '(match (find-files "src/test" "command-exec\\.rs")
                        ((file) file))))
-               ;; TODO(rebuild-rust): The test in question got fixed long ago.
-               (delete 'disable-cargo-test-for-nightly-channel)
                ;; The test got removed in commit 000fe63b6fc57b09828930cacbab20c2ee6e6d15
                ;; "Remove painful test that is not pulling its weight"
                (delete 'remove-unsupported-tests)))))))))
@@ -1324,4 +1319,4 @@ move around."
     "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
-(define-public rust rust-1.39)
+(define-public rust rust-1.45)

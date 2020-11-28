@@ -79,6 +79,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
@@ -977,7 +978,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -985,8 +986,10 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v8n3dswx7rxqfd0q03xwc7j2w1mv8lv18rdxv487a1xw5vklfad"))))
+                "0zdk4afdrrr1539f2q15zja19j4wwfmpswzws2ffgflcnhywlxhr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--disable-static")))
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
     (inputs
@@ -1906,8 +1909,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))
-     (patches (search-patches "grim-revert-output-rotation.patch"))))
+      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("scdoc" ,scdoc)))
@@ -1924,7 +1926,7 @@ identical visual appearance.")
 (define-public slurp
   (package
    (name "slurp")
-   (version "1.2.0")
+   (version "1.3.1")
    (source
     (origin
      (method git-fetch)
@@ -1933,18 +1935,20 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0580m6kaiilgsrcj608r837r37sl6a25y7w21p7d6ij20fs3gvg1"))))
+      (base32 "1fby2v2ylcadgclds05wpkl9xi2r9dfz49dqyqpn20rjv1wnz3jv"))))
    (build-system meson-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("cairo" ,cairo)
-             ("scdoc" ,scdoc)
-             ("wayland" ,wayland)
-             ("wayland-protocols" ,wayland-protocols)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("scdoc" ,scdoc)))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libxkbcommon" ,libxkbcommon)
+      ("wayland" ,wayland)
+      ("wayland-protocols" ,wayland-protocols)))
    (home-page "https://github.com/emersion/slurp")
    (synopsis "Select a region in a Wayland compositor")
    (description "Slurp can select a region in a Wayland compositor and print it
 to the standard output.  It works well together with grim.")
-   ;; MIT license.
    (license license:expat)))
 
 (define-public sng

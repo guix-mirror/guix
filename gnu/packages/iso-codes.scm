@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages gettext)
@@ -31,21 +32,22 @@
 (define-public iso-codes
   (package
     (name "iso-codes")
-    (version "3.77")
+    (version "4.5.0")
+    (home-page "https://salsa.debian.org/iso-codes-team/iso-codes")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://pkg-isocodes.alioth.debian.org/downloads/iso-codes-"
-                   version ".tar.xz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url home-page)
+                   (commit (string-append "iso-codes-" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "140dgygv22a49xb8x1941xr5ff12cphd9zzwxds98pgrqsj77k91"))))
+               "1q6x9c5x4x0x4q11iygldsmxdyzhz1mb4n8im76glwsgqsqyjs80"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("python" ,python-wrapper)))
-    (home-page "https://salsa.debian.org/iso-codes-team/iso-codes")
     (synopsis "Various ISO standards")
     (description
      "This package provides lists of various ISO standards (e.g. country,
