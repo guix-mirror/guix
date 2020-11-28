@@ -11189,7 +11189,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "52.0")
+    (version "53.0")
     (source
      (origin
        (method url-fetch)
@@ -11197,17 +11197,13 @@ highlights quasi-quoted expressions.")
              "https://github.com/tvraman/emacspeak/releases/download/"
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
-        (base32 "0x5b0s38r5ih2lk7f5hasi9arrgxlmmq5jaddadbxi8in2gw2jzl"))))
+        (base32 "0lasj4ggsh93ingf46n16wxfx5zzxvr1igikbmdqlz3i99j331gs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-symlink
-           (lambda _
-             (delete-file "lisp/sudoku.el")
-             #t))
          (replace 'configure
            (lambda _
              (setenv "SHELL" (which "sh"))
