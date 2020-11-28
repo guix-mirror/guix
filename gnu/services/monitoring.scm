@@ -128,18 +128,33 @@ HTTP.")
   (web-listen-address prometheus-node-exporter-web-listen-address
                       (default ":9100")))
 
+(define %prometheus-node-exporter-accounts
+  (list (user-account
+         (name "prometheus-node-exporter")
+         (group "prometheus-node-exporter")
+         (system? #t)
+         (comment "Prometheus node exporter daemon user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))
+        (user-group
+         (name "prometheus-node-exporter")
+         (system? #t))))
+
 (define prometheus-node-exporter-shepherd-service
   (match-lambda
     (( $ <prometheus-node-exporter-configuration>
          package web-listen-address)
-     (shepherd-service
-      (documentation "Prometheus node exporter.")
-      (provision '(prometheus-node-exporter))
-      (requirement '(networking))
-      (start #~(make-forkexec-constructor
-                (list #$(file-append package "/bin/node_exporter")
-                      "--web.listen-address" #$web-listen-address)))
-      (stop #~(make-kill-destructor))))))
+     (list
+      (shepherd-service
+       (documentation "Prometheus node exporter.")
+       (provision '(prometheus-node-exporter))
+       (requirement '(networking))
+       (start #~(make-forkexec-constructor
+                 (list #$(file-append package "/bin/node_exporter")
+                       "--web.listen-address" #$web-listen-address)
+                 #:user "prometheus-node-exporter"
+                 #:group "prometheus-node-exporter"))
+       (stop #~(make-kill-destructor)))))))
 
 (define prometheus-node-exporter-service-type
   (service-type
@@ -148,9 +163,11 @@ HTTP.")
     "Run @command{node_exporter} to serve hardware and OS metrics to
 Prometheus.")
    (extensions
-    (list (service-extension
-           shepherd-root-service-type
-           (compose list prometheus-node-exporter-shepherd-service))))
+    (list
+     (service-extension account-service-type
+                        (const %prometheus-node-exporter-accounts))
+     (service-extension shepherd-root-service-type
+                        prometheus-node-exporter-shepherd-service)))
    (default-value (prometheus-node-exporter-configuration))))
 
 
