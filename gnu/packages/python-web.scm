@@ -4467,13 +4467,13 @@ in various CSS modules.")
 (define-public python-cssselect2
   (package
     (name "python-cssselect2")
-    (version "0.2.2")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cssselect2" version))
        (sha256
-        (base32 "0skymzb4ncrm2zdsy80f53vi0arf776lvbp51hzh4ayp1il5lj3h"))))
+        (base32 "1j2fcr217rsvkipsg6zjq03rl64rxnvb5hqqpx0dv58fhspvkywk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
