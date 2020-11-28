@@ -314,7 +314,7 @@ languages.")
               (files '("share/info"))))))))
 
 (define-public emacs-next-pgtk
-  (let ((commit "3df4ca451d41a5f1036713277ef55ca9734c6fa7")
+  (let ((commit "d46a223d8595e8edb67c6361033625797503cacf")
         (revision "0"))
     (package/inherit emacs-next
       (name "emacs-next-pgtk")
@@ -323,12 +323,12 @@ languages.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/masm11/emacs")
+               (url "https://git.savannah.gnu.org/git/emacs.git/")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1c677c97b9avhlzysg09cvf6bd69iz41ggppnszw8chhphk3knfc"))))
+           "1fhkgqsdpy3qkf8wyjvavnfyh8byxh0h80n0448rkg9k0lrkl4wf"))))
       (arguments
        (substitute-keyword-arguments (package-arguments emacs-next)
          ((#:configure-flags flags ''())
