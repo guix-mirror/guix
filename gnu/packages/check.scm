@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +82,8 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1))
 
 (define-public pedansee
   (package
@@ -931,6 +933,45 @@ and many external plugins.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-pytest))))))
 
+(define-public python-pytest-6
+  (package
+    (inherit (strip-python2-variant python-pytest))
+    (version "6.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest" version))
+       (sha256
+        (base32
+         "0gl2sdm322vzmsh5k4f8kj9raiq2y7kdinnca4m45ifvii5fk9y0"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (setenv "TERM" "dumb")     ;attempt disabling markup tests
+             (if tests?
+                 (invoke "pytest" "-vv" "-k"
+                         (string-append
+                          ;; This test involve the /usr directory, and fails.
+                          " not test_argcomplete"
+                          ;; These test do not honor the isatty detection and
+                          ;; fail.
+                          " and not test_code_highlight"
+                          " and not test_color_yes"))
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (propagated-inputs
+     (append (alist-delete "python-py"
+                           (package-propagated-inputs python-pytest))
+             `(("python-py" ,python-py-next))))
+    (native-inputs
+     (append (alist-delete "python-pytest"
+                           (package-native-inputs python-pytest))
+             `(("python-pytest" ,python-pytest-6-bootstrap)
+               ("python-toml" ,python-toml)
+               ("python-iniconfig" ,python-iniconfig))))))
+
 ;; Pytest 4.x are the last versions that support Python 2.
 (define-public python2-pytest
   (package
@@ -974,6 +1015,15 @@ and many external plugins.")
     (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
     (arguments `(#:tests? #f))
     (properties `((python2-variant . ,(delay python2-pytest-bootstrap))))))
+
+(define-public python-pytest-6-bootstrap
+  (package
+    (inherit (strip-python2-variant python-pytest-6))
+    (name "python-pytest-bootstrap")
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)))))
 
 (define-public python2-pytest-bootstrap
   (hidden-package
