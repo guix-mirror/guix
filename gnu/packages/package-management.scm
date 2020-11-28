@@ -572,14 +572,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.8")
+    (version "2.3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "0amd5nnqslvkfpz042l4ydihw2qsy68nmjbwaagcrggaq4irh4f7"))))
+               "1yi2c1fp33sxv9j0pvxlpxs1dhq3axrwkxdwr867ll90lbdiycvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
