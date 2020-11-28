@@ -36,8 +36,12 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:export (darkstat-configuration
-            prometheus-node-exporter-configuration
             darkstat-service-type
+
+            prometheus-node-exporter-configuration
+            prometheus-node-exporter-configuration?
+            prometheus-node-exporter-configuration-package
+            prometheus-node-exporter-web-listen-address
             prometheus-node-exporter-service-type
 
             zabbix-server-configuration
@@ -110,6 +114,11 @@ HTTP.")
           (service-extension shepherd-root-service-type
                              (compose list darkstat-shepherd-service))))))
 
+
+;;;
+;;; Prometheus node exporter
+;;;
+
 (define-record-type* <prometheus-node-exporter-configuration>
   prometheus-node-exporter-configuration
   make-prometheus-node-exporter-configuration
@@ -137,7 +146,7 @@ HTTP.")
    (name 'prometheus-node-exporter)
    (description
     "Run @command{node_exporter} to serve hardware and OS metrics to
-prometheus.")
+Prometheus.")
    (extensions
     (list (service-extension
            shepherd-root-service-type
