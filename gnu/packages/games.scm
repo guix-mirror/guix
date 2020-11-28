@@ -6879,17 +6879,23 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
 (define-public nudoku
   (package
     (name "nudoku")
-    (version "1.0.0")
-    (source (origin
-	      (method url-fetch)
-	      (uri (string-append "https://github.com/jubalh/nudoku/"
-                                  "releases/download/" version
-                                  "/nudoku-" version ".tar.xz"))
-	      (sha256
-               (base32
-                "0nr2j2z07nxk70s8xnmmpzccxicf7kn5mbwby2kg6aq8paarjm8k"))))
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jubalh/nudoku.git")
+             (commit version)))
+       (sha256
+        (base32 "12v00z3p0ymi8f3w4b4bgl4c76irawn3kmd147r0ap6s9ssx2q6m"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (home-page "https://jubalh.github.io/nudoku/")
     (synopsis "Sudoku for your terminal")
     (description "Nudoku is a ncurses-based Sudoku game for your terminal.")
