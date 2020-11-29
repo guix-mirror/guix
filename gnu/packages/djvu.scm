@@ -39,12 +39,15 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public djvulibre
@@ -397,4 +400,90 @@ It is able to:
      "@code{didjvu} uses the @code{Gamera} framework to separate the foreground
 and background layers of images, which can then be encoded into a DjVu file.")
     (home-page "https://jwilk.net/software/didjvu")
+    (license license:gpl2)))
+
+(define-public ocrodjvu
+  (package
+    (name "ocrodjvu")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jwilk/ocrodjvu/releases/download/" version
+             "/ocrodjvu-" version ".tar.xz"))
+       (sha256
+        (base32 "09w9rqr7z2jd5kwp178zz2yrsc82mxs7gksipg92znxzgzhmw2ng"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("libxml2" ,libxml2)
+       ("python2-nose" ,python2-nose)
+       ("python2-pillow" ,python2-pillow)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("ocrad" ,ocrad)
+       ("python" ,python-2)
+       ("python2-djvulibre" ,python2-djvulibre)
+       ("python2-html5lib" ,python2-html5lib)
+       ("python2-lxml" ,python2-lxml)
+       ("python2-pyicu" ,python2-pyicu)
+       ("python2-subprocess32" ,python2-subprocess32)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build python-build-system))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             (substitute* "tests/test_ipc.py"
+               ;; test_wait_signal gets stuck forever
+               (("yield self\\._test_signal, name")
+                "return True")
+               ;; test_path fails to find a file it should have created
+               (("path = os\\.getenv\\('PATH'\\)\\.split\\(':'\\)")
+                "return True"))
+             ;; Disable tests with tesseract. They can't work without
+             ;; the language files that must downloaded by the final user
+             ;; as they are not packaged in Guix.
+             (substitute* "tests/ocrodjvu/test.py"
+               (("engines = stdout\\.getvalue\\(\\)\\.splitlines\\(\\)")
+                "engines = ['ocrad']"))
+             (substitute* "tests/ocrodjvu/test_integration.py"
+               (("engines = 'tesseract', 'cuneiform', 'gocr', 'ocrad'")
+                "engines = 'ocrad'"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make"
+                       "DESTDIR="
+                       (string-append "PREFIX=" out)
+                       "install"))))
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'wrap-python 'wrap-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (djvulibre (assoc-ref inputs "djvulibre"))
+                   (ocrad (assoc-ref inputs "ocrad"))
+                   (tesseract (assoc-ref inputs "tesseract-ocr")))
+               (for-each (lambda (file)
+                           (wrap-program (string-append out "/bin/" file)
+                             `("PATH" ":" prefix
+                               (,(string-append djvulibre "/bin:"
+                                                ocrad "/bin:"
+                                                tesseract "/bin")))))
+                         '("djvu2hocr"
+                           "hocr2djvused"
+                           "ocrodjvu"))))))))
+    (synopsis "Program to perform OCR on DjVu files")
+    (description
+     "@code{ocrodjvu} is a wrapper for OCR systems, that allows you to perform
+OCR on DjVu files.")
+    (home-page "https://jwilk.net/software/ocrodjvu")
     (license license:gpl2)))
