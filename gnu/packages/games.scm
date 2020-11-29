@@ -6887,6 +6887,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
        (uri (git-reference
              (url "https://github.com/jubalh/nudoku.git")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "12v00z3p0ymi8f3w4b4bgl4c76irawn3kmd147r0ap6s9ssx2q6m"))))
     (build-system gnu-build-system)
