@@ -11549,3 +11549,33 @@ with a complex event filtering system.")
 
 (define-public ecl-deeds
   (sbcl-package->ecl-package sbcl-deeds))
+
+(define-public sbcl-make-hash
+  ;; no tagged branch
+  (let ((revision "1")
+        (commit "ae0909cd8e697520a1085fac6f54ac2b448ebd21"))
+    (package
+      (name "sbcl-make-hash")
+      (version (git-version "1.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/genovese/make-hash")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1qa4mcmb3pv44py0j129dd8hjx09c2akpnds53b69151mgwv5qz8"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/genovese/make-hash")
+      (synopsis "Common Lisp package for flexible hash table creation")
+      (description
+       "This is a Common Lisp package for hash table creation with flexible,
+extensible initializers.")
+      (license license:bsd-3))))
+
+(define-public cl-make-hash
+  (sbcl-package->cl-source-package sbcl-make-hash))
+
+(define-public ecl-make-hash
+  (sbcl-package->ecl-package sbcl-make-hash))
