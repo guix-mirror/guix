@@ -11514,3 +11514,38 @@ applications with foreign library dependencies that run some kind of GUI.")
 
 (define-public ecl-deploy
   (sbcl-package->ecl-package sbcl-deploy))
+
+(define-public sbcl-deeds
+  ;; taged branch is outdated
+  (let ((revision "1")
+        (commit "f5df54eac79b58a34030e0eb8acf3952c788410d"))
+    (package
+      (name "sbcl-deeds")
+      (version (git-version "1.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/deeds")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "062cnb2dwli6pw3zvv46jfxyxdzcbzwsck5pa6nw03qf1j1hyg3k"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)))
+      (home-page "https://github.com/Shinmera/deeds")
+      (synopsis "Extensible Event Delivery System")
+      (description
+       "@code{deeds} allows for efficient event delivery to multiple handlers
+with a complex event filtering system.")
+      (license license:zlib))))
+
+(define-public cl-deeds
+  (sbcl-package->cl-source-package sbcl-deeds))
+
+(define-public ecl-deeds
+  (sbcl-package->ecl-package sbcl-deeds))
