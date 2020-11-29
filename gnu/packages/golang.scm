@@ -1191,6 +1191,46 @@ Features include:
 optimized for performance yet simple to use.")
       (license license:expat))))
 
+(define-public go-github-com-tomnomnom-gron
+  (package
+    (name "gron")
+    (version "0.6.0")
+    (home-page "https://github.com/tomnomnom/gron")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05f3w4zr15wd7xk75l12y5kip4gnv719a2x9w2hy23q3pnss9wk0"))))
+    (build-system go-build-system)
+    (arguments
+     (let ((import-path "github.com/tomnomnom/gron"))
+       `(#:import-path ,import-path
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'check 'remove-non-source
+             (lambda _
+               (for-each (lambda (dir)
+                           (delete-file-recursively
+                            (string-append "src/" ,import-path dir)))
+                         '("/docs" "/script" "/testdata"))
+               #t))))))
+    (inputs
+     `(("github.com/fatih/color" ,go-github-com-fatih-color)
+       ("github.com/mattn/go-colorable" ,go-github-com-mattn-go-colorable)
+       ("github.com/mattn/go-isatty" ,go-github-com-mattn-go-isatty)
+       ("github.com/nwidger/jsoncolor" ,go-github-com-nwidger-jsoncolor)
+       ("github.com/pkg/errors" ,go-github-com-pkg-errors)))
+    (synopsis "Transform JSON to make it easier to grep")
+    (description
+     "This package transforms JSON into discrete assignments to make it easier
+to use line-based tools such as grep to search for what you want and see the
+absolute \"path\" to it.")
+    (license license:expat)))
+
 (define-public go-github-com-tv42-httpunix
   (let ((commit "2ba4b9c3382c77e7b9ea89d00746e6111d142a22")
         (revision "0"))
