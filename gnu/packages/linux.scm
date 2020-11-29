@@ -2825,7 +2825,7 @@ user-space processes.")
 (define-public unionfs-fuse
   (package
     (name "unionfs-fuse")
-    (version "2.0")
+    (version "2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2834,7 +2834,7 @@ user-space processes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lb8zgdxnjy2fjr2284hvdfn7inc1in44ynzgcr66x54bxzvynj6"))))
+                "0bwx70x834qgqh53vqp18bhbxbsny80hz922rbgj8k9wj7cbfilm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)))
