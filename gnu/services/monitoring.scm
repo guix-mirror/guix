@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -343,7 +343,7 @@ configuration file."))
    (group "zabbix")
    "Group who will run the Zabbix agent.")
   (hostname
-   (string "Zabbix server")
+   (string "")
    "Unique, case sensitive hostname which is required for active checks and
 must match hostname as configured on the server.")
   (log-type
