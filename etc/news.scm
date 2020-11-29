@@ -19,6 +19,7 @@
  (version 0)
  (entry (commit "79f9dee3c4c0e6d21066f142116a537207ae7ba4")
         (title (en "Local substitute servers discovery is now supported")
+               (de "Substitutserver können jetzt im lokalen Netz erkannt werden")
                (fr "La découverte des serveurs de substituts locaux est désormais supportée"))
         (body
          (en "The @command{guix-daemon} can now discover local substitute
@@ -26,6 +27,13 @@ servers when the @option{--discover} option is passed.  Only the substitute
 servers started with the @option{--advertise} option will be discovered.  The
 network discovery is based on mDNS and DNS-SD protocols, using Guile-Avahi
 library for now.")
+         (de "Mit dem @command{guix-daemon} können jetzt lokal laufende
+Substitutserver erkannt werden, wenn die Befehlszeilenoption
+@option{--discover} übergeben wurde.  Nur solche Substitutserver werden
+gefunden, die mit der Befehlszeilenoption @option{--advertise} gestartet
+wurden.  Die Ermittlung im Netzwerk verfügbarer Substitutserver baut auf den
+Protokollen mDNS und DNS-SD auf.  Derzeit wird dazu die Bibliothek Guile-Avahi
+benutzt.")
          (fr "Le @command{guix-daemon} peut désormais découvrir les serveurs
 de substituts locaux lorsque l'option @option{--discover} est passée.  Seuls
 les serveurs de substituts démarrés avec l'option{--advertise} seront
