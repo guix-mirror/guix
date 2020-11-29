@@ -1471,7 +1471,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/picard-fix-id3-rename-test.patch		\
   %D%/packages/patches/picprog-non-intel-support.patch		\
   %D%/packages/patches/pidgin-add-search-path.patch		\
-  %D%/packages/patches/pidgin-libnm.patch			\
   %D%/packages/patches/pinball-const-fix.patch			\
   %D%/packages/patches/pinball-cstddef.patch			\
   %D%/packages/patches/pinball-missing-separators.patch		\

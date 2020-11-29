@@ -718,25 +718,22 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.13.0")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "mirror://sourceforge/pidgin/Pidgin/"
-                       version "/pidgin-" version ".tar.bz2"))
+                       version "/pidgin-" version ".tar.gz"))
        (sha256
-        (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
+        (base32 "1c4dzxg9c3d9zfqqa7jwijj9rv9fm6w95igmpljwy88lxq7v5w11"))
        (patches
         (search-patches
-         "pidgin-add-search-path.patch"
-         ;; Remove the snippet and bootstrapping
-         ;; native-inputs together with this patch.
-         "pidgin-libnm.patch"))
+         "pidgin-add-search-path.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; Remove stale generated file after applying pidgin-libnm.patch.
+           ;; Remove stale generated file after applying patches.
            (delete-file "configure")
            #t))))
     (build-system glib-or-gtk-build-system)
