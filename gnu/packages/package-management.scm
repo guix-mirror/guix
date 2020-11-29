@@ -1015,8 +1015,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "99f6a0f248600fc9063ec808370a2a070a856dbe")
-        (revision "7"))
+  (let ((commit "ed3b2e56655ccf4cd9574f00e72b20e9022d9ab0")
+        (revision "8"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1027,7 +1027,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1vk9dn4km4j6ngfk97vip822zs1j9494f2ig3l97mq1r5400fpqv"))
+                  "15c7398km1870w82410jrmcnb4mvkhrsb8qvshr8wa1gjcpb6s6z"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1076,7 +1076,7 @@ environments.")
          ("gnutls" ,gnutls)
 
          ;; Guile libraries are needed here for cross-compilation.
-         ("guile-json" ,guile-json-3)
+         ("guile-json" ,guile-json-4)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guix" ,guix)
          ("guile-prometheus" ,guile-prometheus)
