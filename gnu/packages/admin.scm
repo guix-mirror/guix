@@ -3108,7 +3108,7 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
-    (version "1.24")
+    (version "1.25")
     (source
      (origin
        (method git-fetch)
@@ -3117,8 +3117,8 @@ buffers.")
              (commit (string-append "igt-gpu-tools-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gpdjs5aj6vsnzwcjvw5bb120lgffvvshi4202phr0bzw3b92ky8"))))
-    (build-system gnu-build-system)
+        (base32 "1lvhkdhilw0fn4nzkpfwvrhiv8d92h811qs2v6ac3p5w7v86a9zm"))))
+    (build-system meson-build-system)
     (arguments
      `(#:tests? #f))            ; many of the tests try to load kernel modules
     (inputs
@@ -3135,9 +3135,8 @@ buffers.")
        ("procps" ,procps)
        ("util-macros" ,util-macros)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
+     `(("bison" ,bison)
+       ("flex" ,flex)
        ("pkg-config" ,pkg-config)))
     (home-page "https://gitlab.freedesktop.org/drm/igt-gpu-tools")
     (synopsis "Tools for development and testing of the Intel DRM driver")
