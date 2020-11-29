@@ -1960,7 +1960,7 @@ button is pressed on the root window.")
 (define-public xmenu
   (package
     (name "xmenu")
-    (version "3.4")
+    (version "4.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1969,10 +1969,11 @@ button is pressed on the root window.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sw9l87fh03jp03a2v7rhgpyx29yg2x9blzfzp40jwad2whs7m7n"))))
+                "1s70zvsaqnsjqs298vw3py0vcvia68xlks1wcz37pb88bwligz1x"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)
        ("libxft" ,libxft)
        ("freetype" ,freetype)
        ("imlib2" ,imlib2)))
