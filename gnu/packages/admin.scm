@@ -3414,7 +3414,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
       (method git-fetch)
@@ -3423,11 +3423,11 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0cisaca2c2z1x9xvxc4lr6nl6yqx5bww6brh73m0p1n643jgq1dl"))))
+       (base32 "08sy6v09drcy3nwv7za543vajn4bm8jvwk9iwwf7i9azmk47jgna"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (let ((out      (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out")))
          (list (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
                "--localstatedir=/var"))
