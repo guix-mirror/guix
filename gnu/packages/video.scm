@@ -3136,16 +3136,26 @@ present in modern GPUs.")
     (version "1.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
-                            name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.freedesktop.org/vdpau/vdpauinfo")
+              (commit (string-append "vdpauinfo-" version))))
+        (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1i2b0k9h8r0lnxlrkgqzmrjakgaw3f1ygqqwzx8w6676g85rcm20"))))
+         (base32 "0j495axk56dmdzw32dn6qdb1lhd2nff77cpwdia7liwz7p1jli0g"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; ./autogen.sh runs ./configure too soon.
+           (lambda _
+             (invoke "autoreconf" "-fiv"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libx11" ,libx11)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libx11" ,libx11)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libvdpau" ,libvdpau)))
     (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
