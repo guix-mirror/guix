@@ -1638,12 +1638,6 @@ void DerivationGoal::startBuilder()
        getdents returns the inode of the mount point). */
     env["PWD"] = tmpDirInSandbox;
 
-    /* Compatibility hack with Nix <= 0.7: if this is a fixed-output
-       derivation, tell the builder, so that for instance `fetchurl'
-       can skip checking the output.  On older Nixes, this environment
-       variable won't be set, so `fetchurl' will do the check. */
-    if (fixedOutput) env["NIX_OUTPUT_CHECKED"] = "1";
-
     /* *Only* if this is a fixed-output derivation, propagate the
        values of the environment variables specified in the
        `impureEnvVars' attribute to the builder.  This allows for
