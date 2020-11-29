@@ -171,7 +171,8 @@ rejects UDP traffic from the application you're using.")
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy")
-                               "--localstatedir=/var")
+                               "--localstatedir=/var"
+                               "--with-openssl")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
@@ -193,8 +194,9 @@ rejects UDP traffic from the application you're using.")
                  (("^logfile") "#logfile")))
              #t)))))
     (inputs
-     `(("w3m" ,w3m)
+     `(("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("w3m" ,w3m)
        ("zlib" ,zlib)))
     (native-inputs
      `(("autoconf" ,autoconf)
