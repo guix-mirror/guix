@@ -48,6 +48,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
@@ -348,8 +349,8 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
                (base32 "0psd0kf10q5ixfima0mxz10syy7qq1ilz1npr0rz862xycvzgjyf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list
-                     "CC=gcc"
+     `(#:make-flags (list
+                     (string-append "CC=" ,(cc-for-target))
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
