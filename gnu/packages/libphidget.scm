@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public libphidget
   (package
    (name "libphidget")
-   (version "2.1.8.20180607")
+   (version "2.1.9.20190409")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -35,7 +36,7 @@
                   "linux/libphidget/libphidget_"
                   version ".tar.gz"))
             (sha256
-             (base32 "1mdw8k13yy5dq3r41v9w5yijdk87alzix0qagslc2mxh1pf17npn"))))
+             (base32 "07w54dmr75vq2imngfy66nk1sxlvkzhl2p6g362q0a02f099jy0f"))))
    (build-system gnu-build-system)
    (inputs `(("libusb" ,libusb)))
    (outputs '("out" "debug"))
