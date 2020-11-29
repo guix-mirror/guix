@@ -2120,32 +2120,30 @@ terminal.")
     (license license:expat)))
 
 (define-public go-github-com-mattn-go-colorable
-  (let ((commit "efa589957cd060542a26d2dd7832fd6a6c6c3ade")
-        (revision "0"))
-    (package
-      (name "go-github-com-mattn-go-colorable")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mattn/go-colorable")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0kshi4hvm0ayrsxqxy0599iv81kryhd2fn9lwjyczpj593cq069r"))))
-      (build-system go-build-system)
-      (native-inputs
-       `(("go-github-com-mattn-go-isatty"
-          ,go-github-com-mattn-go-isatty)))
-      (arguments
-       '(#:import-path "github.com/mattn/go-colorable"))
-      (home-page "https://github.com/mattn/go-colorable")
-      (synopsis "Handle ANSI color escapes on Windows")
-      (description "This package provides @code{colorable}, a module that
+  (package
+    (name "go-github-com-mattn-go-colorable")
+    (version "0.1.8")
+    (home-page "https://github.com/mattn/go-colorable")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q34zqwbnls72md8q8mhj368s7p3i4xspvs3rk8fs76s0pn7dr2l"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("go-github-com-mattn-go-isatty"
+        ,go-github-com-mattn-go-isatty)))
+    (arguments
+     '(#:import-path "github.com/mattn/go-colorable"))
+    (synopsis "Handle ANSI color escapes on Windows")
+    (description "This package provides @code{colorable}, a module that
 makes it possible to handle ANSI color escapes on Windows.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-mattn-go-pointer
   (let ((commit "a0a44394634f41e4992b173b24f14fecd3318a67")
