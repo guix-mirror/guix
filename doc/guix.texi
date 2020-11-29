@@ -22135,7 +22135,7 @@ Defaults to @samp{"zabbix"}.
 Unique, case sensitive hostname which is required for active checks and
 must match hostname as configured on the server.
 
-Defaults to @samp{"Zabbix server"}.
+Defaults to @samp{""}.
 
 @end deftypevr
 
