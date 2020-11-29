@@ -679,7 +679,7 @@ PGP keysigning parties.")
 (define-public signing-party
   (package
     (name "signing-party")
-    (version "2.10")
+    (version "2.11")
     (home-page "https://salsa.debian.org/signing-party-team/signing-party")
     (source (origin
               (method git-fetch)
@@ -689,7 +689,7 @@ PGP keysigning parties.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lq8nmwjmysry0n4jg6vb7bh0lagbyb9pa11ii3s41p1mhzchf2r"))))
+                "1aig5ssabzbk4mih7xd04vgr931bw0flbi8dz902wlr610gyv5s5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
