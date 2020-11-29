@@ -666,14 +666,14 @@ Extension (MIME).")
 (define-public altermime
   (package
     (name "altermime")
-    (version "0.3.10")
+    (version "0.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pldaniels.com/altermime/altermime-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vn3vmbcimv0n14khxr1782m76983zz9sf4j2kz5v86lammxld43"))))
+                "15zxg6spcmd35r6xbidq2fgcg2nzyv1sbbqds08lzll70mqx4pj7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
