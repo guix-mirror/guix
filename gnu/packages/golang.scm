@@ -5342,6 +5342,33 @@ style your output, without you having to deal with all kinds of weird ANSI
 escape sequences and color conversions.")
     (license license:expat)))
 
+(define-public go-github-com-nwidger-jsoncolor
+  (package
+    (name "go-github-com-nwidger-jsoncolor")
+    (version "0.3.0")
+    (home-page "https://github.com/nwidger/jsoncolor")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "13rd146pnj7qm70r1333gyd1f61x40nafxlpvdxlci9h7mx8c5p8"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/nwidger/jsoncolor"))
+    (native-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)))
+    (synopsis "Colorized JSON marshalling and encoding")
+    (description
+     "@code{jsoncolor} is a drop-in replacement for @code{encoding/json}'s
+@code{Marshal} and @code{MarshalIndent} functions and @code{Encoder} type
+which produce colorized output using github.com/fatih/color.")
+    (license license:expat)))
+
 (define-public go-github-com-olekukonko-tablewriter
   (package
     (name "go-github-com-olekukonko-tablewriter")
