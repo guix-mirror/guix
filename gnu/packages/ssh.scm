@@ -878,7 +878,7 @@ clients at a time.")
 (define-public webssh
   (package
     (name "webssh")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -887,7 +887,7 @@ clients at a time.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l4bwzaifsd6pl120d400qkhvaznj2ck1lvwg76ycb08jsk6gpaz"))))
+                "1bcy9flrzbvams5p77swwiygv54ac58ia7hpic1bvg30b3wpvv7b"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-paramiko" ,python-paramiko)
