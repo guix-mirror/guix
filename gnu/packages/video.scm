@@ -2845,14 +2845,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.4.1")
+    (version "1.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "1s458k8z1lv0w8i82sxs8dys66fwm4yr9j1m7fzp7r0piz8phcpd"))))
+          "0ymqxzpwk7mr77w0dnnv7dj63d46q7cl1l4vj9llgn8jfaj64ypq"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
