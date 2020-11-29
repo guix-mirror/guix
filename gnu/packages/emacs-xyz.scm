@@ -13512,6 +13512,31 @@ literate programming tools for exporting, weaving and tangling.")
      "Edit YAML files for Ansible containing embedded Jinja2 templating.")
     (license license:gpl3+)))
 
+(define-public emacs-polymode-markdown
+  (package
+    (name "emacs-polymode-markdown")
+    (version "0.2.2")
+    (home-page "https://github.com/polymode/poly-markdown")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q4qq0ql08hxkdrd2aal03560k612my7bvnfpfij3g432hn0p7v6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-polymode" ,emacs-polymode)))
+    (properties '((upstream-name . "poly-markdown")))
+    (synopsis "Polymode for Markdown mode")
+    (description
+     "This package allows editing source code blocks embedded in Markdown
+files using the major mode corresponding to each block.")
+    (license license:gpl3+)))
+
 (define-public emacs-powershell
   ;; Tagged branch 0.1 is outdated (2015).
   (let ((revision "0")
