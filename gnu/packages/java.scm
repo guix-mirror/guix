@@ -827,6 +827,8 @@ machine.")))
               (sha256
                (base32
                 "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
+              (patches (search-patches
+                        "icedtea-6-extend-hotspot-aarch64-support.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -855,7 +857,8 @@ machine.")))
        `("--enable-bootstrap"
          "--enable-nss"
          "--without-rhino"
-         "--with-parallel-jobs"
+         ,(string-append "--with-parallel-jobs="
+                         (number->string (parallel-job-count)))
          "--disable-downloading"
          "--disable-tests"
          ,(string-append "--with-ecj="
@@ -888,11 +891,8 @@ machine.")))
                             (assoc-ref inputs
                                        (string-append part "-src"))
                             part))
-                         '("jdk" "corba"
+                         '("jdk" "hotspot" "corba"
                            "langtools" "jaxp" "jaxws")))
-             (with-directory-excursion "openjdk"
-               (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
-               (rename-file "hg-checkout" "hotspot"))
              (substitute* "patches/freetypeversion.patch"
                (("REQUIRED_FREETYPE_VERSION = 2.2.1")
                 "REQUIRED_FREETYPE_VERSION = 2.10.1"))
@@ -1118,9 +1118,7 @@ machine.")))
                  (changeset "jdk6-b41")))
            (sha256
             (base32
-             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))
-           (patches
-            (search-patches "icedtea-6-hotspot-gcc-segfault-workaround.patch"))))
+             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
        ("corba-src"
         ,(origin
            (method hg-fetch)
@@ -1231,6 +1229,8 @@ bootstrapping purposes.")
            "--enable-bootstrap"
            "--enable-nss"
            "--without-rhino"
+           ,(string-append "--with-parallel-jobs="
+                           (number->string (parallel-job-count)))
            "--disable-downloading"
            "--disable-tests"        ;they are run in the check phase instead
            "--with-openjdk-src-dir=./openjdk.src"
@@ -1659,7 +1659,7 @@ bootstrapping purposes.")
               (base32
                "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
              (patches (search-patches
-                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
+                       "icedtea-7-hotspot-aarch64-use-c++98.patch"))))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
@@ -1762,6 +1762,8 @@ IcedTea build harness.")
                  `( ;;"--disable-bootstrap"
                    "--enable-bootstrap"
                    "--enable-nss"
+                   ,(string-append "--with-parallel-jobs="
+                                   (number->string (parallel-job-count)))
                    "--disable-downloading"
                    "--disable-system-pcsc"
                    "--disable-system-sctp"
@@ -1853,16 +1855,8 @@ new Date();"))
           ,(drop "langtools"
                  "15wizy123vhk40chl1b4p552jf2pw2hdww0myf11qab425axz4nw"))
          ("hotspot-drop"
-          ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://icedtea.classpath.org/download/drops"
-                   "/icedtea8/" version "/hotspot.tar.xz"))
-             (sha256
-              (base32
-               "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
-             (patches (search-patches
-                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
+          ,(drop "hotspot"
+                 "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
          ("nashorn-drop"
           ,(drop "nashorn"
                  "19pzl3ppaw8j6r5cnyp8qiw3hxijh3hdc46l39g5yfhdl4pr4hpa"))
@@ -2729,7 +2723,7 @@ debugging, etc.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
+                    (url "https://github.com/javacc/javacc")
                     (commit "release_32")))
               (file-name (string-append "javacc-" version "-checkout"))
               (sha256
@@ -3319,7 +3313,7 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
          ("java-cisd-args4j" ,java-cisd-args4j)
          ("java-commons-lang" ,java-commons-lang)
          ("java-commons-io" ,java-commons-io)
-         ("hdf5" ,hdf5)
+         ("hdf5" ,hdf5-1.8)
          ("zlib" ,zlib)))
       (native-inputs
        `(("jdk" ,icedtea-8)
@@ -9684,8 +9678,11 @@ not included are ones that require dependency to the Databind package.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://github.com/FasterXML/jackson-core")
-    (synopsis "")
-    (description "")
+    (synopsis "Low-level streaming parser and generator abstractions")
+    (description "This package contains core low-level incremental
+(streaming) parser and generator abstractions used by the Jackson Data
+Processor.  It also includes the default implementation of handler types
+(parser, generator) that handle JSON format.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
 (define-public java-fasterxml-jackson-databind
@@ -9932,12 +9929,14 @@ interface and high-performance Typed Access API.")
     (name "java-woodstox-core")
     (version "5.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/woodstox/archive/"
-                                  "woodstox-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/woodstox")
+                     (commit (string-append "woodstox-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i7pdgb8jbw6gdy5kmm0l6rz109n2ns92pqalpyp24vb8vlvdfd4"))))
+                "0bfylk24a967hwxprxqbg6cdvm6n4ldcarp54yg980viwvjiglyp"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "woodstox.jar"
@@ -9972,13 +9971,14 @@ interface and high-performance Typed Access API.")
     (name "java-fasterxml-jackson-dataformat-xml")
     (version "2.9.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/FasterXML/"
-                                  "jackson-dataformat-xml/archive/"
-                                  "jackson-dataformat-xml-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/FasterXML/jackson-dataformat-xml")
+                     (commit (string-append "jackson-dataformat-xml-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "111fkkl90w31jbf30kgj82qdcxlw4sxppki7i198liw0ck1jcavq"))))
+                "0s1wl65mbs57c2hz2v8rnh8i04y5lpyyvnjz562j5j6b83vwwpfx"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"

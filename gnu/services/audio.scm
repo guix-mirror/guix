@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,8 @@
   #:use-module (guix gexp)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu system shadow)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages mpd)
   #:use-module (guix records)
   #:use-module (ice-9 match)
@@ -135,19 +138,19 @@ audio_output {
 (define (mpd-shepherd-service config)
   (shepherd-service
    (documentation "Run the MPD (Music Player Daemon)")
+   (requirement '(user-processes))
    (provision '(mpd))
    (start #~(make-forkexec-constructor
              (list #$(file-append mpd "/bin/mpd")
                    "--no-daemon"
                    #$(mpd-config->file config))
-             #:pid-file #$(mpd-file-name config "pid")
              #:environment-variables
              ;; Required to detect PulseAudio when run under a user account.
-             '(#$(string-append
-                   "XDG_RUNTIME_DIR=/run/user/"
-                   (number->string
+             (list (string-append
+                    "XDG_RUNTIME_DIR=/run/user/"
+                    (number->string
                      (passwd:uid
-                       (getpwnam (mpd-configuration-user config))))))
+                      (getpwnam #$(mpd-configuration-user config))))))
              #:log-file #$(mpd-file-name config "log")))
    (stop  #~(make-kill-destructor))))
 
@@ -158,9 +161,25 @@ audio_output {
         (define %user
           (getpw #$(mpd-configuration-user config)))
 
-        (let ((directory #$(mpd-file-name config "")))
+        (let ((directory #$(mpd-file-name config ".mpd")))
           (mkdir-p directory)
           (chown directory (passwd:uid %user) (passwd:gid %user))))))
+
+
+(define %mpd-accounts
+  ;; Default account and group for MPD.
+  (list (user-group (name "mpd") (system? #t))
+        (user-account
+         (name "mpd")
+         (group "mpd")
+         (system? #t)
+         (comment "Music Player Daemon (MPD) user")
+
+         ;; Note: /var/run/mpd hosts one sub-directory per user, of which
+         ;; /var/run/mpd/mpd corresponds to the "mpd" user.
+         (home-directory "/var/run/mpd/mpd")
+
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define mpd-service-type
   (service-type
@@ -169,6 +188,8 @@ audio_output {
    (extensions
     (list (service-extension shepherd-root-service-type
                              (compose list mpd-shepherd-service))
+          (service-extension account-service-type
+                             (const %mpd-accounts))
           (service-extension activation-service-type
                              mpd-service-activation)))
    (default-value (mpd-configuration))))

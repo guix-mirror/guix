@@ -51,7 +51,8 @@
      `(#:modules ((ice-9 ftw)
                   ,@%gnu-build-system-modules)
        #:configure-flags '("--disable-static")
-       #:tests? ,(not (hurd-target?))
+       #:tests? ,(not (or (%current-target-system)
+                          (hurd-target?)))
        #:phases
        (modify-phases %standard-phases
          ;; XXX After repacking the sources the timestamps are reset to the

@@ -28,9 +28,7 @@
 
 (define %mpd-os
   (simple-operating-system
-   (service mpd-service-type
-            (mpd-configuration
-             (user "root")))))
+   (service mpd-service-type)))
 
 (define (run-mpd-test)
   "Run tests in %mpd-os, which has mpd running."
@@ -62,9 +60,14 @@
                 (start-service 'mpd))
              marionette))
 
-          (test-assert "mpc connect"
+          (test-assert "mpd listening"
+            ;; Wait until mpd is actually listening before spawning 'mpc'.
+            (wait-for-tcp-port 6600 marionette))
+
+          (test-equal "mpc connect"
+            0
             (marionette-eval
-             '(zero? (system #$(file-append mpd-mpc "/bin/mpc")))
+             '(system* #$(file-append mpd-mpc "/bin/mpc"))
              marionette))
 
           (test-end)

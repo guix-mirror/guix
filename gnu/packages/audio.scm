@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -58,6 +58,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -140,7 +141,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry.git")
+         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry")
          (commit "ea5104bf37bf525c25e6ae2386586048179d0fda")))
        (file-name (git-file-name name version))
        (sha256
@@ -202,7 +203,7 @@ promoting the market for advanced audio.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/Mindwerks/wildmidi.git")
+         (url "https://github.com/Mindwerks/wildmidi")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -277,7 +278,7 @@ Coding (AAC) encoder.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/tinyalsa/tinyalsa.git")
+         (url "https://github.com/tinyalsa/tinyalsa")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -300,7 +301,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +309,7 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "1cwpc4j90dpxa2siia68rg9qwwm2xk6bhxnslfjj364507jy6s4l"))))
+        (base32 "1f155yf5v57dwhzb7z0kh67lckr3yq4x8040dm54qgbxw582la77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -862,18 +863,30 @@ tools.")
          "audiofile-Fix-index-overflow-in-IMA.cpp.patch"
          ;; CVE-2017-6827, CVE-2017-6828, CVE-2017-6832, CVE-2017-6835,
          ;; CVE-2017-6837:
-         "audiofile-Check-the-number-of-coefficients.patch"
+         "audiofile-check-number-of-coefficients.patch"
          ;; CVE-2017-6839:
-         "audiofile-Fix-overflow-in-MSADPCM-decodeSam.patch"
+         "audiofile-overflow-in-MSADPCM.patch"
          ;; CVE-2017-6830, CVE-2017-6834, CVE-2017-6836, CVE-2017-6838:
-         "audiofile-Fix-multiply-overflow-sfconvert.patch"
-         "audiofile-signature-of-multiplyCheckOverflow.patch"
+         "audiofile-multiply-overflow.patch"
+         "audiofile-function-signature.patch"
          ;; CVE-2017-6831:
          "audiofile-Fail-on-error-in-parseFormat.patch"
          ;; CVE-2017-6833:
-         "audiofile-division-by-zero-BlockCodec-runPull.patch"
+         "audiofile-division-by-zero.patch"
          "audiofile-CVE-2018-13440.patch"
          "audiofile-CVE-2018-17095.patch"))))
+    (properties `((lint-hidden-cve . ("CVE-2017-6829"
+
+                                      "CVE-2017-6827" "CVE-2017-6828"
+                                      "CVE-2017-6832" "CVE-2017-6835"
+                                      "CVE-2017-6837"
+
+                                      "CVE-2017-6839"
+
+                                      "CVE-2017-6830" "CVE-2017-6834"
+                                      "CVE-2017-6836" "CVE-2017-6838"
+
+                                      "CVE-2017-6831" "CVE-2017-6833"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)))
@@ -2926,7 +2939,7 @@ aimed at audio/musical applications.")
     (description "This package contains the @command{resample} and
 @command{windowfilter} command line utilities.  The @command{resample} command
 allows changing the sampling rate of a sound file, while the
-@command{windowfilter} command allows to design Finite Impulse Response (FIR)
+@command{windowfilter} command allows designing Finite Impulse Response (FIR)
 filters using the so-called @emph{window method}.")
     (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
     (license license:lgpl2.1+)))
@@ -3510,8 +3523,11 @@ interface.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
-                           "/qsynth-" version ".tar.gz"))
+       (uri (list
+              (string-append "mirror://sourceforge/qsynth/qsynth/" version
+                             "/qsynth-" version ".tar.gz")
+              (string-append "mirror://sourceforge/qsynth/qsynth (attic)"
+                             "/qsynth-" version ".tar.gz")))
        (sha256
         (base32 "18im4w8agj60nkppwbkxqnhpp13z5li3w30kklv4lgs20rvgbvl6"))))
     (build-system gnu-build-system)
@@ -3790,8 +3806,11 @@ machine-readable ASCII format.")
     (version "3.0.10")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://etree.org/shnutils/shntool/dist/src/"
-                                 "shntool-" version ".tar.gz"))
+             (uri (list
+                    (string-append "http://etree.org/shnutils/shntool/dist/src/"
+                                   "shntool-" version ".tar.gz")
+                    (string-append "mirror://debian/pool/main/s/shntool/shntool_"
+                                   version ".orig.tar.gz")))
              (sha256
               (base32
                "00i1rbjaaws3drkhiczaign3lnbhr161b7rbnjr8z83w8yn2wc3l"))))
@@ -3822,9 +3841,9 @@ use them split WAVE data into multiple files.")
     (build-system gnu-build-system)
     (arguments
      ;; Test files are missing: https://github.com/foo86/dcadec/issues/53
-     '(#:tests? #f
+     `(#:tests? #f
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              ;; Build shared library.
              "CONFIG_SHARED=1"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -3899,8 +3918,8 @@ loudness of audio and video files to the same level.")
            "0hbb290n3wb23f2k692a6bhc23nnqmxqi9sc9j15pnya8wifw64g"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:make-flags (list (string-append "PREFIX=" %output)
-                            "CC=gcc")
+       `(#:make-flags (list (string-append "PREFIX=" %output)
+                            (string-append "CC=" ,(cc-for-target)))
          #:tests? #f ; No tests
          #:phases
          (modify-phases %standard-phases
@@ -4068,14 +4087,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.7")
+    (version "20.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1kd422krz8ln4m8g3p14wfplcq8lgpzly9297rpbvyc94dc6sdwj"))))
+                "0jxkycxn6jcbs4gklk9sk3gfr0y26dz1m71nxah9rnx80wnzj6hr"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -4695,7 +4714,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
       (origin
         (method git-fetch)
@@ -4705,11 +4724,13 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "04hw61db8wscj28qjyiaiafx8xl87njgmvqszxyhs4gmg8xgjip7"))))
+            "1570m2dfia17dbkhd2qhx8jjihrpm7g8nnyg6n4wif4vv229s7dz"))))
    (build-system meson-build-system)
    (arguments
-     ;; Compile tests.
-    `(#:configure-flags `("-Dtests=true")))
+    `(#:meson ,meson-0.55
+      #:configure-flags
+      ;; Build the tests.
+      `("-Dtests=true")))
    (inputs
     `(("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)))

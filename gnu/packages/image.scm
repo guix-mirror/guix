@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
@@ -91,6 +93,7 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
@@ -791,7 +794,7 @@ images of initially unknown height.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/uclouvain/openjpeg-data.git")
+         (url "https://github.com/uclouvain/openjpeg-data")
          (commit "c5c4a8c")))
        (file-name (git-file-name name version))
        (sha256
@@ -1792,33 +1795,26 @@ parsing, viewing, modifying, and saving this metadata.")
 (define-public flameshot
   (package
     (name "flameshot")
-    (version "0.5.1")
+    (version "0.8.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lupoDharkael/flameshot")
+             (url "https://github.com/flameshot-org/flameshot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "13h77np93r796jf289v4r687cmnpqkyqs34dm9gif4akaig74ky0"))))
-    (build-system gnu-build-system)
+         "1z77igs60lz106vsf6wsayxjafxm3llf2lm4dpvsqyyrxybfq191"))))
+    (build-system qt-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "qmake"
-                     "CONFIG+=packaging"
-                     (string-append "BASEDIR=" (assoc-ref outputs "out"))
-                     "PREFIX=/"))))))
-    (home-page "https://github.com/lupoDharkael/flameshot")
+     `(#:tests? #f))                    ;no tests
+    (home-page "https://github.com/flameshot-org/flameshot")
     (synopsis "Powerful yet simple to use screenshot software")
     (description "Flameshot is a screenshot program.
 Features:
@@ -1914,8 +1910,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))
-     (patches (search-patches "grim-revert-output-rotation.patch"))))
+      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("scdoc" ,scdoc)))
@@ -1932,7 +1927,7 @@ identical visual appearance.")
 (define-public slurp
   (package
    (name "slurp")
-   (version "1.2.0")
+   (version "1.3.1")
    (source
     (origin
      (method git-fetch)
@@ -1941,18 +1936,20 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0580m6kaiilgsrcj608r837r37sl6a25y7w21p7d6ij20fs3gvg1"))))
+      (base32 "1fby2v2ylcadgclds05wpkl9xi2r9dfz49dqyqpn20rjv1wnz3jv"))))
    (build-system meson-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("cairo" ,cairo)
-             ("scdoc" ,scdoc)
-             ("wayland" ,wayland)
-             ("wayland-protocols" ,wayland-protocols)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("scdoc" ,scdoc)))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libxkbcommon" ,libxkbcommon)
+      ("wayland" ,wayland)
+      ("wayland-protocols" ,wayland-protocols)))
    (home-page "https://github.com/emersion/slurp")
    (synopsis "Select a region in a Wayland compositor")
    (description "Slurp can select a region in a Wayland compositor and print it
 to the standard output.  It works well together with grim.")
-   ;; MIT license.
    (license license:expat)))
 
 (define-public sng
@@ -2127,16 +2124,16 @@ by AOM, including with alpha.")
     (name "mtpaint")
     ;; The author neither releases tarballs nor uses git version tags.
     ;; Instead, author puts version in git commit title.
-    (version "3.49.27")
+    (version "3.49.33")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/wjaguar/mtPaint")
-             (commit "26751cd0336414e2f16cbe25c9fe2702f34e7b5c")))
+             (commit "5272e2b1e773c8e02ac3506b2d3bde82ad946b21")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12mzai9pqvyb342m21rjz0jxiy75q24sjw6ax147pzy8frzkgd54"))))
+        (base32 "1bmq4m0dxczl18n1yiqb75g05a4c3pal1vdcyypkilx7ijsr0cmc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)

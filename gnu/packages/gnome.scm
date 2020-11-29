@@ -55,6 +55,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,6 +215,62 @@
   #:use-module (guix store)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public gupnp-igd
+  (package
+    (name "gupnp-igd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1q9bw12ibih3yxpha3gm1dabyqg9gx6yxacbh4kxsgm1i84j0lab"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
+       #:configure-flags (list "-Dgtk_doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "gupnp-igd-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.1.2")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml-4.1.2" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gssdp" ,gssdp)
+       ("gupnp" ,gupnp)
+       ("libsoup" ,libsoup)))
+    (synopsis "UPnP IGD for GNOME")
+    (description "GUPnP-IGD is a library to handle UPnP IGD port mapping.")
+    (home-page "https://gitlab.gnome.org/GNOME/gupnp-igd")
+    (license license:lgpl2.1+)))
 
 (define-public brasero
   (package
@@ -657,7 +714,7 @@ of known objects without needing a central registrar.")
 (define-public zeitgeist
   (package
     (name "zeitgeist")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -669,7 +726,7 @@ of known objects without needing a central registrar.")
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "0ig3d3j1n0ghaxsgfww6g2hhcdwx8cljwwfmp9jk1nrvkxd6rnmv"))))
+        (base32 "0y6fyzxl5np4yskcxibd0p03h619w9ir907nhf40h02y0pk1kgkp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -2783,16 +2840,16 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.12")
+    (version "1.5.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/OpenPrinting/system-config-printer/releases/"
-             "download/" version
+             "download/v" version
              "/system-config-printer-" version ".tar.xz"))
        (sha256
-        (base32 "050yrx1vfh9f001qsn06y1jcidxq0ymxr64kxykasr0zzryp25kb"))))
+        (base32 "18dqvi1s971lggkw6pv1sqxixlpg5a8rppzc1pxbanxa91jg18zf"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -4213,7 +4270,7 @@ passwords in the GNOME keyring.")
      `(("graphviz" ,graphviz)))
     (propagated-inputs
      `(("glib" ,glib))) ; required by libvala-0.40.pc
-    (home-page "https://live.gnome.org/Vala/")
+    (home-page "https://wiki.gnome.org/Projects/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
      "Vala is a programming language that aims to bring modern programming
@@ -4222,10 +4279,10 @@ requirements and without using a different ABI compared to applications and
 libraries written in C.")
     (license license:lgpl2.1+)))
 
-(define-public vala-0.48
+(define-public vala-0.50
   (package
     (inherit vala)
-    (version "0.48.9")
+    (version "0.50.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4233,7 +4290,7 @@ libraries written in C.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "1agyrvslv2yh9ikiw7k5nw6j6il1l2zrzfan0pzdpb9xpg9idslw"))))))
+                "1nnf0x6vk0a9p2y6z7jwjfvmlxh3qhj581v381r0y1sxsv35s39c"))))))
 
 (define-public vte
   (package
@@ -5014,14 +5071,14 @@ keyboard shortcuts.")
 (define-public colord
   (package
     (name "colord")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "19f0938fr7nvvm3jr263dlknaq7md40zrac2npfyz25zc00yh3ws"))))
+        (base32 "05sydi6qqqx1rrqwnga1vbg9srkf89wdcfw5w4p4m7r37m2flx5p"))))
     (build-system meson-build-system)
     (arguments
      '(;; FIXME: One test fails:
@@ -5950,7 +6007,7 @@ discovery protocols.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.34.1")
+    (version "3.38.0")
     (source
      (origin
        (method url-fetch)
@@ -5959,14 +6016,14 @@ discovery protocols.")
                            "totem-" version ".tar.xz"))
        (sha256
         (base32
-         "028sc6xbyi7rs884862d8f3di6zhcm0lhvlpc3r69ifzjsq9my3b"))))
+         "0bs33ijvxbr2prb9yj4dxglsszslsn9k258n311sld84masz4ad8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
-       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("xorg-server" ,xorg-server-for-tests)))
@@ -6020,6 +6077,14 @@ discovery protocols.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
+         (add-after 'unpack 'patch-failing-test
+           (lambda _
+             ;; Work around test failure with GStreamer 1.18, because the test
+             ;; relies on "und" not being mapped to a particular language:
+             ;; https://gitlab.gnome.org/GNOME/totem/-/issues/450
+            (substitute* "src/test-totem.c"
+              (("und") "nosuchlang"))
+            #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
@@ -6383,7 +6448,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.6")
+    (version "3.38.1")
     (source
      (origin
        (method url-fetch)
@@ -6391,7 +6456,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0x9hzqnji5l966yy2k5gppl8hqasn3sd5an4sr8srjmncxcs80ys"))))
+        (base32 "0grscz96bwj79ka4qvxh8h75avdx6824k8k38ylmaj6xbl6gi0hy"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -6423,14 +6488,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.99")
+    (version "0.9.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://adishatz.org/eolie/eolie-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0zj5v7wxqj7c20bmil127ah0vnjfzvvf6kzz82b9ip3846h43j02"))))
+                "1vzhfp8j1z3jvd5ndqfyn7nqrx3zdvx9mv1byjl36nnd9g63ji62"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -6784,7 +6849,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.9")
+    (version "0.30.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -6792,7 +6857,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1y556yyzfya0310v5wqjkf17hy5lhf028iminvvgi2pdfva344id"))))
+                "12d26y40kjlv5x8f5g04wff33vh7mdjb8c41ydqbrwdip0jwy2n2"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -9487,19 +9552,21 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20190917")
+    (version "20201013")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/NicoHood/arc-theme")
+                    (url "https://github.com/jnsh/arc-theme")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
+                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       (list "--disable-cinnamon")
+       #:phases
        (modify-phases %standard-phases
          ;; autogen.sh calls configure at the end of the script.
          (replace 'bootstrap
@@ -9916,14 +9983,14 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.11")
+    (version "2.2.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
+       (uri (string-append "https://www.bennewitz.com/bluefish/stable/source/"
                            "bluefish-" version ".tar.gz"))
        (sha256
-        (base32 "0a7kf78q4cj2ap4igjks9kbmmr74brsrl4y2f9wbxpl0b0v2ck2x"))))
+        (base32 "09hgxq139kbkjda5y073lqhq1z1x7cx0j80jh77afrqa3y9c53wl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -9938,7 +10005,7 @@ only know by its Unicode name or code point.")
     (home-page "http://bluefish.openoffice.nl")
     (synopsis "Web development studio")
     (description
-     "Bluefish is an editor targeted towards programmers and web developers,
+     "Bluefish is an editor aimed at programmers and web developers,
 with many options to write web sites, scripts and other code.
 Bluefish supports many programming and markup languages.")
     (license license:gpl3+)))
@@ -10339,9 +10406,9 @@ photo-booth-like software, such as Cheese.")
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
@@ -10824,7 +10891,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -10833,7 +10900,7 @@ advanced image management tool")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "193y09yy0302x8fkyrnq591m805xp68bkd93fl5qggxi52k8pj0v"))))
+        (base32 "1bmmkahshvlvpsnb7zp8bddv7i1h5k4p967n6kxh71g1vnj8x20m"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -10862,7 +10929,7 @@ advanced image management tool")
        ;; Test suite dependencies.
        ("xorg-server" ,xorg-server-for-tests)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
-    (home-page "https://source.puri.sm/Librem5/libhandy")
+    (home-page "https://gitlab.gnome.org/GNOME/libhandy/")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user
 interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
@@ -11414,6 +11481,62 @@ symbol tables, document templates, project management, spell-checking, menus
 and toolbars.")
     (license license:gpl3+)))
 
+(define-public setzer
+  (package
+    (name "setzer")
+    (version "0.3.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cvfosammmm/Setzer")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "118gip6bv4mcsq4nrai7kl0vmqqbyzpsd4ky9vhxb1x2cvg048s8"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/setzer"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("pango" ,pango)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)
+       ("webkitgtk" ,webkitgtk)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://www.cvfosammmm.org/setzer/")
+    (synopsis "LaTeX editor written in Python with GTK+")
+    (description
+     "Setzer is a simple yet full-featured LaTeX editor written in Python with
+GTK+.  It integrates well with the GNOME desktop environment.")
+    (license license:gpl3+)))
+
 (define-public libratbag
   (package
     (name "libratbag")
@@ -11553,7 +11676,7 @@ provided there is a DBus service present:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gkarsay/parlatype.git")
+             (url "https://github.com/gkarsay/parlatype")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -11746,6 +11869,13 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                 (string-append (assoc-ref inputs "python-pygobject")
                                "/lib")))
              #t))
+         (add-after 'configure 'fix-ninja
+           (lambda _
+             ;; #43296: meson(?) incorrectly assumes we want to link
+             ;;         this PIE against a static libselinux.
+             (substitute* "build.ninja"
+               (("libselinux\\.a") "libselinux.so"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              (system "Xvfb :1 &")
@@ -11785,7 +11915,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.21.1")
+    (version "0.23.0")
     (source
      (origin
        (method git-fetch)
@@ -11795,7 +11925,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17ss5k2hnymk6xyx1dy3q0y2pwcld78cw7d0cs9c0hnhskh5dirh"))))
+         "1xh3qmf2pk80qxj528lajjcwg7mps72s1zz8cj388av58p8l3hyw"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11852,17 +11982,17 @@ developed with the aim of being used with the Librem 5 phone.")
 (define-public libgda
   (package
     (name "libgda")
-    (version "5.2.9")
+    (version "5.2.10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.gnome.org/GNOME/libgda.git/")
-             (commit "LIBGDA_5_2_9")))
+             (commit (string-append "LIBGDA_" (string-replace-substring
+                                               version "." "_")))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "122anbk15vj2dfxrw7s48b6zwlpp7cyppshxizynvf3zmc0ygw3j"))))
+        (base32 "18rg773gq9v3cdywpmrp12c5xyp97ir9yqjinccpi22sksb1kl8a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-vala")
@@ -11907,6 +12037,7 @@ developed with the aim of being used with the Librem 5 phone.")
        ("vala" ,vala)))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("glib:bin" ,glib "bin")
        ("gnome-common" ,gnome-common)
@@ -11960,9 +12091,10 @@ your data.")
      `(("gtksourceview" ,gtksourceview))) ; required for source view
     (arguments
      `(#:build-type "release"
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
-       (add-after 'unpack 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'skip-gtk-update-icon-cache
            (lambda _
              (substitute* "build-aux/meson/meson_post_install.py"
                (("gtk-update-icon-cache") (which "true")))

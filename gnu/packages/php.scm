@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.11")
+    (version "7.4.13")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "1knnw9b5hkxmisxclw384ic6bcihihhii51q0fyva8cwkdd6fcax"))
+                "1x402vsg3zq8mbar2fwln85vmvdvmrxm8q4ma8333hms78z31bdf"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -218,6 +218,9 @@
                          ;; count of a sub-directory to increase compared to
                          ;; its parent.
                          "ext/standard/tests/file/lstat_stat_variation8.phpt"
+                         ;; This tests whether microseconds ‘differ enough’ and
+                         ;; fails inconsistently on ‘fast’ machines.
+                         "ext/date/tests/bug73837.phpt"
 
                          ;; XXX: These gd tests fails.  Likely because our version
                          ;; is different from the (patched) bundled one.
@@ -312,10 +315,10 @@
                          "ext/standard/tests/file/bug43008.phpt"
                          ;; Table data not created in sqlite(?).
                          "ext/pdo_sqlite/tests/bug_42589.phpt"
-
-                         ;; This tests whether microseconds ‘differ enough’ and
-                         ;; fails inconsistently on ‘fast’ machines.
-                         "ext/date/tests/bug73837.phpt"))
+                         ;; Expects an Array with 3 preg_matches; gets 0.
+                         "ext/pcre/tests/bug79846.phpt"
+                         ;; Expects an empty Array; gets one with " " in it.
+                         "ext/pcre/tests/bug80118.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")

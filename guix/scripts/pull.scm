@@ -385,7 +385,7 @@ previous generation.  Return true if there are news to display."
     (and=> (relative-generation profile -1)
            (cut generation-file-name profile <>)))
 
-  (when previous
+  (and previous
     (let ((old-channels (profile-channels previous))
           (new-channels (profile-channels profile)))
       ;; Find the channels present in both PROFILE and PREVIOUS, and print

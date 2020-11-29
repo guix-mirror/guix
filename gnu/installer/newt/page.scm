@@ -32,7 +32,9 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (newt)
-  #:export (draw-info-page
+  #:export (default-listbox-height
+
+            draw-info-page
             draw-connecting-page
             run-input-page
             run-error-page
@@ -167,6 +169,10 @@ Like 'run-form', return two values: the exit reason, and an \"argument\"."
                    (loop)))))))
         (_
          (values reason argument))))))
+
+(define (default-listbox-height)
+  "Return the default listbox height."
+  (max 5 (- (screen-rows) 20)))
 
 (define (draw-info-page text title)
   "Draw an informative page with the given TEXT as content.  Set the title of
@@ -339,7 +345,8 @@ of the page is set to TITLE."
                                      (info-textbox-width 50)
                                      listbox-items
                                      listbox-item->text
-                                     (listbox-height 20)
+                                     (listbox-height
+                                      (default-listbox-height))
                                      (listbox-default-item #f)
                                      (listbox-allow-multiple? #f)
                                      (sort-listbox-items? #t)

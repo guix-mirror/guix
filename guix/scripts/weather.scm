@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
+  #:use-module ((guix build utils) #:select (every*))
   #:use-module (guix scripts substitute)
   #:use-module (guix http-client)
   #:use-module (guix ci)
@@ -540,23 +542,23 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                                     (package-outputs packages system))
                                   systems))))))
         (exit
-         (every (lambda (server)
-                  (define coverage
-                    (report-server-coverage server items
-                                            #:display-missing?
-                                            (assoc-ref opts 'display-missing?)))
-                  (match (assoc-ref opts 'coverage)
-                    (#f #f)
-                    (threshold
-                     ;; PACKAGES may include non-package objects coming from a
-                     ;; manifest.  Filter them out.
-                     (report-package-coverage server
-                                              (filter package? packages)
-                                              systems
-                                              #:threshold threshold)))
+         (every* (lambda (server)
+                   (define coverage
+                     (report-server-coverage server items
+                                             #:display-missing?
+                                             (assoc-ref opts 'display-missing?)))
+                   (match (assoc-ref opts 'coverage)
+                     (#f #f)
+                     (threshold
+                      ;; PACKAGES may include non-package objects coming from a
+                      ;; manifest.  Filter them out.
+                      (report-package-coverage server
+                                               (filter package? packages)
+                                               systems
+                                               #:threshold threshold)))
 
-                  (= 1 coverage))
-                urls))))))
+                   (= 1 coverage))
+                 urls))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'let/time 'scheme-indent-function 1)

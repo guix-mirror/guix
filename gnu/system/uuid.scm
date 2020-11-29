@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +42,7 @@
             string->ext2-uuid
             string->ext3-uuid
             string->ext4-uuid
+            string->bcachefs-uuid
             string->btrfs-uuid
             string->fat-uuid
             string->jfs-uuid
@@ -236,6 +237,7 @@ ISO9660 UUID representation."
 (define string->ext2-uuid string->dce-uuid)
 (define string->ext3-uuid string->dce-uuid)
 (define string->ext4-uuid string->dce-uuid)
+(define string->bcachefs-uuid string->dce-uuid)
 (define string->btrfs-uuid string->dce-uuid)
 (define string->jfs-uuid string->dce-uuid)
 
@@ -251,14 +253,14 @@ ISO9660 UUID representation."
 
 (define %uuid-parsers
   (vhashq
-   ('dce 'ext2 'ext3 'ext4 'btrfs 'jfs 'luks => string->dce-uuid)
+   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'jfs 'luks => string->dce-uuid)
    ('fat32 'fat16 'fat => string->fat-uuid)
    ('ntfs => string->ntfs-uuid)
    ('iso9660 => string->iso9660-uuid)))
 
 (define %uuid-printers
   (vhashq
-   ('dce 'ext2 'ext3 'ext4 'btrfs 'jfs 'luks => dce-uuid->string)
+   ('dce 'ext2 'ext3 'ext4 'bcachefs 'btrfs 'jfs 'luks => dce-uuid->string)
    ('iso9660 => iso9660-uuid->string)
    ('fat32 'fat16 'fat => fat-uuid->string)
    ('ntfs => ntfs-uuid->string)))

@@ -444,7 +444,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.5")
+    (version "1.4.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -453,10 +453,11 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14v2zfka2y3h0r0biw1rl59585lji5074x958s4xnb352jm5h9b9"))))
+                "14bx4gywfzr2f07ldqk3la82g5ag1agj21f7ccrxip12ydmpx0xb"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1763,22 +1764,23 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
+                "1jv4jkc35b7rizz8iflh74hhk9qy665isn1xa6gqz0qp9grwb019"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (propagated-inputs
-     `(("guile-opengl" ,guile-opengl)
-       ("guile-sdl2" ,guile-sdl2)))
+     `(("guile-opengl" ,guile3.0-opengl)
+       ("guile-sdl2" ,guile3.0-sdl2)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("freetype" ,freetype)
+       ("guile" ,guile-3.0)
        ("libvorbis" ,libvorbis)
        ("mpg123" ,mpg123)
        ("openal" ,openal)))
@@ -1801,48 +1803,12 @@ that parenthetically inclined game developers need to make 2D (and eventually
     (license license:gpl3+)))
 
 (define-public guile3.0-chickadee
-  (package
-    (inherit guile-chickadee)
-    (name "guile3.0-chickadee")
-    (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://files.dthompson.us/chickadee/"
-                                  "chickadee-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
-    (build-system gnu-build-system)
-    (propagated-inputs
-     `(("guile-opengl" ,guile3.0-opengl)
-       ("guile-sdl2" ,guile3.0-sdl2)))
-    (inputs
-     `(("guile" ,guile-3.0)
-       ("libvorbis" ,libvorbis)
-       ("mpg123" ,mpg123)
-       ("openal" ,openal)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (home-page "https://dthompson.us/projects/chickadee.html")
-    (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
-    (description "Chickadee is a game development toolkit for Guile Scheme
-built on top of SDL2 and OpenGL.  Chickadee aims to provide all the features
-that parenthetically inclined game developers need to make 2D (and eventually
-3D) games in Scheme, such as:
-
-@enumerate
-@item extensible, fixed-timestep game loop
-@item OpenGL-based rendering engine
-@item keyboard, mouse, controller input
-@item REPL-driven development model
-@end enumerate\n")
-    (license license:gpl3+)))
+  (deprecated-package "guile3.0-chickadee" guile-chickadee))
 
 (define-public bennu-game-development
   (package
     (name "bennu-game-development")
-    (version "348")
+    (version "353")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1851,7 +1817,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))
+                "1iri58ryk9lbqn585cbccnvrfkj8qxlbcsk8rpih40jhvs1j101l"))
               (modules '((guix build utils)))
               (snippet
                '(begin

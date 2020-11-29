@@ -1,0 +1,86 @@
+diff --git a/cmd/yggdrasil/main.go b/cmd/yggdrasil/main.go
+index 813e950..08d35cc 100644
+--- a/cmd/yggdrasil/main.go
++++ b/cmd/yggdrasil/main.go
+@@ -40,11 +40,12 @@ type node struct {
+ 	admin     module.Module // admin.AdminSocket
+ }
+ 
+-func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config.NodeConfig {
++func readConfig(useconf *bool, useconffile *string, extraconffile *string, normaliseconf *bool) *config.NodeConfig {
+ 	// Use a configuration file. If -useconf, the configuration will be read
+ 	// from stdin. If -useconffile, the configuration will be read from the
+ 	// filesystem.
+ 	var conf []byte
++	var extraconf []byte
+ 	var err error
+ 	if *useconffile != "" {
+ 		// Read the file from the filesystem
+@@ -56,6 +57,21 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+ 	if err != nil {
+ 		panic(err)
+ 	}
++	if *extraconffile != "" {
++		extraconf, err = ioutil.ReadFile(*extraconffile);
++	}
++	if err != nil {
++		panic(err)
++	}
++	// Generate a new configuration - this gives us a set of sane defaults -
++	// then parse the configuration we loaded above on top of it. The effect
++	// of this is that any configuration item that is missing from the provided
++	// configuration will use a sane default.
++	cfg := config.GenerateConfig()
++	var confs [2][]byte
++	confs[0]=conf
++	confs[1]=extraconf
++	for _, conf := range confs { if len(conf)>0 {
+ 	// If there's a byte order mark - which Windows 10 is now incredibly fond of
+ 	// throwing everywhere when it's converting things into UTF-16 for the hell
+ 	// of it - remove it and decode back down into UTF-8. This is necessary
+@@ -69,11 +85,6 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+ 			panic(err)
+ 		}
+ 	}
+-	// Generate a new configuration - this gives us a set of sane defaults -
+-	// then parse the configuration we loaded above on top of it. The effect
+-	// of this is that any configuration item that is missing from the provided
+-	// configuration will use a sane default.
+-	cfg := config.GenerateConfig()
+ 	var dat map[string]interface{}
+ 	if err := hjson.Unmarshal(conf, &dat); err != nil {
+ 		panic(err)
+@@ -112,6 +123,7 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+ 	if err = mapstructure.Decode(dat, &cfg); err != nil {
+ 		panic(err)
+ 	}
++	}}
+ 	return cfg
+ }
+ 
+@@ -164,6 +176,7 @@ func main() {
+ 	genconf := flag.Bool("genconf", false, "print a new config to stdout")
+ 	useconf := flag.Bool("useconf", false, "read HJSON/JSON config from stdin")
+ 	useconffile := flag.String("useconffile", "", "read HJSON/JSON config from specified file path")
++	extraconffile := flag.String("extraconffile", "", "extra (usually private) HJSON/JSON config from specified file path")
+ 	normaliseconf := flag.Bool("normaliseconf", false, "use in combination with either -useconf or -useconffile, outputs your configuration normalised")
+ 	confjson := flag.Bool("json", false, "print configuration from -genconf or -normaliseconf as JSON instead of HJSON")
+ 	autoconf := flag.Bool("autoconf", false, "automatic mode (dynamic IP, peer with IPv6 neighbors)")
+@@ -187,7 +200,7 @@ func main() {
+ 		cfg = config.GenerateConfig()
+ 	case *useconffile != "" || *useconf:
+ 		// Read the configuration from either stdin or from the filesystem
+-		cfg = readConfig(useconf, useconffile, normaliseconf)
++		cfg = readConfig(useconf, useconffile, extraconffile, normaliseconf)
+ 		// If the -normaliseconf option was specified then remarshal the above
+ 		// configuration and print it back to stdout. This lets the user update
+ 		// their configuration file with newly mapped names (like above) or to
+@@ -332,7 +345,7 @@ func main() {
+ 			goto exit
+ 		case _ = <-r:
+ 			if *useconffile != "" {
+-				cfg = readConfig(useconf, useconffile, normaliseconf)
++				cfg = readConfig(useconf, useconffile, extraconffile, normaliseconf)
+ 				logger.Infoln("Reloading configuration from", *useconffile)
+ 				n.core.UpdateConfig(cfg)
+ 				n.tuntap.UpdateConfig(cfg)

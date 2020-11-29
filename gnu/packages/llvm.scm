@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,12 +49,16 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages xml)
   #:export (system->llvm-target))
 
@@ -388,6 +393,27 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 (("@GLIBC_LIBDIR@")
                                  (string-append libc "/lib"))))))
                         #t)))
+                  ,@(if (version>=? version "10")
+                        `((add-after 'install 'adjust-cmake-file
+                            (lambda* (#:key outputs #:allow-other-keys)
+                              (let ((out (assoc-ref outputs "out")))
+                                ;; Clang generates a CMake file with "targets"
+                                ;; for each installed library file.  Downstream
+                                ;; consumers of the CMake interface can use this
+                                ;; to get absolute library locations.  Including
+                                ;; this file will needlessly assert that _all_
+                                ;; libraries are available, which causes problems
+                                ;; in Guix because some are removed (see the
+                                ;; move-extra-tools phase).  Thus, remove the
+                                ;; asserts so that the main functionality works.
+                                (substitute*
+                                    (string-append
+                                     out
+                                     "/lib/cmake/clang/ClangTargets-release.cmake")
+                                  (("list\\(APPEND _IMPORT_CHECK_TARGETS.*" all)
+                                   (string-append "# Disabled by Guix.\n#" all)))
+                                #t))))
+                        '())
                   ,@(if (version>? version "3.8")
                         `((add-after 'install 'symlink-cfi_blacklist
                             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -639,11 +665,10 @@ of programming tools as well as libraries with equivalent functionality.")
        (sha256
         (base32
          "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))
-       (patch-flags '("-p2"))
        (patches (search-patches
-                  "llvm-9-fix-bitcast-miscompilation.patch"
-                  "llvm-9-fix-scev-miscompilation.patch"
-                  "llvm-9-fix-lpad-miscompilation.patch"))))))
+                 "llvm-9-fix-bitcast-miscompilation.patch"
+                 "llvm-9-fix-scev-miscompilation.patch"
+                 "llvm-9-fix-lpad-miscompilation.patch"))))))
 
 (define-public clang-runtime-9
   (clang-runtime-from-llvm
@@ -946,6 +971,40 @@ components which highly leverage existing libraries in the larger LLVM Project."
 components which highly leverage existing libraries in the larger LLVM Project.")
     (license license:asl2.0))) ; With LLVM exception
 
+(define-public lldb
+  (package
+    (name "lldb")
+    (version "11.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "lldb" version))
+              (sha256
+               (base32
+                "0wic9lyb2la9bkzdc13szkm4f793w1mddp50xvh237iraygw0w45"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DCMAKE_CXX_COMPILER=clang++")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("clang" ,clang-11)
+       ("llvm" ,llvm-11)
+
+       ;; Optional (but recommended) inputs.
+       ("curses" ,ncurses)
+       ("editline" ,libedit)
+       ("liblzma" ,xz)
+       ("libxml2" ,libxml2)
+       ("lua" ,lua)
+       ("python" ,python)))
+    (home-page "https://lldb.llvm.org/")
+    (synopsis "Low level debugger")
+    (description
+     "LLDB is a high performance debugger built as a set of reusable components
+which highly leverage existing libraries in the larger LLVM project.")
+    (license license:asl2.0))) ;with LLVM exceptions
+
 (define-public libcxx
   (package
     (name "libcxx")
@@ -1078,48 +1137,96 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 (define-public python-llvmlite
   (package
     (name "python-llvmlite")
-    (version "0.30.0")
+    (version "0.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "llvmlite" version))
        (sha256
         (base32
-         "01wspdc0xhnydl66jyhyr4ii16h3fnw6mjihiwnnxdxg9j6kkajf"))))
+         "0qqzs6h34002ig2jn31vk08q9hh5kn84lhmv4bljz3yakg8y0gph"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: One test fails unable to find libm.so
-     ;; https://github.com/numba/llvmlite/issues/537
-     `(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-reference-to-llvmlite.so
+           ;; ctypes.CDLL uses dlopen to load libllvmlite.so, which
+           ;; fails, so locate it by its absolute path.  Change it in
+           ;; ffi.py, not utils.py, because setup.py relies on the
+           ;; output of get_library_name for proper installation.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libllvmlite.so (string-append out "/lib/python"
+                                                   ,(version-major+minor
+                                                     (package-version python))
+                                                   "/site-packages/llvmlite/"
+                                                   "binding/libllvmlite.so")))
+               (substitute* "llvmlite/binding/ffi.py"
+                 (("_lib_name = get_library_name\\(\\)")
+                  (format #f "_lib_name = ~s" libllvmlite.so)))
+               #t)))
+         (add-after 'unpack 'skip-failing-tests
+           (lambda _
+             (substitute* "llvmlite/tests/test_binding.py"
+               (("    def test_libm\\(self\\).*" all)
+                (string-append "    @unittest.skip('Fails on Guix')\n" all)))
+             #t))
+         (add-before 'build 'set-compiler/linker-flags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((llvm (assoc-ref inputs "llvm")))
+               ;; Refer to ffi/Makefile.linux.
+               (setenv "CPPFLAGS" "-fPIC")
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath="
+                                                llvm "/lib"))
+               #t))))))
     (inputs
      `(("llvm"
-        ,(let ((patches-commit "486edd5fb2a6667feb5c865f300c0da73785434a"))
-           (package
-             (inherit llvm-7)
-             (source
-              (origin
-                (inherit (package-source llvm-7))
-                (patches
+        ,(let* ((patches-commit "061ab39e1d4591f3aa842458252a19ad01858167")
+                (patch-uri (lambda (name)
+                             (string-append
+                              "https://raw.githubusercontent.com/numba/"
+                              "llvmlite/" patches-commit "/conda-recipes/"
+                              name)))
+                (patch-origin (lambda (name hash)
+                                (origin
+                                  (method url-fetch)
+                                  (uri (patch-uri name))
+                                  (sha256 (base32 hash)))))
+                (arch-independent-patches
                  (list
+                  (patch-origin
+                   "partial-testing.patch"
+                   "1cwy4jsmijd838q0bylxl77vrwrb7ksijfly5062ay32303jmj86")
+                  (patch-origin
+                   "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
+                   "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
+           (if (string=? "aarch64-linux" (%current-system))
+               (package
+                 (inherit llvm-9)
+                 (source
                   (origin
-                    (method url-fetch)
-                    (uri (string-append
-                          "https://raw.githubusercontent.com/numba/"
-                          "llvmlite/" patches-commit "/conda-recipes/"
-                          "D47188-svml-VF.patch"))
-                    (sha256
-                     (base32
-                      "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
+                    (inherit (package-source llvm-9))
+                    (patches
+                     `(,(patch-origin
+                         "intel-D47188-svml-VF_LLVM9.patch"
+                         "1f9ld7wc8bn4gbvdsmk07w1rq371h42vy05rxsq9a22f57rljqbd")
+                       ,@arch-independent-patches
+                       ,@(origin-patches (package-source llvm-9)))))))
+               (package
+                 (inherit llvm-10)
+                 (source
                   (origin
-                    (method url-fetch)
-                    (uri (string-append
-                          "https://raw.githubusercontent.com/numba/"
-                          "llvmlite/" patches-commit "/conda-recipes/"
-                          "twine_cfg_undefined_behavior.patch"))
-                    (sha256
-                     (base32
-                      "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp"))))))))))))
-    (home-page "http://llvmlite.pydata.org")
+                    (inherit (package-source llvm-10))
+                    (patches
+                     `(,(patch-origin
+                         "intel-D47188-svml-VF.patch"
+                         "0n46qjwfl7i12bl7wp0cyxl277axfvaaz5lxx5kdlgwjcpa582dg")
+                       ,(patch-origin
+                         "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
+                         "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
+                       ,@arch-independent-patches
+                       ,@(origin-patches (package-source llvm-10))))))))))))
+    (home-page "https://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
      "This package provides a Python binding to LLVM for use in Numba.")

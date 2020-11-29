@@ -195,7 +195,7 @@ Protocol.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/syncthing/syncthing-gtk.git")
+                    (url "https://github.com/syncthing/syncthing-gtk")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

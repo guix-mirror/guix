@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
@@ -60,6 +62,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -341,6 +344,129 @@ access.")
     (properties `((lint-hidden-cve . ("CVE-2016-9179"))))
     (license license:gpl2)))
 
+(define-public kristall
+  ;; Fixes to the build system applied after the latest tag
+  ;; Use tagged release when updating
+  (let ((commit "204b08a9303e75cd8d4c252b0554935062766f86")
+        (revision "1"))
+    (package
+      (name "kristall")
+      (version (string-append "0.3-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/MasterQ32/kristall")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mymq0dh6r0829x74j0jkw8hw46amqwbznlf1b4ra6w77h9yz3lj"))
+         (modules '((srfi srfi-1)
+                    (ice-9 ftw)
+                    (guix build utils)))
+         (snippet
+          '(let ((preserved-lib-files '("luis-l-gist")))
+             (with-directory-excursion "lib"
+               (for-each
+                (lambda (directory)
+                  (simple-format #t "deleting: ~A\n" directory)
+                  (delete-file-recursively directory))
+                (lset-difference string=?
+                                 (scandir ".")
+                                 (cons* "." ".." preserved-lib-files))))
+             ;; Contains executable of 7z and pscp
+             (delete-file-recursively "ci/tools")
+             ;; Remove bundled fonts
+             (delete-file-recursively "src/fonts")
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build qt-utils)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build qt-utils))
+         #:make-flags
+         (list (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no ./configure script
+           (delete 'check)              ; no check target
+           (add-before 'build 'set-program-version
+             (lambda _
+               ;; configure.ac relies on ‘git --describe’ to get the version.
+               ;; Patch it to just return the real version number directly.
+               (substitute* "src/kristall.pro"
+                 (("(KRISTALL_VERSION=).*" _ match)
+                  (string-append match ,version "\n")))
+               #t))
+           (add-before 'build 'dont-use-bundled-cmark
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 (("(^include\\(.*cmark.*)" _ match)
+                  (string-append
+                   "LIBS += -I" (assoc-ref %build-inputs "cmark") " -lcmark")))
+               #t))
+           (add-before 'build 'dont-use-bundled-breeze-stylesheet
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 (("../lib/BreezeStyleSheets/breeze.qrc")
+                  (string-append
+                   (assoc-ref %build-inputs "breeze-stylesheet") "/breeze.qrc")))
+               #t))
+           (add-before 'build 'dont-use-bundled-fonts
+             (lambda _
+               (substitute* "src/kristall.pro"
+                 ((".*fonts.qrc.*") ""))
+               (substitute* "src/main.cpp"
+                 (("/fonts/OpenMoji-Color")
+                  (string-append
+                   (assoc-ref %build-inputs "font-openmoji")
+                   "/share/fonts/truetype/OpenMoji-Color"))
+                 (("/fonts/NotoColorEmoji")
+                  (string-append
+                   (assoc-ref %build-inputs "font-google-noto")
+                   "/share/fonts/truetype/NotoColorEmoji")))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-qt-program out "kristall"))
+               #t)))))
+      (native-inputs
+       `(("breeze-stylesheet"
+          ,(let ((commit "2d595a956f8a5f493aa51139a470b768a6d82cce")
+                 (revision "0"))
+             (origin
+               (method git-fetch)
+               (uri
+                (git-reference
+                 (url "https://github.com/Alexhuszagh/BreezeStyleSheets")
+                 (commit "2d595a956f8a5f493aa51139a470b768a6d82cce")))
+               (file-name (git-file-name "breeze-stylesheet"
+                                         (git-version "0" revision commit)))
+               (sha256
+                (base32
+                 "1kvkxkisi3czldnb43ig60l55pi4a3m2a4ixp7krhpf9fc5wp294")))))))
+      (inputs
+       `(("cmark" ,cmark)
+         ("font-google-noto" ,font-google-noto)
+         ("font-openmoji" ,font-openmoji)
+         ("openssl" ,openssl)
+         ("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtsvg" ,qtsvg)))
+      (home-page "https://kristall.random-projects.net")
+      (synopsis "Small-internet graphical client")
+      (description "Graphical small-internet client with with many features
+including multi-protocol support (gemini, HTTP, HTTPS, gopher, finger),
+bookmarks, TSL certificates management, outline generation and a tabbed
+interface.")
+      (license (list license:gpl3+
+                     ;; for breeze-stylesheet
+                     license:expat)))))
+
 (define-public qutebrowser
   (package
     (name "qutebrowser")
@@ -412,7 +538,7 @@ access.")
                                       (assoc-ref inputs "qtwebengine")
                                       "/lib/qt5/libexec/QtWebEngineProcess")))
                (wrap-program bin
-                 `("QTWEBENGINEPROCESS_PATH" ":" prefix (,qt-process-path)))
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (home-page "https://qutebrowser.org/")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")
@@ -461,7 +587,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-2")
+    (version "2-pre-release-4")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +598,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0wqq8ppn0n7js3pxzzb36h0lf3r3gqhs2hi8h85c3n8a54hnbp8q"))
+         "00865plmvgl1nj009a4w9bcb5mf0zgqjx7w6slacyqgidjzad6qm"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -482,26 +608,19 @@ driven and does not detract you from your daily work.")
        #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-version ; Version is guessed from .git which Guix does not have.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((version (format #f "~a" ,version))
-                   (file "source/global.lisp"))
-               (chmod file #o666)
-               (let ((port (open-file file "a")))
-                 (format port "(setf +version+ ~s)" version)
-                 (close-port port)))
-             #t))
-         (add-before 'build 'make-desktop-version-number
-           (lambda _
-             (with-output-to-file "version"
-               (lambda _
-                 (format #t "~a" ,version)
-                 #t))))
-
          (delete 'configure)
          (add-before 'build 'fix-common-lisp-cache-folder
            (lambda _
              (setenv "HOME" "/tmp")
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (setenv "NYXT_VERSION" ,version)
+             #t))
+         (add-before 'check 'configure-tests
+           (lambda _
+             (setenv "NYXT_TESTS_NO_NETWORK" "1")
+             (setenv "NYXT_TESTS_ERROR_ON_FAIL" "1")
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -515,7 +634,8 @@ driven and does not detract you from your daily work.")
                            ":"))
                     (gi-path (string-join
                               (map (lambda (lib)
-                                     (string-append (assoc-ref inputs lib) "/lib/girepository-1.0"))
+                                     (string-append (assoc-ref inputs lib)
+                                                    "/lib/girepository-1.0"))
                                    libs)
                               ":"))
                     (xdg-path (string-join
@@ -536,6 +656,7 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-chanl" ,sbcl-chanl)
        ("cl-containers" ,sbcl-cl-containers)
        ("cl-css" ,sbcl-cl-css)
        ("cl-json" ,sbcl-cl-json)
@@ -551,7 +672,6 @@ driven and does not detract you from your daily work.")
        ("iolib" ,sbcl-iolib)
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
-       ("lparallel" ,sbcl-lparallel)
        ("mk-string-metrics" ,sbcl-mk-string-metrics)
        ("moptilities" ,sbcl-moptilities)
        ("osicat" ,sbcl-osicat)
@@ -567,6 +687,7 @@ driven and does not detract you from your daily work.")
        ("trivial-package-local-nicknames" ,sbcl-trivial-package-local-nicknames)
        ("trivial-types" ,sbcl-trivial-types)
        ("unix-opts" ,sbcl-unix-opts)
+       ("usocket" ,sbcl-usocket)
        ;; WebKitGTK deps
        ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
        ("cl-webkit" ,sbcl-cl-webkit)
@@ -588,7 +709,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public bombadillo
   (package
     (name "bombadillo")
-    (version "2.2.0")
+    (version "2.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -596,7 +717,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                     (commit version)))
               (sha256
                (base32
-                "1m52b1wk48gkqmjy8l0x3jaksrx2v8w6w59lhr7zaw2i0n4f5k0z"))
+                "0n0gza9qfx1hxigicyvf6wg1ccc2irvh17yhzpw9gx75ls5ybrjn"))
               (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
@@ -615,7 +736,6 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                              (pixdir (string-append sharedir "/pixmaps")))
                         (with-directory-excursion builddir
                           (install-file "bombadillo.desktop" appdir)
-                          (install-file "LICENSE" docdir)
                           (install-file "bombadillo.1" mandir)
                           (install-file "bombadillo-icon.png" pixdir)
                           #t)))))))

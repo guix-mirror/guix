@@ -54,6 +54,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -116,6 +117,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
@@ -588,6 +590,139 @@ possible, while battling many vicious aliens.")
                    license:cc-by-sa3.0
                    license:lgpl2.1+
                    license:bsd-2))))
+
+(define-public bsd-games
+  (package
+    (name "bsd-games")
+    (version "2.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://ibiblio.org/pub/linux/games/bsd-games-2.17.tar.gz")
+       (sha256
+        (base32 "0q7zdyyfvn15y0w4g54kq3gza89h61py727m8slmw73cxx594vq6"))
+       (patches
+        (search-patches
+         ;; thanks Arch, and Debian
+         "bsd-games-2.17-64bit.patch"
+         "bsd-games-bad-ntohl-cast.patch"
+         "bsd-games-gamescreen.h.patch"
+         "bsd-games-getline.patch"
+         "bsd-games-null-check.patch"
+         "bsd-games-number.c-and-test.patch"
+         "bsd-games-stdio.h.patch"
+         "bsd-games-prevent-name-collisions.patch"
+         ;; Guix customizations
+         "bsd-games-add-configure-config.patch"
+         "bsd-games-dont-install-empty-files.patch"
+         "bsd-games-add-wrapper.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (inputs
+     `(("curses" ,ncurses)
+       ("pager" ,less)
+       ("miscfiles" ,miscfiles)
+       ("openssl" ,openssl)))           ;used only by 'factor'
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/bsd-games-" ,version))
+                    (man (string-append out "/share/man"))
+                    (word-list (string-append (assoc-ref inputs "miscfiles")
+                                              "/share/web2"))
+                    (static-data (string-append out "/share/games/bsd-games"))
+                    ;; Not a "./" because of substitute* in 'patch-install
+                    ;; below.  The .// allow us not to mess with the games'
+                    ;; code any further: we just use a wrapper script that
+                    ;; cd's to a BSD_GAMES_DIR.  :]
+                    (save-files ".//"))
+               (substitute* "configure"
+                 (("/usr/share/man") man)
+                 (("/usr/share/doc/bsd-games") doc)
+                 (("/usr/share/[^\n/]*") static-data)
+                 (("/var/games") save-files)
+                 (("/usr/bin/less") (which "less"))
+                 (("(/usr/bin|/usr/games)") bin))
+               (substitute* "config.params" (("WORD_LIST") word-list))
+               (substitute* "wrapper" (("STATIC_DATA") static-data))
+               (invoke "./configure"))
+             #t))
+         (add-before 'install 'patch-install
+           ;; Some games need a writable directory containing pre-maded files.
+           ;; The files get installed to the Store.  Then the wrapper kicks in.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (static-data (string-append out "/share/games/bsd-games"))
+                    (save-files ".//"))
+               (substitute* "Makeconfig" ((save-files) static-data)))
+             #t))
+         (add-after 'install 'install-documents
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/bsd-games-" ,version)))
+               (rename-file "phantasia/COPYRIGHT" "phantasia-COPYRIGHT")
+               (for-each
+                (lambda(file) (install-file file doc))
+                '("AUTHORS" "BUGS" "README" "SECURITY" "THANKS"
+                  "phantasia-COPYRIGHT")))
+             #t)))))
+    (home-page "https://github.com/vattam/BSDGames")
+    (synopsis "Collection of the old text-based games and amusements")
+    (description
+     "These are the BSD games.  See the fortune-mod package for fortunes.
+
+Action: atc (keep the airplanes safe), hack (explore the dangerous Dungeon),
+hunt (kill the others for the Pair of Boots, multi-player only), robots (avoid
+the evil robots), sail (game of naval warfare with wooden ships), snake (steal
+the $$ from the cave, anger the snake, and get out alive), tetris (game of
+lining up the falling bricks of different shapes), and worm (eat, grow big,
+and neither bite your tail, nor ram the wall).
+
+Amusements: banner (prints a large banner), bcd & morse & ppt (print a punch
+card, or paper tape, or Morse codes), caesar & rot13 (ciphers and deciphers
+the input), factor (factorizes a number), number (translates numbers into
+text), pig (translates from English to Pig Latin), pom (should print the
+Moon's phase), primes (generates primes), rain & worms (plays an screen-saver
+in terminal), random (prints randomly chosen lines from files, or returns a
+random exit-code), and wtf (explains what do some acronyms mean).
+
+Board: backgammon (lead the men out of board faster than the friend do),
+boggle (find the words in the square of letters), dab (game of dots and
+boxes), gomoku (game of five in a row), hangman (guess a word before man is
+hanged), and monop (game of monopoly, hot-seat only).  Also the card-games:
+canfield, cribbage, fish (juniors game), and mille.
+
+Quests: adventure (search for treasures with the help of wizard),
+battlestar (explore the world around, starting from dying spaceship),
+phantasia (role-play as an rogue), trek (hunt the Klingons, and save the
+Federation), and wump (hunt the big smelly Wumpus in a dark cave).
+
+Quizes: arithmetic, and quiz.")
+    ;; "Auxiliary and data files, distributed with the games in NetBSD, but
+    ;; not bearing copyright notices, probably fall under the terms of the UCB
+    ;; or NetBSD copyrights and licences.  The file "fortune/Notes" contains a
+    ;; warning in regard to the fortune databases."
+    (license (list
+              ;; Most games.  Files: countmail/countmail.6, dab/dab.6,
+              ;; lib/strlcpy.c, wargames/wargames.6
+              license:bsd-3
+              ;; dab and hunt.  Files: adventure/extern.h,
+              ;; backgammon/backgammon/backlocal.h, caesar/rot13.in,
+              ;; countmail/countmail, dm/utmpentry.c, dm/utmpentry.h,
+              ;; hack/extern.h, robots/auto.c, sail/display.h,
+              ;; sail/restart.h, wargames/wargames
+              license:bsd-4
+              ;; wtf (the game)
+              license:public-domain
+              ;; phantasia (all but phantasia/pathnames.h.in, which is bsd-3)
+              (license:fsf-free "file:///phantasia/COPYRIGHT")))))
+
 
 (define-public bzflag
   (package
@@ -1186,7 +1321,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.4.1")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1330,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12hhnhdwgz7hd3hlndbnk15pxggm1375qs0764ija4nl1gbpb110"))
+        (base32 "10d6py1cmkq8lnb5h3w8rdpp4fmpd1wgqkgiabdghqxi7b2s0g4b"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -1222,7 +1357,7 @@ does not include game data.")
   (package
     (inherit julius)
     (name "augustus")
-    (version (package-version julius))
+    (version "1.4.1a")
     (source
      (origin
        (method git-fetch)
@@ -1231,7 +1366,7 @@ does not include game data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ii0w0iwa9zv5bbqfcps5mxifd796m6fw4gvjf09pkm3yjgqc0ag"))
+        (base32 "1xqv8j8jh3f13fjhyf7hk1anrn799cwwsvsd75kpl9n5yh5s1j5y"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -1470,7 +1605,14 @@ such as chess or stockfish.")
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       ;; SSE instructions are available on Intel systems only.
+       (list ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                    (%current-system)))
+                        '("x86_64" "i686"))
+                   '("--enable-simd=sse2") ; prevent avx instructions
+                   '()))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1734,8 +1876,8 @@ role, and your gender.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://downloads.sourceforge.net/pipewalker/"
-                           "pipewalker-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/pipewalker/pipewalker/"
+                           version "/pipewalker-" version ".tar.gz"))
        (sha256
         (base32 "1x46wgk0s55562pd96cxagxkn6wpgglq779f9b64ff1k3xzp3myn"))))
     (build-system gnu-build-system)
@@ -4294,7 +4436,7 @@ is attributed to Albert Einstein.")
 (define-public powwow
   (package
     (name "powwow")
-    (version "1.2.19")
+    (version "1.2.22")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4302,7 +4444,7 @@ is attributed to Albert Einstein.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "10rjl63hmf62qslyhzqrbw3i2zf09dgxv65avhj0iiz0m4pbc9wy"))))
+                "12i11b8zxg8vdb9d6ims8qy2lmwwr42rcqbwq3vsa1x94s51bcbp"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
@@ -5083,7 +5225,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.04")
+    (version "2.02.05")
     (source
      (origin
        (method url-fetch)
@@ -5091,7 +5233,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32 "1w1y20vqcikg59gnbxjbhyq2yanwqz1a6wp8vd1qnmil240id4j7"))))
+        (base32 "18fm9ga08mxqmblahmnlzwnl387i8mbkj4n0gffxc91d299019v3"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -5119,7 +5261,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
 (define-public laby
   (package
     (name "laby")
-    (version "0.6.4")
+    (version "0.7.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -5128,7 +5270,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "12fq9hhrxpzgfinmj9ra9ckss9yficwdlrmgjvvsq7agvh3sgyl1"))
+               "1y6nfxcjhqg9bb81hs0wijg7kcwk5kff81rgd8bsv5ps7ia9nj6b"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -6387,76 +6529,72 @@ at their peak of economic growth and military prowess.
                    license:mpl2.0
                    license:zlib))))
 
-;; There have been no official releases.
 (define-public open-adventure
-  (let* ((commit "d43854f0f6bb8e9eea7fbce80348150e7e7fc34d")
-         (revision "2"))
-    (package
-      (name "open-adventure")
-      (version (string-append "2.5-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/esr/open-adventure")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "08bwrvf4axb1rsfd6ia1fddsky9pc1p350vjskhaakg2czc6dsk0"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc")
-         #:parallel-build? #f ; not supported
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; Linenoise is meant to be included, so we have to
-               ;; copy it into the working directory.
-               (let* ((linenoise (assoc-ref inputs "linenoise"))
-                      (noisepath (string-append linenoise "/include/linenoise"))
-                      (out (assoc-ref outputs "out")))
-                 (copy-recursively noisepath "linenoise"))
-               #t))
-           (add-before 'build 'use-echo
-             (lambda _
-               (substitute* "tests/Makefile"
-                 (("/bin/echo") (which "echo")))
-               #t))
-           (add-after 'build 'build-manpage
-             (lambda _
-               ;; This target is missing a dependency
-               (substitute* "Makefile"
-                 ((".adoc.6:" line)
-                  (string-append line " advent.adoc")))
-               (invoke "make" ".adoc.6")))
-           ;; There is no install target
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (man (string-append out "/share/man/man6")))
-                 (install-file "advent" bin)
-                 (install-file "advent.6" man))
-               #t)))))
-      (native-inputs
-       `(("asciidoc" ,asciidoc)
-         ("linenoise" ,linenoise)
-         ("python" ,python)
-         ("python-pyyaml" ,python-pyyaml)))
-      (home-page "https://gitlab.com/esr/open-adventure")
-      (synopsis "Colossal Cave Adventure")
-      (description "The original Colossal Cave Adventure from 1976 was the
-origin of all text adventures, dungeon-crawl (computer) games, and
-computer-hosted roleplaying games.  This is the last version released by
+  (package
+    (name "open-adventure")
+    (version "1.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/esr/open-adventure")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "123svzy7xczdklx6plbafp22yv9bcvwfibjk0jv2c9i22dfsr07f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'build 'use-echo
+           (lambda _
+             (substitute* "tests/Makefile"
+               (("/bin/echo") (which "echo")))
+             #t))
+         (add-after 'build 'build-manpage
+           (lambda _
+             ;; This target is missing a dependency
+             (substitute* "Makefile"
+               ((".adoc.6:" line)
+                (string-append line " advent.adoc")))
+             (invoke "make" ".adoc.6")))
+         ;; There is no install target.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "advent" bin)
+               (install-file "advent.6" man))
+             #t)))))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("libedit" ,libedit)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://gitlab.com/esr/open-adventure")
+    (synopsis "Colossal Cave Adventure")
+    (description
+     "The original Colossal Cave Adventure from 1976 was the origin of all
+text adventures, dungeon-crawl (computer) games, and computer-hosted
+roleplaying games.  This is a forward port of the last version released by
 Crowther & Woods, its original authors, in 1995.  It has been known as
-\"adventure 2.5\" and \"430-point adventure\".")
-      (license license:bsd-2))))
+``adventure 2.5'' and ``430-point adventure''.")
+    (license license:bsd-2)))
+
+(define-public open-adventure-2.5
+  (package
+    (inherit open-adventure)
+    (version "2.5")
+    (properties `((superseded . ,open-adventure)))))
 
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.6.7")
+    (version "1.7.2")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -6464,7 +6602,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        (uri (string-append "https://te4.org/dl/t-engine/t-engine4-src-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0283hvms5hr29zr0grd6gq059k0hg8hcz3fsmwjmysiih8790i68"))
+        (base32 "1xa0pdn9pggwf7hnqb87ya2qxqhjahkdjwf8cr2y01gixgrkj9lv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -6486,7 +6624,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        ("vorbis" ,libvorbis)
        ("luajit" ,luajit)))
     (arguments
-     `(#:make-flags '("CC=gcc" "config=release")
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "config=release")
        ;; XXX: Building in parallel occasionally causes this build failure:
        ;;   ../src/luajit2/src/host/buildvm.c:73:10: fatal error: buildvm_arch.h:
        ;;   No such file or directory
@@ -6677,15 +6817,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
 (define-public yamagi-quake2
   (package
     (name "yamagi-quake2")
-    (version "7.10")
+    (version "7.45")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://deponie.yamagi.org/quake2/quake2-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "0psinbg25mysd58k99s1n34w31w5hj1vppb39gdjb0zqi6sl6cps"))))
+        (base32 "0rgz8x7lzd0zb0xqd0gvnf2641nr9xpfm6v14mgh99hspxklaln7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -6714,12 +6853,15 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         (string-append out "/bin/yamagi-quake2"))
                (symlink (string-append out "/lib/yamagi-quake2/q2ded")
                         (string-append out "/bin/yamagi-q2ded"))))))))
-    (inputs `(("sdl2" ,sdl2)
-              ("mesa" ,mesa)
-              ("libvorbis" ,libvorbis)
-              ("zlib" ,zlib)
-              ("openal" ,openal)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl-minimal)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
     (synopsis "First person shooter engine based on quake2")
     (description "Yamagi Quake II is an enhanced client for id Software's Quake II.
 The main focus is an unchanged single player experience like back in 1997,
@@ -6737,17 +6879,23 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
 (define-public nudoku
   (package
     (name "nudoku")
-    (version "1.0.0")
-    (source (origin
-	      (method url-fetch)
-	      (uri (string-append "https://github.com/jubalh/nudoku/"
-                                  "releases/download/" version
-                                  "/nudoku-" version ".tar.xz"))
-	      (sha256
-               (base32
-                "0nr2j2z07nxk70s8xnmmpzccxicf7kn5mbwby2kg6aq8paarjm8k"))))
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jubalh/nudoku.git")
+             (commit version)))
+       (sha256
+        (base32 "12v00z3p0ymi8f3w4b4bgl4c76irawn3kmd147r0ap6s9ssx2q6m"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (home-page "https://jubalh.github.io/nudoku/")
     (synopsis "Sudoku for your terminal")
     (description "Nudoku is a ncurses-based Sudoku game for your terminal.")
@@ -8144,6 +8292,39 @@ and cooperative.")
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public slimevolley
+  (package
+    (name "slimevolley")
+    (version "2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.tuxfamily.org/slime/"
+                           "slimevolley_" version ".tar.gz"))
+       (sha256
+        (base32 "1pi60zjpx95mfdkrbwf4cbzy5lv4v5qrljvgck46qca78i9g9g46"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       ;; Work around build failure: "error adding symbols: DSO
+       ;; missing from command line".
+       #:configure-flags (list "-DCMAKE_EXE_LINKER_FLAGS=-lm")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-net sdl-ttf)))))
+    (home-page "https://slime.tuxfamily.org/")
+    (synopsis "Unrealistic 2D volleyball simulation")
+    (description
+     "Slime Volley is a 2D arcade-oriented volleyball simulation, in
+the spirit of some Java games of the same name.
+
+Two teams, 1-3 players each, try to be the first to get 10 points.
+This happens when the one ball touches the floor on the other side of
+the net.  There can be 1 to 8 balls in game.  Once one ball touches
+the ground, the set ends and all balls are served again.")
+    (license license:gpl3+)))
+
 (define-public slingshot
   (package
     (name "slingshot")
@@ -9345,7 +9526,7 @@ angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
      `(("bash" ,bash)
        ("scummvm" ,scummvm)))
     (home-page "https://www.scummvm.org/")
-    (synopsis "Classic 2D point an click science-fiction adventure game")
+    (synopsis "Classic 2D point and click science-fiction adventure game")
     (description
      "Beneath a Steel Sky is a science-fiction thriller set in a bleak
 post-apocalyptic vision of the future.  It revolves around Union City,
@@ -11806,3 +11987,33 @@ inside the Zenith Colony.")
 X11 that won't set your CPU on fire, drain your laptop battery, or lower video
 game FPS.")
       (license license:unlicense))))
+
+(define-public curseofwar
+  (package
+    (name "curseofwar")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/a-nikolaev/curseofwar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wd71wdnj9izg5d95m81yx3684g4zdi7fsy0j5wwnbd9j34ilz1i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://a-nikolaev.github.io/curseofwar/")
+    (synopsis "Fast-paced action strategy game")
+    (description "Curse of War is a fast-paced action strategy game originally
+implemented using ncurses user interface.  An SDL graphical version is also
+available.")
+    (license license:gpl3+)))

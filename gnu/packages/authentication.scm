@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,26 +33,14 @@
 (define-public oath-toolkit
   (package
     (name "oath-toolkit")
-    (version "2.6.2")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
-       (patches
-        (append (search-patches "oath-toolkit-glibc-compat.patch")
-                (list (origin
-                        ;; This huge commit updates gnulib for GCC 7 compatibility.
-                        (method url-fetch)
-                        (uri (string-append
-                              "https://gitlab.com/oath-toolkit/oath-toolkit/commit/"
-                              "2fffce2a471f74a585939c84cce16ef3015e5d3d.diff"))
-                        (file-name "oath-toolkit-update-gnulib.patch")
-                        (sha256
-                         (base32
-                          "088c9s4ay1b54bjqc4mwfs5l3f6357zj5vpw771zlq5g4addd4s0"))))))
        (sha256
-        (base32 "182ah8vfbg0yhv6mh1b6ap944d0na6x7lpfkwkmzb6jl9gx4cd5h"))))
+        (base32 "116na9nncpwshl3ww8w3llzwk49igilplxcjy1k6jzl3mmg2bimz"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO ‘--enable-pskc’ causes xmlsec-related test suite failures.

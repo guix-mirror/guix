@@ -72,6 +72,7 @@
             openpgp-fingerprint->bytevector
             openpgp-fingerprint
 
+            %default-guix-channel
             %default-channels
             guix-channel?
 
@@ -170,13 +171,16 @@ to the corresponding bytevector."
   ;; URL of the default 'guix' channel.
   "https://git.savannah.gnu.org/git/guix.git")
 
+(define %default-guix-channel
+  (channel
+   (name 'guix)
+   (branch "master")
+   (url %default-channel-url)
+   (introduction %guix-channel-introduction)))
+
 (define %default-channels
   ;; Default list of channels.
-  (list (channel
-         (name 'guix)
-         (branch "master")
-         (url %default-channel-url)
-         (introduction %guix-channel-introduction))))
+  (list %default-guix-channel))
 
 (define (guix-channel? channel)
   "Return true if CHANNEL is the 'guix' channel."

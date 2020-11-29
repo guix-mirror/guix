@@ -440,7 +440,7 @@ releases for ~a~%")
                  (full-name x)))
         (lst
          (format (current-output-port)
-                 (N_ "Building the following ~*package would ensure ~d \
+                 (N_ "Building the following ~d package would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                      "Building the following ~d packages would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"

@@ -1,0 +1,24 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Sat, 14 Nov 2020 15:40:56 +0100
+Subject: [PATCH] gnu: perl-www-curl: Fix struct void* usage.
+
+Copied verbatim from Gentoo[0].  Fixes:
+
+  Curl.xs:76:12: error: expected ‘{’ before ‘void’
+       struct void *curlm;
+              ^~~~
+  Curl.xs:76:12: error: two or more data types in declaration specifiers
+
+[0]: https://694466.bugs.gentoo.org/attachment.cgi?id=595098
+
+--- WWW-Curl-4.17/Curl.xs	2014-02-21 18:08:30.000000000 +0200
++++ WWW-Curl-4.17.new/Curl.xs	2019-11-05 21:44:55.434395739 +0200
+@@ -73,7 +73,7 @@ typedef struct {
+ #ifdef __CURL_MULTI_H
+     struct CURLM *curlm;
+ #else
+-    struct void *curlm;
++    void *curlm;
+ #endif
+ } perl_curl_multi;
+ 

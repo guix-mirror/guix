@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -32,7 +32,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
-  #:use-module (guix build-system minify))
+  #:use-module (guix build-system minify)
+  #:use-module (guix utils))
 
 (define-public font-mathjax
   (package
@@ -415,24 +416,28 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://mujs.com/downloads/mujs-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1ilhay15z4k7mlzs6g2d00snivin7vp72dfw5wwpmc0x70jr31l2"))))
+    (version "1.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ccxvii/mujs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "146lmmigqlvx36d3fzb9kk7sy6y4ddv0ih4pkjz4zyj30zl84gy2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)  ; no configure
-         (add-after 'install 'install-shared-library
+         (delete 'configure)  ; no configure script
+         (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (apply invoke "make" "install-shared" make-flags))))
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
-                          (string-append "CC=gcc"))
+       #:make-flags
+       (list ,(string-append "VERSION=" version)
+             ,(string-append "CC=" (cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no tests
     (inputs
      `(("readline" ,readline)))
@@ -451,14 +456,14 @@ roots, or wrestle with obscure build systems.")
 (define-public quickjs
   (package
     (name "quickjs")
-    (version "2020-09-06")
+    (version "2020-11-08")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bellard.org/quickjs/quickjs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "05vpnnzmws7plnwsnk2brwf7whyj84l5xl0iahi1xdn6rpla6880"))))
+                "0yqqcjxi3cqagw184mqrxpvqg486x7c233r3cp9mxachngd6779f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

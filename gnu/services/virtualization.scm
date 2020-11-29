@@ -875,7 +875,16 @@ that will be listening to receive secret keys on port 1004, TCP."
                          (permit-root-login #t)
                          (allow-empty-passwords? #t)
                          (password-authentication? #t)))
-               %base-services/hurd))))
+
+               ;; By default, the secret service introduces a pre-initialized
+               ;; /etc/guix/acl file in the childhurd.  Thus, clear
+               ;; 'authorize-key?' so that it's not overridden at activation
+               ;; time.
+               (modify-services %base-services/hurd
+                 (guix-service-type config =>
+                                    (guix-configuration
+                                     (inherit config)
+                                     (authorize-key? #f))))))))
 
 (define-record-type* <hurd-vm-configuration>
   hurd-vm-configuration make-hurd-vm-configuration

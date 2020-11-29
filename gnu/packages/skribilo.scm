@@ -20,6 +20,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix licenses)
+  #:use-module ((guix utils) #:select (version-major+minor))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
@@ -32,30 +33,35 @@
 (define-public skribilo
   (package
     (name "skribilo")
-    (version "0.9.4")
+    (version "0.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/skribilo/skribilo-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "06ywnfjfa9sxrzdszb5sryzg266380g519cm64kq62sskzl7zmnf"))))
+               "02dzy2imqgfmwda4d1r51205si4c0r4fp2gf22sb0kv3qhhnm0h0"))))
     (build-system gnu-build-system)
     (arguments
      ;; Make the modules available under the usual location.
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Make sure the 'skribilo' command gets to see
              ;; Guile-Reader, even if Guile-Reader is not in the search
              ;; path.
-             (let ((reader (assoc-ref inputs "guile-reader")))
+             (let ((reader (assoc-ref inputs "guile-reader"))
+                   (effective ,(version-major+minor
+                                (package-version
+                                 (car (assoc-ref (package-inputs this-package)
+                                                 "guile"))))))
                (substitute* "src/skribilo.in"
                  (("^exec (.*) -c" _ things)
                   (string-append "exec " things
-                                 " -L " reader "/share/guile/site/2.2"
-                                 " -C " reader "/lib/guile/2.2/site-ccache"
+                                 " -L " reader "/share/guile/site/" effective
+                                 " -C " reader
+                                 "/lib/guile/" effective "/site-ccache"
                                  " -c"))))
              #t)))
 
@@ -63,7 +69,7 @@
 
     (native-inputs `(("pkg-config" ,pkg-config)))
 
-    (inputs `(("guile" ,guile-2.2)
+    (inputs `(("guile" ,guile-3.0)
               ("imagemagick" ,imagemagick)
               ("ghostscript" ,ghostscript)        ; for 'convert'
               ("ploticus" ,ploticus)
@@ -71,8 +77,8 @@
 
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
     ;; library, these inputs are needed as well.
-    (propagated-inputs `(("guile-reader" ,guile2.2-reader)
-                         ("guile-lib" ,guile2.2-lib)))
+    (propagated-inputs `(("guile-reader" ,guile-reader)
+                         ("guile-lib" ,guile-lib)))
 
     (home-page "https://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")

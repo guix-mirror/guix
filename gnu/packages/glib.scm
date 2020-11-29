@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Arthur Margerit <ruhtra.mar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -63,6 +65,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -170,6 +173,7 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
+   (replacement glib-with-gio-patch)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -380,11 +384,20 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
+(define glib-with-gio-patch
+  ;; GLib with a fix for <https://bugs.gnu.org/35594>.
+  ;; TODO: Fold into 'glib' above in the next rebuild cycle.
+  (package
+    (inherit glib)
+    (source (origin
+              (inherit (package-source glib))
+              (patches (cons (search-patch "glib-appinfo-watch.patch")
+                             (origin-patches (package-source glib))))))))
+
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
-  (package
-    (inherit glib)
+  (package/inherit glib
     (properties (alist-delete 'hidden? (package-properties glib)))
     (outputs (cons "doc" (package-outputs glib))) ; 20 MiB of GTK-Doc reference
     (native-inputs
@@ -691,8 +704,7 @@ useful for C++.")
        (sha256
         (base32
          "0nkam61rsn7y3wik3vw46wk5q2cjfh2iph57hl9m39rc8jijb7dv"))
-       (patches (search-patches
-                 "python2-pygobject-2-gi-info-type-error-domain.patch"))))
+       (patches (search-patches "python2-pygobject-2-deprecation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
@@ -927,6 +939,45 @@ programming language.  It also contains the utility
 @command{dbuscxx-xml2cpp}.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
     (license license:lgpl2.1+)))
+
+(define-public dbus-cxx
+  (package
+    (name "dbus-cxx")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/dbus-cxx/dbus-cxx/"
+                                  version "/dbus-cxx-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1acsgpkd9v7b9jdc79ijmh9dbdfrzgkwkaff518i3zpk7y6g5mzw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DENABLE_TESTS=ON"
+                           "-DENABLE_TOOLS=ON"
+                           "-DENABLE_GLIBMM=ON")))
+    (inputs `(("dbus" ,dbus)
+              ("libsigc++" ,libsigc++)
+              ("glibmm" ,glibmm)
+              ("python" ,python)
+              ("popt" ,popt)
+              ("expat" ,expat)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("m4" ,m4)))
+    (synopsis "C++ wrapper for dbus")
+    (description "Dbus-cxx is a C++ wrapper for dbus.\n
+It exposes the C API to allow direct manipulation and
+relies on sigc++ to provide an Oriented Object interface.\n
+This package provide 2 utils:
+@enumerate
+@item @command{dbus-cxx-xml2cpp} to generate proxy and adapter
+@item @command{dbus-cxx-introspect} to introspect a dbus interface
+@end enumerate
+
+Some codes examples can be find at:
+@url{https://dbus-cxx.github.io/examples.html}")
+    (home-page "https://dbus-cxx.github.io/")
+    (license license:gpl3)))
 
 (define-public appstream-glib
   (package

@@ -198,7 +198,7 @@ edges."
 
 (test-assert "reverse bag DAG"
   (let-values (((dune bap ocaml-base)
-                (values (specification->package "dune")
+                (values (specification->package "ocaml4.07-dune")
                         (specification->package "bap")
                         (specification->package "ocaml4.07-base")))
                ((backend nodes+edges) (make-recording-backend)))

@@ -29,6 +29,8 @@
   #:export (%ocaml-build-system-modules
             package-with-ocaml4.07
             strip-ocaml4.07-variant
+            package-with-ocaml4.09
+            strip-ocaml4.09-variant
             default-findlib
             default-ocaml
             lower
@@ -95,6 +97,18 @@
 (define (default-ocaml4.07-dune)
   (let ((module (resolve-interface '(gnu packages ocaml))))
     (module-ref module 'ocaml4.07-dune)))
+
+(define (default-ocaml4.09)
+  (let ((ocaml (resolve-interface '(gnu packages ocaml))))
+    (module-ref ocaml 'ocaml-4.09)))
+
+(define (default-ocaml4.09-findlib)
+  (let ((module (resolve-interface '(gnu packages ocaml))))
+    (module-ref module 'ocaml4.09-findlib)))
+
+(define (default-ocaml4.09-dune)
+  (let ((module (resolve-interface '(gnu packages ocaml))))
+    (module-ref module 'ocaml4.09-dune)))
 
 (define* (package-with-explicit-ocaml ocaml findlib dune old-prefix new-prefix
                                        #:key variant-property)
@@ -170,6 +184,19 @@ pre-defined variants."
   (package
     (inherit p)
     (properties (alist-delete 'ocaml4.07-variant (package-properties p)))))
+
+(define package-with-ocaml4.09
+  (package-with-explicit-ocaml (delay (default-ocaml4.09))
+                               (delay (default-ocaml4.09-findlib))
+                               (delay (default-ocaml4.09-dune))
+                               "ocaml-" "ocaml4.09-"
+                               #:variant-property 'ocaml4.09-variant))
+
+(define (strip-ocaml4.09-variant p)
+  "Remove the 'ocaml4.09-variant' property from P."
+  (package
+    (inherit p)
+    (properties (alist-delete 'ocaml4.09-variant (package-properties p)))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

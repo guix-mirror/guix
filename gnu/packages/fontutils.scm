@@ -69,6 +69,7 @@
   (package
    (name "freetype")
    (version "2.10.1")
+   (replacement freetype/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
@@ -96,6 +97,19 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
+
+(define freetype/fixed
+  ;; Security fix for CVE-2020-15999.
+  (package
+    (inherit freetype)
+    (version "2.10.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/freetype/freetype-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "112pyy215chg7f7fmp2l9374chhhpihbh8wgpj5nj6avj3c59a46"))))))
 
 (define-public ttfautohint
   (package
@@ -146,7 +160,7 @@ scripts.")
     (inputs
      `(("zlib" ,zlib)))
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ;no tests
        #:phases
        (modify-phases %standard-phases
@@ -156,7 +170,8 @@ scripts.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "sfnt2woff" bin)
-               (install-file "woff2sfnt" bin)))))))
+               (install-file "woff2sfnt" bin))
+             #t)))))
     (synopsis "Convert between OpenType and WOFF fonts")
     (description
      "This package provides two tools:
@@ -268,7 +283,7 @@ work with most software requiring Type 1 fonts.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/google/woff2.git")
+         (url "https://github.com/google/woff2")
          (commit (string-append "v" version))))
        (file-name
         (git-file-name name version))
@@ -945,7 +960,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
 (define-public libraqm
   (package
     (name "libraqm")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -953,7 +968,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
                            "releases/download/v" version "/"
                            "raqm-" version ".tar.gz"))
        (sha256
-        (base32 "0hgry3fj2y3qaq2fnmdgd93ixkk3ns5jds4vglkiv2jfvpn7b1g2"))))
+        (base32 "0a4q9dziirb85sa9rmkamg2krdhd009di2vlz91njwxcp3q8qj46"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-static")))
@@ -975,3 +990,33 @@ It currently provides bidirectional text support (using FriBiDi),
 shaping (using HarfBuzz), and proper script itemization.  As a result, Raqm
 can support most writing systems covered by Unicode.")
     (license license:expat)))
+
+(define-public lcdf-typetools
+  (package
+    (name "lcdf-typetools")
+    (version "2.108")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/kohler/lcdf-typetools")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a6jqaqwq43ldjjjlnsh6mczs2la9363qav7v9fyrfzkfj8kw9ad"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; This is only provided by the monolithic texlive distribution.
+       ;; FIXME: texlive-kpathsea doesn't come with the library and headers
+       (list "--without-kpathsea")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://lcdf.org/type/")
+    (synopsis "Multiple font manipulation tools")
+    (description "LCDF Typetools comprises several programs for manipulating
+PostScript Type 1, Type 1 Multiple Master, OpenType, and TrueType fonts.
+These tools are cfftot1, mmafm, mmpfb, otfinfo, otftotfm, t1dotlessj, t1lint,
+t1rawfm, t1reencode, t1testpage and ttftotype42.")
+    (license license:gpl2+)))

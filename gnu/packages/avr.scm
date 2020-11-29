@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,8 +42,8 @@
     (inherit (cross-binutils "avr"))
     (name "avr-binutils")))
 
-(define-public avr-gcc-4.9
-  (let ((xgcc (cross-gcc "avr" #:xgcc gcc-4.9 #:xbinutils avr-binutils)))
+(define avr-gcc
+  (let ((xgcc (cross-gcc "avr" #:xgcc gcc #:xbinutils avr-binutils)))
     (package
       (inherit xgcc)
       (name "avr-gcc")
@@ -94,19 +95,10 @@
               (variable "CROSS_LIBRARY_PATH")
               (files '("avr/lib")))))
       (native-inputs
-       `(("gcc@5" ,gcc-5)
+       `(("gcc" ,gcc)
          ,@(package-native-inputs xgcc))))))
 
-(define-public avr-gcc-5
-  (package
-    (inherit avr-gcc-4.9)
-    (version (package-version gcc-5))
-    (source (origin
-              (inherit (package-source gcc-5))
-              (patches (append (origin-patches (package-source gcc-5))
-                               (search-patches "gcc-cross-environment-variables.patch")))))))
-
-(define (avr-libc avr-gcc)
+(define avr-libc
   (package
     (name "avr-libc")
     (version "2.0.0")
@@ -120,18 +112,7 @@
     (build-system gnu-build-system)
     (arguments
      '(#:out-of-source? #t
-       #:configure-flags '("--host=avr")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'unpack 'fix-cpath
-           (lambda _
-             ;; C_INCLUDE_PATH and CPATH pose issues for cross-building,
-             ;; leading to failures when building avr-libc on 64-bit systems.
-             ;; Simply unsetting them allows the build to succeed because it
-             ;; doesn't try to use any of the native system's headers.
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPATH")
-             #t)))))
+       #:configure-flags '("--host=avr")))
     (native-inputs `(("avr-binutils" ,avr-binutils)
                      ("avr-gcc" ,avr-gcc)))
     (home-page "https://www.nongnu.org/avr-libc/")
@@ -142,31 +123,27 @@ for use with GCC on Atmel AVR microcontrollers.")
     (license
      (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
 
-(define (avr-toolchain avr-gcc)
+(define-public avr-toolchain
   ;; avr-libc checks the compiler version and passes "--enable-device-lib" for avr-gcc > 5.1.0.
   ;; It wouldn't install the library for atmega32u4 etc if we didn't use the corret avr-gcc.
-  (let ((avr-libc (avr-libc avr-gcc)))
-    (package
-      (name "avr-toolchain")
-      (version (package-version avr-gcc))
-      (source #f)
-      (build-system trivial-build-system)
-      (arguments '(#:builder (begin (mkdir %output) #t)))
-      (propagated-inputs
-       `(("avrdude" ,avrdude)
-         ("binutils" ,avr-binutils)
-         ("gcc" ,avr-gcc)
-         ("libc" ,avr-libc)))
-      (synopsis "Complete GCC tool chain for AVR microcontroller development")
-      (description "This package provides a complete GCC tool chain for AVR
+  (package
+    (name "avr-toolchain")
+    (version (package-version avr-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (begin (mkdir %output) #t)))
+    (propagated-inputs
+     `(("avrdude" ,avrdude)
+       ("binutils" ,avr-binutils)
+       ("gcc" ,avr-gcc)
+       ("libc" ,avr-libc)))
+    (synopsis "Complete GCC tool chain for AVR microcontroller development")
+    (description "This package provides a complete GCC tool chain for AVR
 microcontroller development.  This includes the GCC AVR cross compiler and
 avrdude for firmware flashing.  The supported programming languages are C and
 C++.")
-      (home-page (package-home-page avr-libc))
-      (license (package-license avr-gcc)))))
-
-(define-public avr-toolchain-4.9 (avr-toolchain avr-gcc-4.9))
-(define-public avr-toolchain-5 (avr-toolchain avr-gcc-5))
+    (home-page (package-home-page avr-libc))
+    (license (package-license avr-gcc))))
 
 (define-public microscheme
   (package

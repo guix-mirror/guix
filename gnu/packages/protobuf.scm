@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,7 +83,7 @@ data in motion, or as a file format for data at rest.")
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "3.12.3")
+    (version "3.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/protobuf/releases/"
@@ -90,7 +91,7 @@ data in motion, or as a file format for data at rest.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0s29dj8l9j6jk04im3ivcji1x9jm42fwjmwcmli0smz0m337xyaf"))))
+                "0nan2wkkwkcx3qyx0cf5vfzjcjhr5qgh4jfx6v2lwpf5q03mmv2h"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (outputs (list "out"
@@ -276,7 +277,7 @@ mechanism for serializing structured data.")
     (home-page "https://pypi.org/project/pure-protobuf/")
     (synopsis "Protobuf implementation using dataclasses")
     (description
-     "@code{python-pure-protobuf} allows to take advantage of the standard
+     "@code{python-pure-protobuf} takes advantage of the standard
 dataclasses module to define message types.  Protocol buffers are a
 language-neutral, platform-neutral extensible mechanism for serializing
 structured data.")

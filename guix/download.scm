@@ -463,17 +463,17 @@ download by itself using its own dependencies."
                     #:key (system (%current-system))
                     (guile (default-guile))
                     executable?)
-  "Return a fixed-output derivation that fetches URL (a string, or a list of
-strings denoting alternate URLs), which is expected to have hash HASH of type
-HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
-optionally, NAME can specify a different file name.  When EXECUTABLE? is true,
-make the downloaded file executable.
+  "Return a fixed-output derivation that fetches data from URL (a string, or a
+list of strings denoting alternate URLs), which is expected to have hash HASH
+of type HASH-ALGO (a symbol).  By default, the file name is the base name of
+URL; optionally, NAME can specify a different file name.  When EXECUTABLE? is
+true, make the downloaded file executable.
 
 When one of the URL starts with mirror://, then its host part is
 interpreted as the name of a mirror scheme, taken from %MIRROR-FILE.
 
-Alternately, when URL starts with file://, return the corresponding file name
-in the store."
+Alternatively, when URL starts with file://, return the corresponding file
+name in the store."
   (define file-name
     (match url
       ((head _ ...)

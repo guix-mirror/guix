@@ -307,7 +307,9 @@ zabbix||{}
   (let ((base-os
          (simple-operating-system
           (service dhcp-client-service-type)
-          (postgresql-service)
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (postgresql postgresql-10)))
           (service zabbix-front-end-service-type
                    (zabbix-front-end-configuration
                     (db-password "zabbix")))

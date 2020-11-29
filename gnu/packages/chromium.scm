@@ -27,9 +27,11 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages compression)
@@ -141,6 +143,7 @@
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/acorn" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/front_end/third_party/chromium" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/codemirror" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
@@ -150,8 +153,8 @@
     "third_party/devtools-frontend/src/front_end/third_party/lit-html" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/lodash-isequal" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/marked" ;Expat, BSD-3
+    "third_party/devtools-frontend/src/front_end/third_party/puppeteer" ;ASL2.0
     "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
-    "third_party/devtools-frontend/src/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/typescript" ;ASL2.0
     "third_party/dom_distiller_js" ;BSD-3
@@ -219,6 +222,7 @@
     "third_party/pffft" ;the "FFTPACK" license, similar to BSD-3
     "third_party/ply" ;BSD-3
     "third_party/polymer" ;BSD-3
+    "third_party/private_membership" ;ASL2.0
     "third_party/private-join-and-compute" ;ASL2.0
     "third_party/protobuf" ;BSD-3
     "third_party/protobuf/third_party/six" ;Expat
@@ -231,6 +235,8 @@
     "third_party/s2cellid" ;ASL2.0
     "third_party/schema_org" ;CC-BY-SA3.0
     "third_party/securemessage" ;ASL2.0
+    "third_party/shaka-player" ;ASL2.0
+    "third_party/shell-encryption" ;ASL2.0
     "third_party/skia" ;BSD-3
     "third_party/skia/include/third_party/skcms" ;BSD-3
     "third_party/skia/third_party/skcms" ;BSD-3
@@ -252,6 +258,8 @@
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
     "third_party/vulkan_memory_allocator" ;Expat
+    "third_party/wayland/protocol" ;Expat
+    "third_party/wayland/stubs" ;BSD-3, Expat
     "third_party/wayland/wayland_scanner_wrapper.py" ;BSD-3
     "third_party/wayland-protocols" ;Expat
     "third_party/web-animations-js" ;ASL2.0
@@ -294,34 +302,15 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define (arch-patch name revision hash)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://raw.githubusercontent.com/archlinux"
-                        "/svntogit-packages/" revision "/trunk/" name))
-    (sha256 (base32 hash))))
-
-(define %chromium-version "86.0.4240.75")
-(define %ungoogled-revision "c34a56db4c121238fface560e21531b6199ce5dd")
+(define %chromium-version "87.0.4280.66")
+(define %ungoogled-revision "1f7cdef6dfa8f612afde8f988131f210612333e0")
 (define %debian-revision "debian/84.0.4147.105-1")
-(define %arch-revision "2cbe439471932d30ff2c8ded6b3dfd51b312bbc9")
 
 (define %debian-patches
   (list (debian-patch "system/zlib.patch" %debian-revision
                       "09vqgs37w9ycc7par14wa7rnvmg9bm0z9pqg6fyl3iqvpghyjyr4")
         (debian-patch "system/openjpeg.patch" %debian-revision
                       "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
-
-(define %arch-patches
-  (list (arch-patch "check-for-enable-accelerated-video-decode-on-Linux.patch"
-                    %arch-revision
-                    "12qj23dcp2g2ivyfyj13m4fzf68nllb9djwcxf1h195gn8wkml03")
-        (arch-patch "only-fall-back-to-the-i965-driver-if-we-re-on-iHD.patch"
-                    %arch-revision
-                    "0073qjp0dp9kj2ix2j6cxrima01rpdpkcjj9crxlb9b43b4cc53m")
-        (arch-patch "fix-invalid-end-iterator-usage-in-CookieMonster.patch"
-                    %arch-revision
-                    "1p1wy3dfncw0hhz77a1km0xjhix69ksgbpa569qz86nv76jbgn39")))
 
 (define %ungoogled-origin
   (origin
@@ -332,7 +321,15 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "18p9a7qffmy8m03nqva7maalgil13lj2mn0s56v3crbs4wk4lalj"))))
+      "1cka9h7znkmilz9ld4s8pw1jjq2p7br03g3agcnqrk591y5h141i"))))
+
+(define %guix-patches
+  (list (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-nspr.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-extension-search-path.patch")))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -355,10 +352,7 @@
           (for-each (lambda (patch)
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
-                    (append '#+%debian-patches '#+%arch-patches
-                            '#+(list (local-file
-                                      (search-patch
-                                       "ungoogled-chromium-system-nspr.patch")))))
+                    (append '#+%debian-patches '#+%guix-patches))
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
@@ -446,10 +440,10 @@
               (method url-fetch)
               (uri (string-append "https://commondatastorage.googleapis.com"
                                   "/chromium-browser-official/chromium-"
-                                  (car (string-split version #\-)) ".tar.xz"))
+                                  %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1ddw4p9zfdzhi5hrd8x14k4w326znljzprnpfi2f917rlpnl2ynx"))
+                "0hgpg31gkksqgyvycsan7l7vjypc7cr6ikjfygf2zv7dhbmf9a19"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -463,7 +457,7 @@
        #:configure-flags
        ;; See tools/gn/docs/cookbook.md and
        ;; https://www.chromium.org/developers/gn-build-configuration
-       ;; for usage.  Run "./gn args . --list" in the Release
+       ;; for usage.  Run "gn args . --list" in the Release
        ;; directory for an exhaustive list of supported flags.
        ;; (Note: The 'configure' phase will do that for you.)
        (list "is_debug=false"
@@ -471,8 +465,10 @@
              ;; a developer build.
              "is_official_build=true"
              (string-append "max_jobs_per_link="
-                            (number->string (parallel-job-count)))
+                            ;; Respect the default cap of 8 jobs.
+                            (number->string (max 8 (parallel-job-count))))
              "clang_use_chrome_plugins=false"
+             "chrome_pgo_phase=0"
              "use_sysroot=false"
              "goma_dir=\"\""
              "enable_nacl=false"
@@ -506,6 +502,11 @@
              "use_system_libjpeg=true"
              "use_system_libopenjpeg2=true"
              "use_system_libpng=true"
+             "use_system_wayland_scanner=true"
+             (string-append "system_wayland_scanner_path=\""
+                            (assoc-ref %build-inputs "wayland-scanner")
+                            "/bin/wayland-scanner\"")
+
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
              "use_openh264=true"
@@ -529,6 +530,8 @@
 
              ;; WebRTC stuff.
              "rtc_use_h264=true"
+             "rtc_use_pipewire=true"
+             "rtc_link_pipewire=true"
              ;; Don't use bundled sources.
              "rtc_build_json=true"      ;FIXME: libc++ std::string ABI difference
              "rtc_build_libevent=false"
@@ -571,11 +574,6 @@
                        (find-files (string-append "third_party/webrtc/modules"
                                                   "/audio_coding/codecs/opus")))
 
-             (substitute* "chrome/common/chrome_paths.cc"
-               (("/usr/share/chromium/extensions")
-                ;; TODO: Add ~/.guix-profile.
-                "/run/current-system/profile/share/chromium/extensions"))
-
              ;; Many files try to include ICU headers from "third_party/icu/...".
              ;; Remove the "third_party/" prefix to use system headers instead.
              (substitute* (find-files "chrome" "\\.cc$")
@@ -617,6 +615,18 @@
                (substitute* "device/udev_linux/udev1_loader.cc"
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
+
+               (substitute*
+                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                     "ui/ozone/common/egl_util.cc"
+                     "ui/gl/init/gl_initializer_linux_x11.cc"
+                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
+                 (("libGL\\.so\\.1")
+                  (string-append mesa "/lib/libGL.so.1"))
+                 (("libEGL\\.so\\.1")
+                  (string-append mesa "/lib/libEGL.so.1"))
+                 (("libGLESv2\\.so\\.2")
+                  (string-append mesa "/lib/libGLESv2.so.2")))
                #t)))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
@@ -705,7 +715,10 @@
                     (libs           '("chrome_100_percent.pak"
                                       "chrome_200_percent.pak"
                                       "resources.pak"
-                                      "v8_context_snapshot.bin"))
+                                      "v8_context_snapshot.bin"
+                                      ;; Chromium ships its own libGL
+                                      ;; implementation called ANGLE.
+                                      "libEGL.so" "libGLESv2.so"))
                     (locales        (string-append lib "/locales"))
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
@@ -774,7 +787,8 @@
 
        ("python-beautifulsoup4" ,python2-beautifulsoup4)
        ("python-html5lib" ,python2-html5lib)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("wayland-scanner" ,wayland)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("atk" ,atk)
@@ -824,12 +838,19 @@
        ("opus" ,opus+custom)
        ("pango" ,pango)
        ("pciutils" ,pciutils)
+       ("pipewire" ,pipewire)
        ("pulseaudio" ,pulseaudio)
        ("snappy" ,snappy)
        ("speech-dispatcher" ,speech-dispatcher)
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
-       ("vulkan-headers" ,vulkan-headers)))
+       ("vulkan-headers" ,vulkan-headers)
+       ("wayland" ,wayland)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CHROMIUM_EXTENSION_DIRECTORY")
+            (separator #f)              ;single entry
+            (files '("share/chromium/extensions")))))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.
@@ -857,24 +878,46 @@ disabled in order to protect the users privacy.")
                    license:lgpl2.1+))))
 
 (define-public ungoogled-chromium/wayland
-  (package/inherit ungoogled-chromium
+  (package
+    (inherit ungoogled-chromium)
     (name "ungoogled-chromium-wayland")
+    (native-inputs '())
     (inputs
-     `(("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ,@(package-inputs ungoogled-chromium)))
+     `(("bash" ,bash-minimal)
+       ("glibc-locales" ,glibc-utf8-locales)
+       ("ungoogled-chromium" ,ungoogled-chromium)))
+    (build-system trivial-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments ungoogled-chromium)
-       ((#:configure-flags flags)
-        `(append (list "use_ozone=true"
-                       "ozone_platform_wayland=true"
-                       "ozone_platform_x11=true"
-                       "ozone_auto_platforms=false"
-                       "ozone_platform=\"wayland\""
-                       "use_xkbcommon=true"
-                       "use_system_minigbm=true"
-                       "use_system_libwayland=true"
-                       (string-append "system_wayland_scanner_path=\""
-                                      (assoc-ref %build-inputs "wayland")
-                                      "/bin/wayland-scanner\""))
-                 (delete "use_vaapi=true" ,flags)))))))
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((bash (assoc-ref %build-inputs "bash"))
+                (chromium (assoc-ref %build-inputs "ungoogled-chromium"))
+                (locales (assoc-ref %build-inputs "glibc-locales"))
+                (out (assoc-ref %outputs "out"))
+                (exe (string-append out "/bin/chromium")))
+
+           ;; Use a Unicode locale so we can substitute the file below.
+           (setenv "GUIX_LOCPATH" (string-append locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.utf8")
+
+           (mkdir-p (dirname exe))
+           (symlink (string-append chromium "/bin/chromedriver")
+                    (string-append out "/bin/chromedriver"))
+
+           (call-with-output-file exe
+             (lambda (port)
+               (format port "#!~a
+exec ~a --enable-features=UseOzonePlatform --ozone-platform=wayland $@"
+                       (string-append bash "/bin/bash")
+                       (string-append chromium "/bin/chromium"))))
+           (chmod exe #o555)
+
+           ;; Provide the manual and .desktop file.
+           (copy-recursively (string-append chromium "/share")
+                             (string-append out "/share"))
+           (substitute* (string-append
+                         out "/share/applications/chromium.desktop")
+             ((chromium) out))
+           #t))))))

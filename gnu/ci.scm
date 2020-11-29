@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (gnu system install)
   #:use-module (gnu system images hurd)
   #:use-module (gnu system images pine64)
+  #:use-module (gnu system images pinebook-pro)
   #:use-module (gnu tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -205,10 +207,16 @@ SYSTEM."
 
 (define %guix-system-images
   (list hurd-barebones-qcow2-image
-        pine64-barebones-raw-image))
+        pine64-barebones-raw-image
+        pinebook-pro-barebones-raw-image))
+
+(define (hours hours)
+  (* 3600 hours))
 
 (define (image-jobs store system)
-  "Return a list of jobs that build images for SYSTEM."
+  "Return a list of jobs that build images for SYSTEM.  Those jobs are
+expensive in storage and I/O operations, hence their periodicity is limited by
+passing the PERIOD argument."
   (define (->alist drv)
     `((derivation . ,(derivation-file-name drv))
       (log . ,(log-file store (derivation-file-name drv)))
@@ -223,6 +231,7 @@ SYSTEM."
       (long-description . "This is a demo stand-alone image of the GNU
 system.")
       (license . ,(license-name gpl3+))
+      (period . ,(hours 48))
       (max-silent-time . 600)
       (timeout . 3600)
       (home-page . ,%guix-home-page-url)
@@ -321,6 +330,9 @@ system.")
             (set-guile-for-build (default-guile))
             (system-test-value test))))
 
+      ;; Those tests are extremely expensive in I/O operations and storage
+      ;; size, use the "period" attribute to run them with a period of at
+      ;; least 48 hours.
       `((derivation . ,(derivation-file-name drv))
         (log . ,(log-file store (derivation-file-name drv)))
         (outputs . ,(filter-map (lambda (res)
@@ -334,6 +346,7 @@ system.")
                                 (system-test-name test)))
         (long-description . ,(system-test-description test))
         (license . ,(license-name gpl3+))
+        (period . ,(hours 48))
         (max-silent-time . 600)
         (timeout . 3600)
         (home-page . ,%guix-home-page-url)
@@ -372,7 +385,8 @@ system.")
 all its dependencies, and ready to be installed on \"foreign\" distributions.")
       (license . ,(license-name gpl3+))
       (home-page . ,%guix-home-page-url)
-      (maintainers . ("bug-guix@gnu.org"))))
+      (maintainers . ("bug-guix@gnu.org"))
+      (period . ,(hours 24))))
 
   (define (->job name drv)
     (let ((name (symbol-append name (string->symbol ".")

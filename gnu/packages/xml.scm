@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,7 +85,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hughsie/libxmlb.git")
+         (url "https://github.com/hughsie/libxmlb")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -224,7 +225,7 @@ project (but it is usable outside of the Gnome platform).")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -284,7 +285,7 @@ It uses libxml2 to access the XML files.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -997,14 +998,14 @@ the form of functions.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
                           version "/pugixml-" version ".tar.gz"))
       (sha256
-       (base32 "02l7nllhydggf7s64d2x84kckbmwag4lsn28sc82953hnkxrkwsm"))))
+       (base32 "0b5apqiisq8yk51x0cwks4h2m0zd2zgjdy0w80qp9h5rccz3v496"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
@@ -1086,14 +1087,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.30")
+    (version "1.2.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                   "xmlsec1-" version ".tar.gz"))
               (sha256
                (base32
-                "1j5bf7ni45jghyrbf7a14wx2pvfara557zyry7g7h8840c5kd11d"))))
+                "09hbbaz2d9hw645q27apkjs1mdr6vd85x5z3c9hzgr1iri9bq44v"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
@@ -1266,7 +1267,15 @@ C++ programming language.")
            (substitute* "Makefile"
              (("^examples/schema1\\\\") "\\")
              (("^examples/valid1\\\\") "\\"))
-           #t)))))
+           #t))
+       (add-after 'install 'symlink-xmlstarlet
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Other distros usually either rename or symlink the `xml' binary
+           ;; as `xmlstarlet', let's do it as well for compatibility.
+           (let* ((out (assoc-ref outputs "out"))
+                  (bin (string-append out "/bin")))
+             (symlink "xml" (string-append bin "/xmlstarlet"))
+             #t))))))
    (inputs
     `(("libxslt" ,libxslt)
       ("libxml2" ,libxml2)))

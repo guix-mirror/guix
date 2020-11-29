@@ -953,7 +953,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/libmirage-"
+                    "mirror://sourceforge/cdemu/libmirage/libmirage-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -982,7 +982,7 @@ the data stored in various image formats.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/"
+                    "mirror://sourceforge/cdemu/cdemu-daemon/"
                     "cdemu-daemon-" version ".tar.bz2"))
               (sha256
                (base32
@@ -1011,7 +1011,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://downloads.sourceforge.net/cdemu/cdemu-client-"
+                    "mirror://sourceforge/cdemu/cdemu-client/cdemu-client-"
                     version ".tar.bz2"))
               (sha256
                (base32

@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -28,6 +28,7 @@
 
 (define-module (gnu packages c)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -183,6 +184,8 @@ language with thin bindings for other languages.")
 (define-public udunits
   (package
     (name "udunits")
+    ;; Four-part version numbers are development snapshots, not releases.  See
+    ;; <https://github.com/Unidata/UDUNITS-2/issues/99#issuecomment-732323472>.
     (version "2.2.26")
     (source (origin
               (method url-fetch)
@@ -370,7 +373,7 @@ any other grammar rules.")
 (define-public sparse
   (package
     (name "sparse")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -378,7 +381,7 @@ any other grammar rules.")
                               "sparse-"  version ".tar.xz"))
               (sha256
                (base32
-                "1z11chawwcmf5xxx5v52cj7wrr3warz6q5wlcjvxpif1jbga172i"))))
+                "16d8c4dhipjzjf8z4z7pix1pdpqydz0v4r7i345f5s09hjnxpxnl"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -518,7 +521,8 @@ replacement for the syslog() call, but retains its ease of use.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))
-       #:make-flags (list "CC=gcc" (string-append "prefix=" %output))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "prefix=" %output))
        #:tests? #f))                    ;no test suite
     (native-inputs
      `(("perl" ,perl)))

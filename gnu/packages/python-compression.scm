@@ -136,14 +136,14 @@ the LZ4 frame format.")
 (define-public python-brotli
   (package
     (name "python-brotli")
-    (version "1.0.7")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Brotli" version ".zip"))
         (sha256
          (base32
-          "19x5dqxckb62n37mpnczp21rfxqvgpm0ki5ds8ac65zx8hbxqf05"))))
+          "0f4433s4wv9masc303kkb1s0a09x81xwr8pdvj0kyxzdl05826sd"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

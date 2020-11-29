@@ -6,7 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -40,12 +40,14 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -135,7 +137,7 @@ This package contains GUI widgets for baloo.")
      (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
-  (let ((version "20.08.2"))
+  (let ((version "20.08.3"))
     (package
       (name "kdenlive")
       (version version)
@@ -147,7 +149,7 @@ This package contains GUI widgets for baloo.")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
-          (base32 "1zcckv4wj12pvxjg85c8l67vi3amz79yv8mf7m4fbxnam3yxhy90"))))
+          (base32 "0x0qfwf6wfnybjyjvmllpf87sm27d1n2akslhp2k8ins838qy55i"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -374,7 +376,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.0")
+    (version "4.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -382,7 +384,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "13r7x4gql5wp88hmpv9m6m3lh7gsybm4la48hqbjcb3iwiv86pzw"))))
+                "05rq5hkh2lmk8hall2h9ccaav0nw8fj7vd4aff5fyp2fiq3aybbg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -790,3 +792,47 @@ services such as printers which advertise themselves with DNSSD (called Avahi
 or Bonjour by other projects).")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
+
+
+(define-public kuserfeedback
+  ;; FIXME: Try to reduce data collection and ensure transmission i disabled by default.
+  ;; FIXME: Check https://www.reddit.com/r/kde/comments/f7ojg9 for insights
+  (package
+    (name "kuserfeedback")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/kuserfeedback/"
+                           "/kuserfeedback-" version ".tar.xz"))
+       (sha256
+        (base32 "1dwx9fscnfp3zsxdir774skn8xvad2dvscnaaw3ji6mrnkmm6bss"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
+       ;; For optional component "Survey target expression parser"
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ;; For syntax checking and unit tests of PHP server code
+       ;;("php" ,php)
+       ;;("phpunit" ,phpunit)
+       ))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtcharts" ,qtcharts)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:tests? #f))  ;; 4/17 fail
+    (home-page "https://api.kde.org/frameworks/kuserfeedback/html/")
+    (synopsis "Framework for collecting feedback from application users via
+telemetry and targeted surveys")
+    (description "This framework consists of the following components:
+@itemize
+@item Libraries for use in applications.
+@item QML bindings for the above.
+@item A server application.
+@item A management and analytics application.
+@end itemize")
+    (license license:expat)))

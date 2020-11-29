@@ -37,6 +37,7 @@
   #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -353,8 +354,9 @@ of MACHINE's system profile, ordered from most recent to oldest."
 
   (define remote-exp
     (with-extensions (list guile-gcrypt)
-      (with-imported-modules (source-module-closure '((guix config)
-                                                      (guix profiles)))
+      (with-imported-modules (source-module-closure
+                              `(((guix config) => ,(make-config.scm))
+                                (guix profiles)))
         #~(begin
             (use-modules (guix config)
                          (guix profiles)
@@ -482,6 +484,8 @@ an environment type of 'managed-host."
                                         (list (second boot-parameters))))
                        (locale -> (boot-parameters-locale
                                    (second boot-parameters)))
+                       (store-dir -> (boot-parameters-store-directory-prefix
+                                      (second boot-parameters)))
                        (old-entries -> (map boot-parameters->menu-entry
                                             (drop boot-parameters 2)))
                        (bootloader -> (operating-system-bootloader
@@ -492,6 +496,7 @@ an environment type of 'managed-host."
                                     bootloader))
                                   bootloader entries
                                   #:locale locale
+                                  #:store-directory-prefix store-dir
                                   #:old-entries old-entries)))
                        (remote-result (machine-remote-eval machine remote-exp)))
     (when (eqv? 'error remote-result)

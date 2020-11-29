@@ -100,7 +100,8 @@
                     inputs local-packages excludes)))))))
 
 (define* (fix-pom-files #:key inputs local-packages exclude #:allow-other-keys)
-  (fix-pom "pom.xml" inputs local-packages exclude))
+  (fix-pom "pom.xml" inputs local-packages exclude)
+  #t)
 
 (define* (build #:key outputs #:allow-other-keys)
   "Build the given package."

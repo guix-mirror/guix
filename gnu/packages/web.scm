@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +129,8 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -232,14 +235,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.3")
+    (version "1.19.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w4dkq7bl5gyix3x0ap3d9lndh7zyvc3mscl693d4ybql57vgrci"))))
+                "173rv8gacd9bakb0r9jmkr4pqgjw9mzpdh3f7x2d8ln4ssplc2jw"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -322,9 +325,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.3")
-        (revision 2603)
-        (changeset "94ebfbcd68bb"))
+  (let ((version "1.19.5")
+        (revision 2622)
+        (changeset "64bbb9163a14"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -336,7 +339,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "1yryharm4dkjnj424r7sy0rc28h8ypfyj8as255a42gmllkwl2pg"))))
+                 "085f3c00mqsaq95hp1bv9y0b517jv4zzs2q0j1c9m8nvh7k09zaa"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -565,7 +568,7 @@ documentation.")
   (package
     (inherit nginx)
     (name "nginx-lua-module")
-    (version "0.10.15")
+    (version "0.10.16")
     (source
      (origin
        (method git-fetch)
@@ -574,8 +577,7 @@ documentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "lua-nginx-module" version))
        (sha256
-        (base32
-         "1j216isp0546hycklbr5wi8mlga5hq170hk7f2sm16sfavlkh5gz"))))
+        (base32 "0nwcbqm1visg1dkxav7qa16w0d0n8cgqn4881xiqn88xfkxj0dyg"))))
     (build-system gnu-build-system)
     (inputs
      `(("nginx-sources" ,(package-source nginx-socket-cloexec))
@@ -1422,7 +1424,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.7.14")
+    (version "0.8.15")
     (source
      (origin
        (method git-fetch)
@@ -1431,8 +1433,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1y5hqymv2r8r29f8vh8kgncj3wlkg4fzi0zlc7mgyss872ajkc7i"))
+        (base32 "1b8ibxx1imh7jaspi3b36kpmijc06viv49ms7fml20yc0br2qbwj"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1447,15 +1448,15 @@ used to validate and fix HTML data.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key tests? unpack-path #:allow-other-keys)
-             (if tests?
+             (when tests?
                (with-directory-excursion (string-append "src/" unpack-path)
                  (invoke "make" "test-go")))
              #t)))))
     (inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     `(("golang.org/x/sys" ,go-golang-org-x-sys)))
     (native-inputs
-     `(("go-github-com-kylelemons-godebug" ,go-github-com-kylelemons-godebug)))
-    (home-page "https://github.com/evanw/esbuild")
+     `(("github.com/kylelemons/godebug" ,go-github-com-kylelemons-godebug)))
+    (home-page "https://esbuild.github.io/")
     (synopsis "Bundler and minifier tool for JavaScript and TypeScript")
     (description
      "The esbuild tool provides a unified bundler, transpiler and
@@ -3790,15 +3791,14 @@ exists it is used instead.")
 (define-public perl-lwp-protocol-https
   (package
     (name "perl-lwp-protocol-https")
-    (version "6.07")
+    (version "6.09")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "LWP-Protocol-https-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rxrpwylfw1afah0nk96kgkwjbl2p1a7lwx50iipg8c4rx3cjb2j"))))
+        (base32 "14pm785cgyrnppks6ccasb2vkqifh0a8fz36nmnhc2v926jy3kqn"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
@@ -4424,14 +4424,14 @@ RFC 6570.")
               (uri (string-append
                     "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
                     version".tar.gz"))
-              (patches (search-patches "perl-www-curl-remove-symbol.patch"))
+              (patches (search-patches "perl-www-curl-fix-struct-void.patch"
+                                       "perl-www-curl-remove-symbol.patch"))
               (sha256
                (base32
                 "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
     (build-system perl-build-system)
     (arguments
      '(#:tests? #f                          ;XXX: tests require network access
-
        #:phases (modify-phases %standard-phases
                    (add-before 'configure 'set-search-path
                      (lambda _
@@ -5632,14 +5632,14 @@ on the fly.")
 (define-public hitch
   (package
     (name "hitch")
-    (version "1.6.0")
+    (version "1.7.0")
     (home-page "https://hitch-tls.org/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "source/hitch-" version ".tar.gz"))
               (sha256
                (base32
-                "01n70yf8hx42jb801jv5q1xhrpqxyjnqhd98hjf81lvxpd5fnisf"))))
+                "1i75giwyr66ip8xsvk3gg5xdbxnmcabgxz8dqi06c58mw7qzhzn9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5772,13 +5772,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.4.0")
+    (version "6.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1hkn98vbxk7rc1sd08367qn6rcv8wkxgwbmm1x46y50vi0nvldpn"))))
+                "1dfdswri6lkfk6kml3szvffm91y49pajgqy1k5y26llqixl4r5hi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -5846,18 +5846,25 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.16.0")
+    (version "0.17.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/varnish/varnish-modules"
-                                  "/releases/download/varnish-modules-" version
-                                  "/varnish-modules-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ph5bplsip4rycql1c2hgbvmrwbgcrgv2ldgfp7saxxbsv5cpcds"))))
+                "0zg8y2sgkygdani70zp9rbx278431fmssj26d47c5qsiw939i519"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For bootstrapping.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+
+       ;; For generating manuals.
+       ("rst2man" ,python-docutils)))
     (inputs
      `(("python" ,python)
        ("varnish" ,varnish)))
@@ -7691,3 +7698,40 @@ solution for any project's interface needs:
 @item Easily integrated and extensible with Python or Lua scripting.
 @end itemize\n")
     (license license:expat)))
+
+(define-public gmnisrv
+  (let ((commit "d484ba0ab0020866535a44be5948c9482b8f2b8d")
+        (revision "1"))
+    (package
+      (name "gmnisrv")
+      (version (git-version "0" revision commit))
+      (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "11phipixsxx1jgm42agp76p5s68l0zj65kgb41vzaymgwcq79ivn"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'set-variables
+             (lambda _
+               (setenv "CC" "gcc")
+               #t))
+           (delete 'check))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("scdoc" ,scdoc)))
+      (propagated-inputs
+       `(("mailcap" ,mailcap)))
+      (synopsis "Simple Gemini protocol server")
+      (description "gmnisrv is a simple Gemini protocol server written in C.")
+      (license (list license:gpl3+
+                     license:bsd-3))))) ;; for ini.c and ini.h

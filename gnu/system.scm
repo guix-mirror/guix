@@ -148,6 +148,7 @@
             boot-parameters-bootloader-name
             boot-parameters-bootloader-menu-entries
             boot-parameters-store-device
+            boot-parameters-store-directory-prefix
             boot-parameters-store-mount-point
             boot-parameters-locale
             boot-parameters-kernel
@@ -289,16 +290,21 @@ directly by the user."
   ;; Because we will use the 'store-device' to create the GRUB search command,
   ;; the 'store-device' has slightly different semantics than 'root-device'.
   ;; The 'store-device' can be a file system uuid, a file system label, or #f,
-  ;; but it cannot be a device path such as "/dev/sda3", since GRUB would not
-  ;; understand that.  The 'root-device', on the other hand, corresponds
+  ;; but it cannot be a device file name such as "/dev/sda3", since GRUB would
+  ;; not understand that.  The 'root-device', on the other hand, corresponds
   ;; exactly to the device field of the <file-system> object representing the
-  ;; OS's root file system, so it might be a device path like "/dev/sda3".
+  ;; OS's root file system, so it might be a device file name like
+  ;; "/dev/sda3".  The 'store-directory-prefix' field contains #f or the store
+  ;; file name inside the 'store-device' as it is seen by GRUB, e.g. it would
+  ;; contain "/storefs" if the store is located in that subvolume of a btrfs
+  ;; partition.
   (root-device      boot-parameters-root-device)
   (bootloader-name  boot-parameters-bootloader-name)
   (bootloader-menu-entries                        ;list of <menu-entry>
    boot-parameters-bootloader-menu-entries)
   (store-device     boot-parameters-store-device)
   (store-mount-point boot-parameters-store-mount-point)
+  (store-directory-prefix boot-parameters-store-directory-prefix)
   (locale           boot-parameters-locale)
   (kernel           boot-parameters-kernel)
   (kernel-arguments boot-parameters-kernel-arguments)
@@ -394,6 +400,17 @@ file system labels."
           (_                                      ;the old format
            root-device))))
 
+      (store-directory-prefix
+       (match (assq 'store rest)
+         (('store . store-data)
+          (match (assq 'directory-prefix store-data)
+            (('directory-prefix prefix) prefix)
+            ;; No directory-prefix found.
+            (_ #f)))
+         (_
+          ;; No store found, old format.
+          #f)))
+
       (store-mount-point
        (match (assq 'store rest)
          (('store ('device _) ('mount-point mount-point) _ ...)
@@ -458,9 +475,9 @@ marked as 'needed-for-boot'."
     (let ((device (file-system-device fs)))
       (if (string? device)                        ;title is 'device
           (filter (lambda (md)
-                    (string=? (string-append "/dev/mapper/"
-                                             (mapped-device-target md))
-                              device))
+                    (any (cut string=? device <>)
+                         (map (cut string-append "/dev/mapper" <>)
+                              (mapped-device-targets md))))
                   (operating-system-mapped-devices os))
           '())))
 
@@ -480,11 +497,12 @@ marked as 'needed-for-boot'."
 
 (define (mapped-device-users device file-systems)
   "Return the subset of FILE-SYSTEMS that use DEVICE."
-  (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
+  (let ((targets (map (cut string-append "/dev/mapper/" <>)
+                      (mapped-device-targets device))))
     (filter (lambda (fs)
               (or (member device (file-system-dependencies fs))
                   (and (string? (file-system-device fs))
-                       (string=? (file-system-device fs) target))))
+                       (any (cut string=? (file-system-device fs) <>) targets))))
             file-systems)))
 
 (define (operating-system-user-mapped-devices os)
@@ -1294,6 +1312,7 @@ such as '--root' and '--load' to <boot-parameters>."
   (let* ((initrd          (and (not (operating-system-hurd os))
                                (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
+         (file-systems    (operating-system-file-systems os))
          (locale          (operating-system-locale os))
          (bootloader      (bootloader-configuration-bootloader
                            (operating-system-bootloader os)))
@@ -1315,6 +1334,7 @@ such as '--root' and '--load' to <boot-parameters>."
       (bootloader-configuration-menu-entries (operating-system-bootloader os)))
      (locale locale)
      (store-device (ensure-not-/dev (file-system-device store)))
+     (store-directory-prefix (btrfs-store-subvolume-file-name file-systems))
      (store-mount-point (file-system-mount-point store)))))
 
 (define (device->sexp device)
@@ -1371,7 +1391,9 @@ being stored into the \"parameters\" file)."
                       (device
                        #$(device->sexp (boot-parameters-store-device params)))
                       (mount-point #$(boot-parameters-store-mount-point
-                                      params))))
+                                      params))
+                      (directory-prefix
+                       #$(boot-parameters-store-directory-prefix params))))
                   #:set-load-path? #f)))
 
 (define-gexp-compiler (operating-system-compiler (os <operating-system>)

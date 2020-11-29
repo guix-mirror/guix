@@ -64,13 +64,16 @@
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:test-target "test"
        #:make-flags
-       '("MYCFLAGS=-fPIC -DLUA_DL_DLOPEN"
-         "linux")
+       (list "MYCFLAGS=-fPIC -DLUA_DL_DLOPEN"
+             (string-append "CC=" ,(cc-for-target))
+             (string-append "SYSLIBS=-L" (assoc-ref %build-inputs "readline")
+                            "/lib")
+             "linux")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -883,7 +886,7 @@ on numbers.")
 (define-public lua-resty-core
   (package
     (name "lua-resty-core")
-    (version "0.1.17")
+    (version "0.1.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -892,7 +895,7 @@ on numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11fyli6yrg7b91nv9v2sbrc6y7z3h9lgf4lrrhcjk2bb906576a0"))))
+                "1c58hykwpg5zqbyhrcb703pzwbkih409v3bh2gady6z2kj9q32dw"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -920,7 +923,7 @@ on numbers.")
 (define-public lua-resty-lrucache
   (package
     (name "lua-resty-lrucache")
-    (version "0.09")
+    (version "0.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -929,7 +932,7 @@ on numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mwiy55qs8bija1kpgizmqgk15ijizzv4sa1giaz9qlqs2kqd7q2"))))
+                "1bsc54v1rvxmkwg7a2c01p192lvw5g576f589is8fy1m1c6v4ap8"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

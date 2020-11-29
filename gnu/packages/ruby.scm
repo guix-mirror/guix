@@ -147,16 +147,16 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.7
   (package
     (inherit ruby-2.6)
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+       (uri (string-append "https://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
                            "/ruby-" version ".tar.gz"))
        (sha256
         (base32
-         "0674x98f542y02r7n2yv2qhmh97blqhi2mvh2dn5f000vlxlh66l"))
+         "1m63461mxi3fg4y3bspbgmb0ckbbb1ldgf9xi0piwkpfsk80cmvf"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -1343,7 +1343,7 @@ Prawn module.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/prawnpdf/prawn-templates.git")
+             (url "https://github.com/prawnpdf/prawn-templates")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1405,7 +1405,7 @@ loader for the file type associated with a filename extension, and it augments
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/cjheath/treetop.git")
+             (url "https://github.com/cjheath/treetop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1458,7 +1458,7 @@ for performance optimizations in Ruby code.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/searls/gimme.git")
+               (url "https://github.com/searls/gimme")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1519,7 +1519,7 @@ only what they care about.")
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/testdouble/standard.git")
+             (url "https://github.com/testdouble/standard")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1557,17 +1557,16 @@ to save time in the following ways:
 (define-public ruby-chunky-png
   (package
     (name "ruby-chunky-png")
-    (version "1.3.12")
+    (version "1.3.14")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wvanbergen/chunky_png.git")
+             (url "https://github.com/wvanbergen/chunky_png")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0hn8ap7iib47qkqdp0awmxgma11z0lmk1ca3lp7c97ykhv7ij1zs"))))
+        (base32 "1m7y11ix38h5a2pj5v81qdmvqh980ql9hp62hk2dxwkwsa4nh22h"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -1606,7 +1605,12 @@ pixel, depending on the hardware).
 Performance: ChunkyPNG is reasonably fast for Ruby standards, by only using
 integer math and a highly optimized saving routine.
 @item Interoperability with RMagick.
-@end itemize")
+@end itemize
+
+ChunkyPNG is vulnerable to decompression bombs and can run out of memory when
+loading a specifically crafted PNG file.  This is hard to fix in pure Ruby.
+Deal with untrusted images in a separate process, e.g., by using @code{fork}
+or a background processing library.")
     (home-page "https://github.com/wvanbergen/chunky_png/wiki")
     (license license:expat)))
 
@@ -1668,7 +1672,7 @@ web pages.")
        (origin
          (method git-fetch)      ;no test suite in the distributed gem
          (uri (git-reference
-               (url "https://github.com/asciidoctor/asciidoctor-pdf.git")
+               (url "https://github.com/asciidoctor/asciidoctor-pdf")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2374,7 +2378,9 @@ extensions.")
     (arguments
      '(#:tests? #f ; test suite hangs for unknown reason
        #:gem-flags
-       (list "--"
+       (list "--no-document"            ; TODO: Re-enable when documentation
+                                        ; generation works
+             "--"
              (string-append "--with-xml2-include="
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2" ))))
@@ -3805,6 +3811,10 @@ as a base class when writing classes that depend upon
         (base32
          "1r19ifc4skyl2gxnifrxa5jvbbay9fb2in79ppgv02b6n4bhsw90"))))
     (build-system ruby-build-system)
+    (arguments
+     ;; The test suite fails (see:
+     ;; https://github.com/cldwalker/bond/issues/46).
+     `(#:tests? #f))
     (native-inputs
      `(("ruby-bacon" ,ruby-bacon)
        ("ruby-bacon-bits" ,ruby-bacon-bits)
@@ -4474,6 +4484,29 @@ reporter.")
     (description
      "@code{minitest-rg} changes the colour of the output from Minitest.")
     (home-page "https://blowmage.com/minitest-rg/")
+    (license license:expat)))
+
+(define-public ruby-minitest-global-expectations
+  (package
+    (name "ruby-minitest-global-expectations")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-global_expectations"
+                          version))
+       (sha256
+        (base32
+         "1pp3k2608spj4kvqy2y16hs18an917g6vwgvphrfhjviac83090x"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Adjust minitest behaviour for calling expectation methods")
+    (description
+     "Minitest-global_expectations allows continued use of expectation methods
+on all objects.  Calling expectation methods on all objects was deprecated in
+minitest 5.12, and is planned to be removed from minitest 6.")
+    (home-page "https://github.com/jeremyevans/minitest-global_expectations")
     (license license:expat)))
 
 (define-public ruby-minitest-hooks
@@ -6749,7 +6782,7 @@ inspired by the Sinatra microframework style of specifying actions:
      (origin
        (method git-fetch)               ;no test suite in distributed gem
        (uri (git-reference
-             (url "https://github.com/rubocop-hq/rubocop-ast.git")
+             (url "https://github.com/rubocop-hq/rubocop-ast")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6793,7 +6826,7 @@ by RuboCop to deal with Ruby's Abstract Syntax Tree (AST), in particular:
      (origin
        (method git-fetch)               ;no tests in distributed gem
        (uri (git-reference
-             (url "https://github.com/ruby/rexml.git")
+             (url "https://github.com/ruby/rexml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6844,7 +6877,7 @@ better performance than @code{Regexp} and @code{String} methods from the
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/janosch-x/range_compressor.git")
+              (url "https://github.com/janosch-x/range_compressor")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -6877,7 +6910,7 @@ following: @code{[1, 2, 3, 4, 6, 8, 9, 10]} into @code{[1..4, 6..6, 8..10]}.")
      (origin
        (method git-fetch)
        (uri (git-reference              ;no test suite in distributed gem
-             (url "https://github.com/jaynetics/regexp_property_values.git")
+             (url "https://github.com/jaynetics/regexp_property_values")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6908,7 +6941,7 @@ they match.")
      (origin
        (method git-fetch)               ;bin/test missing from gem
        (uri (git-reference
-             (url "https://github.com/ammar/regexp_parser.git")
+             (url "https://github.com/ammar/regexp_parser")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6981,7 +7014,7 @@ run.")
      (origin
        (method git-fetch)               ;no tests in distributed gem
        (uri (git-reference
-             (url "https://github.com/rubocop-hq/rubocop.git")
+             (url "https://github.com/rubocop-hq/rubocop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10461,7 +10494,7 @@ custom checks.  This gem provides a set of additional checks.")
     (source (origin
               (method git-fetch)        ;no test in distributed gem archive
               (uri (git-reference
-                    (url "https://github.com/yob/pdf-reader.git")
+                    (url "https://github.com/yob/pdf-reader")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -10501,7 +10534,7 @@ access to the contents of a PDF file with a high degree of flexibility.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/prawnpdf/pdf-inspector.git")
+                      (url "https://github.com/prawnpdf/pdf-inspector")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -10564,7 +10597,7 @@ functionality from Prawn.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/prawnpdf/prawn.git")
+                      (url "https://github.com/prawnpdf/prawn")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

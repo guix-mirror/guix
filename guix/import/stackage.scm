@@ -30,7 +30,8 @@
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
-  #:export (stackage->guix-package
+  #:export (%stackage-url
+            stackage->guix-package
             stackage-recursive-import
             %stackage-updater))
 
@@ -39,12 +40,11 @@
 ;;; Stackage info fetcher and access functions
 ;;;
 
-(define %stackage-url "http://www.stackage.org")
+(define %stackage-url
+  (make-parameter "https://www.stackage.org"))
 
-(define (lts-info-ghc-version lts-info)
-  "Returns the version of the GHC compiler contained in LTS-INFO."
-  (and=> (assoc-ref lts-info "snapshot")
-         (cut assoc-ref <> "ghc")))
+;; Latest LTS version compatible with GHC 8.6.5.
+(define %default-lts-version "14.27")
 
 (define (lts-info-packages lts-info)
   "Returns the alist of packages contained in LTS-INFO."
@@ -57,9 +57,10 @@
   ;; "Retrieve the information about the LTS Stackage release VERSION."
   (memoize
    (lambda* (#:optional (version ""))
-     (let* ((url (if (string=? "" version)
-                     (string-append %stackage-url "/lts")
-                     (string-append %stackage-url "/lts-" version)))
+     (let* ((url (string-append (%stackage-url)
+                                "/lts-" (if (string-null? version)
+                                            %default-lts-version
+                                            version)))
             (lts-info (json-fetch url)))
        (if lts-info
            (reverse lts-info)
@@ -90,7 +91,7 @@
    (lambda* (package-name ; upstream name
              #:key
              (include-test-dependencies? #t)
-             (lts-version "")
+             (lts-version %default-lts-version)
              (packages-info
               (lts-info-packages
                (stackage-lts-info-fetch lts-version))))
@@ -119,7 +120,9 @@ included in the Stackage LTS release."
 ;;;
 
 (define latest-lts-release
-  (let ((pkgs-info (mlambda () (lts-info-packages (stackage-lts-info-fetch)))))
+  (let ((pkgs-info
+        (mlambda () (lts-info-packages
+                     (stackage-lts-info-fetch %default-lts-version)))))
     (lambda* (package)
       "Return an <upstream-source> for the latest Stackage LTS release of
 PACKAGE or #f if the package is not included in the Stackage LTS release."

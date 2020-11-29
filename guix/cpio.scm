@@ -27,6 +27,7 @@
             make-cpio-header
             file->cpio-header
             file->cpio-header*
+            special-file->cpio-header*
             write-cpio-header
             read-cpio-header
 
@@ -132,9 +133,10 @@
     (%make-cpio-header MAGIC
                        inode mode uid gid
                        nlink mtime
-                       (if (= C_ISDIR (logand mode C_FMT))
-                           0
-                           size)
+                       (if (or (= C_ISLNK (logand mode C_FMT))
+                               (= C_ISREG (logand mode C_FMT)))
+                           size
+                           0)
                        major minor rmajor rminor
                        (+ name-size 1)              ;include trailing zero
                        0)))                          ;checksum
@@ -146,6 +148,8 @@ denotes, similar to 'stat:type'."
     (cond ((= C_ISREG fmt) 'regular)
           ((= C_ISDIR fmt) 'directory)
           ((= C_ISLNK fmt) 'symlink)
+          ((= C_ISBLK fmt) 'block-special)
+          ((= C_ISCHR fmt) 'char-special)
           (else
            (error "unsupported file type" mode)))))
 
@@ -186,6 +190,25 @@ produced in a deterministic fashion."
                       #:nlink (stat:nlink st)
                       #:size (stat:size st)
                       #:name-size (string-length file-name))))
+
+(define* (special-file->cpio-header* file
+                                     device-type
+                                     device-major
+                                     device-minor
+                                     permission-bits
+                                     #:optional (file-name file))
+  "Create a character or block device header.
+
+DEVICE-TYPE is either 'char-special or 'block-special.
+
+The number of hard links is assumed to be 1."
+  (make-cpio-header #:mode (logior (match device-type
+                                    ('block-special C_ISBLK)
+                                    ('char-special C_ISCHR))
+                                    permission-bits)
+                    #:nlink 1
+                    #:rdev (device-number device-major device-minor)
+                    #:name-size (string-length file-name)))
 
 (define %trailer
   "TRAILER!!!")
@@ -232,6 +255,10 @@ produces with the '-H newc' option."
          (let ((target (readlink file)))
            (put-string port target)))
         ((directory)
+         #t)
+        ((block-special)
+         #t)
+        ((char-special)
          #t)
         (else
          (error "file type not supported")))

@@ -57,18 +57,19 @@
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.8.2")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/igraph/igraph/releases/"
                            "download/" version "/igraph-" version ".tar.gz"))
        (sha256
-        (base32 "158flvl80qh1l1ikfa04p1dzh8kapsvm6q80x3ih5gwcgcg4g2ki"))))
+        (base32 "127q6q40kbmvd62yhbz6dlfk370qiq98s1iscyagpgbpjwb4xvyf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-external-glpk"
+       (list "--disable-static"
+             "--with-external-glpk"
              "--with-external-blas"
              "--with-external-lapack")))
     (inputs

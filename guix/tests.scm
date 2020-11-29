@@ -160,15 +160,17 @@ too expensive to build entirely in the test store."
              number->string)
       (logxor (getpid) (car (gettimeofday)))))
 
-(define %seed
+(define (%seed)
   (let ((seed (random-seed)))
     (format (current-error-port) "random seed for tests: ~a~%"
             seed)
-    (seed->random-state seed)))
+    (let ((result (seed->random-state seed)))
+      (set! %seed (lambda () result))
+      result)))
 
 (define (random-text)
   "Return the hexadecimal representation of a random number."
-  (number->string (random (expt 2 256) %seed) 16))
+  (number->string (random (expt 2 256) (%seed)) 16))
 
 (define (random-bytevector n)
   "Return a random bytevector of N bytes."
@@ -176,7 +178,7 @@ too expensive to build entirely in the test store."
     (let loop ((i 0))
       (if (< i n)
           (begin
-            (bytevector-u8-set! bv i (random 256 %seed))
+            (bytevector-u8-set! bv i (random 256 (%seed)))
             (loop (1+ i)))
           bv))))
 

@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 
 (define-module (gnu packages gnucash)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -82,6 +85,7 @@
        ("libxslt" ,libxslt)
        ("webkitgtk" ,webkitgtk)
        ("aqbanking" ,aqbanking)
+       ("python" ,python)
        ("perl-date-manip" ,perl-date-manip)
        ("perl-finance-quote" ,perl-finance-quote)
        ("tzdata" ,tzdata-for-tests)))
@@ -95,9 +99,10 @@
     (propagated-inputs
      ;; dconf is required at runtime according to README.dependencies.
      `(("dconf" ,dconf)))
-    (outputs '("out" "doc" "debug"))
+    (outputs '("out" "doc" "debug" "python"))
     (arguments
      `(#:test-target "check"
+       #:configure-flags '("-DWITH_PYTHON=ON")
        #:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
@@ -149,6 +154,20 @@
                (symlink (string-append docs "/share/gnome")
                         (string-append doc-output "/share/gnome"))
                #t)))
+         (add-after 'install 'split-python-bindings
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python-output (assoc-ref outputs "python"))
+                    (python-bindings (string-append
+                                      "lib/python"
+                                      ,(version-major+minor
+                                        (package-version python)))))
+               (mkdir-p (string-append python-output "/" python-bindings))
+               (copy-recursively
+                (string-append out "/" python-bindings)
+                (string-append python-output "/" python-bindings))
+               (delete-file-recursively
+                (string-append out "/" python-bindings)))))
          (add-after 'install-docs 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each (lambda (prog)

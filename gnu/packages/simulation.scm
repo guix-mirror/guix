@@ -684,17 +684,13 @@ user interface to the FEniCS core components and external libraries.")
              (with-directory-excursion "test"
                ;; Note: The test test_snes_set_from_options() in the file
                ;; unit/nls/test_PETScSNES_solver.py fails and is ignored.
-               (and (invoke "py.test" "unit" "--ignore"
-                            "unit/nls/test_PETScSNES_solver.py")
-                    (invoke "mpirun" "-np" "3" "python" "-B" "-m"
-                            "pytest" "unit" "--ignore"
-                            "unit/nls/test_PETScSNES_solver.py")))
-             (with-directory-excursion "demo"
-               ;; Check demos.
-               (invoke "python" "generate-demo-files.py")
-               (and (invoke "python" "-m" "pytest" "-v" "test.py")
-                    (invoke "python" "-m" "pytest" "-v" "test.py"
-                            "--mpiexec=mpiexec" "--num-proc=3")))
+               ;; Limit the number of jobs to 3 as 500 MiB of memory is used
+               ;; per process.
+               (invoke "mpirun" "-np" (number->string
+                                       (min 3 (parallel-job-count)))
+                       "python" "-B" "-m"
+                       "pytest" "unit" "--ignore"
+                       "unit/nls/test_PETScSNES_solver.py"))
              #t))
          (add-after 'install 'install-demo-files
            (lambda* (#:key outputs #:allow-other-keys)

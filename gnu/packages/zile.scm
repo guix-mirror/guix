@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,14 +42,14 @@
 (define-public zile
   (package
     (name "zile")
-    (version "2.4.14")
+    (version "2.4.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/zile/zile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0x3byaddms8l3g7igx6njycqsq98wgapysdb5c7lhcnajlkp8y3s"))))
+               "0ph3wd0cz3ysdyka6ds2w5l5b89mb5l79kwkfyk7phvq9yih1hrr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

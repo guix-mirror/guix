@@ -188,8 +188,11 @@
                           ;; libraries, but it means that the Guile libraries
                           ;; needed for the Guix Build Coordinator don't need
                           ;; to be individually specified here.
-                          (map second (package-inputs
-                                       guix-build-coordinator-package)))
+                          (append
+                           (map second (package-inputs
+                                        guix-build-coordinator-package))
+                           (map second (package-propagated-inputs
+                                        guix-build-coordinator-package))))
      #~(begin
          (use-modules (srfi srfi-1)
                       (ice-9 match)
@@ -200,16 +203,21 @@
                       (guix-build-coordinator build-allocator)
                       (guix-build-coordinator coordinator))
 
+         (setvbuf (current-output-port) 'line)
+         (setvbuf (current-error-port) 'line)
+
+         (simple-format #t "starting the guix-build-coordinator:\n  ~A\n"
+                        (current-filename))
          (let* ((metrics-registry (make-metrics-registry
                                    #:namespace
-                                   "guixbuildcoordinator_"))
+                                   "guixbuildcoordinator"))
                 (datastore (database-uri->datastore
                             #$database-uri-string
                             #:metrics-registry metrics-registry))
                 (hooks
                  (list #$@(map (match-lambda
                                  ((name . hook-gexp)
-                                  #~(cons name #$hook-gexp)))
+                                  #~(cons '#$name #$hook-gexp)))
                                hooks)))
                 (hooks-with-defaults
                  `(,@hooks
@@ -265,7 +273,8 @@
                 #:environment-variables
                 `(,(string-append
                     "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
-                  "LC_ALL=en_US.utf8")
+                  "LC_ALL=en_US.utf8"
+                  "PATH=/run/current-system/profile/bin") ; for hooks
                 #:log-file "/var/log/guix-build-coordinator/coordinator.log"))
       (stop #~(make-kill-destructor))))))
 
@@ -345,16 +354,17 @@
                       #$@(if non-derivation-substitute-urls
                              #~(#$(string-append
                                    "--non-derivation-substitute-urls="
-                                   (string-join derivation-substitute-urls " ")))
+                                   (string-join non-derivation-substitute-urls " ")))
                              #~())
                       #$@(map (lambda (system)
                                 (string-append "--system=" system))
                               (or systems '())))
                 #:user #$user
-                #:pid-file "/var/run/guix-build-coordinator-agent/pid"
                 #:environment-variables
                 `(,(string-append
                     "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
+                  ;; XDG_CACHE_HOME is used by Guix when caching narinfo files
+                  "XDG_CACHE_HOME=/var/cache/guix-build-coordinator-agent"
                   "LC_ALL=en_US.utf8")
                 #:log-file "/var/log/guix-build-coordinator/agent.log"))
       (stop #~(make-kill-destructor))))))
@@ -363,11 +373,13 @@
   #~(begin
       (use-modules (guix build utils))
 
+      (define %user (getpw "guix-build-coordinator-agent"))
+
       (mkdir-p "/var/log/guix-build-coordinator")
 
-      ;; Allow writing the PID file
-      (mkdir-p "/var/run/guix-build-coordinator-agent")
-      (chown "/var/run/guix-build-coordinator-agent"
+      ;; Create a cache directory for storing narinfo files if downloaded
+      (mkdir-p "/var/cache/guix-build-coordinator-agent")
+      (chown "/var/cache/guix-build-coordinator-agent"
              (passwd:uid %user)
              (passwd:gid %user))))
 

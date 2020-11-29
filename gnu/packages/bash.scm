@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,14 +23,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages bash)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages guile)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -210,7 +215,7 @@ from the Korn Shell and the C Shell and new improvements of its own.  It
 allows command-line editing, unlimited command history, shell functions and
 aliases, and job control while still allowing most sh scripts to be run
 without modification.")
-     (license gpl3+)
+     (license license:gpl3+)
      (home-page "https://www.gnu.org/software/bash/"))))
 
 (define-public bash-minimal
@@ -320,7 +325,7 @@ without modification.")
      "This package provides extensions that allow Bash to provide adapted
 completion for many common commands.")
     (home-page "https://github.com/scop/bash-completion")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public bash-tap
   (package
@@ -364,7 +369,7 @@ test library")
 for Bash shell scripts and functions.  Along with the Test::More-style testing
 helpers it provides helper functions for mocking commands and in-process output
 capturing.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public bats
   (package
@@ -414,4 +419,32 @@ capturing.")
 framework for Bash.  It provides a simple way to verify that the UNIX programs
 you write behave as expected.  Bats is most useful when testing software written
 in Bash, but you can use it to test any UNIX program.")
-    (license expat)))
+    (license license:expat)))
+
+(define-public bash-ctypes
+  (package
+    (name "bash-ctypes")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/taviso/ctypes.sh/releases/download/v"
+                           version "/ctypes-sh-" version ".tar.gz"))
+       (sha256
+        (base32 "0s1sifqzqmr0dnciv06yqrpzgj11d7n0gy5zaxh6b3x8bx7k75l8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("elfutils" ,elfutils)
+       ("libelf" ,libelf)
+       ("libffi" ,libffi)
+       ("zlib" ,zlib)
+       ;; Require a bash with C plugin support to build.
+       ("bash" ,bash)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/taviso/ctypes.sh")
+    (synopsis "Foreign function interface for Bash")
+    (description "Bash-ctypes is a Bash plugin that provides a foreign
+function interface (FFI) directly in your shell.  In other words, it allows
+you to call routines in shared libraries from within Bash.")
+    (license license:expat)))

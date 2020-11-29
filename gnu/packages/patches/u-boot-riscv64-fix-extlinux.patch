@@ -32,9 +32,9 @@ Index: u-boot/configs/sifive_fu540_defconfig
 ===================================================================
 --- u-boot.orig/configs/sifive_fu540_defconfig
 +++ u-boot/configs/sifive_fu540_defconfig
-@@ -12,3 +12,5 @@ CONFIG_DISPLAY_BOARDINFO=y
- CONFIG_DEFAULT_DEVICE_TREE="hifive-unleashed-a00"
- CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+@@ -27,3 +27,5 @@ CONFIG_SPL_DM_SEQ_ALIAS=y
+ CONFIG_SPL_CLK=y
  CONFIG_DM_MTD=y
+ CONFIG_DM_RESET=y
 +CONFIG_USE_PREBOOT=y
 +CONFIG_PREBOOT="setenv fdt_addr ${fdtcontroladdr}; fdt addr ${fdtcontroladdr};"

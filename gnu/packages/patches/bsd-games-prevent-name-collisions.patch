@@ -1,0 +1,13 @@
+There is already a "fish" shell.
+diff -ur bsd-games-2.17.orig/fish/Makefrag bsd-games-2.17/fish/Makefrag
+--- bsd-games-2.17.orig/fish/Makefrag	1970-01-01 07:00:01.000000000 +0700
++++ bsd-games-2.17/fish/Makefrag	2020-08-06 19:18:43.204492847 +0700
+@@ -31,7 +31,7 @@
+ fish_all:	fish/fish fish/fish.instr fish/fish.6
+
+ fish_install:	fish_all
+-	$(INSTALL_BINARY) fish/fish $(INSTALL_PREFIX)$(GAMESDIR)/fish
++	$(INSTALL_BINARY) fish/fish $(INSTALL_PREFIX)$(GAMESDIR)/fish-game
+	$(HIDE_GAME) fish
+	$(INSTALL_DATA) fish/fish.instr $(INSTALL_PREFIX)$(FISH_INSTRFILE)
+	$(INSTALL_MANUAL) fish/fish.6

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -115,11 +115,12 @@
                      ;; determine the root file system when it's a RAID
                      ;; device.  Failing to do that, 'grub-probe' silently
                      ;; fails if 'mdadm' is not in $PATH.
-                     (substitute* "grub-core/osdep/linux/getroot.c"
-                       (("argv\\[0\\] = \"mdadm\"")
-                        (string-append "argv[0] = \""
-                                       (assoc-ref inputs "mdadm")
-                                       "/sbin/mdadm\"")))
+                     (when (assoc-ref inputs "mdadm")
+                       (substitute* "grub-core/osdep/linux/getroot.c"
+                         (("argv\\[0\\] = \"mdadm\"")
+                          (string-append "argv[0] = \""
+                                         (assoc-ref inputs "mdadm")
+                                         "/sbin/mdadm\""))))
 
                      ;; Make the font visible.
                      (copy-file (assoc-ref (or native-inputs inputs)
@@ -132,6 +133,20 @@
                        (("^ckbcomp ")
                         (string-append (assoc-ref inputs "console-setup")
                                        "/bin/ckbcomp ")))
+                     #t))
+                  (add-after 'unpack 'set-freetype-variables
+                    ;; These variables need to be set to the native versions
+                    ;; of the dependencies because they are used to build
+                    ;; programs which are executed during build time.
+                    (lambda* (#:key native-inputs #:allow-other-keys)
+                      (when (assoc-ref native-inputs "freetype")
+                        (let ((freetype (assoc-ref native-inputs "freetype")))
+                          (setenv "BUILD_FREETYPE_LIBS"
+                                  (string-append "-L" freetype
+                                                 "/lib -lfreetype"))
+                          (setenv "BUILD_FREETYPE_CFLAGS"
+                                  (string-append "-I" freetype
+                                                 "/include/freetype2"))))
                      #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
@@ -149,10 +164,11 @@
                         (("test_unset grub_func_test")
                           "test_unset"))
                       #t)))
-       ;; Disable tests on ARM and AARCH64 platforms.
-       #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)
-                                                       (%current-system)))
-                           '("arm" "aarch64")))))
+       ;; Disable tests on ARM and AARCH64 platforms or when cross-compiling.
+       #:tests? ,(not (or (any (cute string-prefix? <> (or (%current-target-system)
+                                                           (%current-system)))
+                               '("arm" "aarch64"))
+                          (%current-target-system)))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
@@ -194,6 +210,7 @@
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
+       ("freetype" ,freetype)   ; native version needed for build-grub-mkfont
 
        ;; XXX: When building GRUB 2.02 on 32-bit x86, we need a binutils
        ;; capable of assembling 64-bit instructions.  However, our default
@@ -241,21 +258,25 @@ menu to select one of the installed operating systems.")
      (fold alist-delete (package-native-inputs grub)
            '("help2man" "texinfo" "parted" "qemu" "xorriso")))
     (arguments
-     `(#:configure-flags (list "PYTHON=true")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-stuff
-                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                     (substitute* "grub-core/Makefile.in"
-                       (("/bin/sh") (which "sh")))
+     (substitute-keyword-arguments (package-arguments grub)
+       ((#:configure-flags _ ''())
+        '(list "PYTHON=true"))
+       ((#:tests? _ #t)
+        #f)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'patch-stuff
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (substitute* "grub-core/Makefile.in"
+                 (("/bin/sh") (which "sh")))
 
-                     ;; Make the font visible.
-                     (copy-file (assoc-ref (or native-inputs inputs)
-                                           "unifont")
-                                "unifont.bdf.gz")
-                     (system* "gunzip" "unifont.bdf.gz")
+               ;; Make the font visible.
+               (copy-file (assoc-ref (or native-inputs inputs)
+                                     "unifont")
+                          "unifont.bdf.gz")
+               (system* "gunzip" "unifont.bdf.gz")
 
-                     #t)))
-       #:tests? #f))))
+               #t))))))))
 
 (define-public grub-efi
   (package
@@ -424,7 +445,7 @@ menu to select one of the installed operating systems.")
      `(("python" ,python)))
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
 
              ;; /bin/fdt{get,overlay,put} need help finding libfdt.so.1.
              (string-append "LDFLAGS=-Wl,-rpath="
@@ -435,6 +456,15 @@ menu to select one of the installed operating systems.")
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* '("Makefile"
+                            "tests/run_tests.sh")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t))
          (delete 'configure))))         ; no configure script
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
@@ -446,7 +476,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.07")
+    (version "2020.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -454,7 +484,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1"))))
+                "08m6f1bh4pdcqbxf983qdb66ccd5vak5cbzc114yf3jwq2yinj0d"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -482,7 +512,7 @@ also initializes the boards (RAM etc).")
        ,@(package-native-inputs u-boot)))
     (arguments
      `(#:make-flags '("HOSTCC=gcc")
-       #:test-target "tests"
+       #:test-target "tcheck"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
@@ -493,11 +523,8 @@ also initializes the boards (RAM etc).")
              (substitute* "tools/dtoc/fdt_util.py"
               (("'cc'") "'gcc'"))
              (substitute* "tools/patman/test_util.py"
-              ;; python*-coverage is simply called coverage in guix.
-              (("%s-coverage") "coverage")
-              ;; XXX Allow for only 99% test coverage.
-              ;; TODO: Find out why that is needed.
-              (("if coverage != '100%':") "if not int(coverage.rstrip('%')) >= 99:"))
+              ;; python3-coverage is simply called coverage in guix.
+              (("python3-coverage") "coverage"))
              (substitute* "test/run"
               ;; Make it easier to find test failures.
               (("#!/bin/bash") "#!/bin/bash -x")
@@ -507,8 +534,6 @@ also initializes the boards (RAM etc).")
               (("run_test \"binman\"") ": run_test \"binman\"")
               ;; FIXME: code coverage not working
               (("run_test \"binman code coverage\"") ": run_test \"binman code coverage\"")
-              (("run_test \"dtoc code coverage\"") ": run_test \"dtoc code coverage\"")
-              (("run_test \"fdt code coverage\"") ": run_test \"fdt code coverage\"")
               ;; This test would require internet access.
               (("\\./tools/buildman/buildman") (which "true")))
              (substitute* "test/py/tests/test_sandbox_exit.py"
@@ -521,10 +546,12 @@ def test_ctrl_c"))
                (("BASEDIR=sandbox") "BASEDIR=."))
              (for-each (lambda (file)
                               (substitute* file
-                                  ;; Disable signatures, due to GPL/Openssl
-                                  ;; license incompatibilities.  See
-                                  ;; https://bugs.gnu.org/34717 for details.
-                                  (("CONFIG_FIT_SIGNATURE=y") "CONFIG_FIT_SIGNATURE=n")
+                                  ;; Disable features that require OpenSSL due
+                                  ;; to GPL/Openssl license incompatibilities.
+                                  ;; See https://bugs.gnu.org/34717 for
+                                  ;; details.
+                                  (("CONFIG_FIT_SIGNATURE=y")
+                                   "CONFIG_FIT_SIGNATURE=n\nCONFIG_UT_LIB_ASN1=n")
                                   ;; This test requires a sound system, which is un-used
                                   ;; in u-boot-tools.
                                   (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))

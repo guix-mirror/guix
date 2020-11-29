@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,8 @@
   #:use-module (guix store)
   #:use-module (guix store database)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
+  #:use-module ((guix build utils)
+                #:select (mkdir-p delete-file-recursively))
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
@@ -54,6 +56,28 @@
            (null? (referrers %store file))
            (list (stat:mtime (lstat file))
                  (stat:mtime (lstat ref)))))))
+
+(test-equal "register-path, directory"
+  '(1 1 1)
+  (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
+                             "-fake-directory")))
+    (when (valid-path? %store file)
+      (delete-paths %store (list file)))
+    (false-if-exception (delete-file-recursively file))
+
+    (let ((drv (string-append file ".drv")))
+      (mkdir-p (string-append file "/a"))
+      (call-with-output-file (string-append file "/a/b")
+        (const #t))
+      (register-path file #:deriver drv)
+
+      (and (valid-path? %store file)
+           (null? (references %store file))
+           (null? (valid-derivers %store file))
+           (null? (referrers %store file))
+           (list (stat:mtime (lstat file))
+                 (stat:mtime (lstat (string-append file "/a")))
+                 (stat:mtime (lstat (string-append file "/a/b"))))))))
 
 (test-equal "new database"
   (list 1 2)

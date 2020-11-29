@@ -20,6 +20,7 @@
   #:use-module (gnu installer proxy)
   #:use-module (gnu installer steps)
   #:use-module (gnu installer newt page)
+  #:use-module (guix build syscalls)
   #:use-module (guix i18n)
   #:use-module (ice-9 match)
   #:use-module (newt)
@@ -40,7 +41,8 @@ empty string, proxy usage will be disabled.")
   (let* ((items
           (list
            (cons (G_ "Change keyboard layout") keyboard-layout-selection)
-           (cons (G_ "Configure HTTP proxy") run-proxy-page)))
+           (cons (G_ "Configure HTTP proxy") run-proxy-page)
+           (cons (G_ "Reboot") reboot)))
          (result
           (run-listbox-selection-page
            #:info-text (G_ "Please choose one of the following parameters or \

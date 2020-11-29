@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -415,6 +416,48 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
     (description "This library uses attoparsec for parsing the actual
 contents of the HTTP connection.  It also provides higher-level functions
 which allow you to avoid direct usage of conduits.")
+    (license license:bsd-3)))
+
+(define-public ghc-http-reverse-proxy
+  (package
+    (name "ghc-http-reverse-proxy")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/http-reverse-proxy/"
+             "http-reverse-proxy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1a6i5njf85b2lhg8m83njagcf09wih5q2irnyb2890s724qr277v"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-network" ,ghc-network)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-wai-logger" ,ghc-wai-logger)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-http-conduit" ,ghc-http-conduit)))
+    (home-page
+     "https://github.com/fpco/http-reverse-proxy")
+    (synopsis
+     "Reverse proxy HTTP requests, either over raw sockets or with WAI")
+    (description
+     "Provides a simple means of reverse-proxying HTTP requests.  The raw
+approach uses the same technique as leveraged by keter, whereas the WAI
+approach performs full request/response parsing via WAI and http-conduit.")
     (license license:bsd-3)))
 
 (define-public ghc-wai

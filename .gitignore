@@ -140,9 +140,13 @@ Makefile
 Makefile.in
 config.cache
 stamp-h[0-9]
+.dirstamp
+.deps
 tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
 /.version
 /doc/stamp-[0-9]
 /gnu/packages/bootstrap
+/gnu/packages/aux-files/guile-guile-launcher.o
+/guile

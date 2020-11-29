@@ -19,6 +19,7 @@
 ;;; Copyright © 2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages fontutils)
@@ -68,7 +71,6 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages libffi)
@@ -89,6 +91,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -191,9 +194,7 @@ please install the @code{flyer-composer-gui} package.")))
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
-             ("cairo" ,(package (inherit cairo)
-                         (inputs (alist-delete "poppler"
-                                               (package-inputs cairo)))))))
+             ("cairo" ,cairo-sans-poppler)))
    (propagated-inputs
     ;; As per poppler-cairo and poppler-glib.pc.
     ;; XXX: Ideally we'd propagate Cairo too, but that would require a
@@ -221,17 +222,17 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler-data
   (package
     (name "poppler-data")
-    (version "0.4.9")
+    (version "0.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://poppler.freedesktop.org/poppler-data"
                                   "-" version ".tar.gz"))
               (sha256
                (base32
-                "04i0wgdkn5lhda8cyxd1ll4a2p41pwqrwd47n9mdpl7cx5ypx70z"))))
+                "0c3vjs3p7rjc4yfacnhd865r27czmzwcr4j2z4jldi68dvvcwbvf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -501,7 +502,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.5")
+    (version "0.3.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -509,7 +510,7 @@ using the DjVuLibre library.")
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
               (sha256
                (base32
-                "1pjwsb7zwclxsvz229fl7y2saf1pv3ifwv3ay8viqxgrp9x3z9hq"))))
+                "1r3v37k9fl2rxipvacgxr36llywvy7n20a25h3ajlyk70697sa66"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -528,6 +529,12 @@ using the DjVuLibre library.")
                                "-Dlink-external=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-libmupdfthird.a-requirement
+           (lambda _
+             ;; Ignore a missing (apparently superfluous) static library.
+             (substitute* "meson.build"
+               ((".*mupdfthird.*") ""))
+             #t))
          (add-before 'configure 'add-mujs-to-dependencies
            (lambda _
              ;; Add mujs to the 'build_dependencies'.
@@ -686,30 +693,35 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.16.1")
+    (version "1.18.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://mupdf.com/downloads/archive/"
-                            "mupdf-" version "-source.tar.xz"))
-        (sha256
-         (base32
-          "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))
-        (modules '((guix build utils)))
-        (snippet
-         ;; We keep lcms2 since it is different than our lcms.
-         '(begin
-            (for-each
-              (lambda (dir)
-                (delete-file-recursively (string-append "thirdparty/" dir)))
-              '("freeglut" "freetype" "harfbuzz" "jbig2dec"
-                "libjpeg" "mujs" "openjpeg" "zlib"))
-                #t))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mupdf.com/downloads/archive/"
+                           "mupdf-" version "-source.tar.xz"))
+       (sha256
+        (base32 "16m5sksil22sshxy70xkslsb2qhvcqb1d95i9savnhds1xn4ybar"))
+       (patches (search-patches "mupdf-fix-linkage.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled software.
+           (let* ((keep (list "lcms2")) ; different from our lcms2 package
+                  (from "thirdparty")
+                  (kept (string-append from "~temp")))
+             (mkdir-p kept)
+             (for-each (lambda (file) (rename-file (string-append from "/" file)
+                                              (string-append kept "/" file)))
+                       keep)
+             (delete-file-recursively from)
+             (rename-file kept from))
+           #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
         ("freeglut" ,freeglut)
         ("freetype" ,freetype)
+        ("gumbo-parser" ,gumbo-parser)
         ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)
         ("libjpeg" ,libjpeg-turbo)
@@ -722,14 +734,19 @@ extracting content or merging files.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      '(#:tests? #f ; no check target
-        #:make-flags (list "CC=gcc"
+      `(#:tests? #f                     ; no check target
+        #:make-flags (list "verbose=yes"
+                           (string-append "CC=" ,(cc-for-target))
                            "XCFLAGS=-fpic"
                            "USE_SYSTEM_LIBS=yes"
                            "USE_SYSTEM_MUJS=yes"
+                           "shared=yes"
+                           ;; Even with the linkage patch we must fix RUNPATH.
+                           (string-append "LDFLAGS=-Wl,-rpath="
+                                          (assoc-ref %outputs "out") "/lib")
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                   (delete 'configure)))) ; no configure script
     (home-page "https://mupdf.com")
     (synopsis "Lightweight PDF viewer and toolkit")
     (description
@@ -792,6 +809,53 @@ program capable of converting PDF into other formats.")
    (license (list license:asl2.0 license:clarified-artistic))
    (home-page "http://qpdf.sourceforge.net/")))
 
+(define-public qpdfview
+  (package
+    (name "qpdfview")
+    (version "0.4.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/qpdfview/"
+                           "trunk/" version "/+download/"
+                           "qpdfview-" version ".tar.gz"))
+       (sha256
+        (base32 "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cups" ,cups)
+       ("djvulibre" ,djvulibre)
+       ("libspectre" ,libspectre)
+       ("poppler-qt5" ,poppler-qt5)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:imported-modules ((guix build qt-build-system)
+                           (guix build cmake-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  ((guix build qt-build-system) #:prefix qt:))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "qpdfview.pri"
+               (("/usr") (assoc-ref %outputs "out")))
+             (invoke "qmake" "qpdfview.pro")))
+         ;; Otherwise, the user interface will not display any icons.
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (home-page "https://launchpad.net/qpdfview")
+    (synopsis "Tabbed document viewer")
+    (description "@command{qpdfview} is a document viewer for PDF, PS and DJVU
+files.  It uses the Qt toolkit and features persistent per-file settings,
+configurable toolbars and shortcuts, continuous and multi‐page layouts,
+SyncTeX support, and rudimentary support for annotations and forms.")
+    (license license:gpl2+)))
+
 (define-public xournal
   (package
     (name "xournal")
@@ -823,7 +887,7 @@ using a stylus.")
 (define-public xournalpp
   (package
     (name "xournalpp")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
      (origin
        (method git-fetch)
@@ -832,7 +896,7 @@ using a stylus.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0a9ygbmd4dwgck3k8wsrm2grynqa0adb12wwspzmzvpisbadffjy"))))
+        (base32 "05nx4cmrka6hwdn7r91yy4h46qpa9k7iy9dkgaq3hrkh9z3fxlkq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DENABLE_CPPUNIT=ON") ;enable tests
@@ -1047,7 +1111,6 @@ the PDF pages.")
               ("libudev" ,eudev)
               ("libwebp" ,libwebp)
               ("libdrm" ,libdrm)
-              ("imagemagick" ,imagemagick)
               ("giflib" ,giflib)
               ("glib" ,glib)
               ("cairo-xcb" ,cairo-xcb)
@@ -1265,7 +1328,7 @@ multiple files.")
 (define-public pdfpc
   (package
     (name "pdfpc")
-    (version "4.4.0")
+    (version "4.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1274,7 +1337,7 @@ multiple files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vh2r32akvasdrghkaq7ard24r2qncp34jfiyshi3zxabm9bhfaa"))))
+        (base32 "11n925c5jj3yfwnqkgxzqrmsrpqh8ls1g4idmqqzpsanpam1xvna"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test target
     (inputs

@@ -80,7 +80,7 @@ network devices were found. Do you want to continue anyway?"))
       #:title (G_ "Internet access")
       #:listbox-items items
       #:listbox-item->text technology->text
-      #:listbox-height (min (+ (length items) 2) 10)
+      #:listbox-height (min (+ (length items) 2) 5)
       #:button-text (G_ "Exit")
       #:button-callback-procedure
       (lambda _

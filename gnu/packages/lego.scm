@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@posteo.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +35,8 @@
     (name "nqc")
     (version "3.1.r6")
     (source (origin
+              ;; XXX Using url-fetch/tarbomb results in failure:
+              ;; Error: could not create compiler/rcx1_nqh.h
               (method url-fetch)
               (uri (string-append "http://bricxcc.sourceforge.net/nqc/release/"
                                   "nqc-" version ".tgz"))
@@ -44,24 +46,48 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex)
+       ("add-usb-tcp-support.patch"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://sourceforge.net/p/bricxcc/patches/"
+                               "_discuss/thread/00b427dc/b84b/attachment/"
+                               "nqc-01-Linux_usb_and_tcp.diff"))
+           (sha256
+            (base32 "0z5gx55ra1kamhhqxz08lvvwslfl36pbmwdd566rhmbgmyhlykbr"))))
+       ("debian-writable-swap-inst-len.patch"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://sources.debian.org/data/main/n/nqc/"
+                               "3.1.r6-7/debian/patches/"
+                               "writable-swap-inst-len.patch"))
+           (sha256
+            (base32 "1kr7j057aa5i0kxmlfpbfcsif5yq2lrmjw4sljn400ijaq4mys3v"))))))
     (arguments
      '(#:tests? #f                      ;no tests
        #:make-flags (list (string-append "PREFIX=" %output))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'rm-generated
-                    ;; Regenerating compiler/lexer.cpp avoids an 'undefined
-                    ;; reference to `isatty(int)'' error.
-                    (lambda _
-                      (for-each delete-file
-                                '("compiler/lexer.cpp"
-                                  "compiler/parse.cpp"))
-                      #t))
-                  (add-after 'unpack 'deal-with-tarbomb
-                    (lambda _
-                      (chdir "..")      ;tarbomb
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'rm-generated
+           ;; Regenerating compiler/lexer.cpp avoids an 'undefined
+           ;; reference to `isatty(int)'' error.
+           (lambda _
+             (for-each delete-file
+                       '("compiler/lexer.cpp"
+                         "compiler/parse.cpp"))
+             #t))
+         (add-after 'unpack 'deal-with-tarbomb
+           (lambda _
+             (chdir "..")               ;tarbomb
+             #t))
+         (add-after 'deal-with-tarbomb 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each (lambda (patch)
+                         (invoke "patch" "-Np1" "-i"
+                                 (assoc-ref inputs patch)))
+                       (list "add-usb-tcp-support.patch"
+                             "debian-writable-swap-inst-len.patch")))))))
     (home-page "http://bricxcc.sourceforge.net/nqc/")
     (synopsis "C-like language for Lego's MINDSTORMS")
     (description

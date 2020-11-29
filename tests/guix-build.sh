@@ -289,6 +289,12 @@ drv1=`guix build glib -d`
 drv2=`guix build glib -d --with-input=libreoffice=inkscape`
 test "$drv1" = "$drv2"
 
+# '--with-graft' should have no effect when using '--no-grafts'.
+# See <https://bugs.gnu.org/43890>.
+drv1=`guix build inkscape -d --no-grafts`
+drv2=`guix build inkscape -d --no-grafts --with-graft=glib=glib-networking`
+test "$drv1" = "$drv2"
+
 # Rewriting implicit inputs.
 drv1=`guix build hello -d`
 drv2=`guix build hello -d --with-input=gcc=gcc-toolchain`

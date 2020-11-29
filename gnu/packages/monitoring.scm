@@ -158,7 +158,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "5.0.3")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "1dc3fb9pa2cr6mfwgfyy1hpx26pbrws7989wj2kiiilmvimvrz1l"))))
+        (base32 "0rz5hg0r2m6qc0dj9b57g96dgilbg8i0rjhm4v9025v51jkby3xq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -456,7 +456,7 @@ written in Go with pluggable metric collectors.")
 (define-public collectd
   (package
     (name "collectd")
-    (version "5.11.0")
+    (version "5.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -465,7 +465,7 @@ written in Go with pluggable metric collectors.")
                     ".tar.bz2"))
               (sha256
                (base32
-                "1cjxksxdqcqdccz1nbnc2fp6yy84qq361ynaq5q8bailds00mc9p"))
+                "1mh97afgq6qgmpvpr84zngh58m0sl1b4wimqgvvk376188q09bjv"))
               (patches (search-patches "collectd-5.11.0-noinstallvar.patch"))))
     (build-system gnu-build-system)
     (arguments

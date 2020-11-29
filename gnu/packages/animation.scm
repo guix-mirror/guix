@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,19 +28,30 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages video))
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph))
 
 ;; ETL, synfig, and Synfig Studio are updated in tandem.
 (define synfig-version "1.2.2")
@@ -191,6 +203,89 @@ be capable of producing feature-film quality animation.  It eliminates the
 need for tweening, preventing the need to hand-draw each frame.  This package
 contains the graphical user interface for synfig.")
     (license license:gpl3+)))
+
+;; This package provides a standalone (no browser plugin) version of Gnash.
+(define-public gnash
+  ;; The last tagged release of Gnash was in 2013.
+  (let ((commit "583ccbc1275c7701dc4843ec12142ff86bb305b4")
+        (revision "0"))
+    (package
+      (name "gnash")
+      (version (git-version "0.8.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/gnash.git/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (patches (search-patches "gnash-fix-giflib-version.patch"))
+         (sha256
+          (base32 "0fh0bljn0i6ypyh6l99afi855p7ki7lm869nq1qj6k8hrrwhmfry"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--disable-static"
+               ;; Plugins are based on XULRunner and NPAPI only.  Disable.
+               "--disable-plugins"
+               "--enable-gui=gtk"
+               "--enable-media=ffmpeg"
+               (string-append "--with-boost-incl="
+                              (assoc-ref %build-inputs "boost") "/include")
+               (string-append "--with-boost-lib="
+                              (assoc-ref %build-inputs "boost") "/lib")
+               (string-append "--with-ffmpeg-incl="
+                              (assoc-ref %build-inputs "ffmpeg")
+                              "/include/libavcodec")
+               (string-append "--with-speex-incl="
+                              (assoc-ref %build-inputs "speex") "/include")
+               (string-append "--with-jemalloc-incl="
+                              (assoc-ref %build-inputs "jemalloc")
+                              "/include/jemalloc")
+               (string-append "--with-speex-lib="
+                              (assoc-ref %build-inputs "speex") "/lib")
+               (string-append "--with-jpeg-incl="
+                              (assoc-ref %build-inputs "libjpeg") "/include")
+               (string-append "--with-zlib-incl="
+                              (assoc-ref %build-inputs "zlib") "/include")
+               (string-append "--with-png-incl="
+                              (assoc-ref %build-inputs "libpng")
+                              "/include"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("dejagnu" ,dejagnu) ;for tests
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("perl" ,perl)
+         ("pkg-config" ,pkg-config)
+         ("python" ,python-wrapper)))
+      (inputs
+       `(("agg" ,agg)
+         ("atk" ,atk)
+         ("boost" ,boost)
+         ("curl" ,curl)
+         ("ffmpeg" ,ffmpeg-2.8)
+         ("freeglut" ,freeglut)
+         ("gconf" ,gconf)
+         ("giflib" ,giflib)
+         ("glib" ,glib)
+         ("gtk+" ,gtk+-2)
+         ("gtkglext" ,gtkglext)
+         ("jemalloc" ,jemalloc)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libltdl" ,libltdl)
+         ("libpng" ,libpng)
+         ("pangox-compat" ,pangox-compat)
+         ("sdl" ,sdl)
+         ("speex" ,speex)))
+      (synopsis "Flash movie player")
+      (description
+       "Gnash is a Flash movie player.  It supports SWF version v7 and some
+of v8 and v9.  It is possible to configure Gnash to use several different
+audio or video backends, ensuring good performance.")
+      (home-page "https://www.gnu.org/software/gnash/")
+      (license license:gpl3+))))
 
 (define-public papagayo
   (let ((commit "e143684b30e59fe4a554f965cb655d23cbe93ee7")

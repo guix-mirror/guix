@@ -1,0 +1,60 @@
+;; This is an operating system configuration template
+;; for a "bare bones" setup, with no X11 display server.
+
+(use-modules (gnu))
+(use-service-modules networking ssh)
+(use-package-modules admin curl networking screen)
+
+(operating-system
+  (host-name "ruby-guard-5545")
+  (timezone "Europe/Budapest")
+  (locale "en_US.utf8")
+
+  ;; Boot in "legacy" BIOS mode, assuming /dev/sdX is the
+  ;; target hard disk, and "my-root" is the label of the target
+  ;; root file system.
+  (bootloader (bootloader-configuration
+                (bootloader grub-bootloader)
+                (target "/dev/sdX")))
+  (file-systems (cons (file-system
+                        (device (file-system-label "my-root"))
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+  (users (cons (user-account
+                (name "alice")
+                (comment "Bob's sister")
+                (group "users")
+                ;; adding her to the yggdrasil group means she can use
+                ;; yggdrasilctl to modify the configuration
+                (supplementary-groups '("wheel" "yggdrasil")))
+               %base-user-accounts))
+
+  ;; Globally-installed packages.
+  (packages (cons* screen curl %base-packages))
+
+  ;; Add services to the baseline: a DHCP client and
+  ;; an SSH server.
+  ;; If you add an /etc/yggdrasil-private.conf, you can log in to ssh
+  ;; using your Yggdrasil IPv6 address from another machine running Yggdrasil.
+  ;; Alternatively, the client can sit behind a router that has Yggdrasil.
+  ;; That file is specifically _not_ handled by Guix, because we don't want its
+  ;; contents to sit in the world-readable /gnu/store.
+  (services
+   (append
+    (list
+     (service dhcp-client-service-type)
+     (service yggdrasil-service-type
+              (yggdrasil-configuration
+               (log-to 'stdout)
+               (log-level 'debug)
+               (autoconf? #f)
+               (json-config
+                ;; choose a few from
+                ;; https://github.com/yggdrasil-network/public-peers
+                '((peers . #("tcp://1.2.3.4:1337"))))
+               (config-file #f)))
+     (service openssh-service-type
+              (openssh-configuration
+               (port-number 2222))))
+    %base-services)))

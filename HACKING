@@ -13,7 +13,7 @@ Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 
 * Contributing
 
-See the manual for useful hacking informations, either by running
+See the manual for useful hacking information, either by running
 
   info -f doc/guix.info "Contributing"
 

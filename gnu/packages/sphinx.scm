@@ -48,14 +48,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "3.1.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "1zd8l4dh0v4p8m7s51xr001k09cq2023dd0953ygw7xa76dypnmr"))))
+         "1s70hxhddzf656kmj01lws4cbywgsinbg8750r9ilf7s2sdns79j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -511,14 +511,14 @@ and several other projects.")
 (define-public python-breathe
   (package
     (name "python-breathe")
-    (version "4.13.1")
+    (version "4.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "breathe" version))
        (sha256
         (base32
-         "1aw749n2ry27434qd7gr99dvsrs3x3chyi9aywmhjj1g4m2j6xf6"))))
+         "0snk538xv60z4vfhl3f7v5g658za7257hddkg07cknkn33k6cjvf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
@@ -533,14 +533,13 @@ to be able to read and render the Doxygen xml output.")
 (define-public python-sphinx-intl
   (package
     (name "python-sphinx-intl")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-intl" version))
        (sha256
-        (base32
-         "0zbf1bh23b3kza8bnjykmv2k21xmmr4gamhi3lnicnr6ypnrphr5"))))
+        (base32 "1d1q0sanjp4nkfvhsxi75zf3xjyyi8nzxvl3v7l0jy9ld70nwnmj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)

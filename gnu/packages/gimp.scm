@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +139,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hodefoting/mrg.git")
+         (url "https://github.com/hodefoting/mrg")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -204,7 +205,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.24")
+    (version "0.4.26")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -218,11 +219,26 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "0ji57s7cba94vzy49agn7x47ca61rccm6rif0cb0s6rl4ygljrbp"))))
+                "097427icgpgvcx40019b3dm8m84cchz79pixzpz648drs8p1wdqg"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dintrospection=false")))
+       (list "-Dintrospection=false")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'extend-test-time-outs
+           (lambda _
+             ;; Multiply some poorly-chosen time-outs for busy build machines.
+             (substitute* "tests/simple/test-node-exponential.c"
+               (("G_TIME_SPAN_SECOND" match)
+                (string-append "10 * " match)))
+             (substitute* "tests/simple/test-buffer-sharing.c"
+               (("g_timeout_add_seconds\\([0-9]+" match)
+                (string-append match "0")))
+             (substitute* (find-files "tests" "^meson\\.build$")
+               (("timeout ?: [0-9]+" match)
+                (string-append match "0")))
+             #t)))))
     ;; These are propagated to satisfy 'gegl-0.4.pc'.
     (propagated-inputs
      `(("babl" ,babl)
@@ -249,7 +265,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.20")
+    (version "2.10.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -257,7 +273,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0g3vzh1bjffqx94mfghmwvkhncv71cgah2mnfx17q00s9f3rybz1"))))
+                "1fqqyshakvdarf1jipk2n33ibqr23ni22z3d8srq13bpydblpf1d"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
@@ -309,6 +325,7 @@ buffers.")
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
+       ("libxcursor" ,libxcursor)       ; optional, Mouse Cursor support
        ("poppler" ,poppler)             ; optional, PDF support
        ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support

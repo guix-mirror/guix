@@ -38,7 +38,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.16")
+    (version "3.10.17")
     (source
      (origin
        (method git-fetch)
@@ -46,8 +46,7 @@
              (url "https://github.com/gpodder/gpodder")
              (commit version)))
        (sha256
-        (base32
-         "0pbpaasd7kj6y25nm45y1qyb9sxd4570f7g6zkfcpf6pa3nx7qkq"))
+        (base32 "0wrk8d4q6ricbcjzlhk10vrk1qg9hi323kgyyd0c8nmh7a82h8pd"))
        (file-name (git-file-name name version))
        (patches (search-patches "gpodder-disable-updater.patch"))))
     (build-system python-build-system)
@@ -177,21 +176,20 @@ downloading episode status changes.")
 (define-public python-podcastparser
   (package
     (name "python-podcastparser")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "podcastparser" version))
        (sha256
-        (base32 "0k62ppg20i41gcc5x8ddjn7zbpy47hqpxzrq9257g2c71m4qw07b"))))
+        (base32 "0m24r2qhck0win44xfhxajbppkss4ha6am0042s0xyq3408883m3"))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "nosetests"))))))
+           (lambda _ (invoke "pytest"))))))
     (build-system python-build-system)
     (home-page "http://gpodder.org/podcastparser")
     (synopsis "Simplified and fast RSS parser Python library")

@@ -286,8 +286,9 @@ instrumented for further testing."
                                edit-configuration-file))
   "Converse over PORT to choose the partitioning method.  When ENCRYPTED? is
 true, choose full-disk encryption with PASSPHRASE as the LUKS passphrase.
-This conversation goes past the final dialog box that shows the configuration
-file, actually starting the installation process."
+This conversation stops when the user partitions have been formatted, right
+before the installer generates the configuration file and shows it in a dialog
+box."
   (converse port
     ((list-selection (title "Partitioning method")
                      (multiple-choices? #f)
@@ -330,15 +331,29 @@ file, actually starting the installation process."
      #t)
     ((info (title "Preparing partitions") _ ...)
      (values))                                    ;nothing to return
+    ((starting-final-step)
+     ;; Do not return anything.  The reply will be sent by
+     ;; 'conclude-installation' and in the meantime the installer just waits
+     ;; for us, giving us a chance to do things such as changing partition
+     ;; UUIDs before it generates the configuration file.
+     (values))))
+
+(define (conclude-installation port)
+  "Conclude the installation by checking over PORT that we get the generated
+configuration file, accepting it and starting the installation, and then
+receiving the final messages once the 'guix system init' process has
+completed."
+  ;; Assume the previous message received was 'starting-final-step'; here we
+  ;; send the reply to that message, which lets the installer continue.
+  (write #t port)
+  (newline port)
+  (force-output port)
+
+  (converse port
     ((file-dialog (title "Configuration file")
                   (text _)
                   (file ,configuration-file))
-     (edit-configuration-file configuration-file))))
-
-(define (conclude-installation port)
-  "Conclude the installation by checking over PORT that we get the final
-messages once the 'guix system init' process has completed."
-  (converse port
+     (edit-configuration-file configuration-file))
     ((pause)                                      ;"Press Enter to continue."
      #t)
     ((installation-complete)                      ;congratulations!

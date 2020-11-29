@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -313,7 +313,7 @@ interface and is based on GNU Guile.")
 (define-public cloud-utils
   (package
     (name "cloud-utils")
-    (version "0.31")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
@@ -322,7 +322,7 @@ interface and is based on GNU Guile.")
              version "/+download/cloud-utils-" version ".tar.gz"))
        (sha256
         (base32
-         "07fl3dlqwdzw4xx7mcxhpkks6dnmaxha80zgs9f6wmibgzni8z0r"))))
+         "0xxdi55lzw7j91zfajw7jhd2ilsqj2dy04i9brlk8j3pvb5ma8hk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.43")
+    (version "4.0.46")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ppzr7vsl6iw8x82c4g60mx1vz06nzwcy8byablhg0n0g6qa3pb0"))))
+                "1pi93i1jfpmxxw22b5r4gyx5jzgrammlrjzhjr3q2bpn3kcas91j"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1499,7 +1499,7 @@ commands and their arguments.")
 (define-public opendoas
   (package
     (name "opendoas")
-    (version "6.6.1")
+    (version "6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1508,7 +1508,7 @@ commands and their arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+                "1dlwnvy8r6slxcy260gfkximp1ms510wdslpfq9y6xvd2qi5izcb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1516,19 +1516,17 @@ commands and their arguments.")
          (replace 'configure
            ;; The configure script doesn't accept most of the default flags.
            (lambda* (#:key configure-flags #:allow-other-keys)
-             ;; The configure script can only be told which compiler to use
+             ;; The configure script can be told which compiler to use only
              ;; through environment variables.
              (setenv "CC" ,(cc-for-target))
              (apply invoke "./configure" configure-flags)))
          (add-before 'install 'fix-makefile
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "bsd.prog.mk"
+             (substitute* "GNUmakefile"
                (("^\tchown.*$") ""))
              #t)))
        #:configure-flags
        (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             ;; Nothing is done with this value (yet?) but it's supported.
-             ;; (string-append "--target=" (or ,(%current-target-system) ""))
              "--with-timestamp")
        ;; Compiler choice is not carried over from the configure script.
        #:make-flags
@@ -1566,10 +1564,10 @@ features of sudo with a fraction of the codebase.")
                     #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              (chdir "wpa_supplicant")
              (copy-file "defconfig" ".config")
              (let ((port (open-file ".config" "al")))
@@ -1583,6 +1581,15 @@ features of sudo with a fraction of the codebase.")
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
                (close-port port))
+             ;; Make sure we have a pkg-config when cross compiling
+             (substitute* '(".config"
+                            "Android.mk"
+                            "Makefile"
+                            "dbus/Makefile")
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (which (string-append ,(%current-target-system)
+                                          "-pkg-config")))))
              #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1611,7 +1618,7 @@ features of sudo with a fraction of the codebase.")
                            "wpa_supplicant.conf"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
@@ -1721,10 +1728,10 @@ command.")
                 "1mrbvg4v7vm7mknf0n29mf88k3s4a4qj6r4d51wq8hmjj1m7s7c8"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda _
              ;; This is mostly copied from 'wpa-supplicant' above.
              (chdir "hostapd")
              (copy-file "defconfig" ".config")
@@ -1735,6 +1742,14 @@ command.")
       CONFIG_IEEE80211N=y
       CONFIG_IEEE80211AC=y\n" port)
                (close-port port))
+             #t))
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "src/drivers/drivers.mak"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
              #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1752,7 +1767,7 @@ command.")
                          (find-files "." "\\.8"))
                #t))))
 
-      #:make-flags (list "CC=gcc"
+      #:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
                                         "/sbin")
                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
@@ -1847,7 +1862,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200717")
+    (version "20201113")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1855,13 +1870,13 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0jyy71szjr40c8v40qqw6yh3gfk8d6sl3nay69zrn5d88i3r0jca"))))
+                "0fmck3zklc328c8nzvfzm2xyh2i8zszzrd4k8kk8q30y4avnc6z1"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
     (arguments
-     '(#:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc"
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "CC=" ,(cc-for-target))
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f                      ; no 'check' target
@@ -2381,17 +2396,20 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (replace 'build
-                    (lambda _
-                      (invoke "make" "CC=gcc" "-Csrc")))
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "make" "-Csrc" make-flags)))
                   (replace 'check
-                    (lambda _
-                      (invoke "make" "CC=gcc" "-Ctests")))
+                    (lambda* (#:key tests? make-flags #:allow-other-keys)
+                      (when tests?
+                        (apply invoke "make" "-Ctests" make-flags))
+                      #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin")))
                         (install-file "src/cpulimit" bin))
-                      #t)))))
+                      #t)))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/opsengine/cpulimit")
     (synopsis "Limit CPU usage")
     (description
@@ -2688,7 +2706,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dagwieers/dstat")
+             (url "https://github.com/dstat-real/dstat")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
@@ -2880,9 +2898,13 @@ shortcut syntax and completion options.")
     (version "4.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://archives.eyrie.org/software/kerberos/"
-                    "pam-krb5-" version ".tar.xz"))
+              (uri
+                (list (string-append
+                        "https://archives.eyrie.org/software/kerberos/"
+                        "pam-krb5-" version ".tar.xz")
+                      (string-append
+                        "https://archives.eyrie.org/software/ARCHIVE/"
+                        "pam-krb5/pam-krb5-" version ".tar.xz")))
               (patches (search-patches "pam-krb5-CVE-2020-10595.patch"))
               (sha256
                (base32
@@ -2916,7 +2938,7 @@ with @code{ChallengeResponseAuthentication} and @code{PrivilegeSeparation}
 enabled, and supports extensive configuration either by PAM options or in
 krb5.conf or both.  PKINIT is supported with recent versions of both MIT
 Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
-    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5")
+    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5/")
     ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
     ;; However, the tarball does not contain a copy of the GPL,  so unless
     ;; we put one in, we cannot distribute it under GPL without violating
@@ -3358,14 +3380,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.4")
+    (version "3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "189h950m1jjrnhvgcvzk6nj89l58rkxim7bxa0441ssajxpaw0vq"))))
+        (base32 "1ww18vvfjkvi36rcamw8kpix4bhk71w5bw9kmnh158crah1x8dp6"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3373,15 +3395,23 @@ information tool.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-after 'unpack 'patch-pkg-config
+           (lambda _
+             (substitute* "Makefile"
+               (("pkg-config")
+                (or (which "pkg-config")
+                    (string-append ,(%current-target-system)
+                                   "-pkg-config"))))
+             #t)))
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        "CC=gcc")))
+        (string-append "CC=" ,(cc-for-target)))))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
     (description "@command{nnn} is a fork of @command{noice}, a blazing-fast
@@ -3394,40 +3424,56 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.9.1")
+    (version "2.3")
     (source
      (origin
       (method git-fetch)
       (uri (git-reference
-             (url "https://github.com/01org/thermal_daemon")
+             (url "https://github.com/intel/thermal_daemon")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0iagc3jqpnh6q2fa1gx4wx6r8qg0556j60xr159zqg95djr4dv99"))))
+       (base32 "0cisaca2c2z1x9xvxc4lr6nl6yqx5bww6brh73m0p1n643jgq1dl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
-         (list (string-append "--sysconfdir="
-                              out "/etc")
-               (string-append "--with-dbus-sys-dir="
+         (list (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
-               "--localstatedir=/var"))))
+               "--localstatedir=/var"))
+       #:make-flags
+       (list "V=1")                     ; log build commands
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'no-early-./configure
+           (lambda _
+             (setenv "NO_CONFIGURE" "yet")
+             ;; XXX thd_trip_point.h redefines "__STDC_LIMIT_MACROS" after
+             ;; <xz>/include/lzma.h.  ./configure forcibly appends -Werror
+             ;; to CXXFLAGS, overriding any -Wno-error we'd add.
+             (substitute* "configure.ac"
+               (("-Werror") ""))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
-       ("libxml2" ,libxml2)))
+       ("libevdev" ,libevdev)
+       ("libxml2" ,libxml2)
+       ("upower" ,upower)
+       ("xz" ,xz)))
     (home-page "https://01.org/linux-thermal-daemon/")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
 on systems running the Linux kernel.")
     ;; arm and aarch64 don't have cpuid.h.
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (license license:gpl2+)))
+    (license license:gpl2)))
 
 (define-public masscan
   (package
@@ -3446,9 +3492,9 @@ on systems running the Linux kernel.")
     (inputs
      `(("libpcap" ,libpcap)))
     (arguments
-     '(#:test-target "regress"
+     `(#:test-target "regress"
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -3576,7 +3622,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.07-1")
+      (version "3.1.09-1")
       (source
        (origin
          (method git-fetch)
@@ -3585,7 +3631,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0hs4m2vmfc6srscaz72r6zpkn6n7msgzlps376ks38gj1l103xfn"))))
+          (base32 "0m6s8kxjppy3jm39is5i1lbrah29cw86rq0vamvx46izbdyf84y5"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3755,26 +3801,20 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "0.9.2")
+    (version "1.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pwr/Solaar")
+                    (url "https://github.com/pwr-Solaar/Solaar")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "085mfa13dap3wqik1dqlad0d7kff4rv7j4ljh99c7l8nhczkqgwm"))))
+                "15wzxxr2m5349kkvcs3k5clg1rsmvh6by2066qm4hlgvjwmigggy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-prefix-detection
-           (lambda _
-             (substitute* "setup.py"
-              (("'--prefix' in sys\\.argv")
-               "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
-             #t))
          (add-before 'build 'setenv-PATH
            (lambda _
              (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
@@ -4096,7 +4136,7 @@ entries, providing commands to add, remove, comment, and search.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/jclehner/nmrpflash.git")
+         (url "https://github.com/jclehner/nmrpflash")
          (commit (string-append "v" version))))
        (sha256
         (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))
@@ -4127,3 +4167,61 @@ EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6400, R6800,
 R8000, R8500, WNDR3800, but is likely to be compatible with many other
 Netgear devices.")
     (license license:gpl3+)))
+
+(define-public atop
+  (package
+    (name "atop")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.atoptool.nl/download/atop-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0crzz4i2nabyh7d6xg7fvl65qls87nbca5ihidp3nijhrrbi14ab"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             ;; The installer requires a choice between systemd or SysV.
+             "systemdinstall"
+             (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "BINPATH=/bin")
+             (string-append "SBINPATH=/sbin")
+             (string-append "SYSDPATH=/etc/systemd/system")
+             (string-append "PMPATHD=/etc/systemd/system-sleep")
+             (string-append "MAN1PATH=/share/man/man1")
+             (string-append "MAN5PATH=/share/man/man5")
+             (string-append "MAN8PATH=/share/man/man8")
+             ;; Or else it tries to create /var/log/atop...
+             (string-append "LOGPATH="))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No ./configure script
+         (add-before 'build 'patch-build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               ;; We don't need to chown things in the build environment.
+               (("chown.*$") "")
+               ;; We can't toggle the setuid bit in the build environment.
+               (("chmod 04711") "chmod 0711")
+               ;; Otherwise, it creates a blank configuration file as a "default".
+               (("touch.*DEFPATH)/atop") "")
+               (("chmod.*DEFPATH)/atop") ""))
+             #t)))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("python" ,python-wrapper) ; for `atopgpud`
+       ("zlib" ,zlib)))
+    (home-page "https://www.atoptool.nl/")
+    (synopsis "Linux performance monitoring console")
+    (description "Atop is an ASCII full-screen performance monitor for Linux
+that is capable of reporting the activity of all processes (even processes have
+finished during the monitoring interval), daily logging of system and process
+activity for long-term analysis, highlighting overloaded system resources by
+using colors, etc.  At regular intervals, it shows system-level activity related
+to the CPU, memory, swap, disks (including LVM) and network layers, and for
+every process (and thread) it shows e.g. the CPU utilization, memory growth,
+disk utilization, priority, username, state, and exit code.")
+    (license license:gpl2+)))

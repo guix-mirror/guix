@@ -112,7 +112,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/jiuka/memphis.git")
+         (url "https://github.com/jiuka/memphis")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -788,14 +788,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.0.2")
+    (version "3.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1jmji8i2wjabkrzqil683lypnmimigdmn64a10j3kj3kzlfn98d3"))))
+                "05s8cx1rlysiq7dd44kf7cid0la61a4p895j9g95bvfb8v8dpzh7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1277,7 +1277,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "17013")
+    (version "17084")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1286,7 +1286,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "12mcqswjijvx2n7hz7lnx83i3vjr5ib58cazqin10hczcwnd778q"))
+                "0pl1v0lj6lslnaxlr5isivg97xgnydsp0f491idvf93fi2g5grn5"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -2099,6 +2099,7 @@ growing set of geoscientific methods.")
        ("python" ,python)
        ("python-chardet" ,python-chardet)
        ("python-dateutil" ,python-dateutil)
+       ("python-future" ,python-future)
        ("python-gdal" ,python-gdal)
        ("python-jinja2" ,python-jinja2)
        ("python-numpy" ,python-numpy)

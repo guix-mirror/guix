@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages build-tools) ;for meson-0.55
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -272,14 +274,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.18.2")
+    (version "4.18.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "030jym6b8b07yf4y6pb806hg8k77zsprv569gy0r72rh5zb1g1mj"))))
+                "03dijnwv2n8ak9jq59fhq0rc80m5wjc9d54fslqaivnnz81pkbjk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -342,7 +344,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.18.2")
+           (version "4.18.3")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -350,7 +352,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "0lz08wf4b0yprzqsmymn94kiyg885dcwmh0p64v2rnf52s165g2g"))))
+                       "1hcakwyz78lgp8mhqv7pw86jlb3m415pfql1q19rkijnhm3fn3ci"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
@@ -610,7 +612,7 @@ Features include:
                                         "/bin/gawk")))
 
                (substitute* "lock"
-                 (("$(which wmctrl)") wmctrl)
+                 (("\\$\\(command -V wmctrl\\)") wmctrl)
                  (("convert") mconvert)
                  (("shot=\\(import") (string-append "shot=\(" mimport))
                  (("awk -F") (string-append awk " -F"))
@@ -629,7 +631,7 @@ Features include:
                             (string-append bin "/i3lock-fancy"))
                (copy-recursively "icons" icons)
                #t))))))
-    (native-inputs
+    (inputs
      `(("imagemagick" ,imagemagick)
        ("wmctrl" ,wmctrl)
        ("gawk" ,gawk)))
@@ -1341,7 +1343,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.10.1")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -1350,32 +1352,35 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j2lh9vc92zhn44rjbia5aw3y1rpgfng1x1h17lcvj5m4i6vj0pc"))))
+        (base32 "01j38lmgs2c6fq68v8b75pkilia2wsgzgp46ivfbi9hhx47kgcfn"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
+       #:meson ,meson-0.55
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "xwayland/xwayland.c"
+             (substitute* "xwayland/server.c"
                (("Xwayland") (string-append (assoc-ref inputs
                                                        "xorg-server-xwayland")
                                             "/bin/Xwayland")))
              #t)))))
-    (inputs `(("elogind" ,elogind)
-              ("eudev" ,eudev)
-              ("libinput" ,libinput)
-              ("libxkbcommon" ,libxkbcommon)
-              ("mesa" ,mesa)
-              ("pixman" ,pixman)
-              ("wayland" ,wayland)
-              ("xorg-server-xwayland" ,xorg-server-xwayland)))
-    (native-inputs `(("ffmpeg" ,ffmpeg)
-                     ("libcap" ,libcap)
-                     ("libpng" ,libpng)
-                     ("pkg-config" ,pkg-config)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (propagated-inputs
+     `(;; As required by wlroots.pc.
+       ("elogind" ,elogind)
+       ("eudev" ,eudev)
+       ("libinput" ,libinput)
+       ("libxkbcommon" ,libxkbcommon)
+       ("mesa" ,mesa)
+       ("pixman" ,pixman)
+       ("wayland" ,wayland)
+       ("xcb-util-errors" ,xcb-util-errors)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -1386,9 +1391,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
-    ;; be dropped from the grim package.
-    (version "1.4")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1397,7 +1400,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11qf89y3q92g696a6f4d23qb44gqixg6qxq740vwv2jw59ms34ja"))))
+        (base32 "1xsa3h8zhf29p0mi90baxpr76jkd9pd1gr97ky8cnjbcs4isj9j0"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1426,21 +1429,21 @@ modules for building a Wayland compositor.")
               ("swaybg" ,swaybg)
               ("wayland" ,wayland)
               ("wlroots" ,wlroots)))
-    (native-inputs `(("libcap" ,libcap)
-                     ("linux-pam" ,linux-pam)
-                     ("mesa" ,mesa)
-                     ("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("linux-pam" ,linux-pam)
+       ("mesa" ,mesa)
+       ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Wayland compositor compatible with i3")
     (description "Sway is a i3-compatible Wayland compositor.")
-    (license license:expat)))       ; MIT license
+    (license license:expat)))
 
 (define-public swayidle
   (package
     (name "swayidle")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method git-fetch)
@@ -1449,7 +1452,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05qi96j58xqxjiighay1d39rfanxcpn6vlynj23mb5dymxvlaq9n"))))
+        (base32 "1nd3v8r9549lykdwh4krldfl59lzaspmmai5k1icy7dvi6kkr18r"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")))
@@ -1466,7 +1469,7 @@ modules for building a Wayland compositor.")
 (define-public swaylock
   (package
     (name "swaylock")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method git-fetch)
@@ -1475,7 +1478,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ii9ql1mxkk2z69dv6bg1x22nl3a46iww764wqjiv78x08xpk982"))))
+        (base32 "0r95p4w11dwm5ra614vddz83r8j7z6gd120z2vcchy7m9b0f15kf"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("gdk-pixbuf" ,gdk-pixbuf)
@@ -1557,7 +1560,7 @@ Wlroots based compositors.")
 (define-public mako
   (package
     (name "mako")
-    (version "1.4")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1566,7 +1569,7 @@ Wlroots based compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11ymiq6cr2ma0iva1mqybn3j6k73bsc6lv6pcbdq7hkhd4f9b7j9"))))
+        (base32 "0hwvibpnrximb628w9dsfjpi30b5jy7nfkm4d94z5vhp78p43vxh"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("elogind" ,elogind)
@@ -1717,7 +1720,8 @@ productive, customizable lisp based systems.")
     (name "stumpish")
     (inputs
      `(("bash" ,bash)
-       ("rlwrap" ,rlwrap)))
+       ("rlwrap" ,rlwrap)
+       ("xprop" ,xprop)))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -1729,6 +1733,8 @@ productive, customizable lisp based systems.")
          (substitute* "stumpish"
            (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
                                       "/bin/rlwrap"))
+           (("xprop") (string-append (assoc-ref %build-inputs "xprop")
+                                      "/bin/xprop"))
            (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
                                        "/bin/bash")))
          (install-file "stumpish" (string-append %output "/bin")))))

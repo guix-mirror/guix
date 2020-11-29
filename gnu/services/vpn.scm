@@ -273,16 +273,16 @@ servers.")
     "The device type used to represent the VPN connection.")
 
    (ca
-    (string "/etc/openvpn/ca.crt")
+    (maybe-string "/etc/openvpn/ca.crt")
     "The certificate authority to check connections against.")
 
    (cert
-    (string "/etc/openvpn/client.crt")
+    (maybe-string "/etc/openvpn/client.crt")
     "The certificate of the machine the daemon is running on. It should be signed
 by the authority given in @code{ca}.")
 
    (key
-    (string "/etc/openvpn/client.key")
+    (maybe-string "/etc/openvpn/client.key")
     "The key of the machine the daemon is running on. It must be the key whose
 certificate is @code{cert}.")
 

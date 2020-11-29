@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:export (gexp
             gexp?
@@ -146,12 +147,17 @@
 
 ;; "G expressions".
 (define-record-type <gexp>
-  (make-gexp references modules extensions proc)
+  (make-gexp references modules extensions proc location)
   gexp?
   (references gexp-references)                    ;list of <gexp-input>
   (modules    gexp-self-modules)                  ;list of module names
   (extensions gexp-self-extensions)               ;list of lowerable things
-  (proc       gexp-proc))                         ;procedure
+  (proc       gexp-proc)                          ;procedure
+  (location   %gexp-location))                    ;location alist
+
+(define (gexp-location gexp)
+  "Return the source code location of GEXP."
+  (and=> (%gexp-location gexp) source-properties->location))
 
 (define (write-gexp gexp port)
   "Write GEXP on PORT."
@@ -164,6 +170,11 @@
    (write (apply (gexp-proc gexp)
                  (gexp-references gexp))
           port))
+
+  (let ((loc (gexp-location gexp)))
+    (when loc
+      (format port " ~a" (location->string loc))))
+
   (format port " ~a>"
           (number->string (object-address gexp) 16)))
 
@@ -737,22 +748,26 @@ whether this should be considered a \"native\" input or not."
 
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
-(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?))
+(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?)
+                         #:key (validate (const #t)))
   "Recurse on GEXP and the expressions it refers to, summing the items
 returned by SELF-ATTRIBUTE, a procedure that takes a gexp.  Use EQUAL? as the
-second argument to 'delete-duplicates'."
+second argument to 'delete-duplicates'.  Pass VALIDATE every gexp and
+attribute that is traversed."
   (if (gexp? gexp)
       (delete-duplicates
-       (append (self-attribute gexp)
+       (append (let ((attribute (self-attribute gexp)))
+                 (validate gexp attribute)
+                 attribute)
                (append-map (match-lambda
                              (($ <gexp-input> (? gexp? exp))
-                              (gexp-attribute exp self-attribute))
+                              (gexp-attribute exp self-attribute
+                                              #:validate validate))
                              (($ <gexp-input> (lst ...))
                               (append-map (lambda (item)
-                                            (if (gexp? item)
-                                                (gexp-attribute item
-                                                                self-attribute)
-                                                '()))
+                                            (gexp-attribute item self-attribute
+                                                            #:validate
+                                                            validate))
                                           lst))
                              (_
                               '()))
@@ -778,7 +793,25 @@ false, meaning that GEXP is a plain Scheme object, return the empty list."
       (_
        (equal? m1 m2))))
 
-  (gexp-attribute gexp gexp-self-modules module=?))
+  (define (validate-modules gexp modules)
+    ;; Warn if MODULES, imported by GEXP, contains modules that in general
+    ;; should not be imported from the host because they vary from user to
+    ;; user and may thus be a source of non-reproducibility.  This includes
+    ;; (guix config) as well as modules that come with Guile.
+    (match (filter (match-lambda
+                     ((or ('guix 'config) ('ice-9 . _)) #t)
+                     (_ #f))
+                   modules)
+      (() #t)
+      (suspects
+       (warning (gexp-location gexp)
+                (N_ "importing module~{ ~a~} from the host~%"
+                    "importing modules~{ ~a~} from the host~%"
+                    (length suspects))
+                suspects))))
+
+  (gexp-attribute gexp gexp-self-modules module=?
+                  #:validate validate-modules))
 
 (define (gexp-extensions gexp)
   "Return the list of Guile extensions (packages) GEXP relies on.  If (gexp?
@@ -1084,7 +1117,8 @@ The other arguments are as for 'derivation'."
         (make-gexp (gexp-references exp)
                    (append modules (gexp-self-modules exp))
                    (gexp-self-extensions exp)
-                   (gexp-proc exp))))
+                   (gexp-proc exp)
+                   (gexp-location exp))))
 
   (mlet* %store-monad ( ;; The following binding forces '%current-system' and
                        ;; '%current-target-system' to be looked up at >>=
@@ -1414,7 +1448,8 @@ execution environment."
                       current-imported-modules
                       current-imported-extensions
                       (lambda #,formals
-                        #,sexp)))))))
+                        #,sexp)
+                      (current-source-location)))))))
 
 
 ;;;

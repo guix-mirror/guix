@@ -50,7 +50,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module (guix svn-download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -747,10 +747,10 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (license (list license:expat        ; icc2ps/*.[ch]
                    license:gpl2+))))    ; everything else
 
-(define-public escpr
+(define-public epson-inkjet-printer-escpr
   (package
-    (name "escpr")
-    (version "1.7.7")
+    (name "epson-inkjet-printer-escpr")
+    (version "1.7.8")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -758,15 +758,19 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/10/49/18/"
-                           "f3016be6120a7271a6d9cb64872f817bce1920b8/"
-                           "epson-inkjet-printer-escpr-1.7.7-1lsb3.2.tar.gz"))
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/12/04/32/"
+                           "1a455ef8618def65700ca4e446311c2fb43cd839/"
+                           "epson-inkjet-printer-escpr-1.7.8-1lsb3.2.tar.gz"))
        (sha256
-        (base32 "0khdf2a9iwh9aplj2gzyzl53yyfnfv0kszk3p018jnirl5l475ld"))))
+        (base32 "1pygg2bd2gh27dc65h3dzwrpvi6bq5c87wl0ldchqlc2b3blsx6p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       `(,(string-append "--prefix="
+     `(#:modules
+       ((srfi srfi-26)
+        ,@%gnu-build-system-modules)
+       #:configure-flags
+       `("--disable-static"
+         ,(string-append "--prefix="
                          (assoc-ref %outputs "out"))
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
@@ -784,7 +788,13 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
                 (string-append match "aclocal"))
                (("^(AUTOMAKE=).*" _ match)
                 (string-append match "automake")))
-             #t)))))
+             #t))
+         (add-after 'install 'compress-PPDs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion out
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files "share/cups" "\\.ppd$")))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -796,31 +806,39 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 System} that offers high-quality printing with Seiko@tie{}Epson color ink jet
 printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
-    (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (home-page "http://download.ebz.epson.net/dsc/search/01/search/?OSC=LX")
     (license license:gpl2+)))
 
+(define-public escpr
+  (deprecated-package "escpr" epson-inkjet-printer-escpr))
+
 (define-public splix
-  ;; The last release was in 2009.  The SVN repository contains 5 years of
-  ;; unreleased bug fixes and support for newer printer models.
-  (let ((revision 315))
+  ;; Last released in 2009 <https://sourceforge.net/projects/splix/files/>.
+  ;; Last SVN commit was 2013 <https://svn.code.sf.net/p/splix/code/splix/>.
+  ;; Use a more maintained fork with several bug fixes and support for newer
+  ;; printer models.
+  (let ((commit "76268c4dd7dbc8218ea7426401104c3b40cc707a")
+        (revision "315"))
     (package
       (name "splix")
-      (version (string-append "2.0.0-" (number->string revision)))
+      (version (git-version "2.0.0" revision commit))
       (source
        (origin
-         (method svn-fetch)
-         (uri (svn-reference
-               (url "https://svn.code.sf.net/p/splix/code/splix/")
-               (revision revision)))
-         (file-name (string-append name "-" version "-checkout"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ScumCoder/splix")
+               (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "16wbm4xnz35ca3mw2iggf5f4jaxpyna718ia190ka6y4ah932jxl"))))
+          (base32 "1mxsvllwwr1v8sgrax0b7gkajjhnm0l06s67spmaxz47lyll1qab"))))
       (build-system gnu-build-system)
-      ;; 90% (3.8 MiB) of output are .ppd files.  Don't install them by default:
-      ;; CUPS has been able to read the .drv sources directly since version 1.2.
+      ;; PPDs have been obsolete since CUPS 1.2 and make up 90% of total size.
       (outputs (list "out" "ppd"))
       (arguments
-       '(#:make-flags
+       `(#:modules
+         ((srfi srfi-26)
+          ,@%gnu-build-system-modules)
+         #:make-flags
          (list (string-append "CUPSDRV="
                               (assoc-ref %outputs "out") "/share/cups/drv")
                (string-append "CUPSFILTER="
@@ -831,21 +849,28 @@ language.")
                "THREADS=4")             ; compress and print faster
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'enter-subdirectory
+             ;; The git repository replicates the top-level SVN layout.
+             (lambda _
+               (chdir "splix")
+               #t))
            (delete 'configure)          ; no configure script
            (add-before 'build 'build-.drv-files
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "drv" make-flags)))
            (add-after 'install 'install-.drv-files
              (lambda* (#:key make-flags #:allow-other-keys)
-               (apply invoke "make" "install" "DRV_ONLY=1" make-flags))))
+               (apply invoke "make" "install" "DRV_ONLY=1" make-flags)))
+           (add-after 'install 'compress-PPDs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((ppd (assoc-ref outputs "ppd")))
+                 (for-each (cut invoke "gzip" "-9" <>)
+                           (find-files ppd "\\.ppd$"))))))
          #:tests? #f))                  ; no test suite
       (inputs
        `(("cups" ,cups-minimal)
-         ("zlib" ,zlib)
-
-         ;; This dependency can be dropped by setting DISABLE_JBIG=1, but the
-         ;; result will not support some printers like the Samsung CLP-600.
-         ("jbigkit" ,jbigkit)))
+         ("jbigkit" ,jbigkit)
+         ("zlib" ,zlib)))
       (synopsis "QPDL (SPL2) printer driver")
       (description
        "SpliX is a set of CUPS drivers for printers that speak @acronym{QPDL,

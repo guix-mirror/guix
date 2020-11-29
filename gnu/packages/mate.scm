@@ -903,7 +903,6 @@ icons on the MATE desktop.  It works on local and remote file systems.")
        ("dbus-glib" ,dbus-glib)
        ("gajim" ,gajim) ;runtime only?
        ("gtk+" ,gtk+)
-       ("imagemagick" ,imagemagick)
        ("graphicsmagick" ,graphicsmagick)
        ("mate-desktop" ,mate-desktop)
        ("pidgin" ,pidgin) ;runtime only?

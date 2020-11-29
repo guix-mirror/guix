@@ -41,6 +41,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/syscall.h>
+#include <sys/prctl.h>
 
 /* Whether we're building the ld.so/libfakechroot wrapper.  */
 #define HAVE_EXEC_WITH_LOADER						\
@@ -258,10 +259,19 @@ exec_in_user_namespace (const char *store, int argc, char *argv[])
 {
   /* Spawn @WRAPPED_PROGRAM@ in a separate namespace where STORE is
      bind-mounted in the right place.  */
-  int err;
+  int err, is_tmpfs;
   char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
   char *new_store = concat (new_root, original_store);
   char *cwd = get_current_dir_name ();
+
+  /* Become the new parent of grand-children when their parent dies.  */
+  prctl (PR_SET_CHILD_SUBREAPER, 1);
+
+  /* Optionally, make NEW_ROOT a tmpfs.  That way, if we have to leave it
+     behind because there are sub-processes still running when this wrapper
+     exits, it's OK.  */
+  err = mount ("none", new_root, "tmpfs", 0, NULL);
+  is_tmpfs = (err == 0);
 
   /* Create a child with separate namespaces and set up bind-mounts from
      there.  That way, bind-mounts automatically disappear when the child
@@ -300,6 +310,7 @@ exec_in_user_namespace (const char *store, int argc, char *argv[])
       /* Failure: user namespaces not supported.  */
       fprintf (stderr, "%s: error: 'clone' failed: %m\n", argv[0]);
       rm_rf (new_root);
+      free (new_root);
       break;
 
     default:
@@ -312,10 +323,25 @@ exec_in_user_namespace (const char *store, int argc, char *argv[])
 	write_id_map (child, "uid_map", getuid ());
 	write_id_map (child, "gid_map", getgid ());
 
-	int status;
+	int status, status_other;
 	waitpid (child, &status, 0);
-	chdir ("/");			  /* avoid EBUSY */
-	rm_rf (new_root);
+
+	chdir ("/");				  /* avoid EBUSY */
+	if (is_tmpfs)
+	  {
+	    /* NEW_ROOT lives on in child processes and we no longer need it
+	       to exist as an empty directory in the global namespace.  */
+	    umount (new_root);
+	    rmdir (new_root);
+	  }
+	/* Check whether there are child processes left.  If there are none,
+	   we can remove NEW_ROOT just fine.  Conversely, if there are
+	   processes left (for example because this wrapper's child forked),
+	   we have to leave NEW_ROOT behind so that those processes can still
+	   access their root file system (XXX).  */
+	else if (waitpid (-1 , &status_other, WNOHANG) == -1)
+	  rm_rf (new_root);
+
 	free (new_root);
 
 	if (WIFEXITED (status))
@@ -490,6 +516,9 @@ exec_with_loader (const char *store, int argc, char *argv[])
 
   setenv ("FAKECHROOT_BASE", new_root, 1);
 
+  /* Become the new parent of grand-children when their parent dies.  */
+  prctl (PR_SET_CHILD_SUBREAPER, 1);
+
   pid_t child = fork ();
   switch (child)
     {
@@ -507,12 +536,19 @@ exec_with_loader (const char *store, int argc, char *argv[])
 
     default:
       {
-  	int status;
+  	int status, status_other;
 	waitpid (child, &status, 0);
-	chdir ("/");			  /* avoid EBUSY */
-	rm_rf (new_root);
-	free (new_root);
 
+	/* If there are child processes still running, leave NEW_ROOT around
+	   so they can still access it.  XXX: In that case NEW_ROOT is left
+	   behind.  */
+	if (waitpid (-1 , &status_other, WNOHANG) == -1)
+	  {
+	    chdir ("/");			  /* avoid EBUSY */
+	    rm_rf (new_root);
+	  }
+
+	free (new_root);
 	close (2);			/* flushing stderr should be silent */
 
 	if (WIFEXITED (status))
@@ -620,7 +656,7 @@ main (int argc, char *argv[])
   /* SELF is something like "/home/ludo/.local/gnu/store/…-foo/bin/ls" and we
      want to extract "/home/ludo/.local/gnu/store".  */
   size_t index = strlen (self)
-    - strlen ("@WRAPPED_PROGRAM@") + strlen (original_store);
+    - strlen (WRAPPER_PROGRAM) + strlen (original_store);
   char *store = strdup (self);
   store[index] = '\0';
 

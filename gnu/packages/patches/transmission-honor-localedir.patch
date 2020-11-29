@@ -1,0 +1,34 @@
+This patch modifies Transmission so it honors the "localedir" option
+passed to its configure script, allowing GTK-specific localization
+data to be placed in the package's "gui" output.
+
+Without this patch, localization of transmission-gtk can break as the
+application will expect to find this data in the package's default
+output (as a result of the call to bindtextdomain in gtk/main.c).
+
+diff --git a/configure b/configure
+index a29e24f..3ae8ef4 100755
+--- a/configure
++++ b/configure
+@@ -21305,7 +21305,7 @@ $as_echo "$LINGUAS" >&6; }
+    sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
+ 	< $srcdir/po/POTFILES.in > po/POTFILES
+ 
+-    transmissionlocaledir='${prefix}/${DATADIRNAME}/locale'
++    transmissionlocaledir='${localedir}'
+ 
+ fi
+ 
+diff --git a/configure.ac b/configure.ac
+index 57d3cae..ab62093 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -563,7 +563,7 @@ if test "x$enable_nls" = "xyes" ; then
+     AC_SUBST(GETTEXT_PACKAGE)
+     AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],["$GETTEXT_PACKAGE"],[Gettext package])
+     AM_GLIB_GNU_GETTEXT
+-    transmissionlocaledir='${prefix}/${DATADIRNAME}/locale'
++    transmissionlocaledir='${localedir}'
+     AC_SUBST(transmissionlocaledir)
+ fi
+ AC_SUBST(INTLLIBS)

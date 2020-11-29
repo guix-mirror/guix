@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -123,7 +123,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
@@ -131,7 +131,7 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "1j4cmj5mv13m5b4ig950yas8ayybakqs366lp1cimmzw8ycparml"))))
+        (base32 "0f3ygnjzjijqmmrvrslwsbnz208jgxp5bwy4p336w3bn1bggl6qh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
@@ -211,7 +211,7 @@ algorithms AES or Twofish.")
 (define-public pwsafe
   (package
     (name "pwsafe")
-    (version "3.52.0")
+    (version "3.54.1")
     (home-page "https://www.pwsafe.org/")
     (source
      (origin
@@ -220,7 +220,7 @@ algorithms AES or Twofish.")
              (url "https://github.com/pwsafe/pwsafe")
              (commit version)))
        (sha256
-        (base32 "1ka7xsl63v0559fzf3pwc1iqr37gwr4vq5iaxa2hzar2g28hsxvh"))
+        (base32 "0d51dlw98mv23nwb0b5jyji8gnb9f5cnig6kivfljl97lmr6lhvf"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
@@ -367,7 +367,7 @@ them out, at the source.")
 (define-public libpwquality
   (package
     (name "libpwquality")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -379,7 +379,7 @@ them out, at the source.")
                                    "libpwquality-" version ".tar.bz2")))
               (sha256
                (base32
-                "13hw532fmzc5xjpy75d74rlfdlxf2a8ibb4hyy9c0s92wsgf0qsj"))))
+                "0id5a8bi8xnjg11g9vzrl2xbpx65mfxclxcvis7zx1v8vhisyfyl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

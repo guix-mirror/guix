@@ -439,6 +439,32 @@ doing practical, real world data analysis in Python.")
 written in C.")
     (license license:bsd-2)))
 
+(define-public python-baycomp
+  (package
+    (name "python-baycomp")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "baycomp" version))
+       (sha256
+        (base32 "1c1354a7b3g8slychjgyjxqdm8z40z9kviyl9n4g9kfpdg0p4d64"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/janezd/baycomp")
+    (synopsis "Library for comparison of Bayesian classifiers")
+    (description
+     "Baycomp is a library for Bayesian comparison of classifiers.  Functions
+in the library compare two classifiers on one or on multiple data sets.  They
+compute three probabilities: the probability that the first classifier has
+higher scores than the second, the probability that differences are within the
+region of practical equivalence (rope), or that the second classifier has
+higher scores.")
+    (license license:expat)))
+
 (define-public python-xarray
   (package
     (name "python-xarray")

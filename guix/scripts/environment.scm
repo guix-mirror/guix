@@ -32,6 +32,7 @@
   #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix transformations)
   #:use-module (gnu build linux-container)
   #:use-module (gnu build accounts)
   #:use-module ((guix build syscalls) #:select (set-network-interface-up))
@@ -322,7 +323,7 @@ for the corresponding packages."
                    (manifest-entry-output e2))))
 
   (define transform
-    (cut (options->transformation opts) store <>))
+    (options->transformation opts))
 
   (define* (package->manifest-entry* package #:optional (output "out"))
     (package->manifest-entry (transform package) output))

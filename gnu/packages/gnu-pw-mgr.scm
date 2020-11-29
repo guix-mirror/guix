@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,15 +31,14 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "2.7")
+    (version "2.7.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnu-pw-mgr/gnu-pw-mgr-"
                           version ".tar.xz"))
       (sha256
-       (base32
-        "1ra8in91qx6n8jydb8kwl2rnqaa2hix5pyawn6nvyqs815h9gx17"))))
+       (base32 "0fhwvsmsqpw0vnivarfg63l8pgwqfv7d5wi6l80jpb41dj6qpjz8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -50,7 +50,7 @@
              #t))
          (add-before 'check 'pre-check
            (lambda _
-             ;; In build environment, There is no /dev/tty
+             ;; In the build environment, there is no /dev/tty.
              (substitute* "tests/base.test"
                (("/dev/tty") "/dev/null"))
              #t)))))

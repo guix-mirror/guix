@@ -165,7 +165,8 @@ of <service-item> records present in LISTBOX."
 (define service-name-max-length (make-parameter 20))
 
 ;; Height of the listbox displaying wifi services.
-(define wifi-listbox-height (make-parameter 20))
+(define wifi-listbox-height (make-parameter
+                             (default-listbox-height)))
 
 ;; Information textbox width.
 (define info-textbox-width (make-parameter 40))

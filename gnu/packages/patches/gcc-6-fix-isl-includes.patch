@@ -1,0 +1,16 @@
+See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86724
+Author: Rainer Jung
+Date: 2018-07-29
+
+isl 0.20 stopped including other unused header files in their header files.
+Therefore,now it's necessary to include the stuff ourselves.
+--- .../gcc/graphite.h 2018-01-03 11:03:58.000000000 +0000
++++ .../gcc/graphite.h 2018-07-29 17:42:55.836121000 +0000
+@@ -37,6 +37,8 @@
+ #include <isl/schedule.h>
+ #include <isl/ast_build.h>
+ #include <isl/schedule_node.h>
++#include <isl/id.h>
++#include <isl/space.h>
+
+ typedef struct poly_dr *poly_dr_p;

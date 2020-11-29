@@ -36,10 +36,12 @@
   #:use-module (guix utils)
   #:use-module (guix i18n)
   #:use-module (parted)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -317,7 +319,7 @@ PARTED-OBJECT field equals PARTITION, return #f if not found."
 fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   ;; Kernel always return EINVAL for BLKRRPART on loopdevices.
   (and (not (string-match "/dev/loop*" file-name))
-       (let loop ((try 4))
+       (let loop ((try 16))
          (usleep 250000)
          (let ((in-use? (device-in-use? file-name)))
            (if (and in-use? (> try 0))
@@ -338,15 +340,12 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
 (define (non-install-devices)
   "Return all the available devices, except the busy one, allegedly the
 install device. DEVICE-IS-BUSY? is a parted call, checking if the device is
-mounted. The install image uses an overlayfs so the install device does not
-appear as mounted and won't be considered as busy. So use also DEVICE-IN-USE?
-from (guix build syscalls) module, who will try to re-read the device's
-partition table to determine whether or not it is already used (like sfdisk
-from util-linux)."
+mounted."
+  ;; FIXME: The install image uses an overlayfs so the install device does not
+  ;; appear as mounted and won't be considered as busy.
   (remove (lambda (device)
             (let ((file-name (device-path device)))
-              (or (device-is-busy? device)
-                  (with-delay-device-in-use? file-name))))
+              (device-is-busy? device)))
           (devices)))
 
 
@@ -526,56 +525,54 @@ determined by MAX-LENGTH-COLUMN procedure."
          (size (user-partition-size user-partition))
          (mount-point (user-partition-mount-point user-partition)))
     `(,@(if has-name?
-            `((name . ,(string-append "Name: " (or name "None"))))
+            `((name . ,(format #f (G_ "Name: ~a")
+                               (or name (G_ "None")))))
             '())
       ,@(if (and has-extended?
                  (freespace-partition? partition)
                  (not (eq? type 'logical)))
-            `((type . ,(string-append "Type: " type-name)))
+            `((type . ,(format #f (G_ "Type: ~a") type-name)))
             '())
       ,@(if (eq? type 'extended)
             '()
-            `((fs-type . ,(string-append "Filesystem type: " fs-type-name))))
+            `((fs-type . ,(format #f (G_ "File system type: ~a")
+                                  fs-type-name))))
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap)
                 (not has-extended?))
             '()
-            `((bootable . ,(string-append "Bootable flag: "
-                                          (if bootable? "On" "Off")))))
+            `((bootable . ,(format #f (G_ "Bootable flag: ~:[off~;on~]")
+                                   bootable?))))
       ,@(if (and (not has-extended?)
                  (not (eq? fs-type 'swap)))
-            `((esp? . ,(string-append "ESP flag: "
-                                      (if esp? "On" "Off"))))
+            `((esp? . ,(format #f (G_ "ESP flag: ~:[off~;on~]") esp?)))
             '())
       ,@(if (freespace-partition? partition)
             (let ((size-formatted
-                   (or size (unit-format device
+                   (or size (unit-format device   ;XXX: i18n
                                          (partition-length partition)))))
-              `((size . ,(string-append "Size : " size-formatted))))
+              `((size . ,(format #f (G_ "Size: ~a") size-formatted))))
             '())
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap))
             '()
             `((crypt-label
-               . ,(string-append
-                   "Encryption: "
-                   (if crypt-label
-                       (format #f "Yes (label ~a)" crypt-label)
-                       "No")))))
+               . ,(format #f (G_ "Encryption: ~:[No~a~;Yes (label '~a')~]")
+                          crypt-label (or crypt-label "")))))
       ,@(if (or (freespace-partition? partition)
                 (eq? fs-type 'swap))
             '()
             `((need-formatting?
-               . ,(string-append "Format the partition? : "
-                                 (if need-formatting? "Yes" "No")))))
+               . ,(format #f (G_ "Format the partition? ~:[No~;Yes~]")
+                          need-formatting?))))
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap))
             '()
             `((mount-point
-               . ,(string-append "Mount point : "
-                                 (or mount-point
-                                     (and esp? (default-esp-mount-point))
-                                     "None"))))))))
+               . ,(format #f (G_ "Mount point: ~a")
+                          (or mount-point
+                              (and esp? (default-esp-mount-point))
+                              (G_ "None")))))))))
 
 
 ;;
@@ -759,11 +756,33 @@ cause them to cross."
                                                       dev-constraint))
               (no-constraint (constraint-any device))
               ;; Try to create a partition with an optimal alignment
-              ;; constraint. If it fails, fallback to creating a partition with
-              ;; no specific constraint.
+              ;; constraint. If it fails, fallback to creating a partition
+              ;; with no specific constraint.
+              (partition-constraint-ok?
+               (disk-add-partition disk partition final-constraint))
+              (partition-no-contraint-ok?
+               (or partition-constraint-ok?
+                   (disk-add-partition disk partition no-constraint)))
               (partition-ok?
-               (or (disk-add-partition disk partition final-constraint)
-                   (disk-add-partition disk partition no-constraint))))
+               (or partition-constraint-ok? partition-no-contraint-ok?)))
+         (syslog "Creating partition:
+~/type: ~a
+~/filesystem-type: ~a
+~/start: ~a
+~/end: ~a
+~/start-range: [~a, ~a]
+~/end-range: [~a, ~a]
+~/constraint: ~a
+~/no-constraint: ~a
+"
+                 partition-type
+                 (filesystem-type-name filesystem-type)
+                 start-sector*
+                 end-sector
+                 (geometry-start start-range) (geometry-end start-range)
+                 (geometry-start end-range) (geometry-end end-range)
+                 partition-constraint-ok?
+                 partition-no-contraint-ok?)
          ;; Set the partition name if supported.
          (when (and partition-ok? has-name? name)
            (partition-set-name partition name))
@@ -911,13 +930,13 @@ exists."
 
     (let* ((start-partition
             (and (not has-extended?)
-                 (not esp-partition)
                  (if (efi-installation?)
-                     (user-partition
-                      (fs-type 'fat32)
-                      (esp? #t)
-                      (size new-esp-size)
-                      (mount-point (default-esp-mount-point)))
+                     (and (not esp-partition)
+                          (user-partition
+                           (fs-type 'fat32)
+                           (esp? #t)
+                           (size new-esp-size)
+                           (mount-point (default-esp-mount-point))))
                      (user-partition
                       (fs-type 'ext4)
                       (bootable? #t)
@@ -1327,7 +1346,12 @@ USER-PARTITIONS, or return nothing."
       ,@(initrd-configuration user-partitions)
       ,@(if (null? swap-devices)
             '()
-            `((swap-devices (list ,@swap-devices))))
+            (let* ((uuids (map (lambda (file)
+                                 (uuid->string (read-partition-uuid file)))
+                               swap-devices)))
+              `((swap-devices (list ,@(map (lambda (uuid)
+                                             `(uuid ,uuid))
+                                           uuids))))))
       ,@(if (null? encrypted-partitions)
             '()
             `((mapped-devices
@@ -1364,9 +1388,12 @@ the devices not to be used before returning."
   (let ((device-file-names (map device-path devices)))
     (for-each force-device-sync devices)
     (for-each (lambda (file-name)
-                (let ((in-use? (with-delay-device-in-use? file-name)))
-                  (and in-use?
-                       (error
-                        (format #f (G_ "Device ~a is still in use.")
-                                file-name)))))
+                (let/time ((time in-use?
+                                 (with-delay-device-in-use? file-name)))
+                  (if in-use?
+                      (error
+                       (format #f (G_ "Device ~a is still in use.")
+                               file-name))
+                      (syslog "Syncing ~a took ~a seconds.~%"
+                              file-name (time-second time)))))
               device-file-names)))

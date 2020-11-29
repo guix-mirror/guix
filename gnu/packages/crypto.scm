@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Hendur Saga <hendursaga@yahoo.com>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -443,15 +444,14 @@ total number of shares generated.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://files.dyne.org/tomb/"
+              (uri (string-append "https://files.dyne.org/tomb/releases/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "0x3al02796vx1cvy6y6h685c367qx70dwv471g0hmks2gr10f0cn"))
-              (patches (search-patches "tomb-fix-errors-on-open.patch"))))
+                "0bggzzqmpfiknr76lyl8iszybrcpyqlbgiqk47fxq08h2b5ln1ic"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -570,12 +570,19 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
         (base32
          "1d76ys6cp7fi4ng1w3mz2l0p9dbr7ljbk33dcywyimzjz8bahdng"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "static"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'install:static
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (install-file "libscrypt.a" lib)
+               #t))))))
     (home-page "https://lolware.net/libscrypt.html")
     (synopsis "Password hashing library")
     (description "@code{libscrypt} implements @code{scrypt} key derivation
@@ -1222,7 +1229,7 @@ Trusted comments are signed, thus verified, before being displayed.")
 (define-public libolm
   (package
     (name "libolm")
-    (version "3.1.5")
+    (version "3.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1230,15 +1237,16 @@ Trusted comments are signed, thus verified, before being displayed.")
                     (commit version)))
               (sha256
                (base32
-                "030g0jmmvhx2dh32k708sz6cdd5q1wz48i4gigh6dclqk10w28lm"))
+                "14b5cplcnbf2baq0lvz4f97m6swxpb13rvxdajxyw3s4mbvasia4"))
               (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "ctest" "build/tests"))))))
-    (build-system cmake-build-system)
+             (with-directory-excursion "tests"
+               (invoke "ctest" ".")))))))
     (synopsis "Implementation of the olm and megolm cryptographic ratchets")
     (description "The libolm library implements the Double Ratchet
 cryptographic ratchet.  It is written in C and C++11, and exposed as a C
@@ -1287,3 +1295,38 @@ length extension attacks supporting MD4, MD5, RIPEMD-160, SHA-0, SHA-1,
 SHA-256, SHA-512, and WHIRLPOOL hashes.")
       (home-page "https://github.com/iagox86/hash_extender")
       (license license:bsd-3))))
+
+(define-public mkp224o
+  (package
+    (name "mkp224o")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cathugger/mkp224o")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0b2cn96wg4l8jkkqqp8l2295xlmm2jc8nrw6rdqb5g0zkpfmrxbb"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin")))
+               (install-file "mkp224o" bindir)
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (synopsis "Tor hidden service v3 name generator")
+    (description "@code{mkp224o} generates valid ed25519 (hidden service
+version 3) onion addresses.  It allows one to produce customized vanity .onion
+addresses using a brute-force method.")
+    (home-page "https://github.com/cathugger/mkp224o")
+    (license license:cc0)))

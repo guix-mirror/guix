@@ -2,6 +2,7 @@
 ;;;
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
   #:use-module (guix build-system glib-or-gtk)
@@ -192,15 +194,16 @@ tracks in one file. ")
 (define-public bcg729
   (package
     (name "bcg729")
-    (version "1.0.4")
+    (version "1.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.linphone.org/releases/sources/" name
-                       "/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.linphone.org/bcg729.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "01y34ky7ykjgfnf8a9f59hg61fqfjiprfrzshdz06w0lz4gvy3qs"))))
+        (base32 "1hal6b3w6f8y5r1wa0xzj8sj2jjndypaxyw62q50p63garp2h739"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target

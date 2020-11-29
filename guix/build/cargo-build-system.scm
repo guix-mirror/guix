@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +123,13 @@ directory = '" port)
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
   (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
   (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+  (when (assoc-ref inputs "openssl")
+    (setenv "OPENSSL_DIR" (assoc-ref inputs "openssl")))
+  (when (assoc-ref inputs "gettext")
+    (setenv "GETTEXT_SYSTEM" (assoc-ref inputs "gettext")))
+  (when (assoc-ref inputs "clang")
+    (setenv "LIBCLANG_PATH"
+            (string-append (assoc-ref inputs "clang") "/lib")))
 
   ;; We don't use the Cargo.lock file to determine the package versions we use
   ;; during building, and in any case if one is not present it is created
@@ -141,14 +149,17 @@ directory = '" port)
 
 (define* (build #:key
                 skip-build?
-                features
+                (features '())
                 (cargo-build-flags '("--release"))
                 #:allow-other-keys)
   "Build a given Cargo package."
   (or skip-build?
-      (apply invoke "cargo" "build"
-             "--features" (string-join features)
-             cargo-build-flags)))
+      (apply invoke
+             `("cargo" "build"
+               ,@(if (null? features)
+                     '()
+                     `("--features" ,(string-join features)))
+               ,@cargo-build-flags))))
 
 (define* (check #:key
                 tests?

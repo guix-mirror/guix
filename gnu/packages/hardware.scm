@@ -289,7 +289,7 @@ be dangerous and may void your CPU or system board's warranty.")
 (define-public wavemon
   (package
     (name "wavemon")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -298,7 +298,24 @@ be dangerous and may void your CPU or system board's warranty.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "109ycwnjjqc2vpnd8b86njfifczlxglnyv4rh2qmbn2i5nw2wryg"))))
+        (base32 "0y984wm03lzqf7bk06a07mw7d1fzjsp9x7zxcvlx4xqmv7wlgb29"))
+       (patches
+        (list
+         ;; Two upstream commits required to find the correct <ncurses.h>.
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/uoaerg/wavemon/commit/"
+                 "ce7f9c4da90767bb50e4b80cdb3cee61264d8d12.patch"))
+           (sha256
+            (base32 "04b4qbsa5l0jr41dkj0c8yw74lm8z8b50nw1iwas6hnzq41dwdm3")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/uoaerg/wavemon/commit/"
+                 "31e3def1c7332ad830bd966e7d21b343b4f2da54.patch"))
+           (sha256
+            (base32 "0kyv3sbkv9hl8b88xnk6bq550axh9wzfjlhp3jbvqd4fqf7663br")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

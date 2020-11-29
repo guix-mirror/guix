@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
@@ -284,6 +284,10 @@ HTTP-PORT."
             (marionette-eval
              '(file-exists? "/srv/git/test")
              marionette))
+
+          (test-assert "fcgiwrap listens"
+            ;; Wait for fcgiwrap to be ready before cloning.
+            (wait-for-tcp-port 9000 marionette))
 
           ;; Make sure we can clone the repo from the host.
           (test-equal "clone"

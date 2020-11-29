@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -710,17 +711,17 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.03")
+    (version "13.0.04")
     (source
      (origin
        (method url-fetch)
        (uri (list
-             (string-append "http://unifoundry.com/pub/unifont/unifont-"
+             (string-append "https://unifoundry.com/pub/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "04l2sbg6il78qsj3jxqfbz5k1xzihvw8vdlckgkp4zfr0nh2q7h7"))))
+        (base32 "064ilpbnz62cwmpajszs2b08x2zg7yh9whlaiqhjzi7bir3im94j"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1430,6 +1431,30 @@ emphasis while still being readable.")
 (define-public font-open-dyslexic
   (deprecated-package "font-open-dyslexic" font-opendyslexic))
 
+(define-public font-openmoji
+  (package
+    (name "font-openmoji")
+    (version "12.4.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append "https://github.com/hfg-gmuend/openmoji/"
+                       "releases/download/" version
+                       "/openmoji-font.zip"))
+       (sha256
+        (base32
+         "0wvvg5vnc950h8v23wfgjyi7rv89mgm5hqq6viqv0bxcc3azglxb"))))
+    (build-system font-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://openmoji.org")
+    (synopsis "Font for rendering emoji characters")
+    (description
+     "This package provides the OpenMoji font in both color and black
+variants.")
+    (license license:cc-by-sa4.0)))
+
 (define-public font-dosis
   (package
     (name "font-dosis")
@@ -1736,24 +1761,30 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "2.002")
+    (version "2.210")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://download.jetbrains.com/fonts/"
-                       "JetBrainsMono-" version ".zip"))
+        (string-append "https://github.com/JetBrains/JetBrainsMono/releases/"
+                       "download/v" version "/JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0lcsl718jhkqgld1xqll7fsv8j968jlf292541fkqxwm8i5g93sn"))))
+        (base32 "19wbggnmqs3k1wdqy7l7imnx23g7hh159pl32nz3mzz8s8sqfdix"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'install-license-files 'change-directory-to-archive-root
-           ;; Find the LICENSE file outside of the default subdirectory.
+           ;; Find the license file outside of the default subdirectory.
            (lambda _
              (chdir "..")
-             #t)))))
+             #t))
+         (replace 'install-license-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "OFL.txt" doc)
+               #t))))))
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
     (description
@@ -1761,6 +1792,36 @@ This package provides the TrueType fonts.")
 Mono’s typeface forms are simple and free from unnecessary details.  Rendered
 in small sizes, the text looks crisper.")
     (license license:asl2.0)))
+
+(define-public font-juliamono
+  (package
+    (name "font-juliamono")
+    (version "0.025")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cormullion/juliamono")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w8mpl9zc1y4j1f26ikbz5g9dqsszhikp4r9p1d3ch3b5ayb5c3m"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-website-folder
+           ;; This folder contains other unrelated fonts.
+           (lambda _
+             (delete-file-recursively "website")
+             #t)))))
+    (home-page "https://github.com/cormullion/juliamono")
+    (synopsis "Monospaced font for programming")
+    (description
+     "JuliaMono is a monospaced font for scientific and technical computing,
+designed to work for programming in the Julia Programming Language and other
+text environments.")
+    (license license:silofl1.1)))
 
 (define-public font-vazir
   (package

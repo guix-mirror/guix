@@ -33,25 +33,14 @@ See the manual for the installation instructions, either by running
 
 or by checking the [[https://guix.gnu.org/manual/en/html_node/Installation.html][web copy of the manual]].
 
-For information on installation from a Git checkout, please see the section
-"Building from Git" in the manual.
+* Building from Git
 
-* Installing Guix from Guix
+For information on building Guix from a Git checkout, please see the relevant
+section in the manual, either by running
 
-You can re-build and re-install Guix using a system that already runs Guix.
-To do so:
+  info -f doc/guix.info "Building from Git"
 
-  - Start a shell with the development environment for Guix:
-
-      guix environment guix
-
-  - Re-run the 'configure' script passing it the option
-    '--localstatedir=/somewhere', where '/somewhere' is the 'localstatedir'
-    value of the currently installed Guix (failing to do that would lead the
-    new Guix to consider the store to be empty!).  We recommend to use the
-    value '/var'.
-
-  - Run "make", "make check", and "make install".
+or by checking the [[https://guix.gnu.org/manual/en/html_node/Building-from-Git.html][web_copy of the manual]].
 
 * How It Works
 

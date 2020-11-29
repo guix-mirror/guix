@@ -14,7 +14,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 André <eu@euandre.org>
+;;; Copyright © 2017, 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages golang)
@@ -93,6 +94,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -159,14 +161,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.28.0")
+   (version "2.29.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "17a311vzimqn1glc9d7x82rhb1mb81m5rr4g8xji8idaafid39fz"))))
+              "1h87yv117ypnc0yi86941089c14n91gixk8b6shj2y35prp47z7j"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -183,7 +185,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1dvwq0py8a2ywmgc5pzdlsj3608s7r9wyba292728fcs3yj7ynk6"))))
+            "14npkg9rnp2yclsx5p622qpm6byzfy5k5wb209vkmm5r60m4mm72"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -390,6 +392,16 @@ as well as the classic centralized workflow.")
               (install-file "contrib/subtree/git-subtree.1"
                             (string-append subtree "/share/man/man1"))
               #t)))
+         (add-after 'install 'restore-sample-hooks-shebang
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/git-core/templates/hooks")))
+               (for-each (lambda (file)
+                           (format #t "restoring shebang on `~a'~%" file)
+                           (substitute* file
+                             (("^#!.*/bin/sh") "#!/bin/sh")))
+                         (find-files dir ".*"))
+               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Split the binaries to the various outputs.
@@ -518,11 +530,6 @@ everything from small to very large projects with speed and efficiency.")
            (delete 'install-man-pages)
            (delete 'install-subtree)
            (delete 'install-credential-netrc)
-           (add-before 'check 'delete-svn-test
-             (lambda _
-               ;; This test cannot run since we are not building 'git-svn'.
-               (delete-file "t/t9020-remote-svn.sh")
-               #t))
            (add-after 'install 'remove-unusable-perl-commands
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
@@ -1446,7 +1453,7 @@ control to Git repositories.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.7.1")
+    (version "2.8.1")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1456,7 +1463,7 @@ control to Git repositories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n7qby5a4yz3s02nqcp5js6jg9wrd0x7msblxwb1883ds4b2b71a"))))
+        (base32 "0b3ks6viccq3n4p8i8zgfd40vp1k5nkhmmlz7p4nxcdizw8zxgn8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1497,6 +1504,12 @@ control to Git repositories.")
                       " and not test_additional_rust_lib_dependencies_installed"
                       " and not test_local_rust_additional_dependencies"
                       " and not test_rust_hook"
+                      ;; Disable dotnet tests.
+                      " and not test_dotnet_hook"
+                      ;; Disable nodejs tests.
+                      " and not test_unhealthy_if_system_node_goes_missing"
+                      " and not test_installs_without_links_outside_env"
+                      " and not test_healthy_system_node"
                       ;; Disable python2 test.
                       " and not test_switch_language_versions_doesnt_clobber"
                       ;; These tests try to open a network socket.
@@ -1539,8 +1552,10 @@ control to Git repositories.")
                #t))))))
     (native-inputs
      `(("git" ,git-minimal)
-       ("python-pytest" ,python-pytest)))
-    (inputs
+       ("python-pytest" ,python-pytest)
+       ("python-re-assert" ,python-re-assert)))
+    ;; Propagate because pre-commit is also used as a module.
+    (propagated-inputs
      `(("python-cfgv" ,python-cfgv)
        ("python-identify" ,python-identify)
        ("python-nodeenv" ,python-nodeenv)
@@ -1799,26 +1814,17 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.9.4")
+    (version "5.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsx7bb0rgvvvisiy4zlixf56ay8wbd9qqqcp1a1g0m1gl6mlg86"))
-             (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
+               "1if5pa4iip2p70gljm54nggfdnsfjxa4cqz8fpj07lvsijary39s"))
+             (patches (search-patches "rcs-5.10.0-no-stdin.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-t810
-                    ;; See https://savannah.gnu.org/bugs/index.php?52288
-                    ;; Back-porting the fix is non-trivial, so disable for now.
-                    (lambda _
-                      (substitute* "tests/Makefile"
-                        ((" t810 \\\\\n") ""))
-                     #t)))))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
@@ -2306,6 +2312,49 @@ collections efficiently.  Mirrors decide to clone and update repositories
 based on a manifest file published by servers.")
     (license license:gpl3+)))
 
+(define-public b4
+  (package
+    (name "b4")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/utils/b4/b4.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "1w11fiyspyncz2m7njrjfylgzch4azi7560ngd8i733wvjjhg3mj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((man (string-append (assoc-ref outputs "out")
+                                       "/man/man5/")))
+               (mkdir-p man)
+               (for-each (lambda (file) (install-file file man))
+                         (find-files "man" "\\.[1-8]$")))
+             #t)))))
+    (inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://git.kernel.org/pub/scm/utils/b4/b4.git")
+    (synopsis "Tool for working with patches in public-inbox archives")
+    (description
+     "The @code{b4} command is designed to make it easier to participate in
+patch-based workflows for projects that have public-inbox archives.
+
+Features include:
+@itemize
+@item downloading a thread's mbox given a message ID
+@item processing an mbox so that is ready to be fed to @code{git-am}
+@item creating templated replies for processed patches and pull requests
+@item submitting cryptographic attestation for patches.
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public git-annex-remote-rclone
   (package
     (name "git-annex-remote-rclone")
@@ -2668,6 +2717,40 @@ interrupted, published, and collaborated on while in progress.")
      "Git Large File Storage (LFS) replaces large files such as audio samples,
 videos, datasets, and graphics with text pointers inside Git, while storing the
 file contents on a remote server.")
+    (license license:expat)))
+
+(define-public git-open
+  (package
+    (name "git-open")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/paulirish/git-open")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11n46bngvca5wbdbfcxzjhjbfdbad7sgf7h9gf956cb1q8swsdm0"))))
+    (build-system trivial-build-system)
+    (propagated-inputs
+     `(("xdg-utils" ,xdg-utils)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (out    (assoc-ref %outputs "out")))
+           (mkdir-p (string-append out "/bin"))
+           (copy-file (string-append source "/git-open")
+                      (string-append out "/bin/git-open"))
+           #t))))
+    (home-page "https://github.com/paulirish/git-open")
+    (synopsis "Open a Git repository's homepage from the command-line")
+    (description
+     "@code{git open} opens the repository's website from the command-line,
+guessing the URL pattern from the @code{origin} remote.")
     (license license:expat)))
 
 (define-public tla

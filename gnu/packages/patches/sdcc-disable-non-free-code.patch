@@ -1,0 +1,3643 @@
+This patch disables the use of non-free code distributed with SDCC by
+removing
+
+  - The "--disable-non-free" option to "configure" and the build logic
+    it controls;
+
+  - All references to the "device/non-free" source directory and the
+    corresponding "non-free" installation directory; and
+
+  - The "--use-non-free" and "--no-warn-non-free" compiler options and
+    references to them in build scripts and compiler output.
+
+It also updates SDCC's documentation to reflect these changes and to
+remove instructions that encourage the use of SDCC with non-free
+software.
+
+diff --git a/Makefile.common.in b/Makefile.common.in
+index 4c75cfa..9fa306d 100644
+--- a/Makefile.common.in
++++ b/Makefile.common.in
+@@ -65,7 +65,6 @@ OPT_DISABLE_PACKIHX     = @OPT_DISABLE_PACKIHX@
+ OPT_DISABLE_SDBINUTILS  = @OPT_DISABLE_SDBINUTILS@
+ OPT_DISABLE_SDCPP       = @OPT_DISABLE_SDCPP@
+ OPT_DISABLE_UCSIM       = @OPT_DISABLE_UCSIM@
+-OPT_DISABLE_NON_FREE    = @OPT_DISABLE_NON_FREE@
+ 
+ SLIB                    = $(top_builddir)/support/util
+ 
+diff --git a/Makefile.in b/Makefile.in
+index aac442e..dd73e40 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -82,9 +82,6 @@ endif
+ ifeq ($(OPT_DISABLE_DEVICE_LIB), 0)
+ TARGETS        += sdcc-device-lib
+ PKGS           += device/lib
+-ifeq ($(OPT_DISABLE_NON_FREE), 0)
+-PKGS           += device/non-free/lib
+-endif
+ endif
+ 
+ ifeq ($(OPT_DISABLE_PACKIHX), 0)
+@@ -105,9 +102,6 @@ endif
+ TARGETS        += sdcc-libs sdcc-cc sdcc-device-inc sdcc-as sdcc-ld sdcc-scripts
+ 
+ PKGS           += $(SDCC_LIBS) src device/include
+-ifeq ($(OPT_DISABLE_NON_FREE), 0)
+-PKGS           += device/non-free/include
+-endif
+ PKGS           += $(SDCC_AS) sdas/linksrc $(SDCC_LIBRARIAN) $(SDCC_SCRIPTS)
+ 
+ PORTS           = $(shell cat ports.build)
+@@ -156,21 +150,12 @@ sdcc-sdbinutils:
+ 
+ sdcc-device-inc:
+ 	$(MAKE) -C device/include
+-ifeq ($(OPT_DISABLE_NON_FREE), 0)
+-	$(MAKE) -C device/non-free/include
+-endif
+ 
+ sdcc-device-lib: sdcc-cc sdcc-as sdcc-ld $(SDCC_BINUTILS)
+ 	$(MAKE) -C device/lib
+-ifeq ($(OPT_DISABLE_NON_FREE), 0)
+-	$(MAKE) -C device/non-free/lib
+-endif
+ 
+ sdcc-device-tini:
+ 	$(MAKE) -C device/include
+-ifeq ($(OPT_DISABLE_NON_FREE), 0)
+-	$(MAKE) -C device/non-free/include
+-endif
+ 	$(MAKE) -C device/lib model-ds390 model-ds400
+ 
+ # doc depends on latex and latex2html
+diff --git a/configure b/configure
+index 42b1c7d..00ecb51 100755
+--- a/configure
++++ b/configure
+@@ -632,7 +632,6 @@ LATEX
+ LATEX2HTML
+ LYX
+ OPT_ENABLE_DOC
+-OPT_DISABLE_NON_FREE
+ OPT_DISABLE_SDBINUTILS
+ OPT_DISABLE_SDCDB
+ OPT_DISABLE_SDCPP
+@@ -654,10 +653,7 @@ OPT_DISABLE_R2K
+ OPT_DISABLE_Z180
+ OPT_DISABLE_Z80
+ OPT_DISABLE_MCS51
+-non_free_lib_dir_suffix
+ lib_dir_suffix
+-non_free_include_dir_suffix
+-non_free_inclib_dir_suffix
+ include_dir_suffix
+ inclib_dir_suffix
+ LIB_TYPE
+@@ -771,7 +767,6 @@ enable_packihx
+ enable_sdcpp
+ enable_sdcdb
+ enable_sdbinutils
+-enable_non_free
+ enable_doc
+ enable_libgc
+ '
+@@ -792,10 +787,7 @@ sdccconf_h_dir_separator
+ LIB_TYPE
+ inclib_dir_suffix
+ include_dir_suffix
+-non_free_inclib_dir_suffix
+-non_free_include_dir_suffix
+ lib_dir_suffix
+-non_free_lib_dir_suffix
+ docdir'
+ ac_subdirs_all='support/cpp
+ support/packihx
+@@ -803,9 +795,7 @@ sim/ucsim
+ debugger/mcs51
+ support/sdbinutils
+ device/lib/pic14
+-device/non-free/lib/pic14
+-device/lib/pic16
+-device/non-free/lib/pic16'
++device/lib/pic16'
+ 
+ # Initialize some variables set by options.
+ ac_init_help=
+@@ -1452,7 +1442,6 @@ Optional Features:
+   --disable-sdcpp         Disables building sdcpp
+   --disable-sdcdb         Disables building sdcdb
+   --disable-sdbinutils    Disables configuring and building of sdbinutils
+-  --disable-non-free      Disables non-free runtime library parts
+   --enable-doc            Enables building the documentation
+   --enable-libgc          Use the Bohem memory allocator. Lower runtime
+                           footprint.
+@@ -1481,16 +1470,8 @@ Some influential environment variables:
+               appended to datadir to define SDCC's include/lib directory
+   include_dir_suffix
+               appended to datadir to define SDCC's include directory
+-  non_free_inclib_dir_suffix
+-              appended to datadir to define SDCC's non-free include/lib
+-              directory
+-  non_free_include_dir_suffix
+-              appended to datadir to define SDCC's non-free include directory
+   lib_dir_suffix
+               appended to datadir to define SDCC's library root directory
+-  non_free_lib_dir_suffix
+-              appended to datadir to define SDCC's non-free library root
+-              directory
+   docdir      documentation installation directory
+ 
+ Use these variables to override the choices made by `configure' or to help
+@@ -7236,19 +7217,6 @@ if test "${include_dir_suffix}" = ""; then
+     include_dir_suffix="${inclib_dir_suffix}/include"
+ fi
+ 
+-
+-if test "${non_free_inclib_dir_suffix}" = ""; then
+-    non_free_inclib_dir_suffix="sdcc/non-free"
+-fi
+-
+-# non_free_include_dir_suffix:
+-# *nix default: "sdcc/non-free/include"
+-
+-
+-if test "${non_free_include_dir_suffix}" = ""; then
+-    non_free_include_dir_suffix="${non_free_inclib_dir_suffix}/include"
+-fi
+-
+ # lib_dir_suffix:
+ # *nix default: "sdcc/lib"
+ 
+@@ -7256,13 +7224,6 @@ if test "${lib_dir_suffix}" = ""; then
+     lib_dir_suffix="${inclib_dir_suffix}/lib"
+ fi
+ 
+-# non_free_lib_dir_suffix:
+-# *nix default: "sdcc/non-free/lib"
+-
+-if test "${non_free_lib_dir_suffix}" = ""; then
+-    non_free_lib_dir_suffix="${non_free_inclib_dir_suffix}/lib"
+-fi
+-
+ # docdir:
+ # *nix default: "${datadir}/sdcc/doc"
+ 
+@@ -7429,24 +7390,6 @@ cat >>confdefs.h <<_ACEOF
+ #define INCLUDE_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_inc_dir_suffix}"
+ _ACEOF
+ 
+-norm_non_free_inc_dir_suffix=${non_free_include_dir_suffix}
+-case ":$norm_non_free_inc_dir_suffix:" in
+-  ::) norm_non_free_inc_dir_suffix='.' ;;
+-  :*[\\/]:) norm_non_free_inc_dir_suffix=`echo "$norm_non_free_inc_dir_suffix" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $sdccconf_h_dir_separator in
+-
+-    *\\*) norm_non_free_inc_dir_suffix=`echo "$norm_non_free_inc_dir_suffix" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) norm_non_free_inc_dir_suffix=`echo "$norm_non_free_inc_dir_suffix" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-
+-cat >>confdefs.h <<_ACEOF
+-#define NON_FREE_INCLUDE_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_non_free_inc_dir_suffix}"
+-_ACEOF
+-
+ 
+ norm_lib_dir_suffix=${lib_dir_suffix}
+ case ":$norm_lib_dir_suffix:" in
+@@ -7466,24 +7409,6 @@ cat >>confdefs.h <<_ACEOF
+ #define LIB_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_lib_dir_suffix}"
+ _ACEOF
+ 
+-norm_non_free_lib_dir_suffix=${non_free_lib_dir_suffix}
+-case ":$norm_non_free_lib_dir_suffix:" in
+-  ::) norm_non_free_lib_dir_suffix='.' ;;
+-  :*[\\/]:) norm_non_free_lib_dir_suffix=`echo "$norm_non_free_lib_dir_suffix" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $sdccconf_h_dir_separator in
+-
+-    *\\*) norm_non_free_lib_dir_suffix=`echo "$norm_non_free_lib_dir_suffix" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) norm_non_free_lib_dir_suffix=`echo "$norm_non_free_lib_dir_suffix" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-
+-cat >>confdefs.h <<_ACEOF
+-#define NON_FREE_LIB_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_non_free_lib_dir_suffix}"
+-_ACEOF
+-
+ 
+ # relative paths
+ for _lcl_i in expanded_bindir:expanded_datadir:bin2data_dir; do
+@@ -8411,28 +8336,6 @@ _ACEOF
+ 
+ 
+ 
+-  # Check whether --enable-non-free was given.
+-if test "${enable_non_free+set}" = set; then :
+-  enableval=$enable_non_free;
+-fi
+-
+-
+-      arg1=`echo non-free | sed s/-/_/`
+-
+-  if test "`eval echo \\$enable_$arg1`" = "no"; then
+-    OPT_DISABLE_NON_FREE=1
+-  else
+-    OPT_DISABLE_NON_FREE=0
+-  fi
+-
+-
+-cat >>confdefs.h <<_ACEOF
+-#define OPT_DISABLE_NON_FREE $OPT_DISABLE_NON_FREE
+-_ACEOF
+-
+-
+-
+-
+ 
+   # Check whether --enable-doc was given.
+ if test "${enable_doc+set}" = set; then :
+@@ -8827,20 +8730,12 @@ if test $OPT_DISABLE_PIC14 = 0; then
+ 
+   test $OPT_DISABLE_DEVICE_LIB = 0 && subdirs="$subdirs device/lib/pic14"
+ 
+-fi
+-if test $OPT_DISABLE_PIC14 = 0 && test $OPT_DISABLE_NON_FREE = 0; then
+-  test $OPT_DISABLE_DEVICE_LIB = 0 && subdirs="$subdirs device/non-free/lib/pic14"
+-
+ fi
+ if test $OPT_DISABLE_PIC16 = 0; then
+   ac_config_files="$ac_config_files src/pic16/Makefile"
+ 
+   test $OPT_DISABLE_DEVICE_LIB = 0 && subdirs="$subdirs device/lib/pic16"
+ 
+-fi
+-if test $OPT_DISABLE_PIC16 = 0 && test $OPT_DISABLE_NON_FREE = 0; then
+-  test $OPT_DISABLE_DEVICE_LIB = 0 && subdirs="$subdirs device/non-free/lib/pic16"
+-
+ fi
+ 
+ if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0; then
+@@ -8885,15 +8780,9 @@ fi
+ 
+ test $OPT_DISABLE_DEVICE_LIB = 0 && ac_config_files="$ac_config_files device/lib/Makefile"
+ 
+-test $OPT_DISABLE_DEVICE_LIB = 0 && test $OPT_DISABLE_NON_FREE = 0 && ac_config_files="$ac_config_files device/non-free/lib/Makefile"
+-
+ 
+ ac_config_files="$ac_config_files main.mk:main_in.mk src/Makefile device/include/Makefile sdas/linksrc/Makefile support/librarian/Makefile support/makebin/Makefile support/regression/Makefile support/valdiag/Makefile support/scripts/Makefile support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in Makefile Makefile.common:Makefile.common.in"
+ 
+-if test $OPT_DISABLE_NON_FREE = 0; then
+-  ac_config_files="$ac_config_files device/non-free/include/Makefile"
+-
+-fi
+ cat >confcache <<\_ACEOF
+ # This file is a shell script that caches the results of configure
+ # tests run on this system so they can be shared between configure
+@@ -9621,7 +9510,6 @@ do
+     "sdas/asstm8/Makefile") CONFIG_FILES="$CONFIG_FILES sdas/asstm8/Makefile" ;;
+     "device/lib/stm8/Makefile") CONFIG_FILES="$CONFIG_FILES device/lib/stm8/Makefile" ;;
+     "device/lib/Makefile") CONFIG_FILES="$CONFIG_FILES device/lib/Makefile" ;;
+-    "device/non-free/lib/Makefile") CONFIG_FILES="$CONFIG_FILES device/non-free/lib/Makefile" ;;
+     "main.mk") CONFIG_FILES="$CONFIG_FILES main.mk:main_in.mk" ;;
+     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+     "device/include/Makefile") CONFIG_FILES="$CONFIG_FILES device/include/Makefile" ;;
+@@ -9634,7 +9522,6 @@ do
+     "support/regression/ports/host/spec.mk") CONFIG_FILES="$CONFIG_FILES support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in" ;;
+     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+     "Makefile.common") CONFIG_FILES="$CONFIG_FILES Makefile.common:Makefile.common.in" ;;
+-    "device/non-free/include/Makefile") CONFIG_FILES="$CONFIG_FILES device/non-free/include/Makefile" ;;
+ 
+   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
+   esac
+@@ -10443,54 +10330,6 @@ esac
+ incPath3=`echo "$incPath3" | sed 's,\\\\\\\\,\\\\,g'`
+ 
+ 
+-nonFreeIncPath1=`echo "/${prefix2data_dir}/${norm_non_free_inc_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeIncPath1:" in
+-  ::) nonFreeIncPath1='.' ;;
+-  :*[\\/]:) nonFreeIncPath1=`echo "$nonFreeIncPath1" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeIncPath1=`echo "$nonFreeIncPath1" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeIncPath1=`echo "$nonFreeIncPath1" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeIncPath1=`echo "$nonFreeIncPath1" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+-nonFreeIncPath2=`echo "/${bin2data_dir}/${norm_non_free_inc_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeIncPath2:" in
+-  ::) nonFreeIncPath2='.' ;;
+-  :*[\\/]:) nonFreeIncPath2=`echo "$nonFreeIncPath2" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeIncPath2=`echo "$nonFreeIncPath2" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeIncPath2=`echo "$nonFreeIncPath2" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeIncPath2=`echo "$nonFreeIncPath2" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+-nonFreeIncPath3=`echo "${expanded_datadir}/${norm_non_free_inc_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeIncPath3:" in
+-  ::) nonFreeIncPath3='.' ;;
+-  :*[\\/]:) nonFreeIncPath3=`echo "$nonFreeIncPath3" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeIncPath3=`echo "$nonFreeIncPath3" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeIncPath3=`echo "$nonFreeIncPath3" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeIncPath3=`echo "$nonFreeIncPath3" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+ 
+ libPath1=`echo "/${prefix2data_dir}/${norm_lib_dir_suffix}" | sed 's,/\./,/,g'`
+ case ":$libPath1:" in
+@@ -10540,54 +10379,6 @@ esac
+ libPath3=`echo "$libPath3" | sed 's,\\\\\\\\,\\\\,g'`
+ 
+ 
+-nonFreeLibPath1=`echo "/${prefix2data_dir}/${norm_non_free_lib_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeLibPath1:" in
+-  ::) nonFreeLibPath1='.' ;;
+-  :*[\\/]:) nonFreeLibPath1=`echo "$nonFreeLibPath1" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeLibPath1=`echo "$nonFreeLibPath1" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeLibPath1=`echo "$nonFreeLibPath1" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeLibPath1=`echo "$nonFreeLibPath1" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+-nonFreeLibPath2=`echo "/${bin2data_dir}/${norm_non_free_lib_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeLibPath2:" in
+-  ::) nonFreeLibPath2='.' ;;
+-  :*[\\/]:) nonFreeLibPath2=`echo "$nonFreeLibPath2" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeLibPath2=`echo "$nonFreeLibPath2" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeLibPath2=`echo "$nonFreeLibPath2" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeLibPath2=`echo "$nonFreeLibPath2" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+-nonFreeLibPath3=`echo "${expanded_datadir}/${norm_non_free_lib_dir_suffix}" | sed 's,/\./,/,g'`
+-case ":$nonFreeLibPath3:" in
+-  ::) nonFreeLibPath3='.' ;;
+-  :*[\\/]:) nonFreeLibPath3=`echo "$nonFreeLibPath3" | sed 's,[\\/]*$,,'` ;;
+-  :*:) ;;
+-esac
+-case $dirch in
+-
+-    *\\*) nonFreeLibPath3=`echo "$nonFreeLibPath3" | sed 's,\(.\)[\\/][\\/]*,\1\\\\\\\\,g
+-                                  s,^[\\/],\\\\\\\\,'` ;;
+-
+- *) nonFreeLibPath3=`echo "$nonFreeLibPath3" | sed 's,\(.\)[\\/][\\/]*,\1/,g'` ;;
+-esac
+-nonFreeLibPath3=`echo "$nonFreeLibPath3" | sed 's,\\\\\\\\,\\\\,g'`
+-
+-
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result:
+ sdcc ${VERSION} is now configured for
+ 
+@@ -10618,7 +10409,6 @@ sdcc ${VERSION} is now configured for
+     tlcs90              ${enable_tlcs90_port}
+     stm8                ${enable_stm8_port}
+ 
+-  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
+   Disable packihx:      ${OPT_DISABLE_PACKIHX}
+   Disable ucsim:        ${OPT_DISABLE_UCSIM}
+   Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
+@@ -10633,9 +10423,6 @@ sdcc ${VERSION} is now configured for
+     include/library files:  ${datadir}/${inclib_dir_suffix}
+     include files:          ${datadir}/${include_dir_suffix}
+     library files:          ${datadir}/${lib_dir_suffix}
+-    non-free files:         ${datadir}/${non_free_inclib_dir_suffix}
+-    non-free include files: ${datadir}/${non_free_include_dir_suffix}
+-    non-free library files: ${datadir}/${non_free_lib_dir_suffix}
+     documentation:          ${docdir}
+ 
+     prefix:             ${prefix}
+@@ -10647,15 +10434,9 @@ sdcc ${VERSION} is now configured for
+     include files:      ${incPath1}
+                         path(argv[0])${incPath2}
+                         ${incPath3}
+-                        ${nonFreeIncPath1}
+-                        path(argv[0])${nonFreeIncPath2}
+-                        ${nonFreeIncPath3}
+     library files:      \$SDCC_HOME${libPath1}${dirch}<model>
+                         path(argv[0])${libPath2}${dirch}<model>
+                         ${libPath3}${dirch}<model>
+-                        \$SDCC_HOME${nonFreeLibPath1}${dirch}<model>
+-                        path(argv[0])${nonFreeLibPath2}${dirch}<model>
+-                        ${nonFreeLibPath3}${dirch}<model>
+ " >&5
+ $as_echo "
+ sdcc ${VERSION} is now configured for
+@@ -10687,7 +10468,6 @@ sdcc ${VERSION} is now configured for
+     tlcs90              ${enable_tlcs90_port}
+     stm8                ${enable_stm8_port}
+ 
+-  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
+   Disable packihx:      ${OPT_DISABLE_PACKIHX}
+   Disable ucsim:        ${OPT_DISABLE_UCSIM}
+   Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
+@@ -10702,9 +10482,6 @@ sdcc ${VERSION} is now configured for
+     include/library files:  ${datadir}/${inclib_dir_suffix}
+     include files:          ${datadir}/${include_dir_suffix}
+     library files:          ${datadir}/${lib_dir_suffix}
+-    non-free files:         ${datadir}/${non_free_inclib_dir_suffix}
+-    non-free include files: ${datadir}/${non_free_include_dir_suffix}
+-    non-free library files: ${datadir}/${non_free_lib_dir_suffix}
+     documentation:          ${docdir}
+ 
+     prefix:             ${prefix}
+@@ -10716,14 +10493,8 @@ sdcc ${VERSION} is now configured for
+     include files:      ${incPath1}
+                         path(argv[0])${incPath2}
+                         ${incPath3}
+-                        ${nonFreeIncPath1}
+-                        path(argv[0])${nonFreeIncPath2}
+-                        ${nonFreeIncPath3}
+     library files:      \$SDCC_HOME${libPath1}${dirch}<model>
+                         path(argv[0])${libPath2}${dirch}<model>
+                         ${libPath3}${dirch}<model>
+-                        \$SDCC_HOME${nonFreeLibPath1}${dirch}<model>
+-                        path(argv[0])${nonFreeLibPath2}${dirch}<model>
+-                        ${nonFreeLibPath3}${dirch}<model>
+ " >&6; }
+ # End of configure/configure.in
+diff --git a/configure.ac b/configure.ac
+index 3a16e42..bfba129 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -588,19 +588,6 @@ if test "${include_dir_suffix}" = ""; then
+     include_dir_suffix="${inclib_dir_suffix}/include"
+ fi
+ 
+-AC_ARG_VAR([non_free_inclib_dir_suffix], [appended to datadir to define SDCC's non-free include/lib directory])
+-if test "${non_free_inclib_dir_suffix}" = ""; then
+-    non_free_inclib_dir_suffix="sdcc/non-free"
+-fi
+-
+-# non_free_include_dir_suffix:
+-# *nix default: "sdcc/non-free/include"
+-
+-AC_ARG_VAR([non_free_include_dir_suffix], [appended to datadir to define SDCC's non-free include directory])
+-if test "${non_free_include_dir_suffix}" = ""; then
+-    non_free_include_dir_suffix="${non_free_inclib_dir_suffix}/include"
+-fi
+-
+ # lib_dir_suffix:
+ # *nix default: "sdcc/lib"
+ AC_ARG_VAR([lib_dir_suffix], [appended to datadir to define SDCC's library root directory])
+@@ -608,13 +595,6 @@ if test "${lib_dir_suffix}" = ""; then
+     lib_dir_suffix="${inclib_dir_suffix}/lib"
+ fi
+ 
+-# non_free_lib_dir_suffix:
+-# *nix default: "sdcc/non-free/lib"
+-AC_ARG_VAR([non_free_lib_dir_suffix], [appended to datadir to define SDCC's non-free library root directory])
+-if test "${non_free_lib_dir_suffix}" = ""; then
+-    non_free_lib_dir_suffix="${non_free_inclib_dir_suffix}/lib"
+-fi
+-
+ # docdir:
+ # *nix default: "${datadir}/sdcc/doc"
+ AC_ARG_VAR([docdir], [documentation installation directory])
+@@ -655,19 +635,11 @@ norm_inc_dir_suffix=${include_dir_suffix}
+ adl_NORMALIZE_PATH([norm_inc_dir_suffix], [$sdccconf_h_dir_separator])
+ AC_DEFINE_UNQUOTED(INCLUDE_DIR_SUFFIX,
+                    DIR_SEPARATOR_STRING "${norm_inc_dir_suffix}", [XXX])
+-norm_non_free_inc_dir_suffix=${non_free_include_dir_suffix}
+-adl_NORMALIZE_PATH([norm_non_free_inc_dir_suffix], [$sdccconf_h_dir_separator])
+-AC_DEFINE_UNQUOTED(NON_FREE_INCLUDE_DIR_SUFFIX,
+-                   DIR_SEPARATOR_STRING "${norm_non_free_inc_dir_suffix}", [XXX])
+ 
+ norm_lib_dir_suffix=${lib_dir_suffix}
+ adl_NORMALIZE_PATH([norm_lib_dir_suffix], [$sdccconf_h_dir_separator])
+ AC_DEFINE_UNQUOTED(LIB_DIR_SUFFIX,
+                    DIR_SEPARATOR_STRING "${norm_lib_dir_suffix}", [XXX])
+-norm_non_free_lib_dir_suffix=${non_free_lib_dir_suffix}
+-adl_NORMALIZE_PATH([norm_non_free_lib_dir_suffix], [$sdccconf_h_dir_separator])
+-AC_DEFINE_UNQUOTED(NON_FREE_LIB_DIR_SUFFIX,
+-                   DIR_SEPARATOR_STRING "${norm_non_free_lib_dir_suffix}", [XXX])
+ 
+ # relative paths
+ adl_COMPUTE_RELATIVE_PATHS([expanded_bindir:expanded_datadir:bin2data_dir])
+@@ -836,7 +808,6 @@ AC_DO_DISABLER(packihx,    PACKIHX,    [Disables building packihx])
+ AC_DO_DISABLER(sdcpp,      SDCPP,      [Disables building sdcpp])
+ AC_DO_DISABLER(sdcdb,      SDCDB,      [Disables building sdcdb])
+ AC_DO_DISABLER(sdbinutils, SDBINUTILS, [Disables configuring and building of sdbinutils])
+-AC_DO_DISABLER(non-free,   NON_FREE,   [Disables non-free runtime library parts])
+ 
+ AC_DO_ENABLER(doc,   DOC,   [Enables building the documentation])
+ AC_CHECK_PROG([LYX],        [lyx],        [lyx],        [:])
+@@ -907,16 +878,10 @@ if test $OPT_DISABLE_PIC14 = 0; then
+   AC_CONFIG_FILES(src/pic14/Makefile)
+   test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/lib/pic14)
+ fi
+-if test $OPT_DISABLE_PIC14 = 0 && test $OPT_DISABLE_NON_FREE = 0; then
+-  test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/non-free/lib/pic14)
+-fi
+ if test $OPT_DISABLE_PIC16 = 0; then
+   AC_CONFIG_FILES(src/pic16/Makefile)
+   test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/lib/pic16)
+ fi
+-if test $OPT_DISABLE_PIC16 = 0 && test $OPT_DISABLE_NON_FREE = 0; then
+-  test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/non-free/lib/pic16)
+-fi
+ 
+ if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0; then
+   AC_CONFIG_FILES([src/z80/Makefile])
+@@ -951,7 +916,6 @@ if test $OPT_DISABLE_STM8 = 0; then
+ fi
+ 
+ test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_FILES([device/lib/Makefile])
+-test $OPT_DISABLE_DEVICE_LIB = 0 && test $OPT_DISABLE_NON_FREE = 0 && AC_CONFIG_FILES([device/non-free/lib/Makefile])
+ 
+ AC_CONFIG_FILES([main.mk:main_in.mk
+ src/Makefile
+@@ -966,9 +930,6 @@ support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in
+ Makefile
+ Makefile.common:Makefile.common.in
+ ])
+-if test $OPT_DISABLE_NON_FREE = 0; then
+-  AC_CONFIG_FILES([device/non-free/include/Makefile])
+-fi
+ AC_OUTPUT
+ 
+ # I found no better place
+@@ -986,16 +947,10 @@ adl_NORMALIZE_PATH_MSG(/${prefix2bin_dir},                         [binPath],  [
+ adl_NORMALIZE_PATH_MSG(/${prefix2data_dir}/${norm_inc_dir_suffix}, [incPath1], [$dirch])
+ adl_NORMALIZE_PATH_MSG(/${bin2data_dir}/${norm_inc_dir_suffix},    [incPath2], [$dirch])
+ adl_NORMALIZE_PATH_MSG(${expanded_datadir}/${norm_inc_dir_suffix}, [incPath3], [$dirch])
+-adl_NORMALIZE_PATH_MSG(/${prefix2data_dir}/${norm_non_free_inc_dir_suffix}, [nonFreeIncPath1], [$dirch])
+-adl_NORMALIZE_PATH_MSG(/${bin2data_dir}/${norm_non_free_inc_dir_suffix},    [nonFreeIncPath2], [$dirch])
+-adl_NORMALIZE_PATH_MSG(${expanded_datadir}/${norm_non_free_inc_dir_suffix}, [nonFreeIncPath3], [$dirch])
+ 
+ adl_NORMALIZE_PATH_MSG(/${prefix2data_dir}/${norm_lib_dir_suffix}, [libPath1], [$dirch])
+ adl_NORMALIZE_PATH_MSG(/${bin2data_dir}/${norm_lib_dir_suffix},    [libPath2], [$dirch])
+ adl_NORMALIZE_PATH_MSG(${expanded_datadir}/${norm_lib_dir_suffix}, [libPath3], [$dirch])
+-adl_NORMALIZE_PATH_MSG(/${prefix2data_dir}/${norm_non_free_lib_dir_suffix}, [nonFreeLibPath1], [$dirch])
+-adl_NORMALIZE_PATH_MSG(/${bin2data_dir}/${norm_non_free_lib_dir_suffix},    [nonFreeLibPath2], [$dirch])
+-adl_NORMALIZE_PATH_MSG(${expanded_datadir}/${norm_non_free_lib_dir_suffix}, [nonFreeLibPath3], [$dirch])
+ 
+ AC_MSG_RESULT([
+ sdcc ${VERSION} is now configured for
+@@ -1027,7 +982,6 @@ sdcc ${VERSION} is now configured for
+     tlcs90              ${enable_tlcs90_port}
+     stm8                ${enable_stm8_port}
+ 
+-  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
+   Disable packihx:      ${OPT_DISABLE_PACKIHX}
+   Disable ucsim:        ${OPT_DISABLE_UCSIM}
+   Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
+@@ -1042,9 +996,6 @@ sdcc ${VERSION} is now configured for
+     include/library files:  ${datadir}/${inclib_dir_suffix}
+     include files:          ${datadir}/${include_dir_suffix}
+     library files:          ${datadir}/${lib_dir_suffix}
+-    non-free files:         ${datadir}/${non_free_inclib_dir_suffix}
+-    non-free include files: ${datadir}/${non_free_include_dir_suffix}
+-    non-free library files: ${datadir}/${non_free_lib_dir_suffix}
+     documentation:          ${docdir}
+ 
+     prefix:             ${prefix}
+@@ -1056,14 +1007,8 @@ sdcc ${VERSION} is now configured for
+     include files:      ${incPath1}
+                         path(argv[[0]])${incPath2}
+                         ${incPath3}
+-                        ${nonFreeIncPath1}
+-                        path(argv[[0]])${nonFreeIncPath2}
+-                        ${nonFreeIncPath3}
+     library files:      \$SDCC_HOME${libPath1}${dirch}<model>
+                         path(argv[[0]])${libPath2}${dirch}<model>
+                         ${libPath3}${dirch}<model>
+-                        \$SDCC_HOME${nonFreeLibPath1}${dirch}<model>
+-                        path(argv[[0]])${nonFreeLibPath2}${dirch}<model>
+-                        ${nonFreeLibPath3}${dirch}<model>
+ ])
+ # End of configure/configure.in
+diff --git a/device/lib/pic14/Makefile.common b/device/lib/pic14/Makefile.common
+index e456838..8179255 100644
+--- a/device/lib/pic14/Makefile.common
++++ b/device/lib/pic14/Makefile.common
+@@ -3,11 +3,10 @@ EARCH ?= @EARCH@
+ 
+ AM_CPPFLAGS =
+ AM_CPPFLAGS += -I.
+-AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic14 -I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic14
+ 
+ AM_CFLAGS =
+ AM_CFLAGS += -mpic14 -p$(ARCH)
+-AM_CFLAGS += --no-warn-non-free
+ AM_CFLAGS += --std-c99
+ #AM_CFLAGS += --asm="$(CCAS)"
+ ##AM_CFLAGS += -Wa,-q
+@@ -29,7 +28,7 @@ AM_CFLAGS += --i-code-in-asm
+ 
+ AM_CCASFLAGS =
+ AM_CCASFLAGS += -p$(ARCH)
+-AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic14 -I$(top_srcdir)/../../non-free/include/pic14
++AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic14
+ AM_CCASFLAGS += -I$(srcdir)
+ 
+ clean-local:
+diff --git a/device/lib/pic14/Makefile.in b/device/lib/pic14/Makefile.in
+index f1c9940..de47dbe 100644
+--- a/device/lib/pic14/Makefile.in
++++ b/device/lib/pic14/Makefile.in
+@@ -297,15 +297,13 @@ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = libm libsdcc/regular $(am__append_1) $(am__append_2)
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
+ #AM_CFLAGS += --asm="$(CCAS)"
+ 
+ #AM_CFLAGS += --debug-ralloc
+ #AM_CFLAGS += --debug-xtra
+ #AM_CFLAGS += --pcode-verbose
+-AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+-	--i-code-in-asm
++AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ 
+ #AM_CFLAGS += --no-pcode-opt
+ 
+@@ -316,8 +314,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
++AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
+ DISTCLEANFILES = a.cod a.hex ./.checkdevices/*
+ all: config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+diff --git a/device/lib/pic14/libm/Makefile.in b/device/lib/pic14/libm/Makefile.in
+index fd9fd2e..4a7d250 100644
+--- a/device/lib/pic14/libm/Makefile.in
++++ b/device/lib/pic14/libm/Makefile.in
+@@ -299,15 +299,13 @@ libm_a_SOURCES = acosf.c asincosf.c asinf.c atan2f.c atanf.c ceilf.c \
+ libm_a_CFLAGS = -p$(ARCH) $(AM_CFLAGS)
+ libme_a_SOURCES = $(libm_a_SOURCES)
+ libme_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS) $(am__append_2)
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
+ #AM_CFLAGS += --asm="$(CCAS)"
+ 
+ #AM_CFLAGS += --debug-ralloc
+ #AM_CFLAGS += --debug-xtra
+ #AM_CFLAGS += --pcode-verbose
+-AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+-	--i-code-in-asm
++AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ 
+ #AM_CFLAGS += --no-pcode-opt
+ 
+@@ -318,8 +316,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
++AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in b/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
+index e946da7..bced941 100644
+--- a/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
++++ b/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
+@@ -311,15 +311,13 @@ libsdcce_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
+ 	_gptrput3.S _gptrput4.S macros.inc
+ libsdcce_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS)
+ CLEANFILES = ../*.asm ../*.lst
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
+ #AM_CFLAGS += --asm="$(CCAS)"
+ 
+ #AM_CFLAGS += --debug-ralloc
+ #AM_CFLAGS += --debug-xtra
+ #AM_CFLAGS += --pcode-verbose
+-AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+-	--i-code-in-asm
++AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ 
+ #AM_CFLAGS += --no-pcode-opt
+ 
+@@ -330,8 +328,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
++AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic14/libsdcc/enhanced/Makefile.in b/device/lib/pic14/libsdcc/enhanced/Makefile.in
+index 7fe1e25..854f87f 100644
+--- a/device/lib/pic14/libsdcc/enhanced/Makefile.in
++++ b/device/lib/pic14/libsdcc/enhanced/Makefile.in
+@@ -311,15 +311,13 @@ libsdcce_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
+ 	_gptrput3.S _gptrput4.S macros.inc
+ libsdcce_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS)
+ CLEANFILES = ../*.asm ../*.lst
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
+ #AM_CFLAGS += --asm="$(CCAS)"
+ 
+ #AM_CFLAGS += --debug-ralloc
+ #AM_CFLAGS += --debug-xtra
+ #AM_CFLAGS += --pcode-verbose
+-AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+-	--i-code-in-asm
++AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ 
+ #AM_CFLAGS += --no-pcode-opt
+ 
+@@ -330,8 +328,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
++AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic14/libsdcc/regular/Makefile.in b/device/lib/pic14/libsdcc/regular/Makefile.in
+index 29a5924..8c60a49 100644
+--- a/device/lib/pic14/libsdcc/regular/Makefile.in
++++ b/device/lib/pic14/libsdcc/regular/Makefile.in
+@@ -304,15 +304,13 @@ libsdcc_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
+ 	_gptrput3.S _gptrput4.S macros.inc shadowregs.c
+ libsdcc_a_CFLAGS = -p$(ARCH) $(AM_CFLAGS)
+ CLEANFILES = ../*.asm ../*.lst
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
+ #AM_CFLAGS += --asm="$(CCAS)"
+ 
+ #AM_CFLAGS += --debug-ralloc
+ #AM_CFLAGS += --debug-xtra
+ #AM_CFLAGS += --pcode-verbose
+-AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+-	--i-code-in-asm
++AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ 
+ #AM_CFLAGS += --no-pcode-opt
+ 
+@@ -323,8 +321,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
+-	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
++AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/Makefile.common b/device/lib/pic16/Makefile.common
+index 73200d7..e298bf5 100644
+--- a/device/lib/pic16/Makefile.common
++++ b/device/lib/pic16/Makefile.common
+@@ -1,11 +1,10 @@
+ AM_CPPFLAGS =
+ AM_CPPFLAGS += -I.
+-AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic16 -I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic16
+ 
+ AM_CFLAGS =
+ AM_CFLAGS += --std-c99
+ AM_CFLAGS += --asm="$(CCAS)"
+-AM_CFLAGS += --no-warn-non-free
+ ##AM_CFLAGS += -Wa,-q
+ 
+ AM_CFLAGS += --fomit-frame-pointer
+@@ -31,7 +30,7 @@ AM_CFLAGS += --i-code-in-asm
+ AM_CFLAGS += @USE_FLOATS@
+ 
+ AM_CCASFLAGS =
+-AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic16 -I$(top_srcdir)/../../non-free/include/pic16
++AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic16
+ AM_CCASFLAGS += -I$(srcdir)
+ 
+ clean-local:
+diff --git a/device/lib/pic16/Makefile.in b/device/lib/pic16/Makefile.in
+index b17f151..31ecfa4 100644
+--- a/device/lib/pic16/Makefile.in
++++ b/device/lib/pic16/Makefile.in
+@@ -87,10 +87,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = .
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
+@@ -295,8 +292,7 @@ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = debug libc libio libm libsdcc startup
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -310,11 +306,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ DISTCLEANFILES = a.cod a.hex ./.checkdevices/* pics.supported
+ all: config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+diff --git a/device/lib/pic16/configure b/device/lib/pic16/configure
+index d8760a0..eaea231 100755
+--- a/device/lib/pic16/configure
++++ b/device/lib/pic16/configure
+@@ -3657,7 +3657,6 @@ fi
+ 
+ 
+ 
+-LIBDEV="${srcdir}/../../non-free/lib/pic16/libdev"
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking devices supported by gputils" >&5
+ $as_echo_n "checking devices supported by gputils... " >&6; }
+ GOOD_PICS="";
+diff --git a/device/lib/pic16/configure.ac b/device/lib/pic16/configure.ac
+index 3966c11..cdbffc7 100644
+--- a/device/lib/pic16/configure.ac
++++ b/device/lib/pic16/configure.ac
+@@ -68,10 +68,6 @@ AC_SUBST(OBJEXT, [o])
+ _AM_DEPENDENCIES(CC)
+ _AM_DEPENDENCIES(CCAS)
+ 
+-LIBDEV="${srcdir}/../../non-free/lib/pic16/libdev"
+-m4_include([../../non-free/lib/pic16/supported-devices.ac])
+-m4_include([../../non-free/lib/pic16/processors.ac])
+-
+ # Checks for libraries.
+ 
+ # Checks for header files.
+diff --git a/device/lib/pic16/debug/Makefile.in b/device/lib/pic16/debug/Makefile.in
+index bc77b98..724a443 100644
+--- a/device/lib/pic16/debug/Makefile.in
++++ b/device/lib/pic16/debug/Makefile.in
+@@ -88,10 +88,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = debug
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -290,8 +287,7 @@ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ lib_LIBRARIES = libdebug.a
+ libdebug_a_SOURCES = gstack/gstack.c
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -305,11 +301,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/libc/Makefile.in b/device/lib/pic16/libc/Makefile.in
+index 6d2699f..5546319 100644
+--- a/device/lib/pic16/libc/Makefile.in
++++ b/device/lib/pic16/libc/Makefile.in
+@@ -88,10 +88,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = libc
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -344,8 +341,7 @@ libc18f_a_SOURCES = ctype/iscntrl.c ctype/isdigit.c ctype/isgraph.c \
+ 	string/strpbrk.c string/strrchr.c string/strspn.c \
+ 	string/strstr.c string/strtok.c string/strupr.c \
+ 	utils/cnvfrac.S utils/cnvint.S utils/cvtdec.S
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -359,11 +355,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/libio/Makefile.in b/device/lib/pic16/libio/Makefile.in
+index 0d7c731..64b56c8 100644
+--- a/device/lib/pic16/libio/Makefile.in
++++ b/device/lib/pic16/libio/Makefile.in
+@@ -481,10 +481,7 @@ POST_UNINSTALL = :
+ @ENABLE_18LF8723_TRUE@am__append_393 = libio18lf8723.a
+ subdir = libio
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -9826,8 +9823,7 @@ libio18lf8722_a_SOURCES = dummy.c i2c/i2cack.c i2c/i2cclose.c \
+ libio18lf8722_a_CFLAGS = -p18lf8722 $(AM_CFLAGS)
+ libio18lf8723_a_SOURCES = dummy.c
+ libio18lf8723_a_CFLAGS = -p18lf8723 $(AM_CFLAGS)
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -9841,11 +9837,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/libio/mkmk.sh b/device/lib/pic16/libio/mkmk.sh
+index 211604e..e8896bf 100755
+--- a/device/lib/pic16/libio/mkmk.sh
++++ b/device/lib/pic16/libio/mkmk.sh
+@@ -17,40 +17,6 @@ lib_LIBRARIES =
+ 
+ HEREDOC
+ 
+-for f in "../../../non-free/lib/pic16/libdev/pic1"*.c; do
+-    p="${f##*/pic}";
+-    p="${p%.c}";
+-    P=$(echo "$p" | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ);
+-    echo "Generating for device >>${p}<<" >&2;
+-    cat <<HERE
+-if ENABLE_$P
+-lib_LIBRARIES += libio${p}.a
+-endif ENABLE_$P
+-libio${p}_a_SOURCES = dummy.c
+-HERE
+-    sed -e 's/\s*\(#.*\)\{0,1\}$//' adc.ignore | grep -x "$p" > /dev/null 2>&1 && { echo "No adc." >&2 ; } || cat <<HERE
+-libio${p}_a_SOURCES += adc/adcbusy.c adc/adcclose.c adc/adcconv.c
+-libio${p}_a_SOURCES += adc/adcopen.c adc/adcread.c adc/adcsetch.c
+-HERE
+-    sed -e 's/\s*\(#.*\)\{0,1\}$//' i2c.ignore | grep -x "$p" > /dev/null 2>&1 && { echo "No i2c." >&2 ; } || cat <<HERE
+-libio${p}_a_SOURCES += i2c/i2cack.c i2c/i2cclose.c i2c/i2cdrdy.c
+-libio${p}_a_SOURCES += i2c/i2cidle.c i2c/i2cnack.c i2c/i2copen.c
+-libio${p}_a_SOURCES += i2c/i2creadc.c i2c/i2creads.c i2c/i2crestart.c
+-libio${p}_a_SOURCES += i2c/i2cstart.c i2c/i2cstop.c i2c/i2cwritec.c
+-libio${p}_a_SOURCES += i2c/i2cwrites.c
+-HERE
+-    sed -e 's/\s*\(#.*\)\{0,1\}$//' usart.ignore | grep -x "$p" > /dev/null 2>&1 && { echo "No usart." >&2 ; } || cat <<HERE
+-libio${p}_a_SOURCES += usart/ubaud.c usart/ubusy.c usart/uclose.c
+-libio${p}_a_SOURCES += usart/udrdy.c usart/ugetc.c usart/ugets.c
+-libio${p}_a_SOURCES += usart/uopen.c usart/uputc.c usart/uputs.c
+-libio${p}_a_SOURCES += usart/usartd.c
+-HERE
+-    cat <<HERE
+-libio${p}_a_CFLAGS = -p${p} \$(AM_CFLAGS)
+-
+-HERE
+-done
+-
+ cat <<HEREDOC
+ include \$(top_srcdir)/Makefile.common
+ 
+diff --git a/device/lib/pic16/libm/Makefile.in b/device/lib/pic16/libm/Makefile.in
+index 7f90e89..94cd985 100644
+--- a/device/lib/pic16/libm/Makefile.in
++++ b/device/lib/pic16/libm/Makefile.in
+@@ -88,10 +88,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = libm
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -299,8 +296,7 @@ libm18f_a_SOURCES = acosf.c asincosf.c asinf.c atan2f.c atanf.c \
+ 	frexpf.c isinf.c isnan.c ldexpf.c log10f.c logf.c modff.c \
+ 	powf.c sincosf.c sincoshf.c sinf.c sinhf.c sqrtf.c tancotf.c \
+ 	tanf.c tanhf.c
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -314,11 +310,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/libsdcc/Makefile.in b/device/lib/pic16/libsdcc/Makefile.in
+index e58bad0..b318b70 100644
+--- a/device/lib/pic16/libsdcc/Makefile.in
++++ b/device/lib/pic16/libsdcc/Makefile.in
+@@ -88,10 +88,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = libsdcc
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -364,8 +361,7 @@ libsdcc_a_SOURCES = char/divschar.c char/divuchar.c char/modschar.c \
+ 	int/modsint.c int/moduint.c int/mulint.c long/divslong.c \
+ 	long/divulong.c long/modslong.c long/modulong.c long/mullong.c \
+ 	lregs/lrrest.c lregs/lrst.c stack/stack.S
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -379,11 +375,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/device/lib/pic16/startup/Makefile.in b/device/lib/pic16/startup/Makefile.in
+index 3c44c6f..274acde 100644
+--- a/device/lib/pic16/startup/Makefile.in
++++ b/device/lib/pic16/startup/Makefile.in
+@@ -89,10 +89,7 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ subdir = startup
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps =  \
+-	$(top_srcdir)/../../non-free/lib/pic16/supported-devices.ac \
+-	$(top_srcdir)/../../non-free/lib/pic16/processors.ac \
+-	$(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+@@ -306,8 +303,7 @@ libcrt0iz_a_SOURCES = crt0iz.c
+ # Force installation of .o files into $libdir
+ crtdir = $(libdir)
+ crt_DATA = crt0.o crt0i.o crt0iz.o
+-AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16
++AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16
+ #AM_CFLAGS += --no-optimize-goto
+ 
+ #AM_CFLAGS += --debug-ralloc
+@@ -321,11 +317,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+ #AM_CFLAGS += --noinduction
+ #AM_CFLAGS += --nojtbound
+ #AM_CFLAGS += --noloopreverse
+-AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+ 	--fomit-frame-pointer --obanksel=9 --denable-peeps \
+ 	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
+-AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
+-	-I$(top_srcdir)/../../non-free/include/pic16 -I$(srcdir)
++AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 -I$(srcdir)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/doc/INSTALL.txt b/doc/INSTALL.txt
+index 7d83ef7..5bd71d3 100644
+--- a/doc/INSTALL.txt
++++ b/doc/INSTALL.txt
+@@ -18,9 +18,7 @@ To install:
+ 
+ This will install sdcc binaries into: /usr/local/bin/
+ header files into:                    /usr/local/share/sdcc/include/
+-non-free header files into:           /usr/local/share/sdcc/non-free/include/
+ library files into:                   /usr/local/share/sdcc/lib/
+-non-free library files into:          /usr/local/share/sdcc/non-free/lib/
+ and documentation into:               /usr/local/share/sdcc/doc/
+ 
+ You can test the install by entering:
+@@ -44,9 +42,7 @@ To install:
+ 
+ By default this will install sdcc binaries into: C:\Program Files\SDCC\bin\
+ header files into:                               C:\Program Files\SDCC\include\
+-non-free header files into:                      C:\Program Files\SDCC\non-free\include\
+ library files into:                              C:\Program Files\SDCC\lib\
+-non-free library files into:                     C:\Program Files\SDCC\non-free\lib\
+ and documentation into:                          C:\Program Files\SDCC\doc\
+ 
+ You can test the install by opening a DOS box and entering:
+@@ -75,9 +71,7 @@ To install:
+ 
+ This will install sdcc binaries into: /Developer/sdcc/bin/
+ header files into:                    /Developer/sdcc/share/sdcc/include/
+-non-free header files into:           /Developer/sdcc/share/sdcc/non-free/include/
+ library files into:                   /Developer/sdcc/share/sdcc/lib/
+-non-free library files into:          /Developer/sdcc/share/sdcc/non-free/lib/
+ and documentation into:               /Developer/sdcc/share/sdcc/doc/
+ 
+ You can test the install by entering:
+diff --git a/doc/README.txt b/doc/README.txt
+index 86ed809..69e16e2 100644
+--- a/doc/README.txt
++++ b/doc/README.txt
+@@ -35,10 +35,9 @@ Exception are pic device libraries and header files which are derived
+ from Microchip header (.inc) and linker script (.lkr) files. Microchip
+ requires that "The header files should state that they are only to be
+ used with authentic Microchip devices" which makes them incompatible
+-with the GPL. Pic device libraries and header files are located at
+-non-free/lib and non-free/include directories respectively. Sdcc should
+-be run with the --use-non-free command line option in order to include
+-non-free header files and libraries.
++with the GPL. These non-free libraries and header files (and the build
++and run-time options that enable their use) are omitted in the SDCC
++package distributed with GNU Guix.
+ 
+ See:
+ 
+diff --git a/doc/sdccman.lyx b/doc/sdccman.lyx
+index 41e8db0..9a971fa 100644
+--- a/doc/sdccman.lyx
++++ b/doc/sdccman.lyx
+@@ -1083,54 +1083,9 @@ Exception are pic device libraries and header files which are derived from
+  Microchip requires that "The header files should state that they are only
+  to be used with authentic Microchip devices" which makes them incompatible
+  with the GPL.
+- Pic device libraries and header files are located at non-free/lib and non-free/
+-include directories respectively.
+- SDCC should be run with the 
+-\series bold
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--
+-\series default
+-use-non-free
+-\series bold
+-
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+-
+-\series default
+- command line option in order to include non-free header files and libraries.
+- 
++ These non-free libraries and header files (and the build and run-time options
++ that enable their use) are omitted in the SDCC package distributed with
++ GNU Guix.
+ \end_layout
+ 
+ \begin_layout Itemize
+@@ -2890,18 +2845,6 @@ include_dir_suffix environment variable, see table below
+ \end_inset
+ 
+ 
+-\begin_inset space ~
+-\end_inset
+-
+-non_free_include_dir_suffix environment variable, see table below
+-\end_layout
+-
+-\begin_layout Labeling
+-\labelwidthstring 00.00.0000
+-\begin_inset space ~
+-\end_inset
+-
+-
+ \begin_inset space ~
+ \end_inset
+ 
+@@ -2914,22 +2857,6 @@ lib_dir_suffix environment variable, see table below
+ \end_inset
+ 
+ 
+-\begin_inset space ~
+-\end_inset
+-
+-
+-\begin_inset space ~
+-\end_inset
+-
+-non_free_lib_dir_suffix environment variable, see table below
+-\end_layout
+-
+-\begin_layout Labeling
+-\labelwidthstring 00.00.0000
+-\begin_inset space ~
+-\end_inset
+-
+-
+ \begin_inset space ~
+ \end_inset
+ 
+@@ -3410,7 +3337,7 @@ These defaults are:
+ \begin_layout Standard
+ \align center
+ \begin_inset Tabular
+-<lyxtabular version="3" rows="11" columns="3">
++<lyxtabular version="3" rows="9" columns="3">
+ <features tabularvalignment="middle">
+ <column alignment="block" valignment="top" width="0in">
+ <column alignment="block" valignment="top" width="0in">
+@@ -3694,68 +3621,6 @@ sdcc/include
+ include
+ \end_layout
+ 
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-NON_FREE_INCLUDE_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-sdcc/non-free/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-non-free/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-LIB_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-sdcc/lib
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-lib
+-\end_layout
+-
+ \end_inset
+ </cell>
+ </row>
+@@ -3766,7 +3631,7 @@ lib
+ \begin_layout Plain Layout
+ 
+ \emph on
+-NON_FREE_LIB_DIR_SUFFIX
++LIB_DIR_SUFFIX
+ \end_layout
+ 
+ \end_inset
+@@ -3775,7 +3640,7 @@ NON_FREE_LIB_DIR_SUFFIX
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+-sdcc/non-free/lib
++sdcc/lib
+ \end_layout
+ 
+ \end_inset
+@@ -3784,7 +3649,7 @@ sdcc/non-free/lib
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+-non-free/lib
++lib
+ \end_layout
+ 
+ \end_inset
+@@ -4183,20 +4048,6 @@ include
+ \end_inset
+ 
+  
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-non_free_include_dir_suffix=
+-\begin_inset Quotes srd
+-\end_inset
+-
+-non-free/include
+-\begin_inset Quotes srd
+-\end_inset
+-
+- 
+ \backslash
+ 
+ \begin_inset Newline newline
+@@ -4211,20 +4062,6 @@ lib
+ \end_inset
+ 
+  
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-non_free_lib_dir_suffix=
+-\begin_inset Quotes srd
+-\end_inset
+-
+-non-free/lib
+-\begin_inset Quotes srd
+-\end_inset
+-
+- 
+ \backslash
+ 
+ \begin_inset Newline newline
+@@ -4405,20 +4242,6 @@ include
+ \end_inset
+ 
+  
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-non_free_include_dir_suffix=
+-\begin_inset Quotes srd
+-\end_inset
+-
+-non-free/include
+-\begin_inset Quotes srd
+-\end_inset
+-
+- 
+ \backslash
+ 
+ \begin_inset Newline newline
+@@ -4433,20 +4256,6 @@ lib
+ \end_inset
+ 
+  
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-non_free_lib_dir_suffix=
+-\begin_inset Quotes srd
+-\end_inset
+-
+-non-free/lib
+-\begin_inset Quotes srd
+-\end_inset
+-
+- 
+ \backslash
+ 
+ \begin_inset Newline newline
+@@ -4543,7 +4352,7 @@ Install paths
+ \begin_layout Standard
+ \align center
+ \begin_inset Tabular
+-<lyxtabular version="3" rows="7" columns="4">
++<lyxtabular version="3" rows="5" columns="4">
+ <features tabularvalignment="middle">
+ <column alignment="left" valignment="top">
+ <column alignment="left" valignment="top" width="4.5cm">
+@@ -4699,64 +4508,6 @@ include
+ <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+-\begin_layout Plain Layout
+-Non-free include files
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-$DATADIR/non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$INCLUDE_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-/usr/local/share/
+-\begin_inset Newline newline
+-\end_inset
+-
+-sdcc/non-free/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\backslash
+-sdcc
+-\backslash
+-non-free
+-\backslash
+-include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+ \begin_layout Plain Layout
+ Library file**
+ \end_layout
+@@ -4806,64 +4557,6 @@ sdcc
+ lib
+ \end_layout
+ 
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Library file**
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-$DATADIR/non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$LIB_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-/usr/local/share/
+-\begin_inset Newline newline
+-\end_inset
+-
+-sdcc/non-free/lib
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\backslash
+-sdcc
+-\backslash
+-non-free
+-\backslash
+-lib
+-\end_layout
+-
+ \end_inset
+ </cell>
+ </row>
+@@ -5186,7 +4879,7 @@ $PATH
+ \begin_layout Standard
+ \align center
+ \begin_inset Tabular
+-<lyxtabular version="3" rows="9" columns="4">
++<lyxtabular version="3" rows="6" columns="4">
+ <features tabularvalignment="middle">
+ <column alignment="block" valignment="top" width="0.5cm">
+ <column alignment="block" valignment="top" width="4.8cm">
+@@ -5464,203 +5157,13 @@ include
+ </cell>
+ </row>
+ <row>
+-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
++<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+ 5
+ \end_layout
+ 
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-$DATADIR/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$INCLUDE_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-/usr/local/share/
+-\begin_inset Newline newline
+-\end_inset
+-
+-sdcc/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-(not on Win32)
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-6
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME/
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$PREFIX2DATA_DIR/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$INCLUDE_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME/share/
+-\begin_inset Newline newline
+-\end_inset
+-
+-sdcc/non-free/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME
+-\backslash
+-non-free
+-\backslash
+-include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-7
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])/
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$BIN2DATADIR/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$INCLUDE_DIR_SUFFIX
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])/../
+-\begin_inset Newline newline
+-\end_inset
+-
+-sdcc/non-free/include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])
+-\backslash
+-..
+-\backslash
+-non-free
+-\backslash
+-include
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-8
+-\end_layout
+-
+ \end_inset
+ </cell>
+ <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+@@ -5676,21 +5179,13 @@ $DATADIR/
+ \end_inset
+ 
+ 
+-\emph on
+-non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+ \emph on
+ $INCLUDE_DIR_SUFFIX
+ \end_layout
+ 
+ \end_inset
+ </cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
++<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+@@ -5698,7 +5193,7 @@ $INCLUDE_DIR_SUFFIX
+ \begin_inset Newline newline
+ \end_inset
+ 
+-sdcc/non-free/include
++sdcc/include
+ \end_layout
+ 
+ \end_inset
+@@ -5796,7 +5291,7 @@ model
+ \begin_layout Standard
+ \align center
+ \begin_inset Tabular
+-<lyxtabular version="3" rows="10" columns="4">
++<lyxtabular version="3" rows="6" columns="4">
+ <features tabularvalignment="middle">
+ <column alignment="block" valignment="top" width="0.5cm">
+ <column alignment="block" valignment="top" width="4.5cm">
+@@ -6076,7 +5571,7 @@ lib
+ </cell>
+ </row>
+ <row>
+-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
++<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+@@ -6085,7 +5580,7 @@ lib
+ 
+ \end_inset
+ </cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
++<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+@@ -6116,7 +5611,7 @@ $LIB_DIR_SUFFIX/
+ 
+ \end_inset
+ </cell>
+-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
++<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+@@ -6131,7 +5626,7 @@ lib/
+ 
+ \end_inset
+ </cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
++<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+ \begin_inset Text
+ 
+ \begin_layout Plain Layout
+@@ -6154,308 +5649,6 @@ lib
+ <model>
+ \end_layout
+ 
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-6
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-$DATADIR/non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$LIB_DIR_SUFFIX/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-/usr/local/share/sdcc/
+-\begin_inset Newline newline
+-\end_inset
+-
+-lib/
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-(not on Win32)
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-7
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME/
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$PREFIX2DATA_DIR/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$LIB_DIR_SUFFIX/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME/share/sdcc/
+-\begin_inset Newline newline
+-\end_inset
+-
+-non-free/lib/
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-$SDCC_HOME
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-lib
+-\backslash
+-non-free
+-\emph on
+-
+-\backslash
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-8
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])/
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$BIN2DATADIR/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$LIB_DIR_SUFFIX/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])/../sdcc/
+-\begin_inset Newline newline
+-\end_inset
+-
+-non-free/lib/
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-path(argv[0])
+-\backslash
+-..
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-lib
+-\backslash
+-non-free
+-\emph on
+-
+-\backslash
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-9
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-
+-\emph on
+-$DATADIR/non-free/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-$LIB_DIR_SUFFIX/
+-\emph default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-/usr/local/share/sdcc/
+-\begin_inset Newline newline
+-\end_inset
+-
+-non-free/lib/
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\emph on
+-<model>
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-(not on Win32)
+-\end_layout
+-
+ \end_inset
+ </cell>
+ </row>
+@@ -8723,14 +7916,6 @@ In <installdir>/share/sdcc/include
+ the include files
+ \end_layout
+ 
+-\begin_layout Standard
+-In <installdir>/share/sdcc/non-free/include
+-\end_layout
+-
+-\begin_layout Itemize
+-the non-free include files
+-\end_layout
+-
+ \begin_layout Standard
+ In <installdir>/share/sdcc/lib
+ \end_layout
+@@ -8739,14 +7924,6 @@ In <installdir>/share/sdcc/lib
+ the src and target subdirectories with the precompiled relocatables.
+ \end_layout
+ 
+-\begin_layout Standard
+-In <installdir>/share/sdcc/non-free/lib
+-\end_layout
+-
+-\begin_layout Itemize
+-the src and target subdirectories with the non-free precompiled relocatables.
+-\end_layout
+-
+ \begin_layout Standard
+ In <installdir>/share/sdcc/doc
+ \end_layout
+@@ -15589,66 +14766,6 @@ splint
+ myprogram.c
+ \end_layout
+ 
+-\begin_layout Labeling
+-\labelwidthstring 00.00.0000
+-
+-\series bold
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\series default
+-
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+-
+-\begin_inset CommandInset label
+-LatexCommand label
+-name "lyx:--use-non-free"
+-
+-\end_inset
+-
+- Search / include non-free licensed libraries and header files, located
+- under the non-free directory - see section 
+-\begin_inset CommandInset ref
+-LatexCommand ref
+-reference "subsec:Search-Paths"
+-
+-\end_inset
+-
+-
+-\end_layout
+-
+ \begin_layout Subsection
+ Linker Options
+ \begin_inset Index idx
+@@ -44653,66 +43770,9 @@ http://sourceforge.net/projects/gputils
+ Pic device specific header and c source files are automatically generated
+  from MPLAB include files, which are published by Microchip with a special
+  requirement that they are only to be used with authentic Microchip devices.
+- This reqirement prevents to publish generated header and c source files
+- under the GPL compatible license, so they are located in non-free directory
+- (see section 
+-\begin_inset CommandInset ref
+-LatexCommand ref
+-reference "subsec:Search-Paths"
+-
+-\end_inset
+-
+-).
+- In order to include them in include and library search paths, the 
+-\series bold
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+-
+-\series default
+- command line option should be defined.
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-NOTE: the compiled code, which use non-free pic device specific libraries,
+- is not GPL compatible!
++ As this restriction is incompatible with the goal of software freedom,
++ header files and libraries generated from these files are not included
++ in the SDCC package distributed with Guix.
+ \begin_inset Newline newline
+ \end_inset
+ 
+@@ -44766,7 +43826,7 @@ Makefile
+ \begin_inset space ~
+ \end_inset
+ 
+-sdcc -V --use-non-free -mpic14 -p16f877 -c $<
++sdcc -V -mpic14 -p16f877 -c $<
+ \begin_inset Newline newline
+ \end_inset
+ 
+@@ -44860,7 +43920,7 @@ Makefile
+ \begin_inset space ~
+ \end_inset
+ 
+-sdcc -S -V --use-non-free -mpic14 -p16f877 $<
++sdcc -S -V -mpic14 -p16f877 $<
+ \begin_inset Newline newline
+ \end_inset
+ 
+@@ -45142,47 +44202,6 @@ status collapsed
+ \begin_layout Plain Layout
+ 
+ 
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+-PIC14!Options!-
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+- make non-free device headers and libraries available in the compiler's
+- search paths (implicit -I and -L options)
+-\end_layout
+-
+-\begin_layout Description
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+ \backslash
+ /
+ \end_layout
+@@ -46055,47 +45074,6 @@ status collapsed
+ -all-callee-saves
+ \end_layout
+ 
+-\begin_layout Description
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+-PIC16!Options!-
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+- Make non-free device headers and libraries available in the compiler's
+- search paths (implicit -I and -L options).
+-\end_layout
+-
+ \begin_layout Subsection
+ Port Specific Options
+ \begin_inset Index idx
+@@ -47372,188 +46350,6 @@ Linker
+ \end_inset
+ 
+ 
+-\end_layout
+-
+-\begin_layout Standard
+-If the 
+-\series bold
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+-
+-\series default
+- command line option is specified, non-free directories are searched:
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\begin_inset Separator latexpar
+-\end_inset
+-
+-
+-\end_layout
+-
+-\begin_layout Standard
+-\align center
+-\begin_inset Tabular
+-<lyxtabular version="3" rows="3" columns="4">
+-<features tabularvalignment="middle">
+-<column alignment="center" valignment="top">
+-<column alignment="center" valignment="top">
+-<column alignment="center" valignment="top">
+-<column alignment="center" valignment="top">
+-<row>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Directory
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Description
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Target
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Command prefix
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-PREFIX/sdcc/non-free/include/pic16
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-PIC16 specific non-free headers
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Compiler
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+--I
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-<row>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-PREFIX/sdcc/non-free/lib/pic16
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-PIC16 specific non-free libraries
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+-Linker
+-\end_layout
+-
+-\end_inset
+-</cell>
+-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+-\begin_inset Text
+-
+-\begin_layout Plain Layout
+--L
+-\end_layout
+-
+-\end_inset
+-</cell>
+-</row>
+-</lyxtabular>
+-
+-\end_inset
+-
+-
+ \end_layout
+ 
+ \begin_layout Subsection
+@@ -48249,66 +47045,9 @@ name "subsec:PIC16_Header-Files-and-Libraries"
+ Pic device specific header and c source files are automatically generated
+  from MPLAB include files, which are published by Microchip with a special
+  requirement that they are only to be used with authentic Microchip devices.
+- This requirement prevents to publish generated header and c source files
+- under the GPL compatible license, so they are located in the non-free directory
+- (see section 
+-\begin_inset CommandInset ref
+-LatexCommand ref
+-reference "subsec:Search-Paths"
+-
+-\end_inset
+-
+-).
+- In order to include them in include and library search paths, the 
+-\series bold
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\begin_inset Index idx
+-status collapsed
+-
+-\begin_layout Plain Layout
+--
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-/
+-\end_layout
+-
+-\end_inset
+-
+--use-non-free
+-\end_layout
+-
+-\end_inset
+-
+-
+-\series default
+- command line option should be defined.
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-NOTE: the compiled code, which use non-free pic device specific libraries,
+- is not GPL compatible!
++ As this restriction is incompatible with the goal of software freedom,
++ header files and libraries generated from these files are not included
++ in the SDCC package distributed with Guix.
+ \end_layout
+ 
+ \begin_layout Subsection
+@@ -48554,195 +47293,6 @@ vfprintf.c
+  should also work, but is untested.
+ \end_layout
+ 
+-\begin_layout Subsection
+-Adding New Devices to the Port
+-\end_layout
+-
+-\begin_layout Standard
+-Adding support for a new 16
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+-,
+-\end_layout
+-
+-\end_inset
+-
+-bit PIC MCU requires the following steps:
+-\end_layout
+-
+-\begin_layout Enumerate
+-Create picDEVICE.c and picDEVICE.h from pDEVICE.inc using
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\family typewriter
+-perl /path/to/sdcc/support/scripts/inc2h-pic16.pl 
+-\backslash
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-/path/to/gputils/header/pDEVICE.inc
+-\end_layout
+-
+-\begin_layout Enumerate
+-
+-\family typewriter
+-mv picDEVICE.h /path/to/sdcc/device/non-free/include/pic16
+-\end_layout
+-
+-\begin_layout Enumerate
+-
+-\family typewriter
+-mv picDEVICE.c /path/to/sdcc/device/non-free/lib/pic16/libdev
+-\end_layout
+-
+-\begin_layout Enumerate
+-Either
+-\begin_inset Separator latexpar
+-\end_inset
+-
+-
+-\end_layout
+-
+-\begin_deeper
+-\begin_layout Enumerate
+-add the new device to 
+-\family typewriter
+-/path/to/sdcc/device/lib/pic16/libio/*.ignore
+-\family default
+- to suppress building any of the I/O libraries for the new device
+-\begin_inset Foot
+-status collapsed
+-
+-\begin_layout Plain Layout
+-In fact, the 
+-\family typewriter
+-.ignore
+-\family default
+- files are only used when auto-generating 
+-\family typewriter
+-Makefile.am
+-\family default
+- using the 
+-\family typewriter
+-.../libio/mkmk.sh
+-\family default
+- script.
+-\end_layout
+-
+-\end_inset
+-
+-, or
+-\end_layout
+-
+-\begin_layout Enumerate
+-add the device (family) to 
+-\family typewriter
+-/path/to/sdcc/support/scripts/pic18fam-h-gen.pl
+-\family default
+- to assign I/O styles, run the 
+-\family typewriter
+-pic18fam-h-gen.pl
+-\family default
+- script to generate 
+-\family typewriter
+-pic18fam.h.gen
+-\family default
+-, replace your existing 
+-\family typewriter
+-pic18fam.h
+-\family default
+- with the generated file, and (if required) implement new I/O styles in
+- 
+-\family typewriter
+-/path/to/sdcc/device/include/pic16/{adc,i2c,usart}.h
+-\family default
+- and 
+-\family typewriter
+-/path/to/sdcc/device/lib/pic16/libio/*/*.
+-\end_layout
+-
+-\end_deeper
+-\begin_layout Enumerate
+-Edit 
+-\family typewriter
+-/path/to/sdcc/device/include/pic16/pic18fregs.h
+-\family default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-The file format is self-explanatory, just add
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\family typewriter
+-#elif defined(picDEVICE)
+-\begin_inset Newline newline
+-\end_inset
+-
+-#
+-\begin_inset ERT
+-status collapsed
+-
+-\begin_layout Plain Layout
+-
+-
+-\backslash
+- 
+-\backslash
+- 
+-\end_layout
+-
+-\end_inset
+-
+-include <picDEVICE.h>
+-\family default
+-
+-\begin_inset Newline newline
+-\end_inset
+-
+-at the right place (keep the file sorted, please).
+-\end_layout
+-
+-\begin_layout Enumerate
+-Edit 
+-\family typewriter
+-/path/to/sdcc/device/include/pic16devices.txt
+-\begin_inset Newline newline
+-\end_inset
+-
+-
+-\family default
+-Copy and modify an existing entry or create a new one and insert it at the
+- correct place (keep the file sorted, please).
+-\end_layout
+-
+-\begin_layout Enumerate
+-
+-\family typewriter
+-( cd /path/to/sdcc/device/non-free/lib/pic16 && sh update.sh )
+-\end_layout
+-
+-\begin_layout Enumerate
+-Recompile the pic16 libraries as described in 
+-\begin_inset CommandInset ref
+-LatexCommand ref
+-reference "subsec:pic16Libraries"
+-
+-\end_inset
+-
+- or just configure and build sdcc again from scratch (recommended).
+-\end_layout
+-
+ \begin_layout Subsection
+ Memory Models
+ \end_layout
+@@ -73525,6 +72075,12 @@ This document was initially written by Sandeep Dutta and updated by SDCC
+  developers.
+ \end_layout
+ 
++\begin_layout Standard
++It has been modified from the original to reflect the removal of non-free
++ components and related functionality in the SDCC package distributed with
++ GNU Guix.
++\end_layout
++
+ \begin_layout Standard
+ All product names mentioned herein may be trademarks
+ \begin_inset Index idx
+diff --git a/sdcc.spec b/sdcc.spec
+index 9f1eeff..3686228 100644
+--- a/sdcc.spec
++++ b/sdcc.spec
+@@ -83,15 +83,15 @@ rm -rf $RPM_BUILD_ROOT
+ %files common
+ %defattr(-,root,root)
+ /usr/share/sdcc/include
+-/usr/share/sdcc/non-free/include
+ /usr/share/sdcc/lib
+-/usr/share/sdcc/non-free/lib
+ 
+ %files doc
+ %defattr(-,root,root)
+ %doc %{_defaultdocdir}
+ 
+ %changelog
++* Sat Oct 31 2020 - simon AT simonsouth.net
++- removed non-free include and lib directories
+ * Wed Feb 07 2018 - pkk AT spth.de
+ - version updated to 3.7.0
+ * Sun May 29 2016 - sourceforge.brock AT dse.nl
+diff --git a/sdcc_vc.h.in b/sdcc_vc.h.in
+index 06d8cca..736c325 100644
+--- a/sdcc_vc.h.in
++++ b/sdcc_vc.h.in
+@@ -23,8 +23,6 @@
+ 
+ #define INCLUDE_DIR_SUFFIX          "\\include"
+ #define LIB_DIR_SUFFIX              "\\lib"
+-#define NON_FREE_INCLUDE_DIR_SUFFIX "\\non-free\\include"
+-#define NON_FREE_LIB_DIR_SUFFIX     "\\non-free\\lib"
+ 
+ #define BIN2DATA_DIR                "\\.."
+ #define PREFIX2BIN_DIR              "\\bin"
+diff --git a/sdccconf_in.h b/sdccconf_in.h
+index 29619bd..dadf310 100644
+--- a/sdccconf_in.h
++++ b/sdccconf_in.h
+@@ -106,12 +106,6 @@
+ /* XXX */
+ #undef LIB_DIR_SUFFIX
+ 
+-/* XXX */
+-#undef NON_FREE_INCLUDE_DIR_SUFFIX
+-
+-/* XXX */
+-#undef NON_FREE_LIB_DIR_SUFFIX
+-
+ /* Define to 1 to disable the AVR port */
+ #undef OPT_DISABLE_AVR
+ 
+@@ -133,9 +127,6 @@
+ /* XXX */
+ #undef OPT_DISABLE_MCS51
+ 
+-/* XXX */
+-#undef OPT_DISABLE_NON_FREE
+-
+ /* XXX */
+ #undef OPT_DISABLE_PACKIHX
+ 
+diff --git a/src/SDCCglobl.h b/src/SDCCglobl.h
+index 2ce040b..d72d3b8 100644
+--- a/src/SDCCglobl.h
++++ b/src/SDCCglobl.h
+@@ -315,7 +315,6 @@ struct options
+     int no_pack_iram;           /* MCS51/DS390 - Deprecated: Tells the linker not to pack variables in internal ram */
+     int acall_ajmp;             /* MCS51 - Use acall/ajmp instead of lcall/ljmp */
+     int no_ret_without_call;    /* MCS51 - Do not use ret independent of acall/lcall */
+-    int use_non_free;           /* Search / include non-free licensed libraries and header files */
+     /* starting address of the segments */
+     int xstack_loc;             /* initial location of external stack */
+     int stack_loc;              /* initial value of internal stack pointer */
+diff --git a/src/SDCCmain.c b/src/SDCCmain.c
+index a523164..a279d3d 100644
+--- a/src/SDCCmain.c
++++ b/src/SDCCmain.c
+@@ -144,7 +144,6 @@ char buffer[PATH_MAX * 2];
+ #define OPTION_DATA_SEG             "--dataseg"
+ #define OPTION_DOLLARS_IN_IDENT     "--fdollars-in-identifiers"
+ #define OPTION_SIGNED_CHAR          "--fsigned-char"
+-#define OPTION_USE_NON_FREE         "--use-non-free"
+ #define OPTION_PEEP_RETURN          "--peep-return"
+ #define OPTION_NO_PEEP_RETURN       "--no-peep-return"
+ #define OPTION_NO_OPTSDCC_IN_ASM    "--no-optsdcc-in-asm"
+@@ -192,7 +191,6 @@ static const OPTION optionsTable[] = {
+   {0,   OPTION_STD_SDCC11, NULL, "Use ISO C11 standard with SDCC extensions (default)"},
+   {0,   OPTION_DOLLARS_IN_IDENT, &options.dollars_in_ident, "Permit '$' as an identifier character"},
+   {0,   OPTION_SIGNED_CHAR, &options.signed_char, "Make \"char\" signed by default"},
+-  {0,   OPTION_USE_NON_FREE, &options.use_non_free, "Search / include non-free licensed libraries and header files"},
+ 
+   {0,   NULL, NULL, "Code generation options"},
+   {'m', NULL, NULL, "Set the port to use e.g. -mz80."},
+@@ -2045,10 +2043,6 @@ preProcess (char **envp)
+       else
+         addSet (&preArgvSet, Safe_strdup ("-D__SDCC_CHAR_UNSIGNED"));
+ 
+-      /* set the macro for non-free  */
+-      if (options.use_non_free)
+-        addSet (&preArgvSet, Safe_strdup ("-D__SDCC_USE_NON_FREE"));
+-
+       /* set the macro for large model  */
+       switch (options.model)
+         {
+@@ -2262,12 +2256,6 @@ setIncludePath (void)
+    *  6. - $SDCC_HOME/PREFIX2DATA_DIR/INCLUDE_DIR_SUFFIX
+    *  7. - path(argv[0])/BIN2DATA_DIR/INCLUDE_DIR_SUFFIX
+    *  8. - DATADIR/INCLUDE_DIR_SUFFIX (only on *nix)
+-   *  9. - $SDCC_HOME/PREFIX2DATA_DIR/NON_FREE_INCLUDE_DIR_SUFFIX/target
+-   * 10. - path(argv[0])/BIN2DATA_DIR/NON_FREE_INCLUDE_DIR_SUFFIX/target
+-   * 11. - DATADIR/NON_FREE_INCLUDE_DIR_SUFFIX/target (only on *nix)
+-   * 12. - $SDCC_HOME/PREFIX2DATA_DIR/NON_FREE_INCLUDE_DIR_SUFFIX
+-   * 13. - path(argv[0])/BIN2DATA_DIR/NON_FREE_INCLUDE_DIR_SUFFIX
+-   * 14. - DATADIR/NON_FREE_INCLUDE_DIR_SUFFIX (only on *nix)
+    */
+ 
+   if (!options.nostdinc)
+@@ -2280,17 +2268,6 @@ setIncludePath (void)
+       includeDirsSet = processStrSet (includeDirsSet, NULL, port->target, NULL);
+       mergeSets (&includeDirsSet, tempSet);
+ 
+-      if (options.use_non_free)
+-        {
+-          set *tempSet1;
+-
+-          tempSet = processStrSet (dataDirsSet, NULL, NON_FREE_INCLUDE_DIR_SUFFIX, NULL);
+-          tempSet1 = processStrSet (tempSet, NULL, DIR_SEPARATOR_STRING, NULL);
+-          tempSet1 = processStrSet (tempSet1, NULL, port->target, NULL);
+-          mergeSets (&tempSet1, tempSet);
+-          mergeSets (&includeDirsSet, tempSet1);
+-        }
+-
+       if ((p = getenv (SDCC_INCLUDE_NAME)) != NULL)
+         {
+           struct dbuf_s dbuf;
+@@ -2315,9 +2292,6 @@ setLibPath (void)
+    * 3. - $SDCC_HOME/PREFIX2DATA_DIR/LIB_DIR_SUFFIX/<model>
+    * 4. - path(argv[0])/BIN2DATA_DIR/LIB_DIR_SUFFIX/<model>
+    * 5. - DATADIR/LIB_DIR_SUFFIX/<model> (only on *nix)
+-   * 6. - $SDCC_HOME/PREFIX2DATA_DIR/NON_FREE_LIB_DIR_SUFFIX/<model>
+-   * 7. - path(argv[0])/BIN2DATA_DIR/NON_FREE_LIB_DIR_SUFFIX/<model>
+-   * 8. - DATADIR/NON_FREE_LIB_DIR_SUFFIX/<model> (only on *nix)
+    */
+ 
+   if (!options.nostdlib)
+@@ -2334,13 +2308,6 @@ setLibPath (void)
+       dbuf_makePath (&dbuf, LIB_DIR_SUFFIX, port->general.get_model ? port->general.get_model () : targetname);
+       libDirsSet = processStrSet (dataDirsSet, NULL, dbuf_c_str (&dbuf), NULL);
+ 
+-      if (options.use_non_free)
+-        {
+-          dbuf_set_length (&dbuf, 0);
+-          dbuf_makePath (&dbuf, NON_FREE_LIB_DIR_SUFFIX, port->general.get_model ? port->general.get_model () : targetname);
+-          mergeSets (&libDirsSet, processStrSet (dataDirsSet, NULL, dbuf_c_str (&dbuf), NULL));
+-        }
+-
+       if ((p = getenv (SDCC_LIB_NAME)) != NULL)
+         {
+           addSetHead (&libDirsSet, Safe_strdup (p));
+diff --git a/src/pic14/main.c b/src/pic14/main.c
+index 3d868cc..e8ecaaf 100644
+--- a/src/pic14/main.c
++++ b/src/pic14/main.c
+@@ -42,7 +42,6 @@ static OPTION _pic14_poptions[] =
+     { 0, "--no-pcode-opt", &pic14_options.disable_df, "disable (slightly faulty) optimization on pCode" },
+     { 0, OPTION_STACK_SIZE, &options.stack_size, "sets the size if the argument passing stack (default: 16, minimum: 4)", CLAT_INTEGER },
+     { 0, "--no-extended-instructions", &pic14_options.no_ext_instr, "forbid use of the extended instruction set (e.g., ADDFSR)" },
+-    { 0, "--no-warn-non-free", &pic14_options.no_warn_non_free, "suppress warning on absent --use-non-free option" },
+     { 0, NULL, NULL, NULL }
+   };
+ 
+@@ -153,16 +152,6 @@ _pic14_finaliseOptions (void)
+       addSet (&preArgvSet, dbuf_detach_c_str (&dbuf));
+     }
+ 
+-  if (!pic14_options.no_warn_non_free && !options.use_non_free)
+-    {
+-      fprintf(stderr,
+-              "WARNING: Command line option --use-non-free not present.\n"
+-              "         When compiling for PIC14/PIC16, please provide --use-non-free\n"
+-              "         to get access to device headers and libraries.\n"
+-              "         If you do not use these, you may provide --no-warn-non-free\n"
+-              "         to suppress this warning (not recommended).\n");
+-    } // if
+-
+ }
+ 
+ static void
+diff --git a/src/pic14/main.h b/src/pic14/main.h
+index 4275b65..0dc8c86 100644
+--- a/src/pic14/main.h
++++ b/src/pic14/main.h
+@@ -5,7 +5,6 @@ typedef struct {
+   unsigned int isLibrarySource:1;
+   int disable_df;
+   int no_ext_instr;
+-  int no_warn_non_free;
+ } pic14_options_t;
+ 
+ extern pic14_options_t pic14_options;
+diff --git a/src/pic16/device.h b/src/pic16/device.h
+index cdfbba0..5877f09 100644
+--- a/src/pic16/device.h
++++ b/src/pic16/device.h
+@@ -99,7 +99,6 @@ typedef struct {
+   int gstack;
+   unsigned int debgen;
+   int xinst;
+-  int no_warn_non_free;
+ } pic16_options_t;
+ 
+ extern pic16_options_t pic16_options;
+diff --git a/src/pic16/main.c b/src/pic16/main.c
+index 6f194c1..7f7b2f0 100644
+--- a/src/pic16/main.c
++++ b/src/pic16/main.c
+@@ -655,7 +655,6 @@ OPTION pic16_optionsTable[]= {
+     { 0, "--pcode-verbose",     &pic16_pcode_verbose, "dump pcode related info"},
+     { 0, "--calltree",          &pic16_options.dumpcalltree, "dump call tree in .calltree file"},
+     { 0, "--gstack",            &pic16_options.gstack, "trace stack pointer push/pop to overflow"},
+-    { 0, "--no-warn-non-free",  &pic16_options.no_warn_non_free, "suppress warning on absent --use-non-free option" },
+     { 0, NULL,                  NULL, NULL}
+ };
+ 
+@@ -940,16 +939,6 @@ _pic16_finaliseOptions (void)
+       addSet (&asmOptionsSet, Safe_strdup ("-D__STACK_MODEL_SMALL"));
+     }
+ 
+-  if (!pic16_options.no_warn_non_free && !options.use_non_free)
+-    {
+-      fprintf(stderr,
+-              "WARNING: Command line option --use-non-free not present.\n"
+-              "         When compiling for PIC14/PIC16, please provide --use-non-free\n"
+-              "         to get access to device headers and libraries.\n"
+-              "         If you do not use these, you may provide --no-warn-non-free\n"
+-              "         to suppress this warning (not recommended).\n");
+-    } // if
+-
+   dbuf_destroy (&dbuf);
+ }
+ 
+@@ -979,7 +968,6 @@ _pic16_setDefaultOptions (void)
+   pic16_options.ip_stack = 1;       /* set to 1 to enable ipop/ipush for stack */
+   pic16_options.gstack = 0;
+   pic16_options.debgen = 0;
+-  pic16_options.no_warn_non_free = 0;
+ }
+ 
+ static const char *
+diff --git a/src/regression/Makefile b/src/regression/Makefile
+index 26a7ff3..4547295 100644
+--- a/src/regression/Makefile
++++ b/src/regression/Makefile
+@@ -65,10 +65,10 @@ TARGETPIC = 18f452
+ CFLAGS	= -mpic16 -p$(TARGETPIC)
+ DIR = pic16
+ endif
+-CFLAGS += -Wl,-q --no-warn-non-free
++CFLAGS += -Wl,-q
+ CFLAGS += -Wl,--map
+-CFLAGS += -I $(SDCC_SRC)/device/include/$(DIR) -I $(SDCC_SRC)/device/non-free/include/$(DIR)
+-CFLAGS += -L $(SDCC_BIN)/device/lib/build/$(DIR) -L $(SDCC_BIN)/device/non-free/lib/build/$(DIR)
++CFLAGS += -I $(SDCC_SRC)/device/include/$(DIR)
++CFLAGS += -L $(SDCC_BIN)/device/lib/build/$(DIR)
+ #CFLAGS += --no-pcode-opt
+ #CFLAGS += -V
+ 
+diff --git a/support/regression/ports/pic14/spec.mk b/support/regression/ports/pic14/spec.mk
+index a3dcc05..bef1c45 100644
+--- a/support/regression/ports/pic14/spec.mk
++++ b/support/regression/ports/pic14/spec.mk
+@@ -12,13 +12,9 @@ endif
+ 
+ ifndef SDCC_BIN_PATH
+   ifndef CROSSCOMPILING
+-    SDCCFLAGS += --nostdinc -I$(top_srcdir)/device/include/pic14 -I$(top_srcdir)/device/non-free/include/pic14 -I$(top_srcdir)
+-    LINKFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/pic14 -L$(top_builddir)/device/non-free/lib/build/pic14
+-  else
+-    SDCCFLAGS += --use-non-free
++    SDCCFLAGS += --nostdinc -I$(top_srcdir)/device/include/pic14 -I$(top_srcdir)
++    LINKFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/pic14
+   endif
+-else
+-  SDCCFLAGS += --use-non-free
+ endif
+ 
+ ifdef CROSSCOMPILING
+@@ -26,7 +22,6 @@ ifdef CROSSCOMPILING
+ endif
+ 
+ SDCCFLAGS += -mpic14 -pp16f877 --less-pedantic -Wl,-q
+-SDCCFLAGS += --no-warn-non-free
+ LINKFLAGS += libsdcc.lib libm.lib
+ 
+ OBJEXT = .o
+diff --git a/support/regression/ports/pic16/spec.mk b/support/regression/ports/pic16/spec.mk
+index 1f94cde..f1ac726 100644
+--- a/support/regression/ports/pic16/spec.mk
++++ b/support/regression/ports/pic16/spec.mk
+@@ -12,13 +12,9 @@ endif
+ 
+ ifndef SDCC_BIN_PATH
+   ifndef CROSSCOMPILING
+-    SDCCFLAGS += --nostdinc -I$(top_srcdir)/device/include/pic16 -I$(top_srcdir)/device/non-free/include/pic16 -I$(top_srcdir)
+-    LINKFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/pic16 -L$(top_builddir)/device/non-free/lib/build/pic16
+-  else
+-    SDCCFLAGS += --use-non-free
++    SDCCFLAGS += --nostdinc -I$(top_srcdir)/device/include/pic16 -I$(top_srcdir)
++    LINKFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/pic16
+   endif
+-else
+-  SDCCFLAGS += --use-non-free
+ endif
+ 
+ ifdef CROSSCOMPILING
+@@ -27,7 +23,6 @@ endif
+ 
+ SDCCFLAGS += -mpic16 -pp18f452 --less-pedantic -Wl,-q
+ SDCCFLAGS += --no-peep
+-SDCCFLAGS += --no-warn-non-free
+ LINKFLAGS += libsdcc.lib libc18f.lib libm18f.lib
+ 
+ OBJEXT = .o
+diff --git a/support/scripts/cinc2h.pl b/support/scripts/cinc2h.pl
+index 8558135..30d72b7 100755
+--- a/support/scripts/cinc2h.pl
++++ b/support/scripts/cinc2h.pl
+@@ -39,58 +39,10 @@
+ 
+   -------------------------------------------------
+ 
+-  Steps to add a new target device to SDCC/PIC16:
+-  (Following Raphael Neider <rneider AT web.de>)
+-
+-   1. Create the picDEVICE.c and picDEVICE.h from pDEVICE.inc using
+-      ./cinc2h.pl -p 18f4520 -cb -cp -gp "path/to/gputils_source" -o "path/to/output"
+-
+-   2. mv picDEVICE.h $SDCC/device/non-free/include/pic16
+-   3. mv picDEVICE.c $SDCC/device/non-free/lib/pic16/libdev
+-   4. either
+-
+-      (a) adjust $SDCC/device/lib/pic16/libio/*.ignore
+-          if the device does not support ADC, I2C, or USART
+-          --- OR ---
+-      (b) adjust
+-          * SDCC/scripts/pic18fam-h-gen.pl
+-          * SDCC/device/include/pic16/adc.h (if required)
+-          * SDCC/device/include/pic16/usart.h (if required)
+-          * SDCC/device/lib/pic16/libio/*/* (if required)
+-          to add the new device to the appropriate I/O style
+-          and implement new styles (if required).
+-
+-          Having modified pic18fam-h-gen.pl, you need to run the
+-          script to generate pic18fam.h.gen, which in turn must
+-          then replace your .../include/pic16/pic18fam.h to take
+-          effect; see pic18fam-h-gen.pl for usage information.
+-   6. edit $SDCC/device/include/pic16/pic18fregs.h
+-   7. edit $SDCC/device/include/pic16/pic16devices.txt
+-   8. run cd $SDCC/device/non-free/lib/pic16 && sh update.sh
+-      to regenerate .../libdev/Makefile.am and processors.ac
+-
+-   The file format of steps 6 and 7 is self explanatory, in most
+-   if not all cases you can copy and paste another device's records
+-   and adjust them to the newly added device.
+-
+-  -------------------------------------------------
+-
+-  Steps to add a new target device to SDCC/PIC14:
+-
+-   1. Create the picDEVICE.c and picDEVICE.h from pDEVICE.inc using
+-      ./cinc2h.pl -p 16f1503 -cb -cp -gp "path/to/gputils_source" -o "path/to/output"
+-
+-   2. mv picDEVICE.h $SDCC/device/non-free/include/pic14
+-   3. mv picDEVICE.c $SDCC/device/non-free/lib/pic14/libdev
+-   4. add DEVICE to $SDCC/device/non-free/lib/pic14/libdev/devices.txt
+-      (The names of the enhanced devices the "# enhanced cores" line
+-       after follow.)
+-
+-   5. edit $SDCC/device/include/pic14/pic14devices.txt
+-
+-   The file format of step 5 is self explanatory, in most if not all
+-   cases you can copy and paste another device's records and adjust
+-   them to the newly added device.
++  For its inclusion in the SDCC package distributed with GNU Guix
++  (https://guix.gnu.org/) this file has been modified from the
++  original to remove instructions on its use with non-free software
++  and to update the output of the print_license subroutine below.
+ 
+   $Id: cinc2h.pl 9450 2016-01-09 16:47:43Z molnarkaroly $
+ =cut
+@@ -1345,10 +1297,9 @@ sub print_license($)
+  * Microchip header (.inc) and linker script (.lkr) files Microchip
+  * requires that "The header files should state that they are only to be
+  * used with authentic Microchip devices" which makes them incompatible
+- * with the GPL. Pic device libraries and header files are located at
+- * non-free/lib and non-free/include directories respectively.
+- * Sdcc should be run with the --use-non-free command line option in
+- * order to include non-free header files and libraries.
++ * with the GPL. These non-free libraries and header files (and the
++ * build and run-time options that enable their use) are omitted in the
++ * SDCC package distributed with GNU Guix.
+  *
+  * See http://sdcc.sourceforge.net/ for the latest information on sdcc.
+  */
+diff --git a/support/scripts/pic14-header-parser.pl b/support/scripts/pic14-header-parser.pl
+index 4413c25..57c6076 100755
+--- a/support/scripts/pic14-header-parser.pl
++++ b/support/scripts/pic14-header-parser.pl
+@@ -63,9 +63,7 @@ use constant P_SHOW_ONLY_NAME   => 3;
+ 
+ my @default_paths =
+   (
+-  '/usr/share/sdcc/non-free/include',
+   '/usr/share/sdcc/include',
+-  '/usr/local/share/sdcc/non-free/include',
+   '/usr/local/share/sdcc/include'
+   );
+ 
+diff --git a/support/scripts/pic16-header-parser.pl b/support/scripts/pic16-header-parser.pl
+index 6db417a..4b35225 100755
+--- a/support/scripts/pic16-header-parser.pl
++++ b/support/scripts/pic16-header-parser.pl
+@@ -62,9 +62,7 @@ use constant P_SHOW_ONLY_NAME   => 3;
+ 
+ my @default_paths =
+   (
+-  '/usr/share/sdcc/non-free/include',
+   '/usr/share/sdcc/include',
+-  '/usr/local/share/sdcc/non-free/include',
+   '/usr/local/share/sdcc/include'
+   );
+ 
+diff --git a/support/scripts/sdcc.nsi b/support/scripts/sdcc.nsi
+index 5086181..9527244 100644
+--- a/support/scripts/sdcc.nsi
++++ b/support/scripts/sdcc.nsi
+@@ -477,11 +477,6 @@ ${Section} "SDCC include files" SEC05
+ 
+   SetOutPath "$INSTDIR\include"
+   File "${DEV_ROOT}\include\*.h"
+-
+-  SetOutPath "$INSTDIR\non-free\include\pic14"
+-  File "${DEV_ROOT}\non-free\include\pic14\*.h"
+-  SetOutPath "$INSTDIR\non-free\include\pic16"
+-  File "${DEV_ROOT}\non-free\include\pic16\*.h"
+ ${SectionEnd}
+ 
+ ${Section} "SDCC DS390 library" SEC06
+@@ -579,18 +574,12 @@ ${Section} "SDCC PIC16 library" SEC21
+   SetOutPath "$INSTDIR\lib\pic16"
+   File "${DEV_ROOT}\lib\pic16\*.o"
+   File "${DEV_ROOT}\lib\pic16\*.lib"
+-
+-  SetOutPath "$INSTDIR\non-free\lib\pic16"
+-  File "${DEV_ROOT}\non-free\lib\pic16\*.lib"
+ ${SectionEnd}
+ 
+ ${Section} "SDCC PIC14 library" SEC22
+   SectionIn 1 2
+   SetOutPath "$INSTDIR\lib\pic14"
+   File "${DEV_ROOT}\lib\pic14\*.lib"
+-
+-  SetOutPath "$INSTDIR\non-free\lib\pic14"
+-  File "${DEV_ROOT}\non-free\lib\pic14\*.lib"
+ ${SectionEnd}
+ 
+ ${Section} "SDCC STM8 library" SEC23
+@@ -691,10 +680,6 @@ ${Section} "SDCC library sources" SEC25
+   File "${DEV_ROOT}\lib\src\pic14\libsdcc\enhanced\*.inc"
+ #  File "${DEV_ROOT}\lib\src\pic14\libsdcc\Makefile"
+ 
+-  SetOutPath "$INSTDIR\non-free\lib\src\pic14\libdev"
+-  File "${DEV_ROOT}\non-free\lib\src\pic14\libdev\*.c"
+-#  File "${DEV_ROOT}\non-free\lib\src\pic14\libdev\Makefile"
+-
+   SetOutPath "$INSTDIR\lib\src\pic14\libm"
+   File "${DEV_ROOT}\lib\src\pic14\libm\*.c"
+ 
+@@ -746,10 +731,6 @@ ${Section} "SDCC library sources" SEC25
+   File "${DEV_ROOT}\lib\src\pic16\libc\utils\*.S"
+ #  File "${DEV_ROOT}\lib\src\pic16\libc\utils\Makefile"
+ 
+-  SetOutPath "$INSTDIR\non-free\lib\src\pic16\libdev"
+-  File "${DEV_ROOT}\non-free\lib\src\pic16\libdev\*.c"
+-#  File "${DEV_ROOT}\non-free\lib\src\pic16\libdev\Makefile"
+-
+   SetOutPath "$INSTDIR\lib\src\pic16\libio"
+   File "${DEV_ROOT}\lib\src\pic16\libio\*.ignore"
+ #  File "${DEV_ROOT}\lib\src\pic16\libio\Makefile"
+@@ -1003,13 +984,9 @@ ${Section} Uninstall SECUNINSTALL
+ 
+   Delete "$INSTDIR\lib\pic14\*.lib"
+ 
+-  Delete "$INSTDIR\non-free\lib\pic14\*.lib"
+-
+   Delete "$INSTDIR\lib\pic16\*.o"
+   Delete "$INSTDIR\lib\pic16\*.lib"
+ 
+-  Delete "$INSTDIR\non-free\lib\pic16\*.lib"
+-
+   Delete "$INSTDIR\lib\hc08\*.lib"
+ 
+   Delete "$INSTDIR\lib\s08\*.lib"
+@@ -1059,9 +1036,7 @@ ${Section} Uninstall SECUNINSTALL
+   Delete "$INSTDIR\include\pic14\*.h"
+   Delete "$INSTDIR\include\pic14\*.txt"
+   Delete "$INSTDIR\include\pic14\*.inc"
+-  Delete "$INSTDIR\non-free\include\pic14\*.h"
+   Delete "$INSTDIR\include\pic16\*.h"
+-  Delete "$INSTDIR\non-free\include\pic16\*.h"
+   Delete "$INSTDIR\include\pic16\*.txt"
+   Delete "$INSTDIR\include\mcs51\*.h"
+   Delete "$INSTDIR\include\hc08\*.h"
+@@ -1119,9 +1094,7 @@ ${Section} Uninstall SECUNINSTALL
+   Delete "$INSTDIR\uninstall.exe"
+ 
+   RMDir /r "$INSTDIR\lib\src\pic14"
+-  RMDir /r "$INSTDIR\non-free\lib\src\pic14"
+   RMDir /r "$INSTDIR\lib\src\pic16"
+-  RMDir /r "$INSTDIR\non-free\lib\src\pic16"
+   RMDir "$INSTDIR\lib\src\small"
+   RMDir "$INSTDIR\lib\src\medium"
+   RMDir "$INSTDIR\lib\src\large"
+@@ -1138,12 +1111,9 @@ ${Section} Uninstall SECUNINSTALL
+   RMDir "$INSTDIR\lib\src\s08"
+   RMDir "$INSTDIR\lib\src\stm8"
+   RMDir "$INSTDIR\lib\src"
+-  RMDir "$INSTDIR\non-free\lib\src"
+ 
+   RMDir "$INSTDIR\lib\pic14"
+-  RMDir "$INSTDIR\non-free\lib\pic14"
+   RMDir "$INSTDIR\lib\pic16"
+-  RMDir "$INSTDIR\non-free\lib\pic16"
+   RMDir "$INSTDIR\lib\z80"
+   RMDir "$INSTDIR\lib\z180"
+   RMDir "$INSTDIR\lib\r2k"
+@@ -1160,16 +1130,13 @@ ${Section} Uninstall SECUNINSTALL
+   RMDir "$INSTDIR\lib\s08"
+   RMDir "$INSTDIR\lib\stm8"
+   RMDir "$INSTDIR\lib"
+-  RMDir "$INSTDIR\non-free\lib"
+ 
+   RMDir "$INSTDIR\include\asm\z80"
+   RMDir "$INSTDIR\include\asm\z180"
+   RMDir "$INSTDIR\include\asm\r2k"
+   RMDir "$INSTDIR\include\asm\r3ka"
+   RMDir "$INSTDIR\include\asm\pic16"
+-  RMDir "$INSTDIR\non-free\include\asm\pic16"
+   RMDir "$INSTDIR\include\asm\pic14"
+-  RMDir "$INSTDIR\non-free\include\asm\pic14"
+   RMDir "$INSTDIR\include\asm\mcs51"
+   RMDir "$INSTDIR\include\asm\gbz80"
+   RMDir "$INSTDIR\include\asm\ds390"
+@@ -1178,17 +1145,12 @@ ${Section} Uninstall SECUNINSTALL
+   RMDir "$INSTDIR\include\asm"
+   RMDir "$INSTDIR\include\z180"
+   RMDir "$INSTDIR\include\pic14"
+-  RMDir "$INSTDIR\non-free\include\pic14"
+   RMDir "$INSTDIR\include\pic16"
+-  RMDir "$INSTDIR\non-free\include\pic16"
+   RMDir "$INSTDIR\include\mcs51"
+   RMDir "$INSTDIR\include\hc08"
+   RMDir "$INSTDIR\include\ds400"
+   RMDir "$INSTDIR\include\ds390"
+   RMDir "$INSTDIR\include"
+-  RMDir "$INSTDIR\non-free\include"
+-
+-  RMDir "$INSTDIR\non-free"
+ 
+ !ifdef FULL_DOC
+   RMDir /r "$INSTDIR\doc"
+diff --git a/support/scripts/sdcc_cygwin_mingw32 b/support/scripts/sdcc_cygwin_mingw32
+index 5575663..2588d4f 100755
+--- a/support/scripts/sdcc_cygwin_mingw32
++++ b/support/scripts/sdcc_cygwin_mingw32
+@@ -6,9 +6,7 @@
+ --datarootdir="/sdcc" \
+ docdir="\${datarootdir}/doc" \
+ include_dir_suffix="include" \
+-non_free_include_dir_suffix="non-free/include" \
+ lib_dir_suffix="lib" \
+-non_free_lib_dir_suffix="non-free/lib" \
+ sdccconf_h_dir_separator="\\\\" \
+ CC="gcc -mno-cygwin" \
+ CXX="g++ -mno-cygwin"
+diff --git a/support/scripts/sdcc_mingw32 b/support/scripts/sdcc_mingw32
+index 96e3280..050761e 100755
+--- a/support/scripts/sdcc_mingw32
++++ b/support/scripts/sdcc_mingw32
+@@ -19,9 +19,7 @@ export SDCCCONFIGUREFLAGS=" \
+ --datarootdir=/sdcc \
+ docdir=\${datarootdir}/doc \
+ include_dir_suffix=include \
+-non_free_include_dir_suffix=non-free/include \
+ lib_dir_suffix=lib \
+-non_free_lib_dir_suffix=non-free/lib \
+ sdccconf_h_dir_separator=\\\\ \
+ --disable-device-lib \
+ --host=i586-mingw32msvc --build=unknown-unknown-linux-gnu"

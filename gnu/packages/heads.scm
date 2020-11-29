@@ -19,6 +19,7 @@
 (define-module (gnu packages heads)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -161,3 +162,36 @@ done
     (synopsis "Musl-cross gcc 5 toolchain")
     (description "Musl-cross toolchain: binutils, gcc 5 and musl.")
     (license license:isc))))
+
+;; This package provides a "dev.cpio" file usable as a base for booting Heads.
+(define-public heads-dev-cpio
+  (package
+    (name "heads-dev-cpio")
+    (version "0.1")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix cpio))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (guix cpio)
+                                (srfi srfi-26))
+                   (mkdir-p "dev") ; input directory.
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (libexec (string-append out "/libexec")))
+                     (mkdir-p libexec)
+                     (call-with-output-file (string-append libexec "/dev.cpio")
+                      (lambda (port)
+                        (write-cpio-archive '("dev" "dev/console") port
+                         #:file->header
+                         (lambda (name)
+                           (if (string=? "dev/console" name)
+                               (special-file->cpio-header* name 'char-special 5 1 #o600)
+                               (file->cpio-header* name))))))
+                     #t))))
+    (synopsis "@file{dev.cpio} for Heads")
+    (description "This package provides a @file{dev.cpio} file usable as a
+base for heads' initrd.")
+    (home-page "http://osresearch.net/")
+    (license license:bsd-2)))

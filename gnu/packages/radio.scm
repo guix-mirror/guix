@@ -159,14 +159,14 @@ this package.  E.g.: @code{(udev-rules-service 'rtl-sdr rtl-sdr)}")
 (define-public chirp
   (package
     (name "chirp")
-    (version "20201014")
+    (version "20201121")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://trac.chirp.danplanet.com/chirp_daily/daily-"
                            version "/chirp-daily-" version ".tar.gz"))
        (sha256
-        (base32 "16x3ix2n7a9l7lln2pri1xfmhyfvvzxb0nr3h33iajqimbwckxj0"))))
+        (base32 "092jryb1jn9li6zj243awv6piz1lhghqsm4phrz7j0rgqf76dy4n"))))
     (build-system python-build-system)
     (inputs
      `(("python2-libxml2" ,python2-libxml2)
@@ -538,7 +538,7 @@ to the fix block above.
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.12.1")
+    (version "2.13.5")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ to the fix block above.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00alf3q6y313xpx6p7v43vqsphd2x4am4q362lw21bcy9wc4jidw"))))
+        (base32 "168wjad5g0ka555hwsciwbj7fqx1c89q59hq1yxj8aiyp5kfcahx"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -567,7 +567,7 @@ to the fix block above.
        ("qtsvg" ,qtsvg)
        ("volk" ,volk)))
     (arguments
-     `(#:tests? #f)) ; No tests
+     `(#:tests? #f))                    ; no tests
     (synopsis "Software defined radio receiver")
     (description "Gqrx is a software defined radio (SDR) receiver implemented
 using GNU Radio and the Qt GUI toolkit.")
@@ -577,14 +577,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.14")
+    (version "4.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0hr6xbv01xf7z4r2jxxhn8xjdmca2198q4m9glh4877dllvfq6xj"))))
+        (base32 "1dfkvhs0ri5kbyskk730ik8ix5z138qys26b31p6kixd8jjkw3k4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -613,14 +613,14 @@ hardware.")
 (define-public flrig
   (package
     (name "flrig")
-    (version "1.3.51")
+    (version "1.3.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/flrig/flrig-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0aq4x0ai9q08ypfhzfj2inc4z3q39zq1l6h9as1kil9yn4zbay61"))))
+        (base32 "18c154080vl25cy4l5amh96abm6kzm7mzld9h58pabc28yqq8zl8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1015,7 +1015,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "3.8.1")
+    (version "4.0")
     (source
      (origin
        (method git-fetch)
@@ -1024,7 +1024,7 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xg8rzrxqklx1m9ncxsd96dlkbjcsxfi2mrb859v50f07xysdyd8"))))
+        (base32 "1zacsqaqsiapljhzw31dwc4nld2rp98jm3ivkyznrhzk9n156p42"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1052,7 +1052,7 @@ gain and standing wave ratio.")
 It can be used to decode the ADS-B signals that planes emit to indicate
 their position, altitude, speed, etc.")
     (home-page "https://github.com/flightaware/dump1090")
-    (license license:bsd-3)))
+    (license license:gpl2+)))
 
 (define-public rtl-433
   (package

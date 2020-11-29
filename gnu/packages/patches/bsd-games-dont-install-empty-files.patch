@@ -1,0 +1,87 @@
+Those games rely on user to provide the files to write scores in.
+Those score-files are initially empty.  Anyway, the Store is read-only.
+So we do not install those empty files.
+
+diff -Naur bsd-games-2.17/install-score.in bsd-games-patch/install-score.in
+--- bsd-games-2.17/install-score.in	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/install-score.in	2020-04-22 21:41:47.810544804 +0700
+@@ -1,45 +0,0 @@
+-# install-score.in - install a score file
+-#
+-# Copyright (c) 1997, 1998, 1999 Joseph Samuel Myers.
+-# All rights reserved.
+-#
+-# Redistribution and use in source and binary forms, with or without
+-# modification, are permitted provided that the following conditions
+-# are met:
+-# 1. Redistributions of source code must retain the above copyright
+-#    notice, this list of conditions and the following disclaimer.
+-# 2. Redistributions in binary form must reproduce the above copyright
+-#    notice, this list of conditions and the following disclaimer in the
+-#    documentation and/or other materials provided with the distribution.
+-# 3. The name of the author may not be used to endorse or promote products
+-#    derived from this software without specific prior written permission.
+-#
+-# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+-# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+-# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+-# AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+-# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+-# SUCH DAMAGE.
+-
+-set -e
+-
+-if [ "$1" = "-p" ]; then
+-    scorefile="@install_prefix@$2"
+-    perms=@vardata_perms_priv@
+-else
+-    scorefile="@install_prefix@$1"
+-    perms=@vardata_perms@
+-fi
+-
+-mkdir -p "$(dirname "$scorefile")"
+-
+-test -e "$scorefile" || touch "$scorefile"
+-if [ @do_chown@ = y ]; then
+-    chown @vardata_owner@:@vardata_group@ "$scorefile"
+-fi
+-chmod "$perms" "$scorefile"
+diff -Naur bsd-games-2.17/phantasia/Makefrag bsd-games-patch/phantasia/Makefrag
+--- bsd-games-2.17/phantasia/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/phantasia/Makefrag	2020-04-22 21:26:00.162409464 +0700
+@@ -27,9 +27,8 @@
+ # SUCH DAMAGE.
+
+ phantasia_DIRS := $(GAMESDIR) $(MAN6DIR) $(PHANTASIA_DIR)
+-phantasia_VFILES1 := gold lastdead mess monsters motd void
+-phantasia_VFILES2 := scoreboard characs
+-phantasia_CLEANFILES := $(phantasia_VFILES1) $(phantasia_VFILES2) scorefiles.stamp
++phantasia_VFILES1 := monsters
++phantasia_CLEANFILES := $(phantasia_VFILES1) scorefiles.stamp
+
+ phantasia_all:	phantasia/phantasia phantasia/phantasia.6 phantasia/scorefiles.stamp
+
+@@ -43,9 +42,4 @@
+	(set -e; for f in $(phantasia_VFILES1); do \
+	    cp phantasia/$$f $(INSTALL_PREFIX)$(PHANTASIA_DIR)/$$f; \
+	    $(INSTALL_SCORE_FILE) $(PHANTASIA_DIR)/$$f; done)
+-	(set -e; for f in $(phantasia_VFILES2); do \
+-	    if [ ! -e $(PHANTASIA_DIR)/$$f ]; then \
+-		cp phantasia/$$f $(INSTALL_PREFIX)$(PHANTASIA_DIR)/$$f; fi; done; \
+-	    $(INSTALL_SCORE_FILE) $(PHANTASIA_DIR)/scoreboard; \
+-	    $(INSTALL_SCORE_FILE) -p $(PHANTASIA_DIR)/characs)
+	$(INSTALL_MANUAL) phantasia/phantasia.6
+diff -Naur bsd-games-2.17/sail/Makefrag bsd-games-patch/sail/Makefrag
+--- bsd-games-2.17/sail/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/sail/Makefrag	2020-04-22 21:26:48.701801676 +0700
+@@ -34,5 +34,4 @@
+	$(INSTALL_SCORE_GAME) sail/sail $(INSTALL_PREFIX)$(GAMESDIR)/sail
+	$(HIDE_GAME) sail
+	$(INSTALL_SCORE_FILE) $(SAIL_SCOREFILE)
+-	$(INSTALL_SAIL_DIR) $(INSTALL_PREFIX)$(SAIL_DIR)
+	$(INSTALL_MANUAL) sail/sail.6

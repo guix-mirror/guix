@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages databases)
   #:use-module (guix build-system trivial)
   #:use-module (guix build union)
+  #:use-module (guix deprecation)
   #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix records)
@@ -146,8 +148,7 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-configuration>
   postgresql-configuration make-postgresql-configuration
   postgresql-configuration?
-  (postgresql         postgresql-configuration-postgresql ;<package>
-                      (default postgresql))
+  (postgresql         postgresql-configuration-postgresql) ;<package>
   (port               postgresql-configuration-port
                       (default 5432))
   (locale             postgresql-configuration-locale
@@ -278,15 +279,15 @@ host	all	all	::1/128 	md5"))
                        (service-extension account-service-type
                                           (const %postgresql-accounts))
                        (service-extension profile-service-type
-                                          (compose list postgresql-configuration-postgresql))))
-                (default-value (postgresql-configuration))))
+                                          (compose list postgresql-configuration-postgresql))))))
 
-(define* (postgresql-service #:key (postgresql postgresql)
-                             (port 5432)
-                             (locale "en_US.utf8")
-                             (config-file (postgresql-config-file))
-                             (data-directory "/var/lib/postgresql/data")
-                             (extension-packages '()))
+(define-deprecated (postgresql-service #:key (postgresql postgresql)
+                                       (port 5432)
+                                       (locale "en_US.utf8")
+                                       (config-file (postgresql-config-file))
+                                       (data-directory "/var/lib/postgresql/data")
+                                       (extension-packages '()))
+  postgresql-service-type
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}
@@ -465,8 +466,11 @@ storage:
   mysql-configuration make-mysql-configuration
   mysql-configuration?
   (mysql mysql-configuration-mysql (default mariadb))
+  (bind-address mysql-configuration-bind-address (default "127.0.0.1"))
   (port mysql-configuration-port (default 3306))
-  (extra-content mysql-configuration-extra-content (default "")))
+  (socket mysql-configuration-socket (default "/run/mysqld/mysqld.sock"))
+  (extra-content mysql-configuration-extra-content (default ""))
+  (auto-upgrade? mysql-configuration-auto-upgrade? (default #t)))
 
 (define %mysql-accounts
   (list (user-group
@@ -481,10 +485,11 @@ storage:
 
 (define mysql-configuration-file
   (match-lambda
-    (($ <mysql-configuration> mysql port extra-content)
+    (($ <mysql-configuration> mysql bind-address port socket extra-content)
      (mixed-text-file "my.cnf" "[mysqld]
 datadir=/var/lib/mysql
-socket=/run/mysqld/mysqld.sock
+socket=" socket "
+bind-address=" bind-address "
 port=" (number->string port) "
 " extra-content "
 "))))
@@ -556,6 +561,52 @@ FLUSH PRIVILEGES;
                      #:user "mysql" #:group "mysql")))
          (stop #~(make-kill-destructor)))))
 
+(define (mysql-upgrade-wrapper mysql socket-file)
+  ;; The MySQL socket and PID file may appear before the server is ready to
+  ;; accept connections.  Ensure the socket is responsive before attempting
+  ;; to run the upgrade script.
+  (program-file
+   "mysql-upgrade-wrapper"
+   #~(begin
+       (let ((mysql-upgrade #$(file-append mysql "/bin/mysql_upgrade"))
+             (timeout 10))
+         (begin
+           (let loop ((i 0))
+             (catch 'system-error
+               (lambda ()
+                 (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                   (connect sock AF_UNIX #$socket-file)
+                   (close-port sock)
+                   ;; The socket is ready!
+                   (execl mysql-upgrade mysql-upgrade
+                          (string-append "--socket=" #$socket-file))))
+                 (lambda args
+                   (if (< i timeout)
+                       (begin
+                         (sleep 1)
+                         (loop (+ 1 i)))
+                       ;; No luck, give up.
+                       (throw 'timeout-error
+                              "MySQL server did not appear in time!"))))))))))
+
+(define (mysql-upgrade-shepherd-service config)
+  (list (shepherd-service
+         (provision '(mysql-upgrade))
+         (requirement '(mysql))
+         (one-shot? #t)
+         (documentation "Upgrade MySQL database schemas.")
+         (start (let ((mysql (mysql-configuration-mysql config))
+                      (socket (mysql-configuration-socket config)))
+                  #~(make-forkexec-constructor
+                     (list #$(mysql-upgrade-wrapper mysql socket))
+                     #:user "mysql" #:group "mysql"))))))
+
+(define (mysql-shepherd-services config)
+  (if (mysql-configuration-auto-upgrade? config)
+      (append (mysql-shepherd-service config)
+              (mysql-upgrade-shepherd-service config))
+      (mysql-shepherd-service config)))
+
 (define mysql-service-type
   (service-type
    (name 'mysql)
@@ -565,15 +616,11 @@ FLUSH PRIVILEGES;
           (service-extension activation-service-type
                              %mysql-activation)
           (service-extension shepherd-root-service-type
-                             mysql-shepherd-service)))
+                             mysql-shepherd-services)))
    (default-value (mysql-configuration))))
 
-(define* (mysql-service #:key (config (mysql-configuration)))
-  "Return a service that runs @command{mysqld}, the MySQL or MariaDB
-database server.
-
-The optional @var{config} argument specifies the configuration for
-@command{mysqld}, which should be a @code{<mysql-configuration>} object."
+(define-deprecated (mysql-service #:key (config (mysql-configuration)))
+  mysql-service-type
   (service mysql-service-type config))
 
 

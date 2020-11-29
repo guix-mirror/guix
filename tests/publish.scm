@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -412,7 +413,8 @@ References: ~%"
                     (call-with-new-thread
                      (lambda ()
                        (guix-publish "--port=6797" "-C2"
-                                     (string-append "--cache=" cache)))))))
+                                     (string-append "--cache=" cache)
+                                     "--cache-bypass-threshold=0"))))))
        (wait-until-ready 6797)
        (let* ((base     "http://localhost:6797/")
               (part     (store-path-hash-part %item))
@@ -432,6 +434,11 @@ References: ~%"
                  (< ttl 3600)))
 
               (wait-for-file cached)
+
+              ;; Both the narinfo and nar should be world-readable.
+              (= #o644 (stat:perms (lstat cached)))
+              (= #o644 (stat:perms (lstat nar)))
+
               (let* ((body         (http-get-port url))
                      (compressed   (http-get nar-url))
                      (uncompressed (http-get (string-append base "nar/"
@@ -461,7 +468,8 @@ References: ~%"
                     (call-with-new-thread
                      (lambda ()
                        (guix-publish "--port=6794" "-Cgzip:2" "-Clzip:2"
-                                     (string-append "--cache=" cache)))))))
+                                     (string-append "--cache=" cache)
+                                     "--cache-bypass-threshold=0"))))))
        (wait-until-ready 6794)
        (let* ((base     "http://localhost:6794/")
               (part     (store-path-hash-part %item))
@@ -516,7 +524,8 @@ References: ~%"
                       (call-with-new-thread
                        (lambda ()
                          (guix-publish "--port=6796" "-C2" "--ttl=42h"
-                                       (string-append "--cache=" cache)))))))
+                                       (string-append "--cache=" cache)
+                                       "--cache-bypass-threshold=0"))))))
          (wait-until-ready 6796)
          (let* ((base     "http://localhost:6796/")
                 (part     (store-path-hash-part item))
@@ -580,11 +589,78 @@ References: ~%"
                                        (basename item)
                                        ".narinfo"))
               (response (http-get url)))
-         (and (= 404 (response-code response))
+         (and (= 200 (response-code response))    ;we're below the threshold
               (wait-for-file cached)
               (begin
                 (delete-paths %store (list item))
                 (response-code (pk 'response (http-get url))))))))))
+
+(test-equal "with cache, cache bypass"
+  200
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6788" "-C" "gzip"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6788)
+
+       (let* ((base     "http://localhost:6788/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (narinfo  (string-append base part ".narinfo"))
+              (nar      (string-append base "nar/gzip/" (basename item)))
+              (cached   (string-append cache "/gzip/" (basename item)
+                                       ".narinfo")))
+         ;; We're below the default cache bypass threshold, so NAR and NARINFO
+         ;; should immediately return 200.  The NARINFO request should trigger
+         ;; caching, and the next request to NAR should return 200 as well.
+         (and (let ((response (pk 'r1 (http-get nar))))
+                (and (= 200 (response-code response))
+                     (not (response-content-length response)))) ;not known
+              (= 200 (response-code (http-get narinfo)))
+              (begin
+                (wait-for-file cached)
+                (let ((response (pk 'r2 (http-get nar))))
+                  (and (> (response-content-length response)
+                          (stat:size (stat item)))
+                       (response-code response))))))))))
+
+(test-equal "with cache, cache bypass, unmapped hash part"
+  200
+
+  ;; This test reproduces the bug described in <https://bugs.gnu.org/44442>:
+  ;; the daemon connection would be closed as a side effect of a nar request
+  ;; for a non-existing file name.
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6787" "-C" "gzip"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6787)
+
+       (let* ((base     "http://localhost:6787/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (narinfo  (string-append base part ".narinfo"))
+              (nar      (string-append base "nar/gzip/" (basename item)))
+              (cached   (string-append cache "/gzip/" (basename item)
+                                       ".narinfo")))
+         ;; The first response used to be 500 and to terminate the daemon
+         ;; connection as a side effect.
+         (and (= (response-code
+                  (http-get (string-append base "nar/gzip/"
+                                           (make-string 32 #\e)
+                                           "-does-not-exist")))
+                 404)
+              (= 200 (response-code (http-get nar)))
+              (= 200 (response-code (http-get narinfo)))
+              (begin
+                (wait-for-file cached)
+                (response-code (http-get nar)))))))))
 
 (test-equal "/log/NAME"
   `(200 #t application/x-bzip2)
@@ -612,6 +688,10 @@ References: ~%"
   404
   (let ((uri (publish-uri "/log/does-not-exist")))
     (response-code (http-get uri))))
+
+(test-equal "/signing-key.pub"
+  200
+  (response-code (http-get (publish-uri "/signing-key.pub"))))
 
 (test-equal "non-GET query"
   '(200 404)

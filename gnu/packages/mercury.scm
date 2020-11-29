@@ -56,7 +56,7 @@
 (define-public mercury-minimal
   (package
     (name "mercury-minimal")
-    (version "20.06")
+    (version "20.06.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -64,7 +64,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gkr9w8lsdzqykqwd3f1a1phsqv090648i14ilhv8jdg85frdimr"))))
+                "07qwkk871yxd4q1sw5xv26g8jrpvnpprmzvfd7zg7i142kl3l2gg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -173,7 +173,7 @@ separate compilation, and numerous optimization/time trade-offs.")
 (define-public mercury
   (package (inherit mercury-minimal)
            (name "mercury")
-           (version "20.06")
+           (version "20.06.1")
            (source
             (origin
               (method git-fetch)
@@ -185,7 +185,7 @@ separate compilation, and numerous optimization/time trade-offs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pc51r7vlqmi689rkwdkk1ka2dyk36q11dqvl339cizng6mp72h6"))))
+                "1b6rmdinw8mj6n9sc7c75kkf42gd2k254rf51x4snlrqckxj7aaz"))))
            (arguments
             (substitute-keyword-arguments
                 (package-arguments mercury-minimal)

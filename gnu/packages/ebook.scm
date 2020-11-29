@@ -281,7 +281,7 @@
                   (lambda (binary)
                     (wrap-program binary
                       ;; Make QtWebEngineProcess available.
-                      `("QTWEBENGINEPROCESS_PATH" ":" =
+                      `("QTWEBENGINEPROCESS_PATH" =
                         ,(list (string-append
                                 qtwebengine
                                 "/lib/qt5/libexec/QtWebEngineProcess")))))
@@ -415,7 +415,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.7.2")
+    (version "0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -424,7 +424,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fmbddi4ga0bppwg3rm3yjmf7jgqc6zfslmavnr1pglbzkjhy9fs"))))
+        (base32 "1pg0djhg4p32vxfwf6bfals31zf93m56fx1x4q5jhhdwmll7xl6w"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -432,7 +432,7 @@ following formats:
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-desktop-file
            (lambda _
-             (substitute* "data/com.github.geigi.cozy.desktop.in"
+             (substitute* "data/com.github.geigi.cozy.desktop"
                (("Exec=com.github.geigi.cozy") "Exec=cozy"))
              #t))
          (add-after 'install 'patch-executable-name
@@ -477,7 +477,7 @@ following formats:
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
-       ("python-apsw" ,python-apsw)
+       ("libhandy" ,libhandy)
        ("python-distro" ,python-distro)
        ("python-gst" ,python-gst)
        ("python-mutagen" ,python-mutagen)

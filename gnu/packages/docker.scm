@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
@@ -70,11 +70,11 @@
     (inputs
      `(("python-requests" ,python-requests-2.20)
        ("python-six" ,python-six)
-       ("python-urllib3" ,python-urllib3-1.24)
-       ("python-websocket-client" ,python-websocket-client)))
+       ("python-urllib3" ,python-urllib3-1.24)))
     (propagated-inputs
      `(("python-docker-pycreds" ,python-docker-pycreds)
-       ("python-paramiko" ,python-paramiko))) ; adds SSH support
+       ("python-paramiko" ,python-paramiko)    ;adds SSH support
+       ("python-websocket-client" ,python-websocket-client)))
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
     (description "Docker-Py is a Python client for the Docker container
@@ -671,7 +671,7 @@ provisioning etc.")
 (define-public cqfd
   (package
     (name "cqfd")
-    (version "5.1.0")
+    (version "5.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -680,7 +680,7 @@ provisioning etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xhydz01f2rrnw7rmnaxh3f3q1ariq7j2ig0i0w1p3wn10l3q0nv"))))
+                "1zqgznfl7slfrddfpy2pfmablbvyf7296d3b3vcprilqb93cc7li"))))
     (build-system gnu-build-system)
     (arguments
      ;; The test suite requires a docker daemon and connectivity.

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public lean
   (package
     (name "lean")
-    (version "3.17.1")
+    (version "3.23.0")
     (home-page "https://github.com/leanprover-community/lean")
     (source (origin
               (method git-fetch)
@@ -36,7 +37,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15yfryg98x9lvy00v1w5kg4hp921mpvlxx1ic3m08k1ls6p1gkj4"))))
+                "09mklc1p6ms1jayg2f89hqfmhca3h5744lli936l38ypn1d00sxx"))))
     (build-system cmake-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -65,7 +66,7 @@
                #t)))
          (add-before 'configure 'chdir-to-src
            (lambda _ (chdir "src") #t)))))
-    (synopsis "The Lean theorem prover and programming language")
+    (synopsis "Theorem prover and programming language")
     (description
      "Lean is a theorem prover and programming language with a small trusted
 core based on dependent typed theory, aiming to bridge the gap between

@@ -46,6 +46,9 @@
 (define %default-initrd (string-append %default-initrd-path "/initrd.cpio.gz"))
 (define %default-root-device (uuid "abcdef12-3456-7890-abcd-ef1234567890"))
 (define %default-store-device (uuid "01234567-89ab-cdef-0123-456789abcdef"))
+(define %default-btrfs-subvolume "testfs")
+(define %default-store-directory-prefix
+  (string-append "/" %default-btrfs-subvolume))
 (define %default-store-mount-point (%store-prefix))
 (define %default-multiboot-modules '())
 (define %default-locale "es_ES.utf8")
@@ -63,6 +66,7 @@
    (multiboot-modules %default-multiboot-modules)
    (locale %default-locale)
    (store-device %default-store-device)
+   (store-directory-prefix %default-store-directory-prefix)
    (store-mount-point %default-store-mount-point)))
 
 (define %default-operating-system
@@ -81,7 +85,10 @@
 		         (file-system
                            (device %default-store-device)
                            (mount-point %default-store-mount-point)
-                           (type "btrfs"))
+                           (type "btrfs")
+                           (options
+                            (string-append "subvol="
+                                           %default-btrfs-subvolume)))
                          %base-file-systems))))
 
 (define (quote-uuid uuid)
@@ -103,6 +110,7 @@
           (with-store #t)
           (store-device
            (quote-uuid %default-store-device))
+          (store-directory-prefix %default-store-directory-prefix)
           (store-mount-point %default-store-mount-point))
   (define (generate-boot-parameters)
     (define (sexp-or-nothing fmt val)
@@ -117,10 +125,12 @@
             (sexp-or-nothing " (kernel-arguments ~S)" kernel-arguments)
             (sexp-or-nothing " (initrd ~S)" initrd)
             (if with-store
-                (format #false " (store~a~a)"
+                (format #false " (store~a~a~a)"
                         (sexp-or-nothing " (device ~S)" store-device)
                         (sexp-or-nothing " (mount-point ~S)"
-                                         store-mount-point))
+                                         store-mount-point)
+                        (sexp-or-nothing " (directory-prefix ~S)"
+                                         store-directory-prefix))
                 "")
             (sexp-or-nothing " (locale ~S)" locale)
             (sexp-or-nothing " (bootloader-name ~a)" bootloader-name)
@@ -149,6 +159,7 @@
        (test-read-boot-parameters #:store-device #false)
        (test-read-boot-parameters #:store-device 'false)
        (test-read-boot-parameters #:store-mount-point #false)
+       (test-read-boot-parameters #:store-directory-prefix #false)
        (test-read-boot-parameters #:multiboot-modules #false)
        (test-read-boot-parameters #:locale #false)
        (test-read-boot-parameters #:bootloader-name #false
@@ -250,6 +261,12 @@
 (test-equal "from os, locale"
   %default-locale
   (boot-parameters-locale
+   (operating-system-boot-parameters %default-operating-system
+                                     %default-root-device)))
+
+(test-equal "from os, store-directory-prefix"
+  %default-store-directory-prefix
+  (boot-parameters-store-directory-prefix
    (operating-system-boot-parameters %default-operating-system
                                      %default-root-device)))
 

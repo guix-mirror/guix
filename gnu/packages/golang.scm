@@ -59,6 +59,7 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -232,7 +233,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.14.4")
+    (version "1.14.10")
     (source
      (origin
        (method git-fetch)
@@ -242,7 +243,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08bazglmqp123c9dgrxflvxd011xsqfxsgah2kzbvca0mhm6qcm3"))))
+         "0h1nmqzjc0xxpn6n2hjq7692gdqkznagzdmiq9490yzkrrii2lgk"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:system system)
@@ -918,6 +919,30 @@ time.")
  spec in Go.")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-xerrors
+  (let ((commit "5ec99f83aff198f5fbd629d6c8d8eb38a04218ca")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-xerrors")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/xerrors")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1dbzc3gmf2haazpv7cgmv97rq40g2xzwbglc17vas8dwhgwgwrzb"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/xerrors"))
+      (synopsis "Go 1.13 error values")
+      (description
+       "This package holds the transition packages for the new Go 1.13 error values.")
+      (home-page "https://godoc.org/golang.org/x/xerrors")
+      (license license:bsd-3))))
+
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")
@@ -1120,7 +1145,7 @@ optimized for performance yet simple to use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tv42/httpunix.git")
+               (url "https://github.com/tv42/httpunix")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1689,7 +1714,7 @@ finding resources located relative to the executable file.")
          (method git-fetch)
          (uri (git-reference
                (url
-                "https://github.com/ayufan/golang-kardianos-service.git")
+                "https://github.com/ayufan/golang-kardianos-service")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3975,7 +4000,7 @@ colorized or SGR defined output to the standard output.")
 (define-public go-github-com-google-go-cmp-cmp
   (package
     (name "go-github-com-google-go-cmp-cmp")
-    (version "0.3.1")
+    (version "0.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3984,11 +4009,13 @@ colorized or SGR defined output to the standard output.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1caw49i0plkjxir7kdf5qhwls3krqwfmi7g4h392rdfwi3kfahx1"))))
+                "0qchy411jm9q2l9mf7x3ry2ycaqp9xdhf2nx14qrpzcxfigv2705"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/google/go-cmp/cmp"
        #:unpack-path "github.com/google/go-cmp"))
+    (propagated-inputs
+     `(("go-golang-org-x-xerrors" ,go-golang-org-x-xerrors)))
     (synopsis "Determine equality of values in Go")
     (description "This package provides a more powerful and safer
 alternative to @code{reflect.DeepEqual} for comparing whether two values
@@ -5127,7 +5154,7 @@ escape sequences and color conversions.")
      `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)))
     (home-page "https://github.com/olekukonko/tablewriter/")
     (synopsis "Generate ASCII table")
-    (description "This package allows to generate ASCII table.  Features:
+    (description "This package generates ASCII tables.  Features:
 @itemize
 @item automatic Padding
 @item support Multiple Lines
@@ -5827,3 +5854,190 @@ log package.  All the functionality of the built-in package still exists and
 is unchanged.  This package contains a series of small enhancements and
 additions.")
       (license license:bsd-3))))
+
+(define-public go-github-com-frankban-quicktest
+  (package
+    (name "go-github-com-frankban-quicktest")
+    (version "1.11.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/frankban/quicktest")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0b1b44b2hli2p969gqz30z8v9z6ahlklpqzi17nwk1lsjz9yv938"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/frankban/quicktest"))
+    (propagated-inputs
+     `(("go-github-com-google-go-cmp-cmp" ,go-github-com-google-go-cmp-cmp)
+       ("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+    (home-page "https://github.com/frankban/quicktest")
+    (synopsis "Quick helpers for testing Go applications")
+    (description
+     "Package quicktest provides a collection of Go helpers for writing
+tests.")
+    (license license:expat)))
+
+(define-public go-github-com-bep-golibsass
+  (package
+    (name "go-github-com-bep-golibsass")
+    (version "0.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bep/golibsass")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xk3m2ynbydzx87dz573ihwc4ryq0r545vz937szz175ivgfrhh3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "libsass_src")
+           #t))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/bep/golibsass/libsass"
+       #:unpack-path "github.com/bep/golibsass"
+       ;; The dev build tag modifies the build to link to system libsass
+       ;; instead of including the bundled one (which we remove.)
+       ;; https://github.com/bep/golibsass/blob/v0.7.0/internal/libsass/a__cgo_dev.go
+       #:build-flags '("-tags" "dev")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-bindings
+           ;; Generate bindings for system libsass, replacing the
+           ;; pre-generated bindings.
+           (lambda* (#:key inputs unpack-path #:allow-other-keys)
+             (mkdir-p (string-append "src/" unpack-path "/internal/libsass"))
+             (let ((libsass-src (string-append (assoc-ref inputs "libsass-src") "/src")))
+               (substitute* (string-append "src/" unpack-path "/gen/main.go")
+                 (("filepath.Join\\(rootDir, \"libsass_src\", \"src\"\\)")
+                  (string-append "\"" libsass-src "\""))
+                 (("../../libsass_src/src/")
+                  libsass-src)))
+             (invoke "go" "generate" (string-append unpack-path "/gen"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? import-path #:allow-other-keys)
+             (if tests?
+                 (invoke "go" "test" import-path "-tags" "dev"))
+             #t)))))
+    (propagated-inputs
+     `(("libsass" ,libsass)))
+    (native-inputs
+     `(("go-github-com-frankban-quicktest" ,go-github-com-frankban-quicktest)
+       ("libsass-src" ,(package-source libsass))))
+    (home-page "https://github.com/bep/golibsass")
+    (synopsis "Easy to use Go bindings for LibSass")
+    (description
+     "This package provides SCSS compiler support for Go applications.")
+    (license license:expat)))
+
+(define-public go-github-com-hashicorp-go-syslog
+  (package
+    (name "go-github-com-hashicorp-go-syslog")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hashicorp/go-syslog")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09vccqggz212cg0jir6vv708d6mx0f9w5bxrcdah3h6chgmal6v1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/hashicorp/go-syslog"))
+    (home-page "https://github.com/hashicorp/go-syslog")
+    (synopsis "Golang syslog wrapper, cross-compile friendly")
+    (description "This package is a very simple wrapper around log/syslog")
+    (license license:expat)))
+
+(define-public go-github-com-hjson-hjson-go
+  (package
+    (name "go-github-com-hjson-hjson-go")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hjson/hjson-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dfdiahimg6z9idg8jiqxwnlwjnmasbjccx8gnag49cz4yfqskaz"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/hjson/hjson-go"))
+    (home-page "https://hjson.org/")
+    (synopsis "Human JSON implementation for Go")
+    (description "Hjson is a syntax extension to JSON.  It is intended to be
+used like a user interface for humans, to read and edit before passing the
+JSON data to the machine.")
+    (license license:expat)))
+
+(define-public go-golang-zx2c4-com-wireguard
+  (package
+    (name "go-golang-zx2c4-com-wireguard")
+    (version "0.0.20200320")
+    (source
+     (origin
+       (method git-fetch)
+       ;; NOTE: module URL is a redirect
+       ;; target: git.zx2c4.com/wireguard-go
+       ;; source: golang.zx2c4.com/wireguard
+       (uri (git-reference
+             (url "https://git.zx2c4.com/wireguard-go/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fy4qsss3i3pkq1rpgjds4aipbwlh1dr9hbbf7jn2a1c63kfks0r"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "golang.zx2c4.com/wireguard"))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))
+    (home-page "https://git.zx2c4.com/wireguard")
+    (synopsis "Implementation of WireGuard in Go")
+    (description "This package is a Go Implementation of WireGuard.")
+    (license license:expat)))
+
+(define-public go-github-com-kardianos-minwinsvc
+  (package
+    (name "go-github-com-kardianos-minwinsvc")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kardianos/minwinsvc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0z941cxymkjcsj3p5l3g4wm2da3smz7iyqk2wbs5y8lmxd4kfzd8"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kardianos/minwinsvc"))
+    (home-page "https://github.com/kardianos/minwinsvc/")
+    ;; some packages (Yggdrasil) need it to compile
+    ;; it's a tiny package and it's easier to bundle it than to patch it out
+    (synopsis "Minimal windows only service stub for Go")
+    (description "Go programs designed to run from most *nix style operating
+systems can import this package to enable running programs as services without
+modifying them.")
+    (license license:zlib)))

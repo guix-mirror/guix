@@ -106,6 +106,7 @@
                         (match (string-take target
                                             (string-index target #\-))
                           ("armhf" "arm-unknown-linux-gnueabi")
+                          ("mips64el" "mips-unknown-linux-gnu")
                           (x
                            (string-append x "-unknown-linux-gnu")))))
                    (symlink
@@ -167,7 +168,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.3")
+    (version "2.5.4")
     (source
      (origin
       (method url-fetch)
@@ -175,7 +176,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "00p7cpvzf0q3qwcgg51r9d0vbab4qga2xi8wpk2fgd36710b1g4i"))))
+        "1w7vnnycq4z7gf4bk38pi4hrb8qrrzgfpz3cd7frwldxnfbfx060"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)
@@ -195,7 +196,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.5")
+    (version "1.5.0")
     (source
      (origin
       (method url-fetch)
@@ -204,7 +205,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0h53q4sns1jz1pkmhcz5wp9qrfn9f5g9i3vjv6dafwzzlvblyi21"))))
+        "1fm0mf3wq9fmyi1rmc1vk2fafn6liiw2mgxml3g7ybbb44lz2jmf"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -254,7 +255,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.23")
+    (version "2.2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -262,7 +263,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "0p6ss4f3vlkf91pmp27bmvfr5bdxxi0pb3dmxpqljglbsx4mxd8h"))))
+                "02n3klqbyzxyil13sg4wa0pcwr7vs7zjaslis926yjxg8yr0fly5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -325,52 +326,6 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
-(define-public gnupg-2.0
-  (package (inherit gnupg)
-    (version "2.0.30")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                                  ".tar.bz2"))
-              (sha256
-               (base32
-                "0wax4cy14hh0h7kg9hj0hjn9424b71z8lrrc5kbsasrn9xd7hag3"))))
-    (native-inputs '())
-    (inputs
-     `(("adns" ,adns)
-       ("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("libassuan" ,libassuan)
-       ("libgcrypt" ,libgcrypt)
-       ("libgpg-error" ,libgpg-error)
-       ("libksba" ,libksba)
-       ("pth" ,pth)
-       ("openldap" ,openldap)
-       ("zlib" ,zlib)
-       ("readline" ,readline)))
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'patch-config-files
-          (lambda _
-            (substitute* "tests/openpgp/Makefile.in"
-              (("/bin/sh") (which "sh")))
-            #t))
-        (add-after 'install 'rename-v2-commands
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Upstream suggests removing the trailing '2' from command names:
-            ;; <http://debbugs.gnu.org/cgi/bugreport.cgi?bug=22883#58>.
-            (let ((out (assoc-ref outputs "out")))
-              (with-directory-excursion (string-append out "/bin")
-                (rename-file "gpgv2" "gpgv")
-                (rename-file "gpg2" "gpg")
-
-                ;; Keep the old name around to ease transition.
-                (symlink "gpgv" "gpgv2")
-                (symlink "gpg" "gpg2")
-                #t)))))))
-   (properties `((superseded . ,gnupg)))))
-
 (define-public gnupg-1
   (package (inherit gnupg)
     (version "1.4.23")
@@ -400,13 +355,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.14.0")
+    (version "1.15.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "01s3rlspykbm9vmi5rfbdm3d20ip6yni69r48idqzlmhlq8ggwff"))))
+       (base32 "0nqfipv5s4npfidsm1rs3kpq0r0av9bfqfd5r035jibx5k0jniqb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))

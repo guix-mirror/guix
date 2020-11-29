@@ -1,0 +1,25 @@
+From ff5ed26f21d304e867ab57781878069567deb23d Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Mon, 3 Aug 2020 19:49:58 +0000
+Subject: [PATCH] Fix build errors if PREFIX is different from ECM's PREFIX.
+
+See <https://bugs.kde.org/424483> for details
+---
+ KF5PlasmaMacros.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/KF5PlasmaMacros.cmake b/KF5PlasmaMacros.cmake
+index 494b42d56..80b3fd8dd 100644
+--- a/KF5PlasmaMacros.cmake
++++ b/KF5PlasmaMacros.cmake
+@@ -1,6 +1,5 @@
+ 
+-find_package(ECM 1.6.0 CONFIG REQUIRED)
+-include(${ECM_KDE_MODULE_DIR}/KDEInstallDirs.cmake)
++include(KDEInstallDirs)
+ 
+ set(PLASMA_RELATIVE_DATA_INSTALL_DIR "plasma")
+ set(PLASMA_DATA_INSTALL_DIR "${KDE_INSTALL_DATADIR}/${PLASMA_RELATIVE_DATA_INSTALL_DIR}")
+-- 
+GitLab
+

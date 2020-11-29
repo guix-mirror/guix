@@ -50,7 +50,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/nu-book/zxing-cpp.git")
+         (url "https://github.com/nu-book/zxing-cpp")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

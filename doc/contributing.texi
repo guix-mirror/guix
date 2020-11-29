@@ -28,6 +28,7 @@ choice.
 * Submitting Patches::          Share your work.
 * Tracking Bugs and Patches::   Using Debbugs.
 * Commit Access::               Pushing to the official repository.
+* Updating the Guix Package::   Updating the Guix package definition.
 @end menu
 
 @node Building from Git
@@ -138,6 +139,16 @@ make authenticate
 @end example
 
 The first run takes a couple of minutes, but subsequent runs are faster.
+
+Or, when your configuration for your local Git repository doesn't match
+the default one, you can provide the reference for the @code{keyring}
+branch through the variable @code{GUIX_GIT_KEYRING}.  The following
+example assumes that you have a Git remote called @samp{myremote}
+pointing to the official repository:
+
+@example
+make authenticate GUIX_GIT_KEYRING=myremote/keyring
+@end example
 
 @quotation Note
 You are advised to run @command{make authenticate} after every
@@ -604,11 +615,11 @@ to make recommendations or instructions visible to them by inserting
 special comments like this (@pxref{xgettext Invocation,,, gettext, GNU
 Gettext}):
 
-@example
+@lisp
 ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
 (description "ARandR is designed to provide a simple visual front end
 for the X11 resize-and-rotate (RandR) extension. @dots{}")
-@end example
+@end lisp
 
 @node Snippets versus Phases
 @subsection Snippets versus Phases
@@ -1323,3 +1334,40 @@ only push their own awesome changes, but also offer some of their time
 @emph{reviewing} and pushing other people's changes.  As a committer,
 you're welcome to use your expertise and commit rights to help other
 contributors, too!
+
+@node Updating the Guix Package
+@section Updating the Guix Package
+
+@cindex update-guix-package, updating the guix package
+It is sometimes desirable to update the @code{guix} package itself (the
+package defined in @code{(gnu packages package-management)}), for
+example to make new daemon features available for use by the
+@code{guix-service-type} service type.  In order to simplify this task,
+the following command can be used:
+
+@example
+make update-guix-package
+@end example
+
+The @code{update-guix-package} make target will use the last known
+@emph{commit} corresponding to @code{HEAD} in your Guix checkout,
+compute the hash of the Guix sources corresponding to that commit and
+update the @code{commit}, @code{revision} and hash of the @code{guix}
+package definition.
+
+To validate that the updated @code{guix} package hashes are correct and
+that it can be built successfully, the following command can be run from
+the directory of your Guix checkout:
+
+@example
+./pre-inst-env guix build guix
+@end example
+
+To guard against accidentally updating the @code{guix} package to a
+commit that others can't refer to, a check is made that the commit used
+has already been pushed to the Savannah-hosted Guix git repository.
+
+This check can be disabled, @emph{at your own peril}, by setting the
+@code{GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT} environment variable.  When
+this variable is set, the updated package source is also added to the
+store.  This is used as part of the release process of Guix.

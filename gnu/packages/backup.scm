@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
@@ -82,7 +82,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.8.15")
+    (version "0.8.17")
     (source
      (origin
       (method url-fetch)
@@ -91,10 +91,10 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "1kg467mxg5a97v1rlv4shk32krgv8ys4nczq4b11av4bp1lgysdc"))))
+       (base32 "114rwkf9b3h4fcagrx013sb7krc4hafbwl9gawjph2wd9pkv2wx2"))))
     (build-system python-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)         ; for msgfmt
+     `(("gettext" ,gettext-minimal)     ; for msgfmt
        ("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-fasteners" ,python-fasteners)
@@ -392,7 +392,7 @@ list and implement the backup strategy.")
      `(("librsync" ,librsync-0.9)))
     (arguments
      `(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-                      "CC=gcc")
+                      ,(string-append "CC=" ,(cc-for-target)))
        #:tests? #f                      ;test input not distributed
        #:phases
        ;; no configure phase
@@ -743,14 +743,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.2")
+    (version "1.13.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0id9ym3hzij4kpdrk0sz3ijxp5r0z1md5jch83pml9hdy1zbx5bj"))))
+                "0zpsbl9iicc6y81xfl6kf8farwfsyrl63shc0idp654kgp8421wa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1072,7 +1072,7 @@ interactive mode.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.34")
+    (version "2.3.38")
     (source
      (origin
        (method git-fetch)
@@ -1080,7 +1080,7 @@ interactive mode.")
              (url "https://github.com/grke/burp")
              (commit version)))
        (sha256
-        (base32 "0ri62xshcjrk5vgyx8s11vsllab132mk1pcy4xxl9kzijdsjhdpy"))
+        (base32 "0m0s6rrgxn3l6bad45vyhks6iz6bwvd0f3rzdsc7l28gar79wsj6"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

@@ -86,7 +86,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public udevil
   (package
@@ -482,7 +483,7 @@ systems.  Output format is completely customizable.")
 (define-public f3
   (package
     (name "f3")
-    (version "7.2")
+    (version "8.0")
     (source
      (origin
       (method git-fetch)
@@ -491,11 +492,11 @@ systems.  Output format is completely customizable.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1iwdg0r4wkgc8rynmw1qcqz62l0ldgc8lrazq33msxnk5a818jgy"))))
+       (base32 "17l5vspfcgfbkqg7bakp3gql29yb05gzawm8n3im30ilzdr53678"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:make-flags (list "CC=gcc"
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -520,7 +521,7 @@ a card with a smaller capacity than stated.")
 (define-public python-parted
   (package
     (name "python-parted")
-    (version "3.11.6")
+    (version "3.11.7")
     (source
      (origin
        (method git-fetch)
@@ -529,7 +530,7 @@ a card with a smaller capacity than stated.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xgrqhvn44vr3676j5sy2x3xfv2dzf7vncg25cmrsmkbd49x3z5j"))))
+        (base32 "01193fmkss9icjvqpw85szpk8ld1pnha7p9kqm7mpwk6rc6gi2m3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -558,7 +559,7 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
      (origin
        (method git-fetch)
@@ -566,7 +567,7 @@ a card with a smaller capacity than stated.")
              (url "https://github.com/markfasheh/duperemove")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
+        (base32 "1a87mka2sfzhbch2jip6wlvvs0glxq9lqwmyrp359d1rmwwmqiw9"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -580,7 +581,9 @@ a card with a smaller capacity than stated.")
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")))
+                          (string-append "CC=" ,(cc-for-target))
+                          ;; Set to <next release>dev by default.
+                          (string-append "VER=" ,version))))
     (home-page "https://github.com/markfasheh/duperemove")
     (synopsis "Tools for de-duplicating file system data")
     (description "Duperemove is a simple tool for finding duplicated extents
@@ -1049,7 +1052,7 @@ that support this feature).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/memkind/memkind.git")
+                    (url "https://github.com/memkind/memkind")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

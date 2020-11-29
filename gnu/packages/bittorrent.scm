@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -75,12 +75,17 @@
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1wjmn96zrvmk8j1yz2ysmqd7a2x6ilvnwwapcvfzgxs2wwpnai4i"))))
+                "1wjmn96zrvmk8j1yz2ysmqd7a2x6ilvnwwapcvfzgxs2wwpnai4i"))
+              (patches (search-patches "transmission-honor-localedir.patch"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
     (arguments
-     '(#:glib-or-gtk-wrap-excluded-outputs '("out")
+     '(#:configure-flags
+       (list (string-append "--localedir="
+                            (assoc-ref %outputs "gui")
+                            "/share/locale"))
+       #:glib-or-gtk-wrap-excluded-outputs '("out")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'move-gui
@@ -93,14 +98,17 @@
                (rename-file (string-append out "/bin/transmission-gtk")
                             (string-append gui "/bin/transmission-gtk"))
 
-               ;; Move the '.desktop' and icon files as well.
-               (mkdir (string-append gui "/share"))
                (for-each
                 (lambda (dir)
                   (rename-file (string-append out "/share/" dir)
                                (string-append gui "/share/" dir)))
-                '("applications" "icons" "pixmaps")))
-             #t)))))
+                '("appdata" "applications" "icons" "pixmaps"))
+
+               (mkdir-p (string-append gui "/share/man/man1"))
+               (rename-file
+                (string-append out "/share/man/man1/transmission-gtk.1")
+                (string-append gui "/share/man/man1/transmission-gtk.1"))
+             #t))))))
     (inputs
      `(("libevent" ,libevent)
        ("curl" ,curl)
@@ -308,7 +316,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
 (define-public uget
   (package
     (name "uget")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -316,7 +324,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
                            "uget%20%28stable%29/" version "/uget-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0rg2mr2cndxvnjib8zm5dp7y2hgbvnqkz2j2jmg0xlzfh9d34b2m"))))
+        (base32 "0dlrjhnm1pg2vwmp7nl2xv1aia5hyirb3021rl46x859k63zap24"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
@@ -355,7 +363,7 @@ downloads, download scheduling, download rate limiting.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))          ; no configure script
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "NO_HASH_CHECK=1"
                           "USE_LARGE_FILES=1"

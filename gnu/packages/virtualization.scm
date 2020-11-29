@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -177,6 +179,13 @@
                                               '("include")
                                               input-directories)
                #t)))
+         (add-after 'unpack 'extend-test-time-outs
+           (lambda _
+             ;; These tests can time out on heavily-loaded and/or slow storage.
+             (substitute* (cons* "tests/qemu-iotests/common.qemu"
+                                 (find-files "tests/qemu-iotests" "^[0-9]+$"))
+               (("QEMU_COMM_TIMEOUT=[0-9]+" match)
+                (string-append match "9")))))
          (add-after 'unpack 'disable-unusable-tests
            (lambda _
              (substitute* "tests/Makefile.include"
@@ -1286,14 +1295,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.14")
+    (version "3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1jrr3v99g18gc0hriz0avq6ccdvyya0j6wwz888sdsc4icc30gzn"))))
+                "09d0j24x0cyc7wkgi7cnxqgfjk7kbdlm79zxpj8d356sa3rw2z24"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1374,7 +1383,8 @@ domains, their live performance and resource utilization statistics.")
        ("libcap" ,libcap)
        ("libnet" ,libnet)
        ("libnl" ,libnl)
-       ("libbsd" ,libbsd)))
+       ("libbsd" ,libbsd)
+       ("nftables" ,nftables)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -1606,7 +1616,8 @@ Open Container Initiative (OCI) image layout and its tagged images.")
                 "1v7k3ki10i6082r7zswblyirx6zck674y6bw3plssw4p1l2611rd"))))
     (build-system go-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("go-github-com-go-md2man" ,go-github-com-go-md2man)))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("eudev" ,eudev)
@@ -1625,13 +1636,18 @@ Open Container Initiative (OCI) image layout and its tagged images.")
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
-               ;; TODO: build manpages with 'go-md2man'.
                (invoke "make" "bin/skopeo"))))
+         (add-after 'build 'build-docs
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "make" "docs"))))
          (replace 'install
            (lambda* (#:key import-path outputs #:allow-other-keys)
              (with-directory-excursion (string-append "src/" import-path)
                (let ((out (assoc-ref outputs "out")))
-                 (invoke "make" "install-binary" "install-completions"
+                 (install-file "default-policy.json"
+                               (string-append out "/etc/containers"))
+                 (invoke "make" "install-binary" "install-completions" "install-docs"
                          (string-append "PREFIX=" out)))))))))
     (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
@@ -1764,7 +1780,7 @@ DOS or Microsoft Windows.")
 (define-public xen
   (package
     (name "xen")
-    (version "4.13.0")
+    (version "4.14.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1773,7 +1789,7 @@ DOS or Microsoft Windows.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0py50n995gv909i0d1lfdcj9wcp5g1d5z6m2291jqqlfyany138g"))))
+                "1s06zhzmkm7wylrxhas5v0sg2ackmmyw01gvv67r9idml55i0dh5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1887,13 +1903,14 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
                                          new-search-path ":")))
                     (setenv env-name new-env-value)))
                 environment-variable-names))
-             (setenv "CROSS_CPATH" (getenv "CPATH"))
+             (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+             (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
              (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
              (filter-environment! cross?
-              '("CROSS_CPATH"
+              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
                 "CROSS_LIBRARY_PATH"))
              (filter-environment! (lambda (e) (not (cross? e)))
-              '("CPATH"
+              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
                 "LIBRARY_PATH"))
              ;; Guix tries to be helpful and automatically adds
              ;; mini-os-git-checkout/include to the include path,
@@ -1902,7 +1919,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
                                     (not
                                      (string-contains e
                                       "mini-os-git-checkout")))
-              '("CPATH"
+              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
                 "LIBRARY_PATH"))
             (setenv "EFI_VENDOR" "guix")
              #t))
@@ -2032,3 +2049,48 @@ administrators and developers in managing the database.")
 libosinfo library.  It provides information about guest operating systems for
 use with virtualization provisioning tools")
     (license license:lgpl2.0+)))
+
+(define-public python-transient
+  (package
+    (name "python-transient")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "transient" version))
+       (sha256
+        (base32
+         "1pcyw8j2l354qa6c8gr58xd7fmxcx1svnfyr2rj5nh04ircx3x7l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Requires behave
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-dependencies
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("==")
+                         ">="))
+                      #t)))))
+    (propagated-inputs
+     `(("python-beautifultable" ,python-beautifultable)
+       ("python-click" ,python-click)
+       ("python-importlib-resources"
+        ,python-importlib-resources)
+       ("python-lark-parser" ,python-lark-parser)
+       ("python-marshmallow" ,python-marshmallow)
+       ("python-progressbar2" ,python-progressbar2)
+       ("python-requests" ,python-requests)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-mypy" ,python-mypy)
+       ("python-pyhamcrest" ,python-pyhamcrest)
+       ("python-twine" ,python-twine)))
+    (home-page
+     "https://github.com/ALSchwalm/transient")
+    (synopsis
+     "QEMU Wrapper written in Python")
+    (description
+     "@code{transient} is a wrapper for QEMU allowing the creation of virtual
+machines with shared folder, ssh, and disk creation support.")
+    (license license:expat)))

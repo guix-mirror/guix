@@ -69,6 +69,7 @@
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
+               "doc"           ;400+ section 3 man pages
                "debug"))
     (inputs
      `(("libx11" ,libx11)
@@ -114,6 +115,15 @@
                (substitute* (string-append lib "/lib/pkgconfig/hwloc.pc")
                  (("^.*prefix=.*$")
                   ""))
+               #t)))
+         (add-after 'install 'move-man3-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move section 3 man pages to the "doc" output.
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (copy-recursively (string-append out "/share/man/man3")
+                                 (string-append doc "/share/man/man3"))
+               (delete-file-recursively (string-append out "/share/man/man3"))
                #t))))))
     (home-page "https://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
@@ -436,7 +446,12 @@ arrays) that expose a buffer interface.")
      `(#:configure-flags
        (list "--disable-silent-rules"             ;let's see what's happening
              "--enable-debuginfo"
-             ;; "--with-device=ch4:ucx" ; --with-device=ch4:ofi segfaults in tests
+
+             ;; Default to "ch4", as will be the case in 3.4.  It also works
+             ;; around issues when running test suites of packages that use
+             ;; MPICH: <https://issues.guix.gnu.org/39588#15>.
+             "--with-device=ch4:ucx" ; --with-device=ch4:ofi segfaults in tests
+
              (string-append "--with-hwloc-prefix="
                             (assoc-ref %build-inputs "hwloc"))
 

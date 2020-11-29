@@ -550,14 +550,13 @@ is to provide an accurate identifier for record tracks.")
 (define-public python-audioread
   (package
     (name "python-audioread")
-    (version "2.1.8")
+    (version "2.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "audioread" version))
        (sha256
-        (base32
-         "0s6iilb8ca6j6nv5a5hbyxi5alr3crvsbr6kggh82a44pkx08f87"))))
+        (base32 "129hab8x9sb3plff2bkq4xnzc3i8k9rgcm1a36l813kc0m10wj53"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; there is no "audiofile" fixture
     (native-inputs

@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module ((guix diagnostics) #:select (guix-warning-port))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
@@ -818,6 +819,17 @@
   '()
   (gexp-modules #t))
 
+(test-assert "gexp-modules, warning"
+  (string-match "tests/gexp.scm:[0-9]+:[0-9]+: warning: \
+importing.* \\(guix config\\) from the host"
+                (call-with-output-string
+                  (lambda (port)
+                    (parameterize ((guix-warning-port port))
+                      (let* ((x (with-imported-modules '((guix config))
+                                  #~(+ 1 2 3)))
+                             (y #~(+ 39 #$x)))
+                        (gexp-modules y)))))))
+
 (test-assertm "gexp->derivation #:modules"
   (mlet* %store-monad
       ((build ->  #~(begin
@@ -1413,7 +1425,7 @@
 
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
- \"/bin/uname\"\\) [[:xdigit:]]+>$"
+ \"/bin/uname\"\\) [[:graph:]]+tests/gexp\\.scm:[0-9]+:[0-9]+ [[:xdigit:]]+>$"
                 (with-output-to-string
                   (lambda ()
                     (write

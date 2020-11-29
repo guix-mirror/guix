@@ -183,20 +183,12 @@ text or blue underlined text, on ANSI terminals.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.53)
-        ("rust-metadeps" ,rust-metadeps-1.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))
+        ("rust-metadeps" ,rust-metadeps-1.1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libaom" ,libaom)
-       ("libclang" ,clang)
+       ("clang" ,clang)
        ("llvm" ,llvm)))
     (home-page "https://github.com/rust-av/aom-rs")
     (synopsis "FFI bindings to aom")
@@ -402,19 +394,12 @@ for computer graphics.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.54)
-        ("rust-metadeps" ,rust-metadeps-1.1))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-environmental-variable
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "libclang")))
-               (setenv "LIBCLANG_PATH"
-                       (string-append clang "/lib")))
-             #t)))))
+        ("rust-metadeps" ,rust-metadeps-1.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("dav1d" ,dav1d)
-       ("pkg-config" ,pkg-config)
-       ("libclang" ,clang)
+       ("clang" ,clang)
        ("llvm" ,llvm)))
     (home-page "https://github.com/rust-av/dav1d-rs")
     (synopsis "FFI bindings to dav1d")

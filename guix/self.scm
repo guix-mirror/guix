@@ -400,6 +400,12 @@ a list of extra files, such as '(\"contributing\")."
                         (find-files directory
                                     "\\.[a-z]{2}(_[A-Z]{2})?\\.po$")))
 
+          (define parallel-jobs
+            ;; Limit thread creation by 'n-par-for-each'.  Going beyond can
+            ;; lead libgc 8.0.4 to abort with:
+            ;; mmap(PROT_NONE) failed
+            (min (parallel-job-count) 4))
+
           (mkdir #$output)
           (copy-recursively #$documentation "."
                             #:log (%make-void-port "w"))
@@ -415,14 +421,14 @@ a list of extra files, such as '(\"contributing\")."
           (setenv "LC_ALL" "en_US.UTF-8")
           (setlocale LC_ALL "en_US.UTF-8")
 
-          (n-par-for-each (parallel-job-count)
+          (n-par-for-each parallel-jobs
                           (match-lambda
                             ((language . po)
                              (translate-texi "guix" po language
                                              #:extras '("contributing"))))
                           (available-translations "." "guix-manual"))
 
-          (n-par-for-each (parallel-job-count)
+          (n-par-for-each parallel-jobs
                           (match-lambda
                             ((language . po)
                              (translate-texi "guix-cookbook" po language)))

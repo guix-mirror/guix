@@ -41,7 +41,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
 
-(define-public gdb
+(define-public gdb-9.2
   (package
     (name "gdb")
     (version "9.2")
@@ -135,18 +135,11 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
-(define-public gdb-minimal
-  (package/inherit
-   gdb
-   (name "gdb-minimal")
-   (inputs (fold alist-delete (package-inputs gdb)
-                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
-
 ;; This version of GDB is required by some of the Rust compilers, see
 ;; <https://bugs.gnu.org/37810>.
 (define-public gdb-8.2
   (package
-    (inherit gdb)
+    (inherit gdb-9.2)
     (version "8.2.1")
     (source (origin
               (method url-fetch)
@@ -155,3 +148,30 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (sha256
                (base32
                 "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))))
+
+(define-public gdb
+  ;; This is the fixed version that packages depend on.  Update it rarely
+  ;; enough to avoid massive rebuilds.
+  gdb-9.2)
+
+(define-public gdb-10
+  (package
+    (inherit gdb)
+    (version "10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1h32dckz1y8fnyxh22iyw8h3hnhxr79v1ng85px3ljn1xv71wbzq"))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ,@(alist-delete "guile" (package-inputs gdb))))))
+
+(define-public gdb-minimal
+  (package/inherit
+   gdb-10
+   (name "gdb-minimal")
+   (inputs (fold alist-delete (package-inputs gdb)
+                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))

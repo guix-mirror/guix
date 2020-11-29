@@ -234,7 +234,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.11.4")
+    (version "2.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -242,7 +242,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "070bjw4kg7r6lqs1hfs08n5fmjv90cpwflp3wr04hbrmyz28zj5z"))))
+                "14xs90wrw8mbdx08hxlbhiahp6kgjq6yh27zjw7fvhfjx5nr84f8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
@@ -355,7 +355,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-25")
+    (version "1.6.0-31")
     (source
      (origin
        (method url-fetch)
@@ -367,7 +367,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "11kik2csdg9wy0npiih21kaag0nc89i9ldgk7ak7gvf9ycddm6mh"))))
+        (base32 "1dr1y88sx2gzldn0zl6p8b1ngjjcmh89iv4kzyhi2cf74j3yw85m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1005,16 +1005,20 @@ Optional thin wrappers allow usage of the library from other languages.")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.3.7")
+    (version "3.3.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
-                                  version ".tar.bz2"))
+              (uri (list
+                     (string-append "https://bitbucket.org/eigen/eigen/get/"
+                                    version ".tar.bz2")
+                     (string-append "mirror://debian/pool/main/e/eigen3/eigen3_"
+                                    version ".orig.tar.bz2")))
               (sha256
                (base32
-                "1km3fyfzyqfdvmnl79drps3fjwnz3zbh0c7l34mfbqyvvs8cy4wz"))
+                "1vxrsncfnkyq6gwxpsannpryp12mk7lc8f42ybvz3saf7icwc582"))
               (file-name (string-append name "-" version ".tar.bz2"))
-              (patches (search-patches "eigen-stabilise-sparseqr-test.patch"))
+              (patches (search-patches "eigen-remove-openmp-error-counting.patch"
+                                       "eigen-stabilise-sparseqr-test.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
@@ -1089,7 +1093,7 @@ features, and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/QuantStack/xtensor")
+                    (url "https://github.com/xtensor-stack/xtensor")
                     (commit version)))
               (sha256
                (base32
@@ -1103,7 +1107,7 @@ features, and more.")
      `(#:configure-flags
        '("-DBUILD_TESTS=ON")
        #:test-target "xtest"))
-    (home-page "https://quantstack.net/xtensor")
+    (home-page "https://xtensor.readthedocs.io/en/latest/")
     (synopsis "C++ tensors with broadcasting and lazy computing")
     (description "xtensor is a C++ library meant for numerical analysis with
 multi-dimensional array expressions.

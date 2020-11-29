@@ -8,6 +8,8 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020 Simon Streit <simon@netpanic.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,16 +33,22 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -53,7 +61,9 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages video)
@@ -94,7 +104,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.22")
+    (version "0.22.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -103,7 +113,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0xlhwdbnww7gjw474j54j94iwrzbzlqvnv6chlkga6yh4pcl5rvx"))))
+                "1kvcarqijyw07bdqszjsn62plmncaid5az0q542p6rsygc1i501k"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=enabled")))
@@ -185,7 +195,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.41")
+    (version "0.42")
     (source (origin
               (method url-fetch)
               (uri
@@ -194,7 +204,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1b0kxidz3h3anc006cjrrbb281zl75f1qaip4m3672pczdc2lwwa"))))
+                "0kfdyvqd2dfrxll5bla8mm10xvpngshlmyjf6wic4wbafqflgxx5"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -369,3 +379,84 @@ MPD library in a similar way to many other music players' 'shuffle library'
 feature. ashuffle works like any other MPD client, and can be used alongside
 other MPD frontends.")
     (license license:expat)))
+
+(define-public mpdris2
+  (package
+    (name "mpdris2")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/eonpatapon/mpDris2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "048b8acsd1b8kcxzd9fsh5p9g2an9c4rznicfcpyrsjz5syv894h"))))
+    (build-system gnu-build-system)
+    ;; Manually wrap the binary, because we’re not using python-build-system.
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out         (assoc-ref outputs "out"))
+                   (python-path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/mpDris2")
+                 `("PYTHONPATH" ":" prefix (,python-path)))
+               #t))))))
+    (inputs
+     `(("python-mpd2" ,python-mpd2)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python" ,python)))             ; Sets PYTHONPATH.
+    ;; For bootstrapping.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("which" ,which)
+       ("intltool" ,intltool)))
+    (synopsis "MPRIS V2.1 support for MPD")
+    (description "Client for the Music Player Daemon providing MPRIS 2
+support")
+    (home-page "https://github.com/eonpatapon/mpDris2")
+    (license license:gpl3+)))
+
+(define-public cantata
+  (package
+    (name "cantata")
+    (version "2.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/CDrummond/"
+                                  "cantata/releases/download/v" version "/"
+                                  "cantata-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "10pcrpmb4n1mkgr21xd580nrbmh57q7s72cbs1zay847hc65vliy"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No test suite
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eudev", eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libebur128" ,libebur128)
+       ("libmtp" ,libmtp)
+       ("mpg123" ,mpg123)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("taglib" ,taglib)
+       ("zlib" ,zlib)))
+    (synopsis "Graphical MPD Client")
+    (description "Cantata is a graphical client for the Music Player Daemon
+(MPD), using the Qt5 toolkit.  Its user interface is highly customizable,
+supporting multiple collections, ratings, and dynamic playlists.  A local cache
+of the music library will be created to provide a hierarchy of albums and
+artists along with albumart.")
+    (home-page "https://github.com/cdrummond/cantata")
+    (license license:gpl3+)))

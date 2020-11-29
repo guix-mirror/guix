@@ -90,6 +90,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages upnp)
@@ -120,7 +121,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/NVIDIA/eglexternalplatform.git")
+         (url "https://github.com/NVIDIA/eglexternalplatform")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -171,7 +172,7 @@ application-facing EGL functions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/NVIDIA/egl-wayland.git")
+         (url "https://github.com/NVIDIA/egl-wayland")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -201,7 +202,7 @@ EGLStream families of extensions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/hodefoting/mmm.git")
+         (url "https://github.com/hodefoting/mmm")
          (commit version)))
        (file-name
         (git-file-name name version))
@@ -230,7 +231,7 @@ framebuffer graphics, audio output and input event.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/deniskropp/DirectFB.git")
+         (url "https://github.com/deniskropp/DirectFB")
          (commit "DIRECTFB_1_7_7")))
        (file-name (git-file-name name version))
        (sha256
@@ -300,7 +301,7 @@ minimum of resource usage and overhead.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/deniskropp/flux.git")
+         (url "https://github.com/deniskropp/flux")
          (commit "e45758a")))
        (file-name (git-file-name name version))
        (sha256
@@ -430,14 +431,14 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.83.5")
+    (version "2.83.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "0xyawly00a59hfdb6b7va84k5fhcv2mxnzd77vs22bzi9y7sap43"))))
+                "106w9vi6z0gi2nbr73g8pm40w3wn7dkjcibzvvzbc786yrnzvkhb"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -855,26 +856,102 @@ other vector formats such as:
 @end itemize")
     (license license:gpl2+)))
 
+(define-public dear-imgui
+  (package
+    (name "dear-imgui")
+    (version "1.79")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocornut/imgui")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x26igynxp6rlpp2wfc5dr7x6yh583ajb7p23pgycn9vqikn318q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "VERSION=" ,version))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-debian-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "xvf" (assoc-ref inputs "debian-files"))
+             (apply invoke "patch" "-Np1" "-i"
+                    (find-files "debian/patches" "\\.patch$"))
+             (substitute* "Makefile"
+               (("<stb/") "<")          ; Guix doesn't use this subdirectory
+               ;; Don't build or install the static library.
+               (("^all: .*") "all: $(SHLIB) $(PCFILE)"))
+             (substitute* (list "imgui.pc.in"
+                                "Makefile")
+               ;; Don't link against a non-existent library.
+               (("-lstb") ""))
+             #t))
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           ;; The default ‘install’ target installs the static library.  Don't.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-shared" "install-header"
+                    make-flags))))))
+    (native-inputs
+     `(("debian-files"
+        ;; Upstream doesn't provide a build system.  Use Debian's.
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://debian/pool/main/i/imgui/imgui_"
+                               version "+ds-1.debian.tar.xz"))
+           (sha256
+            (base32 "1xhk34pzpha6k5l2j150capq66y8czhmsi04ib09wvb34ahqxpby"))))
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("stb-rect-pack" ,stb-rect-pack)
+       ("stb-truetype" ,stb-truetype)))
+    (home-page "https://github.com/ocornut/imgui")
+    (synopsis "Immediate-mode C++ GUI library with minimal dependencies")
+    (description
+     "Dear ImGui is a @acronym{GUI, graphical user interface} library for C++.
+It creates optimized vertex buffers that you can render anytime in your
+3D-pipeline-enabled application.  It's portable, renderer-agnostic, and
+self-contained, without external dependencies.
+
+Dear ImGui is aimed at content creation, visualization, and debugging tools as
+opposed to average end-user interfaces.  Hence it favors simplicity and
+productivity but lacks certain features often found in higher-level libraries.
+It is particularly suited to integration in game engine tooling, real-time 3D
+applications, full-screen applications, and embedded platforms without standard
+operating system features.")
+    (license license:expat)))           ; some examples/ use the zlib licence
+
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.12.6")
+    (version "1.12.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/OGRECave/ogre")
-             (commit (string-append "v" version))
-             (recursive? #t)))          ;for Dear ImGui submodule
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ap3krrl55hswv1n2r3ijf3xrb3kf9dnqvwyrc0fgnc7j7vd45sk"))))
+        (base32 "0b0pwh31nykrfhka6jqwclfx1pxzhj11vkl91951d63kwr5bbzms"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'unpack-dear-imgui
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "dear-imgui-source")
+                               "../dear-imgui-source")
+             #t))
          (add-before 'configure 'pre-configure
-           ;; CMakeLists.txt forces CMAKE_INSTALL_RPATH value.  As
+           ;; CMakeLists.txt forces a CMAKE_INSTALL_RPATH value.  As
            ;; a consequence, we cannot suggest ours in configure flags.  Fix
            ;; it.
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -888,6 +965,7 @@ other vector formats such as:
                                   (string-append out "/lib/OGRE"))
                             ";")))
          (list (string-append "-DCMAKE_INSTALL_RPATH=" runpath)
+               "-DIMGUI_DIR=../dear-imgui-source"
                "-DOGRE_BUILD_DEPENDENCIES=OFF"
                "-DOGRE_BUILD_TESTS=TRUE"
                "-DOGRE_INSTALL_DOCS=TRUE"
@@ -895,6 +973,7 @@ other vector formats such as:
                "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE"))))
     (native-inputs
      `(("boost" ,boost)
+       ("dear-imgui-source" ,(package-source dear-imgui))
        ("doxygen" ,doxygen)
        ("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))

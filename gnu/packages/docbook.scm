@@ -41,7 +41,7 @@
     (version "5.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbook-" version ".zip"))
               (sha256
                (base32
@@ -83,7 +83,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -113,7 +113,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -124,7 +124,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -135,7 +135,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbook-xml-" version ".zip"))
               (sha256
                (base32
@@ -146,7 +146,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (version "4.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.docbook.org/xml/" version
+              (uri (string-append "https://docbook.org/xml/" version
                                   "/docbkx412.zip"))
               (sha256
                (base32

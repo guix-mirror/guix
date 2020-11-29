@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -131,10 +131,10 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (home-page "https://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
 (define-public vpnc-scripts
-  (let ((commit "1000e0f6dd7d6bff163169a46359211c1fc3a6d2"))
+  (let ((commit "3885f8bbc4ae03fd6da0ada6de12f7223a59595c"))
     (package
       (name "vpnc-scripts")
-      (version (string-append "20190116." (string-take commit 7)))
+      (version (string-append "20200925." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri
@@ -144,7 +144,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
+                  "1pmi4n58q81pmn9arvfixhvv6vkkf3rpwac3hwnwyl882q5q0ccx"))))
       (build-system gnu-build-system)
       (inputs `(("guile" ,guile-3.0) ; for the wrapper scripts
                 ("coreutils" ,coreutils)
@@ -505,7 +505,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard-linux-compat
   (package
     (name "wireguard-linux-compat")
-    (version "1.0.20200623")
+    (version "1.0.20201112")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/wireguard-linux-compat/"
@@ -513,12 +513,13 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                                   ".tar.xz"))
               (sha256
                (base32
-                "0iclixsqfckaz6kz6a4lhzdary3xhfy1d0pz0pgrwy8m8mr3f28k"))))
+                "1qcpg1rcmy4h529a0spjm50qgxjgjy20j29fpbrqsv5xq3qfgsl9"))))
     (build-system linux-module-build-system)
     (outputs '("out"
                "kernel-patch"))
     (arguments
-     `(#:tests? #f ; No test suite
+     `(#:linux ,linux-libre-5.4         ; mustn't have WG built-in
+       #:tests? #f                      ; no test suite
        #:modules ((guix build linux-module-build-system)
                   (guix build utils)
                   (ice-9 popen)
@@ -538,7 +539,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                (call-with-output-file "wireguard.patch"
                  (lambda (port)
                    (format port "~a" str))))
-               #t))
+             #t))
          (add-after 'install 'install-patch
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "wireguard.patch"
@@ -634,7 +635,7 @@ public keys and can roam across IP addresses.")
 (define-public xl2tpd
   (package
     (name "xl2tpd")
-    (version "1.3.15")
+    (version "1.3.16")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -643,7 +644,7 @@ public keys and can roam across IP addresses.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ppwza8nwm1av1vldw40gin9wrjrs4l9si50jad414js3k8ycaag"))))
+                "0is5ccrvijz0pfm45pfrlbb9y8231yz3c4zqs8mkgakl9rxajy6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)

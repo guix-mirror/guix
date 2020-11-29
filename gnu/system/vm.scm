@@ -77,7 +77,6 @@
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
-            system-disk-image-in-vm
             system-docker-image
 
             virtual-machine
@@ -223,6 +222,12 @@ substitutable."
           #~(begin
               (use-modules (guix build utils)
                            (gnu build vm))
+
+              ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded
+              ;; by 'estimated-partition-size' below.
+              (setenv "GUIX_LOCPATH"
+                      #+(file-append glibc-utf8-locales "/lib/locale"))
+              (setlocale LC_ALL "en_US.utf8")
 
               (let* ((native-inputs
                       '#+(list qemu (canonical-package coreutils)))
@@ -557,77 +562,6 @@ the operating system."
 ;;; VM and disk images.
 ;;;
 
-(define* (system-disk-image-in-vm os
-                                  #:key
-                                  (name "disk-image")
-                                  (file-system-type "ext4")
-                                  (disk-image-size (* 900 (expt 2 20)))
-                                  (volatile? #t)
-                                  (substitutable? #t))
-  "Return the derivation of a disk image of DISK-IMAGE-SIZE bytes of the
-system described by OS.  Said image can be copied on a USB stick as is.  When
-VOLATILE? is true, the root file system is made volatile; this is useful
-to USB sticks meant to be read-only.
-
-SUBSTITUTABLE? determines whether the returned derivation should be marked as
-substitutable."
-  (define root-label
-    "Guix_image")
-
-  (define (root-uuid os)
-    ;; UUID of the root file system, computed in a deterministic fashion.
-    ;; This is what we use to locate the root file system so it has to be
-    ;; different from the user's own file system UUIDs.
-    (operating-system-uuid os 'dce))
-
-  (define file-systems-to-keep
-    (remove (lambda (fs)
-              (string=? (file-system-mount-point fs) "/"))
-            (operating-system-file-systems os)))
-
-  (let* ((os (operating-system (inherit os)
-               ;; Since this is meant to be used on real hardware, don't
-               ;; install QEMU networking or anything like that.  Assume USB
-               ;; mass storage devices (usb-storage.ko) are available.
-               (initrd (lambda (file-systems . rest)
-                         (apply (operating-system-initrd os)
-                                file-systems
-                                #:volatile-root? volatile?
-                                rest)))
-
-               (bootloader (operating-system-bootloader os))
-
-               ;; Force our own root file system.  (We need a "/" file system
-               ;; to call 'root-uuid'.)
-               (file-systems (cons (file-system
-                                     (mount-point "/")
-                                     (device "/dev/placeholder")
-                                     (type file-system-type))
-                                   file-systems-to-keep))))
-         (uuid (root-uuid os))
-         (os (operating-system
-               (inherit os)
-               (file-systems (cons (file-system
-                                     (mount-point "/")
-                                     (device uuid)
-                                     (type file-system-type))
-                                   file-systems-to-keep))))
-        (bootcfg (operating-system-bootcfg os)))
-    (qemu-image #:name name
-                #:os os
-                #:bootcfg-drv bootcfg
-                #:bootloader (bootloader-configuration-bootloader
-                              (operating-system-bootloader os))
-                #:disk-image-size disk-image-size
-                #:disk-image-format "raw"
-                #:file-system-type file-system-type
-                #:file-system-label root-label
-                #:file-system-uuid uuid
-                #:copy-inputs? #t
-                #:inputs `(("system" ,os)
-                           ("bootcfg" ,bootcfg))
-                #:substitutable? substitutable?)))
-
 (define* (system-qemu-image os
                             #:key
                             (file-system-type "ext4")
@@ -641,7 +575,10 @@ of the GNU system as described by OS."
               (let ((target (file-system-mount-point fs))
                     (source (file-system-device fs)))
                 (or (string=? target "/")
-                    (string-prefix? "/dev/" source))))
+                    (and (string? source)
+                         (string-prefix? "/dev/" source))
+                    (uuid? source)
+                    (file-system-label? source))))
             (operating-system-file-systems os)))
 
   (define root-uuid
@@ -652,7 +589,14 @@ of the GNU system as described by OS."
                                'dce)))
 
 
-  (let* ((os (operating-system (inherit os)
+  (let* ((os (operating-system
+               (inherit os)
+
+               ;; As in 'virtualized-operating-system', use BIOS-style GRUB.
+               (bootloader (bootloader-configuration
+                            (bootloader grub-bootloader)
+                            (target "/dev/vda")))
+
                ;; Assume we have an initrd with the whole QEMU shebang.
 
                ;; Force our own root file system.  Refer to it by UUID so that

@@ -211,6 +211,7 @@ CLEANFILES +=					\
 EXTRA_DIST +=					\
   %D%/AUTHORS					\
   %D%/COPYING					\
+  etc/gnu-store.mount.in			\
   etc/guix-daemon.service.in			\
   etc/guix-daemon.conf.in			\
   etc/guix-publish.service.in			\

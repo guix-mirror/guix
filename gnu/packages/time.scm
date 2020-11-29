@@ -140,13 +140,13 @@ saving time.  Almost all of the Olson timezones are supported.")
 (define-public python-pendulum
   (package
     (name "python-pendulum")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pendulum" version))
        (sha256
-        (base32 "1w4an6ki3l1pc36m2f2xiglaw5czmj9b4imbigln9z6mlnkkjxyr"))))
+        (base32 "01zjc245w08j0xryrgrq9vng59q1cl5ry0hcpw5rj774pyhhqsmh"))))
     (build-system python-build-system)
     ;; XXX: The PyPI distribution lacks tests, and the upstream repository
     ;; lacks a setup.py!

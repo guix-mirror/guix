@@ -315,6 +315,9 @@ guix system build "$tmpdir/config.scm" -n 2>&1 | \
 guix system search tor | grep "^name: tor"
 guix system search tor | grep "^shepherdnames: tor"
 guix system search anonym network | grep "^name: tor"
+guix system search . > "$tmpdir/search"
+test $(wc -l < "$tmpdir/search") -gt 500
+rm "$tmpdir/search"
 
 # Below, use -n (--dry-run) for the tests because if we actually tried to
 # build these images, the commands would take hours to run in the worst case.

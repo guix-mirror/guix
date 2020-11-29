@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -193,7 +194,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "7.2.3")
+    (version "7.4.9")
     (source
      (origin
        (method git-fetch)
@@ -201,7 +202,7 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
-        (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
+        (base32 "11by8gbshm4vv6flqp0ihff8c6nmbaqq7ms93b38rrq68bigcply"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -211,11 +212,12 @@ combination of these streams.")
      `(("googletest" ,googletest)))
     (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
-    (description "xsimd provides a unified means for using SIMD features for
-library authors.  Namely, it enables manipulation of batches of numbers with
-the same arithmetic operators as for single values.  It also provides
-accelerated implementation of common mathematical functions operating on
-batches.")
+    (description
+     "xsimd provides a unified means for using @acronym{SIMD, single instruction
+multiple data} features for library authors.  Namely, it enables manipulation of
+batches of numbers with the same arithmetic operators as for single values.
+It also provides accelerated implementation of common mathematical functions
+operating on batches.")
     (license license:bsd-3)))
 
 (define-public chaiscript
@@ -372,7 +374,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.19")
+    (version "0.6.21")
     (source (origin
               (method git-fetch)
               (uri
@@ -381,7 +383,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "1g98lfrp13fqfqrirg0rw90m7bajmjmy12yhrlj5jzwcby4dfs81"))
+                "08xhyy9fm2ddkdrgb1qyd2bs371a2xr7xzar482pwphz27vr035w"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
@@ -406,7 +408,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
 (define-public ccls
   (package
     (name "ccls")
-    (version "0.20190823.6")
+    (version "0.20201025")
     (source
      (origin
        (method git-fetch)
@@ -414,7 +416,8 @@ tools (containers, algorithms) used by other QuantStack packages.")
              (url "https://github.com/MaskRay/ccls")
              (commit version)))
        (sha256
-        (base32 "11h5nwk4qqshf3i8yr4bxpnvmidrhkzd0zxhf1xqv8cv6r08k47f"))
+        (base32
+         "13v00q1bz8g0ckw1sv0zyicbc44irc00vhwxdv3vvwlvylm7s21p"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments

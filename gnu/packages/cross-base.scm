@@ -153,6 +153,12 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-decimal-float" ;would need libc
                                "--disable-libcilkrts"
 
+                              ,@(if (equal? "powerpc64le-linux-gnu" target)
+                                   ;; On POWER9 (little endian) glibc needs
+                                   ;; the 128-bit long double type.
+                                   '("--with-long-double-128")
+                                   '())
+
                                ;; When target is any OS other than 'none' these
                                ;; libraries will fail if there is no libc
                                ;; present. See
@@ -530,7 +536,13 @@ and the cross tool chain."
 
         ;; FIXME: 'static-bash' should really be an input, not a native input, but
         ;; to do that will require building an intermediate cross libc.
-        (inputs '())
+        (inputs (if (hurd-triplet? target)
+                    `(;; TODO: move to glibc in the next rebuild cycle
+                      ("hurd-mach-print.patch"
+                       ,(search-patch "glibc-hurd-mach-print.patch"))
+                      ("hurd-gettyent.patch"
+                       ,(search-patch "glibc-hurd-gettyent.patch")))
+                    '()))
 
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)

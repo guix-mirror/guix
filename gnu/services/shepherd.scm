@@ -224,16 +224,21 @@ which is not provided by any service")
 
   (for-each assert-satisfied-requirements services))
 
+(define %store-characters
+  ;; Valid store characters; see 'checkStoreName' in the daemon.
+  (string->char-set
+   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-._?="))
+
 (define (shepherd-service-file-name service)
   "Return the file name where the initialization code for SERVICE is to be
 stored."
   (let ((provisions (string-join (map symbol->string
                                       (shepherd-service-provision service)))))
     (string-append "shepherd-"
-                   (string-map (match-lambda
-                                 (#\/ #\-)
-                                 (#\  #\-)
-                                 (chr chr))
+                   (string-map (lambda (chr)
+                                 (if (char-set-contains? %store-characters chr)
+                                     chr
+                                     #\-))
                                provisions)
                    ".scm")))
 

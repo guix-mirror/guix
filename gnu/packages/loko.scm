@@ -29,7 +29,7 @@
 (define-public loko-scheme
   (package
     (name "loko-scheme")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -37,11 +37,11 @@
              (url "https://gitlab.com/weinholt/loko")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "019jlh3lywy912cfz689c9fxgf4bi5700i9k04g7sl5w5gchj36m"))
+        (base32 "1441aarw3vy14zdxyab495ag2fch04v4j89krhbqnqfkz6mdi0vy"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(;; r7rs tests are still failing as of 0.6.0.
+     `(;; r7rs tests are a work in progress as of 0.7.0.
        #:tests? #f
        #:strip-binaries? #f
        #:make-flags

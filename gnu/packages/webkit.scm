@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -224,14 +224,14 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.30.1")
+    (version "2.30.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "1cfnsl5kvwrbclmp7v9q9ynrz702i9ncb6xmx6972dxpmpyrvi8p"))
+                "0zsy3say94d9bhaan0l6mfr59z03a5x4kngyy8b2i20n77q19skd"))
               (patches (search-patches "webkitgtk-share-store.patch"
                                        "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)

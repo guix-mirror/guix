@@ -119,7 +119,7 @@ modify some aspects of this style through the use of regular expressions.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/ebassi/mutest.git")
+         (url "https://github.com/ebassi/mutest")
          (commit "e6246c9")))
        (file-name (git-file-name name version))
        (sha256
@@ -509,7 +509,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.4.0")
+    (version "2.4.1")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -517,7 +517,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yi95saqv8qb3ix6w8d7ffvs7qbwvqmq6wblckhxhicxxdxk85cd"))))
+                "17g7n6rjs90i0b231x5s934qnr8m80ga2yg1z344bnsdiqcjd63w"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -1427,14 +1427,14 @@ use of resources by test cases.")))
 (define-public python-subunit-bootstrap
   (package
     (name "python-subunit-bootstrap")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
-         "1fsw8rsn1s3nklx06mayrg5rn2zbky6wwjc5z07s7rf1wjzfs1wn"))))
+         "0j0ymmnc5nfxi1qzvy59j27viqca7l7xd0y9x29g7yr0h693j804"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
@@ -2693,7 +2693,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.14.3")
+    (version "0.14.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2701,7 +2701,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "15smnxwplk48nas2c8ji6a5fqcsh770f1yl5nc2j5iprjspbm4mg"))))
+                "0xmi24ckpps32k7hc139psgbsnsf4g106sv4l9m445m46amkxggd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2020 by Amar M. Singh <nly@disroot.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,10 +63,14 @@
   #:use-module ((guix build utils)
                 #:select (dump-port mkdir-p find-files))
   #:use-module ((guix build syscalls) #:select (set-thread-name))
-  #:export (%public-key
+  #:export (%default-gzip-compression
+
+            %public-key
             %private-key
             signed-string
 
+            open-server-socket
+            run-publish-server
             guix-publish))
 
 (define (show-help)
@@ -81,6 +87,9 @@ Publish ~a over HTTP.\n") %store-directory)
                          compress archives with METHOD at LEVEL"))
   (display (G_ "
   -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
+  (display (G_ "
+      --cache-bypass-threshold=SIZE
+                         serve store items below SIZE even when not cached"))
   (display (G_ "
       --workers=N        use N workers to bake items"))
   (display (G_ "
@@ -134,6 +143,12 @@ if ITEM is already compressed."
       (list %no-compression)
       requested))
 
+(define (low-compression c)
+  "Return <compression> of the same type as C, but optimized for low CPU
+usage."
+  (compression (compression-type c)
+               (min (compression-level c) 2)))
+
 (define %options
   (list (option '(#\h "help") #f #f
                 (lambda _
@@ -184,6 +199,10 @@ if ITEM is already compressed."
         (option '(#\c "cache") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'cache arg result)))
+        (option '("cache-bypass-threshold") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'cache-bypass-threshold (size->number arg)
+                              result)))
         (option '("workers") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'workers (string->number* arg)
@@ -235,6 +254,21 @@ if ITEM is already compressed."
   `(("StoreDir" . ,%store-directory)
     ("WantMassQuery" . 0)
     ("Priority" . 100)))
+
+;;; A common buffer size value used for the TCP socket SO_SNDBUF option and
+;;; the gzip compressor buffer size.
+(define %default-buffer-size
+  (* 208 1024))
+
+(define %default-socket-options
+  ;; List of options passed to 'setsockopt' when transmitting files.
+  (list (list SO_SNDBUF %default-buffer-size)))
+
+(define* (configure-socket socket #:key (level SOL_SOCKET)
+                           (options %default-socket-options))
+  "Apply multiple option tuples in OPTIONS to SOCKET, using LEVEL."
+  (for-each (cut apply setsockopt socket level <>)
+            options))
 
 (define (signed-string s)
   "Sign the hash of the string S with the daemon's key.  Return a canonical
@@ -434,7 +468,7 @@ items.  Failing that, we could eventually have to recompute them and return
             (expiration-time file))))))
 
 (define (hash-part->path* store hash cache)
-  "Like 'hash-part->path' but cached results under CACHE.  This ensures we can
+  "Like 'hash-part->path' but cache results under CACHE.  This ensures we can
 still map HASH to the corresponding store file name, even if said store item
 vanished from the store in the meantime."
   (let ((cached (hash-part-mapping-cache-file cache hash)))
@@ -453,6 +487,18 @@ vanished from the store in the meantime."
                (rename-file (string-append cached ".tmp") cached)
                result))
             (apply throw args))))))
+
+(define cache-bypass-threshold
+  ;; Maximum size of a store item that may be served by the '/cached' handlers
+  ;; below even when not in cache.
+  (make-parameter (* 10 (expt 2 20))))
+
+(define (bypass-cache? store item)
+  "Return true if we allow ITEM to be downloaded before it is cached.  ITEM is
+interpreted as the basename of a store item."
+  (guard (c ((store-error? c) #f))
+    (< (path-info-nar-size (query-path-info store item))
+       (cache-bypass-threshold))))
 
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compressions (list %no-compression))
@@ -513,9 +559,20 @@ requested using POOL."
                                                      (nar-expiration-time ttl)
                                                      #:delete-entry delete-entry
                                                      #:cleanup-period ttl))))
-           (not-found request
-                      #:phrase "We're baking it"
-                      #:ttl 300))              ;should be available within 5m
+
+           ;; If ITEM passes 'bypass-cache?', render a temporary narinfo right
+           ;; away, with a short TTL.  The narinfo is temporary because it
+           ;; lacks 'FileSize', for instance, which the cached narinfo will
+           ;; have.  Chances are that the nar will be baked by the time the
+           ;; client asks for it.
+           (if (bypass-cache? store item)
+               (render-narinfo store request hash
+                               #:ttl 300          ;temporary
+                               #:nar-path nar-path
+                               #:compressions compressions)
+               (not-found request
+                          #:phrase "We're baking it"
+                          #:ttl 300)))          ;should be available within 5m
           (else
            (not-found request #:phrase "")))))
 
@@ -532,7 +589,7 @@ requested using POOL."
        (lambda (port)
          (write-file item port))
        #:level (compression-level compression)
-       #:buffer-size (* 128 1024))
+       #:buffer-size %default-buffer-size)
      (rename-file (string-append nar ".tmp") nar))
     ('lzip
      ;; Note: the file port gets closed along with the lzip port.
@@ -546,7 +603,10 @@ requested using POOL."
      ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
      (with-atomic-file-output nar
        (lambda (port)
-         (write-file item port))))))
+         (write-file item port)
+         ;; Make the file world-readable, contrary to what
+         ;; 'with-atomic-file-output' does.
+         (chmod port (logand #o644 (lognot (umask)))))))))
 
 (define* (bake-narinfo+nar cache item
                            #:key ttl (compressions (list %no-compression))
@@ -578,7 +638,12 @@ requested using POOL."
                                           #:nar-path nar-path
                                           #:compressions compressions
                                           #:file-sizes sizes)
-                          port)))))
+                          port)))
+
+             ;; Make the cached narinfo world-readable, contrary to what
+             ;; 'with-atomic-file-output' does, so that other users can rsync
+             ;; the whole cache.
+             (chmod port (logand #o644 (lognot (umask))))))
 
          ;; Make narinfo files for OTHERS hard links to NARINFO such that the
          ;; atime-based cache eviction considers either all the nars or none
@@ -627,19 +692,32 @@ return it; otherwise, return 404.  When TTL is true, use it as the
 'Cache-Control' expiration time."
   (let ((cached (nar-cache-file cache store-item
                                 #:compression compression)))
-    (if (file-exists? cached)
-        (values `((content-type . (application/octet-stream
-                                   (charset . "ISO-8859-1")))
-                  ,@(if ttl
-                        `((cache-control (max-age . ,ttl)))
-                        '())
+    (cond ((file-exists? cached)
+           (values `((content-type . (application/octet-stream
+                                      (charset . "ISO-8859-1")))
+                     ,@(if ttl
+                           `((cache-control (max-age . ,ttl)))
+                           '())
 
-                  ;; XXX: We're not returning the actual contents, deferring
-                  ;; instead to 'http-write'.  This is a hack to work around
-                  ;; <http://bugs.gnu.org/21093>.
-                  (x-raw-file . ,cached))
-                #f)
-        (not-found request))))
+                     ;; XXX: We're not returning the actual contents, deferring
+                     ;; instead to 'http-write'.  This is a hack to work around
+                     ;; <http://bugs.gnu.org/21093>.
+                     (x-raw-file . ,cached))
+                   #f))
+          ((let* ((hash (and=> (string-index store-item #\-)
+                               (cut string-take store-item <>)))
+                  (item (and hash
+                             (guard (c ((store-error? c) #f))
+                               (hash-part->path store hash)))))
+             (and item (not (string-null? item))
+                  (bypass-cache? store item)))
+           ;; Render STORE-ITEM live.  We reach this because STORE-ITEM is
+           ;; being baked but clients are already asking for it.  Thus, we're
+           ;; duplicating work, but doing so allows us to reduce delays.
+           (render-nar store request store-item
+                       #:compression (low-compression compression)))
+          (else
+           (not-found request)))))
 
 (define (render-content-addressed-file store request
                                        name algo hash)
@@ -686,6 +764,13 @@ to compress or decompress the log file; just return it as-is."
         (values (response-headers log) log)
         (not-found request))))
 
+(define (render-signing-key)
+  "Render signing key."
+  (let ((file %public-key-file))
+    (values `((content-type . (text/plain (charset . "UTF-8")))
+              (x-raw-file . ,file))
+            file)))
+
 (define (render-home-page request)
   "Render the home page."
   (values `((content-type . (text/html (charset . "UTF-8"))))
@@ -699,7 +784,12 @@ to compress or decompress the log file; just return it as-is."
                                (a (@ (href
                                       "https://guix.gnu.org/manual/en/html_node/Invoking-guix-publish.html"))
                                   (tt "guix publish"))
-                               " speaking.  Welcome!")))
+                               " speaking.  Welcome!")
+                            (p "Here is the "
+                               (a (@ (href
+                                      "signing-key.pub"))
+                                  (tt "signing key"))
+                               " for this server. Knock yourselves out!")))
                          port)))))
 
 (define (extract-narinfo-hash str)
@@ -796,7 +886,7 @@ or if EOF is reached."
      ;; 'make-gzip-output-port' wants a file port.
      (make-gzip-output-port (response-port response)
                             #:level level
-                            #:buffer-size (* 64 1024)))
+                            #:buffer-size %default-buffer-size))
     (($ <compression> 'lzip level)
      (make-lzip-output-port (response-port response)
                             #:level level))
@@ -821,6 +911,7 @@ blocking."
                                             client))
                (port        (begin
                               (force-output client)
+                              (configure-socket client)
                               (nar-response-port response compression))))
           ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
           ;; 'render-nar', BODY here is just the file name of the store item.
@@ -850,7 +941,7 @@ blocking."
                                                                          size)
                                                     client))
                           (output   (response-port response)))
-                     (setsockopt client SOL_SOCKET SO_SNDBUF (* 128 1024))
+                     (configure-socket client)
                      (if (file-port? output)
                          (sendfile output input size)
                          (dump-port input output))
@@ -918,6 +1009,9 @@ methods, return the applicable compression."
           ;; /
           ((or () ("index.html"))
            (render-home-page request))
+          ;; guix signing-key
+          (("signing-key.pub")
+           (render-signing-key))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
            (if cache
@@ -992,7 +1086,8 @@ methods, return the applicable compression."
 (define (open-server-socket address)
   "Return a TCP socket bound to ADDRESS, a socket address."
   (let ((sock (socket (sockaddr:fam address) SOCK_STREAM 0)))
-    (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
+    (configure-socket sock #:options (cons (list SO_REUSEADDR 1)
+                                           %default-socket-options))
     (bind sock address)
     sock))
 
@@ -1061,7 +1156,10 @@ methods, return the applicable compression."
 consider using the '--user' option!~%")))
 
       (parameterize ((%public-key public-key)
-                     (%private-key private-key))
+                     (%private-key private-key)
+                     (cache-bypass-threshold
+                      (or (assoc-ref opts 'cache-bypass-threshold)
+                          (cache-bypass-threshold))))
         (info (G_ "publishing ~a on ~a, port ~d~%")
               %store-directory
               (inet-ntop (sockaddr:fam address) (sockaddr:addr address))

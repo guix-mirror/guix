@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -323,21 +325,34 @@ can be used either as a standalone application, or as a Python library.")
 (define-public python-pydot
   (package
     (name "python-pydot")
-    (version "1.2.4")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pydot" version))
        (sha256
         (base32
-         "1dhy4jpp646jslh2yks6klwwbaxcs905byyny880gl1iap8y5llj"))))
+         "00az4cbf8bv447lkk9xi6pjm7gcc7ia33y4pm71fwfwis56rv76l"))
+       (patches (search-patches "python-pydot-regression-test.patch"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Taken from .travis.yaml
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "test"
+                 (invoke "python" "pydot_unittest.py")))
+             #t)))))
     (native-inputs
      ;; For tests.
-     `(("python-chardet" ,python-chardet)))
+     `(("graphviz" ,graphviz)
+       ("python-chardet" ,python-chardet)))
     (propagated-inputs
      `(("python-pyparsing" ,python-pyparsing)))
-    (home-page "https://github.com/erocarrera/pydot")
+    (home-page "https://github.com/pydot/pydot")
     (synopsis "Python interface to Graphviz's DOT language")
     (description
      "Pydot provides an interface to create, handle, modify and process

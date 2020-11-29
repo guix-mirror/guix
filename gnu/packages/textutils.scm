@@ -52,6 +52,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
@@ -1125,14 +1126,13 @@ such as ISO-2022-JP, Shift_JIS, EUC-JP, UTF-8, UTF-16 or UTF-32.")
 (define-public python-pandocfilters
   (package
     (name "python-pandocfilters")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandocfilters" version))
        (sha256
-        (base32
-         "1a8d9b7s48gmq9zj0pmbyv2sivn5i7m6mybgpkk4jm5vd7hp1pdk"))))
+        (base32 "1sq675dg4barb5949xxz4d5gk2ly524hi1p1xgwb3d1l0nsznqxw"))))
     (build-system python-build-system)
     (home-page "https://github.com/jgm/pandocfilters")
     (synopsis "Python module for writing Pandoc filters")
@@ -1174,3 +1174,35 @@ This package provides Python bindings.")
     (description "@command{aha} (Ansi Html Adapter) converts ANSI escape sequences
 of a Unix terminal to HTML code.")
     (license (list license:lgpl2.0+ license:mpl1.1))))
+
+(define-public go-github-com-errata-ai-vale
+  (package
+    (name "go-github-com-errata-ai-vale")
+    (version "2.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/errata-ai/vale")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0d07fwha2220m8j24h527xl0gnl3svvyaywflgk5292d6g49ach2"))
+       (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("github.com/sp13/afero" ,go-github-com-spf13-afero)
+       ("github.com/urfave/cli" ,go-github-com-urfave-cli)
+       ("github.com/olekukonko/tablewriter" ,go-github-com-olekukonko-tablewriter)
+       ("github.com/mitchellh/mapstructure" ,go-github-com-mitchellh-mapstructure)))
+    (arguments
+     `(#:import-path "github.com/errata-ai/vale"
+       #:install-source? #f))
+    (home-page "https://github.com/errata-ai/vale")
+    (synopsis "Fully customizable syntax-aware linter that focuses on your style")
+    (description
+     "Vale is a fully extensible linter that focuses on your own writing style
+by making use of rules in individual YAML files.  It is syntax-aware on markup
+languages such as HTML, Markdown, Asciidoc, and reStructuredText.  The community
+around it also has a list of style guides implemented with Vale in
+@url{https://github.com/errata-ai/styles, their styles repo}.")
+    (license license:expat)))

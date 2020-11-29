@@ -1,0 +1,33 @@
+From 919dd016be1abd213b3a7d0e9a3b79e3286ef6ad Mon Sep 17 00:00:00 2001
+From: Simon South <simon@simonsouth.net>
+Date: Wed, 10 Jun 2020 13:02:09 -0400
+Subject: [PATCH] aarch64: Use only C++98
+
+This patch removes an unneeded C++ template that causes the build to
+fail for aarch64 using gcc 7.5.0 and its default support for only the
+C++98 standard.
+
+It is based on original work by Severin Gehwolf <sgehwolf@redhat.com>.
+See: https://bugzilla.redhat.com/show_bug.cgi?id=1307224
+---
+ src/cpu/aarch64/vm/sharedRuntime_aarch64.cpp | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/cpu/aarch64/vm/sharedRuntime_aarch64.cpp b/src/cpu/aarch64/vm/sharedRuntime_aarch64.cpp
+index 0bc0a2b..6f73ca0 100644
+--- a/src/cpu/aarch64/vm/sharedRuntime_aarch64.cpp
++++ b/src/cpu/aarch64/vm/sharedRuntime_aarch64.cpp
+@@ -194,10 +194,6 @@ static int reg2offset_out(VMReg r) {
+   return (r->reg2stack() + SharedRuntime::out_preserve_stack_slots()) * VMRegImpl::stack_slot_size;
+ }
+ 
+-template <class T> static const T& min (const T& a, const T& b) {
+-  return (a > b) ? b : a;
+-}
+-
+ // ---------------------------------------------------------------------------
+ // Read the array of BasicTypes from a signature, and compute where the
+ // arguments should go.  Values in the VMRegPair regs array refer to 4-byte
+-- 
+2.26.2
+

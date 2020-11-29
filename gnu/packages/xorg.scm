@@ -3012,8 +3012,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "5ca3ac1a90af177eb111a965e9b4dd8a27cc58fc")
-        (revision "16"))
+  (let ((commit "ad5540f6ecaec287c70259f0181e613561b716f6")
+        (revision "17"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -3026,7 +3026,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1y1v6cp3r3isq3bc7mypkvypwjygi205k06slmidx2q3sz4h4mjc"))
+           "09jdg5wrq708wc83027337qvdjb96827h7sjwjfl5ffiynfpwl95"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -6072,17 +6072,17 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "361")
-    (source (origin
-              (method url-fetch)
-              (uri (list
-                    (string-append "http://invisible-mirror.net/archives/xterm/"
-                                   "xterm-" version ".tgz")
-                    (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                   "xterm-" version ".tgz")))
-              (sha256
-               (base32
-                "0gv27akkfb796aww1snq3c2sxmi8vajgfxk83g60awp4slh0yqc5"))))
+    (version "362")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "https://invisible-mirror.net/archives/xterm/"
+                            "xterm-" version ".tgz")
+             (string-append "ftp://ftp.invisible-island.net/xterm/"
+                            "xterm-" version ".tgz")))
+       (sha256
+        (base32 "18mch57f5sypgfdbvna22ailcfpnixw0fc5wkf2j3w58dwigwkqx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6266,16 +6266,15 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.4")
+    (version "4.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.xz"))
        (sha256
-        (base32 "10alqdfmgml9ixdi1nyd9xlw8a5q0j8m2sv4g9p83pd6z1a0rpv2"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"
-                                "xpra-4.0.4-norequests.patch"))))
+        (base32 "11ml66z8vbc0fa567kkmp2j20l5l60aflnkrz5ay8arw3w92nmnz"))
+       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(

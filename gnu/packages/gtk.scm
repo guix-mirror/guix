@@ -173,6 +173,12 @@ affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "https://cairographics.org/")))
 
+(define-public cairo-sans-poppler
+  ;; Variant used to break the dependency cycle between Poppler and Cairo.
+  (package/inherit cairo
+    (inputs (alist-delete "poppler" (package-inputs cairo)))
+    (properties `((hidden? . #t)))))
+
 (define-public cairo-xcb
   (package
     (inherit cairo)
@@ -1503,7 +1509,7 @@ write GNOME applications.")
 (define-public perl-cairo
   (package
     (name "perl-cairo")
-    (version "1.107")
+    (version "1.108")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1511,7 +1517,7 @@ write GNOME applications.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0sg1gf1f2pjq7pji0zsv4rbi3bzpsx82z98k7yqxafzrvlkf27ay"))))
+                "1nh5iya63q6j2w0cdi24x2ygpi8k8wwccnbh8cisnx8nqmywnhk0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)

@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
@@ -619,6 +621,45 @@ is not available for Guile 2.0.")
 (define-public guile3.0-fibers
   (deprecated-package "guile3.0-fibers" guile-fibers))
 
+(define-public guile-filesystem
+  (package
+    (name "guile-filesystem")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/leoprikler/guile-filesystem.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1shmkc0y9r2sj3kw7hrsnamnp7y8xifkhf3m3rnfxczqg63k67vy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/leoprikler/guile-filesystem")
+    (synopsis "Complementary library to Guile's built-in file system procedures")
+    (description "@code{guile-filesystem} provides a set of utility functions,
+that augment Guile's support for handling files and their names.")
+    (license license:lgpl3+)))
+
+(define-public guile2.0-filesystem
+  (package
+    (inherit guile-filesystem)
+    (name "guile2.0-filesystem")
+    (inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile2.2-filesystem
+  (package
+    (inherit guile-filesystem)
+    (name "guile2.2-filesystem")
+    (inputs `(("guile" ,guile-2.2)))))
+
 (define-public guile-syntax-highlight
   (package
     (name "guile-syntax-highlight")
@@ -845,8 +886,8 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (license license:bsd-3)))
 
 (define-public guile-prometheus
-  (let ((commit "8980f39bafb3e59d6de17e7b311df4932e5b5182")
-        (revision "1"))
+  (let ((commit "12d3d9de676f518eccf0a384d461cc4c035939b0")
+        (revision "2"))
     (package
     (name "guile-prometheus")
     (version (git-version "0" revision commit))
@@ -857,7 +898,7 @@ Vicare Scheme and IronScheme.  Right now it contains:
                     (commit commit)))
               (sha256
                (base32
-                "04vwza78b5nq0szzxzvpnfjyfkb4pqf2w4dx3kz1f082n01xnwss"))
+                "0d45g2719xy84l2si5h1fw7vlig4pqqkhp5zlw9dlr5gzaa3yrrs"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -925,8 +966,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "68bedb6679716214fb9d3472da57544526f7a618")
-        (revision "3"))
+  (let ((commit "5fc3b7190d31c258ce969c2a5d2ad38c66a09d09")
+        (revision "4"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -938,7 +979,7 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "1ad3xg69qqviy1f6dnlw0ysmfdbmp1jq65rfqb8nfd8dsrq2syli"))
+           "0inhvl5jssvbw3nd129wdahfwyvy1iciq403wzf0algbvl1fqs7z"))
          (file-name (git-file-name name version))))
       (build-system guile-build-system)
       (arguments
@@ -1064,20 +1105,19 @@ allows users to interact with the Guile REPL through Jupyter.")
 (define-public guile-sparql
   (package
    (name "guile-sparql")
-   (version "0.0.7")
+   (version "0.0.8")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/roelj/guile-sparql/releases/download/"
                   version "/guile-sparql-" version ".tar.gz"))
             (sha256
-             (base32 "1drnvhsgl0gc5crmb16yyw1j98nkhwwcgssv9vgm36ng43nnzffd"))))
+             (base32 "1jf4972f9fpm0rd865xpnc9mzl3xv6vhfnp0iygadydy905z9nln"))))
    (build-system gnu-build-system)
-   (arguments `(#:tests? #f)) ; There are no tests.
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (inputs
-    `(("guile" ,guile-2.2)))
+    `(("guile" ,guile-3.0)))
    (home-page "https://github.com/roelj/guile-sparql")
    (synopsis "SPARQL module for Guile")
    (description "This package provides the functionality to query a SPARQL
@@ -1763,8 +1803,8 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
-        (revision "822"))
+  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
+        (revision "839"))
     (package
       (name "g-golf")
       (version (git-version "0.1.0" revision commit))
@@ -1776,7 +1816,7 @@ capabilities.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5"))))
+          (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -2265,7 +2305,7 @@ inspired by the SCSH regular expression system.")
     (description "Haunt is a static site generator written in Guile
 Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
-    (home-page "http://haunt.dthompson.us")
+    (home-page "https://dthompson.us/projects/haunt.html")
     (license license:gpl3+)))
 
 (define-public guile2.2-haunt
@@ -2933,7 +2973,7 @@ more expressive and flexible than the traditional @code{format} procedure.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/scheme-requests-for-implementation/srfi-180.git")
+               (url "https://github.com/scheme-requests-for-implementation/srfi-180")
                (commit commit)))
          (sha256
           (base32
@@ -3044,7 +3084,7 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "v0.4.1-31-g415d96f"))
+  (let ((commit "v0.4.1-37-g5f91ee6"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
@@ -3057,7 +3097,7 @@ in C using Gtk+-3 and WebKitGtk.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1cs1i1hxwrv0a512j54yrvfh743nci1chx6qjgp4jyzq98ncvxgg"))))
+          (base32 "03ym14g9qhjqmryr5z065kynqm8yhmvnbs2djl6vp3i9cmqln8cl"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
@@ -3110,7 +3150,7 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.2.0-alpha-100-g6a565d3")
+    (version "0.2.0-alpha-199-g3e7a475")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3119,7 +3159,7 @@ perform geometrical transforms on JPEG images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0anmprm63a88kii251rl296v1g4iq62r6n4nssx5jbc0hzkknanz"))))
+                "0p0ha6prp7pyadp61clbhc6b55023vxzfwy14j2qygb2mkq7fhic"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3130,7 +3170,7 @@ perform geometrical transforms on JPEG images.")
        ("guile" ,guile-2.2)
        ("glib:bin" ,glib "bin")
        ("texinfo" ,texinfo)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("perl" ,perl)))
     (inputs
      `(;; Guile
@@ -3150,6 +3190,7 @@ perform geometrical transforms on JPEG images.")
        ("gtk+:bin" ,gtk+ "bin")
        ("webkitgtk" ,webkitgtk)
        ("gtksourceview" ,gtksourceview)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("vte" ,vte)
        ;; Gstreamer
        ("gstreamer" ,gstreamer)
@@ -3693,7 +3734,7 @@ models and also supports a rich set of boolean query operators.")
     (source (origin (method git-fetch)
                     (uri (git-reference
                           (url
-                           "https://github.com/o-nly/torrent.git")
+                           "https://github.com/o-nly/torrent")
                           (commit version)))
                     (file-name (git-file-name name version))
                     (sha256
@@ -3836,7 +3877,7 @@ manipulating graphs and datasets.")
 (define-public guile-jsonld
   (package
     (name "guile-jsonld")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method git-fetch)
@@ -3846,13 +3887,13 @@ manipulating graphs and datasets.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0zfn3nwlz6xzip1j8xbj768dc299r037cfc81bk6kwl9xhzkjbrg"))))
+          "1ryyvh71899z2inivqglb8d78zzp1sd0wv9a56kvcmrxf1966z6r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)); require network
     (propagated-inputs
      `(("guile-gnutls" ,gnutls)
-       ("guile-json" ,guile-json-3)
+       ("guile-json" ,guile-json-4)
        ("guile-rdf" ,guile-rdf)))
     (inputs
      `(("guile" ,guile-3.0)))
@@ -4007,3 +4048,100 @@ features not found in the standard read procedure such as a compatible mode
 with support for other RnRS standards and a tolerant mode that continues on
 errors.")
     (license license:expat)))
+
+(define-public guile-avahi
+  (let ((commit "6d43caf64f672a9694bf6c98bbf7a734f17a51e8")
+        (revision "1"))
+    (package
+      (name "guile-avahi")
+      (version (git-version "0.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/guile-avahi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fvrf8x22yvc71180hd3xkhspg9yvadi0pbv8shzlsaxqncwy1m9"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules (((guix build guile-build-system)
+                     #:select (target-guile-effective-version))
+                    ,@%gnu-build-system-modules)
+         #:imported-modules ((guix build guile-build-system)
+                             ,@%gnu-build-system-modules)
+         #:make-flags
+         '("GUILE_AUTO_COMPILE=0")    ;to prevent guild warnings
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-guile-avahi-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "src"
+               (invoke "make" "install"
+                       "-j" (number->string
+                             (parallel-job-count))))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (files (find-files "modules" ".scm")))
+               (substitute* files
+                 (("\"guile-avahi-v-0\"")
+                  (format #f "\"~a/lib/guile/~a/extensions/guile-avahi-v-0\""
+                          out (target-guile-effective-version))))
+               #t))))))
+      (inputs
+       `(("guile" ,guile-3.0)
+         ("avahi" ,avahi)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
+      (synopsis "Guile bindings to Avahi")
+      (description
+       "This package provides bindings for Avahi.  It allows programmers to
+use functionalities of the Avahi client library from Guile Scheme programs.
+Avahi itself is an implementation of multicast DNS (mDNS) and DNS Service
+Discovery (DNS-SD).")
+      (home-page "https://www.nongnu.org/guile-avahi/")
+      (license license:lgpl3+))))
+
+(define-public guile-mkdir-p
+  (package
+    (name "guile-mkdir-p")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://code.divoplade.fr/mkdir-p.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "01k20rjcv6p0spmw8ls776aar6bfw0jxw46d2n12w0cb2p79xjv8"))
+       (file-name (git-file-name name version))
+       (snippet
+        `(begin
+           (with-output-to-file ".tarball-version"
+             (lambda _ (format #t "~a~%" ,version)))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments `())
+    (native-inputs
+     `(("guile" ,guile-3.0)
+       ("texinfo" ,texinfo)
+       ("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)))
+    (inputs `(("guile" ,guile-3.0)))
+    (synopsis "Implementation of a recursive @code{mkdir} for Guile")
+    (description
+     "This package provides within the @code{(mkdir-p)} module the
+@code{mkdir-p} function that tries to create the chain of directories
+recursively.  It also provides new versions of @code{open-output-file},
+@code{call-with-output-file} and @code{with-output-to-file} to create the
+directory of its argument if it does not exist.")
+    (home-page "https://mkdir-p.divoplade.fr")
+    (license license:asl2.0)))

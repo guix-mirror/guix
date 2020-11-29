@@ -76,7 +76,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "5.12")
+    (version "5.21")
     (source
      (origin
        (method url-fetch)
@@ -88,7 +88,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "0bl4ii4h1w4z8kb6dpdc1pgwk0wrhm61c2q2nzpcckkrqra75wc7"))))
+        (base32 "0h185lfpid6cw1sz8rmkpky2l11izpb0w8j0cq6ww6yi94jmq6js"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -171,21 +171,22 @@
                     (let* ((out (assoc-ref outputs "out"))
                            (icd (string-append out "/share/vulkan/icd.d")))
                       (mkdir-p icd)
-                      (copy-file (string-append (assoc-ref inputs "mesa")
-                                 "/share/vulkan/icd.d/radeon_icd.i686.json")
+                      (copy-file (string-append
+                                  (assoc-ref inputs "mesa")
+                                  "/share/vulkan/icd.d/radeon_icd.i686.json")
                                  (string-append icd "/radeon_icd.i686.json"))
-                      (copy-file (string-append (assoc-ref inputs "mesa")
-                                 "/share/vulkan/icd.d/intel_icd.i686.json")
+                      (copy-file (string-append
+                                  (assoc-ref inputs "mesa")
+                                  "/share/vulkan/icd.d/intel_icd.i686.json")
                                  (string-append icd "/intel_icd.i686.json"))
                       (wrap-program (string-append out "/bin/wine-preloader")
-                                    `("VK_ICD_FILENAMES" ":" =
-                                      (,(string-append icd
-                                        "/radeon_icd.i686.json" ":"
-                                        icd "/intel_icd.i686.json"))))
+                        `("VK_ICD_FILENAMES" ":" =
+                          (,(string-append icd
+                                           "/radeon_icd.i686.json" ":"
+                                           icd "/intel_icd.i686.json"))))
                       #t)))))
              (_
-              `())
-             )
+              `()))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
@@ -227,34 +228,35 @@ integrate Windows applications into your desktop.")
          ;; when installing to x86_64-linux so both are available.
          ;; TODO: Add more JSON files as they become available in Mesa.
          ,@(match (%current-system)
-           ((or "x86_64-linux")
-             `((add-after 'copy-wine32-binaries 'wrap-executable
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out")))
-                   (wrap-program (string-append out "/bin/wine-preloader")
-                                 `("VK_ICD_FILENAMES" ":" =
-                                   (,(string-append (assoc-ref inputs "mesa")
-                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json" ":"
-                                     (assoc-ref inputs "mesa")
-                                     "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
-                                     (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json" ":"
-                                     (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
-                   (wrap-program (string-append out "/bin/wine64-preloader")
-                                 `("VK_ICD_FILENAMES" ":" =
-                                   (,(string-append (assoc-ref inputs "mesa")
-                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json"
-                                     ":" (assoc-ref inputs "mesa")
-                                     "/share/vulkan/icd.d/intel_icd.x86_64.json"
-                                     ":" (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json"
-                                     ":" (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
-                   #t)))))
-           (_
-            `())
-           )
+             ((or "x86_64-linux")
+              `((add-after 'copy-wine32-binaries 'wrap-executable
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out")))
+                      (wrap-program (string-append out "/bin/wine-preloader")
+                        `("VK_ICD_FILENAMES" ":" =
+                          (,(string-append
+                             (assoc-ref inputs "mesa")
+                             "/share/vulkan/icd.d/radeon_icd.x86_64.json" ":"
+                             (assoc-ref inputs "mesa")
+                             "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
+                             (assoc-ref inputs "wine")
+                             "/share/vulkan/icd.d/radeon_icd.i686.json" ":"
+                             (assoc-ref inputs "wine")
+                             "/share/vulkan/icd.d/intel_icd.i686.json"))))
+                      (wrap-program (string-append out "/bin/wine64-preloader")
+                        `("VK_ICD_FILENAMES" ":" =
+                          (,(string-append
+                             (assoc-ref inputs "mesa")
+                             "/share/vulkan/icd.d/radeon_icd.x86_64.json"
+                             ":" (assoc-ref inputs "mesa")
+                             "/share/vulkan/icd.d/intel_icd.x86_64.json"
+                             ":" (assoc-ref inputs "wine")
+                             "/share/vulkan/icd.d/radeon_icd.i686.json"
+                             ":" (assoc-ref inputs "wine")
+                             "/share/vulkan/icd.d/intel_icd.i686.json"))))
+                      #t)))))
+             (_
+              `()))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine"))
@@ -266,6 +268,13 @@ integrate Windows applications into your desktop.")
                ;; version.
                (copy-file (string-append wine32 "/bin/.wine-preloader-real")
                           (string-append out "/bin/wine-preloader"))
+               #t)))
+         (add-after 'install 'copy-wine32-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((wine32 (assoc-ref %build-inputs "wine"))
+                    (out (assoc-ref %outputs "out")))
+               (copy-recursively (string-append wine32 "/lib/wine32")
+                                 (string-append out "/lib/wine32"))
                #t)))
          (add-after 'compress-documentation 'copy-wine32-manpage
            (lambda* (#:key outputs #:allow-other-keys)

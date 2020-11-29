@@ -260,7 +260,9 @@ bootloader's configuration file."
      ;; test suite, the bootloader installer script is omitted. 'grub-install'
      ;; would attempt to write directly to the virtual disk if the
      ;; installation script were run.
-     (test (install-bootloader-program #f #f bootcfg bootcfg-file #f "/")))))
+     (test
+      (install-bootloader-program #f #f #f bootcfg bootcfg-file #f "/")))))
+
 
 (define %test-switch-to-system
   (system-test

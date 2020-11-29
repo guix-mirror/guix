@@ -1109,6 +1109,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("clucene" ,clucene)
        ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
+       ("firebird" ,firebird)
        ("fontconfig" ,fontconfig)
        ("fontforge" ,fontforge)
        ("gconf" ,gconf)
@@ -1285,7 +1286,9 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         "--without-java"
         ;; FIXME: Enable once the corresponding inputs are packaged.
         "--disable-coinmp"
-        "--disable-firebird-sdbc"       ; embedded firebird
+        ;; This could (Debian does this) be a separate output containing only
+        ;; program/libfirebird_sdbclo.so, if there's a way to point to it.
+        "--enable-firebird-sdbc"
         ;; XXX: PDFium support requires fetching an external tarball and
         ;; patching the build scripts to work with GCC5.  Try enabling this
         ;; when our default compiler is >=GCC 6.

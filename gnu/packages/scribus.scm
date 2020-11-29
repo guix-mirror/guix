@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,16 +49,14 @@
 (define-public scribus
   (package
     (name "scribus")
-    (version "1.5.5")
+    (version "1.5.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/scribus/scribus-devel/"
                            version "/scribus-" version ".tar.xz"))
-       (patches (search-patches "scribus-1.5.5-poppler-0.86-build-fix.patch"))
        (sha256
-        (base32
-         "0w9zzsiaq3f7vpxybk01c9z2b4qqg67mzpyfb2gjchz8dhdb423r"))))
+        (base32 "1axp8ffnx3nh6k4s5mfa9gbx8d0yql2azgcampg41ylwafapc9fl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target
@@ -99,7 +98,7 @@
        ("openssl" ,openssl)
        ("podofo" ,podofo)
        ("poppler" ,poppler)
-       ("python" ,python-2)             ;need Python library
+       ("python" ,python)               ; need Python library
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("zlib" ,zlib)))

@@ -105,6 +105,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/repl.scm					\
+  guix/transformations.scm			\
   guix/inferior.scm				\
   guix/describe.scm				\
   guix/quirks.scm				\
@@ -343,10 +344,10 @@ dist_noinst_DATA =				\
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/5.8-arm.conf       \
-  gnu/packages/aux-files/linux-libre/5.8-arm64.conf     \
-  gnu/packages/aux-files/linux-libre/5.8-i686.conf      \
-  gnu/packages/aux-files/linux-libre/5.8-x86_64.conf    \
+  gnu/packages/aux-files/linux-libre/5.9-arm.conf       \
+  gnu/packages/aux-files/linux-libre/5.9-arm64.conf     \
+  gnu/packages/aux-files/linux-libre/5.9-i686.conf      \
+  gnu/packages/aux-files/linux-libre/5.9-x86_64.conf    \
   gnu/packages/aux-files/linux-libre/5.4-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-i686.conf	\
@@ -455,7 +456,6 @@ SCM_TESTS =					\
   tests/pypi.scm				\
   tests/records.scm				\
   tests/scripts.scm				\
-  tests/scripts-build.scm			\
   tests/search-paths.scm			\
   tests/services.scm				\
   tests/services/linux.scm			\
@@ -472,6 +472,7 @@ SCM_TESTS =					\
   tests/syscalls.scm				\
   tests/system.scm				\
   tests/texlive.scm				\
+  tests/transformations.scm			\
   tests/ui.scm					\
   tests/union.scm				\
   tests/upstream.scm				\
@@ -560,7 +561,7 @@ dist_zshcompletion_DATA = etc/completion/zsh/_guix
 dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 
 # SELinux policy
-dist_selinux_policy_DATA = etc/guix-daemon.cil
+nodist_selinux_policy_DATA = etc/guix-daemon.cil
 
 EXTRA_DIST +=						\
   HACKING						\
@@ -568,6 +569,7 @@ EXTRA_DIST +=						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  .guix-authorizations					\
   .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
@@ -665,9 +667,11 @@ channel_intro_commit = 9edb3f66fd807b096b48283debdcddccfea34bad
 channel_intro_signer = BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA
 
 # Authenticate the current Git checkout by checking signatures on every commit.
+GUIX_GIT_KEYRING = origin/keyring
 authenticate:
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
 	guix git authenticate					\
+	    --keyring=$(GUIX_GIT_KEYRING)			\
 	    --cache-key=channels/guix --stats			\
 	    "$(channel_intro_commit)" "$(channel_intro_signer)"
 
@@ -706,7 +710,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
 # Name of the 'guix' package shipped in the binary tarball.
-GUIX_FOR_BINARY_TARBALL = guile3.0-guix
+GUIX_FOR_BINARY_TARBALL = guix
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
@@ -726,8 +730,8 @@ distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 EXTRA_DIST += $(top_srcdir)/.version
 BUILT_SOURCES += $(top_srcdir)/.version
-$(top_srcdir)/.version:
-	echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
+$(top_srcdir)/.version: config.status
+	$(AM_V_GEN)echo $(VERSION) > "$@-t" && mv "$@-t" "$@"
 
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
@@ -822,9 +826,10 @@ release: dist-with-updated-version
 	$(MKDIR_P) "$(releasedir)"
 	rm -f "$(releasedir)"/*
 	mv $(SOURCE_TARBALLS) "$(releasedir)"
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+	   	"`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
 	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
@@ -836,9 +841,10 @@ release: dist-with-updated-version
 	  mv "guix-binary.$$system.tar.xz"					\
 	      "$(releasedir)/guix-binary-$(PACKAGE_VERSION).$$system.tar.xz" ;	\
 	done
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	   $(top_srcdir)/build-aux/update-guix-package.scm	\
-	   "`git rev-parse HEAD`"
+	GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT=yes \
+	$(top_builddir)/pre-inst-env "$(GUILE)"	\
+		$(top_srcdir)/build-aux/update-guix-package.scm	\
+		"`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\

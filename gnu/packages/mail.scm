@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
@@ -36,6 +36,9 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +64,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -76,6 +80,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -104,6 +109,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
@@ -111,11 +117,13 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -142,6 +150,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
@@ -400,7 +409,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.12")
+    (version "6.4.13")
     (source
      (origin
        (method url-fetch)
@@ -408,7 +417,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "11s83af63gs9nnrjb66yq58xriyvi8hzj4ykxp3kws5z3nby111b"))))
+        (base32 "1qablzgwx3a516vdhckx3pv716x9r7nyfyr6fbncif861c3cya3x"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -435,7 +444,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.14.7")
+    (version "2.0.2")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -445,7 +454,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0r58xnjgkw0kmnnzhb32mk5gkkani5kbi5krybpbag156fqhgxg4"))
+               "1j0i2jmlk5sc78af9flj3ynj0iiwa8biw7jgf12qm5lppsx1h4j7"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -482,7 +491,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20200313")
+    (version "20201120")
     (source
      (origin
        (method git-fetch)
@@ -491,7 +500,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1k4k07l6h5krc3fx928qvdq3ssw9fxn95aj7k885xlckd2i1lnb5"))))
+        (base32 "0z6xavgd0zv9pqvfsdyvhhi1q3y7zxhgg24isbnn9r6mldafqwna"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -514,7 +523,19 @@ operating systems.")
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml-4.2)
        ("w3m" ,w3m)
-       ("tcl" ,tcl)))
+       ("tcl" ,tcl)
+
+       ;; Test file data for the unit tests included in the neomutt source.
+       ("neomutt-test-files"
+        ,(let ((commit "8629adab700a75c54e8e28bf05ad092503a98f75"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/neomutt/neomutt-test-files")
+                   (commit commit)))
+             (file-name (git-file-name "neomutt-test-files" commit))
+             (sha256
+              (base32 "1ci04nqkab9mh60zzm66sd6mhsr6lya8wp92njpbvafc86vvwdlr")))))))
     (arguments
      `(#:test-target "test"
        #:configure-flags
@@ -565,7 +586,14 @@ operating systems.")
                (setenv "CONFIG_SHELL" bash)
                (apply invoke bash
                       (string-append (getcwd) "/configure")
-                      flags)))))))
+                      flags))))
+         (add-before 'check 'prepare-test-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "neomutt-test-files") "tests")
+             (with-directory-excursion "tests"
+               (setenv "NEOMUTT_TEST_DIR" (getcwd)) ; must be absolute
+               (invoke "bash" "setup.sh")
+               #t))))))
     (home-page "https://neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
@@ -588,12 +616,15 @@ It adds a large amount of new and improved features to mutt.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gnupg" ,gnupg)))               ; for tests only
+       ("gnupg" ,gnupg)                 ; for tests only
+       ("gobject-introspection" ,gobject-introspection)))
     (inputs `(("glib" ,glib)
               ("gpgme" ,gpgme)
               ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+         (list "--enable-introspection=yes")
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'patch-paths-in-tests
@@ -684,7 +715,7 @@ mailpack.  What can alterMIME do?
 
 @enumerate
 @item Insert disclaimers,
-@item insert arbitary X-headers,
+@item insert arbitrary X-headers,
 @item modify existing headers,
 @item remove attachments based on filename or content-type,
 @item replace attachments based on filename.
@@ -694,6 +725,118 @@ mailpack.  What can alterMIME do?
     ;; published under the alterMIME license.
     (license (list (license:non-copyleft "file://LICENSE")
                    license:bsd-3))))
+
+(define-public astroid
+  (package
+    (name "astroid")
+    (version "0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astroidmail/astroid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11cxbva9ni98gii59xmbxh4c6idcg3mg0pgdsp1c3j0yg7ix0lj3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; https://github.com/astroidmail/astroid/pull/685
+           (substitute* "tests/test_composed_message.cc"
+             (("\\\\n\\.\\.\\.") "\\n...\\n"))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%cmake-build-system-modules)
+       #:configure-flags (list "-GNinja")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-markdown-test
+           ;; This test relies on the plugins and the test suite
+           ;; cannot find the Astroid module.
+           ;;  gi.require_version ('Astroid', '0.2')
+           ;; ValueError: Namespace Astroid not available
+           (lambda _
+             (substitute* "tests/CMakeLists.txt"
+               ((".*markdown.*") ""))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "ninja" "-j" (number->string (parallel-job-count)))))
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (setenv "HOME" (getcwd))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+               (invoke "ctest" "."))
+             #t))
+         (replace 'install
+           (lambda _
+             (invoke "ninja" "install")))
+         (add-after 'install 'wrap-with-GI_TYPELIB_PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (paths (map (match-lambda
+                                 ((outputs . directory)
+                                  (let ((girepodir (string-append
+                                                    directory
+                                                    "/lib/girepository-1.0")))
+                                    (if (file-exists? girepodir)
+                                        girepodir
+                                        #f))))
+                               inputs)))
+               (wrap-program (string-append out "/bin/astroid")
+                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gnupg" ,gnupg)
+       ("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)
+       ("ronn" ,ronn)
+       ("w3m" ,w3m)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("boost" ,boost)
+       ("gmime" ,gmime)
+       ("gobject-introspection" ,gobject-introspection) ; it is referenced
+       ("gtkmm" ,gtkmm)
+       ("libpeas" ,libpeas)
+       ("libsass" ,libsass)
+       ("notmuch" ,notmuch)
+       ("protobuf" ,protobuf)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme))) ; Required for the thread view
+    (home-page "https://astroidmail.github.io/")
+    (synopsis "GTK frontend to the notmuch mail system")
+    (description
+     "Astroid is a lightweight and fast Mail User Agent that provides a
+graphical interface to searching, display and composing email, organized in
+thread and tags.  Astroid uses the notmuch backend for searches through tons of
+email.  Astroid searches, displays and compose emails — and relies on other
+programs for fetching, syncing and sending email.")
+    (license (list license:gpl3+        ; 'this program'
+                   license:lgpl2.1+)))) ; code from geary, gmime
 
 (define-public ripmime
   ;; Upstream does not tag or otherwise provide any releases (only a version
@@ -742,6 +885,44 @@ mailpack.  What can alterMIME do?
 MIME-encoded email package.")
       (home-page "https://github.com/inflex/ripMIME")
       (license license:bsd-3))))
+
+(define-public mailcap
+  (let* ((version "2.1.49")
+         (tag ;; mailcap tags their releases like this: rMajor-minor-patch
+          (string-append "r" (string-join (string-split version #\.) "-"))))
+    (package
+      (name "mailcap")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://pagure.io/mailcap.git")
+               (commit tag)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ck1fw6gqn51phcfakhfpfq1yziv3gnmgjvswzhj9x0p162n6alj"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'set-dest-dir
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (setenv "DESTDIR" out)
+                 (substitute* "Makefile"
+                   (("/usr") ""))       ; This allows the man page to install.
+                 #t))))))
+      (native-inputs
+       `(("python" ,python)))           ; for tests
+      (synopsis "MIME type associations for file types")
+      (description
+       "This package provides MIME type associations for file types.")
+      (home-page "https://pagure.io/mailcap")
+      (license (list license:expat              ; mailcap.5
+                     license:public-domain))))) ; mailcap and mime.types
 
 (define-public bogofilter
   (package
@@ -961,7 +1142,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.5.1")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               ;; package author intends on distributing via github rather
@@ -972,27 +1153,47 @@ attachments, create new maildirs, and so on.")
               (file-name (string-append "alot-" version ".tar.gz"))
               (sha256
                (base32
-                "0wax30hjzmkqfml7hig1dqw1v1y63yc0cgbzl96x58b9h2ggqx3a"))))
+                "1r0x3n2fxi6sfq3paz8a4vn2mmyqaznj1207wa7jl0ixnjqilb7f"))))
     (build-system python-build-system)
     (arguments
-     `(;; python 3 is currently unsupported, more info:
-       ;; https://github.com/pazz/alot/blob/master/docs/source/faq.rst
-       #:python ,python-2))
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-before 'check 'fix-tests
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((gnupg (assoc-ref inputs "gnupg")))
+              (substitute* "tests/test_crypto.py"
+                (("gpg2") (string-append gnupg "/bin/gpg")))
+              #t)))
+        (add-before 'check 'disable-failing-tests
+         ;; FIXME: Investigate why these tests are failing.
+         (lambda _
+          (substitute* "tests/test_helper.py"
+            (("def test_env_set") "def _test_env_set"))
+          (substitute* "tests/commands/test_global.py"
+            (("def test_no_spawn_no_stdin_attached")
+             "def _test_no_spawn_no_stdin_attached"))
+          #t)))))
     (native-inputs
-     `(("python2-mock" ,python2-mock)))
+     `(("procps" ,procps)
+       ("python-mock" ,python-mock)))
     (inputs
-     `(("python2-magic" ,python2-magic)
-       ("python2-configobj" ,python2-configobj)
-       ("python2-twisted" ,python2-twisted)
-       ("python2-urwid" ,python2-urwid)
-       ("python2-urwidtrees" ,python2-urwidtrees)
-       ("python2-pygpgme" ,python2-pygpgme)
-       ("python2-notmuch" ,python2-notmuch)))
+     `(("gnupg" ,gnupg)
+       ("python-magic" ,python-magic)
+       ("python-configobj" ,python-configobj)
+       ("python-twisted" ,python-twisted)
+       ("python-service-identity" ,python-service-identity)
+       ("python-urwid" ,python-urwid)
+       ("python-urwidtrees" ,python-urwidtrees)
+       ("python-gpg" ,python-gpg)
+       ("python-notmuch" ,python-notmuch)))
     (home-page "https://github.com/pazz/alot")
-    (synopsis "Command-line MUA using @code{notmuch}")
+    (synopsis "Command-line MUA using Notmuch")
     (description
-     "Alot is an experimental terminal mail user agent (@dfn{MUA}) based on
-@code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
+     "Alot is a terminal-based mail user agent based on the Notmuch mail
+indexer.  It is written in Python using the @code{urwid} toolkit and features
+a modular and command prompt driven interface to provide a full mail user
+agent (@dfn{MUA}) experience as an alternative to the Emacs mode shipped with
+Notmuch.")
     (license license:gpl3+)))
 
 (define-public notifymuch
@@ -1046,14 +1247,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.31")
+    (version "0.31.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1543l57viqzqikjgfzp2abpwz3p0k2iq0b1b3wmn31lwaghs07sp"))))
+                "1vzv9imd0ba51y5zw8h358wikm1fh52rlvvyzvp98w330hzbcmhl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1203,14 +1404,14 @@ and search library.")
 (define-public muchsync
   (package
     (name "muchsync")
-    (version "5")
+    (version "6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.muchsync.org/src/"
                            "muchsync-" version ".tar.gz"))
        (sha256
-        (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
+        (base32 "1s799kx16nm5ry1fcqcc0grgxrwnnp4cnzd0hzwbkvc5v2sf6g8b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pandoc" ,pandoc)
@@ -1230,7 +1431,7 @@ broadband.  Muchsync supports arbitrary pairwise synchronization among
 replicas.  A version-vector-based algorithm allows it to exchange only the
 minimum information necessary to bring replicas up to date regardless of which
 pairs have previously synchronized.")
-    (license license:gpl2+)))
+    (license license:gpl2+)))           ; with OpenSSL libcrypto exception
 
 (define-public getmail
   (package
@@ -1265,7 +1466,7 @@ useful features.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url  "https://github.com/dinhviethoa/libetpan.git")
+                   (url  "https://github.com/dinhviethoa/libetpan")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -1320,16 +1521,15 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.7")
+    (version "3.17.8")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append
-         "https://www.claws-mail.org/releases/claws-mail-"
-         version ".tar.xz"))
+        (string-append "https://www.claws-mail.org/releases/claws-mail-"
+                       version ".tar.xz"))
        (sha256
-        (base32 "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
+        (base32 "1byxmz68lnm2m8q1gnp0lpr3qp7dcwabrw5iqflz9mlm960v5dyd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -1389,14 +1589,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.12")
+    (version "1.8.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0m33m5bc7ajmgy7vivnzj3mhybg37259hx79xypj769kfyafyvx8"))))
+        (base32 "1fcv99nis7c6yc63n04cncjysv9jndrp469gcfxh54aiinmlbadd"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -2420,17 +2620,68 @@ existing mail server.  With Postfix, the proxies can operate as either
 converts them to maildir format directories.")
     (license license:public-domain)))
 
+(define-public mblaze
+  (package
+    (name "mblaze")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leahneukirchen/mblaze")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hxy3mjjv4hg856sl1r15fdmqaw4s9c26b3lidsd5x0kpqy601ai"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:tests? #f                   ; XXX: Upstream tests appear to be broken
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          "PREFIX="
+                          (string-append "DESTDIR=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/leahneukirchen/mblaze")
+    (synopsis "Unix utilities to deal with Maildir")
+    (description
+     "The mblaze message system is a set of Unix utilities for processing and
+interacting with mail messages which are stored in maildir folders.
+
+Its design is roughly inspired by MH, the RAND Message Handling System, but it
+is a complete implementation from scratch.
+
+mblaze is a classic command line MUA and has no features for receiving or
+transferring messages; you can operate on messages in a local maildir spool,
+or fetch your messages using fdm(1), getmail(1), offlineimap(1), or similar
+utilities, and send it using dma(8), msmtp(1), sendmail(8), as provided by
+OpenSMTPD, Postfix, or similar.
+
+mblaze operates directly on maildir folders and doesn't use its own caches or
+databases.  There is no setup needed for many uses.  All utilities have been
+written with performance in mind.  Enumeration of all messages in a maildir is
+avoided unless necessary, and then optimized to limit syscalls.  Parsing
+message metadata is optimized to limit I/O requests.  Initial operations on a
+large maildir may feel slow, but as soon as they are in the file system cache,
+everything is blazingly fast.  The utilities are written to be memory
+efficient (i.e. not wasteful), but whole messages are assumed to fit into RAM
+easily (one at a time).")
+    (license (list license:public-domain
+                   license:expat))))    ; mystrverscmp.c and mymemmem
+
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.10")
+    (version "1.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1243hazpiwgvz2m3p48cdh0yw1019i6xjxgc7qyhmxcdy0inb6wy"))))
+        (base32 "1gcxvhin5y0q47svqbf90r5aip0cgywm8sq6m84ygda7km8xylwv"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -2877,14 +3128,13 @@ messages with @acronym{DKIM, DomainKeys Identified Mail} (RFC 4871).")
 (define-public mailman
   (package
     (name "mailman")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mailman" version))
         (sha256
-         (base32
-          "0idfiv48jjgc0jq4731094ddhraqq8bxnwmjk6sg5ask0jss9kxq"))))
+         (base32 "0a5ckbf8hc3y28b7p5psp0d4bxk601jlr5pd3hhh545xd8d9f0dg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("gunicorn" ,gunicorn)
@@ -3420,20 +3670,23 @@ the use of a local MTA such as Sendmail.")
 (define-public afew
   (package
     (name "afew")
-    (version "1.2.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "afew" version))
        (sha256
         (base32
-         "121w7bd53xyibllxxbfykjj76n81kn1vgjqd22izyh67y8qyyk5r"))))
+         "0wpfqbqjlfb9z0hafvdhkm7qw56cr9kfy6n8vb0q42dwlghpz1ff"))))
     (build-system python-build-system)
     (inputs
-     `(("python-chardet" ,python-chardet)
+     `(("notmuch" ,notmuch)
+       ("python-chardet" ,python-chardet)
+       ("python-dkimpy" ,python-dkimpy)
        ("python-notmuch" ,python-notmuch)))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-freezegun" ,python-freezegun)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/afewmail/afew")
     (synopsis "Initial tagging script for notmuch mail")
     (description "afew is an initial tagging script for notmuch mail.  It
@@ -3492,7 +3745,7 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.16")
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
@@ -3501,19 +3754,19 @@ PGP handling, multiple servers, and secure connections.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0f65sg6hhv6778fxwsz4hvarbm97dsb8jj0mg7a9qs273r35pqck"))))
+        (base32 "0nb0ysdp91r6dr3jgx24halbf4f56g4imx9112hkbz1abzgrmxs3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "CC=gcc")
+             (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
-    (native-inputs
+    (inputs
      `(("lua" ,lua)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("openssl" ,openssl)))
     (home-page "https://github.com/lefcha/imapfilter")
     (synopsis "IMAP mail filtering utility")
@@ -3884,7 +4137,7 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 (define-public python-aiosmtpd
   (package
     (name "python-aiosmtpd")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -3892,7 +4145,7 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
              (url "https://github.com/aio-libs/aiosmtpd")
              (commit version)))
        (sha256
-        (base32 "14c30dm6jzxiblnsah53fdv68vqhxwvb9x0aq9bc4vcdas747vr7"))
+        (base32 "0083d6nf75xv8nq1il6jabz36v6c452svy4p402csxwwih5pw6sk"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
@@ -3918,3 +4171,42 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 based on asyncio.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public rspamd
+  (package
+    (name "rspamd")
+    (version "2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rspamd/rspamd")
+             (commit version)))
+       (sha256
+        (base32 "0vwa7k2s2bkfb8w78z5izkd6ywjbzqysb0grls898y549hm8ii70"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DENABLE_LUAJIT=ON")))
+    (inputs
+     `(("openssl" ,openssl)
+       ("glib" ,glib)
+       ("ragel" ,ragel)
+       ("luajit" ,luajit)
+       ("sqlite" ,sqlite)
+       ("file" ,file)
+       ("icu4c" ,icu4c)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)
+       ("perl" ,perl)
+       ("libsodium" ,libsodium)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Spam filtering system")
+    (description "Rspamd is an advanced spam filtering system that
+allows evaluation of messages by a number of rules including regular
+expressions, statistical analysis and custom services such as URL
+black lists.  Each message is analysed by Rspamd and given a spam
+score.")
+    (home-page "https://www.rspamd.com/")
+    (license license:asl2.0)))

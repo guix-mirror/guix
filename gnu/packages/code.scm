@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -39,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autogen)
@@ -338,81 +339,93 @@ features that are not supported by the standard @code{stdio} implementation.")
               "http://sourceforge.net/p/ctrio/git/ci/master/tree/README"))))
 
 (define-public universal-ctags
-  ;; The project is unable to decide whether to use 1.0 or 6.0 as the
-  ;; first public release version (it started as a fork of another ctags
-  ;; project that was on version 5.8), and five years later have been
-  ;; unable to tag a release.  Thus, we just take the master branch.
-  (let ((commit "0c78c0c4a68030df0d025c90bad291108b5e7107")
-        (revision "0"))
-    (package
-      (name "universal-ctags")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/universal-ctags/ctags")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0lnxc3kwi6srw0015m16vyjfdc7pdr9d1qzxjsbfv3c69ag87jhc"))
-         (modules '((guix build utils)))
-         (snippet
-          '(begin
-             ;; Remove the bundled PackCC and associated build rules.
-             (substitute* "Makefile.am"
-               (("\\$\\(packcc_verbose\\)\\$\\(PACKCC\\)")
-                "packcc")
-               (("\\$\\(PEG_SRCS\\) \\$\\(PEG_HEADS\\): packcc\\$\\(EXEEXT\\)")
-                "$(PEG_SRCS) $(PEG_HEADS):")
-               (("noinst_PROGRAMS \\+= packcc")
-                ""))
-             (delete-file-recursively "misc/packcc")
-             #t))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'make-files-writable
-                      (lambda _
-                        (for-each make-file-writable (find-files "."))
-                        #t))
-                    (add-before 'bootstrap 'patch-optlib2c
-                      (lambda _
-                        ;; The autogen.sh script calls out to optlib2c to
-                        ;; generate translations, so we can not wait for the
-                        ;; patch-source-shebangs phase.
-                        (patch-shebang "misc/optlib2c")
-                        #t))
-                    (add-before 'check 'patch-tests
-                      (lambda _
-                        (substitute* "misc/units"
-                          (("SHELL=/bin/sh")
-                           (string-append "SHELL=" (which "sh"))))
-                        (substitute* "Tmain/utils.sh"
-                          (("/bin/echo") (which "echo")))
-                        #t)))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("packcc" ,packcc)
-         ("perl" ,perl)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("jansson" ,jansson)
-         ("libseccomp" ,libseccomp)
-         ("libxml2" ,libxml2)
-         ("libyaml" ,libyaml)))
-      (home-page "https://ctags.io/")
-      (synopsis "Generate tag files for source code")
-      (description
-       "Universal Ctags generates an index (or tag) file of language objects
+  (package
+    (name "universal-ctags")
+    (version "5.9.20201018.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/universal-ctags/ctags")
+             (commit (string-append "p" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "174p1w20pl25k996hfw61inw4mqhskmmic1lyw2m65firmkyvs7x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove the bundled PackCC and associated build rules.
+           (substitute* "Makefile.am"
+             (("\\$\\(packcc_verbose\\)\\$\\(PACKCC\\)")
+              "packcc")
+             (("\\$\\(PEG_SRCS\\) \\$\\(PEG_HEADS\\): packcc\\$\\(EXEEXT\\)")
+              "$(PEG_SRCS) $(PEG_HEADS):")
+             (("noinst_PROGRAMS \\+= packcc")
+              ""))
+           (delete-file-recursively "misc/packcc")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; Don't use the build-time TMPDIR (/tmp/guix-build-...) at runtime.
+       #:configure-flags '("--enable-tmpdir=/tmp")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'make-files-writable
+                    (lambda _
+                      (for-each make-file-writable (find-files "."))
+                      #t))
+                  (add-before 'bootstrap 'patch-optlib2c
+                    (lambda _
+                      ;; The autogen.sh script calls out to optlib2c to
+                      ;; generate translations, so we can not wait for the
+                      ;; patch-source-shebangs phase.
+                      (patch-shebang "misc/optlib2c")
+                      #t))
+                  (add-before 'check 'patch-tests
+                    (lambda _
+                      (substitute* "misc/units"
+                        (("SHELL=/bin/sh")
+                         (string-append "SHELL=" (which "sh"))))
+                      (substitute* "Tmain/utils.sh"
+                        (("/bin/echo") (which "echo")))
+                      #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ;; XXX: Use ctags' own packcc fork even though we meticolously unbundle
+       ;; it above.  Mainly for historical reasons, and perhaps their changes
+       ;; get upstreamed in the future.
+       ("packcc"
+        ,(let ((commit "03402b79505dc0024f90d5bebfd7e5d3fb62da9a"))
+           (package
+             (inherit packcc)
+             (source (origin
+                       (method git-fetch)
+                       (uri (git-reference
+                             (url "https://github.com/universal-ctags/packcc")
+                             (commit commit)))
+                       (file-name (git-file-name "packcc-for-ctags"
+                                                 (string-take commit 7)))
+                       (sha256
+                        (base32
+                         "0vxpdk9l2lf7f32nx1p3b3xmw2kw2wp95vnf9bc4lyqrg69pblm0")))))))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("jansson" ,jansson)
+       ("libseccomp" ,libseccomp)
+       ("libxml2" ,libxml2)
+       ("libyaml" ,libyaml)))
+    (home-page "https://ctags.io/")
+    (synopsis "Generate tag files for source code")
+    (description
+     "Universal Ctags generates an index (or tag) file of language objects
 found in source files for many popular programming languages.  This index
 makes it easy for text editors and other tools to locate the indexed items.
 Universal Ctags improves on traditional ctags because of its multilanguage
 support, its ability for the user to define new languages searched by regular
 expressions, and its ability to generate emacs-style TAGS files.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public withershins
   (package
@@ -517,6 +530,28 @@ case.  The extension consists of a set of Perl scripts which build on the
 textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
     (license license:gpl2+)))
+
+(define-public lcov-cobertura
+  (package
+    (name "python-lcov-cobertura")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lcov_cobertura" version))
+       (sha256
+        (base32
+         "02ar6yjazlxq4p64cz9gag08bvakmzjrp147jara9wlnlbc96j8g"))))
+    (build-system python-build-system)
+    (home-page "https://eriwen.github.io/lcov-to-cobertura-xml/")
+    (synopsis "LCOV to Cobertura XML converter")
+    (description
+     "The lcov-to-cobertura Python module converts code coverage report files
+in the lcov format to the XML format of
+@uref{http://cobertura.github.io/cobertura/, Cobertura}, a Java code coverage
+tool.  It allows continuous integration servers like Jenkins to aggregate
+results and determine build stability.")
+    (license license:asl2.0)))
 
 (define-public kcov
   (package

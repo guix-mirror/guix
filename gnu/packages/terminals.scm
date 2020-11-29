@@ -16,10 +16,11 @@
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1044,7 +1045,7 @@ comfortably in a pager or editor.
 (define-public eternalterminal
   (package
     (name "eternalterminal")
-    (version "6.0.7")
+    (version "6.0.13")
     (source
       (origin
         (method git-fetch)
@@ -1053,7 +1054,7 @@ comfortably in a pager or editor.
                (commit (string-append "et-v" version))))
         (file-name (git-file-name name version))
        (sha256
-        (base32 "03pdspggqxkmz95qb96pig5x0xw18hy9a7ivszydr32ry6kxxx1h"))))
+        (base32 "0sb1hypg2276y8c2a5vivrkcxp70swddvhnd9h273if3kv6j879r"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TEST=ON")
@@ -1080,6 +1081,9 @@ and IP roaming.  ET provides the same core functionality as @command{mosh},
 while also supporting native scrolling and @command{tmux} control mode
 (@code{tmux -CC}).")
     (license license:asl2.0)))
+
+(define-public et
+  (deprecated-package "et" eternalterminal))
 
 (define-public wterm
   (package
@@ -1220,18 +1224,52 @@ made by suckless.")
         ("rust-winapi" ,rust-winapi-0.3))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'patch-glutin-libgl-path
+         (add-after 'configure 'add-absolute-library-references
            (lambda* (#:key inputs cargo-inputs vendor-dir #:allow-other-keys)
              (let* ((glutin-name ,(package-name rust-glutin-0.22))
                     (glutin-version ,(package-version rust-glutin-0.22))
-                    (src-api
-                      (string-append
-                        glutin-name "-" glutin-version ".tar.gz/src/api/"))
+                    (glutin-api (string-append glutin-name "-" glutin-version
+                                               ".tar.gz/src/api/"))
+                    (smithay-client-toolkit-name
+                     ,(package-name rust-smithay-client-toolkit-0.6))
+                    (smithay-client-toolkit-version
+                     ,(package-version rust-smithay-client-toolkit-0.6))
+                    (smithay-client-toolkit-src
+                     (string-append smithay-client-toolkit-name "-"
+                                    smithay-client-toolkit-version ".tar.gz/src"))
+                    (wayland-sys-name ,(package-name rust-wayland-sys-0.23))
+                    (wayland-sys-version ,(package-version rust-wayland-sys-0.23))
+                    (wayland-sys-src (string-append wayland-sys-name "-"
+                                                    wayland-sys-version
+                                                    ".tar.gz/src"))
+                    (libxkbcommon (assoc-ref inputs "libxkbcommon"))
+                    (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
-              (substitute* (string-append vendor-dir "/" src-api "glx/mod.rs")
+              (substitute* (string-append vendor-dir "/" glutin-api "glx/mod.rs")
                 (("libGL.so") (string-append mesa "/lib/libGL.so")))
-              (substitute* (string-append vendor-dir "/" src-api "egl/mod.rs")
+              (substitute* (string-append vendor-dir "/" glutin-api "egl/mod.rs")
                 (("libEGL.so") (string-append mesa "/lib/libEGL.so")))
+              (substitute* (string-append vendor-dir "/"
+                                          smithay-client-toolkit-src
+                                          "/keyboard/ffi.rs")
+                (("libxkbcommon\\.so")
+                 (string-append libxkbcommon "/lib/libxkbcommon.so")))
+              (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                          "/server.rs")
+                (("libwayland-server\\.so")
+                 (string-append libwayland "/lib/libwayland-server.so")))
+              (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                          "/cursor.rs")
+                (("libwayland-cursor\\.so")
+                 (string-append libwayland "/lib/libwayland-cursor.so")))
+              (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                          "/egl.rs")
+                (("libwayland-egl\\.so")
+                 (string-append libwayland "/lib/libwayland-egl.so")))
+              (substitute* (string-append vendor-dir "/" wayland-sys-src
+                                          "/client.rs")
+                (("libwayland-client\\.so")
+                 (string-append libwayland "/lib/libwayland-client.so")))
               #t)))
          (add-after 'configure 'remove-alacritty-vendor
            (lambda* (#:key vendor-dir #:allow-other-keys)
@@ -1251,15 +1289,8 @@ made by suckless.")
                     (man   (string-append share "/man/man1"))
                     (alacritty-bin "target/release/alacritty"))
 
-               ;; Install and wrap the binary.
+               ;; Install the executable.
                (install-file alacritty-bin bin)
-               (wrap-program (string-append bin "/alacritty")
-                 ;; Both libraries are dlopen()d by cargo dependencies above
-                 ;; when running Alacritty on pure Wayland.
-                 ;; XXX Find out how to patch these at the source.
-                 `("LD_LIBRARY_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "libxkbcommon") "/lib:"
-                                    (assoc-ref inputs "wayland") "/lib"))))
 
                ;; Install man pages.
                (mkdir-p man)
@@ -1312,6 +1343,12 @@ made by suckless.")
        ("ncurses" ,ncurses)
        ("pkg-config" ,pkg-config)
        ("python3" ,python)))
+    (native-search-paths
+     ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
+     ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
+     (list (search-path-specification
+            (variable "TERMINFO_DIRS")
+            (files '("share/terminfo")))))
     (home-page "https://github.com/alacritty/alacritty")
     (synopsis "GPU-accelerated terminal emulator")
     (description

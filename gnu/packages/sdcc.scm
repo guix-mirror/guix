@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages sdcc)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages flex)
@@ -39,7 +40,14 @@
                     "/" version "/sdcc-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "13llvx0j3v5qa7qd4fh7nix4j3alpd3ccprxvx163c4q8q4lfkc5"))))
+                "13llvx0j3v5qa7qd4fh7nix4j3alpd3ccprxvx163c4q8q4lfkc5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove non-free source files
+                  (delete-file-recursively "device/non-free")
+                  #t))
+              (patches (search-patches "sdcc-disable-non-free-code.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
