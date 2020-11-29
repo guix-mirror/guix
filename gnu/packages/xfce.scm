@@ -53,7 +53,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
@@ -62,6 +64,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -202,6 +205,64 @@ storage system.")
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
 to share commonly used Xfce widgets among the Xfce applications.")
     (license lgpl2.0+)))
+
+(define-public catfish
+  (package
+    (name "catfish")
+    (version "1.4.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.xfce.org/src/apps/"
+                                  "catfish/" (version-major+minor version)
+                                  "/catfish-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0fg89946z6n8njxn4mv29jksw8yavg8vypsljn9031pjwl3fmh2q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-command-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "catfish/CatfishSearchEngine.py"
+               (("'which'") (string-append "'" (which "which") "'")))
+             (substitute* "catfish/CatfishWindow.py"
+               (("xdg-mime") (which "xdg-mime"))
+               (("xdg-open") (which "xdg-open")))))
+         ;; setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/")))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/catfish")
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-distutils-extra" ,python-distutils-extra)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("which" ,which)
+       ("xdg-utils" ,xdg-utils)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("python-dbus" ,python-dbus)
+       ("python-pexpect" ,python-pexpect)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://docs.xfce.org/apps/catfish/start")
+    (synopsis "File searching tool for Xfce")
+    (description
+     "Catfish is a file searching tool for Linux and Unix.  The interface is
+intentionally lightweight and simple, using only GTK+ 3.  You can configure
+it to your needs by using several command line options.")
+    (license gpl2+)))
 
 (define-public elementary-xfce-icon-theme
   (package
