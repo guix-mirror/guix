@@ -172,6 +172,7 @@ rejects UDP traffic from the application you're using.")
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy")
                                "--localstatedir=/var"
+                               "--with-brotli"
                                "--with-openssl")
        #:tests? #f                      ; no test suite
        #:phases
@@ -194,7 +195,8 @@ rejects UDP traffic from the application you're using.")
                  (("^logfile") "#logfile")))
              #t)))))
     (inputs
-     `(("openssl" ,openssl)
+     `(("brotli" ,brotli)
+       ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("w3m" ,w3m)
        ("zlib" ,zlib)))
