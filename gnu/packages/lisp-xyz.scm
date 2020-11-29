@@ -11579,3 +11579,30 @@ extensible initializers.")
 
 (define-public ecl-make-hash
   (sbcl-package->ecl-package sbcl-make-hash))
+
+(define-public sbcl-claw-support
+  (package
+    (name "sbcl-claw-support")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/borodust/claw-support")
+             (commit "9a15c8bed04585f45e6a461bcda1b475144dbd0b")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1my2ka7h72ipx5n3b465g6kjkasrhsvhqlijwcg6dhlzs5yygl23"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/borodust/claw-support")
+    (synopsis "Support routines for claw")
+    (description
+     "This packages provide support routines for the @code{claw} common-lisp
+package.")
+    (license license:expat)))
+
+(define-public cl-claw-support
+  (sbcl-package->cl-source-package sbcl-claw-support))
+
+(define-public ecl-claw-support
+  (sbcl-package->ecl-package sbcl-claw-support))
