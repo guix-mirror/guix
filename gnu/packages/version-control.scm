@@ -666,7 +666,7 @@ to GitHub contributions calendar.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "1.0.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -674,7 +674,7 @@ to GitHub contributions calendar.")
                                   "/libgit2-" version ".tar.gz"))
               (sha256
                (base32
-                "0nlg35pxhh548nn7aa3y1m81mf81nkbzz86i2psps4f474n497v8"))
+                "1fjdglkh04qv3b4alg621pxa689i0wlf8m7nf2755zawjr2zhwxd"))
               (patches (search-patches "libgit2-mtime-0.patch"))
               (snippet '(begin
                           (delete-file-recursively "deps") #t))
