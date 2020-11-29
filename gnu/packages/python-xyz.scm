@@ -184,6 +184,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -23091,3 +23092,36 @@ distutils-based python projects.  The goal is to remove the tedious and
 error-prone \"update the embedded version string\" step from your release
 process.")
     (license license:public-domain)))
+
+(define-public python2-gamera
+  (package
+    (name "python2-gamera")
+    (version "3.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gamera.informatik.hsnr.de/download/"
+                           "gamera-" version ".tar.gz"))
+       (sha256
+        (base32 "1g4y1kxk1hmxfsiz682hbxvwryqilnb21ci509m559yp7hcliiyy"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled libraries.
+           (for-each delete-file-recursively
+                     '("src/libpng-1.2.5"
+                       "src/libtiff"
+                       "src/zlib-1.2.8"))))))
+    (build-system python-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("python2-wxpython" ,python2-wxpython)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:python ,python-2))
+    (synopsis "Framework for building document analysis applications")
+    (description
+     "Gamera is a toolkit for building document image recognition systems.")
+    (home-page "https://gamera.informatik.hsnr.de/")
+    (license license:gpl2+)))
