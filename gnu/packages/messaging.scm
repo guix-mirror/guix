@@ -126,6 +126,59 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public libgadu
+  (package
+    (name "libgadu")
+    (version "1.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/wojtekka/libgadu.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1s16cripy5w9k12534qb012iwc5m9qcjyrywgsziyn3kl3i0aa8h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-shebangs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "protobufgen.sh"
+               (("/bin/sh")
+                (string-append (assoc-ref inputs "bash")
+                               "/bin/sh")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)
+       ("doxygen" ,doxygen)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)
+       ("libprotobuf-c" ,protobuf-c)
+       ("libxml" ,libxml2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)))
+    (synopsis "Library for handling the protocol of Gadu-Gadu")
+    (description "LibGadu is library for handling Gadu-Gadu instant messenger
+protocol.  The library is written in C and aims to be operating system and
+environment independent.")
+    (home-page "https://libgadu.net/index.en.html")
+    (license license:lgpl2.1+)))
+
 (define-public silc-toolkit
   (package
     (name "silc-toolkit")
