@@ -2492,7 +2492,7 @@ create layout indicator widgets.")
 (define-public j4-dmenu-desktop
   (package
     (name "j4-dmenu-desktop")
-    (version "2.17")
+    (version "2.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2501,7 +2501,7 @@ create layout indicator widgets.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v23fimkn83dcm5p53y2ymhklff3kwppxhf75sm8xmswrzkixpgc"))))
+                "1gxpgifzy0hnpd0ymw3r32amzr32z3bgb90ldjzl438p6h1q0i26"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("catch2" ,catch-framework2)))
