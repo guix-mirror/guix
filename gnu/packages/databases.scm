@@ -898,7 +898,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.5.6")
+    (version "10.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -906,7 +906,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i257h0zdypdfj5wkg6ck9pxlkph0jvjs92k22pjr6gnx5lxs1gz"))
+                "1s3vfm73911cddjhgpcbkya6nz7ag2zygg56qqzwscn5ybv28j7b"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -956,6 +956,11 @@ Language.")
          "-DDEFAULT_COLLATION=utf8_general_ci"
          "-DMYSQL_DATADIR=/var/lib/mysql"
          "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+
+         ;; Do not install the tests or benchmark suite.
+         "-DINSTALL_MYSQLTESTDIR=false"
+         "-DINSTALL_SQLBENCHDIR=false"
+
          (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
          (string-append "-DCMAKE_INSTALL_RPATH=" (assoc-ref %outputs "lib")
                         "/lib")
@@ -1005,7 +1010,14 @@ Language.")
                       "main.explain_non_select"
                       "main.stat_tables"
                       "main.stat_tables_innodb"
+                      "main.upgrade_MDEV-19650"
                       "roles.acl_statistics"
+
+                      ;; FIXME: This test checks various table encodings and
+                      ;; fails because Guix defaults to UTF8 instead of the
+                      ;; upstream default latin1_swedish_ci.  It's not easily
+                      ;; substitutable because several encodings are tested.
+                      "main.sp2"
 
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
@@ -1077,12 +1089,15 @@ Language.")
                 (("\\$basedir/share/mysql")
                  (string-append lib "/share/mysql")))
 
-              ;; Remove unneeded files for testing.
               (with-directory-excursion lib
-                (for-each delete-file-recursively
-                          '("mysql-test" "sql-bench"))
-                ;; And static libraries.
+                ;; FIXME: Something creates an empty gnu/store/xxx-mariadb/bin
+                ;; directory at the root of the lib output.  It's not present
+                ;; in the installation log.  This started occuring between
+                ;; 10.5.6 and 10.5.8.  How to prevent it?
+                (delete-file-recursively "gnu")
+                ;; Remove static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
+
               (with-directory-excursion out
                 (delete-file "share/man/man1/mysql-test-run.pl.1")
                 ;; Delete huge and unnecessary executables.
