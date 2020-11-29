@@ -5752,14 +5752,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "172")
+    (version "173")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "17666056masfly83791q831yzw6sy1m6rwkxw7sqgjrhchn9sc4w"))
+                "1a1j4lsvql3aiqbkdn10hhpvmhavhlr9qkh2scxcv1kn7rvvclih"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
