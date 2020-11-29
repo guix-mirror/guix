@@ -11447,3 +11447,34 @@ and comparison operations when used heavily in numeric code.")
 
 (define-public ecl-static-dispatch
   (sbcl-package->ecl-package sbcl-static-dispatch))
+
+(define-public sbcl-defpackage-plus
+  (let ((revision "0")
+        (commit "5492e27e0bdb7b75fa5177ea4388519dc7a75f11"))
+    (package
+      (name "sbcl-defpackage-plus")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/defpackage-plus")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0lzljvf343xb6mlh6lni2i27hpm5qd376522mk6hr2pa20vd6rdq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/rpav/defpackage-plus")
+      (synopsis "Extensible @code{DEFPACKAGE} variant with version support")
+      (description
+       "@code{DEFPACKAGE-PLUS} is an extensible @code{DEFPACKAGE} variant with
+predictable cross-platform behavior and some utilities useful for versioning.")
+      (license license:bsd-2))))
+
+(define-public cl-defpackage-plus
+  (sbcl-package->cl-source-package sbcl-defpackage-plus))
+
+(define-public ecl-defpackage-plus
+  (sbcl-package->ecl-package sbcl-defpackage-plus))
