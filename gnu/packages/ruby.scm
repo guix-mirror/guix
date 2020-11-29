@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11715,4 +11716,31 @@ which snapshots to consider and what files to include.")
      "WWTD is a @dfn{Travis Simulator} that lets you run test matrices
 defined in @file{.travis.yml} on your local machine, using @code{rvm},
 @code{rbenv}, or @code{chruby} to test different versions of Ruby.")
+    (license license:expat)))
+
+(define-public ruby-rugged
+  (package
+    (name "ruby-rugged")
+    (version "1.1.0")
+    (home-page "https://www.rubydoc.info/gems/rugged")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rugged" version))
+       (sha256
+        (base32 "04aq913plcxjw71l5r62qgz3bx3466p0wvgyfqahg5n3nybmcwqy"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f
+       #:gem-flags (list  "--" "--use-system-libraries")))
+    (inputs
+     `(("libgit2" ,libgit2)))
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Ruby bindings to the libgit2 linkable C Git library")
+    (description "Rugged is a library for accessing libgit2 in Ruby.  It gives
+you the speed and portability of libgit2 with the beauty of the Ruby
+language.")
     (license license:expat)))
