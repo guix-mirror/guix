@@ -17,6 +17,20 @@
 
 (channel-news
  (version 0)
+ (entry (commit "79f9dee3c4c0e6d21066f142116a537207ae7ba4")
+        (title (en "Local substitute servers discovery is now supported")
+               (fr "La découverte des serveurs de substituts locaux est désormais supportée"))
+        (body
+         (en "The @command{guix-daemon} can now discover local substitute
+servers when the @option{--discover} option is passed.  Only the substitute
+servers started with the @option{--advertise} option will be discovered.  The
+network discovery is based on mDNS and DNS-SD protocols, using Guile-Avahi
+library for now.")
+         (fr "Le @command{guix-daemon} peut désormais découvrir les serveurs
+de substituts locaux lorsque l'option @option{--discover} est passée.  Seuls
+les serveurs de substituts démarrés avec l'option{--advertise} seront
+découverts.  La découverte réseau utilise les protocoles mDNS et DNS-SD, pour
+l'instant grâce à la librairie Guile-Avahi.")))
 
  (entry (commit "a9a2fdaabcc78e7a54d9a6bcfa4ee3de308e9a90")
         (title (en "Logical Volume Manager (LVM) now supported on Guix System")
