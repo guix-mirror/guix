@@ -73,7 +73,6 @@ include gnu/local.mk
 include po/doc/local.mk
 
 MODULES =					\
-  guix/avahi.scm				\
   guix/base16.scm				\
   guix/base32.scm				\
   guix/base64.scm				\
@@ -257,7 +256,6 @@ MODULES =					\
   guix/import/texlive.scm   			\
   guix/import/utils.scm				\
   guix/scripts.scm				\
-  guix/scripts/discover.scm			\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
   guix/scripts/build.scm			\
@@ -320,6 +318,14 @@ MODULES +=					\
   guix/store/ssh.scm
 
 endif HAVE_GUILE_SSH
+
+if HAVE_GUILE_AVAHI
+
+MODULES += 					\
+  guix/avahi.scm				\
+  guix/scripts/discover.scm
+
+endif HAVE_GUILE_AVAHI
 
 if BUILD_DAEMON_OFFLOAD
 

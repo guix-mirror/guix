@@ -42,7 +42,7 @@
   #:use-module (web server)
   #:use-module (web uri)
   #:autoload   (sxml simple) (sxml->xml)
-  #:use-module (guix avahi)
+  #:autoload   (guix avahi) (avahi-publish-service-thread)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix config)

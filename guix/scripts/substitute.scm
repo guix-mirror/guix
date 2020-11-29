@@ -27,7 +27,7 @@
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module ((guix serialization) #:select (restore-file))
-  #:use-module (guix scripts discover)
+  #:autoload   (guix scripts discover) (read-substitute-urls)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix base64)
