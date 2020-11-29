@@ -393,14 +393,14 @@ redone.")
 (define-public rsibreak
   (package
     (name "rsibreak")
-    (version "0.12.11")
+    (version "0.12.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde//stable/rsibreak/0.12/"
                            "rsibreak-" version ".tar.xz"))
        (sha256
-        (base32 "09axg6gbmpnxsk88mdjbxxvfaj5af7xaf1gmnr17b0506zcfgwhv"))))
+        (base32 "06kzyj5jzmzvhw6jy6p7ldrq719bys0yg0nll9rawziwpxzvwh1p"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
