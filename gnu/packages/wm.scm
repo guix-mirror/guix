@@ -1206,15 +1206,14 @@ It is inspired by Xmonad and dwm.  Its major features include:
 (define-public cwm
   (package
     (name "cwm")
-    (version "6.6")
+    (version "6.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://leahneukirchen.org/releases/cwm-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0p350pbfn92m21jiq4i324sdskxhs71p435g0mgz7cmzprnhhg92"))))
+        (base32 "022zld29qawd8gl700g4m24qa89il3aks397zkhh66wvzssdblzx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
