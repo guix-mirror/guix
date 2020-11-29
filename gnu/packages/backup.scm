@@ -148,7 +148,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -157,7 +157,7 @@ spying and/or modification by the server.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f1jsd5sw2wynjzi7yjqjaf13yhyjfdid91p8yh0jn32y03kjyrz"))))
+                "11mx8q29cr0sryd11awab7y4mhqgbamb1ss77rffjj6in8pb4hdk"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
