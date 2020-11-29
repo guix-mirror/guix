@@ -2050,16 +2050,16 @@ start-up.")
 (define-public xnotify
   (package
     (name "xnotify")
-    (version "0.5.0")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/phillbush/xnotify")
-                    (commit (string-append "v" version))))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ris7jhi7hgw7nxkwkn3zk7n3y4nvnnm6dbz0qs0g2srp2k67v7v"))))
+                "09s29m8z4x3mc3wja2587ik3f6zg16b40adr3nllnpyy1mqnprq5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
