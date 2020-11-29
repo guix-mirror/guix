@@ -1212,7 +1212,7 @@ lot easier.")
 (define-public stgit
   (package
     (name "stgit")
-    (version "0.21")
+    (version "0.23")
     (source
      (origin
        (method git-fetch)
@@ -1221,7 +1221,7 @@ lot easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00pmz93znl418lsjwy4mr0chp8i2w27h1xjysa05f62smsv91yyc"))))
+        (base32 "0bgxgsd6nj6gkk74c56vrjsyr7j19jrj6cx2ma6f7b20wriznhd5"))))
     (build-system python-build-system)
     (native-inputs
      `(("perl" ,perl)))
