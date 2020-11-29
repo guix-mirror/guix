@@ -3133,16 +3133,16 @@ present in modern GPUs.")
 (define-public vdpauinfo
   (package
     (name "vdpauinfo")
-    (version "1.0")
+    (version "1.4")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://gitlab.freedesktop.org/vdpau/vdpauinfo")
-              (commit (string-append "vdpauinfo-" version))))
+              (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0j495axk56dmdzw32dn6qdb1lhd2nff77cpwdia7liwz7p1jli0g"))))
+         (base32 "0s84bavxr39w0r7zfaac7kpbfsg88hgymqyzcr0yvbj1yry3liz2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
