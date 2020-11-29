@@ -1251,7 +1251,7 @@ lot easier.")
                      "PERL_PATH=perl"
                      (string-append "SHELL_PATH=" (which "bash"))
                      "test"))))))
-    (home-page "http://procode.org/stgit/")
+    (home-page "https://stacked-git.github.io/")
     (synopsis "Stacked Git")
     (description
      "StGit is a command-line application that provides functionality similar
