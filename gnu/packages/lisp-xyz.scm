@@ -639,9 +639,9 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (let ((revision "3")
+  (let ((revision "4")
         ;; Update together with emacs-sly.
-        (commit "6a2f543cb21f14104c2253af5a1427b884a987ae"))
+        (commit "68561f1b7b66fa0240766ece836bb04da31ea17d"))
     (package
       (name "sbcl-slynk")
       (version (git-version "1.0.0-beta" revision commit))
@@ -653,7 +653,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (url "https://github.com/joaotavora/sly")
            (commit commit)))
          (sha256
-          (base32 "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))
+          (base32 "1xwx537dhgclngi6b0faf320i8pnac9309wvmk6z2g6dm3v652ds"))
          (file-name (git-file-name "slynk" version))
          (modules '((guix build utils)
                     (ice-9 ftw)))
@@ -663,18 +663,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
              ;; access
              (substitute* "slynk/slynk.asd"
                (("\\.\\./contrib")
-                "contrib")
-               (("\\(defsystem :slynk/util")
-                "(defsystem :slynk/util :depends-on (:slynk)"))
-             (substitute* "contrib/slynk-trace-dialog.lisp"
-               (("\\(slynk::reset-inspector\\)") ; Causes problems on load
-                "nil"))
-             (substitute* "contrib/slynk-profiler.lisp"
-               (("slynk:to-line")
-                "slynk-pprint-to-line"))
-             (substitute* "contrib/slynk-fancy-inspector.lisp"
-               (("slynk/util") "slynk-util")
-               ((":compile-toplevel :load-toplevel") ""))
+                "contrib"))
              (rename-file "contrib" "slynk/contrib")
              ;; Move slynk's contents into the base directory for easier
              ;; access
@@ -690,7 +679,6 @@ antialiased TrueType font rendering using CLX and XRender extension.")
        `(#:tests? #f ; No test suite
          #:asd-systems '("slynk"
                          "slynk/arglists"
-                         "slynk/util"
                          "slynk/fancy-inspector"
                          "slynk/package-fu"
                          "slynk/mrepl"
@@ -709,7 +697,6 @@ antialiased TrueType font rendering using CLX and XRender extension.")
                             %outputs
                             #:dependencies '("slynk"
                                              "slynk/arglists"
-                                             "slynk/util"
                                              "slynk/fancy-inspector"
                                              "slynk/package-fu"
                                              "slynk/mrepl"
