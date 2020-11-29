@@ -11478,3 +11478,39 @@ predictable cross-platform behavior and some utilities useful for versioning.")
 
 (define-public ecl-defpackage-plus
   (sbcl-package->ecl-package sbcl-defpackage-plus))
+
+(define-public sbcl-deploy
+  ;; tagged branch is outdated
+  (let ((revision "1")
+        (commit "59fd49719ef651a8fc11750bcfb337f132cff75f"))
+    (package
+      (name "sbcl-deploy")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/deploy")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1vl2116z4kw2pd3qd3n6mmg8g0mnwxr9dgddk86g7j1bis1z8k9a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (arguments
+       '(#:asd-files '("deploy.asd")))
+      (home-page "https://shinmera.github.io/deploy/")
+      (synopsis "Deployment tools for standalone Common Lisp application")
+      (description
+       "This is a system to help you easily and quickly deploy standalone
+common lisp applications as binaries.  Specifically it is geared towards
+applications with foreign library dependencies that run some kind of GUI.")
+      (license license:artistic2.0))))
+
+(define-public cl-deploy
+  (sbcl-package->cl-source-package sbcl-deploy))
+
+(define-public ecl-deploy
+  (sbcl-package->ecl-package sbcl-deploy))
