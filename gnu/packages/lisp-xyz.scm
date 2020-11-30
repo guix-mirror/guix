@@ -11665,3 +11665,37 @@ package.")
 
 (define-public ecl-claw-support
   (sbcl-package->ecl-package sbcl-claw-support))
+
+(define-public sbcl-array-operations
+  (let ((commit "75cbc3b1adb2e3ce2109489753d0f290b071e81b")
+        (revision "0"))
+    (package
+      (name "sbcl-array-operations")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bendudson/array-operations")
+               (commit commit)))
+         (file-name (git-file-name "array-operations" version))
+         (sha256
+          (base32 "0ip49hhq32w80qsc7jmspyda5r2rsszvw0mk2r3341cld78sz9ya"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("clunit2" ,sbcl-clunit2)))
+      (inputs
+       `(("let-plus" ,sbcl-let-plus)))
+      (synopsis "Simple array operations library for Common Lisp")
+      (description
+       "This library is a collection of functions and macros for manipulating
+Common Lisp arrays and performing numerical calculations with them.")
+      (home-page "https://github.com/bendudson/array-operations")
+      (license license:expat))))
+
+(define-public cl-array-operations
+  (sbcl-package->cl-source-package sbcl-array-operations))
+
+(define-public ecl-array-operations
+  (sbcl-package->ecl-package sbcl-array-operations))
