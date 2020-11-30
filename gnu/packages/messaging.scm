@@ -1253,9 +1253,9 @@ messenger protocol.")
       ("pkg-config" ,pkg-config)))
    (synopsis "Lightweight Tox client")
    (description
-    "Utox is a lightweight Tox client.  Tox is a distributed and secure
+    "uTox is a lightweight Tox client.  Tox is a distributed and secure
 instant messenger with audio and video chat capabilities.")
-   (home-page "http://utox.org/")
+   (home-page "https://github.com/uTox/uTox")
    (license license:gpl3)))
 
 (define-public qtox
