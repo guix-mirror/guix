@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -364,6 +365,54 @@ writing GeoTIFF information tags.")
                    license:bsd-3
                    (license:non-copyleft "file://LICENSE"
                                          "See LICENSE in the distribution.")))))
+
+(define-public librttopo
+  (package
+    (name "librttopo")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.osgeo.org/gitea/rttopo/librttopo")
+             (commit (string-append "librttopo-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h7lzlkn9g4xky6h81ndy0aa6dxz8wb6rnl8v3987jy1i6pr072p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autogen
+           (lambda _
+             (let ((autoconf (which "autoconf"))
+                   (autoheader (which "autoheader"))
+                   (aclocal (which "aclocal"))
+                   (automake (which "automake"))
+                   (libtoolize (which "libtoolize")))
+               (substitute* "autogen.sh"
+                            (("`which autoconf 2>/dev/null`") autoconf)
+                            (("`which autoheader 2>/dev/null`") autoheader)
+                            (("ACLOCAL=.*$")
+                             (string-append "ACLOCAL=" aclocal "\n"))
+                            (("AUTOMAKE=.*$")
+                             (string-append "AUTOMAKE=" automake "\n"))
+                            (("LIBTOOLIZE=.*$")
+                             (string-append "LIBTOOLIZE=" libtoolize "\n"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("geos" ,geos)))
+    (synopsis "Library to handle SQL/MM topologies")
+    (description
+     "The RT Topology Library exposes an API to create and manage standard
+(ISO 13249 aka SQL/MM) topologies using user-provided data stores.")
+    (home-page "https://git.osgeo.org/gitea/rttopo/librttopo")
+    (license license:gpl2+)))
 
 (define-public libspatialite
   (package
