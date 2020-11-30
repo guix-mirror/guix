@@ -3042,14 +3042,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.6")
+    (version "0.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/suil-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0z4v01pjw4wh65x38w6icn28wdwxz13ayl8hvn4p1g9kmamp1z06"))))
+                "0h0ghk1s0lrj4gh12r7390b0ybaw7awnj0vhchyy9ll0gvhqgkci"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
