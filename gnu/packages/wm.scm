@@ -1910,6 +1910,24 @@ between windows.")
 layouts in StumpWM.")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-cpu
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-cpu")
+    (arguments
+     '(#:asd-systems '("cpu")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "modeline/cpu"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/cpu")
+    (synopsis "Modeline support for CPU info")
+    (description "Modeline support for CPU info.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
