@@ -4251,3 +4251,11 @@ disk utilization, priority, username, state, and exit code.")
     (description "This package provides a command-line UEFI image editor.")
     (home-page "https://github.com/linuxboot/fiano")
     (license license:bsd-3)))
+
+(define-public fiano-utk
+  (package
+    (inherit fiano)
+    (name "fiano-utk")
+    (arguments
+     `(#:import-path "github.com/linuxboot/fiano/cmds/utk"
+       #:unpack-path "github.com/linuxboot/fiano"))))
