@@ -1928,6 +1928,24 @@ layouts in StumpWM.")
     (description "Modeline support for CPU info.")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-mem
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-mem")
+    (arguments
+     '(#:asd-systems '("mem")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "modeline/mem"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/mem")
+    (synopsis "Modeline support for memory info")
+    (description "Modeline support for memory info.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
