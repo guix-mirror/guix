@@ -81,7 +81,7 @@
 (define-public sbcl-alexandria
   (package
    (name "sbcl-alexandria")
-   (version "1.1")
+   (version "1.2")
    (source
     (origin
      (method git-fetch)
@@ -90,7 +90,7 @@
            (commit (string-append "v" version))))
      (sha256
       (base32
-       "1zanb3xa98js0i66iqcmx3gp123p1m2d1fxn8d7bfzyfad5f6xn2"))
+       "0bcqs0z9xlqgjz43qzgq9i07vdlnjllpm1wwa37wpkg0w975r712"))
      (file-name (git-file-name name version))))
    (build-system asdf-build-system/sbcl)
    (native-inputs
