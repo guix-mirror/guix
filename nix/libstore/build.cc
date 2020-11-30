@@ -82,7 +82,6 @@ using std::map;
 
 /* Forward definition. */
 class Worker;
-struct Agent;
 
 
 /* A pointer to a goal. */
