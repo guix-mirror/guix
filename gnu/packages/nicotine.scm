@@ -21,26 +21,32 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages music))
+  #:use-module (gnu packages mp3))
 
 (define-public nicotine+
   (package
     (name "nicotine+")
-    (version "2.0.1")
+    (version "2.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/Nicotine-Plus/nicotine-plus")
                     (commit version)))
               (file-name (git-file-name name version))
-              (sha256 (base32 "07xagm6kwy8b6gcdv5vx78yqfllkz1gvlakkf0hi2c9ivncq457g"))))
+              (sha256 (base32 "18rra8yqjr10z23chzcp53ncbd5fhm0iqgqxpbxfq7a10za02v6l"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules
+       ((guix build utils)
+        (guix build python-build-system)
+        ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
@@ -50,14 +56,18 @@
                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                (wrap-program prog
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
-               #t))))))
+               #t)))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'glib-or-gtk-wrap 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas)))))
     (inputs
-     `(("python-pygobject" ,python-pygobject)
-       ("python-mutagen" ,python-mutagen)
-       ("python-dbus" ,python-dbus)
-       ("gtk+" ,gtk+)))
+     `(("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pytaglib" ,python-pytaglib)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("gettext" ,gettext-minimal)))
     (home-page "https://nicotine-plus.github.io/nicotine-plus/")
     (synopsis "Graphical client for Soulseek")
     (description
