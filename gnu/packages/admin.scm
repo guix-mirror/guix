@@ -56,6 +56,7 @@
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -4216,3 +4217,37 @@ to the CPU, memory, swap, disks (including LVM) and network layers, and for
 every process (and thread) it shows e.g. the CPU utilization, memory growth,
 disk utilization, priority, username, state, and exit code.")
     (license license:gpl2+)))
+
+;; TODO: Unvendor u-root (pkg: forth, golang, testutil).
+(define fiano
+  (package
+    (name "fiano")
+    (version "5.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linuxboot/fiano.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "03ihdwwhb7g6bihx141cn0924sjs5ps6q3ps58pk1cg0g0srrr9h"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "vendor/golang.org")
+                  (delete-file-recursively "vendor/github.com")
+                  #t))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/linuxboot/fiano"
+       #:unpack-path "github.com/linuxboot/fiano"))
+    (native-inputs
+     `())
+    (inputs
+     `(("go-golang-org-x-text" ,go-golang-org-x-text)
+       ("go-github.com-ulikunitz-xz" ,go-github.com-ulikunitz-xz)))
+    (synopsis "UEFI image editor")
+    (description "This package provides a command-line UEFI image editor.")
+    (home-page "https://github.com/linuxboot/fiano")
+    (license license:bsd-3)))
