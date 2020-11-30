@@ -546,6 +546,32 @@ termination.")
       (home-page "https://gopkg.in/tomb.v2")
       (license license:bsd-3))))
 
+(define-public go-gopkg-in-natefinch-lumberjack.v2
+  (package
+    (name "go-gopkg-in-natefinch-lumberjack.v2")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/natefinch/lumberjack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1l3vlv72b7rfkpy1164kwd3qzrqmmjnb67akzxqp2mlvc66k6p3d"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/natefinch/lumberjack.v2"))
+    (propagated-inputs
+     `(("github.com/burntsush/toml" ,go-github-com-burntsushi-toml)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/natefinch/lumberjack")
+    (synopsis "Rolling logger for Go")
+    (description
+     "Lumberjack is a Go package for writing logs to rolling files.")
+    (license license:expat)))
+
 (define-public go-github.com-jtolds-gls
   (package
     (name "go-github.com-jtolds-gls")
