@@ -4259,3 +4259,11 @@ disk utilization, priority, username, state, and exit code.")
     (arguments
      `(#:import-path "github.com/linuxboot/fiano/cmds/utk"
        #:unpack-path "github.com/linuxboot/fiano"))))
+
+(define-public fiano-fmap
+  (package
+    (inherit fiano)
+    (name "fiano-fmap")
+    (arguments
+     `(#:import-path "github.com/linuxboot/fiano/cmds/fmap"
+       #:unpack-path "github.com/linuxboot/fiano"))))
