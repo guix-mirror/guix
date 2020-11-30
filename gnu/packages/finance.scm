@@ -70,6 +70,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
@@ -1230,20 +1231,25 @@ trezord as a regular user instead of needing to it run as root.")
 (define-public trezord
   (package
     (name "trezord")
-    (version "2.0.29")
+    (version "2.0.30")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/trezor/trezord-go")
-              (commit (string-append "v" version))))
+             (url "https://github.com/trezor/trezord-go")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "1ks1fa0027s3xp0z6qp0dxmayvrb4dwwscfhbx7da0khp153f2cp"))
+         "1hzvk0wfgg7b4wpqjk3738yqxlv3pj5i7zxwm0jady2h97hmrqrr"))
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/trezor/trezord-go"))
+    (native-inputs
+     `(("github.com/gorilla-csrf" ,go-github-com-gorilla-csrf)
+       ("github.com/gorilla/handlers" ,go-github-com-gorilla-handlers)
+       ("github.com/gorilla/mux" ,go-github-com-gorilla-mux)
+       ("gopkg.in/natefinch/lumberjack.v2" ,go-gopkg-in-natefinch-lumberjack.v2)))
     (home-page "https://trezor.io")
     (synopsis "Trezor Communication Daemon aka Trezor Bridge (written in Go)")
     (description "This allows a Trezor hardware wallet to communicate to the
