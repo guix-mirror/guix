@@ -1307,30 +1307,28 @@ values for the purpose of fuzz testing.")
       (license license:bsd-3))))
 
 (define-public go-github-com-gorilla-mux
-  (let ((commit "599cba5e7b6137d46ddf58fb1765f5d928e69604")
-        (revision "0"))
-    (package
-      (name "go-github-com-gorilla-mux")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/gorilla/mux")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0wd6jjii1kg5s0nk3ri6gqriz6hbd6bbcn6x4jf8n7ncrb8qsxyz"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/gorilla/mux"))
-      (home-page "https://github.com/gorilla/mux")
-      (synopsis "URL router and dispatcher for Go")
-      (description
-       "Gorilla/Mux implements a request router and dispatcher for matching
+  (package
+    (name "go-github-com-gorilla-mux")
+    (version "1.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorilla/mux")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18f0q9qxgq1yh4ji07mqhiydfcwvi56z9d775v7dc7yckj33kpdk"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/gorilla/mux"))
+    (home-page "https://github.com/gorilla/mux")
+    (synopsis "URL router and dispatcher for Go")
+    (description
+     "Gorilla/Mux implements a request router and dispatcher for matching
 incoming requests with their respective handler.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-jonboulle-clockwork
   (let ((commit "e3653ace2d63753697e0e5b07b9393971c0bba9d")
