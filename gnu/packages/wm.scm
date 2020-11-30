@@ -1891,6 +1891,25 @@ between windows.")
     (description "Keyboard layout switcher for StumpWM")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-numpad-layouts
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-numpad-layouts")
+    (arguments
+     '(#:asd-systems '("numpad-layouts")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/numpad-layouts"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/numpad-layouts")
+    (synopsis "Keyboard numpad layouts for StumpWM")
+    (description "This is a module for handling different keyboards numpad
+layouts in StumpWM.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
