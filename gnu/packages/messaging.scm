@@ -407,8 +407,10 @@ your private keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license
      (list
-      license:lgpl2.1
-      license:gpl2))))
+      ;; Library
+      license:lgpl2.1+
+      ;; Others
+      license:gpl2+))))
 
 (define-public libsignal-protocol-c
   (package
