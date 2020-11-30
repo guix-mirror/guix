@@ -379,14 +379,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.10")
+    (version "2.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0mq5ga977hzsq4wgv31l8d6rpa186q8xc4x2awwcskf5nq842xai"))))
+        (base32 "07cpswxh2f38b440xdn3fjk7b4r0ipj3sbwb3jd134phrr9smll7"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
