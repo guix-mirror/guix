@@ -576,14 +576,14 @@ FLUSH PRIVILEGES;
                    ;; The socket is ready!
                    (execl mysql-upgrade mysql-upgrade
                           (string-append "--socket=" #$socket-file))))
-                 (lambda args
-                   (if (< i timeout)
-                       (begin
-                         (sleep 1)
-                         (loop (+ 1 i)))
-                       ;; No luck, give up.
-                       (throw 'timeout-error
-                              "MySQL server did not appear in time!"))))))))))
+               (lambda args
+                 (if (< i timeout)
+                     (begin
+                       (sleep 1)
+                       (loop (+ 1 i)))
+                     ;; No luck, give up.
+                     (throw 'timeout-error
+                            "MySQL server did not appear in time!"))))))))))
 
 (define (mysql-upgrade-shepherd-service config)
   (list (shepherd-service
