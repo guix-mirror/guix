@@ -13208,7 +13208,7 @@ compatible build front-ends to build Poetry managed projects.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.0.10")
+    (version "1.1.4")
     ;; Poetry can only be built from source with Poetry.
     (source
      (origin
@@ -13216,7 +13216,7 @@ compatible build front-ends to build Poetry managed projects.")
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "1wm66xlsls4f0q4skmq96yb7aahjsqwgwvbrw4iax6rd4xfqj6sb"))))
+         "1a2kgfiw66fvxhlqk5qc83s6l38czfh5hcsrbiy7qq5yfc8mlsll"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
@@ -13225,14 +13225,9 @@ compatible build front-ends to build Poetry managed projects.")
          (add-before 'build 'patch-setup-py
            (lambda _
              (substitute* "setup.py"
-               ;; poetry won't update version as 21.0.0 relies on python > 3.6
-               (("keyring>=20.0.1,<21.0.0") "keyring>=21.0.0,<22.0.0")
-               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.17.0")
-               ;; Reported upstream:
-               ;; <https://github.com/python-poetry/poetry/issues/2752>.
-               (("tomlkit>=0.5.11,<0.6.0") "tomlkit>=0.5.11,<0.7.0")
-               (("cleo>=0.7.6,<0.8.0") "cleo>=0.7.6,<0.9.0")
-               (("clikit>=0.4.2,<0.5.0") "clikit>=0.4.2,<0.7.0"))
+               ;; Newer versions of keyring produce a package with version "0.0.0"
+               ;; Reported upstream: <https://github.com/jaraco/keyring/issues/469>
+               (("keyring>=21.2.0,<22.0.0") "keyring>=21.0.0,<22.0.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
@@ -13240,15 +13235,15 @@ compatible build front-ends to build Poetry managed projects.")
        ("python-cleo" ,python-cleo)
        ("python-clikit" ,python-clikit)
        ("python-html5lib" ,python-html5lib)
-       ("python-jsonschema" ,python-jsonschema)
        ("python-keyring" ,python-keyring)
        ("python-msgpack-transitional" ,python-msgpack-transitional)
+       ("python-packaging" ,python-packaging)
        ("python-pexpect" ,python-pexpect)
+       ("python-pip" ,python-pip)
        ("python-pkginfo" ,python-pkginfo)
-       ("python-pyparsing" ,python-pyparsing)
-       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-poetry-core" ,python-poetry-core)
        ("python-requests" ,python-requests)
-       ("python-requests-toolbelt" ,python-requests-toolbelt)
+       ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
        ("python-shellingham" ,python-shellingham)
        ("python-tomlkit" ,python-tomlkit)
        ("python-virtualenv" ,python-virtualenv)))
