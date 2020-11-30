@@ -378,32 +378,37 @@ powerful, standard and open protocol.")
   (package
     (name "libotr")
     (version "4.1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://otr.cypherpunks.ca/libotr-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
-              (patches (search-patches "libotr-test-auth-fix.patch"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://otr.cypherpunks.ca/libotr-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
+       (patches
+        (search-patches "libotr-test-auth-fix.patch"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))                 ; for the test suite
+    (inputs
+     `(("libgpg-error" ,libgpg-error)))
     (propagated-inputs
-     `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
-    (inputs `(("libgpg-error" ,libgpg-error)))
-    (native-inputs `(("perl" ,perl))) ; for the test suite
+     `(("libgcrypt" ,libgcrypt)))    ; libotr headers include gcrypt.h
     (synopsis "Off-the-Record (OTR) Messaging Library and Toolkit")
-    (description
-     "OTR allows you to have private conversations over instant messaging by
-providing: (1) Encryption: No one else can read your instant messages.  (2)
-Authentication: You are assured the correspondent is who you think it is.  (3)
-Deniability: The messages you send do not have digital signatures that are
-checkable by a third party.  Anyone can forge messages after a conversation to
-make them look like they came from you.  However, during a conversation, your
-correspondent is assured the messages he sees are authentic and
-unmodified.  (4) Perfect forward secrecy: If you lose control of your private
-keys, no previous conversation is compromised.")
+    (description "OTR allows you to have private conversations over instant
+messaging by providing: (1) Encryption: No one else can read your instant
+messages.  (2) Authentication: You are assured the correspondent is who you
+think it is.  (3) Deniability: The messages you send do not have digital
+signatures that are checkable by a third party.  Anyone can forge messages
+after a conversation to make them look like they came from you.  However,
+during a conversation, your correspondent is assured the messages he sees are
+authentic and unmodified.  (4) Perfect forward secrecy: If you lose control of
+your private keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
-    (license (list license:lgpl2.1 license:gpl2))))
+    (license
+     (list
+      license:lgpl2.1
+      license:gpl2))))
 
 (define-public libsignal-protocol-c
   (package
