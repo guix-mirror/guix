@@ -13021,20 +13021,21 @@ docstring and colored output.")
 (define-public python-tomlkit
   (package
     (name "python-tomlkit")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomlkit" version))
        (sha256
-        (base32 "16jf0060csn8p500jnxa7m5h1sl3pzispvd11961dzrhh287dybl"))))
+        (base32 "062n694sfv24ylda6nh8228y2q9hrvy554kqx84y7czsjfbg4mxc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pyyaml" ,python-pyyaml)))
     (home-page "https://github.com/sdispater/tomlkit")
     (synopsis "Style-preserving TOML library")
     (description
-     "TOML Kit is a 0.5.0-compliant TOML library.  It includes a parser that
+     "TOML Kit is a 1.0.0rc1-compliant TOML library.  It includes a parser that
 preserves all comments, indentations, whitespace and internal element ordering,
 and makes them accessible and editable via an intuitive API.  It can also
 create new TOML documents from scratch using the provided helpers.  Part of the
