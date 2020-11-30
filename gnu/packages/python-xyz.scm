@@ -13185,6 +13185,26 @@ powerful API: thread-safety; decorator syntax; support for memcached, redis,
 database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
     (license license:expat)))
 
+(define-public python-poetry-core
+  (package
+    (name "python-poetry-core")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poetry-core" version))
+       (sha256
+        (base32 "1mgv276h1iphn5fqhp2sgkgd5d0c39hs33vgaf157x5ri7rlyrka"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/python-poetry/poetry-core")
+    (synopsis "Poetry PEP 517 build back-end")
+    (description
+     "The @code{poetry-core} module provides a PEP 517 build back-end
+implementation developed for Poetry.  This project is intended to be
+a light weight, fully compliant, self-contained package allowing PEP 517
+compatible build front-ends to build Poetry managed projects.")
+    (license license:expat)))
+
 (define-public poetry
   (package
     (name "poetry")
