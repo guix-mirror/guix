@@ -331,8 +331,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              (commit "clisp-2.49.92-2018-02-18")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))
-       (patches (search-patches "clisp-remove-failing-test.patch"))))
+        (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
               ("ncurses" ,ncurses)
@@ -346,8 +345,11 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
                                  '())
                             "--with-dynamic-ffi"
                             "--with-dynamic-modules"
+                            "--with-ffcall"
+                            "--with-readline"
+                            "--with-sigsegv"
+                            "--with-module=asdf"
                             "--with-module=rawsock")
-       #:build #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sh-and-pwd
@@ -365,9 +367,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
                (("/bin/sh") "sh"))
              (substitute* '("src/clisp-link.in")
                (("/bin/pwd") "pwd"))
-             #t)))
-       ;; Makefiles seem to have race conditions.
-       #:parallel-build? #f))
+             #t)))))
     (home-page "https://clisp.sourceforge.io/")
     (synopsis "A Common Lisp implementation")
     (description
