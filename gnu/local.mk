@@ -1443,6 +1443,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-pango-matrix_declarations.patch	\
   %D%/packages/patches/sdl-pango-sans-serif.patch		\
   %D%/packages/patches/sqlite-hurd.patch			\
+  %D%/packages/patches/sudo-fix-build-without-sendmail.patch	\
   %D%/packages/patches/sunxi-tools-remove-sys-io.patch	\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\

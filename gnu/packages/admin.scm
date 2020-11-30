@@ -1397,7 +1397,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.3p1")
+    (version "1.9.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -1407,7 +1407,8 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "17mldsg5d08s23cskmjxfa81ibnqw3slgf3l4023j72ywi9xxffw"))
+                "1w03257akspgkkl757vmpq3p30sb2n6y61hll038mw9sqwnbv4cb"))
+              (patches (search-patches "sudo-fix-build-without-sendmail.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
