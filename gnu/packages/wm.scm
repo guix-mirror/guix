@@ -1965,6 +1965,33 @@ layouts in StumpWM.")
 one in Emacs.")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-screenshot
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-screenshot")
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("zpng" ,sbcl-zpng)))
+    (arguments
+     '(#:asd-systems '("screenshot")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/screenshot")))
+         (add-after 'chdir 'fix-build
+           (lambda _
+             (substitute* "screenshot.asd"
+               (("#:zpng")
+                "#:stumpwm #:zpng")))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/screenshot")
+    (synopsis "Screenshots for StumpWM")
+    (description "This StumpWM module can take screenshots and store them as
+PNG files.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
