@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -62,6 +64,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -705,6 +708,43 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 
 (define-public sbcl-next
   (deprecated-package "sbcl-next" nyxt))
+
+(define-public gmni
+  (let ((commit "d8f0870446c471a42612d6a8e853ad9b723a6d39")
+        (revision "0"))
+    (package
+      (name "gmni")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~sircmpwn/gmni")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1h0iqm7l0i06glf5b2872w656s1mjdiqva14zh6sl4f5yp7zmvwr"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no check target
+         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("scdoc" ,scdoc)))
+      (home-page "https://sr.ht/~sircmpwn/gmni")
+      (synopsis "Minimalist command line Gemini client")
+      (description "The gmni package includes:
+
+@itemize
+@item A CLI utility (like curl): gmni
+@item A line-mode browser: gmnlm
+@end itemize")
+      (license (list license:gpl3+
+                     (license:non-copyleft
+                      "https://curl.se/docs/copyright.html"
+                      "Used only for files taken from curl."))))))
 
 (define-public bombadillo
   (package
