@@ -38,15 +38,13 @@
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (<postgresql-config-file>
-            postgresql-config-file
+  #:export (postgresql-config-file
             postgresql-config-file?
             postgresql-config-file-log-destination
             postgresql-config-file-hba-file
             postgresql-config-file-ident-file
             postgresql-config-file-extra-config
 
-            <postgresql-configuration>
             postgresql-configuration
             postgresql-configuration?
             postgresql-configuration-postgresql
@@ -59,7 +57,6 @@
             postgresql-service-type
 
             memcached-service-type
-            <memcached-configuration>
             memcached-configuration
             memcached-configuration?
             memcached-configuration-memecached
@@ -68,7 +65,6 @@
             memcached-configuration-udp-port
             memcached-configuration-additional-options
 
-            <mongodb-configuration>
             mongodb-configuration
             mongodb-configuration?
             mongodb-configuration-mongodb
