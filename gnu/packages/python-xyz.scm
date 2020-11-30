@@ -5555,14 +5555,14 @@ by pycodestyle.")
 (define-public python-distlib
   (package
     (name "python-distlib")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "distlib" version ".zip"))
        (sha256
         (base32
-         "08fyi2r246733vharl2yckw20rilci28r91mzrnnvcr638inw5if"))))
+         "1wdzv7fsjhrkhh1wfkarlhcwa8m00mgcpdsvknmf2qy8f9l13xpd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
