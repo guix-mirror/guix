@@ -1102,7 +1102,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
-       ("which" ,which)))
+       ("which" ,which)
+       ("ziptime" ,ziptime)))
     (inputs
      `(("bluez" ,bluez)
        ("boost" ,boost)
@@ -1216,6 +1217,13 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                                "/bin/xdg-open")))
 
              #t))
+         (add-after 'install 'reset-zip-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file)
+                           (invoke "ziptime" file))
+                         ;; So many different extensions for .zip files.
+                         (find-files out "\\.(bau|dat|otp|ott|zip)$")))))
          (add-after 'install 'bin-and-desktop-install
            ;; Create 'soffice' and 'libreoffice' symlinks to the executable
            ;; script.
