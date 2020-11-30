@@ -417,7 +417,7 @@ writing GeoTIFF information tags.")
 (define-public libspatialite
   (package
     (name "libspatialite")
-    (version "4.3.0a")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
@@ -425,19 +425,23 @@ writing GeoTIFF information tags.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "16d4lpl7xrm9zy4gphy6nwanpjp8wn9g4wq2i2kh8abnlhq01448"))))
+         "1b3dmkgwbfi43hj3jzy2mh707khavrnw91vdd5sv387m8c1dfzvv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freexl" ,freexl)
        ("geos" ,geos)
+       ("librttopo" ,librttopo)
        ("libxml2" ,libxml2)
+       ("minizip" ,minizip)
        ("proj.4" ,proj.4)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       '("--enable-rttopo=yes")
+       #:phases
        (modify-phases %standard-phases
          ;; 3 tests are failing, ignore them:
          (add-after 'unpack 'ignore-broken-tests
@@ -1687,14 +1691,14 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
 (define-public spatialite-tools
   (package
     (name "spatialite-tools")
-    (version "4.3.0")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "spatialite-tools-" version ".tar.gz"))
        (sha256
-        (base32 "12fggjhi8cgwvw8f6nk76f83b8lqkc07abxyj5ap6f2gq2dqafgp"))))
+        (base32 "0ckddgdpxhy6vkpr9q2hnx5qmanrd8g4pqnifbrq1i5jrj82s2dd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1702,8 +1706,10 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
      `(("expat" ,expat)
        ("freexl" ,freexl)
        ("geos" ,geos)
+       ("librttopo" ,librttopo)
        ("libspatialite" ,libspatialite)
        ("libxml2" ,libxml2)
+       ("minizip" ,minizip)
        ("proj.4" ,proj.4)
        ("readosm" ,readosm)
        ("sqlite" ,sqlite)
