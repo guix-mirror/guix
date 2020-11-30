@@ -1606,6 +1606,55 @@ recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
 
+(define-public ziptime
+  (let ((commit "2a5bc9dfbf7c6a80e5f7cb4dd05b4036741478bc")
+        (revision "0"))
+  (package
+    (name "ziptime")
+    (version (git-version "0.0.0" revision commit))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://android.googlesource.com/platform/build")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hrn61b3a97dlc4iqc28rwx8k8zf7ycbwzqqp93vj34zy5a541kn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "tools/ziptime")))
+         (delete 'configure)            ; nothing to configure
+         (replace 'build
+           ;; There is no Makefile, only an ‘Android.bp’ file.  Ignore it.
+           (lambda _
+             (let ((c++ ,(cxx-for-target)))
+               (apply invoke c++ "-O2" "-o" "ziptime"
+                      (find-files "." "\\.cpp$")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "ziptime" bin)
+               (install-file "README.txt" doc)))))))
+    ;; There is no separate home page for this tiny bundled build tool.
+    (home-page (string-append "https://android.googlesource.com/platform/build/"
+                              "+/master/tools/ziptime/README.txt"))
+    (synopsis "Normalize @file{.zip} archive header timestamps")
+    (description
+     "Ziptime helps make @file{.zip} archives reproducible by replacing
+timestamps in the file header with a fixed time (1 January 2008).
+
+``Extra fields'' are not changed, so you'll need to use the @code{-X} option to
+@command{zip} to prevent it from storing the ``universal time'' field.")
+    (license license:asl2.0))))
+
 (define-public zziplib
   (package
     (name "zziplib")
