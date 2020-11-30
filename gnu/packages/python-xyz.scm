@@ -3184,14 +3184,14 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "20.0.10")
+    (version "20.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "0y6x41l3ja891993i4adylbbyly0r4m52n2d0a0y9y4h3lzyh4l5"))))
+         "1rd6wmymsgv0cdsn50jwybcvbbslzym3mzffcjbl42l8br9cgap0"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -3204,7 +3204,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
-       ("python-distlib" ,python-distlib)
+       ("python-distlib" ,python-distlib/next)
        ("python-filelock" ,python-filelock)
        ("python-six" ,python-six)
        ("python-importlib-metadata" ,python-importlib-metadata)))
