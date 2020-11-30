@@ -15974,17 +15974,14 @@ several utilities, as well as an API for building localization tools.")
 (define-public python-packaging
   (package
     (name "python-packaging")
-    (version "20.0")
+    (version "20.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
-        ;; XXX: The URL in the patch file is wrong, it should be
-        ;; <https://github.com/pypa/packaging/pull/256>.
-        (patches (search-patches "python-packaging-test-arch.patch"))
         (sha256
          (base32
-          "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
+          "1y3rc1ams1i25calk6b9jf1gl85ix5a23a146swjvhdr8x7zfms3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
