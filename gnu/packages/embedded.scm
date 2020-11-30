@@ -554,7 +554,8 @@ language.")
          ("libusb-compat" ,libusb-compat)))
       (arguments
        '(#:configure-flags
-         (append (list "--disable-werror"
+         (append (list "LIBS=-lutil"
+                       "--disable-werror"
                        "--enable-sysfsgpio"
                        "--disable-internal-jimtcl"
                        "--disable-internal-libjaylink")
