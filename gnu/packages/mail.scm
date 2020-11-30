@@ -1144,16 +1144,17 @@ attachments, create new maildirs, and so on.")
     (name "alot")
     (version "0.9.1")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; package author intends on distributing via github rather
               ;; than pypi:
               ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
-              (uri (string-append "https://github.com/pazz/alot/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append "alot-" version ".tar.gz"))
+              (uri (git-reference
+                     (url "https://github.com/pazz/alot")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r0x3n2fxi6sfq3paz8a4vn2mmyqaznj1207wa7jl0ixnjqilb7f"))))
+                "0s94m17yph1gq9f2svipb3bbwbw1s4j3zf2xkg5h91006v8286r6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
