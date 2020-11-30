@@ -1946,6 +1946,25 @@ layouts in StumpWM.")
     (description "Modeline support for memory info.")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-winner-mode
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-winner-mode")
+    (arguments
+     '(#:asd-systems '("winner-mode")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/winner-mode"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/winner-mode")
+    (synopsis "Emacs' winner-mode for StumpWM")
+    (description "This module provides a winner-mode for StumpWM similar to the
+one in Emacs.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
