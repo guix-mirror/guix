@@ -10424,6 +10424,13 @@ The returned source tarball is the result of applying any patches and
 code snippets specified in the package @code{origin} (@pxref{Defining
 Packages}).
 
+@cindex source, verification
+As with other derivations, the result of building a source derivation
+can be verified using the @option{--check} option (@pxref{build-check}).
+This is useful to validate that a (potentially already built or
+substituted, thus cached) package source matches against its declared
+hash.
+
 Note that @command{guix build -S} compiles the sources only of the
 specified packages.  They do not include the sources of statically
 linked dependencies and by themselves are insufficient for reproducing
