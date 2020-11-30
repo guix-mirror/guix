@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1587,7 +1588,7 @@ compositors that support the layer-shell protocol.")
 (define-public stumpwm
   (package
     (name "stumpwm")
-    (version "19.11")
+    (version "20.11")
     (source
      (origin
        (method git-fetch)
@@ -1596,7 +1597,7 @@ compositors that support the layer-shell protocol.")
              (commit version)))
        (file-name (git-file-name "stumpwm" version))
        (sha256
-        (base32 "1ha8803ll7472kqxsy2xz0v5d4sv8apmc9z631d67m31q0z1m9rz"))))
+        (base32 "1ghs6ihvmb3bz4q4ys1d3h6rdi96xyiw7l2ip7jh54c25049aymf"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
                      ("texinfo" ,texinfo)
