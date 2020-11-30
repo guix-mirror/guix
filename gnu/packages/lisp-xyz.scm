@@ -11351,12 +11351,10 @@ collecting values easier.")
 (define-public ecl-collectors
   (sbcl-package->ecl-package sbcl-collectors))
 
-(define-public cl-environments
-  ;; TODO: asdf-build-system/sbcl fails here, why?  See if it works with the
-  ;; build system revamp once staging is merged after 2020-11-09.
-  (let ((commit "bbcd958a9ff23ce3e6ea5f8ee2edad9634819a3a")) ; No version in 2 years.
+(define-public sbcl-cl-environments
+  (let ((commit "0b22154c5afefef23d1eba9a4fae11d73580ef41")) ; No version in 2 years.
     (package
-      (name "cl-environments")
+      (name "sbcl-cl-environments")
       (version (git-version "0.2.3" "1" commit))
       (source
        (origin
@@ -11367,8 +11365,8 @@ collecting values easier.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1pfxl3vcdrb4mjy4q4c3c7q95kzv6rfjif3hzd5q91i9z621d64r"))))
-      (build-system asdf-build-system/source)
+           "18r3wfarr7lgn78m6c66r0r9aazirv07gy7xgvqkl9pmrz1bc47m"))))
+      (build-system asdf-build-system/sbcl)
       (propagated-inputs
        `(("alexandria" ,cl-alexandria)
          ("anaphora" ,cl-anaphora)
@@ -11384,6 +11382,12 @@ bindings from implementation-defined lexical environment objects.  All major
 Common Lisp implementations are supported, even those which don't support the
 CLTL2 environment access API.")
       (license license:expat))))
+
+(define-public cl-environments
+  (sbcl-package->cl-source-package sbcl-cl-environments))
+
+(define-public ecl-environments
+  (sbcl-package->ecl-package sbcl-cl-environments))
 
 (define-public sbcl-static-dispatch
   (package
@@ -11408,6 +11412,13 @@ CLTL2 environment access API.")
        ("iterate" ,sbcl-iterate)
        ("trivia" ,sbcl-trivia)))
     (propagated-inputs
+     ;; FIXME: `sbcl-cl-environments' input fails with
+     ;;
+     ;; compiling #<CL-SOURCE-FILE "collectors" "collectors">
+     ;; Unhandled SB-INT:SIMPLE-FILE-ERROR in thread #<SB-THREAD:THREAD "main thread" RUNNING
+     ;; {1008238213}>:
+     ;; Error opening #P"/.../cl-environments/src/common/package-tmp5GEXGEG5.fasl":
+     ;; Permission denied
      `(("cl-environments" ,cl-environments)))
     (native-inputs
      `(("prove" ,sbcl-prove)))
