@@ -3136,7 +3136,7 @@ for systems using the Linux kernel.  This includes commands such as
 (define-public inotify-tools
   (package
     (name "inotify-tools")
-    (version "3.20.2.2")
+    (version "3.20.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3145,7 +3145,7 @@ for systems using the Linux kernel.  This includes commands such as
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r12bglkb0bkqff6kgxjm81hk6z20nrxq3m7iv15d4nrqf9pm7s0"))))
+                "1m8avqccrhm38krlhp88a7v949f3hrzx060bbrr5dp5qw2nmw9j2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
