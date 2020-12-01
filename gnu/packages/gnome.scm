@@ -6691,7 +6691,7 @@ of running programs and invoke methods on those interfaces.")
 (define-public yelp-xsl
   (package
     (name "yelp-xsl")
-    (version "3.36.0")
+    (version "3.34.2")
     (source
      (origin
        (method url-fetch)
@@ -6700,7 +6700,7 @@ of running programs and invoke methods on those interfaces.")
                        (version-major+minor version) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1hsfj3q3a3kca0cf9i02xlq2qd4vy12qsjb89hh4r6mp6c11rrag"))))
+        (base32 "1bdpgkzawhqmw52l6zx8czzg1ndfgcf1p44m2bxjdpqkc4afcgqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext-minimal" ,gettext-minimal)
