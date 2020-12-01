@@ -3151,6 +3151,9 @@ for systems using the Linux kernel.  This includes commands such as
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "https://github.com/rvoicilas/inotify-tools/wiki")
     (synopsis "Monitor file accesses")
     (description
