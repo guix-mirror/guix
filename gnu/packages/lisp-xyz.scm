@@ -12204,3 +12204,34 @@ for drawning progress bars")
 
 (define-public ecl-cl-progress-bar
   (sbcl-package->ecl-package sbcl-cl-progress-bar))
+
+(define-public sbcl-repl-utilities
+  (let ((commit "e0de9c92e774f77cab1a4cd92e2ac922ac3a807e"))
+    (package
+      (name "sbcl-repl-utilities")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/m-n/repl-utilities/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1r5icmw3ha5y77kvzqni3a9bcd66d9pz5mjsbw04xg3jk0d15cgz"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/m-n/repl-utilities")
+      (synopsis "Ease common tasks at the Common Lisp REPL")
+      (description
+       "@code{repl-utilities} is a set of utilities which ease life at the
+REPL.  It includes three sorts of features: introspective procedures,
+miscellaneous utility functions, and, pulling them together, methods to
+conveniently keep these symbols and optionally additional symbols available in
+whichever package you switch to.")
+      (license license:bsd-2))))
+
+(define-public cl-repl-utilities
+  (sbcl-package->cl-source-package sbcl-repl-utilities))
+
+(define-public ecl-repl-utilities
+  (sbcl-package->ecl-package sbcl-repl-utilities))
