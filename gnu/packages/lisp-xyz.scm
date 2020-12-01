@@ -6704,6 +6704,45 @@ docstrings for your library.")
 (define-public ecl-documentation-utils
   (sbcl-package->ecl-package sbcl-documentation-utils))
 
+(define-public sbcl-documentation-utils-extensions
+  (let ((commit "f67f8a05d583174662a594b79356b201c1d9d750"))
+    (package
+      (name "sbcl-documentation-utils-extensions")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/sirherrbatka/documentation-utils-extensions/")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0pn45c9rbxlnhn5nvhqz6kyv0nlirwxpg4j27niwdq80yxzsn51f"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://github.com/sirherrbatka/documentation-utils-extensions")
+      (synopsis "Set of extensions for documentation-utils")
+      (description
+       "Use @code{rich-formatter} to format documentation with sections @code{:syntax},
+@code{:arguments}, @code{:examples}, @code{:description}, @code{:returns},
+@code{:side-effects}, @code{:thread-safety}, @code{:affected-by},
+@code{:see-also} and @code{:notes}.  Gather unformatted input by using
+@code{rich-aggregating-formatter} and @code{*DOCUMENTATION*} variable.  Find
+gathered documentation with find-documentation function.  Execute code stored
+in documentation with @code{execute-documentation}.  See the examples in the
+@code{src/documentation.lisp} file.  See the @code{documentation-utils} system
+for more information.")
+      (license license:expat))))
+
+(define-public cl-documentation-utils-extensions
+  (sbcl-package->cl-source-package sbcl-documentation-utils-extensions))
+
+(define-public ecl-documentation-utils-extensions
+  (sbcl-package->ecl-package sbcl-documentation-utils-extensions))
+
 (define-public sbcl-form-fiddle
   (let ((commit "e0c23599dbb8cff3e83e012f3d86d0764188ad18")
         (revision "0"))
