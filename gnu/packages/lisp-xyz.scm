@@ -11775,3 +11775,37 @@ Polar Stereographic).")
 
 (define-public ecl-utm-ups
   (sbcl-package->ecl-package sbcl-utm-ups))
+
+(define-public sbcl-mgrs
+  (let ((commit "00455460407b7e5509d1be3da09bf6152956761f")
+        (revision "0"))
+    (package
+      (name "sbcl-mgrs")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/mgrs")
+               (commit commit)))
+         (file-name (git-file-name "mgrs" version))
+         (sha256
+          (base32 "0ckvn4hg3wwivzavhfashb6fap4a1q10l8krhbng8bdb54ac10sz"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("utm-ups" ,sbcl-utm-ups)))
+      (synopsis
+       "Convert coordinates between latitude/longitude and MGRS")
+      (description
+       "This a Common Lisp library to convert geographic coordinates between
+latitude/longitude and MGRS.")
+      (home-page "https://github.com/glv2/mgrs")
+      (license license:gpl3+))))
+
+(define-public cl-mgrs
+  (sbcl-package->cl-source-package sbcl-mgrs))
+
+(define-public ecl-mgrs
+  (sbcl-package->ecl-package sbcl-mgrs))
