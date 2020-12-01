@@ -11928,3 +11928,38 @@ latitude/longitude and Open Location Code.")
 
 (define-public ecl-clawk
   (sbcl-package->ecl-package sbcl-clawk))
+
+(define-public sbcl-check-it
+  (let ((commit "b79c9103665be3976915b56b570038f03486e62f"))
+    (package
+      (name "sbcl-check-it")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/DalekBaldwin/check-it/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1kbjwpniffdpv003igmlz5r0vy65m7wpfnhg54fhwirp1227hgg7"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("optima" ,sbcl-optima)))
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (home-page "https://github.com/arclanguage/Clamp")
+      (synopsis "Randomized specification-based testing for Common Lisp")
+      (description
+       "This is a randomized property-based testing library for Common Lisp.
+Rather than being a full-fledged general test framework in its own right, it's
+designed to embed randomized tests in whatever framework you like.")
+      (license license:llgpl))))
+
+(define-public cl-check-it
+  (sbcl-package->cl-source-package sbcl-check-it))
+
+(define-public ecl-check-it
+  (sbcl-package->ecl-package sbcl-check-it))
