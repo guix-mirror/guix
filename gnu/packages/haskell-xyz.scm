@@ -7211,11 +7211,11 @@ compiler versions.")
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags `("--flags=system-libyaml")
-       #:extra-directories ("libyaml")))
+       #:extra-directories ("libyaml+static")))
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
-       ("libyaml" ,libyaml)))
+       ("libyaml+static" ,libyaml+static)))
     (home-page "https://github.com/snoyberg/yaml#readme")
     (synopsis "Low-level, streaming YAML interface.")
     (description "This package provides a Haskell wrapper over the
