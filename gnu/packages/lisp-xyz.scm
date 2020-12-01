@@ -11809,3 +11809,35 @@ latitude/longitude and MGRS.")
 
 (define-public ecl-mgrs
   (sbcl-package->ecl-package sbcl-mgrs))
+
+(define-public sbcl-maidenhead
+  (let ((commit "b756d235c27b5d6798867aa240318af1a8f35d6d")
+        (revision "0"))
+    (package
+      (name "sbcl-maidenhead")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/maidenhead")
+               (commit commit)))
+         (file-name (git-file-name "maidenhead" version))
+         (sha256
+          (base32 "02p990zprhjvifmsfk8yh3frvz6xyw26ikzxvzglqdixbal36nr3"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis
+       "Convert coordinates between latitude/longitude and Maidenhead")
+      (description
+       "This a Common Lisp library to convert geographic coordinates between
+latitude/longitude and Maidenhead locator system.")
+      (home-page "https://github.com/glv2/maidenhead")
+      (license license:gpl3+))))
+
+(define-public cl-maidenhead
+  (sbcl-package->cl-source-package sbcl-maidenhead))
+
+(define-public ecl-maidenhead
+  (sbcl-package->ecl-package sbcl-maidenhead))
