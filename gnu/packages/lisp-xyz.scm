@@ -5965,11 +5965,11 @@ system.")
   (sbcl-package->ecl-package sbcl-cl-ledger))
 
 (define-public sbcl-bst
-  (let ((commit "34f9c7e8e0a9f2c952fe310ab36cb630d5d9c15a")
-        (revision "1"))
+  (let ((commit "8545aed0d504df2829ad139566feeabe22305388")
+        (revision "0"))
     (package
       (name "sbcl-bst")
-      (version (git-version "1.1" revision commit))
+      (version (git-version "2.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -5978,8 +5978,7 @@ system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1amxns7hvvh4arwbh8ciwfzplg127vh37dnbamv1m1kmmnmihfc8"))))
+          (base32 "18ig7rvxcra69437g0i8sxyv7c5dg26jqnx1rc2f9pxmihdprgk8"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("alexandria" ,sbcl-alexandria)
