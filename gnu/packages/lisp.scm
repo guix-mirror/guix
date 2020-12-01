@@ -44,6 +44,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system asdf)
@@ -1048,3 +1049,50 @@ embedding a single C file and two headers.  It can be easily ported to new
 platforms.  The entire language (core library, interpreter, compiler,
 assembler, PEG) is less than 1MB.")
     (license license:expat)))
+
+(define-public lisp-repl-core-dumper
+  (package
+    (name "lisp-repl-core-dumper")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/ambrevar/lisp-repl-core-dumper.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6hlmppn3k8hmwmr21mnapzpvgdcagg17b8a3zz2aa128611s5s"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("lisp-repl-core-dumper" "bin/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-utils-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((coreutils (string-append (assoc-ref inputs "coreutils") "/bin/"))
+                    (paste (string-append coreutils "paste"))
+                    (sort (string-append coreutils "sort"))
+                    (basename (string-append coreutils "basename"))
+                    (sed (string-append (assoc-ref inputs "sed") "/bin/sed")))
+               (substitute* "lisp-repl-core-dumper"
+                 (("\\$\\(basename") (string-append "$(" basename))
+                 (("\\<paste\\>") paste)
+                 (("\\<sed\\>") sed)
+                 (("\\<sort\\>") sort))))))))
+    (inputs
+     `(("coreutils" ,coreutils-minimal)
+       ("sed" ,sed)))
+    (home-page "https://gitlab.com/ambrevar/lisp-repl-core-dumper")
+    (synopsis "Generate REPL-optimized Lisp cores on demand")
+    (description
+     "This tool generates Lisp images that can embed the provided systems
+and make for REPLs that start blazing fast.
+
+@itemize
+@item It’s portable and should work with any compiler.
+@item It works for any REPL.
+@item It allows you to include arbitrary libraries.
+@end itemize\n")
+    (license license:gpl3+)))
