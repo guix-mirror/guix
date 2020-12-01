@@ -12270,3 +12270,36 @@ for debugging and profiling real world applications.")
 
 (define-public ecl-supertrace
   (sbcl-package->ecl-package sbcl-supertrace))
+
+(define-public sbcl-trivial-benchmark
+  (let ((commit "42d76733dd2e873471c6f1e27d39113293f7dd5c"))
+    (package
+      (name "sbcl-trivial-benchmark")
+      (version (git-version "2.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/trivial-benchmark/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0fbzqbpm2ixz85555krl36kbbbjyn699vdj6k383khi3g9y629fa"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "http://shinmera.github.io/trivial-benchmark/")
+      (synopsis "Easy to use benchmarking system for Common Lisp")
+      (description
+       "Trivial-Benchmark runs a block of code many times and outputs some
+statistical data for it.  On SBCL this includes the data from @code{time}, for
+all other implementations just the @code{real-time} and @code{run-time} data.
+However, you can extend the system by adding your own @code{metrics} to it, or
+even by adding additional statistical @code{compute}ations. ")
+      (license license:zlib))))
+
+(define-public cl-trivial-benchmark
+  (sbcl-package->cl-source-package sbcl-trivial-benchmark))
+
+(define-public ecl-trivial-benchmark
+  (sbcl-package->ecl-package sbcl-trivial-benchmark))
