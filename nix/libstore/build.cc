@@ -2986,8 +2986,6 @@ void SubstitutionGoal::tryToRun()
     if (pathExists(destPath))
         deletePath(destPath);
 
-    worker.store.setSubstituterEnv();
-
     /* Fill in the arguments. */
     Strings args;
     args.push_back("guix");
@@ -2998,6 +2996,9 @@ void SubstitutionGoal::tryToRun()
 
     /* Fork the substitute program. */
     pid = startProcess([&]() {
+
+	/* Communicate substitute-urls & co. to 'guix substitute'.  */
+        setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
 
         commonChildInit(logPipe);
 
@@ -3041,7 +3042,6 @@ void SubstitutionGoal::finished()
     logPipe.readSide.close();
 
     /* Get the hash info from stdout. */
-    string dummy = readLine(outPipe.readSide);
     string expectedHashStr = statusOk(status) ? readLine(outPipe.readSide) : "";
     outPipe.readSide.close();
 

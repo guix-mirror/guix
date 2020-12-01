@@ -124,11 +124,7 @@ disabled!~%"))
   ;; purposes, and should be avoided otherwise.
   (make-parameter
    (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
-          (cut string-ci=? <> "yes"))
-   (lambda (value)
-     (when value
-       (warn-about-missing-authentication))
-     value)))
+          (cut string-ci=? <> "yes"))))
 
 (define %narinfo-ttl
   ;; Number of seconds during which cached narinfo lookups are considered
@@ -893,6 +889,9 @@ authorized substitutes."
   (define (valid? obj)
     (valid-narinfo? obj acl))
 
+  (when (%allow-unauthenticated-substitutes?)
+    (warn-about-missing-authentication))
+
   (match (string-tokenize command)
     (("have" paths ..1)
      ;; Return the subset of PATHS available in CACHE-URLS.
@@ -1139,68 +1138,67 @@ default value."
       ((= string->number number) (> number 0))
       (_ #f)))
 
-  (mkdir-p %narinfo-cache-directory)
-  (maybe-remove-expired-cache-entries %narinfo-cache-directory
-                                      cached-narinfo-files
-                                      #:entry-expiration
-                                      cached-narinfo-expiration-time
-                                      #:cleanup-period
-                                      %narinfo-expired-cache-entry-removal-delay)
-  (check-acl-initialized)
+  ;; The daemon's agent code opens file descriptor 4 for us and this is where
+  ;; stderr should go.
+  (parameterize ((current-error-port (match args
+                                       (("--query") (fdopen 4 "wl"))
+                                       (_ (current-error-port)))))
+    ;; Redirect diagnostics to file descriptor 4 as well.
+    (guix-warning-port (current-error-port))
 
-  ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
-  ;; when we know we cannot substitute, but we must emit a newline on stdout
-  ;; when everything is alright.
-  (when (null? (substitute-urls))
-    (exit 0))
+    (mkdir-p %narinfo-cache-directory)
+    (maybe-remove-expired-cache-entries %narinfo-cache-directory
+                                        cached-narinfo-files
+                                        #:entry-expiration
+                                        cached-narinfo-expiration-time
+                                        #:cleanup-period
+                                        %narinfo-expired-cache-entry-removal-delay)
+    (check-acl-initialized)
 
-  ;; Say hello (see above.)
-  (newline)
-  (force-output (current-output-port))
+    ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error
+    ;; message.
+    (for-each validate-uri (substitute-urls))
 
-  ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error message.
-  (for-each validate-uri (substitute-urls))
+    ;; Attempt to install the client's locale so that messages are suitably
+    ;; translated.  LC_CTYPE must be a UTF-8 locale; it's the case by default
+    ;; so don't change it.
+    (match (or (find-daemon-option "untrusted-locale")
+               (find-daemon-option "locale"))
+      (#f     #f)
+      (locale (false-if-exception (setlocale LC_MESSAGES locale))))
 
-  ;; Attempt to install the client's locale so that messages are suitably
-  ;; translated.  LC_CTYPE must be a UTF-8 locale; it's the case by default so
-  ;; don't change it.
-  (match (or (find-daemon-option "untrusted-locale")
-             (find-daemon-option "locale"))
-    (#f     #f)
-    (locale (false-if-exception (setlocale LC_MESSAGES locale))))
+    (catch 'system-error
+      (lambda ()
+        (set-thread-name "guix substitute"))
+      (const #t))                                 ;GNU/Hurd lacks 'prctl'
 
-  (catch 'system-error
-    (lambda ()
-      (set-thread-name "guix substitute"))
-    (const #t))                                   ;GNU/Hurd lacks 'prctl'
-
-  (with-networking
-   (with-error-handling                           ; for signature errors
-     (match args
-       (("--query")
-        (let ((acl (current-acl)))
-          (let loop ((command (read-line)))
-            (or (eof-object? command)
-                (begin
-                  (process-query command
-                                 #:cache-urls (substitute-urls)
-                                 #:acl acl)
-                  (loop (read-line)))))))
-       (("--substitute" store-path destination)
-        ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-        ;; Specify the number of columns of the terminal so the progress
-        ;; report displays nicely.
-        (parameterize ((current-terminal-columns (client-terminal-columns)))
-          (process-substitution store-path destination
-                                #:cache-urls (substitute-urls)
-                                #:acl (current-acl)
-                                #:print-build-trace? print-build-trace?)))
-       ((or ("-V") ("--version"))
-        (show-version-and-exit "guix substitute"))
-       (("--help")
-        (show-help))
-       (opts
-        (leave (G_ "~a: unrecognized options~%") opts))))))
+    (with-networking
+     (with-error-handling                         ; for signature errors
+       (match args
+         (("--query")
+          (let ((acl (current-acl)))
+            (let loop ((command (read-line)))
+              (or (eof-object? command)
+                  (begin
+                    (process-query command
+                                   #:cache-urls (substitute-urls)
+                                   #:acl acl)
+                    (loop (read-line)))))))
+         (("--substitute" store-path destination)
+          ;; Download STORE-PATH and store it as a Nar in file DESTINATION.
+          ;; Specify the number of columns of the terminal so the progress
+          ;; report displays nicely.
+          (parameterize ((current-terminal-columns (client-terminal-columns)))
+            (process-substitution store-path destination
+                                  #:cache-urls (substitute-urls)
+                                  #:acl (current-acl)
+                                  #:print-build-trace? print-build-trace?)))
+         ((or ("-V") ("--version"))
+          (show-version-and-exit "guix substitute"))
+         (("--help")
+          (show-help))
+         (opts
+          (leave (G_ "~a: unrecognized options~%") opts)))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)

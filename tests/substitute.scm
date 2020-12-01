@@ -47,7 +47,8 @@ it writes to GUIX-WARNING-PORT a messages that matches ERROR-RX."
   (test-equal name
     '(1 #t)
     (let ((error-output (open-output-string)))
-      (parameterize ((guix-warning-port error-output))
+      (parameterize ((current-error-port error-output)
+                     (guix-warning-port error-output))
         (catch 'quit
           (lambda ()
             exp
