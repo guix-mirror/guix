@@ -11699,3 +11699,43 @@ Common Lisp arrays and performing numerical calculations with them.")
 
 (define-public ecl-array-operations
   (sbcl-package->ecl-package sbcl-array-operations))
+
+(define-public sbcl-clml
+  (let ((commit "95505b54c8c7b4b27f500c3be97fa5732f4b51a8")
+        (revision "0"))
+    (package
+      (name "sbcl-clml")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mmaul/clml")
+               (commit commit)))
+         (file-name (git-file-name "clml" version))
+         (sha256
+          (base32 "006pii59nmpc61n7p7h8ha5vjg6x0dya327i58z0rnvxs249h345"))
+         ;; TODO: Remove this when the patch has been merged upstream.
+         (patches (search-patches "sbcl-clml-fix-types.patch"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandia" ,sbcl-alexandria)
+         ("array-operations" ,sbcl-array-operations)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("drakma" ,sbcl-drakma)
+         ("introspect-environment" ,sbcl-introspect-environment)
+         ("iterate" ,sbcl-iterate)
+         ("lparallel" ,sbcl-lparallel)
+         ("parse-number" ,sbcl-parse-number)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (synopsis "Common Lisp machine learning library")
+      (description
+       "CLML (Common Lisp Machine Learning) is a high performance and large
+scale statistical machine learning package")
+      (home-page "https://mmaul.github.io/clml/")
+      (license license:llgpl))))
+
+(define-public cl-clml
+  (sbcl-package->cl-source-package sbcl-clml))
