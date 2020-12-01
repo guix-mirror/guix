@@ -11841,3 +11841,35 @@ latitude/longitude and Maidenhead locator system.")
 
 (define-public ecl-maidenhead
   (sbcl-package->ecl-package sbcl-maidenhead))
+
+(define-public sbcl-olc
+  (let ((commit "517e27fa57d9a119b00a29c4b6b31e553deff309")
+        (revision "0"))
+    (package
+      (name "sbcl-olc")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/olc")
+               (commit commit)))
+         (file-name (git-file-name "olc" version))
+         (sha256
+          (base32 "1lnfhp6z6kc8l605zp4siyjiw74y1h4bdq3jfizi084v505wxhgr"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis
+       "Convert coordinates between latitude/longitude and Open Location Code")
+      (description
+       "This a Common Lisp library to convert geographic coordinates between
+latitude/longitude and Open Location Code.")
+      (home-page "https://github.com/glv2/olc")
+      (license license:gpl3+))))
+
+(define-public cl-olc
+  (sbcl-package->cl-source-package sbcl-olc))
+
+(define-public ecl-olc
+  (sbcl-package->ecl-package sbcl-olc))
