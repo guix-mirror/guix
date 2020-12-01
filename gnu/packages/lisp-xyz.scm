@@ -11963,3 +11963,51 @@ designed to embed randomized tests in whatever framework you like.")
 
 (define-public ecl-check-it
   (sbcl-package->ecl-package sbcl-check-it))
+
+(define-public sbcl-clamp
+  (let ((commit "02b8f3953e5753cc61a719807c82f3795cd28fe1"))
+    (package
+      (name "sbcl-clamp")
+      (version (git-version "0.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arclanguage/Clamp")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0fdr9nqfmmpxm6hvjdxi1jkclya9xlnrw1yc3cn1m4ww3f50p31m"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("cl-syntax" ,sbcl-cl-syntax)))
+      (native-inputs
+       `(("cl-unit" ,sbcl-clunit)
+         ("check-it" ,sbcl-check-it)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               (substitute* "clamp.asd"
+                 (("\\(:file \"read\"     :depends-on \\(\"aliases\"\\)\\)")
+                  "(:file \"read\"     :depends-on (\"aliases\" \"base\"))"))
+               #t)))))
+      (home-page "https://github.com/arclanguage/Clamp")
+      (synopsis "Common Lisp with Arc macros and procedures")
+      (description
+       "Clamp is an attempt to bring the powerful, but verbose, language of
+Common Lisp up to the terseness of Arc.
+
+There are two parts to Clamp.  There is the core of Clamp, which implements
+the utilities of Arc that are easily converted from Arc to Common Lisp.  The
+other part is the \"experimental\" part.  It contains features of Arc that are
+not so easy to copy (ssyntax, argument destructuring, etc.).")
+      (license license:artistic2.0))))
+
+(define-public cl-clamp
+  (sbcl-package->cl-source-package sbcl-clamp))
+
+(define-public ecl-clamp
+  (sbcl-package->ecl-package sbcl-clamp))
