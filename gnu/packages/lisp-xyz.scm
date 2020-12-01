@@ -11872,3 +11872,30 @@ latitude/longitude and Open Location Code.")
 
 (define-public ecl-olc
   (sbcl-package->ecl-package sbcl-olc))
+
+(define-public sbcl-regex
+  (let ((commit "fbc9a9f313b9edc1788f33d4b23a29151635ae22"))
+    (package
+      (name "sbcl-regex")
+      (version (git-version "1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/michaelw/regex/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0wq5wlafrxv13wg28hg5b10sc48b88swsvznpy2zg7x37m4nmm6a"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/michaelw/regex/")
+      (synopsis "Regular expression engine for Common Lisp")
+      (description
+       "This Common Lisp package provides a regular expression engine.")
+      (license license:bsd-2))))
+
+(define-public cl-regex
+  (sbcl-package->cl-source-package sbcl-regex))
+
+(define-public ecl-regex
+  (sbcl-package->ecl-package sbcl-regex))
