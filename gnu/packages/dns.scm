@@ -949,6 +949,7 @@ synthesis, and on-the-fly re-configuration.")
                 (search-patches
                  "knot-resolver-fix-map-command-on-32-bit.patch"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      '(#:configure-flags '("-Ddoc=enabled")
        #:phases
@@ -963,6 +964,20 @@ synthesis, and on-the-fly re-configuration.")
          (add-after 'build 'build-doc
            (lambda _
              (invoke "ninja" "doc")))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move the manual and the example configuration files to the
+             ;; "doc" output.
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share/doc/knot-resolver"))
+               (for-each
+                (lambda (dir)
+                  (rename-file (string-append out "/share/" dir)
+                               (string-append doc "/share/" dir)))
+                '("doc/knot-resolver/examples"
+                  "doc/knot-resolver/html"
+                  "info")))))
          (add-after 'install 'wrap-binary
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
