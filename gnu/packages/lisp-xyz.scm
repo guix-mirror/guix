@@ -12073,3 +12073,33 @@ backtick.  It has been forked from SHELISP.")
 
 (define-public ecl-clesh
   (sbcl-package->ecl-package sbcl-clesh))
+
+(define-public sbcl-trivial-download
+  (let ((commit "d2472061d86b1cf3d32f388daacd4e32a13af699"))
+    (package
+      (name "sbcl-trivial-download")
+      (version (git-version "0.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/trivial-download/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06f46zr3gp3wlm2kgxna24qd2gpr1v89x9fynh1x5vrw6c6hqjcv"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("drakma" ,sbcl-drakma)))
+      (home-page "https://github.com/eudoxia0/trivial-download/")
+      (synopsis "Download files from Common Lisp")
+      (description
+       "@code{trivial-download} allows you to download files from the Internet
+from Common Lisp.  It provides a progress bar.")
+      (license license:bsd-2))))
+
+(define-public cl-trivial-download
+  (sbcl-package->cl-source-package sbcl-trivial-download))
+
+(define-public ecl-trivial-download
+  (sbcl-package->ecl-package sbcl-trivial-download))
