@@ -1222,6 +1222,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kmail-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
+  %D%/packages/patches/knot-resolver-fix-map-command-on-32-bit.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kpackage-fix-KF5PackageMacros.cmake.patch \
   %D%/packages/patches/kmplayer-aarch64.patch			\

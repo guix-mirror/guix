@@ -937,14 +937,17 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "5.1.3")
+    (version "5.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "12s5070nqqf599s1mb6rjas2as481rjf751qk5yrz6p34y885k90"))))
+                "0cwlipib3x88dr6cijqv2aps13b4ijv524wc85ns07rkldy2c948"))
+               (patches
+                (search-patches
+                 "knot-resolver-fix-map-command-on-32-bit.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddoc=enabled")
@@ -982,7 +985,8 @@ synthesis, and on-the-fly re-configuration.")
        ("pkg-config" ,pkg-config)
        ("python-breathe" ,python-breathe)
        ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
@@ -991,7 +995,8 @@ synthesis, and on-the-fly re-configuration.")
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
        ;; TODO: Add optional lua modules: basexx and psl.
-       ("lua-bitop" ,lua5.1-bitop)))
+       ("lua-bitop" ,lua5.1-bitop)
+       ("nghttp2" ,nghttp2 "lib")))
     (home-page "https://www.knot-resolver.cz/")
     (synopsis "Caching validating DNS resolver")
     (description
