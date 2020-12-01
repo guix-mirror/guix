@@ -8430,7 +8430,11 @@ code.  The main target of this macro is speed.")
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-files '("specialized-function.asd")
-         #:test-asd-file "specialized-function.test.asd")))))
+         #:test-asd-file "specialized-function.test.asd"
+         ;; Tests fail because they try to use an internal symbol of SBCL
+         ;; that does not exists in recent versions:
+         ;;   "The variable SB-VM:COMPLEX-VECTOR-NIL-WIDETAG is unbound."
+         #:tests? #f)))))
 
 (define-public cl-specialized-function
   (sbcl-package->cl-source-package sbcl-specialized-function))
