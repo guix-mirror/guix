@@ -12011,3 +12011,33 @@ not so easy to copy (ssyntax, argument destructuring, etc.).")
 
 (define-public ecl-clamp
   (sbcl-package->ecl-package sbcl-clamp))
+
+(define-public sbcl-trivial-shell
+  (let ((commit "e02ec191b34b52deca5d1c4ee99d4fa13b8772e0"))
+    (package
+      (name "sbcl-trivial-shell")
+      (version (git-version "0.2.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/trivial-shell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08mpkl5ij5sjfsyn8pq2kvsvpvyvr7ha1r8g1224fa667b8k2q85"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (home-page "http://common-lisp.net/project/trivial-shell/")
+      (synopsis "Common Lisp access to the shell")
+      (description
+       "A simple Common-Lisp interface to the underlying operating system.
+It's independent of the implementation and operating system.")
+      (license license:expat))))
+
+(define-public cl-trivial-shell
+  (sbcl-package->cl-source-package sbcl-trivial-shell))
+
+(define-public ecl-trivial-shell
+  (sbcl-package->ecl-package sbcl-trivial-shell))
