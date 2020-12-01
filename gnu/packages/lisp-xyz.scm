@@ -11899,3 +11899,32 @@ latitude/longitude and Open Location Code.")
 
 (define-public ecl-regex
   (sbcl-package->ecl-package sbcl-regex))
+
+(define-public sbcl-clawk
+  (let ((commit "3a91634df686417114044a98c063cbe76bfac7b6"))
+    (package
+      (name "sbcl-clawk")
+      (version (git-version "4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/clawk")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ph3xjqilvinvgr9q3w47zxqyz1sqnq030nlx7kgkkv8j3bnqk7a"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-regex" ,sbcl-regex)))
+      (home-page "https://github.com/sharplispers/clawk")
+      (synopsis "Common Lisp AWK")
+      (description
+       "CLAWK is an AWK implementation embedded into Common Lisp.")
+      (license license:bsd-2))))
+
+(define-public cl-clawk
+  (sbcl-package->cl-source-package sbcl-clawk))
+
+(define-public ecl-clawk
+  (sbcl-package->ecl-package sbcl-clawk))
