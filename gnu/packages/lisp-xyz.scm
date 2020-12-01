@@ -12041,3 +12041,35 @@ It's independent of the implementation and operating system.")
 
 (define-public ecl-trivial-shell
   (sbcl-package->ecl-package sbcl-trivial-shell))
+
+(define-public sbcl-clesh
+  (let ((commit "44e96e04a72e5bc006dc4eb02ce8962348dd4a11"))
+    (package
+      (name "sbcl-clesh")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Neronus/Clesh")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "012ry02djnqyvvs61wbbqj3saz621w2l9gczrywdxhi5p4ycx318"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("trivial-shell" ,sbcl-trivial-shell)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://github.com/Neronus/Clesh")
+      (synopsis "Embed shell code in Common Lisp")
+      (description
+       "This is a very short and simple program, written in Common Lisp, that
+extends Common Lisp to embed shell code in a manner similar to Perl's
+backtick.  It has been forked from SHELISP.")
+      (license license:bsd-2))))
+
+(define-public cl-clesh
+  (sbcl-package->cl-source-package sbcl-clesh))
+
+(define-public ecl-clesh
+  (sbcl-package->ecl-package sbcl-clesh))
