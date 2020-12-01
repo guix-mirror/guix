@@ -11742,3 +11742,36 @@ scale statistical machine learning package")
 
 (define-public cl-clml
   (sbcl-package->cl-source-package sbcl-clml))
+
+(define-public sbcl-utm-ups
+  (let ((commit "780f1d8ab6290ad2be0f40e2cddc2535fa6fe979")
+        (revision "0"))
+    (package
+      (name "sbcl-utm-ups")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/utm-ups")
+               (commit commit)))
+         (file-name (git-file-name "utm-ups" version))
+         (sha256
+          (base32 "0l3kr2m56skf5cx3kkkdcis7msmidcsixx9fqjapkcjsj8x67aqq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis
+       "Convert coordinates between latitude/longitude and UTM or UPS")
+      (description
+       "This a Common Lisp library to convert geographic coordinates between
+latitude/longitude and UTM (Universal Transverse Mercator) or UPS (Universal
+Polar Stereographic).")
+      (home-page "https://github.com/glv2/utm-ups")
+      (license license:gpl3+))))
+
+(define-public cl-utm-ups
+  (sbcl-package->cl-source-package sbcl-utm-ups))
+
+(define-public ecl-utm-ups
+  (sbcl-package->ecl-package sbcl-utm-ups))
