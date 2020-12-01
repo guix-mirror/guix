@@ -12173,3 +12173,34 @@ and understandable.")
 
 (define-public ecl-gtwiwtg
   (sbcl-package->ecl-package sbcl-gtwiwtg))
+
+(define-public sbcl-cl-progress-bar
+  (let ((commit "9374170858663c8fe829e9fb5a29bd2cb48d95ae"))
+    (package
+      (name "sbcl-cl-progress-bar")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sirherrbatka/cl-progress-bar/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ldb4qhmx431n3lsq71ynwb9ybazbfqd55icjbhi06mj52ngndir"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("documentation-utils-extensions" ,sbcl-documentation-utils-extensions)))
+      (home-page "https://github.com/sirherrbatka/cl-progress-bar/")
+      (synopsis "Progress bars in Common Lisp")
+      (description
+       "This library provides almost the same code as used inside Quicklisp
+for drawning progress bars")
+      (license license:expat))))
+
+(define-public cl-progress-bar
+  (sbcl-package->cl-source-package sbcl-cl-progress-bar))
+
+(define-public ecl-cl-progress-bar
+  (sbcl-package->ecl-package sbcl-cl-progress-bar))
