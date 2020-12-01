@@ -9581,6 +9581,7 @@ getDataFileName name = do
          ("pandoc" ,pandoc "lib")
          ,@all-static-inputs
          ,@direct-inputs)))
+    (outputs '("out" "lib" "static" "doc"))
     (synopsis "Pandoc filter for bibliographic references")))
 
 (define-public ghc-pandoc-types
