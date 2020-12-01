@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5309,7 +5309,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.9")
+    (version "1.20.10")
     (source
       (origin
         (method url-fetch)
@@ -5317,7 +5317,7 @@ over Xlib, including:
                             "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))
+          "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p"))
         (patches
          (list
           ;; See:
@@ -5436,10 +5436,19 @@ draggable titlebars and borders.")
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
+;; TODO: Inherit source from xorg-server in a future rebuild cycle.
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.9")
+     (source (origin
+               (inherit (package-source xorg-server))
+               (uri (string-append "mirror://xorg/individual/xserver/"
+                                   "xorg-server-" version ".tar.bz2"))
+               (sha256
+                (base32
+                 "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2")))))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server
