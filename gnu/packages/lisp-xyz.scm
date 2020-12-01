@@ -12103,3 +12103,34 @@ from Common Lisp.  It provides a progress bar.")
 
 (define-public ecl-trivial-download
   (sbcl-package->ecl-package sbcl-trivial-download))
+
+(define-public sbcl-gtwiwtg
+  (package
+    (name "sbcl-gtwiwtg")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cbeo/gtwiwtg/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lkraw0dwh4is4x5sp5rjrw6f93m0gr9849abrbi12s25ws7jbw4"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("osicat" ,sbcl-osicat)
+       ("prove" ,sbcl-prove)))
+    (home-page "https://github.com/cbeo/gtwiwtg/")
+    (synopsis "Naive generators for Common Lisp")
+    (description
+     "The GTWIWTG library (Generators The Way I Want Them Generated --
+technically not generators, but iterators) is meant to be small, explorable,
+and understandable.")
+    (license license:gpl3)))
+
+(define-public cl-gtwiwtg
+  (sbcl-package->cl-source-package sbcl-gtwiwtg))
+
+(define-public ecl-gtwiwtg
+  (sbcl-package->ecl-package sbcl-gtwiwtg))
