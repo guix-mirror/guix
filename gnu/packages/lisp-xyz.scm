@@ -6425,8 +6425,8 @@ Clojure, as well as several expansions on the idea.")
   (sbcl-package->ecl-package sbcl-arrows))
 
 (define-public sbcl-simple-parallel-tasks
-  (let ((commit "db460f7a3f7bbfe2d3a2223ed21e162068d04dda")
-        (revision "0"))
+  (let ((commit "ce7b60f788d8f68dfb69b24aac54c0e3b63379a6")
+        (revision "1"))
     (package
       (name "sbcl-simple-parallel-tasks")
       (version (git-version "1.0" revision commit))
@@ -6438,8 +6438,7 @@ Clojure, as well as several expansions on the idea.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0amw3qk23wnlyrsgzszs6rs7y4zvxv8dr03rnqhc60mnm8ds4dd5"))))
+          (base32 "0gvbpyff4siifp3cp86cpr9ksmakn66fx21f3h0hpn647zl07nj7"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
