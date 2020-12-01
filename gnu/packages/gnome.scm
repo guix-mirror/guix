@@ -6779,12 +6779,13 @@ freedesktop.org help system specification.")
         (base32 "1yg8f5g5wadhmy4yfd9yjhvd8vll4gq4l86ibp0b42qbxnsmcf0q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)
-       ("xsltproc" ,libxslt)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("yelp-xsl" ,yelp-xsl)))
+    (propagated-inputs
+     `(("itstool" ,itstool)
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
     (synopsis "Yelp documentation tools")
     (description
      "Yelp-tools is a collection of scripts and build utilities to help create,
