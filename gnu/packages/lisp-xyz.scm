@@ -12303,3 +12303,35 @@ even by adding additional statistical @code{compute}ations. ")
 
 (define-public ecl-trivial-benchmark
   (sbcl-package->ecl-package sbcl-trivial-benchmark))
+
+(define-public sbcl-glyphs
+  (let ((commit "1ff5714e8c1dca327bc604dfe3e3d1f4b7755373"))
+    (package
+      (name "sbcl-glyphs")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ahungry/glyphs/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17kai1anbkk5dj5sbrsin2fc019cmcbglb900db60v38myj0y0wf"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("parenscript" ,sbcl-parenscript)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://github.com/ahungry/glyphs/")
+      (synopsis "Reduce Common Lisp verbosity")
+      (description
+       "This library is a little experiment in reducing verbosity in Common
+Lisp, inspired by BODOL (@url{https://github.com/bodil/BODOL}).")
+      (license license:gpl3))))
+
+(define-public cl-glyphs
+  (sbcl-package->cl-source-package sbcl-glyphs))
+
+(define-public ecl-glyphs
+  (sbcl-package->ecl-package sbcl-glyphs))
