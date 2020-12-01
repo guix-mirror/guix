@@ -544,9 +544,7 @@ Return #f if no such checkout is found."
                                   (package->job store package
                                                 system))))
                        (append (filter-map job all)
-                               ;; Disable until
-                               ;; https://issues.guix.gnu.org/44952 is fixed.
-                               ;(image-jobs store system)
+                               (image-jobs store system)
                                (system-test-jobs store system
                                                  #:source source
                                                  #:commit commit)
