@@ -887,7 +887,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clementine-fix-sqlite.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
-  %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/cmake-curl-certificates.patch		\
   %D%/packages/patches/coda-use-system-libs.patch		\
