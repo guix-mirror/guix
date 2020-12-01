@@ -36,7 +36,7 @@ Protokollen mDNS und DNS-SD auf.  Derzeit wird dazu die Bibliothek Guile-Avahi
 benutzt.")
          (fr "Le @command{guix-daemon} peut désormais découvrir les serveurs
 de substituts locaux lorsque l'option @option{--discover} est passée.  Seuls
-les serveurs de substituts démarrés avec l'option{--advertise} seront
+les serveurs de substituts démarrés avec l'option @option{--advertise} seront
 découverts.  La découverte réseau utilise les protocoles mDNS et DNS-SD, pour
 l'instant grâce à la librairie Guile-Avahi.")))
 
