@@ -1639,6 +1639,13 @@ hash/signatures.")
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
 
+(define-public libyaml+static
+  (package
+    (inherit libyaml)
+    (name "libyaml+static")
+    (arguments
+     '(#:configure-flags '("--enable-static")))))
+
 (define-public libquvi-scripts
   (package
     (name "libquvi-scripts")
