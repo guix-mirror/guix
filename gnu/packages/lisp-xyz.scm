@@ -11658,7 +11658,7 @@ extensible initializers.")
     (home-page "https://github.com/borodust/claw-support")
     (synopsis "Support routines for claw")
     (description
-     "This packages provide support routines for the @code{claw} common-lisp
+     "This package provides support routines for the @code{claw} Common Lisp
 package.")
     (license license:expat)))
 
