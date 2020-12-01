@@ -42,7 +42,10 @@ class LocalStore : public StoreAPI
 {
 private:
     /* The currently running substituter or empty.  */
-    std::unique_ptr<Agent> runningSubstituter;
+    std::shared_ptr<Agent> runningSubstituter;
+
+    /* Ensure the substituter is running and return it.  */
+    std::shared_ptr<Agent> substituter();
 
     Path linksDir;
 

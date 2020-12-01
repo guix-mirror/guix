@@ -850,14 +850,7 @@ PathSet LocalStore::querySubstitutablePaths(const PathSet & paths)
 
     if (!settings.useSubstitutes || paths.empty()) return res;
 
-    if (!runningSubstituter) {
-	const Strings args = { "substitute", "--query" };
-	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
-	std::unique_ptr<Agent> fresh(new Agent(settings.guixProgram, args, env));
-	runningSubstituter.swap(fresh);
-    }
-
-    Agent & run = *runningSubstituter;
+    Agent & run = *substituter();
 
     string s = "have ";
     foreach (PathSet::const_iterator, j, paths)
@@ -877,18 +870,22 @@ PathSet LocalStore::querySubstitutablePaths(const PathSet & paths)
 }
 
 
+std::shared_ptr<Agent> LocalStore::substituter()
+{
+    if (!runningSubstituter) {
+	const Strings args = { "substitute", "--query" };
+	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
+	runningSubstituter = std::make_shared<Agent>(settings.guixProgram, args, env);
+    }
+
+    return runningSubstituter;
+}
+
 void LocalStore::querySubstitutablePathInfos(PathSet & paths, SubstitutablePathInfos & infos)
 {
     if (!settings.useSubstitutes) return;
 
-    if (!runningSubstituter) {
-	const Strings args = { "substitute", "--query" };
-	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
-	std::unique_ptr<Agent> fresh(new Agent(settings.guixProgram, args, env));
-	runningSubstituter.swap(fresh);
-    }
-
-    Agent & run = *runningSubstituter;
+    Agent & run = *substituter();
 
     string s = "info ";
     foreach (PathSet::const_iterator, i, paths)
