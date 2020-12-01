@@ -17198,6 +17198,10 @@ only restarts services that are not currently running, which is
 conservative: it minimizes disruption but leaves outdated services
 running.
 
+Use @command{herd status} to find out candidates for restarting.
+@xref{Services}, for general information about services.  Common
+services to restart would include @code{ntpd} and @code{ssh-daemon}.
+
 By default, the @code{mcron} service is restarted.  This ensures that
 the latest version of the unattended upgrade job will be used next time.
 
