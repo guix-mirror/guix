@@ -12235,3 +12235,38 @@ whichever package you switch to.")
 
 (define-public ecl-repl-utilities
   (sbcl-package->ecl-package sbcl-repl-utilities))
+
+(define-public sbcl-supertrace
+  (let ((commit "66d22c3ff131ecd1c8048dfced1d62ed6024ecb0"))
+    (package
+      (name "sbcl-supertrace")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/supertrace")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0n369n6b7y1m49biccnnr7svymjdsk8sksrkqrn3mj21vgv7s7bg"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("cffi-grovel" ,sbcl-cffi)
+         ("rove" ,sbcl-rove)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)))
+      (home-page "https://github.com/fukamachi/supertrace")
+      (synopsis "Improved Common Lisp tracing for debugging and profiling")
+      (description
+       "Supertrace provides a superior Common Lisp @code{trace} functionality
+for debugging and profiling real world applications.")
+      (license license:bsd-2))))
+
+(define-public cl-supertrace
+  (sbcl-package->cl-source-package sbcl-supertrace))
+
+(define-public ecl-supertrace
+  (sbcl-package->ecl-package sbcl-supertrace))
