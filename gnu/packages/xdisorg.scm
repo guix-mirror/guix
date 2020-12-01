@@ -522,11 +522,7 @@ following the mouse.")
          "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        "--disable-static"
-        "--enable-timers"
-        "--enable-gnuplot")))
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
