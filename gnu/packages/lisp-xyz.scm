@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
+;;; Copyright © 2020 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4281,6 +4282,41 @@ Python's WSGI and Ruby's Rack.")
 
 (define-public ecl-clack
   (sbcl-package->ecl-package sbcl-clack))
+
+(define-public sbcl-cl-log
+  (let ((commit "8f4b766d51e02245c310526cf1e4534ce634f837")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-log")
+     (version "1.0.1")
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nicklevine/cl-log")
+             (commit commit)))
+       (sha256
+        (base32 "1r3z9swy1b59swvaa5b97is9ysrfmjvjjhhw56p7p5hqg93b92ak"))
+       (file-name (git-file-name "cl-log" version))))
+     (build-system asdf-build-system/sbcl)
+     (synopsis "Common Lisp general purpose logging utility")
+     (description "CL-LOG is a general purpose logging utility, loosely modelled
+in some respects after Gary King's Log5.  Its features include: logging to
+several destinations at once, via \"messengers\", each messenger is tailored to
+accept some log messages and reject others, and this tailoring can be changed
+on-the-fly, very rapid processing of messages which are rejected by all
+messengers, fully independent use of the utility by several different
+sub-systems in an application, support for messengers which cl:format text to a
+stream, support for messengers which do not invoke cl:format, timestamps in
+theory accurate to internal-time-units-per-second.")
+     (home-page "https://github.com/nicklevine/cl-log")
+     (license license:expat))))
+
+(define-public cl-log
+  (sbcl-package->cl-source-package sbcl-cl-log))
+
+(define-public ecl-cl-log
+  (sbcl-package->ecl-package sbcl-cl-log))
 
 (define-public sbcl-log4cl
   (let ((commit "611e094458504b938d49de904eab141285328c7c")
