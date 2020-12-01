@@ -716,6 +716,8 @@ binary.")
        ("ed" ,ed)
        ("flex" ,flex)
        ("texinfo" ,texinfo)))
+    (inputs
+     `(("readline" ,readline)))
     (arguments
      '(#:configure-flags
        (list "--with-readline")
