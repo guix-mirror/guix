@@ -186,14 +186,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.9")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "03psmp4hxsb9sz35i4cyz6dcbs3ab73amhyx0w0hv8f3hp1hdd7a"))))
+                "1yziv4cbcy61c9mb81c5sg3rmw6nh0srzwmry4svhriv6rdd5dvc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
