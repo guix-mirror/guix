@@ -74,6 +74,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -92,6 +93,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -227,6 +229,54 @@ applications that support the Python @acronym{WSGI, Web Server Gateway
 Interface} specification.")
     (license license:asl2.0)
     (home-page "https://modwsgi.readthedocs.io/")))
+
+(define-public monolith
+  (package
+    (name "monolith")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Y2Z/monolith.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16k5mp64a5l063rdj65hbpx414xv0bqdvhvz49k8018f2a2jj5xl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-cssparser" ,rust-cssparser-0.27)
+        ("rust-html5ever" ,rust-html5ever-0.24)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-reqwest" ,rust-reqwest-0.10)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://github.com/Y2Z/monolith")
+    (synopsis "Command line tool for saving web pages as a single HTML file")
+    (description
+     "Monolith bundles any web page into a single HTML file.  You can finally
+replace that gazillion of open tabs with a gazillion of @file{.html} files
+stored somewhere on your precious little drive.
+
+Unlike conventional ``Save page as…'', Monolith not only saves the
+target document, it embeds CSS, image, and JavaScript assets all at
+once, producing a single HTML5 document that is a joy to store and
+share.
+
+If compared to saving websites with @samp{wget -mpk}, Monolith embeds
+all assets as data URLs and therefore displays the saved page exactly
+the same, being completely separated from the Internet.")
+    (license license:unlicense)))
 
 (define-public nginx
   (package
