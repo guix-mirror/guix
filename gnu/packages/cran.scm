@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24776,3 +24777,27 @@ orthogonal coordinate systems: cartesian, polar, spherical, cylindrical,
 parabolic or user defined by custom scale factors.")
     (license license:gpl3)))
 
+(define-public r-aws-signature
+  (package
+    (name "r-aws-signature")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aws.signature" version))
+       (sha256
+        (base32
+         "15llpcnrdq4y6jsn7079yjmgbr5d1wgy2ymsm3jj3gkrd5l4zzpp"))))
+    (properties `((upstream-name . "aws.signature")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)))
+    (home-page "https://github.com/cloudyr/aws.signature")
+    (synopsis "Amazon Web Services Request Signatures")
+    (description
+     "This package generates version 2 and 4 request signatures for Amazon Web
+Services (AWS) and provides a mechanism for retrieving credentials from
+environment variables, AWS credentials files, and EC2 instance metadata.  For
+use on EC2 instances, the package 'aws.ec2metadata' is suggested.")
+    (license license:gpl2+)))
