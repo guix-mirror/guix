@@ -5638,6 +5638,41 @@ extension-points via the concept of hooks.")
 (define-public ecl-cl-hooks
   (sbcl-package->ecl-package sbcl-cl-hooks))
 
+(define-public sbcl-cl-autowrap
+  (let ((revision "1")
+        (commit "ae846d6968fc0d000de0c541638929a157f3009e"))
+    ;; no taged branches
+    (package
+      (name "sbcl-cl-autowrap")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/cl-autowrap")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gisldp2zns92kdcaikghm7c38ldy2d884n8bfg0wcjvbz78p3ar"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-json" ,sbcl-cl-json)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("defpackage-plus" ,sbcl-defpackage-plus)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/rpav/cl-autowrap")
+      (synopsis "FFI wrapper generator for Common Lisp")
+      (description "This is a c2ffi-based wrapper generator for Common Lisp.")
+      (license license:bsd-2))))
+
+(define-public cl-autowrap
+  (sbcl-package->cl-source-package sbcl-cl-autowrap))
+
+(define-public ecl-cl-autowrap
+  (sbcl-package->ecl-package sbcl-cl-autowrap))
+
 (define-public sbcl-s-sysdeps
   ;; No release since 2013.
   (let ((commit "9aa23bbdceb24bcdbe0e7c39fa1901858f823106")
