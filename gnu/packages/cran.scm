@@ -24801,3 +24801,30 @@ Services (AWS) and provides a mechanism for retrieving credentials from
 environment variables, AWS credentials files, and EC2 instance metadata.  For
 use on EC2 instances, the package 'aws.ec2metadata' is suggested.")
     (license license:gpl2+)))
+
+(define-public r-aws-s3
+  (package
+    (name "r-aws-s3")
+    (version "0.3.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aws.s3" version))
+       (sha256
+        (base32
+         "132cczq0ml7lpp2yl6l4p99dn1zihrncnpa6wyad4m9mnr50a8dx"))))
+    (properties `((upstream-name . "aws.s3")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aws-signature" ,r-aws-signature)
+       ("r-base64enc" ,r-base64enc)
+       ("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-httr" ,r-httr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/cloudyr/aws.s3")
+    (synopsis "AWS S3 Client Package")
+    (description
+     "This package provides a simple client package for the Amazon Web
+Services (AWS) Simple Storage Service (S3) REST API.")
+    (license license:gpl2+)))
