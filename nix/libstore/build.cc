@@ -262,6 +262,7 @@ public:
     LocalStore & store;
 
     std::shared_ptr<Agent> hook;
+    std::shared_ptr<Agent> substituter;
 
     Worker(LocalStore & store);
     ~Worker();
@@ -2773,15 +2774,6 @@ private:
     /* Path info returned by the substituter's query info operation. */
     SubstitutablePathInfo info;
 
-    /* Pipe for the substituter's standard output. */
-    Pipe outPipe;
-
-    /* Pipe for the substituter's standard error. */
-    Pipe logPipe;
-
-    /* The process ID of the builder. */
-    Pid pid;
-
     /* Lock on the store path. */
     std::shared_ptr<PathLocks> outputLock;
 
@@ -2794,6 +2786,17 @@ private:
 
     typedef void (SubstitutionGoal::*GoalState)();
     GoalState state;
+
+    /* The substituter. */
+    std::shared_ptr<Agent> substituter;
+
+    /* Either the empty string, or the expected hash as returned by the
+       substituter.  */
+    string expectedHashStr;
+
+    /* Either the empty string, or the status phrase returned by the
+       substituter.  */
+    string status;
 
     void tryNext();
 
@@ -2840,7 +2843,7 @@ SubstitutionGoal::SubstitutionGoal(const Path & storePath, Worker & worker, bool
 
 SubstitutionGoal::~SubstitutionGoal()
 {
-    if (pid != -1) worker.childTerminated(pid);
+    if (substituter) worker.childTerminated(substituter->pid);
 }
 
 
@@ -2848,9 +2851,9 @@ void SubstitutionGoal::timedOut()
 {
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ substituter-failed %1% timeout") % storePath);
-    if (pid != -1) {
-        pid_t savedPid = pid;
-        pid.kill();
+    if (substituter) {
+        pid_t savedPid = substituter->pid;
+	substituter.reset();
         worker.childTerminated(savedPid);
     }
     amDone(ecFailed);
@@ -2977,45 +2980,29 @@ void SubstitutionGoal::tryToRun()
 
     printMsg(lvlInfo, format("fetching path `%1%'...") % storePath);
 
-    outPipe.create();
-    logPipe.create();
-
     destPath = repair ? storePath + ".tmp" : storePath;
 
     /* Remove the (stale) output path if it exists. */
     if (pathExists(destPath))
         deletePath(destPath);
 
-    /* Fill in the arguments. */
-    Strings args;
-    args.push_back("guix");
-    args.push_back("substitute");
-    args.push_back("--substitute");
-    args.push_back(storePath);
-    args.push_back(destPath);
+    if (!worker.substituter) {
+	const Strings args = { "substitute", "--substitute" };
+	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
+	worker.substituter = std::make_shared<Agent>(settings.guixProgram, args, env);
+    }
 
-    /* Fork the substitute program. */
-    pid = startProcess([&]() {
+    /* Borrow the worker's substituter.  */
+    if (!substituter) substituter.swap(worker.substituter);
 
-	/* Communicate substitute-urls & co. to 'guix substitute'.  */
-        setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
+    /* Send the request to the substituter.  */
+    writeLine(substituter->toAgent.writeSide,
+	      (format("substitute %1% %2%") % storePath % destPath).str());
 
-        commonChildInit(logPipe);
-
-        if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
-            throw SysError("cannot dup output pipe into stdout");
-
-        execv(settings.guixProgram.c_str(), stringsToCharPtrs(args).data());
-
-        throw SysError(format("executing `%1% substitute'") % settings.guixProgram);
-    });
-
-    pid.setSeparatePG(true);
-    pid.setKillSignal(SIGTERM);
-    outPipe.writeSide.close();
-    logPipe.writeSide.close();
-    worker.childStarted(shared_from_this(),
-        pid, singleton<set<int> >(logPipe.readSide), true, true);
+    set<int> fds;
+    fds.insert(substituter->fromAgent.readSide);
+    fds.insert(substituter->builderOut.readSide);
+    worker.childStarted(shared_from_this(), substituter->pid, fds, true, true);
 
     state = &SubstitutionGoal::finished;
 
@@ -3030,28 +3017,25 @@ void SubstitutionGoal::finished()
 {
     trace("substitute finished");
 
-    /* Since we got an EOF on the logger pipe, the substitute is
-       presumed to have terminated.  */
-    pid_t savedPid = pid;
-    int status = pid.wait(true);
+    /* Remove the 'guix substitute' process from the list of children.  */
+    worker.childTerminated(substituter->pid);
 
-    /* So the child is gone now. */
-    worker.childTerminated(savedPid);
-
-    /* Close the read side of the logger pipe. */
-    logPipe.readSide.close();
-
-    /* Get the hash info from stdout. */
-    string expectedHashStr = statusOk(status) ? readLine(outPipe.readSide) : "";
-    outPipe.readSide.close();
+    /* If max-jobs > 1, the worker might have created a new 'substitute'
+       process in the meantime.  If that is the case, terminate ours;
+       otherwise, give it back to the worker.  */
+    if (worker.substituter) {
+	substituter.reset ();
+    } else {
+	worker.substituter.swap(substituter);
+    }
 
     /* Check the exit status and the build result. */
     HashResult hash;
     try {
 
-        if (!statusOk(status))
-            throw SubstError(format("fetching path `%1%' %2%")
-                % storePath % statusToString(status));
+        if (status != "success")
+            throw SubstError(format("fetching path `%1%' (status: '%2%')")
+                % storePath % status);
 
         if (!pathExists(destPath))
             throw SubstError(format("substitute did not produce path `%1%'") % destPath);
@@ -3122,16 +3106,33 @@ void SubstitutionGoal::finished()
 
 void SubstitutionGoal::handleChildOutput(int fd, const string & data)
 {
-    assert(fd == logPipe.readSide);
-    if (verbosity >= settings.buildVerbosity) writeToStderr(data);
-    /* Don't write substitution output to a log file for now.  We
-       probably should, though. */
+    if (verbosity >= settings.buildVerbosity
+	&& fd == substituter->builderOut.readSide) {
+	writeToStderr(data);
+	/* Don't write substitution output to a log file for now.  We
+	   probably should, though. */
+    }
+
+    if (fd == substituter->fromAgent.readSide) {
+	/* Trim whitespace to the right.  */
+	size_t end = data.find_last_not_of(" \t\n");
+	string trimmed = (end != string::npos) ? data.substr(0, end + 1) : data;
+
+	if (expectedHashStr == "") {
+	    expectedHashStr = trimmed;
+	} else if (status == "") {
+	    status = trimmed;
+	    worker.wakeUp(shared_from_this());
+	} else {
+	    printMsg(lvlError, format("unexpected substituter message '%1%'") % data);
+	}
+    }
 }
 
 
 void SubstitutionGoal::handleEOF(int fd)
 {
-    if (fd == logPipe.readSide) worker.wakeUp(shared_from_this());
+    worker.wakeUp(shared_from_this());
 }
 
 

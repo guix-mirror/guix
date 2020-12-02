@@ -88,6 +88,7 @@
             write-narinfo
 
             %allow-unauthenticated-substitutes?
+            %error-to-file-descriptor-4?
 
             substitute-urls
             guix-substitute))
@@ -1016,7 +1017,10 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
 
       ;; Skip a line after what 'progress-reporter/file' printed, and another
       ;; one to visually separate substitutions.
-      (display "\n\n" (current-error-port)))))
+      (display "\n\n" (current-error-port))
+
+      ;; Tell the daemon that we're done.
+      (display "success\n" (current-output-port)))))
 
 
 ;;;
@@ -1127,6 +1131,11 @@ default value."
   (unless (string->uri uri)
     (leave (G_ "~a: invalid URI~%") uri)))
 
+(define %error-to-file-descriptor-4?
+  ;; Whether to direct 'current-error-port' to file descriptor 4 like
+  ;; 'guix-daemon' expects.
+  (make-parameter #t))
+
 (define-command (guix-substitute . args)
   (category internal)
   (synopsis "implement the build daemon's substituter protocol")
@@ -1140,9 +1149,9 @@ default value."
 
   ;; The daemon's agent code opens file descriptor 4 for us and this is where
   ;; stderr should go.
-  (parameterize ((current-error-port (match args
-                                       (("--query") (fdopen 4 "wl"))
-                                       (_ (current-error-port)))))
+  (parameterize ((current-error-port (if (%error-to-file-descriptor-4?)
+                                         (fdopen 4 "wl")
+                                         (current-error-port))))
     ;; Redirect diagnostics to file descriptor 4 as well.
     (guix-warning-port (current-error-port))
 
@@ -1184,15 +1193,22 @@ default value."
                                    #:cache-urls (substitute-urls)
                                    #:acl acl)
                     (loop (read-line)))))))
-         (("--substitute" store-path destination)
+         (("--substitute")
           ;; Download STORE-PATH and store it as a Nar in file DESTINATION.
           ;; Specify the number of columns of the terminal so the progress
           ;; report displays nicely.
           (parameterize ((current-terminal-columns (client-terminal-columns)))
-            (process-substitution store-path destination
-                                  #:cache-urls (substitute-urls)
-                                  #:acl (current-acl)
-                                  #:print-build-trace? print-build-trace?)))
+            (let loop ()
+              (match (read-line)
+                ((? eof-object?)
+                 #t)
+                ((= string-tokenize ("substitute" store-path destination))
+                 (process-substitution store-path destination
+                                       #:cache-urls (substitute-urls)
+                                       #:acl (current-acl)
+                                       #:print-build-trace?
+                                       print-build-trace?)
+                 (loop))))))
          ((or ("-V") ("--version"))
           (show-version-and-exit "guix substitute"))
          (("--help")
