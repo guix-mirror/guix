@@ -1493,7 +1493,7 @@ trace (backtrace) at runtime in a Rust program.")
 c6e7d37.  However, this package works only up to 128 bytes.")
     (license license:expat)))
 
-(define-pUblic rust-base64-0.13
+(define-public rust-base64-0.13
   (package
     (name "rust-base64")
     (version "0.13.0")
