@@ -1053,7 +1053,7 @@ assembler, PEG) is less than 1MB.")
 (define-public lisp-repl-core-dumper
   (package
     (name "lisp-repl-core-dumper")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method git-fetch)
@@ -1062,7 +1062,7 @@ assembler, PEG) is less than 1MB.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n6hlmppn3k8hmwmr21mnapzpvgdcagg17b8a3zz2aa128611s5s"))))
+        (base32 "0ghiqwl7bgzxfqg6hpmyqazr9mi0v5k9byqa3myg5462csvgb754"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
