@@ -23021,14 +23021,14 @@ JIRA issue servers.")
 (define-public emacs-slime-volleyball
   (package
     (name "emacs-slime-volleyball")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "slime-volleyball-" version ".tar"))
        (sha256
-        (base32 "1jsx889j09jbib9v3jzn3k2hn71jzdyc5yv4f010l6fknbsfi7lr"))))
+        (base32 "0dl1x0ghfwg4vv2asz3g4plghjxpzd56fyw09vsa3s3k9xsmy3yy"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.svg$" "\\.b64$" "slime\\.el\\.gz$")))
     (home-page "http://elpa.gnu.org/packages/slime-volleyball.html")
