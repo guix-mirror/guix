@@ -3114,17 +3114,24 @@ void SubstitutionGoal::handleChildOutput(int fd, const string & data)
     }
 
     if (fd == substituter->fromAgent.readSide) {
-	/* Trim whitespace to the right.  */
-	size_t end = data.find_last_not_of(" \t\n");
-	string trimmed = (end != string::npos) ? data.substr(0, end + 1) : data;
+	/* DATA may consist of several lines.  Process them one by one.  */
+	string input = data;
+	while (!input.empty()) {
+	    /* Process up to the first newline.  */
+	    size_t end = input.find_first_of("\n");
+	    string trimmed = (end != string::npos) ? input.substr(0, end) : input;
 
-	if (expectedHashStr == "") {
-	    expectedHashStr = trimmed;
-	} else if (status == "") {
-	    status = trimmed;
-	    worker.wakeUp(shared_from_this());
-	} else {
-	    printMsg(lvlError, format("unexpected substituter message '%1%'") % data);
+	    /* Update the goal's state accordingly.  */
+	    if (expectedHashStr == "") {
+		expectedHashStr = trimmed;
+	    } else if (status == "") {
+		status = trimmed;
+		worker.wakeUp(shared_from_this());
+	    } else {
+		printMsg(lvlError, format("unexpected substituter message '%1%'") % input);
+	    }
+
+	    input = (end != string::npos) ? input.substr(end + 1) : "";
 	}
     }
 }
