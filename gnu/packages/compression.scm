@@ -1898,7 +1898,7 @@ non-Windows systems without running the actual installer using wine.")
 (define-public google-brotli
   (package
     (name "google-brotli")
-    (version "1.0.7")
+    (version "1.0.9")
     (source
      (origin
        (method git-fetch)
@@ -1907,7 +1907,15 @@ non-Windows systems without running the actual installer using wine.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1811b55wdfg4kbsjcgh1kc938g118jpvif97ilgrmbls25dfpvvw"))))
+        (base32 "1fikasxf7r2dwlk8mv8w7nmjkn0jw5ic31ky3mvpkdzwgd4xfndl"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Cherry-picked from upstream since the latest release
+           ;; https://github.com/google/brotli/commit/09b0992b6acb7faa6fd3b23f9bc036ea117230fc
+           (substitute* (find-files "scripts" "^lib.*pc\\.in")
+             (("-R\\$\\{libdir\\} ") ""))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
