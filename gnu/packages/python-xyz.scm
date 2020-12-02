@@ -13227,7 +13227,10 @@ compatible build front-ends to build Poetry managed projects.")
              (substitute* "setup.py"
                ;; Newer versions of keyring produce a package with version "0.0.0"
                ;; Reported upstream: <https://github.com/jaraco/keyring/issues/469>
-               (("keyring>=21.2.0,<22.0.0") "keyring>=21.0.0,<22.0.0"))
+               (("keyring>=21.2.0,<22.0.0") "keyring>=21.0.0,<22.0.0")
+               ;; TODO: remove after the next release cycle,
+               ;; when packaging has been updated.
+               (("packaging>=20.4,<21.0") "packaging>=20.0,<21.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
