@@ -15111,7 +15111,7 @@ disables the timeout.
 The type of compression used for build logs---one of @code{gzip},
 @code{bzip2}, or @code{none}.
 
-@item @code{discover} (default: @code{#f})
+@item @code{discover?} (default: @code{#f})
 Whether to discover substitute servers on the local network using mDNS
 and DNS-SD.
 
