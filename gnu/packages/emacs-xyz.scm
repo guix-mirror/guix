@@ -10867,27 +10867,17 @@ type an abbreviation and automatically expand it into function templates.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "18pcnjnqvcky6i49p38vy3ms5xiisn27vy47pc3vsgr3r2n87mqb"))))
-    (build-system trivial-build-system)
+    (build-system emacs-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((source (assoc-ref %build-inputs "source"))
-                (out (assoc-ref %outputs "out"))
-                (snippet-dir
-                 (string-append out "/share/emacs/yasnippet-snippets/")))
-           (with-directory-excursion source
-             (mkdir-p snippet-dir)
-             (copy-recursively "snippets" snippet-dir)))
-         #t)))
+     `(#:include (cons* "^snippets\\/" %default-include)))
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)             ;for snippets/rjsx-mode/.yas-setup.el
+       ("emacs-yasnippet" ,emacs-yasnippet)))
     (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
     (synopsis "Collection of YASnippet snippets for many languages")
-    (description
-     "Provides Andrea Crotti's collection of YASnippet snippets.  After installation,
-the snippets will be in \"~/.guix-profile/share/emacs/yasnippet-snippets/\".
-To make YASnippet aware of these snippets, add the above directory to
-@code{yas-snippet-dirs}.")
+    (description "This package provides an extensive collection of YASnippet
+snippets.  When this package is installed, the extra snippets it provides are
+automatically made available to YASnippet.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-c-yasnippet
