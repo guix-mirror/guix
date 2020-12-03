@@ -264,14 +264,11 @@ Interface} specification.")
     (home-page "https://github.com/Y2Z/monolith")
     (synopsis "Command line tool for saving web pages as a single HTML file")
     (description
-     "Monolith bundles any web page into a single HTML file.  You can finally
-replace that gazillion of open tabs with a gazillion of @file{.html} files
-stored somewhere on your precious little drive.
+     "Monolith bundles any web page into a single HTML file.
 
-Unlike conventional ``Save page as…'', Monolith not only saves the
-target document, it embeds CSS, image, and JavaScript assets all at
-once, producing a single HTML5 document that is a joy to store and
-share.
+Unlike conventional ``Save page as…'', Monolith not only saves the target
+document, it embeds CSS, image, and JavaScript assets all at once, producing
+a single HTML5 document.
 
 If compared to saving websites with @samp{wget -mpk}, Monolith embeds
 all assets as data URLs and therefore displays the saved page exactly
