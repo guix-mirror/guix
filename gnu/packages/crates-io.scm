@@ -17826,7 +17826,7 @@ You probably don't want to link to this crate directly; instead check out the
 (define-public rust-openssl-0.10
   (package
     (name "rust-openssl")
-    (version "0.10.26")
+    (version "0.10.30")
     (source
      (origin
        (method url-fetch)
@@ -17835,7 +17835,7 @@ You probably don't want to link to this crate directly; instead check out the
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11d505lwlrh5a0jc2l6q36gvsaqic3vizq5q860hiqcqkmwwag1s"))))
+         "1d5wwajanjw1q5d2y23yaq8rvbaqb20z53v7hfdryhb56vzmwmwd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
