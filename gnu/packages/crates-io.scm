@@ -9002,6 +9002,30 @@ implementation that is more efficient for smaller hash keys.")
         (base32
          "0jxgzd04ra4imjv8jgkmdq59kj8fsz6w4zxsbmlai34h26225c00"))))))
 
+(define-public rust-form-urlencoded-1
+  (package
+    (name "rust-form-urlencoded")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "form_urlencoded" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "005yi1319k5bz8g5ylbdiakq5jp5jh90yy6k357zm11fr4aqvrpc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-matches" ,rust-matches-0.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2))))
+    (home-page "https://github.com/servo/rust-url")
+    (synopsis "Parser and serializer for the urlencoded syntax")
+    (description
+     "Parser and serializer for the application/x-www-form-urlencoded
+syntax, as used by HTML forms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fragile-0.3
   (package
     (name "rust-fragile")
