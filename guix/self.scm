@@ -777,6 +777,13 @@ Info manual."
                          (copy-recursively #$miscellany #$output
                                            #:log (%make-void-port "w")))))))
 
+(define (transitive-package-dependencies package)
+  "Return the list of packages propagated by PACKAGE, including PACKAGE
+itself."
+  (match (package-transitive-propagated-inputs package)
+    (((labels packages _ ...) ...)
+     (cons package packages))))
+
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
                         (name (string-append "guix-" version))
@@ -818,14 +825,10 @@ Info manual."
     (specification->package "gnutls"))
 
   (define dependencies
-    (match (append-map (lambda (package)
-                         (cons (list "x" package)
-                               (package-transitive-propagated-inputs package)))
-                       (list guile-gcrypt gnutls guile-git guile-avahi
-                             guile-json guile-semver guile-ssh guile-sqlite3
-                             guile-zlib guile-lzlib))
-      (((labels packages _ ...) ...)
-       packages)))
+    (append-map transitive-package-dependencies
+                (list guile-gcrypt gnutls guile-git guile-avahi
+                      guile-json guile-semver guile-ssh guile-sqlite3
+                      guile-zlib guile-lzlib)))
 
   (define *core-modules*
     (scheme-node "guix-core"
