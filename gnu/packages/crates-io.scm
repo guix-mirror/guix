@@ -32000,7 +32000,7 @@ untrusted inputs in Rust.")
 (define-public rust-url-2
   (package
     (name "rust-url")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -32009,12 +32009,13 @@ untrusted inputs in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1jw7cw8br4xvjb92ddrrh1r7jvqhyhiknnnfpgq9np63fs24m7c2"))))
+         "0vlpd0c7y9yv4x5vmb6qlnkxkj63r20wv2rysyg48l3kh6qg42ar"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-idna" ,rust-idna-0.2)
+       (("rust-form-urlencoded" ,rust-form-urlencoded-1)
+        ("rust-idna" ,rust-idna-0.2)
         ("rust-matches" ,rust-matches-0.1)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-serde" ,rust-serde-1))
