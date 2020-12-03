@@ -849,14 +849,14 @@ and multiple fonts.")
 (define-public geany
   (package
     (name "geany")
-    (version "1.37")
+    (version "1.37.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.geany.org/"
                            "geany-" version ".tar.bz2"))
        (sha256
-        (base32 "0l9xds0qghxv21ymifdc9spvp9mpvpnxn9scf1b9qxivha22brfx"))))
+        (base32 "060sachn33xpx3a609f09y97qq5ky17gvv686zbvrn618ij7bi8q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
