@@ -2626,10 +2626,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "aecd76a2bcc7bfee049c91d94cc75f893800bf37"))
+  (let ((commit "5ce3ea1fbf2b21e7ccb98402a818508ca9b79395"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "9" commit))
+      (version (git-version "2.4" "10" commit))
       (source
        (origin
          (method git-fetch)
