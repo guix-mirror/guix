@@ -4267,3 +4267,42 @@ disk utilization, priority, username, state, and exit code.")
     (arguments
      `(#:import-path "github.com/linuxboot/fiano/cmds/fmap"
        #:unpack-path "github.com/linuxboot/fiano"))))
+
+(define-public novena-eeprom
+  (package
+    (name "novena-eeprom")
+    (version "2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xobs/novena-eeprom.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "00pd71mg0g20v0820ggp3ghf9nyj5s4wavaz9mkmrmsr91hcnf7i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f   ; No tests exist
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin"))
+                    (out-share-man (string-append out "/share/man/man8")))
+               (install-file "novena-eeprom" out-bin)
+               (install-file "novena-eeprom.8" out-share-man)))))))
+    (inputs
+     `(("i2c-tools" ,i2c-tools)))
+    (synopsis "Novena EEPROM editor")
+    (description "This package provides an editor for the Novena EEPROM.
+Novena boards contain a device-dependent descriptive EEPROM that defines
+various parameters such as serial number, MAC address, and featureset.
+This program allows you to view and manipulate this EEPROM list.")
+    (home-page "https://github.com/xobs/novena-eeprom/")
+    (supported-systems '("armhf-linux"))
+    (license license:bsd-3)))
