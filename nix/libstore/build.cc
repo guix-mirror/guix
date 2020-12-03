@@ -3040,27 +3040,28 @@ void SubstitutionGoal::finished()
         if (!pathExists(destPath))
             throw SubstError(format("substitute did not produce path `%1%'") % destPath);
 
+	if (expectedHashStr == "")
+	    throw SubstError(format("substituter did not communicate hash for `%1'") % storePath);
+
         hash = hashPath(htSHA256, destPath);
 
         /* Verify the expected hash we got from the substituer. */
-        if (expectedHashStr != "") {
-            size_t n = expectedHashStr.find(':');
-            if (n == string::npos)
-                throw Error(format("bad hash from substituter: %1%") % expectedHashStr);
-            HashType hashType = parseHashType(string(expectedHashStr, 0, n));
-            if (hashType == htUnknown)
-                throw Error(format("unknown hash algorithm in `%1%'") % expectedHashStr);
-            Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
-            Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
-            if (expectedHash != actualHash) {
-		if (settings.printBuildTrace)
-		    printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
-			     % storePath % "sha256"
-			     % printHash16or32(expectedHash)
-			     % printHash16or32(actualHash));
-                throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
-	    }
-        }
+	size_t n = expectedHashStr.find(':');
+	if (n == string::npos)
+	    throw Error(format("bad hash from substituter: %1%") % expectedHashStr);
+	HashType hashType = parseHashType(string(expectedHashStr, 0, n));
+	if (hashType == htUnknown)
+	    throw Error(format("unknown hash algorithm in `%1%'") % expectedHashStr);
+	Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
+	Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
+	if (expectedHash != actualHash) {
+	    if (settings.printBuildTrace)
+		printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
+			 % storePath % "sha256"
+			 % printHash16or32(expectedHash)
+			 % printHash16or32(actualHash));
+	    throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
+	}
 
     } catch (SubstError & e) {
 
