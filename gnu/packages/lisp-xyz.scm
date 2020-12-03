@@ -2639,7 +2639,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "1j2wvn19kz0bcg17qr9pc4xp6fgjy8zngdnnp5rpfxd25sli62yc"))))
+           "0zgd8hp2nalh0v4xgjvqxd6rf95f7mci181xbg3gmqxxwxd4mkpk"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
