@@ -8829,3 +8829,34 @@ contains high-performing functions operating on rows and columns of
 are optimized per data type and for subsetted calculations such that both
 memory usage and processing time is minimized.")
     (license license:expat)))
+
+(define-public r-mscoreutils
+  (package
+    (name "r-mscoreutils")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MsCoreUtils" version))
+       (sha256
+        (base32
+         "0fa3bcf2cmzf5y8wjs7pnzs26qwgqnrrl4hj4sa4fp9kv8z80630"))))
+    (properties `((upstream-name . "MsCoreUtils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/RforMassSpectrometry/MsCoreUtils")
+    (synopsis "Core utils for mass spectrometry data")
+    (description
+     "This package defines low-level functions for mass spectrometry data and
+is independent of any high-level data structures.  These functions include
+mass spectra processing functions (noise estimation, smoothing, binning),
+quantitative aggregation functions (median polish, robust summarisation,
+etc.), missing data imputation, data normalisation (quantiles, vsn, etc.) as
+well as misc helper functions, that are used across high-level data structure
+within the R for Mass Spectrometry packages.")
+    (license license:artistic2.0)))
