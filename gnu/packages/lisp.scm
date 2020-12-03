@@ -90,6 +90,9 @@
        (sha256
         (base32 "1hpx30f6yrak15nw992k7x3pn75ahvjs04n4f134k68mhgs62km2"))))
     (build-system trivial-build-system)
+    (native-inputs
+     `(("config-patch" ,@(search-patches "cl-asdf-config-directories.patch"))
+       ("patch" ,patch)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build lisp-utils))
@@ -101,28 +104,13 @@
                 (asdf-install (string-append out %source-install-prefix
                                              "/source/asdf/"))
                 (src-asdf (string-append (assoc-ref %build-inputs "source")))
-                (dst-asdf (string-append asdf-install "asdf.lisp")))
+                (dst-asdf (string-append asdf-install "asdf.lisp"))
+                (patch (string-append (assoc-ref %build-inputs "patch")
+                                      "/bin/patch"))
+                (config-patch (assoc-ref %build-inputs "config-patch")))
            (mkdir-p asdf-install)
            (copy-file src-asdf dst-asdf)
-           ;; Patch ASDF to make it read the configuration files in all
-           ;; the direcories listed in '$XDG_CONFIG_DIRS' instead of just
-           ;; the first.
-           (substitute* dst-asdf
-             (("\\(xdg-config-pathname \\*source-registry-directory\\* direction\\)")
-              "`(:source-registry
-                 ,@(loop
-                      for dir in (xdg-config-dirs
-                                  \"common-lisp/source-registry.conf.d/\")
-                      collect `(:include ,dir))
-                 :inherit-configuration)")
-             (("\\(xdg-config-pathname \\*output-translations-directory\\* direction\\)")
-              "`(:output-translations
-                 ,@(loop
-                      for dir in (xdg-config-dirs
-                                  \"common-lisp/asdf-output-translations.conf.d/\")
-                      collect `(:include ,dir))
-                 :inherit-configuration)")))
-         #t)))
+           (invoke patch "-p1" "-i" config-patch dst-asdf)))))
     (home-page "https://common-lisp.net/project/asdf/")
     (synopsis "Another System Definition Facility")
     (description
