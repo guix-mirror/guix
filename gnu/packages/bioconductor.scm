@@ -8867,3 +8867,39 @@ etc.), missing data imputation, data normalisation (quantiles, vsn, etc.) as
 well as misc helper functions, that are used across high-level data structure
 within the R for Mass Spectrometry packages.")
     (license license:artistic2.0)))
+
+(define-public r-biocio
+  (package
+    (name "r-biocio")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (bioconductor-uri "BiocIO" version))
+        (sha256
+          (base32
+            "06gg5ra3r7q4b6mz14c2s9d453cnh1lxh517ffl9f8dr8vwv5s18"))))
+    (properties `((upstream-name . "BiocIO")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-biocgenerics" ,r-biocgenerics)
+        ("r-genomicranges" ,r-genomicranges)
+        ("r-rcurl" ,r-rcurl)
+        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/BiocIO")
+    (synopsis "Standard input and output for Bioconductor packages")
+    (description
+      "This package implements `import()` and `export()` standard generics for
+importing and exporting biological data formats. `import()` supports
+whole-file as well as chunk-wise iterative import.  The `import()` interface
+optionally provides a standard mechanism for 'lazy' access via `filter()` (on
+row or element-like components of the file resource), `select()` (on
+column-like components of the file resource) and `collect()`.  The `import()`
+interface optionally provides transparent access to remote (e.g.  via https)
+as well as local access.  Developers can register a file extension, e.g.,
+`.loom` for dispatch from character-based URIs to specific `import()` /
+`export()` methods based on classes representing file types, e.g.,
+`LoomFile()`.")
+    (license license:artistic2.0)))
