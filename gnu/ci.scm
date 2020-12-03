@@ -57,6 +57,7 @@
   #:use-module (gnu system vm)
   #:use-module (gnu system install)
   #:use-module (gnu system images hurd)
+  #:use-module (gnu system images novena)
   #:use-module (gnu system images pine64)
   #:use-module (gnu system images pinebook-pro)
   #:use-module (gnu tests)
@@ -208,7 +209,8 @@ SYSTEM."
 (define %guix-system-images
   (list hurd-barebones-qcow2-image
         pine64-barebones-raw-image
-        pinebook-pro-barebones-raw-image))
+        pinebook-pro-barebones-raw-image
+        novena-barebones-raw-image))
 
 (define (hours hours)
   (* 3600 hours))
