@@ -803,14 +803,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.4.5")
+    (version "4.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "1v1kyxj7rv5rxadbg8gl8wh1jafpy7zj0wr6dcyxq9209dl6h8ag"))))
+        (base32 "1p62dq2fgdkvdn2clz1xjdj09acv87rbifl67zhlz7skqip31y9d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
