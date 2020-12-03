@@ -652,6 +652,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/system/images/hurd.scm			\
+  %D%/system/images/novena.scm			\
   %D%/system/images/pine64.scm			\
   %D%/system/images/pinebook-pro.scm		\
 						\
