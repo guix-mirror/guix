@@ -49,7 +49,7 @@ supported content to the Kodi media center.")
   (make-chromium-extension play-to-kodi))
 
 (define uassets
-  (let ((commit "0cef83c9fc68fdad8f3ee9dc07f6356ebc12791c"))
+  (let ((commit "a7e476412d875f8c1c341d219df5a11836afa8a0"))
     (origin
       (method git-fetch)
       (uri (git-reference
@@ -58,12 +58,12 @@ supported content to the Kodi media center.")
       (file-name (git-file-name "uAssets" (string-take commit 9)))
       (sha256
        (base32
-        "13mjql3rr5f3zilx05i8r7slnp7xyj6zn43dcfl3gdgi8ik483dd")))))
+        "0nhskrcq2g6y7b700ld0nikcx26k58aax67s29n10mfssys14njf")))))
 
 (define ublock-origin
   (package
     (name "ublock-origin")
-    (version "1.31.0")
+    (version "1.31.2")
     (home-page "https://github.com/gorhill/uBlock")
     (source (origin
               (method git-fetch)
@@ -71,7 +71,7 @@ supported content to the Kodi media center.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wfg1g061l83fqwllp8q1jr1kvwxy2kbbzfk6ynlf18kjng9v3h5"))))
+                "14iik3hxvkk1zhha3jbxpgcp7rrvl7si6gb13w693fkf3s6jsb3n"))))
     (build-system gnu-build-system)
     (outputs '("xpi" "firefox" "chromium"))
     (arguments
