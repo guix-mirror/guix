@@ -287,7 +287,7 @@ required structures.")
   ;; Authentication of Named Entities.  This is required for GNS functionality
   ;; by GNUnet and gnURL.  This is done in an extra package definition
   ;; to have the choice between GnuTLS with Dane and without Dane.
-  (package/inherit gnutls
+  (package/inherit gnutls/fixed
     (name "gnutls-dane")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
