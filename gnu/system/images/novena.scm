@@ -42,18 +42,12 @@
                  (target "/dev/vda")))
     (initrd-modules '("sdhci-esdhc-imx" "ahci_imx"))
     ;(kernel linux-libre-arm-generic)
+    (kernel-arguments '("console=ttymxc1,115200"))
     (file-systems (cons (file-system
                           (device (file-system-label "my-root"))
                           (mount-point "/")
                           (type "ext4"))
-                        %base-file-systems))
-    (services (cons (service agetty-service-type
-                             (agetty-configuration
-                              (extra-options '("-L")) ; no carrier detect
-                              (baud-rate "115200")
-                              (term "vt100")
-                              (tty "ttymxc1")))
-                    %base-services))))
+                        %base-file-systems))))
 
 (define novena-image-type
   (image-type
