@@ -12371,3 +12371,37 @@ Lisp, inspired by BODOL (@url{https://github.com/bodil/BODOL}).")
 
 (define-public ecl-glyphs
   (sbcl-package->ecl-package sbcl-glyphs))
+
+(define-public sbcl-zs3
+  (package
+   (name "sbcl-zs3")
+   (version "1.3.3")
+   (source
+    (origin
+     (method git-fetch)
+     (uri
+      (git-reference
+       (url "https://github.com/xach/zs3")
+       (commit (string-append "release-" version))))
+     (file-name (git-file-name "zs3" version))
+     (sha256
+      (base32 "186v95wgsj2hkxdw2jl9x1w4fddjclp7arp0rrd9vf5ly8h8sbf3"))))
+   (build-system asdf-build-system/sbcl)
+   (inputs
+    `(("drakma" ,sbcl-drakma)
+      ("alexandria" ,sbcl-alexandria)
+      ("cxml" ,sbcl-cxml)
+      ("ironclad" ,sbcl-ironclad)
+      ("puri" ,sbcl-puri)
+      ("cl-base64" ,sbcl-cl-base64)))
+   (synopsis "Work with Amazon S3 and Amazon CloudFront from Common Lisp")
+   (description "This is ZS3, a library for working with Amazon's Simple Storage
+Service (S3) and CloudFront service from Common Lisp.")
+   (home-page "https://github.com/xach/zs3")
+   (license license:bsd-2)))
+
+(define-public cl-zs3
+  (sbcl-package->cl-source-package sbcl-zs3))
+
+(define-public ecl-zs3
+  (sbcl-package->ecl-package sbcl-zs3))
