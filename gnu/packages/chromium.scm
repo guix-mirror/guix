@@ -302,8 +302,8 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "87.0.4280.66")
-(define %ungoogled-revision "1f7cdef6dfa8f612afde8f988131f210612333e0")
+(define %chromium-version "87.0.4280.88")
+(define %ungoogled-revision "b78cb927fa8beaee0ddfb4385277edb96444c40f")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -321,7 +321,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "1cka9h7znkmilz9ld4s8pw1jjq2p7br03g3agcnqrk591y5h141i"))))
+      "0w2137w8hfcgl6f938hqnb4ffp33v5r8vdzxrvs814w7dszkiqgg"))))
 
 (define %guix-patches
   (list (local-file
@@ -443,7 +443,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "0hgpg31gkksqgyvycsan7l7vjypc7cr6ikjfygf2zv7dhbmf9a19"))
+                "1h09g9b2zxad85vd146ymvg3w2kpngpi78yig3dn1vrmhwr4aiiy"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -466,7 +466,7 @@
              "is_official_build=true"
              (string-append "max_jobs_per_link="
                             ;; Respect the default cap of 8 jobs.
-                            (number->string (max 8 (parallel-job-count))))
+                            (number->string (min 8 (parallel-job-count))))
              "clang_use_chrome_plugins=false"
              "chrome_pgo_phase=0"
              "use_sysroot=false"
