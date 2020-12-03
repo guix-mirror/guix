@@ -55,7 +55,7 @@
       ("guile-json" (ref '(gnu packages guile) 'guile-json-4))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
-      ("guile-semver"  (ref '(gnu packages guile-xyz) 'guile3.0-semver))
+      ("guile-semver"  (ref '(gnu packages guile-xyz) 'guile-semver))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
       ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))

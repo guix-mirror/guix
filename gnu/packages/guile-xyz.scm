@@ -3406,7 +3406,7 @@ tests being run, resulting clearer and more specific output.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (home-page "https://ngyro.com/software/guile-semver.html")
     (synopsis "Semantic Versioning (SemVer) for Guile")
     (description "This Guile library provides tools for reading,
@@ -3415,11 +3415,14 @@ the style of the Node Package Manager (NPM).")
     (license license:gpl3+)))
 
 (define-public guile3.0-semver
+  (deprecated-package "guile3.0-semver" guile-semver))
+
+(define-public guile2.2-semver
   (package
     (inherit guile-semver)
-    (name "guile3.0-semver")
+    (name "guile2.2-semver")
     (inputs
-     `(("guile" ,guile-3.0)))))
+     `(("guile" ,guile-2.2)))))
 
 (define-public guile-hashing
   (package
