@@ -405,7 +405,7 @@ $(prefix)/etc/init.d\n")))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
-       `(("gnutls" ,(if (%current-target-system) gnutls-3.6.14 gnutls))
+       `(("gnutls" ,(if (%current-target-system) gnutls/fixed gnutls))
          ;; Avahi requires "glib" which doesn't cross-compile yet.
          ,@(if (%current-target-system)
                '()
