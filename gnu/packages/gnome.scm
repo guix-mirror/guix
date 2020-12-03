@@ -4680,6 +4680,14 @@ libxml to ease remote use of the RESTful API.")
        #:configure-flags '("-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook")))
+               (substitute* (find-files "docs/reference")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t)))
          (add-after 'unpack 'adjust-tests
            (lambda _
              ;; This test fails due to missing /etc/nsswitch.conf
@@ -4751,7 +4759,8 @@ libxml to ease remote use of the RESTful API.")
                (delete-file-recursively (string-append out "/share/gtk-doc"))
                #t))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
