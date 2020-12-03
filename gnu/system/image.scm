@@ -70,7 +70,7 @@
             arm64-disk-image
 
             image-with-os
-            raw-image-type
+            efi-raw-image-type
             qcow2-image-type
             iso-image-type
             uncompressed-iso-image-type
@@ -157,9 +157,9 @@ set to the given OS."
    (inherit base-image)
    (operating-system os)))
 
-(define raw-image-type
+(define efi-raw-image-type
   (image-type
-   (name 'raw)
+   (name 'efi-raw)
    (constructor (cut image-with-os efi-disk-image <>))))
 
 (define qcow2-image-type

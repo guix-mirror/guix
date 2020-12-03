@@ -31406,7 +31406,7 @@ the @option{--image-size} option is ignored in the case of
 @cindex disk-image, creating disk images
 The @code{disk-image} command can produce various image types.  The
 image type can be selected using the @option{--image-type} option.  It
-defaults to @code{raw}.  When its value is @code{iso9660}, the
+defaults to @code{efi-raw}.  When its value is @code{iso9660}, the
 @option{--label} option can be used to specify a volume ID with
 @code{disk-image}.  By default, the root file system of a disk image is
 mounted non-volatile; the @option{--volatile} option can be provided to
@@ -31425,8 +31425,8 @@ qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000 \
                    -bios $(guix build ovmf)/share/firmware/ovmf_x64.bin
 @end example
 
-When using the @code{raw} image type, a raw disk image is produced; it
-can be copied as is to a USB stick, for instance.  Assuming
+When using the @code{efi-raw} image type, a raw disk image is produced;
+it can be copied as is to a USB stick, for instance.  Assuming
 @code{/dev/sdc} is the device corresponding to a USB stick, one can copy
 the image to it using the following command:
 
@@ -31553,8 +31553,8 @@ of the image.
 @itemx -t @var{type}
 For the @code{disk-image} action, create an image with given @var{type}.
 
-When this option is omitted, @command{guix system} uses the @code{raw}
-image type.
+When this option is omitted, @command{guix system} uses the
+@code{efi-raw} image type.
 
 @cindex ISO-9660 format
 @cindex CD image format
