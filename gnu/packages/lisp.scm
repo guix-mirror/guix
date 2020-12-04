@@ -603,7 +603,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
                 "0x4bjx6cxsjvxyagijhlvmc7jkyxifdvz5q5zvz37028va65243c")
                (_ "15l7cfa4a7jkfwdzsfm4q3n22jnb57imxahpql3h77xin57v1gbz"))))))))
     (native-inputs
-     `(("m4" ,m4)))
+     `(("cl-asdf" ,cl-asdf)
+       ("m4" ,m4)))
     (arguments
      `(#:tests? #f                      ;no 'check' target
        #:modules ((ice-9 match)
@@ -615,6 +616,16 @@ statistical profiler, a code coverage tool, and many other extensions.")
          (add-after 'unpack 'unpack-image
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "tar" "xzvf" (assoc-ref inputs "ccl-bootstrap"))))
+         (add-after 'unpack 'replace-asdf
+           ;; Use system ASDF instead of bundled one.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (contrib-asdf "tools/asdf.lisp"))
+               (delete-file contrib-asdf)
+               (copy-file guix-asdf contrib-asdf))))
          (delete 'configure)
          (add-before 'build 'pre-build
            ;; Enter the source directory for the current platform's lisp
@@ -678,6 +689,13 @@ statistical profiler, a code coverage tool, and many other extensions.")
                      "exec -a \"$0\" " libdir kernel " \"$@\"\n"))))
                (chmod wrapper #o755))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
     (home-page "https://ccl.clozure.com/")
     (synopsis "Common Lisp implementation")
