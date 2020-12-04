@@ -294,6 +294,44 @@
     (description "This package provides FFI bindings to @code{libgdk_pixbuf-2.0}.")
     (license license:expat)))
 
+(define-public rust-gdk-sys-0.10
+  (package
+    (name "rust-gdk-sys")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gdk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s8d2jymffbv2kpwrx53krf7mpy3vdfhbb5i2n02dz80qp7m75ha"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.10)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.10)
+        ("rust-gio-sys" ,rust-gio-sys-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.10)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-system-deps" ,rust-system-deps-1))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("pango" ,pango)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libgdk-3")
+    (description "FFI bindings to libgdk-3")
+    (license license:expat)))
+
 (define-public rust-gio-0.8
   (package
     (name "rust-gio")
