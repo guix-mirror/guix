@@ -317,6 +317,9 @@
 (define test-source-hash
   "")
 
+(define have-guile-semver?
+  (false-if-exception (resolve-interface '(semver))))
+
 
 (test-begin "crate")
 
@@ -326,8 +329,9 @@
    (dummy-package
     "rust-rustc-serialize"
     (source (dummy-origin
-     (uri (crate-uri "rustc-serialize" "1.0")))))))
+             (uri (crate-uri "rustc-serialize" "1.0")))))))
 
+(unless have-guile-semver? (test-skip 1))
 (test-assert "crate->guix-package"
   ;; Replace network resources with sample data.
   (mock ((guix http-client) http-fetch
@@ -380,6 +384,7 @@
           (x
            (pk 'fail x #f)))))
 
+(unless have-guile-semver? (test-skip 1))
 (test-assert "cargo-recursive-import"
   ;; Replace network resources with sample data.
   (mock ((guix http-client) http-fetch
@@ -614,6 +619,7 @@
 (test-assert "self-test: rust-docopt 0.8.x is gone, please adjust the test case"
   (not (null? (find-packages-by-name "rust-docopt" "0.8"))))
 
+(unless have-guile-semver? (test-skip 1))
 (test-assert "cargo-recursive-import-hoors-existing-packages"
   (mock ((guix http-client) http-fetch
          (lambda (url . rest)

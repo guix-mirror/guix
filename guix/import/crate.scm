@@ -92,6 +92,7 @@
                  string->symbol)
   (requirement   crate-dependency-requirement "req")) ;string
 
+;; Autoload Guile-Semver so we only have a soft dependency.
 (module-autoload! (current-module)
 		  '(semver) '(string->semver semver->string semver<?))
 (module-autoload! (current-module)
