@@ -23885,16 +23885,15 @@ rustc compiler.")
 (define-public rust-rustdoc-stripper-0.1
   (package
     (name "rust-rustdoc-stripper")
-    (version "0.1.9")
+    (version "0.1.16")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rustdoc-stripper" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "13rf65a0xk1zyb92jd8p12x529rsbfchwk9zvjr0snr9savpxw19"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustdoc-stripper" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "053041694rjfcs0c6nkfz164d67klmj66wkf8dwlcc7y75gf57wp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
