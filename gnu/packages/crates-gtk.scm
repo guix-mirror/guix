@@ -93,8 +93,41 @@
     (description "Rust bindings for the ATK library")
     (license license:expat)))
 
+(define-public rust-cairo-rs-0.9
+  (package
+    (name "rust-cairo-rs")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cairo-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f5x6ipfpzz0ffph0pg0xfkdfcbr0jp59714zz857jp88zhg5h65"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.10)
+        ("rust-glib" ,rust-glib-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-thiserror" ,rust-thiserror-1))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the Cairo library")
+    (description "Rust bindings for the Cairo library")
+    (license license:expat)))
+
 (define-public rust-cairo-rs-0.8
   (package
+    (inherit rust-cairo-rs-0.9)
     (name "rust-cairo-rs")
     (version "0.8.1")
     (source
@@ -106,7 +139,6 @@
         (sha256
          (base32
           "11303v1fv6hsc9n70ak380gknkf0098phpcxqdhkmahqjsx4jw0m"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -117,14 +149,7 @@
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
        (("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (inputs
-     `(("cairo" ,cairo)))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the Cairo library")
-    (description
-     "Rust bindings for the Cairo library.")
-    (license license:expat)))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-cairo-rs-0.7
   (package
