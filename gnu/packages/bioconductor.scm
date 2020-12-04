@@ -6110,6 +6110,17 @@ change point detection.")
          "1knqc3ic2vpck7n7m7adxjz3ac70ra89d5gvlgp9r2q3kgaciwac"))))
     (properties `((upstream-name . "ncdfFlow")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking
+           (lambda _
+             (substitute* "src/Makevars"
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\(RHDF5_LIBS\\)" match)
+                (string-append match "/libhdf5.a")))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
