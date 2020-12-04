@@ -11424,16 +11424,14 @@ It is used to build the target x86_64-unknown-hermit.")
 (define-public rust-hex-0.4
   (package
     (name "rust-hex")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "hex" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0glsfrx2pxfsf6ivxj7vfrvd7g78j4z47ssgm5idm8p376z3jfq2"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dbf00j3h3pz0lw8jp245rwypna6i23l4cpvym8gsczin9c92kv4"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/KokaKiwi/rust-hex")
