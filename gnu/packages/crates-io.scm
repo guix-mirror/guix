@@ -702,7 +702,7 @@ escape codes.")
 (define-public rust-anyhow-1.0
   (package
     (name "rust-anyhow")
-    (version "1.0.26")
+    (version "1.0.34")
     (source
      (origin
        (method url-fetch)
@@ -711,7 +711,7 @@ escape codes.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g6mzcxyj88k8bv8rr3zx4yczgimqvvgr12n14a29sqj6s1zc9bq"))))
+         "1mwz0vg77yqz3w616bl890xihh7dsixwgn27nr9qd8ms9ddwp3dz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
