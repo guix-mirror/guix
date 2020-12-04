@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2268,7 +2269,7 @@ protocol extensions.  Look at the crate wayland-client for usable bindings.")
 (define-public rust-x11-2
   (package
     (name "rust-x11")
-    (version "2.18.1")
+    (version "2.18.2")
     (source
      (origin
        (method url-fetch)
@@ -2276,17 +2277,16 @@ protocol extensions.  Look at the crate wayland-client for usable bindings.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0dg2d0yrqmwg6prpxkw3vpmwzwxnaki2cn0v64ylh5gp4cqpws9r"))))
+        (base32 "0wz7l6dlbraa9zalh9i45v9wibvkir9m2m1sg0jnzcbcaj9d1v3p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
-    (home-page "https://github.com/erlepereira/x11-rs.git")
+    (home-page "https://github.com/erlepereira/x11-rs")
     (synopsis "X11 library bindings for Rust")
-    (description "X11 library bindings for Rust.")
-    (license license:cc0)))
+    (description "This crate provides X11 library bindings for Rust.")
+    (license license:expat)))
 
 (define-public rust-x11-clipboard-0.4
   (package
