@@ -9140,3 +9140,61 @@ variables.To assure a good level of reproducibility a post-test filter is
 available, where we may set the minimum effect size considered biologicaly
 relevant, and the minimum expression of the most abundant condition.")
     (license license:gpl2)))
+
+(define-public r-catalyst
+  (package
+    (name "r-catalyst")
+    (version "1.14.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (bioconductor-uri "CATALYST" version))
+        (sha256
+          (base32
+            "13af7c4irx1f5yqi32k7kj661vzg32wn3dnps7r9pjijfl4drhrh"))))
+    (properties `((upstream-name . "CATALYST")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-circlize" ,r-circlize)
+        ("r-complexheatmap" ,r-complexheatmap)
+        ("r-consensusclusterplus" ,r-consensusclusterplus)
+        ("r-cowplot" ,r-cowplot)
+        ("r-data-table" ,r-data-table)
+        ("r-dplyr" ,r-dplyr)
+        ("r-drc" ,r-drc)
+        ("r-flowcore" ,r-flowcore)
+        ("r-flowsom" ,r-flowsom)
+        ("r-ggplot2" ,r-ggplot2)
+        ("r-ggrepel" ,r-ggrepel)
+        ("r-ggridges" ,r-ggridges)
+        ("r-gridextra" ,r-gridextra)
+        ("r-magrittr" ,r-magrittr)
+        ("r-matrix" ,r-matrix)
+        ("r-matrixstats" ,r-matrixstats)
+        ("r-nnls" ,r-nnls)
+        ("r-purrr" ,r-purrr)
+        ("r-rcolorbrewer" ,r-rcolorbrewer)
+        ("r-reshape2" ,r-reshape2)
+        ("r-rtsne" ,r-rtsne)
+        ("r-s4vectors" ,r-s4vectors)
+        ("r-scales" ,r-scales)
+        ("r-scater" ,r-scater)
+        ("r-singlecellexperiment" ,r-singlecellexperiment)
+        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+      "https://github.com/HelenaLC/CATALYST")
+    (synopsis "Cytometry data analysis tools")
+    (description
+      "This package is Cytometry dATa anALYSis Tools (CATALYST).  Mass
+cytometry (CyTOF) uses heavy metal isotopes rather than fluorescent tags as
+reporters to label antibodies, thereby substantially decreasing spectral
+overlap and allowing for examination of over 50 parameters at the single cell
+level.  While spectral overlap is significantly less pronounced in CyTOF than
+flow cytometry, spillover due to detection sensitivity, isotopic impurities,
+and oxide formation can impede data interpretability.  We designed
+CATALYST (Cytometry dATa anALYSis Tools) to provide a pipeline for
+preprocessing of cytometry data, including i) normalization using bead
+standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
+    (license license:gpl2+)))
