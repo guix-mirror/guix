@@ -322,6 +322,8 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
        (sha256
         (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("cl-asdf" ,cl-asdf)))
     (inputs `(("libffcall" ,libffcall)
               ("ncurses" ,ncurses)
               ("readline" ,readline)
@@ -356,7 +358,24 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
                (("/bin/sh") "sh"))
              (substitute* '("src/clisp-link.in")
                (("/bin/pwd") "pwd"))
-             #t)))))
+             #t))
+         (add-after 'unpack 'replace-asdf
+           ;; Use system ASDF instead of bundled one.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
+                    (guix-asdf (string-append
+                                cl-asdf
+                                "/share/common-lisp/source/asdf/asdf.lisp"))
+                    (contrib-asdf "modules/asdf/asdf.lisp"))
+               (delete-file contrib-asdf)
+               (copy-file guix-asdf contrib-asdf)))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (home-page "https://clisp.sourceforge.io/")
     (synopsis "A Common Lisp implementation")
     (description
