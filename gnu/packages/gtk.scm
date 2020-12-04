@@ -134,13 +134,17 @@ tools have full access to view and control running applications.")
        (sha256
         (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
     (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
        #:configure-flags
        (list
-        "--enable-tee"                    ;needed for GNU Icecat
-        "--enable-xml"                    ;for cairo-xml support
-        "--disable-static")))
+        "--enable-tee"                  ;needed for GNU Icecat
+        "--enable-xml"                  ;for cairo-xml support
+        "--disable-static"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
