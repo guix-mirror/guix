@@ -32,6 +32,36 @@
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
 
+(define-public rust-atk-sys-0.9
+  (package
+    (name "rust-atk-sys")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vzcm1inhax78bcsbapr6mrp4z7lk783csyh200wi91pcxvw2lp5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;missing files
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     `(("atk" ,atk)
+       ("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libatk-1")
+    (description "FFI bindings to libatk-1")
+    (license license:expat)))
+
 (define-public rust-cairo-rs-0.8
   (package
     (name "rust-cairo-rs")
