@@ -139,30 +139,45 @@ tools have full access to view and control running applications.")
      `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
        #:configure-flags
        (list
-        "--enable-tee"                  ;needed for GNU Icecat
-        "--enable-xml"                  ;for cairo-xml support
         "--disable-static"
+        ;; XXX: To be enabled.
+        ;; "--enable-gallium=yes"
+        ;; "--enable-gl=yes"
+        ;; " --enable-glesv2=yes"
+        ;; "--enable-glesv3=yes"
+        ;; "--enable-cogl=yes"
+        ;; "--enable-directfb=yes"
+        ;; "--enable-vg=yes"
+        "--enable-tee=yes"
+        "--enable-xml=yes"
         (string-append "--with-html-dir="
                        (assoc-ref %outputs "doc")
                        "/share/gtk-doc/html"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("ghostscript" ,ghostscript)
+     `(("drm" ,libdrm)
+       ("ghostscript" ,ghostscript)
        ("libspectre" ,libspectre)
-       ("poppler" ,poppler)
-       ("xorgproto" ,xorgproto)
-       ("zlib" ,zlib)))
+       ("poppler" ,poppler)))
     (propagated-inputs
-     `(("fontconfig" ,fontconfig)
+     `( ;; ("cogl" ,cogl)
+       ;; ("directfb" ,directfb)
+       ("fontconfig" ,fontconfig)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
+       ;; ("gtk+" ,gtk+)
        ("libpng" ,libpng)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxrender" ,libxrender)
-       ("pixman" ,pixman)))
+       ;; ("librsvg" ,librsvg)
+       ;; ("opengl" ,mesa)
+       ("pixman" ,pixman)
+       ("x11" ,libx11)
+       ("xcb" ,libxcb)
+       ("xext" ,libxext)
+       ("xrender" ,libxrender)))
     (synopsis "2D graphics library")
     (description "Cairo is a 2D graphics library with support for multiple output
 devices.  Currently supported output targets include the X Window System (via
