@@ -28580,6 +28580,36 @@ syntax extension expansion.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
+(define-public rust-system-deps-1
+  (package
+    (name "rust-system-deps")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "system-deps" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16v4ljmj8sj030mdcc1yk615vciqlyxi7csq6lxka6cs4qbwqghg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-heck" ,rust-heck-0.3)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-strum" ,rust-strum-0.18)
+        ("rust-strum-macros" ,rust-strum-macros-0.18)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-version-compare" ,rust-version-compare-0.0))))
+    (home-page "https://github.com/gdesmott/system-deps")
+    (synopsis "Define system dependencies in @file{Cargo.toml}")
+    (description
+     "This crate lets you write system dependencies in @file{Cargo.toml}
+metadata, rather than programmatically in @file{build.rs}.  This makes those
+dependencies declarative, so other tools can read them as well.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-take-mut-0.2
   (package
     (name "rust-take-mut")
