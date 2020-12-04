@@ -266,6 +266,13 @@ selected keymap."
           (compute (lambda _
                      ((installer-network-page current-installer)))))
 
+         ;; Ask whether to enable substitute server discovery.
+         (installer-step
+          (id 'substitutes)
+          (description (G_ "Substitute server discovery"))
+          (compute (lambda _
+                     ((installer-substitutes-page current-installer)))))
+
          ;; Prompt for users (name, group and home directory).
          (installer-step
           (id 'user)

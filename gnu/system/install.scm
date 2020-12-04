@@ -34,6 +34,7 @@
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
   #:use-module (gnu system locale)
+  #:use-module (gnu services avahi)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
@@ -335,6 +336,10 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
+          ;; Use the Avahi daemon to discover substitute servers on the local
+          ;; network.  It can be faster than fetching from remote servers.
+          (service avahi-service-type)
+
           ;; The build daemon.  Register the default substitute server key(s)
           ;; as trusted to allow the installation process to use substitutes by
           ;; default.
@@ -435,6 +440,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (host-name "gnu")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
+    (name-service-switch %mdns-host-lookup-nss)
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
                  (target "/dev/sda")))
