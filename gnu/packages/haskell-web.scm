@@ -2197,3 +2197,30 @@ syntactic elements, without changing the semantics.")
     (description "This package provides a static file serving subsite
 for the Yesod Web Framework.")
     (license license:expat)))
+
+(define-public ghc-wai-handler-launch
+  (package
+    (name "ghc-wai-handler-launch")
+    (version "3.0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-handler-launch/wai-handler-launch-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1ifqgyc1ccig5angh5l1iq7vyms4lvi8wzvysg5dw82nml49n02m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-async" ,ghc-async)))
+    (home-page "https://hackage.haskell.org/package/wai-handler-launch")
+    (synopsis "Launch a Web application in the default browser")
+    (description "This package handles cross-platform Web browser
+launching and inserts JavaScript code to ping the server.  When the
+server no longer receives pings, it shuts down.")
+    (license license:expat)))
