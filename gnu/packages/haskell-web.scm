@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2024,3 +2025,51 @@ Bower's package manifest file, bower.json.")
 Authoring and Versioning (WebDAV) extensions to HTTP as well an executable,
 @command{hdav}, for command-line operation.")
     (license license:gpl3)))
+
+(define-public ghc-yesod-test
+  (package
+    (name "ghc-yesod-test")
+    (version "1.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-test/yesod-test-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v25lqq7hgd5lggnyfd9kamkzd4126rd7vlhc131n253n4by4yak"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-hspec-core" ,ghc-hspec-core)
+       ("ghc-html-conduit" ,ghc-html-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-network" ,ghc-network)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-xml-types" ,ghc-xml-types)
+       ("ghc-yesod-core" ,ghc-yesod-core)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Integration testing for WAI/Yesod Applications")
+    (description "This package's main goal is to encourage integration
+and system testing of web applications by making everything easy to
+test.  Tests are like browser sessions that keep track of cookies and
+the last visited page.  You can perform assertions on the content of
+HTML responses using CSS selectors.")
+    (license license:expat)))
