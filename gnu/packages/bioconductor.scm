@@ -8609,6 +8609,17 @@ provided.")
          "1hr149q03p09y1cjnx8av854j53041wfyq66xpsjw4mypzjf6f28"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking
+           (lambda _
+             (substitute* "src/Makevars"
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\(RHDF5LIB_LIBS\\)" match)
+                (string-append match "/libhdf5.a")))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
