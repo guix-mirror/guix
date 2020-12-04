@@ -28063,15 +28063,14 @@ browsers.")
 (define-public rust-syn-1
   (package
     (name "rust-syn")
-    (version "1.0.40")
+    (version "1.0.53")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "syn" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0l437lsnv289y64pgl2mfvr1vgrb2hix5bb5a4rbjncvqly7sgwn"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s3y325n7s6gsg4wg0dq0pxymhv1x8qd4nmsp8my2kf24h3y4cw8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -28093,7 +28092,9 @@ browsers.")
         ("rust-walkdir" ,rust-walkdir-2))))
     (home-page "https://github.com/dtolnay/syn")
     (synopsis "Parser for Rust source code")
-    (description "Parser for Rust source code")
+    (description
+     "Syn is a parsing library for parsing a stream of Rust tokens into
+a syntax tree of Rust source code.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-syn-0.15
