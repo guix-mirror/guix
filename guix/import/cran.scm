@@ -578,13 +578,13 @@ s-expression corresponding to that package, or #f on failure."
            (case repo
              ((git)
               ;; Retry import from Bioconductor
-              (cran->guix-package package-name 'bioconductor))
+              (cran->guix-package package-name #:repo 'bioconductor))
              ((hg)
               ;; Retry import from Bioconductor
-              (cran->guix-package package-name 'bioconductor))
+              (cran->guix-package package-name #:repo 'bioconductor))
              ((bioconductor)
               ;; Retry import from CRAN
-              (cran->guix-package package-name 'cran))
+              (cran->guix-package package-name #:repo 'cran))
              (else (values #f '()))))))))
 
 (define* (cran-recursive-import package-name #:key (repo 'cran))
@@ -655,7 +655,7 @@ s-expression corresponding to that package, or #f on failure."
         (input-changes
          (changed-inputs
           pkg
-          (cran->guix-package upstream-name 'bioconductor))))))
+          (cran->guix-package upstream-name #:repo 'bioconductor))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
