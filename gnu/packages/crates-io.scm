@@ -20227,20 +20227,43 @@ formatted tables in terminal.")
      "Almost drop-in replacement to panics in proc-macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-proc-macro-error-attr-1
+  (package
+    (name "rust-proc-macro-error-attr")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-error-attr" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sgq6m5jfmasmwwy8x4mjygx5l7kp8s4j60bv25ckv2j1qc41gm1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://gitlab.com/CreepySkeleton/proc-macro-error")
+    (synopsis "Attribute macro for proc-macro-error crate")
+    (description "Attribute macro for proc-macro-error crate")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proc-macro-error-attr-0.4
   (package
+    (inherit rust-proc-macro-error-attr-1)
     (name "rust-proc-macro-error-attr")
     (version "0.4.12")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "proc-macro-error-attr" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1pk9mwcfnpf8favgc2cl4sqlmi818p96hg8pfb51wg5nzmvlnnwa"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-error-attr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pk9mwcfnpf8favgc2cl4sqlmi818p96hg8pfb51wg5nzmvlnnwa"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -20248,12 +20271,7 @@ formatted tables in terminal.")
         ("rust-version-check" ,rust-version-check-0.9)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
-    (home-page "https://gitlab.com/CreepySkeleton/proc-macro-error")
-    (synopsis "Attribute macro for proc-macro-error crate")
-    (description
-     "Attribute macro for proc-macro-error crate.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-quote" ,rust-quote-1))))))
 
 (define-public rust-proc-macro-hack-0.5
   (package
