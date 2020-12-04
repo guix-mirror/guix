@@ -20212,8 +20212,7 @@ formatted tables in terminal.")
         (base32 "11cpihdk9ba68hzw95aa8zxn0i5g6kdrfd4l2cy3d5jvb72a6vhx"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-toml" ,rust-toml-0.5))))
     (home-page "https://github.com/bkchr/proc-macro-crate")
     (synopsis "Support for @code{$crate} in procedural macros")
