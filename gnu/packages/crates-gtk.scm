@@ -572,8 +572,41 @@
      "LGPL-licensed docs for Gtk-rs crates.")
     (license license:lgpl2.0)))
 
+(define-public rust-pango-0.9
+  (package
+    (name "rust-pango")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pango" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f64hynd9vq6966wb66mrg5kq9q371bkhncp37nqrgdyh22hcdwr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-glib" ,rust-glib-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pango-sys" ,rust-pango-sys-0.10))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("pango" ,pango)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the Pango library")
+    (description "Rust bindings for the Pango library")
+    (license license:expat)))
+
 (define-public rust-pango-0.8
   (package
+    (inherit rust-pango-0.9)
     (name "rust-pango")
     (version "0.8.0")
     (source
@@ -585,7 +618,6 @@
         (sha256
          (base32
           "0xq50950il3228grzs4xvc5s6phxcl5l50grz6syvs0vixr6p70y"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -597,14 +629,7 @@
         ("rust-pango-sys" ,rust-pango-sys-0.9)
         ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     `(("pango" ,pango)))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the Pango library")
-    (description
-     "Rust bindings for the Pango library.")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-pango-0.7
   (package
