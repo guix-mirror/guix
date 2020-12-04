@@ -111,6 +111,24 @@ _guix_is_removing ()
     $result
 }
 
+_guix_is_dash_f ()
+{
+    [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-f" ] \
+	|| { case "${COMP_WORDS[$COMP_CWORD]}" in
+		 --file=*|--install-from-file=*) true;;
+		 *)                              false;;
+	     esac }
+}
+
+_guix_is_dash_l ()
+{
+    [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-l" ] \
+	|| { case "${COMP_WORDS[$COMP_CWORD]}" in
+		 --load=*) true;;
+		 *)        false;;
+	     esac }
+}
+
 _guix_is_dash_L ()
 {
     [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-L" ] \
@@ -182,7 +200,7 @@ _guix_complete ()
 	*)
 	    if _guix_is_command "package"
 	    then
-		if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+		if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_f
 		then
 		    _guix_complete_file
 		elif _guix_is_removing
@@ -217,7 +235,7 @@ _guix_complete ()
 		fi
             elif _guix_is_command "build"
             then
-                if _guix_is_dash_L || _guix_is_dash_m
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_f
                 then
                     _guix_complete_file
 		else
@@ -225,7 +243,7 @@ _guix_complete ()
                 fi
 	    elif _guix_is_command "environment"
 	    then
-                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
                 then
                     _guix_complete_file
 		else
