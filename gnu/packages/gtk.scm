@@ -133,7 +133,7 @@ tools have full access to view and control running applications.")
                        version ".tar.xz"))
        (sha256
         (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
        #:configure-flags
