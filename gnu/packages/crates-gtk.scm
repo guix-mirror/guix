@@ -62,6 +62,37 @@
     (description "FFI bindings to libatk-1")
     (license license:expat)))
 
+(define-public rust-atk-0.8
+  (package
+    (name "rust-atk")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atk" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gk6ijqsd6kh8cki1wznw570499psbppg3d5bqaayagjapxawka4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atk-sys" ,rust-atk-sys-0.9)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-glib" ,rust-glib-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("atk" ,atk)
+       ("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the ATK library")
+    (description "Rust bindings for the ATK library")
+    (license license:expat)))
+
 (define-public rust-cairo-rs-0.8
   (package
     (name "rust-cairo-rs")
