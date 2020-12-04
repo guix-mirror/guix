@@ -20235,13 +20235,25 @@ renamed in @file{Cargo.toml}.")
         (base32 "1373bhxaf0pagd8zkyd03kkx6bchzf6g0dkwrwzsnal9z47lj9fs"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     ;; Tests fail with "extern crate test_crate; <-- can't find crate" error.
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-proc-macro-error-attr" ,rust-proc-macro-error-attr-1)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-version-check" ,rust-version-check-0.9))))
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-trybuild" ,rust-trybuild-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("1.0.107") ,(package-version rust-serde-derive-1))
+               (("0.5.2") ,(package-version rust-toml-0.5))))))))
     (home-page "https://gitlab.com/CreepySkeleton/proc-macro-error")
     (synopsis "Drop-in replacement to panics in proc-macros")
     (description
