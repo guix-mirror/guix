@@ -55,6 +55,7 @@
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
@@ -2733,20 +2734,20 @@ file contents on a remote server.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "11n46bngvca5wbdbfcxzjhjbfdbad7sgf7h9gf956cb1q8swsdm0"))))
-    (build-system trivial-build-system)
-    (propagated-inputs
+    (build-system copy-build-system)
+    (inputs
      `(("xdg-utils" ,xdg-utils)))
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((source (assoc-ref %build-inputs "source"))
-               (out    (assoc-ref %outputs "out")))
-           (mkdir-p (string-append out "/bin"))
-           (copy-file (string-append source "/git-open")
-                      (string-append out "/bin/git-open"))
-           #t))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (xdg-utils (assoc-ref inputs "xdg-utils")))
+               (wrap-program (string-append out "/bin/git-open")
+                 `("PATH" ":" prefix (,(string-append xdg-utils "/bin"))))))))
+       #:install-plan
+       '(("git-open" "bin/git-open"))))
     (home-page "https://github.com/paulirish/git-open")
     (synopsis "Open a Git repository's homepage from the command-line")
     (description
