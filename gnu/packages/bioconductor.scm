@@ -9016,3 +9016,35 @@ as well as local access.  Developers can register a file extension, e.g.,
      "Exploratory data analysis to assess the quality of a set of LC-MS/MS
 experiments, and visualize de influence of the involved factors.")
     (license license:gpl2)))
+
+(define-public r-msmstests
+  (package
+    (name "r-msmstests")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "msmsTests" version))
+       (sha256
+        (base32
+         "1zsnmzj1qvjdwz7mwg9wrsk5iskpqs0f6jccqn8mxy9dgkskmp0j"))))
+    (properties `((upstream-name . "msmsTests")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-edger" ,r-edger)
+       ("r-msmseda" ,r-msmseda)
+       ("r-msnbase" ,r-msnbase)
+       ("r-qvalue" ,r-qvalue)))
+    (home-page
+     "https://bioconductor.org/packages/msmsTests")
+    (synopsis "Differential LC-MS/MS expression tests")
+    (description
+     "This packages provides statistical tests for label-free LC-MS/MS data
+by spectral counts, to discover differentially expressed proteins between two
+biological conditions.  Three tests are available: Poisson GLM regression,
+quasi-likelihood GLM regression, and the negative binomial of the edgeR
+package.The three models admit blocking factors to control for nuissance
+variables.To assure a good level of reproducibility a post-test filter is
+available, where we may set the minimum effect size considered biologicaly
+relevant, and the minimum expression of the most abundant condition.")
+    (license license:gpl2)))
