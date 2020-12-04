@@ -9015,8 +9015,7 @@ implementation that is more efficient for smaller hash keys.")
         (base32 "005yi1319k5bz8g5ylbdiakq5jp5jh90yy6k357zm11fr4aqvrpc"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-matches" ,rust-matches-0.1)
         ("rust-percent-encoding" ,rust-percent-encoding-2))))
     (home-page "https://github.com/servo/rust-url")
