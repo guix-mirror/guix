@@ -395,6 +395,34 @@
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))))
 
+(define-public rust-glib-macros-0.10
+  (package
+    (name "rust-glib-macros")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glib-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fa00s6gnj3hgri9z926199jidczlmjr1db0n4r80sins4k6lj21"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-heck" ,rust-heck-0.3)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-proc-macro-crate" ,rust-proc-macro-crate-0.1)
+        ("rust-proc-macro-error" ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the GLib library, proc macros crate")
+    (description "Rust bindings for the GLib library, proc macros crate.")
+    (license license:expat)))
+
 (define-public rust-glib-sys-0.10
   (package
     (name "rust-glib-sys")
