@@ -2073,3 +2073,49 @@ test.  Tests are like browser sessions that keep track of cookies and
 the last visited page.  You can perform assertions on the content of
 HTML responses using CSS selectors.")
     (license license:expat)))
+
+(define-public ghc-wai-app-static
+  (package
+    (name "ghc-wai-app-static")
+    (version "3.1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-app-static/wai-app-static-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "10k6jb450p89r6dgpnwh428gg0wfw2qbx9n126jkvbchcjr1f4v8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-http-date" ,ghc-http-date)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-mime-types" ,ghc-mime-types)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-warp" ,ghc-warp)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-network" ,ghc-network)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-mockery" ,ghc-mockery)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "0bkmml30rzifvb7nxddj3pxczk0kniahra19mjn0qrkzy1n5752p")))
+    (home-page "https://www.yesodweb.com/book/web-application-interface")
+    (synopsis "WAI application for static serving")
+    (description "This package provides a Web Application
+Interface (WAI) application for static serving.  It also provides some
+helper functions and datatypes for use outside of WAI.")
+    (license license:expat)))
