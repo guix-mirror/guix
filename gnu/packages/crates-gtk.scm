@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -394,25 +395,23 @@
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))))
 
-(define-public rust-glib-sys-0.9
+(define-public rust-glib-sys-0.10
   (package
     (name "rust-glib-sys")
-    (version "0.9.1")
+    (version "0.10.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "glib-sys" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1qhnwfqqcp63mx4q9744rfkq78g6ky2j8ppsxxgw0ipl08w6z1cm"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glib-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hfdwilf3dnrv3pnfbwmp3h2afgwvfsapcgjfg8276kflsbvksf7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Some test libraries not included in release.
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
+        ("rust-system-deps" ,rust-system-deps-1))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -422,6 +421,29 @@
     (synopsis "FFI bindings to libglib-2.0")
     (description "This package provides FFI bindings to libglib-2.0.")
     (license license:expat)))
+
+(define-public rust-glib-sys-0.9
+  (package
+    (inherit rust-glib-sys-0.10)
+    (name "rust-glib-sys")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glib-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qhnwfqqcp63mx4q9744rfkq78g6ky2j8ppsxxgw0ipl08w6z1cm"))))
+    (arguments
+     `(#:tests? #f              ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-gobject-sys-0.9
   (package
