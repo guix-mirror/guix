@@ -357,22 +357,59 @@
     (description "FFI bindings to libgdk-3")
     (license license:expat)))
 
+(define-public rust-gio-0.9
+  (package
+    (name "rust-gio")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qc5aqi2ijval5i9df0qryy4wbmayyhy7ng5v9r0fw7zpx105dhz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-gio-sys" ,rust-gio-sys-0.10)
+        ("rust-glib" ,rust-glib-0.10)
+        ("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.10)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-thiserror" ,rust-thiserror-1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1)
+        ("rust-serial-test" ,rust-serial-test-0.4))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the Gio library")
+    (description "Rust bindings for the Gio library")
+    (license license:expat)))
+
 (define-public rust-gio-0.8
   (package
+    (inherit rust-gio-0.9)
     (name "rust-gio")
     (version "0.8.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "gio" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19cnla2ya0mi6wwaabd5mxbq2kzq46dg6jq2z19rpqyc2na0zl8c"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19cnla2ya0mi6wwaabd5mxbq2kzq46dg6jq2z19rpqyc2na0zl8c"))))
     (arguments
-     `(#:tests? #f  ; Not all files included in the tarball.
+     `(#:tests? #f                    ; Not all files included in the tarball.
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-futures-channel" ,rust-futures-channel-0.3)
@@ -389,13 +426,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1)
         ("rust-serial-test" ,rust-serial-test-0.1)
-        ("rust-serial-test-derive" ,rust-serial-test-derive-0.1))))
-    (inputs
-     `(("glib" ,glib)))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the Gio library")
-    (description "Rust bindings for the Gio library.")
-    (license license:expat)))
+        ("rust-serial-test-derive" ,rust-serial-test-derive-0.1))))))
 
 (define-public rust-gio-0.7
   (package
