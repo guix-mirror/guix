@@ -2224,3 +2224,49 @@ for the Yesod Web Framework.")
 launching and inserts JavaScript code to ping the server.  When the
 server no longer receives pings, it shuts down.")
     (license license:expat)))
+
+(define-public ghc-wai-cors
+  (package
+    (name "ghc-wai-cors")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-cors/wai-cors-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10gv3jjlkcb13031frr818p56v2s0qf6dqjsfpwlhwdxdssvx5r5"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; As of version 0.2.7, there are two test suites: "unit-tests"
+         ;; and "phantomjs".  Since we do not have a PhantomJS package,
+         ;; we only run the unit tests.
+         (replace 'check
+           (lambda _
+             (invoke "runhaskell" "Setup.hs" "test" "unit-tests"))))))
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base-unicode-symbols" ,ghc-base-unicode-symbols)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-wai" ,ghc-wai)))
+    (native-inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-wai-websockets" ,ghc-wai-websockets)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-websockets" ,ghc-websockets)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-wai-websockets" ,ghc-wai-websockets)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-websockets" ,ghc-websockets)))
+    (home-page "https://github.com/larskuhtz/wai-cors")
+    (synopsis "Cross-Origin Resource Sharing (CORS) for WAI")
+    (description "This package provides an implemenation of Cross-Origin
+Resource Sharing (CORS) for the Web Application Framework (WAI) that
+aims to be compliant with @url{https://www.w3.org/TR/cors}.")
+    (license license:expat)))
