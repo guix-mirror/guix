@@ -6281,6 +6281,17 @@ for other R packages to compile and link against.")
          "19svh32jq1dpq3ayhpd5r8bw0iax8d9kdvpvc23gx2pf16g1j5ag"))))
     (properties `((upstream-name . "flowWorkspace")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking
+           (lambda _
+             (substitute* "src/Makevars"
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\{h5lib\\}" match)
+                (string-append match "/libhdf5.a")))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
