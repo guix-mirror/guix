@@ -27811,6 +27811,29 @@ and Jaro-Winkler.")
      "Parse command line argument by defining a struct, derive crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-strum-0.18
+  (package
+    (name "rust-strum")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strum" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0asjskn1qhqqfiq673np0gvmnd1rsp506m38vk53gi7l93mq3gap"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-strum-macros" ,rust-strum-macros-0.18))))
+    (home-page "https://github.com/Peternator7/strum")
+    (synopsis "Set of traits for working with enums and strings")
+    (description
+     "Strum is a set of macros and traits for working with enums and strings
+easier in Rust.")
+    (license license:expat)))
+
 (define-public rust-strum-macros-0.18
   (package
     (name "rust-strum-macros")
