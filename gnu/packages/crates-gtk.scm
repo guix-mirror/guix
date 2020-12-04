@@ -456,16 +456,14 @@
 (define-public rust-gtk-rs-lgpl-docs-0.1
   (package
     (name "rust-gtk-rs-lgpl-docs")
-    (version "0.1.15")
+    (version "0.1.18")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "gtk-rs-lgpl-docs" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "06b1j64zg0xmhwfkyhzh3y0apclg6qihn3f7s1bd7kgjmkia4jlr"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gtk-rs-lgpl-docs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xm3lm15j8yfn2jzh3sz6hrq2g2k917ahnp5caxw9c7z8sgr9f4m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
