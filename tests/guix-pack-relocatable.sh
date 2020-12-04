@@ -55,7 +55,7 @@ run_without_store ()
 	# Run the relocatable program in the current namespaces.  This is a
 	# weak test because we're going to access store items from the host
 	# store.
-	$*
+	sh -c "$*"
     fi
 }
 
