@@ -178,21 +178,17 @@ tools have full access to view and control running applications.")
        ("xcb" ,libxcb)
        ("xext" ,libxext)
        ("xrender" ,libxrender)))
-    (synopsis "2D graphics library")
+    (synopsis "Multi-platform 2D graphics library")
     (description "Cairo is a 2D graphics library with support for multiple output
 devices.  Currently supported output targets include the X Window System (via
 both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
-output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.
-Cairo is designed to produce consistent output on all output media while
-taking advantage of display hardware acceleration when available
-eg. through the X Render Extension).
-The cairo API provides operations similar to the drawing operators of
-PostScript and PDF.  Operations in cairo including stroking and filling cubic
-Bézier splines, transforming and compositing translucent images, and
-antialiased text rendering.  All drawing operations can be transformed by any
-affine transformation (scale, rotation, shear, etc.).")
+output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
     (home-page "https://cairographics.org/")
-    (license license:lgpl2.1))) ; or Mozilla Public License 1.1
+    (license
+     ;; This project is dual-licensed.
+     (list
+      license:lgpl2.1+
+      license:mpl1.1))))
 
 (define-public cairo-sans-poppler
   ;; Variant used to break the dependency cycle between Poppler and Cairo.
