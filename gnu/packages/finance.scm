@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1648,3 +1649,54 @@ generate a variety of reports from them, and provides a web interface.")
     (synopsis "Emacs mode for beancount")
     (description
       "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))
+
+(define-public hledger-web
+  (package
+    (name "hledger-web")
+    (version "1.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hledger-web/hledger-web-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w59nr7mj0nx8z44cvhy1rhlj5rmx0wq4p5nfl4dycfmp7jwvsm1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-decimal" ,ghc-decimal)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-clientsession" ,ghc-clientsession)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-hjsmin" ,ghc-hjsmin)
+       ("hledger" ,hledger)
+       ("ghc-hledger-lib" ,ghc-hledger-lib)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-json" ,ghc-json)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-wai-handler-launch" ,ghc-wai-handler-launch)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-yesod" ,ghc-yesod)
+       ("ghc-yesod-core" ,ghc-yesod-core)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-yesod-static" ,ghc-yesod-static)))
+    (home-page "https://hledger.org")
+    (synopsis "Web-based user interface for the hledger accounting system")
+    (description "This package provides a simple Web-based User
+Interface (UI) for the hledger accounting system.  It can be used as a
+local, single-user UI, or as a multi-user UI for viewing, adding, and
+editing on the Web.")
+    (license license:gpl3)))
