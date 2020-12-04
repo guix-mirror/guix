@@ -560,7 +560,9 @@ to OS.  Also set the UUID and the size of the root partition."
   "Return an operating-system based on the one specified in IMAGE, but
 suitable for image creation.  Assign an UUID to the root file-system, so that
 it can be used for bootloading."
-  (define volatile-root? (image-volatile-root? image))
+  (define volatile-root? (if (eq? (image-format image) 'iso9660)
+                             #t
+                             (image-volatile-root? image)))
 
   (define (root-uuid os)
     ;; UUID of the root file system, computed in a deterministic fashion.
