@@ -8990,3 +8990,29 @@ as well as local access.  Developers can register a file extension, e.g.,
 `export()` methods based on classes representing file types, e.g.,
 `LoomFile()`.")
     (license license:artistic2.0)))
+
+(define-public r-msmseda
+  (package
+    (name "r-msmseda")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "msmsEDA" version))
+       (sha256
+        (base32
+         "1llmy8msxmrqik3s3439wffma1662vwvvcaz8q0a4g5ridkmdbrx"))))
+    (properties `((upstream-name . "msmsEDA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-msnbase" ,r-msnbase)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page
+     "https://bioconductor.org/packages/msmsEDA")
+    (synopsis "Exploratory data analysis of LC-MS/MS data by spectral counts")
+    (description
+     "Exploratory data analysis to assess the quality of a set of LC-MS/MS
+experiments, and visualize de influence of the involved factors.")
+    (license license:gpl2)))
