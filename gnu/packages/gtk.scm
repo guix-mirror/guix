@@ -123,67 +123,57 @@ tools have full access to view and control running applications.")
 
 (define-public cairo
   (package
-   (name "cairo")
-   (version "1.16.0")
-   (replacement cairo/fixed)
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://cairographics.org/releases/cairo-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
-   (build-system gnu-build-system)
-   (propagated-inputs
-    `(("fontconfig" ,fontconfig)
-      ("freetype" ,freetype)
-      ("glib" ,glib)
-      ("libpng" ,libpng)
-      ("libx11" ,libx11)
-      ("libxext" ,libxext)
-      ("libxrender" ,libxrender)
-      ("pixman" ,pixman)))
-   (inputs
-    `(("ghostscript" ,ghostscript)
-      ("libspectre" ,libspectre)
-      ("poppler" ,poppler)
-      ("xorgproto" ,xorgproto)
-      ("zlib" ,zlib)))
-   (native-inputs
-     `(("pkg-config" ,pkg-config)
-      ("python" ,python-wrapper)))
+    (name "cairo")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://cairographics.org/releases/cairo-"
+                       version ".tar.xz"))
+       (sha256
+        (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
-       #:configure-flags '("--enable-tee"      ;needed for GNU Icecat
-                           "--enable-xml"      ;for cairo-xml support
-                           "--disable-static")))
-   (synopsis "2D graphics library")
-   (description
-    "Cairo is a 2D graphics library with support for multiple output devices.
-Currently supported output targets include the X Window System (via both
-Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
+     `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
+       #:configure-flags
+       (list
+        "--enable-tee"                    ;needed for GNU Icecat
+        "--enable-xml"                    ;for cairo-xml support
+        "--disable-static")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("ghostscript" ,ghostscript)
+       ("libspectre" ,libspectre)
+       ("poppler" ,poppler)
+       ("xorgproto" ,xorgproto)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrender" ,libxrender)
+       ("pixman" ,pixman)))
+    (synopsis "2D graphics library")
+    (description "Cairo is a 2D graphics library with support for multiple output
+devices.  Currently supported output targets include the X Window System (via
+both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
 output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.
-
 Cairo is designed to produce consistent output on all output media while
 taking advantage of display hardware acceleration when available
 eg. through the X Render Extension).
-
 The cairo API provides operations similar to the drawing operators of
 PostScript and PDF.  Operations in cairo including stroking and filling cubic
 Bézier splines, transforming and compositing translucent images, and
 antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.).")
-   (license license:lgpl2.1) ; or Mozilla Public License 1.1
-   (home-page "https://cairographics.org/")))
-
-(define cairo/fixed
-  (package
-    (inherit cairo)
-    (source (origin
-              (inherit (package-source cairo))
-              (patches (append (search-patches "cairo-CVE-2018-19876.patch"
-                                               "cairo-CVE-2020-35492.patch")
-                               (origin-patches (package-source cairo))))))))
+    (home-page "https://cairographics.org/")
+    (license license:lgpl2.1))) ; or Mozilla Public License 1.1
 
 (define-public cairo-sans-poppler
   ;; Variant used to break the dependency cycle between Poppler and Cairo.
