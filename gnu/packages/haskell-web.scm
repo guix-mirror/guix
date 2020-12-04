@@ -2119,3 +2119,35 @@ HTML responses using CSS selectors.")
 Interface (WAI) application for static serving.  It also provides some
 helper functions and datatypes for use outside of WAI.")
     (license license:expat)))
+
+(define-public ghc-hjsmin
+  (package
+    (name "ghc-hjsmin")
+    (version "0.2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hjsmin/hjsmin-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r2p5rjdjr25j3w4s57q5hxw2c3ymw12x7ms18yvglnq2ivr9fc1"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dist-directory-for-tests
+           (lambda _
+             (substitute* '("test/test-cli.hs" "test/cli/core/runner")
+               (("dist-newstyle") "dist")))))))
+    (inputs
+     `(("ghc-language-javascript" ,ghc-language-javascript)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-extra" ,ghc-extra)))
+    (home-page "https://github.com/erikd/hjsmin")
+    (synopsis "Haskell implementation of a JavaScript minifier")
+    (description "This library provides tools reduce the size of
+JavaScript files by stripping out extraneous whitespace and other
+syntactic elements, without changing the semantics.")
+    (license license:bsd-3)))
