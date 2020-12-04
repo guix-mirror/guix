@@ -445,26 +445,24 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))))
 
-(define-public rust-gobject-sys-0.9
+(define-public rust-gobject-sys-0.10
   (package
     (name "rust-gobject-sys")
-    (version "0.9.1")
+    (version "0.10.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "gobject-sys" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1nakflbp3gjaas4fw7sn3p1p32khyfpcq1h06z7yqd10yq2ail9i"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gobject-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1311d3zbdhl1g7ibj1iy1650513yrhxbjxgfhazn52ii1jv368cm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Some test libraries not included in release.
+     `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-glib-sys" ,rust-glib-sys-0.9)
+       (("rust-glib-sys" ,rust-glib-sys-0.10)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))
+        ("rust-system-deps" ,rust-system-deps-1))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -474,6 +472,29 @@
     (synopsis "FFI bindings to libgobject-2.0")
     (description "This package provides FFI bindings to libgobject-2.0.")
     (license license:expat)))
+
+(define-public rust-gobject-sys-0.9
+  (package
+    (inherit rust-gobject-sys-0.10)
+    (name "rust-gobject-sys")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gobject-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nakflbp3gjaas4fw7sn3p1p32khyfpcq1h06z7yqd10yq2ail9i"))))
+    (arguments
+     `(#:tests? #f              ; Some test libraries not included in release.
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-gtk-rs-lgpl-docs-0.1
   (package
