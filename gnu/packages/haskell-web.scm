@@ -1258,7 +1258,7 @@ avoid any issues with characters.")
 (define-public ghc-yesod-core
   (package
     (name "ghc-yesod-core")
-    (version "1.6.16.1")
+    (version "1.6.17.2")
     (source
      (origin
        (method url-fetch)
@@ -1267,7 +1267,7 @@ avoid any issues with characters.")
                            "yesod-core-" version ".tar.gz"))
        (sha256
         (base32
-         "0a0yv7wkwvb0n6iia532y9nzrirgnm09pjc8hpm0lx4ff609pgd2"))))
+         "0rcfksbxnwcpg5qh9vjkddv39q95mx4nxzgix51bbwa128hhzcwf"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-wai" ,ghc-wai)
               ("ghc-extra" ,ghc-extra)
