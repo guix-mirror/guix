@@ -21187,7 +21187,7 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
 (define-public rust-quote-1
   (package
     (name "rust-quote")
-    (version "1.0.3")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -21195,7 +21195,7 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0zwd6fp74xfg4jnnnwj4v84lkzif2giwj4ch1hka9g35ghc6rp1b"))))
+          "0drzd6pq7whq7qhdvvs8wn6pbb0hhc12pz8wv80fb05ixhbksmma"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
