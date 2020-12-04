@@ -1103,9 +1103,11 @@ is shorter than MAX elements, then it is directly returned."
 (define %local-substitute-urls
   ;; If the following option is passed to the daemon, use the substitutes list
   ;; provided by "guix discover" process.
-  (if (find-daemon-option "discover")
-      (randomize-substitute-urls (read-substitute-urls))
-      '()))
+  (let* ((option (find-daemon-option "discover"))
+         (discover? (and option (string=? option "yes"))))
+    (if discover?
+     (randomize-substitute-urls (read-substitute-urls))
+     '())))
 
 (define substitute-urls
   ;; List of substitute URLs.
