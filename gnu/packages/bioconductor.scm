@@ -6426,6 +6426,17 @@ sequential way to mimic the manual gating strategy.")
          "1d8x49aqc95x1vx456hya5r7mal80pj9l6wmr5x5pb5r8qyzz6yq"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking
+           (lambda _
+             (substitute* "src/Makevars.in"
+               ;; This is to avoid having a plain directory on the list of
+               ;; libraries to link.
+               (("\\{h5lib\\}" match)
+                (string-append match "/libhdf5.a")))
+             #t)))))
     (inputs
      `(("libxml2" ,libxml2)))
     (propagated-inputs
