@@ -14321,6 +14321,31 @@ pairs in insertion order.")
         ("rust-serde" ,rust-serde-0.8)
         ("rust-serde-test" ,rust-serde-test-0.8))))))
 
+(define-public rust-linkify-0.4
+  (package
+    (name "rust-linkify")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "linkify" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15i0q81vrhm4asskacy2z83fyj09ivcff0km82gwbli4vlkib583"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2))
+       #:cargo-development-inputs
+       (("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/robinst/linkify")
+    (synopsis "Find URLs and email addresses in plain text")
+    (description
+     "Linkify is a Rust library to find links such as URLs and email addresses
+in plain text.  It is smart about where a link ends, such as with trailing
+punctuation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
