@@ -152,33 +152,52 @@
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))))
 
+(define-public rust-cairo-sys-rs-0.10
+  (package
+    (name "rust-cairo-sys-rs")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cairo-sys-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19wch8zc11hbi724mn16hhqyff8kw5c5bsbdlzpxdwfmkadn7lif"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11" ,rust-x11-2))))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "FFI bindings to libcairo")
+    (description "This package provides FFI bindings to libcairo.")
+    (license license:expat)))
+
 (define-public rust-cairo-sys-rs-0.9
   (package
+    (inherit rust-cairo-sys-rs-0.10)
     (name "rust-cairo-sys-rs")
     (version "0.9.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "cairo-sys-rs" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0qsdy6s57yvscg2rfm7wdqrlhzbn1aq9lhk3dy1vw5f7r81blrgz"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cairo-sys-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qsdy6s57yvscg2rfm7wdqrlhzbn1aq9lhk3dy1vw5f7r81blrgz"))))
     (arguments
      `(#:cargo-inputs
        (("rust-glib-sys" ,rust-glib-sys-0.9)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-x11" ,rust-x11-2)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
-    (inputs
-     `(("cairo" ,cairo)))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "FFI bindings to libcairo")
-    (description "This package provides FFI bindings to libcairo.")
-    (license license:expat)))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-gdk-pixbuf-0.8
   (package
