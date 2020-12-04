@@ -20199,33 +20199,56 @@ replacements, adding colorful diffs.")
 formatted tables in terminal.")
     (license license:bsd-3)))
 
+(define-public rust-proc-macro-error-1
+  (package
+    (name "rust-proc-macro-error")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-error" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1373bhxaf0pagd8zkyd03kkx6bchzf6g0dkwrwzsnal9z47lj9fs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-error-attr" ,rust-proc-macro-error-attr-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://gitlab.com/CreepySkeleton/proc-macro-error")
+    (synopsis "Drop-in replacement to panics in proc-macros")
+    (description
+     "This crate serves as a tiny shim around @code{proc_macro::Diagnostic}
+and @code{compile_error!}.  It detects the most preferable way to emit errors
+based on compiler's version.  When the underlying diagnostic type is finally
+stabilized, this crate will be simply delegating to it, requiring no changes
+in your code.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proc-macro-error-0.4
   (package
+    (inherit rust-proc-macro-error-1)
     (name "rust-proc-macro-error")
     (version "0.4.12")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "proc-macro-error" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1rvpaadwv7vmsp142qqh2axqrr9v78f1nvdsi9nhmfhy10kk1wqq"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro-error" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rvpaadwv7vmsp142qqh2axqrr9v78f1nvdsi9nhmfhy10kk1wqq"))))
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-proc-macro-error-attr" ,rust-proc-macro-error-attr-0.4)
-         ("rust-version-check" ,rust-version-check-0.9)
-         ("rust-proc-macro2" ,rust-proc-macro2-1)
-         ("rust-syn" ,rust-syn-1)
-         ("rust-quote" ,rust-quote-1))))
-    (home-page "https://gitlab.com/CreepySkeleton/proc-macro-error")
-    (synopsis "Almost drop-in replacement to panics in proc-macros")
-    (description
-     "Almost drop-in replacement to panics in proc-macros.")
-    (license (list license:expat license:asl2.0))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-error-attr" ,rust-proc-macro-error-attr-0.4)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-quote" ,rust-quote-1))))))
 
 (define-public rust-proc-macro-error-attr-1
   (package
