@@ -2786,7 +2786,7 @@ the command prints and, similar to what we saw above, paste these two
 lines in your terminal and @file{.bash_profile}:
 
 @example
-GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+GUIX_PROFILE="$HOME/.config/guix/current"
 . "$GUIX_PROFILE/etc/profile"
 @end example
 
