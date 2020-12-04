@@ -17893,7 +17893,7 @@ style guide, even if the original code didn't violate the style guide.")
     (synopsis "Command-line YAML/XML processor")
     (description
      "This package provides @command{yq} and @command{xq} for processing YAML
-and XML respectively.  The processing is done through @{jq}, @command{jq}
+and XML respectively.  The processing is done through @command{jq}, @command{jq}
 filters can be used to process the data as it passes through.")
     (license license:asl2.0)))
 
