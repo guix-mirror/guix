@@ -1606,6 +1606,14 @@ Servers may serve substitute over HTTP, unencrypted, so anyone on the
 LAN can see what software you’re installing.
 @end enumerate
 
+It is also possible to enable or disable substitute server discovery at
+run-time by running:
+
+@example
+herd discover guix-daemon on
+herd discover guix-daemon off
+@end example
+
 @item --disable-deduplication
 @cindex deduplication
 Disable automatic file ``deduplication'' in the store.
