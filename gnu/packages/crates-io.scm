@@ -17823,6 +17823,28 @@ You probably don't want to link to this crate directly; instead check out the
         (base32
          "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))))
 
+(define-public rust-open-1
+  (package
+    (name "rust-open")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "open" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0j6ci7jc2aabvw0rvq7a51sw9s2rk3mfsq0s5zjakzjf27q3na3w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/Byron/open-rs")
+    (synopsis "Open a path or URL using the program configured on the system")
+    (description
+     "Use this library to open a path or URL using the program configured on
+the system.")
+    (license license:expat)))
+
 (define-public rust-openssl-0.10
   (package
     (name "rust-openssl")
