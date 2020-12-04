@@ -2151,3 +2151,49 @@ helper functions and datatypes for use outside of WAI.")
 JavaScript files by stripping out extraneous whitespace and other
 syntactic elements, without changing the semantics.")
     (license license:bsd-3)))
+
+(define-public ghc-yesod-static
+  (package
+    (name "ghc-yesod-static")
+    (version "1.6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-static/yesod-static-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jd0ryfr2vyrwasyvbqmc6j4ngv1lgz78w427f169l7gyl1firxb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-cryptonite-conduit" ,ghc-cryptonite-conduit)
+       ("ghc-css-text" ,ghc-css-text)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-hjsmin" ,ghc-hjsmin)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-mime-types" ,ghc-mime-types)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-app-static" ,ghc-wai-app-static)
+       ("ghc-yesod-core" ,ghc-yesod-core)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-yesod-test" ,ghc-yesod-test)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-rio" ,ghc-rio)))
+    (home-page "https://www.yesodweb.com/")
+    (synopsis "Static file serving subsite for Yesod")
+    (description "This package provides a static file serving subsite
+for the Yesod Web Framework.")
+    (license license:expat)))
