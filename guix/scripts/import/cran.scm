@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -98,8 +98,9 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
        (if (assoc-ref opts 'recursive)
            ;; Recursive import
            (map package->definition
-                (cran-recursive-import package-name
-                                       #:repo (or (assoc-ref opts 'repo) 'cran)))
+                (filter identity
+                        (cran-recursive-import package-name
+                                               #:repo (or (assoc-ref opts 'repo) 'cran))))
            ;; Single import
            (let ((sexp (cran->guix-package package-name
                                            #:repo (or (assoc-ref opts 'repo) 'cran))))
