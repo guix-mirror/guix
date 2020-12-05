@@ -24888,8 +24888,38 @@ proven statistical guarantees.")
      "This package provides a library for section-style testing.")
     (license license:expat)))
 
+(define-public rust-security-framework-2
+  (package
+    (name "rust-security-framework")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0scc4vj2mw9k6qpxp26zx8gnqnmw79nwayja91x030457hp9qxf1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;missing files
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-security-framework-sys" ,rust-security-framework-sys-2))
+       #:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://lib.rs/crates/security_framework")
+    (synopsis "@code{Security.framework} bindings for macOS and iOS")
+    (description "This package provides @code{Security.framework} bindings for
+macOS and iOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-security-framework-1
   (package
+    (inherit rust-security-framework-2)
     (name "rust-security-framework")
     (version "1.0.0")
     (source
@@ -24900,7 +24930,6 @@ proven statistical guarantees.")
        (sha256
         (base32
          "0axwlax65j1f79rsm4ylc8rc6p2knbi3dgnpbdq7a1bzh5k2hl5d"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -24910,12 +24939,7 @@ proven statistical guarantees.")
         ("rust-security-framework-sys" ,rust-security-framework-sys-1))
        #:cargo-development-inputs
        (("rust-hex" ,rust-hex-0.4)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://lib.rs/crates/security_framework")
-    (synopsis "@code{Security.framework} bindings for macOS and iOS")
-    (description "This package provides @code{Security.framework} bindings for
-macOS and iOS.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-security-framework-0.3
   (package
