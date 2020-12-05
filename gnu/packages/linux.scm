@@ -2149,6 +2149,11 @@ MIDI functionality to the Linux-based operating system.")
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
     (outputs '("out" "pulseaudio" "jack"))
+    (native-search-paths
+      (list (search-path-specification
+              (variable "ALSA_PLUGIN_DIR")
+              (files '("lib/alsa-lib"))
+              (separator #f))))
     (arguments
      `(#:configure-flags '(;; Do not install a "local" configuration targeted
                            ;; for /etc/alsa.  On Guix System plugins are loaded from
