@@ -8415,6 +8415,48 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (description "Fallible streaming iteration")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fancy-regex-0.3
+  (package
+    (name "rust-fancy-regex")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fancy-regex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "051bnj890xrvhslppdzw6n956xfjg0wr2ixvhy336d2japvap4df"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bit-set" ,rust-bit-set-0.5)
+        ("rust-regex" ,rust-regex-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.7))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("0.3.0") ,(package-version rust-criterion-0.3)))))
+         ;; XXX: Remove Oniguruma-related tests since Guix does not provide
+         ;; the library yet.
+         (add-after 'unpack 'remove-oniguruma-tests
+           (lambda _
+             (delete-file-recursively "tests/oniguruma")
+             (delete-file "tests/oniguruma.rs"))))))
+    (home-page "https://github.com/fancy-regex/fancy-regex")
+    (synopsis "Implementation of regexes with a rich set of features")
+    (description
+     "This package is a Rust library for compiling and matching regular
+expressions.  It uses a hybrid regex implementation designed to support
+a relatively rich set of features.  In particular, it uses backtracking to
+implement features such as look-around and backtracking, which are not
+supported in purely NFA-based implementations.")
+    (license license:expat)))
+
 (define-public rust-fern-0.6
   (package
     (name "rust-fern")
