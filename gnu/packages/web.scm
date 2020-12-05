@@ -30,7 +30,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -93,6 +93,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-gtk)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -6490,6 +6491,48 @@ file links.")
 file upload, download, on-screen display, namespace operations (move/copy),
 collection creation and deletion, and locking operations.")
     (license license:gpl2)))
+
+(define-public castor
+  (package
+    (name "castor")
+    (version "0.8.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~julienxx/castor")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rwg1w7srjwa23mkypl8zk6674nhph4xsc6nc01f6g5k959szylr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-parser" ,rust-ansi-parser-0.6)
+        ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-gdk" ,rust-gdk-0.13)
+        ("rust-gtk" ,rust-gtk-0.8)
+        ("rust-linkify" ,rust-linkify-0.4)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-open" ,rust-open-1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-url" ,rust-url-2))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+)
+       ("libressl" ,libressl)
+       ("pango" ,pango)))
+    (home-page "https://git.sr.ht/~julienxx/castor")
+    (synopsis "Graphical client for plain-text protocols")
+    (description
+     "Castor is a graphical client for plain-text protocols written in
+Rust with GTK.  It currently supports the Gemini, Gopher and Finger
+protocols.")
+    (license license:expat)))
 
 (define-public python-py-ubjson
   (package
