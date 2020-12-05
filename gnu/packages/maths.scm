@@ -2975,18 +2975,21 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "6.2.0")
+    (version "6.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://portal.nersc.gov/project/sparse/superlu/"
-                           "superlu_dist_" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xiaoyeli/superlu_dist")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1ynmwqajc9sc3my2hssa5k9s58ggvizqv9rdss0j7w99pbh5mnvw"))
+        (base32 "0fa29yr72p4yq5ln4rgfsawmi5935n4qcr5niz6864bjladz4lql"))
        (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
         '(begin
+           (make-file-writable "SRC/mc64ad_dist.c")
            (call-with-output-file "SRC/mc64ad_dist.c"
              (lambda (port)
                (display "
