@@ -17832,36 +17832,51 @@ library.  Oniguruma is a modern regex library with support for multiple
 character encodings and regex syntaxes.")
     (license license:expat)))
 
-(define-public rust-onig-sys-69.2
+(define-public rust-onig-sys-69.6
   (package
     (name "rust-onig-sys")
-    (version "69.2.0")
+    (version "69.6.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "onig_sys" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0kjijq29yx05xxg9snvqnfn53dl52hchb4sk3zhfr77mypxlx38a"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "onig_sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xapbm4mrmyar1lbs3xrly2hm2mkb38hji1j15fjw3scryb3q1pd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-bindgen" ,rust-bindgen-0.50)
-        ("rust-cc" ,rust-cc-1))))
+       (("rust-bindgen" ,rust-bindgen-0.55)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/rust-onig/rust-onig")
-    (synopsis
-     "Rust bindings to the oniguruma library.")
+    (synopsis "Rust bindings to the Oniguruma library")
     (description
-      "The @code{onig_sys} crate contains raw rust bindings to the oniguruma
-library.  This crate exposes a set of unsafe functions which can then be used by
-other crates to create safe wrappers around Oniguruma.
-You probably don't want to link to this crate directly; instead check out the
-@code{onig} crate.")
+     "This crate contains raw Rust bindings to the Oniguruma library.
+This crate exposes a set of unsafe functions which can then be used by
+other crates to create safe wrappers around Oniguruma.")
     (license license:expat)))
+
+(define-public rust-onig-sys-69.2
+  (package
+    (inherit rust-onig-sys-69.6)
+    (name "rust-onig-sys")
+    (version "69.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "onig_sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kjijq29yx05xxg9snvqnfn53dl52hchb4sk3zhfr77mypxlx38a"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.50)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-once-cell-1
   (package
