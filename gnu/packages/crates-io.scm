@@ -28631,20 +28631,60 @@ a syntax tree of Rust source code.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-syntect-4
+  (package
+    (name "rust-syntect")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syntect" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "121y6rswylvbhaz8krjb9aa7h16f6ly2sdbbka1hr1dm0pgphfaf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;missing files
+       #:cargo-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-fancy-regex" ,rust-fancy-regex-0.3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lazycell" ,rust-lazycell-1)
+        ("rust-onig" ,rust-onig-6)
+        ("rust-plist" ,rust-plist-1)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-yaml-rust" ,rust-yaml-rust-0.4))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+    (home-page "https://github.com/trishume/syntect")
+    (synopsis "Library for syntax highlighting and code intelligence")
+    (description
+     "This package provides a library for syntax highlighting and code
+intelligence using Sublime Text's grammars.")
+    (license license:expat)))
+
 (define-public rust-syntect-3.3
   (package
+    (inherit rust-syntect-4)
     (name "rust-syntect")
     (version "3.3.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "syntect" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1f6qn1yy15b0hq9h6q1rikqnm3lh56ic6bq3ywsmdsjy8ni9splm"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syntect" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f6qn1yy15b0hq9h6q1rikqnm3lh56ic6bq3ywsmdsjy8ni9splm"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -28661,13 +28701,7 @@ a syntax tree of Rust source code.")
         ("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-walkdir" ,rust-walkdir-2)
-        ("rust-onig" ,rust-onig-5.0))))
-    (home-page "https://github.com/trishume/syntect")
-    (synopsis "Library for syntax highlighting and code intelligence")
-    (description
-     "This package provides a library for syntax highlighting and code
-intelligence using Sublime Text's grammars.")
-    (license license:expat)))
+        ("rust-onig" ,rust-onig-5.0))))))
 
 (define-public rust-syntex-0.58
  (package
