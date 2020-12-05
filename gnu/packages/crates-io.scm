@@ -4684,32 +4684,49 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
 intrinsics.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-foundation-0.9
+  (package
+    (name "rust-core-foundation")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qhackx0i914nbhcwi6bbxnyyqqldgxc046gviak3a3f8apf528a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f             ;tests fail with a lot of "undefined reference"
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-uuid" ,rust-uuid-0.5))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Core Foundation for macOS")
+    (description "This package provides bindings to Core Foundation for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-foundation-0.7
   (package
+    (inherit rust-core-foundation-0.9)
     (name "rust-core-foundation")
     (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "core-foundation" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wbias8f0m5kyn2pcksi0h58fdslams6nmf16w78fgn42dx4rljp"))))
-    (build-system cargo-build-system)
+        (base32 "0wbias8f0m5kyn2pcksi0h58fdslams6nmf16w78fgn42dx4rljp"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.7)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-uuid" ,rust-uuid-0.5))))
-    (home-page "https://github.com/servo/core-foundation-rs")
-    (synopsis "Bindings to Core Foundation for macOS")
-    (description "This package provides bindings to Core Foundation for
-macOS.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-uuid" ,rust-uuid-0.5))))))
 
 (define-public rust-core-foundation-0.6
   (package
