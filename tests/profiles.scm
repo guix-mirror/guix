@@ -384,6 +384,16 @@
            (manifest-entry-search-paths
             (package->manifest-entry mpl)))))
 
+(test-assert "packages->manifest, no duplicates"
+  (let ((expected
+         (manifest
+          (list
+           (package->manifest-entry packages:guile-2.2))))
+        (manifest (packages->manifest
+                   (list packages:guile-2.2 packages:guile-2.2))))
+    (every manifest-entry=? (manifest-entries expected)
+           (manifest-entries manifest))))
+
 (test-equal "packages->manifest, propagated inputs"
   (map (match-lambda
          ((label package)

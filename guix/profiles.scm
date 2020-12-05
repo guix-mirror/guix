@@ -399,22 +399,24 @@ denoting a specific output of a package."
                 'inferior-package->manifest-entry))
 
   (manifest
-   (map (match-lambda
-          (((? package? package) output)
-           (package->manifest-entry package output))
-          ((? package? package)
-           (package->manifest-entry package))
-          ((thing output)
-           (if inferiors-loaded?
-               ((inferior->entry) thing output)
-               (throw 'wrong-type-arg 'packages->manifest
-                      "Wrong package object: ~S" (list thing) (list thing))))
-          (thing
-           (if inferiors-loaded?
-               ((inferior->entry) thing)
-               (throw 'wrong-type-arg 'packages->manifest
-                      "Wrong package object: ~S" (list thing) (list thing)))))
-        packages)))
+   (delete-duplicates
+    (map (match-lambda
+           (((? package? package) output)
+            (package->manifest-entry package output))
+           ((? package? package)
+            (package->manifest-entry package))
+           ((thing output)
+            (if inferiors-loaded?
+                ((inferior->entry) thing output)
+                (throw 'wrong-type-arg 'packages->manifest
+                       "Wrong package object: ~S" (list thing) (list thing))))
+           (thing
+            (if inferiors-loaded?
+                ((inferior->entry) thing)
+                (throw 'wrong-type-arg 'packages->manifest
+                       "Wrong package object: ~S" (list thing) (list thing)))))
+         packages)
+    manifest-entry=?)))
 
 (define (manifest->gexp manifest)
   "Return a representation of MANIFEST as a gexp."
