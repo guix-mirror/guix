@@ -4475,6 +4475,28 @@ generation.")
 It is inspired by the Linux kernel's @code{crypto_memneq}.")
     (license license:cc0)))
 
+(define-public rust-content-inspector-0.2
+  (package
+    (name "rust-content-inspector")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "content_inspector" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f1gwv4axxw9wck4a4jxlkm7xjjakb3616isll2k0s4chmpadgdp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2))))
+    (home-page "https://github.com/sharkdp/content_inspector")
+    (synopsis "Fast inspection of binary buffers to guess the encoding")
+    (description
+     "This package is a simple library for fast inspection of binary buffers
+to guess the type of content.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-conv-0.3
   (package
     (name "rust-conv")
