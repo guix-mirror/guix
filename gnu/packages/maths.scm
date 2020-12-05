@@ -3064,14 +3064,14 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.6")
+    (version "6.1.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "1ky4k9r6jvajhqaqnnx6h8fkmds2yxgp70dpr1qzwcyhi2nhqvv8"))
+       (base32 "1184fcv4wa2df8szb5lan6pjh0raarr45pk8ilpvbz23naikzg53"))
       (patches (search-patches "scotch-build-parallelism.patch"
                                "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
@@ -3119,7 +3119,7 @@ YACC = bison -pscotchyy -y -b y
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
                           "INTSIZE64"             ;use 'int64_t'
-                          ;; Prevents symbolc clashes with libesmumps
+                          ;; Prevents symbol clashes with libesmumps
                           "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests
                           ;; "SCOTCH_PTHREAD"
