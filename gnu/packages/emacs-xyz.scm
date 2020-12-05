@@ -14514,7 +14514,7 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
 (define-public emacs-emacsql-sqlite3
   (package
     (name "emacs-emacsql-sqlite3")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -14523,7 +14523,7 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yy9y27rckm776jnl2rh1fz3bh09690xwzq7102vlw7xkb9s7jhj"))))
+                "1jzvvsvi8jm2ws3y49nmpmwd3zlvf8j83rl2vwizd1aplwwdnmd6"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("ert-runner" ,emacs-ert-runner)))
