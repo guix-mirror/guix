@@ -17802,35 +17802,51 @@ Things in odds may move to more appropriate crates if we find them.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-quickcheck" ,rust-quickcheck-0.4))))))
 
+(define-public rust-onig-6
+  (package
+    (name "rust-onig")
+    (version "6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "onig" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mcx125hh22kx2d0676hkk2gli6v8r6c4rp3wh5qy0dwxpcnzd1h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-onig-sys" ,rust-onig-sys-69.6))))
+    (home-page "https://github.com/rust-onig/rust-onig")
+    (synopsis "Rust bindings for the Oniguruma regular expression library")
+    (description
+     "Rust-Onig is a set of Rust bindings for the Oniguruma regular expression
+library.")
+    (license license:expat)))
+
 (define-public rust-onig-5.0
   (package
+    (inherit rust-onig-6)
     (name "rust-onig")
     (version "5.0.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "onig" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0ivr0wq1zlyjhhkxpsnmpncg92sjx3rha8pnp3m1mzvgk7y27rz4"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "onig" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ivr0wq1zlyjhhkxpsnmpncg92sjx3rha8pnp3m1mzvgk7y27rz4"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-onig-sys" ,rust-onig-sys-69.2))))
-    (home-page "https://github.com/rust-onig/rust-onig")
-    (synopsis
-     "Rust bindings for the Oniguruma regular expression library")
-    (description
-     "Rust-Onig is a set of Rust bindings for the Oniguruma regular expression
-library.  Oniguruma is a modern regex library with support for multiple
-character encodings and regex syntaxes.")
-    (license license:expat)))
+        ("rust-onig-sys" ,rust-onig-sys-69.2))))))
 
 (define-public rust-onig-sys-69.6
   (package
