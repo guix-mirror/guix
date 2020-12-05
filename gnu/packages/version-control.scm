@@ -2812,6 +2812,53 @@ for historians.")
     (home-page "https://www.gnu.org/software/gnu-arch/")
     (license license:gpl2)))                      ;version 2 only
 
+(define-public diff-so-fancy
+  (package
+    (name "diff-so-fancy")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/so-fancy/diff-so-fancy")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0aavxahzha2mms4vdwysk79pa6wzswpfwgsq2hwaxnaf66maahfl"))))
+    (inputs
+     `(("perl" ,perl)
+       ("ncurses" ,ncurses)))
+    (build-system copy-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lib-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (substitute* "diff-so-fancy"
+                 (("use lib.*$")
+                  (string-append "use lib '" lib "';\n")))
+               #t)))
+         (add-after 'install 'symlink-executable
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (ncurses (assoc-ref inputs "ncurses"))
+                   (perl (assoc-ref inputs "perl")))
+               (wrap-program (string-append out "/bin/diff-so-fancy")
+                 `("PATH" ":" prefix (,(string-append ncurses "/bin")
+                                      ,(string-append perl "/bin"))))
+               #t))))
+       #:install-plan
+       '(("lib" "lib")
+         ("diff-so-fancy" "bin/"))))
+    (home-page "https://github.com/so-fancy/diff-so-fancy")
+    (synopsis "Makes diffs more human friendly and readable")
+    (description
+     "@code{diff-so-fancy} strives to make your diffs human readable instead
+of machine readable.  This helps improve code quality and helps you spot
+defects faster.")
+    (license license:expat)))
+
 (define-public go-github-go-git
   (package
     (name "go-github-go-git")
