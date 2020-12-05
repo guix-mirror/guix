@@ -56,7 +56,6 @@
         ("rust-ansi-term" ,rust-ansi-term-0.12)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-clap" ,rust-clap-2)
-        ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.13)
         ("rust-content-inspector" ,rust-content-inspector-0.2)
         ("rust-dirs" ,rust-dirs-3)
