@@ -2496,8 +2496,28 @@ full programmatic control over your models.")
        #:configure-flags
        (list
         "-DBUILD_QT5=ON"
-        (string-append "-DCMAKE_INSTALL_LIBDIR="
-                       (assoc-ref %outputs "out") "/lib"))
+        (string-append "-DCMAKE_INSTALL_LIBDIR=" (assoc-ref %outputs "out") "/lib")
+
+        (string-append "-DPYSIDE2UICBINARY="
+                       (assoc-ref %build-inputs "python-pyside-2-tools")
+                       "/bin/uic")
+        (string-append "-DPYSIDE2RCCBINARY="
+                       (assoc-ref %build-inputs "python-pyside-2-tools")
+                       "/bin/rcc")
+
+        "-DPYSIDE_LIBRARY=PySide2::pyside2"
+        (string-append
+         "-DPYSIDE_INCLUDE_DIR="
+         (assoc-ref %build-inputs "python-pyside-2") "/include;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtCore;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtWidgets;"
+         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtGui;")
+
+        "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
+        (string-append "-DSHIBOKEN_INCLUDE_DIR="
+                       (assoc-ref %build-inputs "python-shiboken-2")
+                       "/include/shiboken2"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'restore-pythonpath
