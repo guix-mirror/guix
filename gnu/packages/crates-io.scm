@@ -4733,25 +4733,35 @@ macOS.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-uuid" ,rust-uuid-0.5))))))
 
+(define-public rust-core-foundation-sys-0.8
+  (package
+    (name "rust-core-foundation-sys")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06wq7yb7mlkc4h2kbc0yjfi0xv44z4snzdpr7c1l0zm4hi91n8pa"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Core Foundation for macOS")
+    (description "This package provides bindings to Core Foundation for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-foundation-sys-0.7
   (package
+    (inherit rust-core-foundation-sys-0.8)
     (name "rust-core-foundation-sys")
     (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "core-foundation-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1ghrg46h4ci306agr2vwm28w6gb5l455nzp61y2zkhwfs49p4nis"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/servo/core-foundation-rs")
-    (synopsis "Bindings to Core Foundation for macOS")
-    (description "This package provides bindings to Core Foundation for
-macOS.")
-    (license (list license:expat license:asl2.0))))
+        (base32 "1ghrg46h4ci306agr2vwm28w6gb5l455nzp61y2zkhwfs49p4nis"))))))
 
 (define-public rust-core-foundation-sys-0.6
   (package
