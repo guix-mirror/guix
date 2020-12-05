@@ -110,14 +110,16 @@ lock on FILE to synchronize with any potential readers."
 (define* (read-substitute-urls #:key (file (%publish-file)))
   "Read substitute urls list from FILE and return it.  Use a read lock on FILE
 to synchronize with the writer."
-  (with-read-file-lock file
-                       (call-with-input-file file
-                         (lambda (port)
-                           (let loop ((url (read-line port))
-                                      (urls '()))
-                             (if (eof-object? url)
-                                 urls
-                                 (loop (read-line port) (cons url urls))))))))
+  (if (file-exists? file)
+      (with-read-file-lock file
+        (call-with-input-file file
+          (lambda (port)
+            (let loop ((url (read-line port))
+                       (urls '()))
+              (if (eof-object? url)
+                  urls
+                  (loop (read-line port) (cons url urls)))))))
+      '()))
 
 
 ;;;
@@ -156,3 +158,7 @@ to synchronize with the writer."
         (mkdir-p (dirname publish-file))
         (avahi-browse-service-thread service-proc
                                      #:types %services)))))
+
+;;; Local Variables:
+;;; eval: (put 'with-read-file-lock 'scheme-indent-function 1)
+;;; End:
