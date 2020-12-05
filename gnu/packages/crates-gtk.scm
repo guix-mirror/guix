@@ -856,6 +856,54 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))))
 
+(define-public rust-gtk-0.8
+  (package
+    (name "rust-gtk")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gtk" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13ygzblfv40l2kp70rnjymz7vk2g2wdjs04lhmk9q8wh0bbyiqc7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atk" ,rust-atk-0.8)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.8)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-gdk" ,rust-gdk-0.12)
+        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.8)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.9)
+        ("rust-gio" ,rust-gio-0.8)
+        ("rust-gio-sys" ,rust-gio-sys-0.9)
+        ("rust-glib" ,rust-glib-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-gtk-sys" ,rust-gtk-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango" ,rust-pango-0.8)
+        ("rust-pango-sys" ,rust-pango-sys-0.9))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("pango" ,pango)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the GTK+ 3 library")
+    (description "This package provides Rust bindings for the GTK+ 3 library.")
+    (license license:expat)))
+
 (define-public rust-gtk-rs-lgpl-docs-0.1
   (package
     (name "rust-gtk-rs-lgpl-docs")
