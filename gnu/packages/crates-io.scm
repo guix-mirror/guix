@@ -18836,6 +18836,34 @@ and would-block I/O operations.")
      "Implementation detail of the paste crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-path-abs-0.5
+  (package
+    (name "rust-path-abs")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "path_abs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "131qi5j201caraqz9rwbzk4mybd9bcrryrhf63lr9gz0xmnqwszb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-std-prelude" ,rust-std-prelude-0.2)
+        ("rust-stfu8" ,rust-stfu8-0.2))
+       #:cargo-development-inputs
+       (("rust-pretty-assertions" ,rust-pretty-assertions-0.4)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/vitiral/path_abs")
+    (synopsis "Ergonomic paths and files in Rust")
+    (description "This library provides ergonomic path and file operations to
+Rust with reasonable performance.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-path-clean-0.1
   (package
     (name "rust-path-clean")
