@@ -2434,7 +2434,7 @@ full programmatic control over your models.")
 (define-public freecad
   (package
     (name "freecad")
-    (version "0.18.4")
+    (version "0.18.5")
     (source
      (origin
        (method git-fetch)
@@ -2453,7 +2453,7 @@ full programmatic control over your models.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "170hk1kgrvsddrwykp24wyj0cha78zzmzbf50gn98x7ngqqs395s"))))
+         "0r31jzzkamf76l19fb175hhv48irk06fpi8ldxdlr31w8c1ix4aa"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
