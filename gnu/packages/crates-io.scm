@@ -16309,19 +16309,17 @@ IO of Windows's named pipes.")
 (define-public rust-native-tls-0.2
   (package
     (name "rust-native-tls")
-    (version "0.2.3")
+    (version "0.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "native-tls" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0ki7cj4wzyd2nach4qdjly69sp7rs0yz3n3z2ii4mm1gqajg2bab"))))
+        (base32 "0grsinsgq1pd70c6k9mif7wambwq2jxh8jhvdgwf9i7dnlwpkk3g"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; tests require network access
+     `(#:tests? #f                      ; tests require network access
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
@@ -16330,11 +16328,11 @@ IO of Windows's named pipes.")
         ("rust-openssl-probe" ,rust-openssl-probe-0.1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-schannel" ,rust-schannel-0.1)
-        ("rust-security-framework" ,rust-security-framework-0.3)
-        ("rust-security-framework-sys" ,rust-security-framework-sys-0.3)
+        ("rust-security-framework" ,rust-security-framework-2)
+        ("rust-security-framework-sys" ,rust-security-framework-sys-2)
         ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
-       (("rust-hex" ,rust-hex-0.3))))
+       (("rust-hex" ,rust-hex-0.4))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
