@@ -605,6 +605,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dns.scm				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
+  %D%/services/file-sharing.scm			\
   %D%/services/games.scm			\
   %D%/services/ganeti.scm			\
   %D%/services/getmail.scm				\

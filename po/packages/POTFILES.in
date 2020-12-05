@@ -59,5 +59,6 @@ gnu/packages/wordnet.scm
 gnu/packages/xiph.scm
 gnu/services/base.scm
 gnu/services/certbot.scm
+gnu/services/file-sharing.scm
 gnu/services/networking.scm
 gnu/services/version-control.scm

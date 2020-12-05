@@ -14716,6 +14716,7 @@ declaration.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
 * Telephony Services::          Telephony services.
+* File-Sharing Services::       File-sharing services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * LDAP Services::               LDAP services.
@@ -22284,6 +22285,804 @@ By default your server will be listed by its IP address.
 If it is set your server will be linked by this host name instead.
 @end table
 @end deftp
+
+
+
+@node File-Sharing Services
+@subsection File-Sharing Services
+
+The @code{(gnu services file-sharing)} module provides services that
+assist with transferring files over peer-to-peer file-sharing networks.
+
+@subsubheading Transmission Daemon Service
+
+@uref{https://transmissionbt.com/, Transmission} is a flexible
+BitTorrent client that offers a variety of graphical and command-line
+interfaces.  A @code{transmission-daemon-service-type} service provides
+Transmission's headless variant, @command{transmission-daemon}, as a
+system service, allowing users to share files via BitTorrent even when
+they are not logged in.
+
+@deffn {Scheme Variable} transmission-daemon-service-type
+The service type for the Transmission Daemon BitTorrent client. Its
+value must be a @code{transmission-daemon-configuration} object as in
+this example:
+
+@lisp
+(service transmission-daemon-service-type
+         (transmission-daemon-configuration
+          ;; Restrict access to the RPC ("control") interface
+          (rpc-authentication-required? #t)
+          (rpc-username "transmission")
+          (rpc-password
+           (transmission-password-hash
+            "transmission" ; desired password
+            "uKd1uMs9"))   ; arbitrary salt value
+
+          ;; Accept requests from this and other hosts on the
+          ;; local network
+          (rpc-whitelist-enabled? #t)
+          (rpc-whitelist '("::1" "127.0.0.1" "192.168.0.*"))
+
+          ;; Limit bandwidth use during work hours
+          (alt-speed-down (* 1024 2)) ;   2 MB/s
+          (alt-speed-up 512)          ; 512 kB/s
+
+          (alt-speed-time-enabled? #t)
+          (alt-speed-time-day 'weekdays)
+          (alt-speed-time-begin
+           (+ (* 60 8) 30))           ; 8:30 am
+          (alt-speed-time-end
+           (+ (* 60 (+ 12 5)) 30))))  ; 5:30 pm
+@end lisp
+@end deffn
+
+Once the service is started, users can interact with the daemon through
+its Web interface (at @code{http://localhost:9091/}) or by using the
+@command{transmission-remote} command-line tool, available in the
+@code{transmission} package.  (Emacs users may want to also consider the
+@code{emacs-transmission} package.)  Both communicate with the daemon
+through its remote procedure call (RPC) interface, which by default is
+available to all users on the system; you may wish to change this by
+assigning values to the @code{rpc-authentication-required?},
+@code{rpc-username} and @code{rpc-password} settings, as shown in the
+example above and documented further below.
+
+The value for @code{rpc-password} must be a password hash of the type
+generated and used by Transmission clients.  This can be copied verbatim
+from an existing @file{settings.json} file, if another Transmission
+client is already being used.  Otherwise, the
+@code{transmission-password-hash} and @code{transmission-random-salt}
+procedures provided by this module can be used to obtain a suitable hash
+value.
+
+@deffn {Scheme Procedure} transmission-password-hash @var{password} @var{salt}
+Returns a string containing the result of hashing @var{password}
+together with @var{salt}, in the format recognized by Transmission
+clients for their @code{rpc-password} configuration setting.
+
+@var{salt} must be an eight-character string.  The
+@code{transmission-random-salt} procedure can be used to generate a
+suitable salt value at random.
+@end deffn
+
+@deffn {Scheme Procedure} transmission-random-salt
+Returns a string containing a random, eight-character salt value of the
+type generated and used by Transmission clients, suitable for passing to
+the @code{transmission-password-hash} procedure.
+@end deffn
+
+These procedures are accessible from within a Guile REPL started with
+the @command{guix repl} command (@pxref {Invoking guix repl}).  This is
+useful for obtaining a random salt value to provide as the second
+parameter to `transmission-password-hash`, as in this example session:
+
+@example
+$ guix repl
+scheme@@(guix-user)> ,use (gnu services file-sharing)
+scheme@@(guix-user)> (transmission-random-salt)
+$1 = "uKd1uMs9"
+@end example
+
+Alternatively, a complete password hash can generated in a single step:
+
+@example
+scheme@@(guix-user)> (transmission-password-hash "transmission"
+(transmission-random-salt))
+$2 = "@{c8bbc6d1740cd8dc819a6e25563b67812c1c19c9VtFPfdsX"
+@end example
+
+The resulting string can be used as-is for the value of
+@code{rpc-password}, allowing the password to be kept hidden even in the
+operating-system configuration.
+
+Torrent files downloaded by the daemon are directly accessible only to
+users in the ``transmission'' user group, who receive read-only access
+to the directory specified by the @code{download-dir} configuration
+setting (and also the directory specified by @code{incomplete-dir}, if
+@code{incomplete-dir-enabled?} is @code{#t}).  Downloaded files can be
+moved to another directory or deleted altogether using
+@command{transmission-remote} with its @code{--move} and
+@code{--remove-and-delete} options.
+
+If the @code{watch-dir-enabled?} setting is set to @code{#t}, users in
+the ``transmission'' group are able also to place @file{.torrent} files
+in the directory specified by @code{watch-dir} to have the corresponding
+torrents added by the daemon.  (The @code{trash-original-torrent-files?}
+setting controls whether the daemon deletes these files after processing
+them.)
+
+Some of the daemon's configuration settings can be changed temporarily
+by @command{transmission-remote} and similar tools. To undo these
+changes, use the service's @code{reload} action to have the daemon
+reload its settings from disk:
+
+@example
+# herd reload transmission-daemon
+@end example
+
+The full set of available configuration settings is defined by the
+@code{transmission-daemon-configuration} data type.
+
+@deftp {Data Type} transmission-daemon-configuration
+The data type representing configuration settings for Transmission
+Daemon.  These correspond directly to the settings recognized by
+Transmission clients in their @file{settings.json} file.
+@end deftp
+
+@c The following documentation was initially generated by
+@c (generate-transmission-daemon-documentation) in (gnu services
+@c file-sharing).  Manually maintained documentation is better, so we
+@c shouldn't hesitate to edit below as needed.  However if the change
+@c you want to make to this documentation can be done in an automated
+@c way, it's probably easier to change (generate-documentation) than to
+@c make it below and have to deal with the churn as Transmission Daemon
+@c updates.
+
+@c %start of fragment
+
+Available @code{transmission-daemon-configuration} fields are:
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} package transmission
+The Transmission package to use.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer stop-wait-period
+The period, in seconds, to wait when stopping the service for
+@command{transmission-daemon} to exit before killing its process.  This
+allows the daemon time to complete its housekeeping and send a final
+update to trackers as it shuts down.  On slow hosts, or hosts with a
+slow network connection, this value may need to be increased.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string download-dir
+The directory to which torrent files are downloaded.
+
+Defaults to @samp{"/var/lib/transmission-daemon/downloads"}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean incomplete-dir-enabled?
+If @code{#t}, files will be held in @code{incomplete-dir} while their
+torrent is being downloaded, then moved to @code{download-dir} once the
+torrent is complete.  Otherwise, files for all torrents (including those
+still being downloaded) will be placed in @code{download-dir}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-string incomplete-dir
+The directory in which files from incompletely downloaded torrents will
+be held when @code{incomplete-dir-enabled?} is @code{#t}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} umask umask
+The file mode creation mask used for downloaded files.  (See the
+@command{umask} man page for more information.)
+
+Defaults to @samp{18}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean rename-partial-files?
+When @code{#t}, ``.part'' is appended to the name of partially
+downloaded files.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} preallocation-mode preallocation
+The mode by which space should be preallocated for downloaded files, one
+of @code{none}, @code{fast} (or @code{sparse}) and @code{full}.
+Specifying @code{full} will minimize disk fragmentation at a cost to
+file-creation speed.
+
+Defaults to @samp{fast}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean watch-dir-enabled?
+If @code{#t}, the directory specified by @code{watch-dir} will be
+watched for new @file{.torrent} files and the torrents they describe
+added automatically (and the original files removed, if
+@code{trash-original-torrent-files?} is @code{#t}).
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-string watch-dir
+The directory to be watched for @file{.torrent} files indicating new
+torrents to be added, when @code{watch-dir-enabled} is @code{#t}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean trash-original-torrent-files?
+When @code{#t}, @file{.torrent} files will be deleted from the watch
+directory once their torrent has been added (see
+@code{watch-directory-enabled?}).
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean speed-limit-down-enabled?
+When @code{#t}, the daemon's download speed will be limited to the rate
+specified by @code{speed-limit-down}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer speed-limit-down
+The default global-maximum download speed, in kilobytes per second.
+
+Defaults to @samp{100}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean speed-limit-up-enabled?
+When @code{#t}, the daemon's upload speed will be limited to the rate
+specified by @code{speed-limit-up}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer speed-limit-up
+The default global-maximum upload speed, in kilobytes per second.
+
+Defaults to @samp{100}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean alt-speed-enabled?
+When @code{#t}, the alternate speed limits @code{alt-speed-down} and
+@code{alt-speed-up} are used (in place of @code{speed-limit-down} and
+@code{speed-limit-up}, if they are enabled) to constrain the daemon's
+bandwidth usage.  This can be scheduled to occur automatically at
+certain times during the week; see @code{alt-speed-time-enabled?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer alt-speed-down
+The alternate global-maximum download speed, in kilobytes per second.
+
+Defaults to @samp{50}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer alt-speed-up
+The alternate global-maximum upload speed, in kilobytes per second.
+
+Defaults to @samp{50}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean alt-speed-time-enabled?
+When @code{#t}, the alternate speed limits @code{alt-speed-down} and
+@code{alt-speed-up} will be enabled automatically during the periods
+specified by @code{alt-speed-time-day}, @code{alt-speed-time-begin} and
+@code{alt-time-speed-end}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} day-list alt-speed-time-day
+The days of the week on which the alternate-speed schedule should be
+used, specified either as a list of days (@code{sunday}, @code{monday},
+and so on) or using one of the symbols @code{weekdays}, @code{weekends}
+or @code{all}.
+
+Defaults to @samp{all}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer alt-speed-time-begin
+The time of day at which to enable the alternate speed limits, expressed
+as a number of minutes since midnight.
+
+Defaults to @samp{540}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer alt-speed-time-end
+The time of day at which to disable the alternate speed limits,
+expressed as a number of minutes since midnight.
+
+Defaults to @samp{1020}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string bind-address-ipv4
+The IP address at which to listen for peer connections, or ``0.0.0.0''
+to listen at all available IP addresses.
+
+Defaults to @samp{"0.0.0.0"}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string bind-address-ipv6
+The IPv6 address at which to listen for peer connections, or ``::'' to
+listen at all available IPv6 addresses.
+
+Defaults to @samp{"::"}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean peer-port-random-on-start?
+If @code{#t}, when the daemon starts it will select a port at random on
+which to listen for peer connections, from the range specified
+(inclusively) by @code{peer-port-random-low} and
+@code{peer-port-random-high}.  Otherwise, it listens on the port
+specified by @code{peer-port}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} port-number peer-port-random-low
+The lowest selectable port number when @code{peer-port-random-on-start?}
+is @code{#t}.
+
+Defaults to @samp{49152}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} port-number peer-port-random-high
+The highest selectable port number when @code{peer-port-random-on-start}
+is @code{#t}.
+
+Defaults to @samp{65535}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} port-number peer-port
+The port on which to listen for peer connections when
+@code{peer-port-random-on-start?} is @code{#f}.
+
+Defaults to @samp{51413}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean port-forwarding-enabled?
+If @code{#t}, the daemon will attempt to configure port-forwarding on an
+upstream gateway automatically using @acronym{UPnP} and
+@acronym{NAT-PMP}.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} encryption-mode encryption
+The encryption preference for peer connections, one of
+@code{prefer-unencrypted-connections},
+@code{prefer-encrypted-connections} or
+@code{require-encrypted-connections}.
+
+Defaults to @samp{prefer-encrypted-connections}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-string peer-congestion-algorithm
+The TCP congestion-control algorithm to use for peer connections,
+specified using a string recognized by the operating system in calls to
+@code{setsockopt} (or set to @code{disabled}, in which case the
+operating-system default is used).
+
+Note that on GNU/Linux systems, the kernel must be configured to allow
+processes to use a congestion-control algorithm not in the default set;
+otherwise, it will deny these requests with ``Operation not permitted''.
+To see which algorithms are available on your system and which are
+currently permitted for use, look at the contents of the files
+@file{tcp_available_congestion_control} and
+@file{tcp_allowed_congestion_control} in the @file{/proc/sys/net/ipv4}
+directory.
+
+As an example, to have Transmission Daemon use
+@uref{http://www-ece.rice.edu/networks/TCP-LP/,the TCP Low Priority
+congestion-control algorithm}, you'll need to modify your kernel
+configuration to build in support for the algorithm, then update your
+operating-system configuration to allow its use by adding a
+@code{sysctl-service-type} service (or updating the existing one's
+configuration) with lines like the following:
+
+@lisp
+(service sysctl-service-type
+         (sysctl-configuration
+          (settings
+           ("net.ipv4.tcp_allowed_congestion_control" .
+            "reno cubic lp"))))
+@end lisp
+
+The Transmission Daemon configuration can then be updated with
+
+@lisp
+(peer-congestion-algorithm "lp")
+@end lisp
+
+and the system reconfigured to have the changes take effect.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} tcp-type-of-service peer-socket-tos
+The type of service to request in outgoing @acronym{TCP} packets, one of
+@code{default}, @code{low-cost}, @code{throughput}, @code{low-delay} and
+@code{reliability}.
+
+Defaults to @samp{default}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer peer-limit-global
+The global limit on the number of connected peers.
+
+Defaults to @samp{200}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer peer-limit-per-torrent
+The per-torrent limit on the number of connected peers.
+
+Defaults to @samp{50}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer upload-slots-per-torrent
+The maximum number of peers to which the daemon will upload data
+simultaneously for each torrent.
+
+Defaults to @samp{14}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer peer-id-ttl-hours
+The maximum lifespan, in hours, of the peer ID associated with each
+public torrent before it is regenerated.
+
+Defaults to @samp{6}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean blocklist-enabled?
+When @code{#t}, the daemon will ignore peers mentioned in the blocklist
+it has most recently downloaded from @code{blocklist-url}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-string blocklist-url
+The URL of a peer blocklist (in @acronym{P2P}-plaintext or eMule
+@file{.dat} format) to be periodically downloaded and applied when
+@code{blocklist-enabled?} is @code{#t}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean download-queue-enabled?
+If @code{#t}, the daemon will be limited to downloading at most
+@code{download-queue-size} non-stalled torrents simultaneously.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer download-queue-size
+The size of the daemon's download queue, which limits the number of
+non-stalled torrents it will download at any one time when
+@code{download-queue-enabled?} is @code{#t}.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean seed-queue-enabled?
+If @code{#t}, the daemon will be limited to seeding at most
+@code{seed-queue-size} non-stalled torrents simultaneously.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer seed-queue-size
+The size of the daemon's seed queue, which limits the number of
+non-stalled torrents it will seed at any one time when
+@code{seed-queue-enabled?} is @code{#t}.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean queue-stalled-enabled?
+When @code{#t}, the daemon will consider torrents for which it has not
+shared data in the past @code{queue-stalled-minutes} minutes to be
+stalled and not count them against its @code{download-queue-size} and
+@code{seed-queue-size} limits.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer queue-stalled-minutes
+The maximum period, in minutes, a torrent may be idle before it is
+considered to be stalled, when @code{queue-stalled-enabled?} is
+@code{#t}.
+
+Defaults to @samp{30}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean ratio-limit-enabled?
+When @code{#t}, a torrent being seeded will automatically be paused once
+it reaches the ratio specified by @code{ratio-limit}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-rational ratio-limit
+The ratio at which a torrent being seeded will be paused, when
+@code{ratio-limit-enabled?} is @code{#t}.
+
+Defaults to @samp{2.0}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean idle-seeding-limit-enabled?
+When @code{#t}, a torrent being seeded will automatically be paused once
+it has been idle for @code{idle-seeding-limit} minutes.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer idle-seeding-limit
+The maximum period, in minutes, a torrent being seeded may be idle
+before it is paused, when @code{idle-seeding-limit-enabled?} is
+@code{#t}.
+
+Defaults to @samp{30}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean dht-enabled?
+Enable @uref{http://bittorrent.org/beps/bep_0005.html,the distributed
+hash table (@acronym{DHT}) protocol}, which supports the use of
+trackerless torrents.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean lpd-enabled?
+Enable @uref{https://en.wikipedia.org/wiki/Local_Peer_Discovery,local
+peer discovery} (@acronym{LPD}), which allows the discovery of peers on
+the local network and may reduce the amount of data sent over the public
+Internet.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean pex-enabled?
+Enable @uref{https://en.wikipedia.org/wiki/Peer_exchange,peer exchange}
+(@acronym{PEX}), which reduces the daemon's reliance on external
+trackers and may improve its performance.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean utp-enabled?
+Enable @uref{http://bittorrent.org/beps/bep_0029.html,the micro
+transport protocol} (@acronym{uTP}), which aims to reduce the impact of
+BitTorrent traffic on other users of the local network while maintaining
+full utilization of the available bandwidth.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean rpc-enabled?
+If @code{#t}, enable the remote procedure call (@acronym{RPC})
+interface, which allows remote control of the daemon via its Web
+interface, the @command{transmission-remote} command-line client, and
+similar tools.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string rpc-bind-address
+The IP address at which to listen for @acronym{RPC} connections, or
+``0.0.0.0'' to listen at all available IP addresses.
+
+Defaults to @samp{"0.0.0.0"}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} port-number rpc-port
+The port on which to listen for @acronym{RPC} connections.
+
+Defaults to @samp{9091}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string rpc-url
+The path prefix to use in the @acronym{RPC}-endpoint @acronym{URL}.
+
+Defaults to @samp{"/transmission/"}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean rpc-authentication-required?
+When @code{#t}, clients must authenticate (see @code{rpc-username} and
+@code{rpc-password}) when using the @acronym{RPC} interface.  Note this
+has the side effect of disabling host-name whitelisting (see
+@code{rpc-host-whitelist-enabled?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-string rpc-username
+The username required by clients to access the @acronym{RPC} interface
+when @code{rpc-authentication-required?} is @code{#t}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-transmission-password-hash rpc-password
+The password required by clients to access the @acronym{RPC} interface
+when @code{rpc-authentication-required?} is @code{#t}.  This must be
+specified using a password hash in the format recognized by Transmission
+clients, either copied from an existing @file{settings.json} file or
+generated using the @code{transmission-password-hash} procedure.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean rpc-whitelist-enabled?
+When @code{#t}, @acronym{RPC} requests will be accepted only when they
+originate from an address specified in @code{rpc-whitelist}.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string-list rpc-whitelist
+The list of IP and IPv6 addresses from which @acronym{RPC} requests will
+be accepted when @code{rpc-whitelist-enabled?} is @code{#t}.  Wildcards
+may be specified using @samp{*}.
+
+Defaults to @samp{("127.0.0.1" "::1")}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean rpc-host-whitelist-enabled?
+When @code{#t}, @acronym{RPC} requests will be accepted only when they
+are addressed to a host named in @code{rpc-host-whitelist}.  Note that
+requests to ``localhost'' or ``localhost.'', or to a numeric address,
+are always accepted regardless of these settings.
+
+Note also this functionality is disabled when
+@code{rpc-authentication-required?} is @code{#t}.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} string-list rpc-host-whitelist
+The list of host names recognized by the @acronym{RPC} server when
+@code{rpc-host-whitelist-enabled?} is @code{#t}.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} message-level message-level
+The minimum severity level of messages to be logged (to
+@file{/var/log/transmission.log}) by the daemon, one of @code{none} (no
+logging), @code{error}, @code{info} and @code{debug}.
+
+Defaults to @samp{info}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean start-added-torrents?
+When @code{#t}, torrents are started as soon as they are added;
+otherwise, they are added in ``paused'' state.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean script-torrent-done-enabled?
+When @code{#t}, the script specified by
+@code{script-torrent-done-filename} will be invoked each time a torrent
+completes.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} maybe-file-object script-torrent-done-filename
+A file name or file-like object specifying a script to run each time a
+torrent completes, when @code{script-torrent-done-enabled?} is
+@code{#t}.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean scrape-paused-torrents-enabled?
+When @code{#t}, the daemon will scrape trackers for a torrent even when
+the torrent is paused.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} non-negative-integer cache-size-mb
+The amount of memory, in megabytes, to allocate for the daemon's
+in-memory cache.  A larger value may increase performance by reducing
+the frequency of disk I/O.
+
+Defaults to @samp{4}.
+
+@end deftypevr
+
+@deftypevr {@code{transmission-daemon-configuration} parameter} boolean prefetch-enabled?
+When @code{#t}, the daemon will try to improve I/O performance by
+hinting to the operating system which data is likely to be read next
+from disk to satisfy requests from peers.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+
+@c %end of fragment
 
 
 

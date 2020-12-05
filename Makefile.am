@@ -475,6 +475,7 @@ SCM_TESTS =					\
   tests/scripts.scm				\
   tests/search-paths.scm			\
   tests/services.scm				\
+  tests/services/file-sharing.scm		\
   tests/services/linux.scm			\
   tests/sets.scm				\
   tests/size.scm				\
