@@ -33832,6 +33832,28 @@ UTF-32 types are provided, including support for malformed encoding.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wild-2
+  (package
+    (name "rust-wild")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wild" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0800hfmb099abwh7gqqbxhlvl7l3g5x681qsy0rm0x2lp2mr6mq3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob-0.3))))
+    (home-page "https://lib.rs/crates/wild")
+    (synopsis "Glob (wildcard) expanded command-line arguments")
+    (description
+     "This package allows Rust applications support wildcard arguments on
+command-line, uniformly on all platforms")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-winapi-0.3
   (package
     (name "rust-winapi")
