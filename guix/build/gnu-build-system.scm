@@ -72,7 +72,9 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
                     (search-paths '()) (native-search-paths '())
                     #:allow-other-keys)
   (define input-directories
-    (match inputs
+    ;; The "source" input can be a directory, but we don't want it for search
+    ;; paths.  See <https://issues.guix.gnu.org/44924>.
+    (match (alist-delete "source" inputs)
       (((_ . dir) ...)
        dir)))
 
