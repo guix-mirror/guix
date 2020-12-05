@@ -25251,8 +25251,32 @@ comparison.")
      "Semantic version parsing and comparison.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-semver-parser-0.10
+  (package
+    (name "rust-semver-parser")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "semver-parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a0lgmnd7jga3c6090lsn4lifh3mnzmy4v6d6yqg9rfm59n19vs2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;missing files
+       #:cargo-inputs
+       (("rust-pest" ,rust-pest-2))
+       #:cargo-development-inputs
+       (("rust-pest-generator" ,rust-pest-generator-2.1))))
+    (home-page "https://github.com/steveklabnik/semver-parser")
+    (synopsis "Parsing of the Semver spec")
+    (description "This package provides for parsing of the Semver spec.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-semver-parser-0.9
   (package
+    (inherit rust-semver-parser-0.10)
     (name "rust-semver-parser")
     (version "0.9.0")
     (source
@@ -25262,13 +25286,7 @@ comparison.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1ahqhvgpzhcsd28id7xnrjv4419i9yyalhm7d7zi430qx0hi2vml"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/steveklabnik/semver-parser")
-    (synopsis "Parsing of the semver spec")
-    (description "This package provides for parsing of the semver spec.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "1ahqhvgpzhcsd28id7xnrjv4419i9yyalhm7d7zi430qx0hi2vml"))))))
 
 (define-public rust-semver-parser-0.7
   (package
