@@ -19711,20 +19711,45 @@ used in Cargo build scripts.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-plist-1
+  (package
+    (name "rust-plist")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plist" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zb7k48x1zf1dhqavs37qm24fxi98qb978xv2nzjkkp4x2a6scvv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-line-wrap" ,rust-line-wrap-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/ebarnard/rust-plist/")
+    (synopsis "Rusty plist parser")
+    (description
+     "This package provides a Rusty plist parser.  It supports Serde
+serialization.")
+    (license license:expat)))
+
 (define-public rust-plist-0.4
   (package
+    (inherit rust-plist-1)
     (name "rust-plist")
     (version "0.4.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "plist" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0zqnxc5i4y6mj119vr0lzpb5j67vffpx2phhgh711533bw3ryajz"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plist" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zqnxc5i4y6mj119vr0lzpb5j67vffpx2phhgh711533bw3ryajz"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -19733,12 +19758,7 @@ used in Cargo build scripts.")
         ("rust-xml-rs" ,rust-xml-rs-0.8)
         ("rust-serde" ,rust-serde-1)
         ("rust-humantime" ,rust-humantime-1)
-        ("rust-byteorder" ,rust-byteorder-1))))
-    (home-page "https://github.com/ebarnard/rust-plist/")
-    (synopsis "Rusty plist parser")
-    (description
-     "This package provides a rusty plist parser.  Supports Serde serialization.")
-    (license license:expat)))
+        ("rust-byteorder" ,rust-byteorder-1))))))
 
 (define-public rust-plotters-0.2
   (package
