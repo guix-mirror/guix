@@ -24969,8 +24969,31 @@ macOS and iOS.")
        (("rust-hex" ,rust-hex-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-security-framework-sys-2
+  (package
+    (name "rust-security-framework-sys")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12v7wpf7cbc92xza4lf3w12411wzrkkvlbjgrhrid9yj4rg9v6zr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://lib.rs/crates/security-framework-sys")
+    (synopsis "Low-level FFI bindings to Apple @code{Security.framework}")
+    (description "This package provides low level FFI bindings to Apple
+@code{Security.framework}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-security-framework-sys-1
   (package
+    (inherit rust-security-framework-sys-2)
     (name "rust-security-framework-sys")
     (version "1.0.0")
     (source
@@ -24981,16 +25004,10 @@ macOS and iOS.")
        (sha256
         (base32
          "1iynsjz53lqkkw4zbq8l99xn799chbx90lsmrlfnsyxii14v1kji"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.7)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://lib.rs/crates/security-framework-sys")
-    (synopsis "Low-level FFI bindings to Apple @code{Security.framework}")
-    (description "This package provides low level FFI bindings to Apple
-@code{Security.framework}.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-security-framework-sys-0.3
   (package
