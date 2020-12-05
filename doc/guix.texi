@@ -32789,10 +32789,15 @@ Bootstrapping in our context refers to how the distribution gets built
 ``from nothing''.  Remember that the build environment of a derivation
 contains nothing but its declared inputs (@pxref{Introduction}).  So
 there's an obvious chicken-and-egg problem: how does the first package
-get built?  How does the first compiler get compiled?  Note that this is
-a question of interest only to the curious hacker, not to the regular
-user, so you can shamelessly skip this section if you consider yourself
-a ``regular user''.
+get built?  How does the first compiler get compiled?
+
+It is tempting to think of this question as one that only die-hard
+hackers may care about.  However, while the answer to that question is
+technical in nature, its implications are wide-ranging.  How the
+distribution is bootstrapped defines the extent to which we, as
+individuals and as a collective of users and hackers, can trust the
+software we run.  It is a central concern from the standpoint of
+@emph{security} and from a @emph{user freedom} viewpoint.
 
 @cindex bootstrap binaries
 The GNU system is primarily made of C code, with libc at its core.  The
