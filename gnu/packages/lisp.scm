@@ -444,12 +444,11 @@ an interpreter, a compiler, a debugger, and much more.")
            ;; of ASDF we use to build software; therefore, replace the contrib
            ;; ASDF with the version packaged into Guix.
            ;; [1] - https://bugs.launchpad.net/sbcl/+bug/1823442
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs #:allow-other-keys)
              (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
                     (guix-asdf (string-append
                                 cl-asdf
                                 "/share/common-lisp/source/asdf/asdf.lisp"))
-                    (out (string-append (assoc-ref outputs "out")))
                     (contrib-asdf "contrib/asdf/asdf.lisp"))
                (copy-file guix-asdf contrib-asdf))
              #t))
