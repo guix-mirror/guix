@@ -26449,26 +26449,37 @@ picking compatible shaders.")
      "Escape characters that may have a special meaning in a shell.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-shell-words-1
+  (package
+    (name "rust-shell-words")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shell-words" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x5hw7ch98sp6b99ihxjs5vw5dmwg4yvy4yxzr59394xr4w3kymn"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tmiasko/shell-words")
+    (synopsis "Process command line according to parsing rules of UNIX shell")
+    (description
+     "This package processes command line according to parsing rules of UNIX
+shell.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-shell-words-0.1
   (package
+    (inherit rust-shell-words-1)
     (name "rust-shell-words")
     (version "0.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "shell-words" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0jnrw3f174974fsi2hg48l0klpy24767ib28w0xcvi2ll5axxb1r"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/tmiasko/shell-words")
-    (synopsis
-     "Process command line according to parsing rules of UNIX shell")
-    (description
-     "Process command line according to parsing rules of UNIX shell.")
-    (license (list license:expat license:asl2.0))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shell-words" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jnrw3f174974fsi2hg48l0klpy24767ib28w0xcvi2ll5axxb1r"))))))
 
 (define-public rust-shlex-0.1
   (package
