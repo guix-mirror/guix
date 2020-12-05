@@ -13896,8 +13896,42 @@ algorithm and related formats (ZLIB, GZIP).")
     (description "This package provides a LZ77 encoder for libflate crate.")
     (license license:expat)))
 
+(define-public rust-libgit2-sys-0.12
+  (package
+    (name "rust-libgit2-sys")
+    (version "0.12.14+1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libgit2-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jgmp69a53lki14p8pigxniwyl755lhqzl0r56ppqps9wrcay9cg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/rust-lang/git2-rs")
+    (synopsis "Native bindings to the libgit2 library")
+    (description
+     "This package provides native Rust bindings to the @code{libgit2}
+library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-libgit2-sys-0.10
   (package
+    (inherit rust-libgit2-sys-0.12)
     (name "rust-libgit2-sys")
     (version "0.10.0")
     (source
@@ -13911,7 +13945,6 @@ algorithm and related formats (ZLIB, GZIP).")
        (modules '((guix build utils)))
        (snippet
         '(begin (delete-file-recursively "libgit2") #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
@@ -13920,19 +13953,7 @@ algorithm and related formats (ZLIB, GZIP).")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libgit2" ,libgit2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
-    (home-page "https://github.com/rust-lang/git2-rs")
-    (synopsis "Native bindings to the libgit2 library")
-    (description
-     "This package provides native rust bindings to the @code{libgit2} library.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-libgit2-sys-0.8
   (package
