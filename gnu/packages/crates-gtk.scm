@@ -224,6 +224,46 @@
         ("rust-x11" ,rust-x11-2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
+(define-public rust-gdk-0.12
+  (package
+    (name "rust-gdk")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gdk" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12bmk9vfpk7f03fx22cq9ps00xylsxcpmp8c8r95r1n05xvyirgv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.8)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.8)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.9)
+        ("rust-gio" ,rust-gio-0.8)
+        ("rust-gio-sys" ,rust-gio-sys-0.9)
+        ("rust-glib" ,rust-glib-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango" ,rust-pango-0.8))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("pango" ,pango)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the GDK 3 library")
+    (description "This package provides Rust bindings for the GDK 3 library.")
+    (license license:expat)))
+
 (define-public rust-gdk-pixbuf-0.9
   (package
     (name "rust-gdk-pixbuf")
