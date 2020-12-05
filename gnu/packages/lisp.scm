@@ -250,12 +250,11 @@ interface to the Tk widget system.")
          (delete 'check)
          (add-after 'unpack 'replace-asdf
            ;; Use system ASDF instead of bundled one.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs #:allow-other-keys)
              (let* ((cl-asdf (assoc-ref inputs "cl-asdf"))
                     (guix-asdf (string-append
                                 cl-asdf
                                 "/share/common-lisp/source/asdf/asdf.lisp"))
-                    (out (string-append (assoc-ref outputs "out")))
                     (contrib-asdf "contrib/asdf/asdf.lisp"))
                (copy-file guix-asdf contrib-asdf))
              #t))
