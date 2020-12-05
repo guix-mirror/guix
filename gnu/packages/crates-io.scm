@@ -6895,33 +6895,44 @@ on Linux, the Known Folder API on Windows, and the Standard
 Directory guidelines on macOS.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-dirs-2.0
+(define-public rust-dirs-3
   (package
     (name "rust-dirs")
-    (version "2.0.2")
+    (version "3.0.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "dirs" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1qymhyq7w7wlf1dirq6gsnabdyzg6yi2yyxkx6c4ldlkbjdaibhk"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zxrb3anxsh80mnp2il7awccv0s5gvy7djn6gis18nbm0bnraa8l"))))
+    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-dirs-sys" ,rust-dirs-sys-0.3))))
-    (build-system cargo-build-system)
+       (("rust-dirs-sys" ,rust-dirs-sys-0.3))))
     (home-page "https://github.com/soc/dirs-rs")
     (synopsis "Abstractions for standard locations for various platforms")
     (description
-     "This package provides a tiny low-level library that provides
-platform-specific standard locations of directories for config, cache and other
-data on Linux, Windows, macOS and Redox by leveraging the mechanisms defined by
-the XDG base/user directory specifications on Linux, the Known Folder API on
-Windows, and the Standard Directory guidelines on macOS.")
+     "This package is a tiny low-level library that provides platform-specific
+standard locations of directories for config, cache and other data.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-dirs-2.0
+  (package
+    (inherit rust-dirs-3)
+    (name "rust-dirs")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qymhyq7w7wlf1dirq6gsnabdyzg6yi2yyxkx6c4ldlkbjdaibhk"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dirs-sys" ,rust-dirs-sys-0.3))))))
 
 (define-public rust-dirs-1.0
   (package
