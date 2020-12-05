@@ -10527,20 +10527,58 @@ authenticated encryption cipher.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-git2-0.13
+  (package
+    (name "rust-git2")
+    (version "0.13.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "git2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0912gv7mvqzdlgkzny0z7ph07g2dmkmz8hp6bvyziy6p7011lvya"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libgit2-sys" ,rust-libgit2-sys-0.12)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl-probe" ,rust-openssl-probe-0.1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-structopt" ,rust-structopt-0.3)
+        ("rust-time" ,rust-time-0.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("git" ,git-minimal)))           ;for a single test
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/rust-lang/git2-rs")
+    (synopsis "Rust bindings to libgit2")
+    (description
+     "This package provides bindings to libgit2 for interoperating with git
+repositories.  This library is both threadsafe and memory safe and allows both
+reading and writing git repositories.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-git2-0.11
   (package
+    (inherit rust-git2-0.13)
     (name "rust-git2")
     (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "git2" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1i0fgsr91r97hsjbgqnymkcyiyg0057m7m04116k3vmyqpvrwlbp"))))
-    (build-system cargo-build-system)
+        (base32 "1i0fgsr91r97hsjbgqnymkcyiyg0057m7m04116k3vmyqpvrwlbp"))))
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -10556,21 +10594,7 @@ DWARF debugging format.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-thread-id" ,rust-thread-id-3)
-        ("rust-time" ,rust-time-0.1))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libgit2" ,libgit2)
-       ("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
-    (home-page "https://github.com/rust-lang/git2-rs")
-    (synopsis "Rust bindings to libgit2")
-    (description
-     "Bindings to libgit2 for interoperating with git repositories.
-This library is both threadsafe and memory safe and allows both
-reading and writing git repositories.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-time" ,rust-time-0.1))))))
 
 (define-public rust-git2-0.9
   (package
