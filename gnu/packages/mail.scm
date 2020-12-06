@@ -3871,7 +3871,7 @@ It is a replacement for the @command{urlview} program.")
                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
                  #t))))))
       (inputs
-       `(("guile-email" ,guile-email)
+       `(("guile-email" ,guile-email-latest)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
