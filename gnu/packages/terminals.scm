@@ -44,6 +44,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -51,6 +52,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages build-tools)   ;for meson-0.55
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -71,6 +73,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -685,6 +688,46 @@ eye-candy, customizable, and reasonably lightweight.")
                 license:silofl1.1
                 license:x11
                 license:bsd-3)))))
+
+(define-public foot
+  (package
+    (name "foot")
+    (version "1.5.4")
+    (home-page "https://codeberg.org/dnkl/foot")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0y6xfsldz5lwy6kp5dy9s27pnii7n5zj754wglvz9d9fp5lkl6id"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:meson ,meson-0.55
+       ;; Using a "release" build is recommended both for performance, and
+       ;; also to address a GCC 10 issue when doing PGO builds.
+       #:build-type "release"
+       ;; Enable LTO as recommended by INSTALL.md.
+       #:configure-flags '("-Db_lto=true")))
+    (native-inputs
+     `(;; Foot makes use of modern C features and needs a newer compiler.
+       ;; Remove when the default compiler is > GCC 7.
+       ("gcc" ,gcc-10)
+       ("ncurses" ,ncurses)             ;for 'tic'
+       ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("wayland-protocols" ,wayland-protocols)))
+    (inputs
+     `(("fcft" ,fcft)
+       ("libxkbcommon" ,libxkbcommon)
+       ("wayland" ,wayland)))
+    (synopsis "Wayland-native terminal emulator")
+    (description
+     "@command{foot} is a terminal emulator for systems using the Wayland
+display server.  It is designed to be fast, lightweight, and independent of
+desktop environments.  It can be used as a standalone terminal and also has
+a server/client mode.")
+    (license license:expat)))
 
 (define-public sakura
   (package
