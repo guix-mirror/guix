@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16180,8 +16181,32 @@ a default trait implementation you've defined.")
 libmysqlclient.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nasm-rs-0.2
+  (package
+    (name "rust-nasm-rs")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nasm-rs" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1lgc3gg32hj4pcbfp07vzwy013smdm27469fyy4rqgyil3x46vx7"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-arrayvec" ,rust-arrayvec-0.5)
+         ("rust-rayon" ,rust-rayon-1))))
+    (home-page "https://github.com/medek/nasm-rs")
+    (synopsis "Run NASM during your Cargo build")
+    (description "Run NASM during your Cargo build.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-nasm-rs-0.1
   (package
+    (inherit rust-nasm-rs-0.2)
     (name "rust-nasm-rs")
     (version "0.1.7")
     (source
@@ -16197,11 +16222,7 @@ libmysqlclient.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rayon" ,rust-rayon-1))))
-    (home-page "https://github.com/medek/nasm-rs")
-    (synopsis "Run NASM during your Cargo build")
-    (description "Run NASM during your Cargo build.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rayon" ,rust-rayon-1))))))
 
 (define-public rust-nalgebra-0.21
   (package
