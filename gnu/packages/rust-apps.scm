@@ -76,8 +76,11 @@
        (("rust-assert-cmd" ,rust-assert-cmd-1)
         ("rust-predicates" ,rust-predicates-1)
         ("rust-tempdir" ,rust-tempdir-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("libgit2" ,libgit2)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/sharkdp/bat")
     (synopsis "@command{cat} clone with syntax highlighting and git integration")
     (description
