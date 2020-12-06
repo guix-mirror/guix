@@ -15261,6 +15261,14 @@ and @code{erc-send-modify-hook} to download and show images.")
        (sha256
         (base32 "07hbz2md52ccy95gv4d5n6szrfmpfqf3w4kwqdg2cf54c7kgf7hw"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-require-cl
+           (lambda _
+             (substitute* "list-utils.el"
+               (("\\(require 'cl\\)") "(require 'cl-lib)"))
+             #t)))))
     (home-page "https://github.com/rolandwalker/list-utils")
     (synopsis "List-manipulation utility functions")
     (description "This package provides a list manipulation library for Emacs.")
