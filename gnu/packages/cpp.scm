@@ -731,3 +731,41 @@ of C++14 components that complements @code{std} and Boost.")
     ;; 32-bit is not supported: https://github.com/facebook/folly/issues/103
     (supported-systems '("aarch64-linux" "x86_64-linux"))
     (license license:asl2.0)))
+
+(define-public libexpected
+  (package
+    (name "libexpected")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TartanLlama/expected")
+             (commit (string-append "v" version))
+             ;; NOTE: Requires TL_CMAKE from custom
+             ;; repository. Should not affect reproducibility.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       ;; NOTE: This patch will be unnecessary on subsequent tags.
+       (patches (search-patches "libexpected-nofetch.patch"))
+       (sha256
+        (base32 "1ckzfrljzzdw9wf8hvdfjz4wjx5na57iwxc48mbv9rf5067m21a5"))))
+    (build-system cmake-build-system)
+    ;; TODO: Clean up install phase.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./tests"))))))
+    (native-inputs
+     `(("catch2" ,catch-framework2)))
+    (synopsis "C++11/14/17 std::expected with functional-style extensions")
+    (description "@code{std::expected} is proposed as the preferred way to
+represent objects which will either have an expected value, or an unexpected
+value giving information about why something failed.  Unfortunately, chaining
+together many computations which may fail can be verbose, as error-checking
+code will be mixed in with the actual programming logic.  This implementation
+provides a number of utilities to make coding with expected cleaner.")
+    (home-page "https://tl.tartanllama.xyz/")
+    (license license:cc0)))
