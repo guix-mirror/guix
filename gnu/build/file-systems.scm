@@ -262,14 +262,16 @@ bytevector."
 
 (define (check-bcachefs-file-system device)
   "Return the health of a bcachefs file system on DEVICE."
-  (match (status:exit-val
+  (let ((ignored-bits (logior 2))       ; DEVICE was mounted read-only
+        (status
+         (status:exit-val
           (apply system* "bcachefs" "fsck" "-p" "-v"
                  ;; Make each multi-device member a separate argument.
-                 (string-split device #\:)))
-    (0 'pass)
-    (1 'errors-corrected)
-    (2 'reboot-required)
-    (_ 'fatal-error)))
+                 (string-split device #\:)))))
+    (match (logand (lognot ignored-bits) status)
+      (0 'pass)
+      (1 'errors-corrected)
+      (_ 'fatal-error))))
 
 
 ;;;
