@@ -13930,7 +13930,10 @@ algorithm and related formats (ZLIB, GZIP).")
        (uri (crate-uri "libgit2-sys" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0jgmp69a53lki14p8pigxniwyl755lhqzl0r56ppqps9wrcay9cg"))))
+        (base32 "0jgmp69a53lki14p8pigxniwyl755lhqzl0r56ppqps9wrcay9cg"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (delete-file-recursively "libgit2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
