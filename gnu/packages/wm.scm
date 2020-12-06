@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1680,6 +1681,7 @@ productive, customizable lisp based systems.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
+                 (setenv "HOME" "/tmp")
                  (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm" "slynk")
