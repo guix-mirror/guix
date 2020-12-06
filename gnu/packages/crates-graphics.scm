@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,8 +168,38 @@ text or blue underlined text, on ANSI terminals.")
          "1xif1bh938qpfc3d0f9xgidibpm65xix11w9gszwqnia00q7rb13"))))
     (arguments `())))
 
+(define-public rust-aom-sys-0.2
+  (package
+    (name "rust-aom-sys")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "aom-sys" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "03a0xhaafjn0hlpcf9ba73hv557m0jqnmj9wl57wzrcnka96zvgj"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-bindgen" ,rust-bindgen-0.54)
+         ("rust-metadeps" ,rust-metadeps-1.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libaom" ,libaom)
+       ("clang" ,clang)
+       ("llvm" ,llvm)))
+    (home-page "https://github.com/rust-av/aom-rs")
+    (synopsis "FFI bindings to aom")
+    (description "This package provides FFI bindings to aom.")
+    (license license:expat)))
+
 (define-public rust-aom-sys-0.1
   (package
+    (inherit rust-aom-sys-0.2)
     (name "rust-aom-sys")
     (version "0.1.4")
     (source
@@ -190,11 +221,7 @@ text or blue underlined text, on ANSI terminals.")
     (inputs
      `(("libaom" ,libaom)
        ("clang" ,clang)
-       ("llvm" ,llvm)))
-    (home-page "https://github.com/rust-av/aom-rs")
-    (synopsis "FFI bindings to aom")
-    (description "This package provides FFI bindings to aom.")
-    (license license:expat)))
+       ("llvm" ,llvm)))))
 
 (define-public rust-ascii-canvas-2
   (package
