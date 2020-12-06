@@ -415,17 +415,16 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.9")
+    (version "3.20.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "1prdbp410405xrfggjc7y34nzljg7jnbgjzalgv4khwwma4i299n"))
+                "04fvdyjyjbkviy3awgm7g43p3lrvrsmgaqz8bwra22g7v2rpa5hb"))
               (modules '((guix build utils)))
-              (patches (search-patches "hplip-fix-bug-1898438.patch"
-                                       "hplip-remove-imageprocessor.patch"))
+              (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
                   ;; Delete non-free blobs: .so files, pre-compiled
