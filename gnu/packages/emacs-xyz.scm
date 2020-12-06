@@ -362,42 +362,38 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
 
 (define-public emacs-with-editor
-  ;; This commit fixes an (magit) issue with emacs 28, see
-  ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2020-10/msg00211.html
-  (let ((commit "c4768f51c7415119519b4626d8643d60e584098c")
-        (revision "1"))
-    (package
-      (name "emacs-with-editor")
-      (version (git-version "2.9.4" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/magit/with-editor")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "01ysb9pnscpmingay6njdywkqgj4hn5l5d9igsg3x7p7061jwwix"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'make-info
-             (lambda _
-               (invoke "makeinfo" "--no-split"
-                       "-o" "with-editor.info" "with-editor.texi"))))))
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/magit/with-editor")
-      (synopsis "Emacs library for using Emacsclient as EDITOR")
-      (description
-       "This package provides an Emacs library to use the Emacsclient as
+  (package
+    (name "emacs-with-editor")
+    (version "3.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magit/with-editor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hw6i5r3adkm4988badi94825lywkrh3sddiff4z04kj1nj15d0k"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (invoke "makeinfo" "--no-split"
+                     "-o" "with-editor.info" "with-editor.texi"))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)))
+    (home-page "https://github.com/magit/with-editor")
+    (synopsis "Emacs library for using Emacsclient as EDITOR")
+    (description
+     "This package provides an Emacs library to use the Emacsclient as
 @code{$EDITOR} of child processes, making sure they know how to call home.
 For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-libgit
   (let ((commit "0ef8b13aef011a98b7da756e4f1ce3bb18e4d55a")
