@@ -3934,19 +3934,14 @@ tcpdump and snoop.")
 (define-public pam-mount
   (package
     (name "pam-mount")
-    (version "2.16")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pam-mount/pam_mount/"
-                           version "/pam_mount-" version ".tar.xz"))
+                           "pam_mount-" version ".tar.xz"))
        (sha256
-        (base32
-         "1rvi4irb7ylsbhvx1cr6islm2xxw1a4b19q6z4a9864ndkm0f0mf"))
-       (patches
-        ;; Patch adding support for encrypted volumes in LUKS2 format.
-        ;; It comes from the Gentoo package definition for sys-auth/pam_mount.
-        (search-patches "pam-mount-luks2-support.patch"))))
+        (base32 "1q2n6a2ah6nghdn8i6ad2wj247njwb5nx48cggxknaa6lqxylidy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)

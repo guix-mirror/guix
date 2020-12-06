@@ -1432,7 +1432,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/pam-krb5-CVE-2020-10595.patch		\
-  %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
   %D%/packages/patches/plasma-framework-fix-KF5PlasmaMacros.cmake.patch \
