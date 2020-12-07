@@ -13061,7 +13061,7 @@ version does count multisplits.")
     (arguments
      `(#:tests? #f                      ; there are none
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (let ((system ,(or (%current-target-system)
                                 (%current-system))))
                (cond
