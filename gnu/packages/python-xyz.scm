@@ -8813,13 +8813,13 @@ third-party code.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.6")
+    (version "1.3.8")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "llfuse" version ".tar.bz2"))
+              (uri (pypi-uri "llfuse" version))
               (sha256
                (base32
-                "1j9fzxpgmb4rxxyl9jcf84zvznhgi3hnh4hg5vb0qaslxkvng8ii"))))
+                "1g2cdhdqrb6m7655qp61pn61pwj1ql61cdzhr2jvl3w4i8877ddr"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
