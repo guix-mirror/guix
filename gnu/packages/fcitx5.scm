@@ -21,9 +21,11 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -34,6 +36,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -177,4 +180,29 @@ client.")
     (home-page "https://github.com/fcitx/fcitx5-lua")
     (synopsis "Lua support for Fcitx 5")
     (description "Fcitx5-lua allows writing Fcitx5 extension in Lua.")
+    (license license:lgpl2.1+)))
+
+(define-public libime
+  (package
+    (name "libime")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.fcitx-im.org/fcitx5/libime/libime-"
+                           version "_dict.tar.xz"))
+       (sha256
+        (base32 "006pncby7p6h3rnicckzjwi6jzsrqiqbj6p9bpic80lanlllgw31"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("fcitx5" ,fcitx5)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("gcc" ,gcc-9)                  ;for #include <filesystem> and ld support
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("python" ,python)))             ;needed to run test
+    (home-page "https://github.com/fcitx/libime")
+    (synopsis "Library for implementing generic input method")
+    (description "Libime is a library for implmenting various input methods
+editors.")
     (license license:lgpl2.1+)))
