@@ -205,6 +205,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/erlang.scm			\
   %D%/packages/fabric-management.scm		\
   %D%/packages/fcitx.scm			\
+  %D%/packages/fcitx5.scm			\
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
   %D%/packages/file-systems.scm			\
