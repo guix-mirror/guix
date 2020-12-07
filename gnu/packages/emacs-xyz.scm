@@ -7783,6 +7783,33 @@ The purpose of this library is to wrap all the quirks and hassle of
 @code{package.el} into a sane API.")
     (license license:gpl3+)))
 
+(define-public emacs-counsel-jq
+  (let ((release "1.0.0")
+        (revision "0")
+        (commit "aaf33fc2447096cd0d03b77395fe2a95c9fe1481"))
+    (package
+      (name "emacs-counsel-jq")
+      (version (git-version release revision commit))
+      (home-page "https://github.com/200ok-ch/counsel-jq")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10rz0qm8a4bl0m86kx19zq8lri047p4sxqyny08bgm9pbam0wvwn"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-swiper" ,emacs-swiper)
+         ("jq" ,jq)))
+      (synopsis "Live preview @code{jq} queries using counsel")
+      (description
+       "This Emacs package provides the ability to live preview @code{jq}
+queries using counsel.")
+      (license license:gpl3+))))
+
 (define-public emacs-counsel-notmuch
   ;; Upstream provides no release.  Extract version for main file.
   (let ((commit "a4a1562935e4180c42524c51609d1283e9be0688")
