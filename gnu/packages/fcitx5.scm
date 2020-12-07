@@ -37,6 +37,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -206,3 +207,38 @@ client.")
     (description "Libime is a library for implmenting various input methods
 editors.")
     (license license:lgpl2.1+)))
+
+(define-public fcitx5-qt
+  (package
+    (name "fcitx5-qt")
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.fcitx-im.org/fcitx5"
+                           "/fcitx5-qt/fcitx5-qt-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "0ilhb4yw9k3m1c4fidnv3nd5dgm9xxds11dgdys6gswjjnmcgqqm"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_QT5PLUGINDIR="
+                            %output "/lib/qt5/plugins")
+             "-DENABLE_QT4=Off")))
+    (inputs
+     `(("fcitx5" ,fcitx5)
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("qtbase" ,qtbase)
+       ("gettext" ,gettext-minimal)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (home-page "https://github.com/fcitx/fcitx5-qt")
+    (synopsis "Qt library and IM module for Fcitx 5")
+    (description "Fcitx5-qt provides Qt library for development and IM module
+for Qt based application.")
+    (license (list license:lgpl2.1+
+                   ;; Files under qt4(Fcitx5Qt4DBusAddons), qt5/dbusaddons
+                   ;; and qt5/platforminputcontext.
+                   license:bsd-3))))
