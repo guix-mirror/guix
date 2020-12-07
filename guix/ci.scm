@@ -50,6 +50,7 @@
             %query-limit
             queued-builds
             latest-builds
+            evaluation
             latest-evaluations
             evaluations-for-commit))
 
@@ -139,6 +140,13 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
     (map json->build (vector->list latest))))
+
+(define (evaluation url evaluation)
+  "Return the given EVALUATION performed by the CI server at URL."
+  (let ((evaluation (json-fetch
+                     (string-append url "/api/evaluation?id="
+                                    (number->string evaluation)))))
+    (json->evaluation evaluation)))
 
 (define* (latest-evaluations url #:optional (limit %query-limit))
   "Return the latest evaluations performed by the CI server at URL."
