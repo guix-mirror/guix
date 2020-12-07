@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1318,6 +1319,43 @@ move around."
 (define-public rust-1.46
   (rust-bootstrapped-package rust-1.45 "1.46.0"
     "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
+
+(define-public rust-1.47
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.46 "1.47.0"
+          "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-11)
+                       (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; The source code got rearranged: libstd is now in the newly created library folder.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+                   (substitute* "library/std/src/sys/unix/process/process_common.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t)))
+             (delete 'patch-cargo-checksums)
+             (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
+               ;; Generate checksums after patching generated files (in
+               ;; particular, vendor/jemalloc/rep/Makefile).
+               (lambda* _
+                 (use-modules (guix build cargo-utils))
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor")
+                 #t)))))))))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)
