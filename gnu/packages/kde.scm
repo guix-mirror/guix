@@ -518,7 +518,7 @@ used in KDE development tools Kompare and KDevelop.")
 straightforward and cross-platform API for a range of cryptographic features,
 including SSL/TLS, X.509 certificates, SASL, OpenPGP, S/MIME CMS, and smart
 cards.")
-    (license license:lgpl2.1)))
+    (license license:lgpl2.1+)))
 
 (define-public kpmcore
   (package
