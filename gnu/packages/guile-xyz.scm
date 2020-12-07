@@ -4207,3 +4207,36 @@ which provides core cryptographic primitives needed to build higher-level
 tools.")
     (home-page "https://inqlab.net/git/guile-sodium.git")
     (license license:gpl3+)))
+
+(define-public guile-eris
+  (package
+    (name "guile-eris")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://inqlab.net/git/eris.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "1ijglmwkdy1l87gj429qfjis0v8b1zlxhbyfhx5za8664h68nqka"))))
+    (build-system gnu-build-system)
+    (arguments '())
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ;; test dependency
+       ("guile-srfi-180" ,guile-srfi-180)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-sodium" ,guile-sodium)))
+    (synopsis "Guile implementation of the Encoding for Robust Immutable Storage (ERIS)")
+    (description
+     "Guile-ERIS is the reference implementation of the Encoding for Robust
+Immutable Storage (ERIS).  ERIS allows arbirtary content to be encoded into
+uniformly sized, encrypted blocks that can be reassembled using a short
+read-capability.")
+    (home-page "https://inqlab.net/git/eris.git")
+    (license license:gpl3+)))
