@@ -1082,7 +1082,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "src/src.pro"
                ;; Do not attempt to install the .prf file into qtbase
-               ;; "lib/mkspecs/features", ref <https://bugs.gnu.org/45301>.
+               ;; "lib/qt5/mkspecs/features", ref <https://bugs.gnu.org/45031>.
                (("\\$\\$\\[QMAKE_MKSPECS\\]")
                 (string-append (assoc-ref outputs "out") "/lib/qt5/mkspecs")))
              #t))
