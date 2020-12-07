@@ -1348,6 +1348,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mingw-w64-dlltool-temp-prefix.patch	\
   %D%/packages/patches/mingw-w64-reproducible-gendef.patch	\
+  %D%/packages/patches/minimap2-aarch64-support.patch		\
   %D%/packages/patches/minisat-friend-declaration.patch		\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\

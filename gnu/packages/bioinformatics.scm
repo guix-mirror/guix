@@ -13056,7 +13056,8 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "0hi7i9pzxhvjj44khzzzj1lrn5gb5837arr4wgln7k1k5n4ci2mn"))))
+         "0hi7i9pzxhvjj44khzzzj1lrn5gb5837arr4wgln7k1k5n4ci2mn"))
+       (patches (search-patches "minimap2-aarch64-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
@@ -13065,12 +13066,16 @@ version does count multisplits.")
              (let ((system ,(or (%current-target-system)
                                 (%current-system))))
                (cond
-                ((string-prefix? "x86_64" system)
-                 "all")
-                ((or (string-prefix? "armhf" system)
-                     (string-prefix? "aarch64" system))
-                 "arm_neon=1")
-                (else "sse2only=1"))))
+                 ((string-prefix? "x86_64" system)
+                  "all")
+                 ((or (string-prefix? "i586" system)
+                      (string-prefix? "i686" system))
+                  "sse2only=1")
+                 ((string-prefix? "armhf" system)
+                  "arm_neon=1")
+                 ((string-prefix? "aarch64" system)
+                  "aarch64=1")
+                 (else ""))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
