@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright 1996-1997,2000-2001,2006,2008,2011,2013,2018
+   Copyright 1996-1997,2000-2001,2006,2008,2011,2013,2018,2020
       Free Software Foundation, Inc.
    Copyright (C) 2020 Ludovic Courtès <ludo@gnu.org>
 
@@ -19,14 +19,47 @@
    along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* This file implements a variant of the 'guile' executable that does not
-   complain about locale issues.  */
+   complain about locale issues and arranges to reduce startup time by
+   ignoring GUILE_LOAD_PATH and GUILE_LOAD_COMPILED_PATH until it has
+   booted.  */
 
+#include <stdlib.h>
+#include <string.h>
 #include <locale.h>
 #include <libguile.h>
+
+/* Saved values of GUILE_LOAD_PATH and GUILE_LOAD_COMPILED_PATH.  */
+static const char *load_path, *load_compiled_path;
 
 static void
 inner_main (void *unused, int argc, char **argv)
 {
+  if (load_path != NULL)
+    {
+      setenv ("GUILE_LOAD_PATH", load_path, 1);
+      SCM load_path_var =
+	scm_c_public_lookup ("guile", "%load-path");
+      SCM addition =
+	scm_parse_path (scm_from_locale_string (load_path), SCM_EOL);
+      scm_variable_set_x (load_path_var,
+			  scm_append
+			  (scm_list_2 (scm_variable_ref (load_path_var),
+				       addition)));
+    }
+
+  if (load_compiled_path != NULL)
+    {
+      setenv ("GUILE_LOAD_COMPILED_PATH", load_compiled_path, 1);
+      SCM load_compiled_path_var =
+	scm_c_public_lookup ("guile", "%load-compiled-path");
+      SCM addition =
+	scm_parse_path (scm_from_locale_string (load_compiled_path), SCM_EOL);
+      scm_variable_set_x (load_compiled_path_var,
+			  scm_append
+			  (scm_list_2 (scm_variable_ref (load_compiled_path_var),
+				       addition)));
+    }
+
   scm_shell (argc, argv);
 }
 
@@ -39,6 +72,15 @@ main (int argc, char **argv)
        that.  That gives us UTF-8 support for 'scm_to_locale_string', etc.,
        which is always preferable over the C locale.  */
     setlocale (LC_ALL, "en_US.utf8");
+
+  const char *str;
+  str = getenv ("GUILE_LOAD_PATH");
+  load_path = str != NULL ? strdup (str) : NULL;
+  str = getenv ("GUILE_LOAD_COMPILED_PATH");
+  load_compiled_path = str ? strdup (str) : NULL;
+
+  unsetenv ("GUILE_LOAD_PATH");
+  unsetenv ("GUILE_LOAD_COMPILED_PATH");
 
   scm_install_gmp_memory_functions = 1;
   scm_boot_guile (argc, argv, inner_main, 0);
