@@ -1071,6 +1071,14 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
              (substitute* "src/src.pro"
                (("/lib64") "/lib"))
              #t))
+         (add-after 'unpack 'adjust-mkspecs-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/src.pro"
+               ;; Do not attempt to install the .prf file into qtbase
+               ;; "lib/mkspecs/features", ref <https://bugs.gnu.org/45301>.
+               (("\\$\\$\\[QMAKE_MKSPECS\\]")
+                (string-append (assoc-ref outputs "out") "/lib/qt5/mkspecs")))
+             #t))
          (delete 'configure) ; no configure script
          (delete 'check) ; no test target
          (add-before 'build 'qmake
