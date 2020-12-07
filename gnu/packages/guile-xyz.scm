@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages emacs)
@@ -4176,3 +4178,32 @@ recursively.  It also provides new versions of @code{open-output-file},
 directory of its argument if it does not exist.")
     (home-page "https://mkdir-p.divoplade.fr")
     (license license:asl2.0)))
+
+(define-public guile-sodium
+  (package
+    (name "guile-sodium")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://inqlab.net/git/guile-sodium.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256 (base32 "189jsj87hycs57a54x0b9lifwvhr63nypb9vfxdrq7rwrpcvi5f8"))))
+    (build-system gnu-build-system)
+    (arguments `())
+    (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("pkg-config" ,pkg-config)
+        ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs `(("libsodium" ,libsodium)))
+    (synopsis "Guile bindings to the libsodium cryptographic library")
+    (description
+     "This package provides Guile bindings to the libsodium cryptographic library
+which provides core cryptographic primitives needed to build higher-level
+tools.")
+    (home-page "https://inqlab.net/git/guile-sodium.git")
+    (license license:gpl3+)))
