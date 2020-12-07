@@ -25743,3 +25743,28 @@ s-expression.")
 work on alists, hash-table and arrays.  All functions are prefixed with
 @code{map-}.")
     (license license:gpl3+)))
+
+(define-public emacs-burly
+  (package
+    (name "emacs-burly")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/burly.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vaikknjzmhpszyi4yxjjkp1ihgmhpbnbx1s5pjy4mnhl1ibi33b"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-map" ,emacs-map)))
+    (home-page "https://github.com/alphapapa/burly.el")
+    (synopsis "Save and restore frame/window configurations with buffers")
+    (description "This package provides tools to save and restore frame and
+window configurations in Emacs, including buffers that may not be live
+anymore.  In this way, it's like a lightweight \"workspace\" manager, allowing
+you to easily restore one or more frames, including their windows, the
+windows' layout, and their buffers.")
+    (license license:gpl3+)))
