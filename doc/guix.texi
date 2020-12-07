@@ -18563,6 +18563,12 @@ This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password.
+
+Note that @code{xfce4-panel} and its plugin packages should be installed in
+the same profile to ensure compatibility.  When using this service, you should
+add extra plugins (@code{xfce4-whiskermenu-plugin},
+@code{xfce4-weather-plugin}, etc.) to the @code{packages} field of your
+@code{operating-system}.
 @end defvr
 
 @deftp {Data Type} xfce-desktop-configuration
