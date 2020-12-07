@@ -19,7 +19,9 @@
 (define-module (gnu packages fcitx5)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages curl)
@@ -410,3 +412,72 @@ including input methods previous bundled inside Fcitx 4:
    (description "Fcitx5-configtool is a graphical configuration tool
 to manage different input methods in Fcitx 5.")
    (license license:gpl2+)))
+
+(define-public fcitx5-material-color-theme
+  (package
+    (name "fcitx5-material-color-theme")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hosxy/Fcitx5-Material-Color")
+             (commit version)))
+       (sha256
+        (base32 "1mgc722521jmfx0xc3ibmiycd3q2w7xg2956xcpc07kz90gcdjaa"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (srfi srfi-26))
+
+             (let* ((out (assoc-ref outputs "out"))
+                    (assets-dir (string-append
+                                 out "/share/fcitx5-material-color-theme"))
+                    (themes-prefix (string-append out "/share/fcitx5/themes")))
+
+               (define (install-theme-variant variant target)
+                 (let ((dir (string-append themes-prefix "/" target))
+                       (png (string-append "panel-" variant ".png"))
+                       (conf (string-append "theme-" variant ".conf")))
+                   (format #t "install: Installing color variant \"~a\" to ~a~%"
+                           variant dir)
+                   (substitute* conf
+                     (("^Name=.*")
+                      (string-append "Name=" target "\n")))
+                   (mkdir-p dir)
+                   (install-file png dir)
+                   (copy-file conf (string-append dir "/theme.conf"))
+                   (symlink (string-append assets-dir "/arrow.png")
+                            (string-append dir "/arrow.png"))))
+
+               (mkdir-p assets-dir)
+               (install-file "arrow.png" assets-dir)
+               (for-each
+                (lambda (x)
+                  (install-theme-variant
+                   x (string-append "Material-Color-" (string-capitalize x))))
+                '("black" "blue" "brown" "indigo"
+                  "orange" "pink" "red" "teal"))
+
+               (install-theme-variant
+                "deepPurple" "Material-Color-DeepPurple")))))))
+    (home-page "https://github.com/hosxy/Fcitx5-Material-Color")
+    (synopsis "Material Design for Fcitx 5")
+    (description "Fcitx5-material-color-theme is a Material Design theme
+for Fcitx 5 with following color variants:
+
+@itemize
+@item Black
+@item Blue
+@item Brown
+@item Indigo
+@item Orange
+@item Pink
+@item Red
+@item teal
+@item DeepPurple
+@end itemize\n")
+    (license license:asl2.0)))
