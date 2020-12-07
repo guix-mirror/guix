@@ -307,14 +307,14 @@ applications, there is xclip integration." )
 (define-public yapet
   (package
     (name "yapet")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://yapet.guengel.ch/downloads/yapet-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0b1v0whf70dfjzlwqwwvfv526s828skjvm4xvwly3vcvcmpz59sh"))))
+        (base32 "0hpibsdry259cmvps35isr6jn9cd9fsk3r1h0ppjx9zxfrpqwldg"))))
     (build-system gnu-build-system)
     (inputs
      `(("argon2" ,argon2)
