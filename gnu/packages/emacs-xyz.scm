@@ -25723,3 +25723,23 @@ syntax highlighting and UI components.")
        "This Emacs package provides a Janet REPL to evaluate @code{janet-mode}
 s-expression.")
       (license license:expat))))
+
+(define-public emacs-map
+  (package
+    (name "emacs-map")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/map-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0ydz5w1n4vwhhzxxj003s7jv8n1wjijwfryk5z93bwhnr0cak0i0"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/map.html")
+    (synopsis "Map manipulation functions")
+    (description "This package provides Emacs map-manipulation functions that
+work on alists, hash-table and arrays.  All functions are prefixed with
+@code{map-}.")
+    (license license:gpl3+)))
