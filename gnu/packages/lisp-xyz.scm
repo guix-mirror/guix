@@ -309,6 +309,45 @@ streams which are similar to string streams.")
 (define-public ecl-flexi-streams
   (sbcl-package->ecl-package sbcl-flexi-streams))
 
+(define-public sbcl-cl-abnf
+  ;; There are no releases
+  (let ((commit "ba1fbb104dedbdaddb1ef93d2e4da711bd96cd70")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-abnf")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/dimitri/cl-abnf")
+              (commit commit)))
+        (file-name (git-file-name "cl-abnf" version))
+        (sha256
+         (base32 "0f09nsndxa90acm71zd4qdnp40v705a4sqm04mnv9x76h6dlggmz"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("cl-ppcre" ,sbcl-cl-ppcre)
+        ("esrap" ,sbcl-esrap)))
+     (arguments
+      `(#:asd-systems '("abnf")))
+     (home-page "https://github.com/dimitri/cl-abnf")
+     (synopsis "ABNF parser generator for Common Lisp")
+     (description "This Common Lisp library implements a parser generator for
+the ABNF grammar format as described in RFC2234.  The generated parser is a
+regular expression scanner provided by the cl-ppcre lib, which means that we
+can't parse recursive grammar definition.  One such definition is the ABNF
+definition as given by the RFC.  Fortunately, as you have this lib, you most
+probably don't need to generate another parser to handle that particular ABNF
+grammar.")
+     (license license:expat))))
+
+(define-public cl-abnf
+  (sbcl-package->cl-source-package sbcl-cl-abnf))
+
+(define-public ecl-cl-abnf
+  (sbcl-package->ecl-package sbcl-cl-abnf))
+
 (define-public sbcl-cl-ppcre
   (package
     (name "sbcl-cl-ppcre")
