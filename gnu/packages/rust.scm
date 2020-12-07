@@ -1357,5 +1357,33 @@ move around."
                  (generate-all-checksums "vendor")
                  #t)))))))))
 
+(define-public rust-1.48
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.47 "1.48.0"
+           "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf")))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          ;; New patch required due to the second part of the source code rearrangement:
+          ;; the relevant source code is now in the compiler directory.
+          (patches (search-patches "rust-1.48-linker-locale.patch"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Some tests got split out into separate files.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process/tests.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   (substitute* "library/std/src/sys/unix/process/process_common/tests.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t))))))))))
+
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)
