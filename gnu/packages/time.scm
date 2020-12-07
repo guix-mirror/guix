@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,21 +400,31 @@ timestamps.")
 (define-public python-arrow
   (package
     (name "python-arrow")
-    (version "0.10.0")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "arrow" version))
               (sha256
                (base32
-                "08n7q2l69hlainds1byd4lxhwrq7zsw7s640zkqc3bs5jkq0cnc0"))))
+                "1m3fpz96w3g08i9x9cpqh3cr795y9zbj1bfnay3ccdhxv86d227z"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "tests"))))))
     (native-inputs
      `(;; For testing
        ("python-chai" ,python-chai)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
        ("python-simplejson" ,python-simplejson)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
-    (home-page "https://github.com/crsmithdev/arrow/")
+     `(("python-dateutil" ,python-dateutil)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/arrow-py/arrow")
     (synopsis "Dates and times for Python")
     (description
      "Arrow is a Python library to creating, manipulating, formatting and
