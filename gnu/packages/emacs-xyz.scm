@@ -86,6 +86,7 @@
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23224,10 +23225,10 @@ Emacs that integrate with major modes like Org-mode.")
       (home-page "https://github.com/hlissner/emacs-doom-themes")
       (license license:expat))))
 
-(define-public emacs-modus-operandi-theme
+(define-public emacs-modus-themes
   (package
-    (name "emacs-modus-operandi-theme")
-    (version "0.13.0")
+    (name "emacs-modus-themes")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -23236,56 +23237,27 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i6n3pzrmlgabsijy6z0hhs71q7g99yagwr2m33lr30skqc9rvdn"))))
+        (base32 "1v82payjgx8z0qdklsrkim7xkb6hqrbs34d5qpq0sii43jwhiy5j"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-other-theme
-           (lambda _
-             (delete-file "modus-vivendi-theme.el")
-             #t)))))
-    (home-page "https://gitlab.com/protesilaos/modus-themes")
-    (synopsis "Accessible light theme (WCAG AAA)")
+    (home-page "https://protesilaos.com/modus-themes/")
+    (synopsis "Accessible themes (WCAG AAA)")
     (description
-     "Modus operandi is the light version of the Modus accessible themes for
-GNU Emacs.  The contrast ratio between foreground and background values should
-always be greater than 7:1, which conforms with the WCAG AAA accessibility
-standard.  This is the highest standard of its kind.")
+     "The Modus themes are designed for accessible readability.  They conform
+with the highest standard for color contrast between any given combination of
+background and foreground values.  This corresponds to the WCAG AAA standard,
+which specifies a minimum rate of distance in relative luminance of 7:1.
+
+Modus Operandi (modus-operandi) is a light theme, while Modus
+Vivendi (modus-vivendi) is dark.  Each theme’s color palette is designed to
+meet the needs of the numerous interfaces that are possible in the Emacs
+computing environment.")
     (license license:gpl3+)))
+
+(define-public emacs-modus-operandi-theme
+  (deprecated-package "emacs-modus-operandi-theme" emacs-modus-themes))
 
 (define-public emacs-modus-vivendi-theme
-  (package
-    (name "emacs-modus-vivendi-theme")
-    (version "0.13.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.com/protesilaos/modus-themes")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0i6n3pzrmlgabsijy6z0hhs71q7g99yagwr2m33lr30skqc9rvdn"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-other-theme
-           (lambda _
-             (delete-file "modus-operandi-theme.el")
-             #t)))))
-    (home-page "https://gitlab.com/protesilaos/modus-themes")
-    (synopsis "Accessible dark theme (WCAG AAA)")
-    (description
-     "Modus vivendi is the dark version of the Modus accessible themes for GNU
-Emacs.  The contrast ratio between foreground and background values should
-always be greater than 7:1, which conforms with the WCAG AAA accessibility
-standard.  This is the highest standard of its kind.")
-    (license license:gpl3+)))
-
-(define-public emacs-modus-themes
-  (deprecated-package "emacs-modus-themes" emacs-modus-operandi-theme))
+  (deprecated-package "emacs-modus-vivendi-theme" emacs-modus-themes))
 
 (define-public emacs-punpun-theme
   (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
