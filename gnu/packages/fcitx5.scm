@@ -31,6 +31,7 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages unicode)
@@ -132,4 +133,48 @@ client.")
     (home-page "https://github.com/fcitx/fcitx5")
     (synopsis "Input method framework")
     (description "Fcitx 5 is a generic input method framework.")
+    (license license:lgpl2.1+)))
+
+(define-public fcitx5-lua
+  (package
+    (name "fcitx5-lua")
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://download.fcitx-im.org/fcitx5/fcitx5-lua/fcitx5-lua-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "177mj56j8yrl79hvk7bbrifvm137np23pwalv83ibgk4l51z92hf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "-DFEM_INCLUDE_INSTALL_DIR=" %output "/include")
+        (string-append "-DFEM_LIB_INSTALL_DIR=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-install-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (x)
+                (format #t "patch-install-prefix: Fixing install prefix in ~a~%"
+                        x)
+                (substitute* x
+                  (("\\$\\{FCITX_INSTALL_PKGDATADIR\\}")
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/fcitx5"))))
+              '("src/addonloader/CMakeLists.txt"
+                "src/imeapi/CMakeLists.txt")))))))
+    (inputs
+     `(("fcitx5" ,fcitx5)
+       ("lua" ,lua)
+       ("gettext" ,gettext-minimal)
+       ("libpthread-stubs" ,libpthread-stubs)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (home-page "https://github.com/fcitx/fcitx5-lua")
+    (synopsis "Lua support for Fcitx 5")
+    (description "Fcitx5-lua allows writing Fcitx5 extension in Lua.")
     (license license:lgpl2.1+)))
