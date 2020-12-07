@@ -31,6 +31,7 @@
             build?
             build-id
             build-derivation
+            build-evaluation
             build-system
             build-status
             build-timestamp
@@ -71,6 +72,7 @@
   json->build
   (id          build-id "id")                     ;integer
   (derivation  build-derivation)                  ;string | #f
+  (evaluation  build-evaluation)                  ;integer
   (system      build-system)                      ;string
   (status      build-status "buildstatus" )       ;integer
   (timestamp   build-timestamp)                   ;integer
