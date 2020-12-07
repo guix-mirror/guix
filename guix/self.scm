@@ -649,6 +649,9 @@ load path."
 
   (program-file "guix-command"
                 #~(begin
+                    ;; Remove the empty extension from the search path.
+                    (set! %load-extensions '(".scm"))
+
                     (set! %load-path
                       (append (list (string-append #$module-directory
                                                    "/share/guile/site/"
