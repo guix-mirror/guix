@@ -1726,8 +1726,6 @@ signal in the input, that lead to spurious peaks during peak calling.")
          "0irhqsi6rrkrkc7dhwmfpqfd0mnigs17027czcx8vgbrbra4lcvd"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-amap" ,r-amap)
        ("r-apeglm" ,r-apeglm)
@@ -5664,8 +5662,6 @@ index.")
          "032m01q34nnmvbhcb2g3pz2fqmgcw5464m74m1m0h7x9bl04a5k8"))))
     (properties `((upstream-name . "QuasR")))
     (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
@@ -6049,8 +6045,6 @@ cluster count and membership by stability evidence in unsupervised analysis.")
                (("\\(RHDF5_LIBS\\)" match)
                 (string-append match "/libhdf5.a")))
              #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
     (native-inputs
      `(("r-knitr" ,r-knitr)
        ("pkg-config" ,pkg-config)))
@@ -6150,8 +6144,6 @@ change point detection.")
                (("\\(RHDF5_LIBS\\)" match)
                 (string-append match "/libhdf5.a")))
              #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-biobase" ,r-biobase)
@@ -6332,8 +6324,6 @@ for other R packages to compile and link against.")
                (("\\{h5lib\\}" match)
                 (string-append match "/libhdf5.a")))
              #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-aws-s3" ,r-aws-s3)
        ("r-aws-signature" ,r-aws-signature)
@@ -6997,8 +6987,6 @@ with multiple R processes supported by the package @code{parallel}.")
      `(("r-biostrings" ,r-biostrings)
        ("r-genomicranges" ,r-genomicranges)
        ("r-rhtslib" ,r-rhtslib)))
-    (inputs
-     `(("zlib" ,zlib))) ; This comes from rhtslib.
     (home-page "https://bioconductor.org/packages/seqbias/")
     (synopsis "Estimation of per-position bias in high-throughput sequencing data")
     (description

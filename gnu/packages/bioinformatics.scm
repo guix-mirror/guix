@@ -7980,8 +7980,6 @@ CAGE.")
                 "1sl0l6v05lfglj281nszma0h5k234md7rn2pdah8vs2d4iq3kimw"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
@@ -8260,8 +8258,6 @@ biological sequences or sets of sequences.")
              (substitute* "NAMESPACE"
                (("import\\(zlibbioc\\)") ""))
              #t)))))
-    (inputs
-     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
@@ -8794,9 +8790,8 @@ secondary structure and comparative analysis in R.")
     (arguments '(#:configure-flags '("--no-staged-install")))
     (propagated-inputs
      `(("curl" ,curl)
+       ("zlib" ,zlib) ; packages using rhtslib need to link with zlib
        ("r-zlibbioc" ,r-zlibbioc)))
-    (inputs
-     `(("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("r-knitr" ,r-knitr)))
@@ -8827,8 +8822,6 @@ of other R packages who wish to make use of HTSlib.")
        ("r-rcpp" ,r-rcpp)
        ("r-rhtslib" ,r-rhtslib)
        ("r-zlibbioc" ,r-zlibbioc)))
-    (inputs
-     `(("zlib" ,zlib)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/bamsignals")
@@ -9127,8 +9120,6 @@ HDF5 datasets.")
     (propagated-inputs
      `(("r-rhdf5filters" ,r-rhdf5filters)
        ("r-rhdf5lib" ,r-rhdf5lib)))
-    (inputs
-     `(("zlib" ,zlib)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/rhdf5")
@@ -9616,8 +9607,6 @@ number detection tools.")
        ("r-zlibbioc" ,r-zlibbioc)))
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
-    (inputs
-     `(("zlib" ,zlib)))
     (home-page "https://github.com/al2na/methylKit")
     (synopsis
      "DNA methylation analysis from high-throughput bisulfite sequencing results")
