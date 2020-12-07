@@ -316,6 +316,10 @@ applications, there is xclip integration." )
        (sha256
         (base32 "0hpibsdry259cmvps35isr6jn9cd9fsk3r1h0ppjx9zxfrpqwldg"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc",name "-" ,version))))
     (inputs
      `(("argon2" ,argon2)
        ("ncurses" ,ncurses)
