@@ -1,4 +1,4 @@
-#!@GUILE@ \
+#!@abs_top_builddir@/guile \
 --no-auto-compile -e main -s
 !#
 ;;; GNU Guix --- Functional package management for GNU
