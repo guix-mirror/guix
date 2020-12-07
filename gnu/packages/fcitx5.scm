@@ -371,3 +371,42 @@ including input methods previous bundled inside Fcitx 4:
                    license:gpl2+
                    ;; im/pinyin/emoji.txt
                    license:unicode))))
+
+(define-public fcitx5-configtool
+  (package
+   (name "fcitx5-configtool")
+   (version "5.0.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://download.fcitx-im.org/fcitx5"
+           "/fcitx5-configtool/fcitx5-configtool-" version ".tar.xz"))
+     (sha256
+      (base32 "0mrqhzvab41hkvhkz7vkb8d2mv5bgx4aqp9jpz4kf3kskwm1q14b"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:configure-flags
+      ;; KDE is currently not working on Guix, KCM supports doesn't make sense.
+      '("-DENABLE_KCM=Off")))
+   (inputs
+    `(("fcitx5" ,fcitx5)
+      ("fcitx5-qt" ,fcitx5-qt)
+      ("qtbase" ,qtbase)
+      ("qtx11extras" ,qtx11extras)
+      ("kitemviews" ,kitemviews)
+      ("kwidgetsaddons" ,kwidgetsaddons)
+      ("libx11" ,libx11)
+      ("xkeyboard-config" ,xkeyboard-config)
+      ("libxkbfile" ,libxkbfile)
+      ("gettext" ,gettext-minimal)
+      ("iso-codes" ,iso-codes)))
+   (native-inputs
+    `(("gcc" ,gcc-9)
+      ("extra-cmake-modules" ,extra-cmake-modules)
+      ("pkg-config" ,pkg-config)))
+   (home-page "https://github.com/fcitx/fcitx5-configtool")
+   (synopsis "Graphical configuration tool for Fcitx 5")
+   (description "Fcitx5-configtool is a graphical configuration tool
+to manage different input methods in Fcitx 5.")
+   (license license:gpl2+)))
