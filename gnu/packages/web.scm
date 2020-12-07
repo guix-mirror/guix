@@ -1063,7 +1063,8 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
      `(("qca" ,qca)
        ("qtbase" ,qtbase)))
     (arguments
-     '(#:phases
+     '(#:tests? #f                      ;FIXME: some tests are failing
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-code
            (lambda _
@@ -1079,11 +1080,9 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
                (("\\$\\$\\[QMAKE_MKSPECS\\]")
                 (string-append (assoc-ref outputs "out") "/lib/qt5/mkspecs")))
              #t))
-         (delete 'configure) ; no configure script
-         (delete 'check) ; no test target
-         (add-before 'build 'qmake
-           (lambda _
-             (let ((qca (assoc-ref %build-inputs "qca")))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((qca (assoc-ref inputs "qca")))
                (invoke
                 "qmake"
                 (string-append "PREFIX=" (assoc-ref %outputs "out"))
