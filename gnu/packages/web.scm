@@ -6431,7 +6431,7 @@ Instagram and YouTube.")
          "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
     (build-system python-build-system)
     (inputs
-     `(("python2-dnspython" ,python2-dnspython)
+     `(("python2-dnspython" ,python2-dnspython-1.16)
        ("python2-pyxdg" ,python2-pyxdg)
        ("python2-requests" ,python2-requests)))
     (native-inputs

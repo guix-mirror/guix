@@ -525,7 +525,7 @@ do so.")
        ("python-aiohttp-socks" ,python-aiohttp-socks)
        ("python-aiorpcx" ,python-aiorpcx)
        ("python-certifi" ,python-certifi)
-       ("python-dnspython" ,python-dnspython)
+       ("python-dnspython" ,python-dnspython-1.16)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
      `(#:tests? #f                      ; no tests

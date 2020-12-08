@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2017, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -13353,6 +13353,27 @@ until the object is actually required, and caches the result of said call.")
 (define-public python-dnspython
   (package
     (name "python-dnspython")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dnspython" version ".zip"))
+              (sha256
+               (base32
+                "1dyip5ygqqhrgcaiy7qzjpndl9xciip186paxqwkm726fj9z0jh4"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (arguments '(#:tests? #f))          ; XXX: requires internet access
+    (home-page "https://www.dnspython.org")
+    (synopsis "DNS toolkit for Python")
+    (description
+     "dnspython is a DNS toolkit for Python.  It supports almost all record
+types.  It can be used for queries, zone transfers, and dynamic updates.
+It supports TSIG authenticated messages and EDNS0.")
+    (license license:expat)))
+
+(define-public python-dnspython-1.16
+  (package
+    (inherit python-dnspython)
     (version "1.16.0")
     (source (origin
               (method url-fetch)
@@ -13361,18 +13382,10 @@ until the object is actually required, and caches the result of said call.")
               (sha256
                (base32
                 "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
-    (build-system python-build-system)
-    (arguments '(#:tests? #f))          ; XXX: requires internet access
-    (home-page "http://www.dnspython.org")
-    (synopsis "DNS toolkit for Python")
-    (description
-     "dnspython is a DNS toolkit for Python.  It supports almost all record
-types.  It can be used for queries, zone transfers, and dynamic updates.
-It supports TSIG authenticated messages and EDNS0.")
-    (license license:expat)))
+    (native-inputs '())))
 
-(define-public python2-dnspython
-  (package-with-python2 python-dnspython))
+(define-public python2-dnspython-1.16
+  (package-with-python2 python-dnspython-1.16))
 
 (define-public python-py3dns
   (package
