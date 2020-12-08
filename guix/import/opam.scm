@@ -267,7 +267,7 @@ REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
   (and-let* ((opam-file (opam-fetch name repository))
              (version (assoc-ref opam-file "version"))
-             (opam-content (pk (assoc-ref opam-file "metadata")))
+             (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
              (source-url (or (metadata-ref url-dict "src")
                              (metadata-ref url-dict "archive")))
