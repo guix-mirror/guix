@@ -126,12 +126,19 @@ path to the repository."
   (let ((url (cond
                ((or (not repo) (equal? repo 'opam))
                 "https://github.com/ocaml/opam-repository")
+               ((string-prefix? "coq-" (symbol->string repo))
+                "https://github.com/coq/opam-coq-archive")
+               ((equal? repo 'coq) "https://github.com/coq/opam-coq-archive")
                (else (throw 'unknown-repository repo)))))
     (receive (location commit _)
       (update-cached-checkout url)
       (cond
         ((or (not repo) (equal? repo 'opam))
          location)
+        ((equal? repo 'coq)
+         (string-append location "/released"))
+        ((string-prefix? "coq-" (symbol->string repo))
+         (string-append location "/" (substring (symbol->string repo) 4)))
         (else location)))))
 
 (define (latest-version versions)
@@ -168,6 +175,7 @@ path to the repository."
   (substitute-char
     (cond
       ((equal? name "ocamlfind") "ocaml-findlib")
+      ((equal? name "coq") name)
       ((string-prefix? "ocaml" name) name)
       ((string-prefix? "conf-" name) (substring name 5))
       (else (string-append "ocaml-" name)))

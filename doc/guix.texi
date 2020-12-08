@@ -11291,6 +11291,25 @@ in Guix.
 @cindex OCaml
 Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
 repository used by the OCaml community.
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@item --repo
+Select the given repository (a repository name).  Possible values include:
+@itemize
+@item @code{opam}, the default opam repository,
+@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
+@item @code{coq-core-dev}, the repository that contains development versions of coq,
+@item @code{coq-extra-dev}, the repository that contains development versions
+      of coq packages.
+@end itemize
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
