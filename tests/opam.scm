@@ -85,7 +85,7 @@ url {
         (with-output-to-file (string-append my-package "/opam")
           (lambda _
             (format #t "~a" test-opam-file))))
-      (match (opam->guix-package "foo" #:repository test-repo)
+      (match (opam->guix-package "foo" #:repo test-repo)
         (('package
            ('name "ocaml-foo")
            ('version "1.0.0")

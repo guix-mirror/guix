@@ -264,11 +264,11 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define* (opam->guix-package name #:key (repository (get-opam-repository)) version)
+(define* (opam->guix-package name #:key (repo (get-opam-repository)) version)
   "Import OPAM package NAME from REPOSITORY (a directory name) or, if
 REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
-  (and-let* ((opam-file (opam-fetch name repository))
+  (and-let* ((opam-file (opam-fetch name repo))
              (version (assoc-ref opam-file "version"))
              (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
@@ -323,10 +323,11 @@ or #f on failure."
                         (not (member name '("dune" "jbuilder"))))
                       dependencies))))))))
 
-(define (opam-recursive-import package-name)
+(define* (opam-recursive-import package-name #:repo (get-opam-repository))
   (recursive-import package-name
                     #:repo->guix-package opam->guix-package
-                    #:guix-name ocaml-name->guix-name))
+                    #:guix-name ocaml-name->guix-name
+                    #:repo repo))
 
 (define (guix-name->opam-name name)
   (if (string-prefix? "ocaml-" name)
