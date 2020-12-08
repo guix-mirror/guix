@@ -141,6 +141,9 @@ path to the repository."
          (string-append location "/" (substring (symbol->string repo) 4)))
         (else location)))))
 
+;; Prevent Guile 3 from inlining this procedure so we can mock it in tests.
+(set! get-opam-repository get-opam-repository)
+
 (define (latest-version versions)
   "Find the most recent version from a list of versions."
   (fold (lambda (a b) (if (version>? a b) a b)) (car versions) versions))
