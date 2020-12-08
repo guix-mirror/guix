@@ -287,8 +287,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.1.1f")
-   (replacement openssl-1.1.1g)
+   (version "1.1.1g")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -298,10 +297,10 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/openssl-" version ".tar.gz")))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "0d9zv9srjqivs8nn099fpbjv1wyhfcb8lzy491dpmfngdvz6nv0q"))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))))
+               "0ikdcc038i7jk8h7asq5xcn8b1xc2rrbc88yfm4hqbz3y5s4gc6x"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
@@ -419,24 +418,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
-
-(define openssl-1.1.1g
-  (package
-   (inherit openssl)
-   (version "1.1.1g")
-   (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                       version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/"
-                                       "openssl-" version ".tar.gz")
-                        (string-append "ftp://ftp.openssl.org/source/old/"
-                                       (string-trim-right version char-set:letter)
-                                       "/openssl-" version ".tar.gz")))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
-             (sha256
-              (base32
-               "0ikdcc038i7jk8h7asq5xcn8b1xc2rrbc88yfm4hqbz3y5s4gc6x"))))))
 
 (define-public openssl-1.0
   (package
