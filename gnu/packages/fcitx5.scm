@@ -423,6 +423,7 @@ to manage different input methods in Fcitx 5.")
        (uri (git-reference
              (url "https://github.com/hosxy/Fcitx5-Material-Color")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1mgc722521jmfx0xc3ibmiycd3q2w7xg2956xcpc07kz90gcdjaa"))))
     (build-system copy-build-system)
