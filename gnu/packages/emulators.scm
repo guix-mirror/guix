@@ -1330,7 +1330,7 @@ multi-system game/emulator system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
+       (uri (string-append "https://downloads.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
         (base32 "11vknasm5dna2vqr6gk343qynh7nhsq3kf60zayarn1vb5z6as8l"))))
