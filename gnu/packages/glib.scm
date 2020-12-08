@@ -172,7 +172,6 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
-   (replacement glib-with-gio-patch)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -181,7 +180,8 @@ shared NFS home directories.")
             (sha256
              (base32
               "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
-            (patches (search-patches "glib-tests-timer.patch"))
+            (patches (search-patches "glib-appinfo-watch.patch"
+                                     "glib-tests-timer.patch"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -378,16 +378,6 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
-
-(define glib-with-gio-patch
-  ;; GLib with a fix for <https://bugs.gnu.org/35594>.
-  ;; TODO: Fold into 'glib' above in the next rebuild cycle.
-  (package
-    (inherit glib)
-    (source (origin
-              (inherit (package-source glib))
-              (patches (cons (search-patch "glib-appinfo-watch.patch")
-                             (origin-patches (package-source glib))))))))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
