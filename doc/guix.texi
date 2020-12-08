@@ -25695,6 +25695,9 @@ Owner's group of the @code{cuirass} process.
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
 
+@item @code{queue-size} (default: @code{1})
+Size of the database writer queue.
+
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
 added specifications.
