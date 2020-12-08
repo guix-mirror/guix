@@ -409,7 +409,7 @@ inverse fourier transform.")
 (define-public libmypaint
   (package
     (name "libmypaint")
-    (version "1.5.1")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mypaint/libmypaint/"
@@ -417,7 +417,7 @@ inverse fourier transform.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0aqcv4fyscpfhknxgfpq0v84aj2nzigqvpi4zgv2zkl41h51by5f"))))
+                "0priwpmc7dizccqvn21ig6d649bprl3xl1hmjj7nddznjgr585vl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
