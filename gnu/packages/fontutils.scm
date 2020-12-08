@@ -557,7 +557,7 @@ using the above tables.")
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/fontforge/libspiro/releases"
-                          "/download/" version "/libspiro-" version ".tar.gz"))
+                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
         "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))
