@@ -1610,15 +1610,14 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.4")
-    (replacement libjpeg-turbo/fixed)
+    (version "2.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "01ill8bgjyk582wipx7sh7gj2nidylpbzvwhx0wkcm6mxx3qbp9k"))))
+                "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
@@ -1667,18 +1666,6 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
-
-(define libjpeg-turbo/fixed
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))))
 
 (define-deprecated libjpeg libjpeg-turbo)
 (export libjpeg)
