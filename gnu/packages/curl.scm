@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -53,16 +53,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.69.1")
-   (replacement curl-7.71.0)
+   (version "7.71.0")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "https://curl.haxx.se/download/curl-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "0kwxh76iq9fblk7iyv4f75bmcmasarp2bcm1mm07wyvzd7kdbiq3"))
-            (patches (search-patches "curl-use-ssl-cert-env.patch"))))
+             (method url-fetch)
+             (uri (string-append "https://curl.haxx.se/download/curl-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -126,25 +124,6 @@
            (substitute* "tests/runtests.pl"
              (("/bin/sh") (which "sh")))
 
-           ;; XXX FIXME: Test #1510 seems to work on some machines and not
-           ;; others, possibly based on the kernel version.  It works on Guix System
-           ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
-           ;; and x86_64 with the following error:
-           ;;
-           ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
-           ;;
-           ;;  1510: output (log/stderr1510) FAILED:
-           ;; --- log/check-expected    2015-06-27 07:45:53.166720834 +0000
-           ;; +++ log/check-generated   2015-06-27 07:45:53.166720834 +0000
-           ;; @@ -1,5 +1,5 @@
-           ;;  * Connection #0 to host server1.example.com left intact[LF]
-           ;;  * Connection #1 to host server2.example.com left intact[LF]
-           ;;  * Connection #2 to host server3.example.com left intact[LF]
-           ;; -* Closing connection 0[LF]
-           ;; +* Closing connection 1[LF]
-           ;;  * Connection #3 to host server4.example.com left intact[LF]
-           (delete-file "tests/data/test1510")
-
            ;; The top-level "make check" does "make -C tests quiet-test", which
            ;; is too quiet.  Use the "test" target instead, which is more
            ;; verbose.
@@ -170,31 +149,6 @@ tunneling, and so on.")
     curl
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
-
-;; Replacement package to fix CVE-2020-8169 and CVE-2020-8177.
-(define curl-7.71.0
-  (package
-    (inherit curl)
-    (version "7.71.0")
-    (source (origin
-              (inherit (package-source curl))
-              (uri (string-append "https://curl.haxx.se/download/curl-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments curl)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'check
-             (lambda _
-               ;; Test 1510 is now disabled upstream, and the test runner
-               ;; complains that it can not disable a non-existing test.
-               ;; Thus, override the phase to not delete the test.
-               (substitute* "tests/runtests.pl"
-                 (("/bin/sh") (which "sh")))
-               (invoke "make" "-C" "tests" "test")))))))))
 
 (define-public kurly
   (package
