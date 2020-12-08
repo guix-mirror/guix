@@ -1993,7 +1993,7 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
     (inputs
      `(("bdb" ,bdb)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl-1.0)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://isync.sourceforge.io/")
     (synopsis "Mailbox synchronization program")
