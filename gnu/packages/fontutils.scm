@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -73,14 +73,14 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.10.1")
-   (replacement freetype/fixed)
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://savannah/freetype/freetype-"
-                                version ".tar.xz"))
-            (sha256 (base32
-                     "0vx2dg1jh5kq34dd6ifpjywkpapp8a7p1bvyq9yq5zi1i94gmnqn"))))
+   (version "2.10.4")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://savannah/freetype/freetype-"
+                          version ".tar.xz"))
+      (sha256
+       (base32 "112pyy215chg7f7fmp2l9374chhhpihbh8wgpj5nj6avj3c59a46"))))
    (build-system gnu-build-system)
    (arguments
     ;; The use of "freetype-config" is deprecated, but other packages still
@@ -102,19 +102,6 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
-
-(define freetype/fixed
-  ;; Security fix for CVE-2020-15999.
-  (package
-    (inherit freetype)
-    (version "2.10.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://savannah/freetype/freetype-"
-                           version ".tar.xz"))
-       (sha256
-        (base32 "112pyy215chg7f7fmp2l9374chhhpihbh8wgpj5nj6avj3c59a46"))))))
 
 (define-public ttfautohint
   (package
