@@ -293,23 +293,8 @@ for Qt based application.")
         (base32 "0mf91gzwzhfci0jn6g3l516xjw8r4v40ginnbl70h1zx6vr24rfp"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        (string-append "-DFEM_INCLUDE_INSTALL_DIR=" %output "/include")
-        (string-append "-DFEM_LIB_INSTALL_DIR=" %output "/lib"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-install-prefix
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (x)
-                (format #t "patch-install-prefix: Fixing install prefix in ~a~%"
-                        x)
-                (substitute* x
-                  (("\\$\\{FCITX_INSTALL_PKGDATADIR\\}")
-                   (string-append (assoc-ref outputs "out")
-                                  "/share/fcitx5"))))
-              (find-files "." "CMakeLists\\.txt$"))))
          (add-before 'configure 'split-outputs
            ;; Build with GUI supports requires Qt and increase package closure
            ;; by 800M on x86_64, so place it under another output.
