@@ -164,21 +164,19 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    ;; XXX Unversion openconnect's "gnutls" input when ungrafting.
-    (replacement gnutls/fixed)
-    (version "3.6.12")
+    (version "3.6.15")
     (source (origin
-             (method url-fetch)
-             (uri
+              (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
               ;; schism (after version 3.1.5).
-              (string-append "mirror://gnupg/gnutls/v"
-                             (version-major+minor version)
-                             "/gnutls-" version ".tar.xz"))
-             (patches (search-patches "gnutls-skip-trust-store-test.patch"))
-             (sha256
-              (base32
-               "0jvca1qahn9lrwv6f5kfs95icirc15b2a8x9fzczyj996ipg3b5z"))))
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-" version ".tar.xz"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-cross.patch"))
+              (sha256
+               (base32
+                "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? ,(not (or (%current-target-system)
@@ -228,7 +226,11 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(,@(if (hurd-target?) '()
+     `(,@(if (%current-target-system)             ;for cross-build
+             `(("guile" ,guile-3.0))              ;to create .go files
+             '())
+       ,@(if (hurd-target?)
+             '()
              `(("net-tools" ,net-tools)))
        ("pkg-config" ,pkg-config)
        ("which" ,which)
@@ -254,27 +256,6 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-;; Replacement package to fix multiple security vulnerabilities.
-(define-public gnutls/fixed
-  (package
-    (inherit gnutls)
-    (version "3.6.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnutls/v"
-                                  (version-major+minor version)
-                                  "/gnutls-" version ".tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
-              (sha256
-               (base32
-                "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
-    (native-inputs
-     `(,@(if (%current-target-system)             ;for cross-build
-             `(("guile" ,guile-3.0))              ;to create .go files
-             '())
-       ,@(package-native-inputs gnutls)))))
-
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
   (package/inherit gnutls
@@ -287,7 +268,7 @@ required structures.")
   ;; Authentication of Named Entities.  This is required for GNS functionality
   ;; by GNUnet and gnURL.  This is done in an extra package definition
   ;; to have the choice between GnuTLS with Dane and without Dane.
-  (package/inherit gnutls/fixed
+  (package/inherit gnutls
     (name "gnutls-dane")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
