@@ -326,12 +326,6 @@ Font Format (WOFF).")
 (define-public fontconfig
   (package
    (name "fontconfig")
-
-   ;; This replacement is not security-related, but works around the fact
-   ;; that gs-fonts are not recognized by newer versions of Pango, causing
-   ;; many applications to fail to find fonts otherwise.
-   (replacement fontconfig/font-dejavu)
-
    (version "2.13.1")
    (source (origin
             (method url-fetch)
@@ -347,16 +341,19 @@ Font Format (WOFF).")
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)
                         ("libuuid" ,util-linux "lib")))
-   (inputs `(("gs-fonts" ,gs-fonts)))
+   (inputs
+    ;; We use to use 'gs-fonts' but they are not recognized by newer versions
+    ;; of Pango, causing many applications to fail to find fonts otherwise.
+    `(("font-dejavu" ,font-dejavu)))
    (native-inputs
     `(("gperf" ,gperf)
       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags
       (list "--with-cache-dir=/var/cache/fontconfig"
-            ;; register gs-fonts as default fonts
+            ;; register the default fonts
             (string-append "--with-default-fonts="
-                           (assoc-ref %build-inputs "gs-fonts")
+                           (assoc-ref %build-inputs "font-dejavu")
                            "/share/fonts")
 
             ;; Register fonts from user and system profiles.
@@ -410,13 +407,6 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
-
-(define fontconfig/font-dejavu
-  (package
-    (inherit fontconfig)
-    (inputs
-     ;; XXX: Reuse the name to avoid having to override the configure flags.
-     `(("gs-fonts" ,font-dejavu)))))
 
 (define-public t1lib
   (package
