@@ -13352,24 +13352,24 @@ until the object is actually required, and caches the result of said call.")
 
 (define-public python-dnspython
   (package
-  (name "python-dnspython")
-  (version "1.16.0")
-  (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.dnspython.org/kits/"
-                                version "/dnspython-" version ".tar.gz"))
-            (sha256
-             (base32
-              "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
-  (build-system python-build-system)
-  (arguments '(#:tests? #f)) ; XXX: requires internet access
-  (home-page "http://www.dnspython.org")
-  (synopsis "DNS toolkit for Python")
-  (description
-   "dnspython is a DNS toolkit for Python.  It supports almost all record
+    (name "python-dnspython")
+    (version "1.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.dnspython.org/kits/"
+                                  version "/dnspython-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; XXX: requires internet access
+    (home-page "http://www.dnspython.org")
+    (synopsis "DNS toolkit for Python")
+    (description
+     "dnspython is a DNS toolkit for Python.  It supports almost all record
 types.  It can be used for queries, zone transfers, and dynamic updates.
 It supports TSIG authenticated messages and EDNS0.")
-  (license license:expat)))
+    (license license:expat)))
 
 (define-public python2-dnspython
   (package-with-python2 python-dnspython))
