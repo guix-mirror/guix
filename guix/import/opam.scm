@@ -235,12 +235,15 @@ path to the repository."
                      (equal? "ocaml" name))
                names)))
 
-(define (depends->inputs depends)
+(define (filter-dependencies depends)
+  "Remove implicit dependencies from the list of dependencies in @var{depends}."
   (filter (lambda (name)
-            (and (not (equal? "" name))
-                 (not (equal? "ocaml" name))
-                 (not (equal? "ocamlfind" name))))
-    (map dependency->input depends)))
+            (and (not (member name '("" "ocaml" "ocamlfind" "dune" "jbuilder")))
+                 (not (string-prefix? "base-" name))))
+          depends))
+
+(define (depends->inputs depends)
+  (filter-dependencies (map dependency->input depends)))
 
 (define (depends->native-inputs depends)
   (filter (lambda (name) (not (equal? "" name)))
@@ -272,7 +275,8 @@ or #f on failure."
              (source-url (or (metadata-ref url-dict "src")
                              (metadata-ref url-dict "archive")))
              (requirements (metadata-ref opam-content "depends"))
-             (dependencies (dependency-list->names requirements))
+             (names (dependency-list->names requirements))
+             (dependencies (filter-dependencies names))
              (native-dependencies (depends->native-inputs requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
              (native-inputs (dependency-list->inputs
@@ -282,10 +286,7 @@ or #f on failure."
                                 (lambda (name)
                                   (not (member name '("dune" "jbuilder"))))
                                 native-dependencies))))
-        ;; If one of these are required at build time, it means we
-        ;; can use the much nicer dune-build-system.
-        (let ((use-dune? (or (member "dune" (append dependencies native-dependencies))
-                        (member "jbuilder" (append dependencies native-dependencies)))))
+        (let ((use-dune? (member "dune" names)))
           (call-with-temporary-output-file
             (lambda (temp port)
               (and (url-fetch source-url temp)
