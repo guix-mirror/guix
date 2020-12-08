@@ -45,6 +45,8 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
   (display (G_ "
   -r, --recursive        import packages recursively"))
   (display (G_ "
+      --repo             import packages from this opam repository"))
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -58,6 +60,9 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix import opam")))
+         (option '(#f "repo") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'repo arg result)))
          (option '(#\r "recursive") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'recursive #t result)))
@@ -79,6 +84,7 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
                 %default-options))
 
   (let* ((opts (parse-options))
+         (repo (and=> (assoc-ref opts 'repo) string->symbol))
          (args (filter-map (match-lambda
                             (('argument . value)
                              value)
@@ -93,9 +99,9 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (opam-recursive-import package-name))
+                (opam-recursive-import package-name #:repo repo))
            ;; Single import
-           (let ((sexp (opam->guix-package package-name)))
+           (let ((sexp (opam->guix-package package-name #:repo repo)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")
                       package-name))

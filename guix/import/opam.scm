@@ -120,12 +120,19 @@
 (define-peg-pattern condition-string all (and QUOTE (* STRCHR) QUOTE))
 (define-peg-pattern condition-var all (+ (or (range #\a #\z) "-" ":")))
 
-(define (get-opam-repository)
+(define* (get-opam-repository #:optional repo)
   "Update or fetch the latest version of the opam repository and return the
 path to the repository."
-  (receive (location commit _)
-    (update-cached-checkout "https://github.com/ocaml/opam-repository")
-    location))
+  (let ((url (cond
+               ((or (not repo) (equal? repo 'opam))
+                "https://github.com/ocaml/opam-repository")
+               (else (throw 'unknown-repository repo)))))
+    (receive (location commit _)
+      (update-cached-checkout url)
+      (cond
+        ((or (not repo) (equal? repo 'opam))
+         location)
+        (else location)))))
 
 (define (latest-version versions)
   "Find the most recent version from a list of versions."
@@ -264,11 +271,11 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define* (opam->guix-package name #:key (repo (get-opam-repository)) version)
+(define* (opam->guix-package name #:key (repo 'opam) version)
   "Import OPAM package NAME from REPOSITORY (a directory name) or, if
 REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
-  (and-let* ((opam-file (opam-fetch name repo))
+  (and-let* ((opam-file (opam-fetch name (get-opam-repository repo)))
              (version (assoc-ref opam-file "version"))
              (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
@@ -323,7 +330,7 @@ or #f on failure."
                         (not (member name '("dune" "jbuilder"))))
                       dependencies))))))))
 
-(define* (opam-recursive-import package-name #:repo (get-opam-repository))
+(define* (opam-recursive-import package-name #:key repo)
   (recursive-import package-name
                     #:repo->guix-package opam->guix-package
                     #:guix-name ocaml-name->guix-name
