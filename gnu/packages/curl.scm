@@ -53,14 +53,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.71.0")
+   (version "7.73.0")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://curl.haxx.se/download/curl-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
+               "12j0qaij1ppgspray8xvs2qk3h3m23wdqh27x87y1aw8xaj7qk3w"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
