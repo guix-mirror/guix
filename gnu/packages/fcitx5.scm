@@ -156,25 +156,6 @@ client.")
        (sha256
         (base32 "177mj56j8yrl79hvk7bbrifvm137np23pwalv83ibgk4l51z92hf"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list
-        (string-append "-DFEM_INCLUDE_INSTALL_DIR=" %output "/include")
-        (string-append "-DFEM_LIB_INSTALL_DIR=" %output "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-install-prefix
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (x)
-                (format #t "patch-install-prefix: Fixing install prefix in ~a~%"
-                        x)
-                (substitute* x
-                  (("\\$\\{FCITX_INSTALL_PKGDATADIR\\}")
-                   (string-append (assoc-ref outputs "out")
-                                  "/share/fcitx5"))))
-              '("src/addonloader/CMakeLists.txt"
-                "src/imeapi/CMakeLists.txt")))))))
     (inputs
      `(("fcitx5" ,fcitx5)
        ("lua" ,lua)
