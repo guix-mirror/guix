@@ -25685,23 +25685,20 @@ font rendering.")
 rustc compiler version.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-rusty-fork-0.2
+(define-public rust-rusty-fork-0.3
   (package
     (name "rust-rusty-fork")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rusty-fork" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1bjg8adk0i921088j52rn0hmvsry34q19g96x41pamqcw5j35n9x"))))
+        (base32 "0kxwq5c480gg6q0j3bg4zzyfh2kwmc3v2ba94jw8ncjc8mpcqgfb"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-fnv" ,rust-fnv-1)
         ("rust-quick-error" ,rust-quick-error-1.2)
         ("rust-tempfile" ,rust-tempfile-3)
@@ -25709,9 +25706,29 @@ rustc compiler version.")
     (home-page "https://github.com/altsysrq/rusty-fork")
     (synopsis "Library for running Rust tests in sub-processes")
     (description
-     "Cross-platform library for running Rust tests in sub-processes
-using a fork-like interface.")
-    (license (list license:asl2.0 license:expat))))
+     "This package is a cross-platform library for running Rust tests in
+sub-processes using a fork-like interface.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rusty-fork-0.2
+  (package
+    (inherit rust-rusty-fork-0.3)
+    (name "rust-rusty-fork")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusty-fork" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bjg8adk0i921088j52rn0hmvsry34q19g96x41pamqcw5j35n9x"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fnv" ,rust-fnv-1)
+        ("rust-quick-error" ,rust-quick-error-1.2)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))))))
 
 (define-public rust-ryu-1
   (package
