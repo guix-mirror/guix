@@ -15563,22 +15563,22 @@ discriminant analysis for the purpose of classifying high dimensional data.")
 (define-public r-ggvis
   (package
     (name "r-ggvis")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggvis" version))
        (sha256
         (base32
-         "1k40mkfxj66qvwbsp849maihv6vxkdprhhzjkwffwn0lwl78lsz1"))))
+         "1qv512pd4x5vmx15y9nvqmabbbw14h75fmi1sjbcg5yl25z0cswy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-dplyr" ,r-dplyr)
        ("r-htmltools" ,r-htmltools)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
        ("r-shiny" ,r-shiny)))
     (home-page "https://ggvis.rstudio.com/")
     (synopsis "Interactive grammar of graphics")
