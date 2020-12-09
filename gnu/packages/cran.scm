@@ -18699,14 +18699,14 @@ the @code{aroma.affymetrix} package.")
 (define-public r-r-filesets
   (package
     (name "r-r-filesets")
-    (version "2.13.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "R.filesets" version))
        (sha256
         (base32
-         "124rygq0bl9n4akxcm868nl30cyk3rz0iprb98zlpk62gci9f5fg"))))
+         "08xv8b3c81nf54viyr3w912al18483k5gfnjpg7bxbdfk70dfzbh"))))
     (properties `((upstream-name . "R.filesets")))
     (build-system r-build-system)
     (propagated-inputs
