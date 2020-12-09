@@ -5205,14 +5205,14 @@ provides some missing S-PLUS functionality in R.")
 (define-public r-ifultools
   (package
     (name "r-ifultools")
-    (version "2.0-5")
+    (version "2.0-22")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ifultools" version))
        (sha256
         (base32
-         "040kvbczcmmbaiaz0k0pdq9af541pjj6iwzh1a3w4szh9w6b5a3j"))))
+         "0f95vqc47dgssqngznk0rclr72ndbyxc7gdq2cmbksvq7qpn3gg1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
