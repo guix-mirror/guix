@@ -33940,6 +33940,25 @@ Unix users and groups.")
      `(#:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.2))))))
 
+(define-public rust-utf8-width-0.1
+  (package
+    (name "rust-utf8-width")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "utf8-width" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ylf5mvzck81iszchxyqmhwimkcdqv7jhazvd454g911cchsqwch"))))
+    (build-system cargo-build-system)
+    (home-page "https://magiclen.org/utf8-width")
+    (synopsis "Determine the width of a UTF-8 character")
+    (description
+     "This package determines the width of a UTF-8 character by providing its
+first byte.")
+    (license license:expat)))
+
 (define-public rust-utf8parse-0.1
   (package
     (name "rust-utf8parse")
