@@ -16545,20 +16545,48 @@ drop-in replacement for miniz.")
      "This package provides math interoperability standard types.")
     (license license:expat)))
 
+(define-public rust-mio-0.7
+  (package
+    (name "rust-mio")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12qsvmsmpijnghgci5i0liskvwxrbg2dz6hc09kgvwaf0s3whfzk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-ntapi" ,rust-ntapi-0.3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/tokio-rs/mio")
+    (synopsis "Lightweight non-blocking IO")
+    (description
+     "Mio is a fast, low-level I/O library for Rust focusing on non-blocking
+APIs and event notification for building I/O apps with as little overhead as
+possible over the OS abstractions.")
+    (license license:expat)))
+
 (define-public rust-mio-0.6
   (package
+    (inherit rust-mio-0.7)
     (name "rust-mio")
     (version "0.6.21")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "mio" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "13q02a7cwc140aygf8amadpzpl5lyj3p2r4wnvgydfpnphifqb9h"))))
-    (build-system cargo-build-system)
+        (base32 "13q02a7cwc140aygf8amadpzpl5lyj3p2r4wnvgydfpnphifqb9h"))))
     (arguments
      `(#:tests? #f
        #:cargo-inputs
@@ -16576,11 +16604,7 @@ drop-in replacement for miniz.")
        #:cargo-development-inputs
        (("rust-bytes" ,rust-bytes-0.3)
         ("rust-env-logger" ,rust-env-logger-0.4)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/tokio-rs/mio")
-    (synopsis "Lightweight non-blocking IO")
-    (description "Lightweight non-blocking IO.")
-    (license license:expat)))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-mio-anonymous-pipes-0.1
   (package
