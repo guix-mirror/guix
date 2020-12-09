@@ -96,6 +96,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -9706,6 +9707,30 @@ files to an structured list.  Users can manipulate this resulting list with
 @code{lapply()} functions.  This same structured list can be used to write
 back to file after modifications.")
     (license license:gpl3)))
+
+(define-public r-gitcreds
+  (package
+    (name "r-gitcreds")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gitcreds" version))
+       (sha256
+        (base32
+         "1snzn7nxy0rwz0bzjsg6k04c0n811dgn8gn9cmn2v78aj57ayjmi"))))
+    (properties `((upstream-name . "gitcreds")))
+    (build-system r-build-system)
+    (inputs `(("git" ,git-minimal)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/r-lib/gitcreds")
+    (synopsis "Query git credentials from R")
+    (description
+     "Query, set, and delete credentials from the git credential store.
+Manage GitHub tokens and other git credentials.  This package is to be used by
+other packages that need to authenticate to GitHub and/or other git
+repositories.")
+    (license license:expat)))
 
 (define-public r-gh
   (package
