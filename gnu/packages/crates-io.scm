@@ -4316,6 +4316,42 @@ CMAKE environmental variable is set.")
        (sha256
         (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))))
 
+(define-public rust-combine-3
+  (package
+    (name "rust-combine")
+    (version "3.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "combine" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1006sbl3ybiky3d5q28p0lyph37hk7sipls1rkhikv11lfxacgfs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ascii" ,rust-ascii-0.9)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-combine-regex-1" ,rust-combine-regex-1-1)
+        ("rust-either" ,rust-either-1)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-unreachable" ,rust-unreachable-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-partial-io" ,rust-partial-io-0.3)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1))))
+    (home-page "https://github.com/Marwes/combine")
+    (synopsis "Parser combinators on arbitrary streams with zero-copy support")
+    (description
+     "This package is an implementation of parser combinators for Rust,
+inspired by the Haskell library Parsec.  As in Parsec the parsers are LL(1) by
+default but they can opt-in to arbitrary lookahead using the attempt
+combinator.")
+    (license license:expat)))
+
 (define-public rust-combine-regex-1-1
   (package
     (name "rust-combine-regex-1")
