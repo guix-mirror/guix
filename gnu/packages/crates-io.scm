@@ -32698,15 +32698,14 @@ automatically instrumenting functions.")
 (define-public rust-tracing-core-0.1
   (package
     (name "rust-tracing-core")
-    (version "0.1.16")
+    (version "0.1.17")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "tracing-core" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "16hisz8nvbav9q6r5lbar2baac097n33q7xqssifwsphy70ldksv"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-core" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0pvbgv301vw6dq4krc14yqbyyixb42lcs4s57xw05llkgy9f63gm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -32714,7 +32713,7 @@ automatically instrumenting functions.")
     (home-page "https://tokio.rs")
     (synopsis "Core primitives for application-level tracing")
     (description
-     "Core primitives for application-level tracing.")
+     "This package provides core primitives for application-level tracing.")
     (license (list license:asl2.0
                    license:expat))))
 
