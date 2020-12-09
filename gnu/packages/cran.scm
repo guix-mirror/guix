@@ -19384,6 +19384,33 @@ and two dimensions, kernel estimation of univariate density functions
 conditional on one covariate, and multimodal regression.")
     (license license:gpl3)))
 
+(define-public r-rainbow
+  (package
+    (name "r-rainbow")
+    (version "3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rainbow" version))
+       (sha256
+        (base32
+         "11vfcck17d2xjc049ci5i8l1nqv345anmd110gdz7654i1pj9lb3"))))
+    (properties `((upstream-name . "rainbow")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-colorspace" ,r-colorspace)
+       ("r-hdrcde" ,r-hdrcde)
+       ("r-ks" ,r-ks)
+       ("r-mass" ,r-mass)
+       ("r-pcapp" ,r-pcapp)))
+    (home-page "https://cran.r-project.org/web/packages/rainbow/")
+    (synopsis "Bagplots, boxplots and rainbow plots for functional data")
+    (description
+     "This is a package for visualizing functional data and identifying
+functional outliers with bagplots, boxplots and rainbow plots.")
+    (license license:gpl3)))
+
 (define-public r-fda
   (package
     (name "r-fda")
