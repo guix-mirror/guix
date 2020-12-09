@@ -177,14 +177,14 @@ easier.")
 (define-public r-rticles
   (package
     (name "r-rticles")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rticles" version))
        (sha256
         (base32
-         "1ca3k5sdy9mnm6frcimqwf5k18j14wn69x5iagjnjwhq711l8dv0"))))
+         "1wbwva5n88dw3vvhcrlzkr58cv03hyx0dqgfmxj7d0dgf4ichr3c"))))
     (properties `((upstream-name . "rticles")))
     (build-system r-build-system)
     (propagated-inputs
