@@ -17120,6 +17120,30 @@ general elements and for numerics.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ndk-macro-0.2
+  (package
+    (name "rust-ndk-macro")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ndk-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07a8vjr4fpksssgp453bf82n73i4i17yj1lvbgvd0964glqcdl85"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-darling" ,rust-darling-0.10)
+        ("rust-proc-macro-crate" ,rust-proc-macro-crate-0.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/rust-windowing/android-ndk-rs")
+    (synopsis "Helper macros for android ndk")
+    (description "This package provides helper macros for android ndk.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-net2-0.2
   (package
     (name "rust-net2")
