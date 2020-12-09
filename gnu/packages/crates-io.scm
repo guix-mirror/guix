@@ -2176,6 +2176,26 @@ bindings to C and C++ libraries.")
         ("rust-diff" ,rust-diff-0.1)
         ("rust-shlex" ,rust-shlex-0.1))))))
 
+(define-public rust-bit-field-0.10
+  (package
+    (name "rust-bit-field")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bit-field" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "192rsg8g3ki85gj8rzslblnwr53yw5q4l8vfg6bf1lkn4cfdvdnw"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/phil-opp/rust-bit-field")
+    (synopsis "Methods for operating on individual bits and ranges of bits")
+    (description
+     "This is a simple crate which provides the BitField trait, which provides
+methods for operating on individual bits and ranges of bits on Rust's integral
+types.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bit-set-0.5
   (package
     (name "rust-bit-set")
