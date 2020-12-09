@@ -2961,6 +2961,28 @@ constants from build.rs or a script.")
     (description "Bytes related utility functions.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-byte-unit-4
+  (package
+    (name "rust-byte-unit")
+    (version "4.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "byte-unit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lxi11qf6h1rqr0yhsh7i6755l325qrkv9r4bgismyik531mi1qw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-utf8-width" ,rust-utf8-width-0.1))))
+    (home-page "https://magiclen.org/byte-unit")
+    (synopsis "Library for interaction with units of bytes.")
+    (description
+     "This package provides a library for interaction with units of bytes.")
+    (license license:expat)))
+
 (define-public rust-bytecount-0.6
   (package
     (name "rust-bytecount")
