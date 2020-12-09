@@ -3704,6 +3704,26 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cesu8-1
+  (package
+    (name "rust-cesu8")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cesu8" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0g6q58wa7khxrxcxgnqyi9s1z2cjywwwd3hzr5c55wskhx6s0hvd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/emk/cesu8-rs")
+    (synopsis "Convert to and from CESU-8 encoding")
+    (description
+     "This library implements the CESU-8 compatibility encoding scheme.  This
+is a non-standard variant of UTF-8 that is used internally by some systems
+that need to represent UTF-16 data as 8-bit characters.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cexpr-0.4
   (package
     (name "rust-cexpr")
