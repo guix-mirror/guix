@@ -6584,6 +6584,32 @@ algorithm which serves to quantify the difference between two colors.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derivative-2
+  (package
+    (name "rust-derivative")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derivative" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03rqx8j9q5nlrpr7w8cwwrvw916pr0ahzs3y8yln18cx6mh2nn6b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/mcarton/rust-derivative")
+    (synopsis "Set of alternative @code{derive} attributes for Rust")
+    (description
+     "This package provides a set of alternative @code{derive} attributes for
+Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-builder-0.9
   (package
     (name "rust-derive-builder")
