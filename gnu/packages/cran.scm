@@ -22950,14 +22950,14 @@ vignette for more information and examples.")
 (define-public r-brms
   (package
     (name "r-brms")
-    (version "2.14.0")
+    (version "2.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brms" version))
        (sha256
         (base32
-         "0s8dl1xm3bpivfv3hw94zv9cifjg8cgs5137yd8d755kc2v0fdmf"))))
+         "0mzwihhgmn405l6zq11a180q4k3chggj9qj0j7q838b9vrszg59j"))))
     (properties `((upstream-name . "brms")))
     (build-system r-build-system)
     (propagated-inputs
@@ -22975,6 +22975,7 @@ vignette for more information and examples.")
        ("r-mgcv" ,r-mgcv)
        ("r-nleqslv" ,r-nleqslv)
        ("r-nlme" ,r-nlme)
+       ("r-projpred" ,r-projpred)
        ("r-rcpp" ,r-rcpp)
        ("r-rstan" ,r-rstan)
        ("r-rstantools" ,r-rstantools)
