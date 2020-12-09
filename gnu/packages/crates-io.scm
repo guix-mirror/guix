@@ -32635,30 +32635,31 @@ server @code{Service} tests.")
     (description "This package provides utilities for working with
 @code{Service}.")
     (license license:expat)))
-
 (define-public rust-tracing-0.1
   (package
     (name "rust-tracing")
-    (version "0.1.20")
+    (version "0.1.22")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tracing" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0hwgbyflibmsz7x6v7ndchnx1qvv43pg18419ji2y7pflzkmngbi"))))
+        (base32 "1qzg7rcfby8f2nn1ln3gk6fjc80q0bg8fw5k95zc1020vin04iwz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
         ("rust-tracing-attributes" ,rust-tracing-attributes-0.1)
         ("rust-tracing-core" ,rust-tracing-core-0.1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-futures" ,rust-futures-0.1)
-        ("rust-log" ,rust-log-0.4))))
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
     (home-page "https://tokio.rs")
     (synopsis "Application-level tracing for Rust")
     (description "@code{rust-tracing} is a framework for instrumenting Rust
