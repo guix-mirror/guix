@@ -8838,22 +8838,6 @@ third-party code.")
                  (strip-python2-variant python-llfuse)))
     (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
 
-;; For attic-0.16
-(define-public python-llfuse-0.41
-  (package (inherit python-llfuse)
-    (version "0.41.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
-                    "llfuse-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1imlqw9b73086y97izr036f58pgc5akv4ihc2rrf8j5h75jbrlaa"))))
-    ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
-    ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
-    (license (list license:expat license:lgpl2.0+))))
-
 (define-public python-msgpack
   (package
     (name "python-msgpack")
