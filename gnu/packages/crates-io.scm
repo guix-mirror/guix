@@ -28367,20 +28367,19 @@ stack.")
 (define-public rust-socket2-0.3
   (package
     (name "rust-socket2")
-    (version "0.3.11")
+    (version "0.3.18")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "socket2" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "11bdcz04i106g4q7swkll0qxrb4287srqd2k3aq2q6i22zjlvdz8"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "socket2" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0mqh39dkspcz3x11jhck9k2yrbx2krawn7xr3zva8n3lazyykq4p"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; tests require network access
+     `(#:tests? #f                      ; tests require network access
        #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-winapi" ,rust-winapi-0.3))
