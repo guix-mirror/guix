@@ -9746,20 +9746,23 @@ repositories.")
 (define-public r-gh
   (package
     (name "r-gh")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gh" version))
        (sha256
         (base32
-         "1bc9bn1078s664hc806dh0y1ncxif77q479rfmxfir9z7hwaz7yy"))))
+         "1zvy3ylxvni10lhvmbm9h14mg4wlsbdbzbzviwf28jxss8749219"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
+       ("r-gitcreds" ,r-gitcreds)
        ("r-httr" ,r-httr)
        ("r-ini" ,r-ini)
        ("r-jsonlite" ,r-jsonlite)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-lib/gh#readme")
     (synopsis "Access the GitHub API via R")
     (description
