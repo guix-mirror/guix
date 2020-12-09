@@ -23536,6 +23536,30 @@ Google guidelines.")
 fish-completion.  It can be used in both Eshell and M-x shell.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-switch-to-repl
+  (package
+    (name "emacs-helm-switch-to-repl")
+    (version "0.1.0")
+    (home-page "https://github.com/emacs-helm/helm-switch-to-repl")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n19brymwnawhi0y10m54cas3qg64pmkqq1ajvjw1rfibmw3n6nk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("helm" ,emacs-helm)))
+    (synopsis "Helm action to switch directory in Emacs REPLs")
+    (description "Helm \"Switch-to-REPL\" offers the
+@code{helm-switch-to-repl} action, a generalized and extensible version of
+@code{helm-ff-switch-to-shell}.  It can be added to @code{helm-find-files} and
+other @code{helm-type-file} sources such as @code{helm-locate}.")
+    (license license:gpl3+)))
+
 (define-public emacs-telega
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
