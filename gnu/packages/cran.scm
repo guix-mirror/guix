@@ -1607,20 +1607,19 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
 (define-public r-d3r
   (package
     (name "r-d3r")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "d3r" version))
        (sha256
         (base32
-         "0vd1qk8yr18xdfkv5ybhqvf0mmccpi721wqa7c881nzm9nnlzc4y"))))
+         "0kc82vvyfxhxvqfalngn36prn3sxdiinsx04rn99ha6zdc27zp5k"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
                   (guix build r-build-system)
-                  (srfi srfi-1)
-                  (ice-9 popen))
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'process-javascript
@@ -1634,16 +1633,16 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
                         (,(assoc-ref inputs "d3.v4.js")
                          "v4/dist/d3.min.js")
                         (,(assoc-ref inputs "d3.v5.js")
-                         "v5/dist/d3.min.js"))))
+                         "v5/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v6.js")
+                         "v6/dist/d3.min.js"))))
                  (lambda (sources targets)
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
                                (delete-file target)
-                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
-                                 (call-with-output-file target
-                                   (lambda (port)
-                                     (dump-port minified port)))))
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
                              sources targets))))
              #t)))))
     (propagated-inputs
@@ -1652,7 +1651,7 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
        ("r-rlang" ,r-rlang)
        ("r-tidyr" ,r-tidyr)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("esbuild" ,esbuild)
        ("d3.v3.js"
         ,(origin
            (method url-fetch)
@@ -1673,7 +1672,14 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
            (uri "https://d3js.org/d3.v5.js")
            (sha256
             (base32
-             "0kxvx5pfagxn6nhavdwsdnzyd26g0z5dsfi1pi5dvcmb0c8ipcdn"))))))
+             "0kxvx5pfagxn6nhavdwsdnzyd26g0z5dsfi1pi5dvcmb0c8ipcdn"))))
+       ("d3.v6.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v6.js")
+           (sha256
+            (base32
+             "1x6432ca7p1pfxhz3airzw943fincn9izzxkclc1wmphcvv2n2p9"))))))
     (home-page "https://github.com/timelyportfolio/d3r")
     (synopsis "d3.js utilities for R")
     (description
