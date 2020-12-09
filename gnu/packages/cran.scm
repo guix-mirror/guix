@@ -11215,14 +11215,14 @@ diagnostics for controlling type-1 errors are also provided.")
 (define-public r-flare
   (package
     (name "r-flare")
-    (version "1.6.0.2")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flare" version))
        (sha256
         (base32
-         "1ybrsx1djqldw0l5l1iz4pfh6xxb8ckkg1ric7wnsr51wm9ljlh5"))))
+         "0f992dmgnr6s8g3386i9bjfyf08q8srgw7sjz2yx7snj8znq7251"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
