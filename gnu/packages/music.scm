@@ -2411,8 +2411,25 @@ main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib")))
                (with-directory-excursion lib
-                 (symlink "libportmidi.so" "libporttime.so")))
-             #t)))))
+                 (symlink "libportmidi.so" "libporttime.so")))))
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-config-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-config-dir)
+               (with-output-to-file (string-append pkg-config-dir "/portmidi.pc")
+                 (lambda _
+                   (format #t
+                           "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: portmidi~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lportmidi~@
+                           Cflags: -I${includedir}~%"
+                           out ,version)))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)))
     (native-inputs
