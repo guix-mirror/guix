@@ -3054,13 +3054,13 @@ by Li, Brown, Huang, and Bickel")
 (define-public r-inline
   (package
     (name "r-inline")
-    (version "0.3.16")
+    (version "0.3.17")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "inline" version))
               (sha256
                (base32
-                "0x9m2hwin6anfhkf61cnsbqn4qp1pr2gy1pbwbdgbdz2cmns85nj"))))
+                "1wslsn60q959yrr27cwanba43qlpfaxzdli46i9dc26lxfr5fa3r"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/inline")
     (synopsis "Functions to inline C, C++, Fortran function calls from R")
