@@ -4225,14 +4225,14 @@ including:
 (define-public r-gplots
   (package
     (name "r-gplots")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gplots" version))
        (sha256
         (base32
-         "05rislwgaw6v5dmhcwyvc04hi1fgaxrpb61f66kx483px45w6f24"))))
+         "0f8khaymz383w2ksnk80d4kpnvgmdk37pbycpsnl2vabaz11kbpr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-catools" ,r-catools)
