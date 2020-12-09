@@ -21946,8 +21946,8 @@ copied into @code{org-mode} buffers.")
       (license license:gpl3+))))
 
 (define-public emacs-dash-docs
-  (let ((commit "111fd9b97001f1ad887b45e5308a14ddd68ce70a")
-        (revision "1"))
+  (let ((commit "dafc8fc9f1ddb2e4e39e0b8d066c42d5d7ce8d06")
+        (revision "2"))
     (package
       (name "emacs-dash-docs")
       (version (git-version "1.4.0" revision commit))
@@ -21960,7 +21960,7 @@ copied into @code{org-mode} buffers.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0sckb7z0ylflva212bns7iq9mfnffgjghi0qspsbfwra35zb9xng"))))
+           "0n6d3mm43gj16v8kjjradcfik93wb89dsqnfcbskb28bvcamafid"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-async" ,emacs-async)))
