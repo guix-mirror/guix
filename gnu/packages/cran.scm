@@ -20867,14 +20867,14 @@ character codes as well as the UN M.49 area codes.")
 (define-public r-stopwords
   (package
     (name "r-stopwords")
-    (version "2.0")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stopwords" version))
        (sha256
         (base32
-         "155g00ansyqfpp1mzd2q6mn0k214xinf78nww2368h24kz761jjw"))))
+         "1g2p8gsj7xjck7idcwczgc7fmv72lzwjw00qarrj0cv44kypmiq8"))))
     (properties `((upstream-name . "stopwords")))
     (build-system r-build-system)
     (propagated-inputs
