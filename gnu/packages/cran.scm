@@ -22889,6 +22889,45 @@ safeguarded Newton methods.  Many methods previously separate are now included
 here.")
     (license license:gpl2)))
 
+(define-public r-projpred
+  (package
+    (name "r-projpred")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "projpred" version))
+       (sha256
+        (base32
+         "0nx514mrfh3gv854pr71w5x3zgdnn0kinf5nh7z90q3h7ysry2mg"))))
+    (properties `((upstream-name . "projpred")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-gamm4" ,r-gamm4)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-loo" ,r-loo)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-mgcv" ,r-mgcv)
+       ("r-optimx" ,r-optimx)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rngtools" ,r-rngtools)
+       ("r-rstantools" ,r-rstantools)
+       ("r-tidyverse" ,r-tidyverse)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://mc-stan.org/projpred/")
+    (synopsis "Projection predictive feature selection")
+    (description
+     "This package performs projection predictive feature selection for
+generalized linear models and generalized linear and additive multilevel
+models.  The package is compatible with the @code{rstanarm} and @code{brms}
+packages, but other reference models can also be used.  See the package
+vignette for more information and examples.")
+    (license license:gpl3)))
+
 (define-public r-brms
   (package
     (name "r-brms")
