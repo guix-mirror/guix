@@ -10264,6 +10264,30 @@ lists, and project planning with a fast and effective plain-text system.
 This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
 
+(define-public emacs-org-pretty-table
+  ;; There is no release yet.
+  (let ((commit "1331c600b83d95b28730b1bfcb48369ac1cf12ef")
+        (revision "0"))
+    (package
+      (name "emacs-org-pretty-table")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Fuco1/org-pretty-table")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0yvqxh66y400n2n5ykmb1zrzd80bakffpwn6nmf37728x4cj8krh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/Fuco1/org-pretty-table")
+      (synopsis "Make tables in Org mode and OrgTbl mode prettier")
+      (description
+       "This package displays tables in Org mode and OrgTbl mode using Unicode
+characters.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-sclang
   (package
     (inherit emacs-org-contrib)
