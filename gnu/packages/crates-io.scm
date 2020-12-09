@@ -23425,15 +23425,14 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-regex-syntax-0.6
   (package
     (name "rust-regex-syntax")
-    (version "0.6.18")
+    (version "0.6.21")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "regex-syntax" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1s648w7rwpxnq9iqwbyy43ar4al07906jpz0jxlql23bgjwjwh96"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "regex-syntax" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "12d176jkgw9749g07zjxz0n78nyvb2nqx3j4sp5aqyphvji1n61v"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expression parser")
