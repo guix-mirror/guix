@@ -22836,6 +22836,31 @@ connection, user authentication and file transfer.  A simple R client is
 included in this package as well.")
     (license license:gpl2)))
 
+(define-public r-gamm4
+  (package
+    (name "r-gamm4")
+    (version "0.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamm4" version))
+       (sha256
+        (base32
+         "128c725y9s07c1m9cvd9hgi9hldrymcs5divd8pw7bdjh9jvdiap"))))
+    (properties `((upstream-name . "gamm4")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)))
+    (home-page "https://cran.r-project.org/web/packages/gamm4/")
+    (synopsis "Generalized additive mixed models using mgcv and lme4")
+    (description
+     "Estimate generalized additive mixed models via a version of function
+@code{gamm} from the @code{mgcv} package, using the @code{lme4} packagefor
+estimation.")
+    (license license:gpl2+)))
+
 (define-public r-brms
   (package
     (name "r-brms")
