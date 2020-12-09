@@ -21035,31 +21035,29 @@ and code peeking.")
       (license license:gpl3+))))
 
 (define-public emacs-lsp-ivy
-  (let ((commit "caf1e1d7e22ed0b5fe18dd508d1a6f83dd163288")
-        (revision "2"))
-    (package
-      (name "emacs-lsp-ivy")
-      (version (git-version "0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-lsp/lsp-ivy")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "084ds4qhzhivfnicy3h7z4mblxgcqx8pfnkbjr9qjrfng7cisy4z"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ivy" ,emacs-ivy)
-         ("emacs-lsp-mode" ,emacs-lsp-mode)
-         ("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/emacs-lsp/lsp-ivy")
-      (synopsis "Provide LSP-enhanced completion for symbols")
-      (description
-       "This package enhances @code{ivy} with completion for symbols from
+  (package
+    (name "emacs-lsp-ivy")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-lsp/lsp-ivy")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08dpn0vcfdwwysijwdpnnj91m69yw0q464i0wmp51zpj3dyd4kb1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)))
+    (home-page "https://github.com/emacs-lsp/lsp-ivy")
+    (synopsis "Provide LSP-enhanced completion for symbols")
+    (description
+     "This package enhances @code{ivy} with completion for symbols from
 workspaces with a LSP-compliant server running.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-lsp
   (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
