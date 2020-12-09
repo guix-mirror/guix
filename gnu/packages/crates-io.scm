@@ -23303,7 +23303,7 @@ functionality.")
 (define-public rust-regex-1
   (package
     (name "rust-regex")
-    (version "1.3.9")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -23311,8 +23311,7 @@ functionality.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rnqga94ypykl2apgj26l2j1s9bvr2ix4dlzs323n6abyky80dww"))))
+        (base32 "172bw2yryv65whn3n5vkww4kgk0bq08lx0zbln8xwia7xl9jrkrq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -23327,7 +23326,7 @@ functionality.")
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expressions for Rust")
     (description
-     "An implementation of regular expressions for Rust.  This implementation
+     "This package is an implementation of regular expressions for Rust.  It
 uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:expat license:asl2.0))))
 
