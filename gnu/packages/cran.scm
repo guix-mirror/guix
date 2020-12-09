@@ -12738,6 +12738,34 @@ simple as possible to identify global objects for the purpose of exporting
 them in distributed compute environments.")
     (license license:lgpl2.1+)))
 
+(define-public r-parallelly
+  (package
+    (name "r-parallelly")
+    (version "1.21.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parallelly" version))
+       (sha256
+        (base32
+         "1hlr81khr7z4x9gprymdh19mdq3nw6wm8d2795sd2pa3ya6phnb0"))))
+    (properties `((upstream-name . "parallelly")))
+    (build-system r-build-system)
+    (home-page "https://github.com/HenrikBengtsson/parallelly")
+    (synopsis "Enhancements of the parallel package")
+    (description
+     "This package provides utility functions that enhance the @code{parallel}
+package and support the built-in parallel backends of the @code{future}
+package.  For example, @code{availableCores} gives the number of CPU cores
+available to your R process as given by R options and environment variables,
+including those set by job schedulers on high-performance compute clusters.
+If none is set, it will fall back to @code{parallel::detectCores}.  Another
+example is @code{makeClusterPSOCK}, which is backward compatible with
+@code{parallel::makePSOCKcluster} while doing a better job in setting up
+remote cluster workers without the need for configuring the firewall to do
+port-forwarding to your local computer.")
+    (license license:lgpl2.1+)))
+
 (define-public r-future
   (package
     (name "r-future")
