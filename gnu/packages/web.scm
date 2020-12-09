@@ -7949,3 +7949,59 @@ for ZIM files.")
     (description "The Kiwix library provides the Kiwix software suite core.
 It contains the code shared by all Kiwix ports.")
     (license license:gpl3)))
+
+(define-public kiwix-desktop
+  (package
+    (name "kiwix-desktop")
+    (version "2.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.kiwix.org/release/kiwix-desktop/kiwix-desktop-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1a9h4qmh6fkfscyp6lax0ri07dvvzw2wp4kr1sm86n0bdk3cwwha"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out")))))
+         (add-before 'configrue 'enable-print-support
+           (lambda _
+             (substitute* "kiwix-desktop.pro"
+               (("webenginewidgets") "webenginewidgets printsupport"))
+             #t))
+         (add-before 'configure 'substitute-source
+           ;; Looks like .pro file is missing a feature.
+           ;; See https://github.com/kiwix/kiwix-desktop/issues/556.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "kiwix-desktop.pro"
+               (("webenginewidgets" all) (string-append all " printsupport")))
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("kiwix-lib" ,kiwix-lib)
+       ("libzim" ,libzim)
+       ("pugixml" ,pugixml)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qmake" ,qtbase)))
+    (home-page "https://wiki.kiwix.org/wiki/Software")
+    (synopsis "Viewer and manager of ZIM files")
+    (description "Kiwix Desktop allows you to enjoy a lot of different content
+offline (such as Wikipedia), without any access to Internet.")
+    (license license:gpl3)))
