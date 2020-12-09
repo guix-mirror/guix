@@ -16695,19 +16695,17 @@ drop-in replacement for miniz.")
 (define-public rust-miow-0.3
   (package
     (name "rust-miow")
-    (version "0.3.3")
+    (version "0.3.6")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "miow" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "09ljvx6wg30f2xlv7b7hhpkw7k312n3hjgmrbhwzhz9x03ra0sir"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "miow" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "15sqdhh29dqgw5xh59clwv6scbsbvdkbmdc16hbfvyq7b2sw2css"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-socket2" ,rust-socket2-0.3)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
