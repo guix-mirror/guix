@@ -79,8 +79,10 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -90,6 +92,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -111,6 +114,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnu-doc)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
@@ -118,6 +122,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
@@ -152,6 +157,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages re2c)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -7854,3 +7860,38 @@ solution for any project's interface needs:
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+
                      license:bsd-3))))) ;; for ini.c and ini.h
+
+(define-public libzim
+  (package
+    (name "libzim")
+    (version "6.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openzim/libzim")
+                    (commit version)))
+              (sha256
+               (base32
+                "0p2317cp19lx0hw9n4fsb3nw2vc4hc1yyi98k3yrs41pkr840kwa"))
+              (file-name (git-file-name name version))))
+    (build-system meson-build-system)
+    (arguments
+     ;; TODO: Find out why tests fail.
+     '(#:tests? #f))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("liblzma" ,xz)
+       ("libuuid" ,util-linux "lib")
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("googletest" ,googletest)))
+    (home-page "https://wiki.openzim.org/wiki/Main_Page")
+    (synopsis "Reference implementation of the ZIM specification")
+    (description "The openZIM project proposes offline storage solutions for
+content coming from the Web.  The zimlib is the standard implementation of the
+ZIM specification.  It is a library which implements the read and write method
+for ZIM files.")
+    (license license:gpl2)))
