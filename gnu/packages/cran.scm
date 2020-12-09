@@ -19411,6 +19411,31 @@ conditional on one covariate, and multimodal regression.")
 functional outliers with bagplots, boxplots and rainbow plots.")
     (license license:gpl3)))
 
+(define-public r-fds
+  (package
+    (name "r-fds")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fds" version))
+       (sha256
+        (base32
+         "1284vncixrzrz9x6b52gslrbrbia07sd0xac7nwdqhp5f5v5wfi0"))))
+    (properties `((upstream-name . "fds")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rainbow" ,r-rainbow)
+       ("r-rcurl" ,r-rcurl)))
+    (home-page "https://cran.r-project.org/web/packages/fds/")
+    (synopsis "Functional data sets")
+    (description "This package contains a list of functional time series,
+sliced functional time series, and functional data sets.  Functional time
+series is a special type of functional data observed over time.  Sliced
+functional time series is a special type of functional time series with a time
+variable observed over time.")
+    (license license:gpl2+)))
+
 (define-public r-fda
   (package
     (name "r-fda")
