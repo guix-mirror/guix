@@ -459,23 +459,27 @@ depends on TYPE."
 
 (define (restore-file port file)
   "Read a file (possibly a directory structure) in Nar format from PORT.
-Restore it as FILE."
+Restore it as FILE with canonical permissions and timestamps."
   (fold-archive (lambda (file type content result)
                   (match type
                     ('directory
                      (mkdir file))
                     ('directory-complete
-                     #t)
+                     (chmod file #o555)
+                     (utime file 1 1 0 0))
                     ('symlink
-                     (symlink content file))
+                     (symlink content file)
+                     (utime file 1 1 0 0 AT_SYMLINK_NOFOLLOW))
                     ((or 'regular 'executable)
                      (match content
                        ((input . size)
                         (call-with-output-file file
                           (lambda (output)
                             (dump input output size)
-                            (when (eq? type 'executable)
-                              (chmod output #o755)))))))))
+                            (chmod output (if (eq? type 'executable)
+                                              #o555
+                                              #o444))))
+                        (utime file 1 1 0 0))))))
                 #t
                 port
                 file))

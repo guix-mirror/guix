@@ -114,10 +114,12 @@ held."
           ;; Install the new TARGET.
           (rename-file source target)
 
-          ;; Register TARGET.  As a side effect, it resets the timestamps of all
-          ;; its files, recursively, and runs a deduplication pass.
+          ;; Register TARGET.  As a side effect, run a deduplication pass.
+          ;; Timestamps and permissions are already correct thanks to
+          ;; 'restore-file'.
           (register-items db
-                          (list (store-info target deriver references))))
+                          (list (store-info target deriver references))
+                          #:reset-timestamps? #f))
 
         (when lock?
           (delete-file (string-append target ".lock"))

@@ -136,8 +136,11 @@
 (define (rm-rf dir)
   (file-system-fold (const #t)                    ; enter?
                     (lambda (file stat result)    ; leaf
+                      (unless (eq? 'symlink (stat:type stat))
+                        (chmod file #o644))
                       (delete-file file))
-                    (const #t)                    ; down
+                    (lambda (dir stat result)     ; down
+                      (chmod dir #o755))
                     (lambda (dir stat result)     ; up
                       (rmdir dir))
                     (const #t)                    ; skip
@@ -363,7 +366,12 @@
                   (cut write-file input <>))
                 (call-with-input-file nar
                   (cut restore-file <> output))
-                (file-tree-equal? input output))
+
+                (and (file-tree-equal? input output)
+                     (every (lambda (file)
+                              (canonical-file?
+                               (string-append output "/" file)))
+                            '("root" "root/reg" "root/exe"))))
               (lambda ()
                 (false-if-exception (delete-file nar))
                 (false-if-exception (rm-rf output)))))))
