@@ -20845,14 +20845,14 @@ and Euclidean distance is particularly fast.")
 (define-public r-isocodes
   (package
     (name "r-isocodes")
-    (version "2020.03.16")
+    (version "2020.12.04")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ISOcodes" version))
        (sha256
         (base32
-         "1hz1sj57qkkkrgn8slsz2n4jv1fkyp40503j9rg30lxy4gmb83hn"))))
+         "18373rkhmwm7y2drvfbhrxkqw9d23avf0ndvh0fg00z4djvddkjx"))))
     (properties `((upstream-name . "ISOcodes")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/package=ISOcodes")
