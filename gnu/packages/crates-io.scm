@@ -32412,6 +32412,33 @@ pool.")
 implementation of TLS for nonblocking I/O streams.")
     (license license:expat)))
 
+(define-public rust-tokio-tls-0.2
+  (package
+    (inherit rust-tokio-tls-0.3)
+    (name "rust-tokio-tls")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z0gmvv7jrpan6y42p5f5wd48rqcd96igp592w1c5cr573c8qjrm"))))
+    (arguments
+     `(#:tests? #f                      ;require internet access
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5)
+        ("rust-security-framework" ,rust-security-framework-0.2)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))))
+
 (define-public rust-tokio-trace-core-0.2
   (package
     (name "rust-tokio-trace-core")
