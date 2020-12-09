@@ -17170,6 +17170,24 @@ general elements and for numerics.")
     (description "This package provides helper macros for android ndk.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ndk-sys-0.2
+  (package
+    (name "rust-ndk-sys")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ndk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13c68a217ag3k18vlffpcj2qjfinchxxchzlwnsp075v7p5j4jf4"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rust-windowing/android-ndk-rs")
+    (synopsis "FFI bindings for the Android NDK")
+    (description "This package provides FFI bindings for the Android NDK.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-net2-0.2
   (package
     (name "rust-net2")
