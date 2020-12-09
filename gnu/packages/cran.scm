@@ -333,13 +333,13 @@ series of numeric vectors/matrices and factors.")
 (define-public r-ggalluvial
   (package
    (name "r-ggalluvial")
-   (version "0.12.2")
+   (version "0.12.3")
    (source (origin
             (method url-fetch)
             (uri (cran-uri "ggalluvial" version))
             (sha256
              (base32
-              "1qcpbb6h2znsq246n1291rxgfryiw24caghbk8acjzzfbdhdj8x1"))))
+              "0mkan9gxg3yxjism22yxbhvlh2lh7wpbrqpb355za790prcmjbh3"))))
    (properties `((upstream-name . "ggalluvial")))
    (build-system r-build-system)
    (propagated-inputs
