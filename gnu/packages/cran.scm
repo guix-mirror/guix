@@ -14533,13 +14533,13 @@ lspec, polyclass, and polymars.")
 (define-public r-rms
   (package
     (name "r-rms")
-    (version "6.0-1")
+    (version "6.1-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rms" version))
        (sha256
-        (base32 "1zkcsqcvldfj4kyn0346vi51igq951qrnpxlv2pfvap6n2v5wbxq"))))
+        (base32 "0llz519rgnc7v2jqhfrjgixkpkmmi5wi1a52hgz3n28s46ww77mq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
