@@ -11802,6 +11802,33 @@ hash map.")
 their key-value pairs in a user controllable order.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-headers-0.2
+  (package
+    (name "rust-headers")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "headers" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hmnrra00cjqpsn05klnr9cysrv2bm19akxl5lncwcrgfbcafb48"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-headers-core" ,rust-headers-core-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-sha-1" ,rust-sha-1-0.8)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://hyper.rs")
+    (synopsis "typed HTTP headers")
+    (description "This package provides typed HTTP headers.")
+    (license license:expat)))
+
 (define-public rust-headers-core-0.1
   (package
     (name "rust-headers-core")
