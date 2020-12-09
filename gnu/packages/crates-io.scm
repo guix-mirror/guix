@@ -31881,12 +31881,17 @@ Tokio.")
          "15751d47984ncvllagz35ldl10ifr8555wixvsg6k3i0yk2hhjrw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f                      ;require internet access
+       #:cargo-inputs
        (("rust-openssl" ,rust-openssl-0.10)
         ("rust-tokio" ,rust-tokio-0.2))
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-tokio" ,rust-tokio-0.2))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://github.com/alexcrichton/tokio-openssl")
     (synopsis "SSL streams for Tokio backed by OpenSSL")
     (description "This package is an implementation of SSL streams for Tokio
@@ -31912,11 +31917,7 @@ backed by OpenSSL.")
         ("rust-openssl" ,rust-openssl-0.10)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
        #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.1))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("openssl" ,openssl)))))
+       (("rust-tokio" ,rust-tokio-0.1))))))
 
 (define-public rust-tokio-process-0.2
   (package
