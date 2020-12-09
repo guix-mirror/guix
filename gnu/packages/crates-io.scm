@@ -36009,6 +36009,37 @@ API.")
      "Contains function definitions for the Windows API library ws2_32.")
     (license license:expat)))
 
+(define-public rust-x86-0.33
+  (package
+    (name "rust-x86")
+    (version "0.33.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x86" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sas98yzn549f5lxswqra2rjdfjxh24f3ndw5dfsnwnm9rlsr1i7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bit-field" ,rust-bit-field-0.10)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-csv" ,rust-csv-1.1)
+        ("rust-phf" ,rust-phf-0.7)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.7)
+        ("rust-raw-cpuid" ,rust-raw-cpuid-8)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/gz/rust-x86")
+    (synopsis "Library to program x86 (amd64) hardware")
+    (description
+     "This is a Library to program x86 (amd64) hardware.  It contains x86
+specific data structure descriptions, data-tables, as well as convenience
+function to call assembly instructions typically not exposed in higher level
+languages.")
+    (license license:expat)))
+
 (define-public rust-xattr-0.2
   (package
     (name "rust-xattr")
