@@ -9572,14 +9572,14 @@ ROPE percentage and pd).")
 (define-public r-performance
   (package
     (name "r-performance")
-    (version "0.5.1")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "performance" version))
        (sha256
         (base32
-         "1vkc87vbhw7l626pdnpiravnpsa5j0iv73lbwy3m309lnfvv0cqx"))))
+         "0ai1pp6k0pmmjgpj7hc53s0h258c4mljln8lv3nd9r7kzrmic0gc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
