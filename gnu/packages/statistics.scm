@@ -1583,26 +1583,36 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "2.3.2")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "0v70v2fs0f2ir962z9csbjlj8snrq9mbjfyhhb9dhz3zy26qs9hs"))))
+                "069ixg03r1s85my9dbc9c1261i4gz8fc1mv67whi2l6kpbp4cjzh"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-cli" ,r-cli)
+     `(("r-brio" ,r-brio)
+       ("r-callr" ,r-callr)
+       ("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
        ("r-ellipsis" ,r-ellipsis)
        ("r-evaluate" ,r-evaluate)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-magrittr" ,r-magrittr)
        ("r-pkgload" ,r-pkgload)
        ("r-praise" ,r-praise)
+       ("r-processx" ,r-processx)
+       ("r-ps" ,r-ps)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
+       ("r-waldo" ,r-waldo)
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/testthat")
     (synopsis "Unit testing for R")
     (description
