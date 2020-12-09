@@ -2699,17 +2699,17 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rprojroot
   (package
     (name "r-rprojroot")
-    (version "1.3-2")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rprojroot" version))
        (sha256
         (base32
-         "12r3fdxmi2pmwn6ic3rhg0b20ll5z420m0d8fziv1n21961namnz"))))
+         "07wy07yhms8zln9qb0iwx69dq08h4lrdi8kavjcplfxcskq638az"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-backports" ,r-backports)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/krlmlr/rprojroot")
     (synopsis "Finding files in project subdirectories")
     (description
