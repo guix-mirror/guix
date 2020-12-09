@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,8 +218,10 @@
   '(("R" directory #f)
     ("R/dir" directory #f)
     ("R/dir/exe" executable "1234")
+    ("R/dir" directory-complete #f)
     ("R/foo" regular "abcdefg")
-    ("R/lnk" symlink "foo"))
+    ("R/lnk" symlink "foo")
+    ("R" directory-complete #f))
 
   (let ()
     (define-values (port get-bytevector)

@@ -444,7 +444,8 @@ depends on TYPE."
                                            (file file)
                                            (token x))))))
                      (loop (read-string port) result)))))
-               (")" result)                       ;done with DIR
+               (")"                               ;done with DIR
+                (proc file 'directory-complete #f result))
                (x
                 (raise
                  (condition
@@ -463,6 +464,8 @@ Restore it as FILE."
                   (match type
                     ('directory
                      (mkdir file))
+                    ('directory-complete
+                     #t)
                     ('symlink
                      (symlink content file))
                     ((or 'regular 'executable)
