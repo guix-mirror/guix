@@ -31893,6 +31893,31 @@ Tokio.")
 backed by OpenSSL.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tokio-openssl-0.3
+  (package
+    (inherit rust-tokio-openssl-0.4)
+    (name "rust-tokio-openssl")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-openssl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19zx58jz0vkxppa3pmqnq0b90mqsycikr5nrcy6i1bkhn53647bp"))))
+    (arguments
+     `(#:tests? #f                      ;require internet access
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))))
+
 (define-public rust-tokio-process-0.2
   (package
     (name "rust-tokio-process")
