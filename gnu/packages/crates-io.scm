@@ -20449,22 +20449,22 @@ function data structures.")
 (define-public rust-pin-project-lite-0.1
   (package
     (name "rust-pin-project-lite")
-    (version "0.1.4")
+    (version "0.1.11")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "pin-project-lite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1bljczwz9yyb6jskjhbkilcbdg7v1mhfwzp2mxknzf7v1isl8y13"))))
+        (base32 "0srgdb3vkx7ppcww1qr7a67c7n84y01lq35j9g44z4h1z8x145y9"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
        (("rust-rustversion" ,rust-rustversion-1)
+        ("rust-static-assertions" ,rust-static-assertions-1)
         ("rust-trybuild" ,rust-trybuild-1))))
     (home-page "https://github.com/taiki-e/pin-project-lite")
-    (synopsis "Lightweight version of pin-project written with declarative
-macros")
+    (synopsis "Lightweight version of pin-project")
     (description "This package provides a lightweight version of pin-project
 written with declarative macros.")
     (license (list license:asl2.0 license:expat))))
