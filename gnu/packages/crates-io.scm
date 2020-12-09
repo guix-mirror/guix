@@ -32856,6 +32856,26 @@ extension for the Trust-DNS client to use rustls for TLS.")
 deserialization.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-typed-headers-0.1
+  (package
+    (inherit rust-typed-headers-0.2)
+    (name "rust-typed-headers")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "typed-headers" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0g40nlq5iw0zxhwb7nfmfbr9m86abgwwhxwhzrm10nfq6bsmlvxx"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-mime" ,rust-mime-0.3))))))
+
 (define-public rust-typemap-0.3
   (package
     (name "rust-typemap")
