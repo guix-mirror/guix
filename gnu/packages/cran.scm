@@ -16677,14 +16677,14 @@ in R, including a translation of the original algorithm into R.")
 (define-public r-uwot
   (package
     (name "r-uwot")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "uwot" version))
        (sha256
         (base32
-         "1jzh8r1h6f7pw7pb1fr32vn6ai9g10s56ahkq0vi77iznihy1rpd"))))
+         "1iqvircvlxyd68n5279a0cwn5rc3pshxs7w1gqrns9c602xd6mhy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dqrng" ,r-dqrng)
