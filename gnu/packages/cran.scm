@@ -2074,14 +2074,16 @@ XML.  To learn more about the Abbyy OCR API, see @url{http://ocrsdk.com/}.")
 (define-public r-colorspace
   (package
     (name "r-colorspace")
-    (version "1.4-1")
+    (version "2.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colorspace" version))
        (sha256
-        (base32 "0wyny3ah2d74hqv80s6imrarpna09gq3j9rjnz6zx2qg0lx72gb9"))))
+        (base32 "13h1hara0s6xn16bgkrbd0flszah1yiylwfwxwn2inqqk6pm6sjf"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/colorspace")
     (synopsis "Color space manipulation")
     (description
