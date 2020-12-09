@@ -7542,14 +7542,14 @@ functions.")
 (define-public r-flextable
   (package
     (name "r-flextable")
-    (version "0.5.11")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flextable" version))
        (sha256
         (base32
-         "1yb872izzr9yja7q2vfqm0imcbcgs0fvi4b19arhdlwwa42figj4"))))
+         "06nzyd2a9yaf9hmn740xrgxw0448z5dvlplcj3kizz9sm23aw9li"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -7562,6 +7562,8 @@ functions.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-uuid" ,r-uuid)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://davidgohel.github.io/flextable")
     (synopsis "Functions for tabular reporting")
     (description
