@@ -288,12 +288,30 @@ authorized substitutes."
         (lambda (obj)
           (valid-narinfo? obj acl))))
 
+  (define* (make-progress-reporter total #:key url)
+    (define done 0)
+
+    (define (report-progress)
+      (erase-current-line (current-error-port)) ;erase current line
+      (force-output (current-error-port))
+      (format (current-error-port)
+              (G_ "updating substitutes from '~a'... ~5,1f%")
+              url (* 100. (/ done total)))
+      (set! done (+ 1 done)))
+
+    (progress-reporter
+     (start report-progress)
+     (report report-progress)
+     (stop (lambda ()
+             (newline (current-error-port))))))
+
   (match (string-tokenize command)
     (("have" paths ..1)
      ;; Return the subset of PATHS available in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/cached)))
+                           #:open-connection open-connection-for-uri/cached
+                           #:make-progress-reporter make-progress-reporter)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
                  substitutable)
@@ -302,7 +320,8 @@ authorized substitutes."
      ;; Reply info about PATHS if it's in CACHE-URLS.
      (let ((substitutable (lookup-narinfos/diverse
                            cache-urls paths valid?
-                           #:open-connection open-connection-for-uri/cached)))
+                           #:open-connection open-connection-for-uri/cached
+                           #:make-progress-reporter make-progress-reporter)))
        (for-each display-narinfo-data substitutable)
        (newline)))
     (wtf

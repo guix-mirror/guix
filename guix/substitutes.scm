@@ -173,18 +173,14 @@ if file doesn't exist, and the narinfo otherwise."
           (apply throw args)))))
 
 (define* (fetch-narinfos url paths
-                         #:key (open-connection guix:open-connection-for-uri))
+                         #:key
+                         (open-connection guix:open-connection-for-uri)
+                         (make-progress-reporter
+                          (const progress-reporter/silent)))
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
-  (define update-progress!
-    (let ((done 0)
-          (total (length paths)))
-      (lambda ()
-        (display "\r\x1b[K" (current-error-port)) ;erase current line
-        (force-output (current-error-port))
-        (format (current-error-port)
-                (G_ "updating substitutes from '~a'... ~5,1f%")
-                url (* 100. (/ done total)))
-        (set! done (+ 1 done)))))
+  (define progress-reporter
+    (make-progress-reporter (length paths)
+                            #:url url))
 
   (define hash-part->path
     (let ((mapping (fold (lambda (path result)
@@ -206,7 +202,7 @@ if file doesn't exist, and the narinfo otherwise."
            (len    (response-content-length response))
            (cache  (response-cache-control response))
            (ttl    (and cache (assoc-ref cache 'max-age))))
-      (update-progress!)
+      (progress-reporter-report! progress-reporter)
 
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
@@ -238,7 +234,7 @@ if file doesn't exist, and the narinfo otherwise."
        ;; narinfos, which provides a much stronger guarantee.
        (let* ((requests (map (cut narinfo-request url <>) paths))
               (result   (begin
-                          (update-progress!)
+                          (start-progress-reporter! progress-reporter)
                           (call-with-connection-error-handling
                            uri
                            (lambda ()
@@ -247,7 +243,7 @@ if file doesn't exist, and the narinfo otherwise."
                                                 requests
                                                 #:open-connection open-connection
                                                 #:verify-certificate? #f))))))
-         (newline (current-error-port))
+         (stop-progress-reporter! progress-reporter)
          result))
       ((file #f)
        (let* ((base  (string-append (uri-path uri) "/"))
@@ -297,7 +293,9 @@ for PATH."
       (values #f #f))))
 
 (define* (lookup-narinfos cache paths
-                          #:key (open-connection guix:open-connection-for-uri))
+                          #:key (open-connection guix:open-connection-for-uri)
+                          (make-progress-reporter
+                           (const progress-reporter/silent)))
   "Return the narinfos for PATHS, invoking the server at CACHE when no
 information is available locally."
   (let-values (((cached missing)
@@ -315,12 +313,16 @@ information is available locally."
     (if (null? missing)
         cached
         (let ((missing (fetch-narinfos cache missing
-                                       #:open-connection open-connection)))
+                                       #:open-connection open-connection
+                                       #:make-progress-reporter
+                                       make-progress-reporter)))
           (append cached (or missing '()))))))
 
 (define* (lookup-narinfos/diverse caches paths authorized?
                                   #:key (open-connection
-                                         guix:open-connection-for-uri))
+                                         guix:open-connection-for-uri)
+                                  (make-progress-reporter
+                                   (const progress-reporter/silent)))
   "Look up narinfos for PATHS on all of CACHES, a list of URLS, in that order.
 That is, when a cache lacks an AUTHORIZED? narinfo, look it up in the next
 cache, and so on.
@@ -353,7 +355,9 @@ AUTHORIZED? narinfo."
        (match caches
          ((cache rest ...)
           (let* ((narinfos (lookup-narinfos cache paths
-                                            #:open-connection open-connection))
+                                            #:open-connection open-connection
+                                            #:make-progress-reporter
+                                            make-progress-reporter))
                  (definite (map narinfo-path (filter authorized? narinfos)))
                  (missing  (lset-difference string=? paths definite))) ;XXX: perf
             (loop rest missing
