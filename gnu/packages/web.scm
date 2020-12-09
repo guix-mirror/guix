@@ -7895,3 +7895,57 @@ content coming from the Web.  The zimlib is the standard implementation of the
 ZIM specification.  It is a library which implements the read and write method
 for ZIM files.")
     (license license:gpl2)))
+
+(define-public kiwix-lib
+  (package
+    (name "kiwix-lib")
+    (version "9.4.0")
+    (home-page "https://github.com/kiwix/kiwix-lib/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32
+                "0nsm4qgl0cb6wv983n0px1kf217k4kykb8q56b8j6ikp061lzamm"))
+              (file-name (git-file-name name version))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths-and-includes
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPPFLAGS" (string-append "-I" (assoc-ref inputs "mustache")))
+             (substitute* "src/aria2.cpp"
+               (("ARIA2_CMD \"aria2c\"")
+                (string-append "ARIA2_CMD \""
+                               (assoc-ref inputs "aria2")
+                               "/bin/aria2c\"")))
+             #t)))))
+    (inputs
+     `(("aria2" ,aria2)
+       ("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("libmicrohttpd" ,libmicrohttpd)
+       ("libzim" ,libzim)
+       ("pugixml" ,pugixml)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("mustache" ,(origin
+                      (method git-fetch)
+                      (uri (git-reference
+                            (url "https://github.com/kainjow/Mustache")
+                            ;; XXX: Readme says to use version 3.  Can we use 3.2.1?
+                            (commit "v4.1")))
+                      (file-name (git-file-name "mustache" "4.1"))
+                      (sha256
+                       (base32
+                        "0r9rbk6v1wpld2ismfsk2lkhbyv3dkf0p03hkjivbj05qkfhvlbb"))))
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Common code base for all Kiwix ports")
+    (description "The Kiwix library provides the Kiwix software suite core.
+It contains the code shared by all Kiwix ports.")
+    (license license:gpl3)))
