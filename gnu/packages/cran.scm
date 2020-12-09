@@ -13083,14 +13083,14 @@ Coefficient Logit Models.")
 (define-public r-tensora
   (package
     (name "r-tensora")
-    (version "0.36.1")
+    (version "0.36.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tensorA" version))
        (sha256
         (base32
-         "176hjy3bvg3in62r97wxbhq187sjz6c1gwy9x6spaxl6k4my3zy7"))))
+         "19wwh654qlja4z1n7afjpzsrrm53p8ddysa2vra5mdnkddb4g2cf"))))
     (properties `((upstream-name . "tensorA")))
     (build-system r-build-system)
     (home-page "http://www.stat.boogaart.de/tensorA")
