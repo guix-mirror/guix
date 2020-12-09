@@ -8827,14 +8827,14 @@ libraries.")
 (define-public r-scuttle
   (package
     (name "r-scuttle")
-    (version "1.0.0")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scuttle" version))
        (sha256
         (base32
-         "1k8q3wzq6f6j6wkjp9fy9j214rv98kyvcxnpavk6blqgaxjqwdr6"))))
+         "0l2r6fhyd33dllf2mc5a1pd5sawfvcin54pgh9l1nafqzg3sdv2m"))))
     (properties `((upstream-name . "scuttle")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8843,6 +8843,7 @@ libraries.")
        ("r-biocparallel" ,r-biocparallel)
        ("r-delayedarray" ,r-delayedarray)
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)
