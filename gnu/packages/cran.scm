@@ -14269,14 +14269,14 @@ sampling.")
 (define-public r-deldir
   (package
     (name "r-deldir")
-    (version "0.1-29")
+    (version "0.2-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "deldir" version))
        (sha256
         (base32
-         "1vwh8c8zxspyls05q9kgzz5p85i8k8aax5ir45np2bmg0pjvh6kv"))))
+         "0kin1hsd6dj36kkg7n328mzp21wwn9jm69lvgg2rvbf6bq7q091d"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/deldir")
