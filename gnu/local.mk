@@ -803,6 +803,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
+  %D%/packages/patches/audacity-add-include.patch 		\
   %D%/packages/patches/audiofile-fix-datatypes-in-tests.patch	\
   %D%/packages/patches/audiofile-fix-sign-conversion.patch	\
   %D%/packages/patches/audiofile-CVE-2015-7747.patch		\
