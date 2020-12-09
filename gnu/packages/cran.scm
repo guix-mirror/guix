@@ -7876,14 +7876,14 @@ procedures to speed up calculations in R.")
 (define-public r-blockfest
   (package
     (name "r-blockfest")
-    (version "1.6")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BlockFeST" version))
        (sha256
         (base32
-         "0hj7a5as7nxbgjac7lbj6qfwffx3g8x8phpf9a55f1c9cdzi73a5"))))
+         "12cbrmgqszlj729zrn9d1d7drbr0iay43knnmrzcxs6v7lfszsx5"))))
     (properties `((upstream-name . "BlockFeST")))
     (build-system r-build-system)
     (propagated-inputs `(("r-basix" ,r-basix)))
