@@ -1,0 +1,23 @@
+Fix a build error on GNU/Hurd for pciutils 3.7.0.
+
+commit 053cf6c8b2acafadf828912828336d90fe9b8696
+Author: Martin Mares <mj@ucw.cz>
+Date:   Sun May 31 11:53:28 2020 +0200
+
+    HURD backend should compile again
+    
+    Fixes a bug introduced by commit 82c06b47dea5a38075ce9d56f743360bc47b4c78.
+
+diff --git a/lib/hurd.c b/lib/hurd.c
+index 7b3b2ae..ccd92f6 100644
+--- a/lib/hurd.c
++++ b/lib/hurd.c
+@@ -307,7 +307,6 @@ hurd_fill_regions(struct pci_dev *d)
+       d->base_addr[i] |= regions[i].is_64 << 2;
+       d->base_addr[i] |= regions[i].is_prefetchable << 3;
+ 
+-      if (flags & PCI_FILL_SIZES)
+-	d->size[i] = regions[i].size;
++      d->size[i] = regions[i].size;
+     }
+ }
