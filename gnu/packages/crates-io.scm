@@ -4316,6 +4316,28 @@ CMAKE environmental variable is set.")
        (sha256
         (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))))
 
+(define-public rust-combine-regex-1-1
+  (package
+    (name "rust-combine-regex-1")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "combine-regex-1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bzir63nvrg98i8g6b7crhgq5qbj4vq9f4y6d279af537djvh5ns"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/Marwes/combine")
+    (synopsis "Re-export of regex 1.0 letting combine use both 0.2 and 1.0")
+    (description
+     "This package is a re-export of regex 1.0 letting combine use both 0.2
+and 1.0.")
+    (license (list license:expat license:asl2.0))))
+
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
 (define-public rust-compiler-builtins-0.1
