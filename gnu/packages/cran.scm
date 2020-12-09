@@ -121,6 +121,28 @@ functions always read and write UTF-8 (8-bit Unicode Transformation Format)
 files and provide more explicit control over line endings.")
     (license license:expat)))
 
+(define-public r-diffobj
+  (package
+    (name "r-diffobj")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "diffobj" version))
+       (sha256
+        (base32
+         "0v18zz14g8ppzmj1d997rdmsfh327ml4wvpmfx168lravdsk5ym2"))))
+    (properties `((upstream-name . "diffobj")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-crayon" ,r-crayon)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/brodieG/diffobj")
+    (synopsis "Diffs for R objects")
+    (description
+     "Generate a colorized diff of two R objects for an intuitive
+visualization of their differences.")
+    (license license:gpl2+)))
+
 (define-public r-rticles
   (package
     (name "r-rticles")
