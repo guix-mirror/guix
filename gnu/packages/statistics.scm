@@ -503,14 +503,14 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
 (define-public r-codetools
   (package
     (name "r-codetools")
-    (version "0.2-16")
+    (version "0.2-18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "codetools" version))
        (sha256
         (base32
-         "00bmhzqprqfn3w6ghx7sakai6s7il8gbksfiawj8in5mbhbncypn"))))
+         "0a2c115glq8jxixwfigrpvjabhxchn9r4mc40y41dg9dg6wsd7hs"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/codetools")
     (synopsis "Code analysis tools for R")
