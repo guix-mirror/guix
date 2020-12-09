@@ -31409,18 +31409,16 @@ backed applications.")
 
 (define-public rust-tokio-0.1
   (package
+    (inherit rust-tokio-0.2)
     (name "rust-tokio")
-    (version "0.1.21")
+    (version "0.1.22")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "11ra8jp3fj70a2zrqmd6as7wgpwiiyzjf50gz89i8r7wpksgqbzc"))))
-    (build-system cargo-build-system)
+        (base32 "1xhaadfmm6m37f79xv5020gc3np9wqza3bq95ymp522qpfsw02as"))))
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
@@ -31452,13 +31450,8 @@ backed applications.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-time" ,rust-time-0.1))))
-    (home-page "https://tokio.rs")
-    (synopsis "Event-driven, non-blocking I/O platform")
-    (description
-     "An event-driven, non-blocking I/O platform for writing asynchronous I/O
-backed applications.")
-    (license license:expat)))
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tracing-core" ,rust-tracing-core-0.1))))))
 
 (define-public rust-tokio-buf-0.1
   (package
