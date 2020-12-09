@@ -21931,20 +21931,55 @@ transfer).
 This library mimics the Git way of showing progress.")
     (license license:gpl2+)))
 
+(define-public rust-proptest-0.10
+  (package
+    (name "rust-proptest")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proptest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vv4cvwn1v7h0zjajmhznll554a2ri8dqw26xql3q49r246cirhj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bit-set" ,rust-bit-set-0.5)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-quick-error" ,rust-quick-error-1.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-rusty-fork" ,rust-rusty-fork-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-x86" ,rust-x86-0.33))
+       #:cargo-development-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "https://altsysrq.github.io/proptest-book/proptest/index.html")
+    (synopsis "Hypothesis-like property-based testing and shrinking")
+    (description
+     "The @code{proptest} crate provides most of Proptest’s functionality,
+including most strategies and the testing framework itself.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proptest-0.9
   (package
+    (inherit rust-proptest-0.10)
     (name "rust-proptest")
     (version "0.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "proptest" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nsslp46lvf3ll5rd83rin652qlz1kqyp0rmsciy0pw4kf0pgi01"))))
-    (build-system cargo-build-system)
+        (base32 "0nsslp46lvf3ll5rd83rin652qlz1kqyp0rmsciy0pw4kf0pgi01"))))
     (arguments
      `(#:cargo-inputs
        (("rust-bit-set" ,rust-bit-set-0.5)
@@ -21960,14 +21995,7 @@ This library mimics the Git way of showing progress.")
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
         ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
-       (("rust-regex" ,rust-regex-1))))
-    (home-page
-     "https://altsysrq.github.io/proptest-book/proptest/index.html")
-    (synopsis
-     "Hypothesis-like property-based testing and shrinking")
-    (description
-     "Hypothesis-like property-based testing and shrinking.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-regex" ,rust-regex-1))))))
 
 (define-public rust-proptest-0.8
   (package
