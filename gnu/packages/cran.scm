@@ -100,6 +100,27 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public r-brio
+  (package
+    (name "r-brio")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "brio" version))
+       (sha256
+        (base32
+         "0f7amcd2cjm09aiq39209cz680l5d2gqpp6wwfhz24zagfsa7cvb"))))
+    (properties `((upstream-name . "brio")))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/brio")
+    (synopsis "Basic R input output")
+    (description
+     "This package provides functions to handle basic input output.  These
+functions always read and write UTF-8 (8-bit Unicode Transformation Format)
+files and provide more explicit control over line endings.")
+    (license license:expat)))
+
 (define-public r-rticles
   (package
     (name "r-rticles")
