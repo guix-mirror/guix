@@ -19355,6 +19355,35 @@ actigraphy-measured activity counts data.")
 R.")
     (license license:gpl2+)))
 
+(define-public r-hdrcde
+  (package
+    (name "r-hdrcde")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hdrcde" version))
+       (sha256
+        (base32
+         "0c2qbw4c3mq1cb068kjs72rxlbibz8svwcrx853jyr8ybs23z7ab"))))
+    (properties `((upstream-name . "hdrcde")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ash" ,r-ash)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-ks" ,r-ks)
+       ("r-locfit" ,r-locfit)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://pkg.robjhyndman.com/hdrcde")
+    (synopsis "Highest density regions and conditional density estimation")
+    (description
+     "This is a package for the computation of highest density regions in one
+and two dimensions, kernel estimation of univariate density functions
+conditional on one covariate, and multimodal regression.")
+    (license license:gpl3)))
+
 (define-public r-fda
   (package
     (name "r-fda")
