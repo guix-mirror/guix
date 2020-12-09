@@ -32393,7 +32393,8 @@ pool.")
          "0hv375949532p32d0w6bm2f6d3r0d00mcdzqjjqlzcmkszyg8w4s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f                      ;require internet access
+       #:cargo-inputs
        (("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-tokio" ,rust-tokio-0.2))
        #:cargo-development-inputs
@@ -32406,6 +32407,10 @@ pool.")
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-tokio-util" ,rust-tokio-util-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://tokio.rs")
     (synopsis "TLS/SSL streams for Tokio")
     (description "An implementation of TLS/SSL streams for Tokio giving an
@@ -32433,11 +32438,7 @@ implementation of TLS for nonblocking I/O streams.")
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-security-framework" ,rust-security-framework-0.2)
-        ("rust-tokio" ,rust-tokio-0.1))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("openssl" ,openssl)))))
+        ("rust-tokio" ,rust-tokio-0.1))))))
 
 (define-public rust-tokio-trace-core-0.2
   (package
