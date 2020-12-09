@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2028,6 +2029,52 @@ bar entirely based on XCB.  Provides full UTF-8 support, basic
 formatting, RandR and Xinerama support and EWMH compliance without
 wasting your precious memory.")
       (license license:x11))))
+
+(define-public lemonbar-xft
+  ;; Upstream v2.0 tag is several years behind HEAD
+  (let ((commit "481e12363e2a0fe0ddd2176a8e003392be90ed02"))
+    (package
+      (inherit lemonbar)
+      (name "lemonbar-xft")
+      (version (string-append "2.0." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/drscream/lemonbar-xft")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0588g37h18lv50h7w8vfbwhvc3iajh7sdr53848spaif99nh3mh4"))))
+      (inputs
+       `(("freetype" ,freetype)
+         ("libxft" ,libxft)
+         ("libx11" ,libx11)
+         ,@(package-inputs lemonbar)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments lemonbar)
+         ((#:make-flags make-flags)
+          `(append
+            ,make-flags
+            (list (string-append
+                   "CFLAGS="
+                   (string-join
+                    (list (string-append
+                           "-I" (assoc-ref %build-inputs "freetype")
+                           "/include/freetype2")
+                          (string-append
+                           "-D" "VERSION="
+                           (format #f "'~s'" ,version))))))))))
+      (home-page "https://github.com/drscream/lemonbar-xft")
+      (synopsis
+       (string-append
+        (package-synopsis lemonbar)
+        " with fontconfig support"))
+      (description
+       (string-append
+        (package-description lemonbar)
+        "This is a fork of the @code{lemonbar} package that adds fontconfig
+support, for easier unicode usage.")))))
 
 (define-public xclickroot
   (package
