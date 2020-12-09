@@ -15454,14 +15454,14 @@ databases, including ENA, PDB or ChEMBL are also accessible.")
 (define-public r-ggraph
   (package
     (name "r-ggraph")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggraph" version))
        (sha256
         (base32
-         "1pz06j0za4p6dc3fqjzcw8bpym70bmnfcvpv1q34r74rnwzjdyvq"))))
+         "1j3xf4fsv0i0gbppdrw4yprfyk53wx6s8nvnkipi2ywbm7cr4q4w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -15477,7 +15477,8 @@ databases, including ENA, PDB or ChEMBL are also accessible.")
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-tidygraph" ,r-tidygraph)
-       ("r-viridis" ,r-viridis)))
+       ("r-viridis" ,r-viridis)
+       ("r-withr" ,r-withr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ggraph/")
