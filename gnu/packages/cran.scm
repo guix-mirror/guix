@@ -362,13 +362,13 @@ variables.")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.3.6")
+    (version "0.3.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "05i81q9rg8zf35vgcxhn3yhkc9dlvcpwpxncq1q3zs0rxhfkf208"))))
+                "121s6c9k4fn3rcz2myc1kxczllq2826c8zllaii58q8lica7dsyn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
