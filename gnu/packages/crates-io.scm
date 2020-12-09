@@ -4993,6 +4993,29 @@ management.  It supports signed and private (encrypted, authenticated) jars.")
     (description "This package implements cookie storage and retrieval.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-affinity-0.5
+  (package
+    (name "rust-core-affinity")
+    (version "0.5.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-affinity" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07qpwyxps4gp3gci2p6c5h4cmcql7551bp91qgbv0ky3bh8h72kz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-winapi" ,rust-winapi-0.2))))
+    (home-page "https://github.com/Elzair/core_affinity_rs")
+    (synopsis "Manage CPU affinities")
+    (description "This package manages CPU affinities.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-arch-0.1
   (package
     (name "rust-core-arch")
