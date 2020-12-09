@@ -889,14 +889,18 @@ algorithms.")
 (define-public r-magrittr
   (package
     (name "r-magrittr")
-    (version "1.5")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magrittr" version))
        (sha256
-        (base32 "1s1ar6rag8m277qcqmdp02gn4awn9bdj9ax0r8s32i59mm1mki05"))))
+        (base32 "0pxd99fvg406whqsk9wh756rayrwh84xn3h44zmlpcy23kanbhkm"))))
     (build-system r-build-system)
+    ;; knitr needs magrittr
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/magrittr/index.html")
     (synopsis "A forward-pipe operator for R")
     (description
