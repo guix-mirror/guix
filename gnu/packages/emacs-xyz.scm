@@ -1810,7 +1810,8 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
         (base32 "1dq04p6ms0zx4awlypp4crkz7dzal4xg8ac7p8fqacz196rczssp"))))
     (build-system emacs-build-system)
     (inputs
-     `(("bluez" ,bluez)))
+     `(("bluez" ,bluez)
+       ("dbus" ,dbus)))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
     (home-page "https://gitlab.com/rstocker/emacs-bluetooth")
