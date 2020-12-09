@@ -12784,19 +12784,20 @@ port-forwarding to your local computer.")
 (define-public r-future
   (package
     (name "r-future")
-    (version "1.19.1")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "future" version))
        (sha256
         (base32
-         "12f483h7g172ygafbg7h43vykv0f7xz9miwqf5q8dyv7gpgqi5fl"))))
+         "14k00g8c9zgf77d6q7x2vibvlivzk2rzj7lwn7v7d9nr6prqzlb6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-globals" ,r-globals)
-       ("r-listenv" ,r-listenv)))
+       ("r-listenv" ,r-listenv)
+       ("r-parallelly" ,r-parallelly)))
     (native-inputs
      `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
     (home-page "https://github.com/HenrikBengtsson/future")
