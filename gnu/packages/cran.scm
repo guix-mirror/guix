@@ -19334,6 +19334,27 @@ metrics to quantify time accumulation strategies based on minute level
 actigraphy-measured activity counts data.")
     (license license:gpl3)))
 
+(define-public r-ash
+  (package
+    (name "r-ash")
+    (version "1.0-15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ash" version))
+       (sha256
+        (base32
+         "1ay2a2agdmiz7zzvn26mli0x0iwk09g5pp4yy1r23knhkp1pn2lb"))))
+    (properties `((upstream-name . "ash")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/ash/")
+    (synopsis "David Scott's ASH routines")
+    (description
+     "This package provides David Scott's ASH routines ported from S-PLUS to
+R.")
+    (license license:gpl2+)))
+
 (define-public r-fda
   (package
     (name "r-fda")
