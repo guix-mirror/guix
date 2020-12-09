@@ -765,20 +765,20 @@ read a protected key.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.5-6")
+    (version "2.5-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "0g60rgn1i7wqf9pf5m1yki1m45gcp7i5hmjic0ci0f6vng70mh5k"))))
+         "0aj6m9l1vkh32sar6fyvq4p8j4h2f2f347w1300qnzgaa5lmhfz6"))))
     (build-system r-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("r-knitr" ,r-knitr)             ; needed for vignettes
+       ("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
-       ("r-knitr" ,r-knitr)             ; needed for vignettes
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
