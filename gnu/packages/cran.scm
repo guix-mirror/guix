@@ -24805,20 +24805,19 @@ model-related packages.")
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidymodels" version))
        (sha256
         (base32
-         "0w2xnr642klmqlflkw6rkvqcrgs01i8f34nk9wdax3fsl1yx2wi4"))))
+         "09njrl655sh82xrzckgg56a6ndfrjla5fy8675wj4jsj14jpv0fw"))))
     (properties `((upstream-name . "tidymodels")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
        ("r-cli" ,r-cli)
-       ("r-crayon" ,r-crayon)
        ("r-dials" ,r-dials)
        ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
