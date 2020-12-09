@@ -143,6 +143,36 @@ files and provide more explicit control over line endings.")
 visualization of their differences.")
     (license license:gpl2+)))
 
+(define-public r-waldo
+  (package
+    (name "r-waldo")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "waldo" version))
+       (sha256
+        (base32
+         "0lsw8p4wiggqm9fvh5vgmf0ms0npcg3hcwyzlg5ahv5yx4pv5fhz"))))
+    (properties `((upstream-name . "waldo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-diffobj" ,r-diffobj)
+       ("r-fansi" ,r-fansi)
+       ("r-glue" ,r-glue)
+       ("r-rematch2" ,r-rematch2)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/r-lib/waldo")
+    (synopsis "Find differences between R objects")
+    (description
+     "Compare complex R objects and reveal the key differences.  This package
+was designed particularly for use in testing packages where being able to
+quickly isolate key differences makes understanding test failures much
+easier.")
+    (license license:expat)))
+
 (define-public r-rticles
   (package
     (name "r-rticles")
