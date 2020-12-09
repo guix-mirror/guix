@@ -22861,6 +22861,34 @@ included in this package as well.")
 estimation.")
     (license license:gpl2+)))
 
+(define-public r-optimx
+  (package
+    (name "r-optimx")
+    (version "2020-4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "optimx" version))
+       (sha256
+        (base32
+         "00bi2sr2hr7x6cfwlsn7hz2r56lcyv9naa8vmfcgr1r269fc50b3"))))
+    (properties `((upstream-name . "optimx")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-numderiv" ,r-numderiv)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/optimx/")
+    (synopsis "Expanded replacement and extension of the optim function")
+    (description
+     "This package provides a replacement and extension of the @code{optim}
+function to call to several function minimization codes in R in a single
+statement.  These methods handle smooth, possibly box constrained functions of
+several or many parameters.  Note that the function @code{optimr} was prepared
+to simplify the incorporation of minimization codes going forward.  This
+package also implements some utility codes and some extra solvers, including
+safeguarded Newton methods.  Many methods previously separate are now included
+here.")
+    (license license:gpl2)))
+
 (define-public r-brms
   (package
     (name "r-brms")
