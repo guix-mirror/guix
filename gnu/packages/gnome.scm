@@ -6785,6 +6785,7 @@ freedesktop.org help system specification.")
     (inputs
      `(("yelp-xsl" ,yelp-xsl)))
     (propagated-inputs
+     ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
      `(("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("xsltproc" ,libxslt)))
