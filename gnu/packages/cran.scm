@@ -24484,27 +24484,26 @@ for creating, simulating, or validating values for such parameters.")
 (define-public r-tune
   (package
     (name "r-tune")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tune" version))
        (sha256
         (base32
-         "0293xkmv1nyvm72wxznnlm3qpf6475xzl2sf52mnrjxxr7i447p1"))))
+         "0ja7rjkjj88v3ngrc6izcz2qh9qv4s8abgcafmvx2ihgz99hds37"))))
     (properties `((upstream-name . "tune")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
-       ("r-crayon" ,r-crayon)
        ("r-dials" ,r-dials)
        ("r-dplyr" ,r-dplyr)
        ("r-foreach" ,r-foreach)
+       ("r-generics" ,r-generics)
        ("r-ggplot2" ,r-ggplot2)
        ("r-glue" ,r-glue)
        ("r-gpfit" ,r-gpfit)
        ("r-hardhat" ,r-hardhat)
-       ("r-lifecycle" ,r-lifecycle)
        ("r-parsnip" ,r-parsnip)
        ("r-purrr" ,r-purrr)
        ("r-recipes" ,r-recipes)
