@@ -6624,14 +6624,14 @@ board and goal value can be customized.")
 (define-public emacs-chess
   (package
     (name "emacs-chess")
-    (version "2.0.4")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "chess-" version ".tar"))
        (sha256
-        (base32 "1sq1bjmp513vldfh7hc2bbfc54665abqiz0kqgqq3gijckaxn5js"))))
+        (base32 "1a4iwjdh6k348df6qywjws9z9f862d62m0b2sz57z4xhywiyxpr7"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
