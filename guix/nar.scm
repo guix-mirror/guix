@@ -119,7 +119,6 @@ held."
           ;; deduplication, timestamps, and permissions.
           (register-items db
                           (list (store-info target deriver references))
-                          #:reset-timestamps? #f
                           #:deduplicate? #f))
 
         (when lock?

@@ -227,7 +227,6 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
         (register-items db items
                         #:prefix prefix
                         #:deduplicate? deduplicate?
-                        #:reset-timestamps? #f
                         #:registration-time %epoch)))))
 
 

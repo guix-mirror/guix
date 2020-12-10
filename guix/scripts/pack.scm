@@ -168,7 +168,6 @@ dependencies are registered."
               (with-database db-file db
                 (register-items db items
                                 #:deduplicate? #f
-                                #:reset-timestamps? #f
                                 #:registration-time %epoch)))))))
 
   (computed-file "store-database" build

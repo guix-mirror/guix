@@ -155,7 +155,6 @@ to call-with-database."
        (register-items db items
                        #:prefix prefix
                        #:deduplicate? deduplicate?
-                       #:reset-timestamps? #f
                        #:registration-time %epoch)))))
 
 (define* (initialize-efi-partition root

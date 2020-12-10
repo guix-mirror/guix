@@ -392,7 +392,8 @@ references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
 given, it must be the name of the directory containing the new store to
 initialize; if STATE-DIRECTORY is given, it must be a string containing the
 absolute file name to the state directory of the store being initialized.
-Return #t on success.
+Return #t on success.  As a side effect, reset timestamps on PATH, unless
+RESET-TIMESTAMPS? is false.
 
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook.
@@ -403,12 +404,17 @@ by adding it as a temp-root."
     (store-database-file #:prefix prefix
                          #:state-directory state-directory))
 
+  (define real-file-name
+    (string-append (or prefix "") path))
+
+  (when reset-timestamps?
+    (reset-timestamps real-file-name))
+
   (parameterize ((sql-schema schema))
     (with-database db-file db
       (register-items db (list (store-info path deriver references))
                       #:prefix prefix
                       #:deduplicate? deduplicate?
-                      #:reset-timestamps? reset-timestamps?
                       #:log-port (%make-void-port "w")))))
 
 (define %epoch
@@ -418,7 +424,6 @@ by adding it as a temp-root."
 (define* (register-items db items
                          #:key prefix
                          (deduplicate? #t)
-                         (reset-timestamps? #t)
                          registration-time
                          (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
@@ -452,8 +457,6 @@ typically by adding them as temp-roots."
     ;; significant differences when 'register-closures' is called
     ;; consecutively for overlapping closures such as 'system' and 'bootcfg'.
     (unless (path-id db to-register)
-      (when reset-timestamps?
-        (reset-timestamps real-file-name))
       (let-values (((hash nar-size) (nar-sha256 real-file-name)))
         (call-with-retrying-transaction db
           (lambda ()
