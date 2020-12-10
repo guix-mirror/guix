@@ -215,18 +215,16 @@ the #:references-graphs parameter of 'derivation'."
 
 (define* (register-closure prefix closure
                            #:key
-                           (deduplicate? #t)
                            (schema (sql-schema)))
   "Register CLOSURE in PREFIX, where PREFIX is the directory name of the
 target store and CLOSURE is the name of a file containing a reference graph as
-produced by #:references-graphs.  As a side effect, if DEDUPLICATE? is true,
-deduplicates files common to CLOSURE and the rest of PREFIX."
+produced by #:references-graphs."
   (let ((items (call-with-input-file closure read-reference-graph)))
     (parameterize ((sql-schema schema))
       (with-database (store-database-file #:prefix prefix) db
         (register-items db items
                         #:prefix prefix
-                        #:deduplicate? deduplicate?
+                        #:deduplicate? #f
                         #:registration-time %epoch)))))
 
 
@@ -412,8 +410,7 @@ system that is passed to 'populate-root-file-system'."
       (display "registering closures...\n")
       (for-each (lambda (closure)
                   (register-closure target
-                                    (string-append "/xchg/" closure)
-                                    #:deduplicate? #f))
+                                    (string-append "/xchg/" closure)))
                 closures)
       (unless copy-closures?
         (umount target-store)))

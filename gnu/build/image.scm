@@ -140,21 +140,18 @@ given CONFIG file."
 
 (define* (register-closure prefix closure
                            #:key
-                           (deduplicate? #t)
                            (schema (sql-schema))
                            (wal-mode? #t))
   "Register CLOSURE in PREFIX, where PREFIX is the directory name of the
 target store and CLOSURE is the name of a file containing a reference graph as
-produced by #:references-graphs.  As a side effect, if DEDUPLICATE? is true,
-deduplicates files common to CLOSURE and the rest of PREFIX.  Pass WAL-MODE?
-to call-with-database."
+produced by #:references-graphs.  Pass WAL-MODE? to call-with-database."
   (let ((items (call-with-input-file closure read-reference-graph)))
     (parameterize ((sql-schema schema))
       (with-database (store-database-file #:prefix prefix) db
        #:wal-mode? wal-mode?
        (register-items db items
                        #:prefix prefix
-                       #:deduplicate? deduplicate?
+                       #:deduplicate? #f
                        #:registration-time %epoch)))))
 
 (define* (initialize-efi-partition root
@@ -196,7 +193,6 @@ register-closure."
   (when register-closures?
     (for-each (lambda (closure)
                 (register-closure root closure
-                                  #:deduplicate? #f
                                   #:wal-mode? wal-mode?))
               references-graphs))
 
