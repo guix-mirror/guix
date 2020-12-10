@@ -196,9 +196,8 @@ register-closure."
 
   (when register-closures?
     (for-each (lambda (closure)
-                (register-closure root
-                                  closure
-                                  #:reset-timestamps? #t
+                (register-closure root closure
+                                  #:reset-timestamps? #f
                                   #:deduplicate? deduplicate?
                                   #:wal-mode? wal-mode?))
               references-graphs))

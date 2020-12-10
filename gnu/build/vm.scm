@@ -414,7 +414,7 @@ system that is passed to 'populate-root-file-system'."
       (for-each (lambda (closure)
                   (register-closure target
                                     (string-append "/xchg/" closure)
-                                    #:reset-timestamps? copy-closures?
+                                    #:reset-timestamps? #f
                                     #:deduplicate? deduplicate?))
                 closures)
       (unless copy-closures?
