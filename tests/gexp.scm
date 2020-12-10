@@ -736,7 +736,8 @@
                                     (zero? (logand #o222 (stat:mode st)))))))
 
                        (mkdir #$output)
-                       (populate-store '("graph") #$output)
+                       (populate-store '("graph") #$output
+                                       #:deduplicate? #f)
 
                        ;; Check whether 'populate-store' canonicalizes
                        ;; permissions and timestamps.

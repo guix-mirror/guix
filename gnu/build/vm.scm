@@ -395,7 +395,8 @@ system that is passed to 'populate-root-file-system'."
     (when copy-closures?
       ;; Populate the store.
       (populate-store (map (cut string-append "/xchg/" <>) closures)
-                      target))
+                      target
+                      #:deduplicate? deduplicate?))
 
     ;; Populate /dev.
     (make-device-nodes target)
@@ -412,7 +413,7 @@ system that is passed to 'populate-root-file-system'."
       (for-each (lambda (closure)
                   (register-closure target
                                     (string-append "/xchg/" closure)
-                                    #:deduplicate? deduplicate?))
+                                    #:deduplicate? #f))
                 closures)
       (unless copy-closures?
         (umount target-store)))

@@ -20,6 +20,7 @@
   #:use-module ((guix build utils) #:hide (copy-recursively))
   #:use-module (guix sets)
   #:use-module (guix progress)
+  #:autoload   (guix store deduplication) (copy-file/deduplicate)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -242,10 +243,13 @@ permissions.  Write verbose output to the LOG port."
                         lstat)))
 
 (define* (populate-store reference-graphs target
-                         #:key (log-port (current-error-port)))
+                         #:key
+                         (deduplicate? #t)
+                         (log-port (current-error-port)))
   "Populate the store under directory TARGET with the items specified in
 REFERENCE-GRAPHS, a list of reference-graph files.  Items copied to TARGET
-maintain timestamps and permissions."
+maintain timestamps and permissions.  When DEDUPLICATE? is true, deduplicate
+regular files as they are copied to TARGET."
   (define store
     (string-append target (%store-directory)))
 
@@ -273,6 +277,11 @@ maintain timestamps and permissions."
                                       (string-append target thing)
                                       #:keep-mtime? #t
                                       #:keep-permissions? #t
+                                      #:copy-file
+                                      (if deduplicate?
+                                          (cut copy-file/deduplicate <> <>
+                                               #:store store)
+                                          copy-file)
                                       #:log (%make-void-port "w"))
                     (report))
                   things)))))

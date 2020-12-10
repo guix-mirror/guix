@@ -34,7 +34,8 @@
   #:use-module (guix serialization)
   #:export (nar-sha256
             deduplicate
-            dump-file/deduplicate))
+            dump-file/deduplicate
+            copy-file/deduplicate))
 
 ;; XXX: This port is used as a workaround on Guile <= 2.2.4 where
 ;; 'port-position' throws to 'out-of-range' when the offset is great than or
@@ -256,3 +257,16 @@ down the road."
           (get-hash)))))
 
   (deduplicate file hash #:store store))
+
+(define* (copy-file/deduplicate source target
+                                #:key (store (%store-directory)))
+  "Like 'copy-file', but additionally deduplicate TARGET in STORE."
+  (call-with-input-file source
+    (lambda (input)
+      (let ((stat (stat input)))
+        (dump-file/deduplicate target input (stat:size stat)
+                               (if (zero? (logand (stat:mode stat)
+                                                  #o100))
+                                   'regular
+                                   'executable)
+                               #:store store)))))

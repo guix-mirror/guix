@@ -186,7 +186,8 @@ rest of the store when registering the closures.  SYSTEM-DIRECTORY is the name
 of the directory of the 'system' derivation.  Pass WAL-MODE? to
 register-closure."
   (populate-root-file-system system-directory root)
-  (populate-store references-graphs root)
+  (populate-store references-graphs root
+                  #:deduplicate? deduplicate?)
 
   ;; Populate /dev.
   (when make-device-nodes
@@ -195,7 +196,7 @@ register-closure."
   (when register-closures?
     (for-each (lambda (closure)
                 (register-closure root closure
-                                  #:deduplicate? deduplicate?
+                                  #:deduplicate? #f
                                   #:wal-mode? wal-mode?))
               references-graphs))
 

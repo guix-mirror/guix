@@ -127,7 +127,8 @@ REFERENCES-GRAPHS."
   (mkdir "contents")
 
   ;; Copy the closures of all the items referenced in REFERENCES-GRAPHS.
-  (populate-store references-graphs "contents")
+  (populate-store references-graphs "contents"
+                  #:deduplicate? #f)
 
   (with-directory-excursion "contents"
     ;; Make '/init'.
