@@ -886,8 +886,8 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (license license:bsd-3)))
 
 (define-public guile-prometheus
-  (let ((commit "2549c482fb04db84481d595f0bf99a1c8bb97c4c")
-        (revision "3"))
+  (let ((commit "f661edf72d2dd711dffe4313c2a9360e79b36dd1")
+        (revision "4"))
     (package
     (name "guile-prometheus")
     (version (git-version "0" revision commit))
@@ -898,7 +898,7 @@ Vicare Scheme and IronScheme.  Right now it contains:
                     (commit commit)))
               (sha256
                (base32
-                "0wfaspy3gvn2bkfzlvgx9ncz6114ldxxj25vnj4frcgbzqbdsair"))
+                "1556rv3b72wxba7yz4nn681k2l8fp70dwx32whyyxg755ma4r76f"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
