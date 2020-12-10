@@ -1071,7 +1071,14 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))))
+         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; drop generated sources
+             (delete-file-recursively "gen")
+             (delete-file-recursively "gen3")
+             #t))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f                ; tests require pygame to be installed first
@@ -1090,11 +1097,6 @@ to create fully featured games and multimedia programs in the python language.")
                                       "/lib -Wl,-rpath,"
                                       (assoc-ref inputs "sdl-union")
                                       "/lib -Wl,--enable-new-dtags -lSDL2"))
-               #t))
-           (add-before 'build 'drop-generated-files
-             (lambda args
-               (delete-file-recursively "gen")
-               (delete-file-recursively "gen3")
                #t)))))
       (inputs
        `(("sdl-union"
