@@ -22702,10 +22702,10 @@ it forcibly
            (lambda _
              (invoke "makeinfo" "elpher.texi"))))))
     (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
-    (synopsis "Gopher client for Emacs")
-    (description "Elpher is a full-featured gopher client for Emacs.  Its
-features include intuitive keyboard and mouse-driven browsing, out-of-the-box
-compatibility with evil-mode, clickable web and gopher links in plain text,
+    (synopsis "Gopher and gemini client for Emacs")
+    (description "Elpher is a full-featured gopher and gemini client for
+Emacs.  Its features include intuitive keyboard and mouse-driven browsing,
+out-of-the-box compatibility with evil-mode, clickable links in plain text,
 caching of visited sites, pleasant and configurable visualization of Gopher
 directories, direct visualisation of image files, jumping directly to links by
 name (with autocompletion), a simple bookmark management system and
