@@ -224,7 +224,6 @@ produced by #:references-graphs."
       (with-database (store-database-file #:prefix prefix) db
         (register-items db items
                         #:prefix prefix
-                        #:deduplicate? #f
                         #:registration-time %epoch)))))
 
 

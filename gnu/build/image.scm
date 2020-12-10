@@ -151,7 +151,6 @@ produced by #:references-graphs.  Pass WAL-MODE? to call-with-database."
        #:wal-mode? wal-mode?
        (register-items db items
                        #:prefix prefix
-                       #:deduplicate? #f
                        #:registration-time %epoch)))))
 
 (define* (initialize-efi-partition root

@@ -407,6 +407,11 @@ by adding it as a temp-root."
   (define real-file-name
     (string-append (or prefix "") path))
 
+  (when deduplicate?
+    (deduplicate real-file-name (nar-sha256 real-file-name)
+                 #:store (string-append (or prefix "")
+                                        %store-directory)))
+
   (when reset-timestamps?
     (reset-timestamps real-file-name))
 
@@ -414,7 +419,6 @@ by adding it as a temp-root."
     (with-database db-file db
       (register-items db (list (store-info path deriver references))
                       #:prefix prefix
-                      #:deduplicate? deduplicate?
                       #:log-port (%make-void-port "w")))))
 
 (define %epoch
@@ -423,7 +427,6 @@ by adding it as a temp-root."
 
 (define* (register-items db items
                          #:key prefix
-                         (deduplicate? #t)
                          registration-time
                          (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
@@ -467,9 +470,7 @@ typically by adding them as temp-roots."
                                      "sha256:"
                                      (bytevector->base16-string hash))
                              #:nar-size nar-size
-                             #:time registration-time)))
-        (when deduplicate?
-          (deduplicate real-file-name hash #:store store-dir)))))
+                             #:time registration-time))))))
 
   (let* ((prefix   (format #f "registering ~a items" (length items)))
          (progress (progress-reporter/bar (length items)

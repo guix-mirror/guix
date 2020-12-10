@@ -118,8 +118,7 @@ held."
           ;; Register TARGET.  The 'restore-file' call took care of
           ;; deduplication, timestamps, and permissions.
           (register-items db
-                          (list (store-info target deriver references))
-                          #:deduplicate? #f))
+                          (list (store-info target deriver references))))
 
         (when lock?
           (delete-file (string-append target ".lock"))

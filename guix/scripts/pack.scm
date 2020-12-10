@@ -167,7 +167,6 @@ dependencies are registered."
             (let ((items (append-map read-closure '#$labels)))
               (with-database db-file db
                 (register-items db items
-                                #:deduplicate? #f
                                 #:registration-time %epoch)))))))
 
   (computed-file "store-database" build
