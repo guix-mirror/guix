@@ -167,7 +167,9 @@
          (process (fork execmem setrlimit setpgid setsched)))
   (allow guix_daemon_t
          guix_daemon_exec_t
-         (file (execute execute_no_trans read open entrypoint map)))
+         (file (execute
+                execute_no_trans read write open entrypoint map
+                getattr link unlink)))
 
   ;; TODO: unknown
   (allow guix_daemon_t
