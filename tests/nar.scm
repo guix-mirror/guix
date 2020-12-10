@@ -452,6 +452,9 @@
         (false-if-exception (rm-rf %test-dir))
         (setlocale LC_ALL locale)))))
 
+;; XXX: Tell the 'deduplicate' procedure what store we're actually using.
+(setenv "NIX_STORE" (%store-prefix))
+
 (test-assert "restore-file-set (signed, valid)"
   (with-store store
     (let* ((texts (unfold (cut >= <> 10)

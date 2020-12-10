@@ -26,12 +26,15 @@
   #:use-module (guix build syscalls)
   #:use-module (guix base32)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (guix serialization)
   #:export (nar-sha256
-            deduplicate))
+            deduplicate
+            dump-file/deduplicate))
 
 ;; XXX: This port is used as a workaround on Guile <= 2.2.4 where
 ;; 'port-position' throws to 'out-of-range' when the offset is great than or
@@ -201,3 +204,55 @@ under STORE."
                              ;; that's OK: we just can't deduplicate it more.
                              #f)
                             (else (apply throw args)))))))))))
+
+(define (tee input len output)
+  "Return a port that reads up to LEN bytes from INPUT and writes them to
+OUTPUT as it goes."
+  (define bytes-read 0)
+
+  (define (fail)
+    ;; Reached EOF before we had read LEN bytes from INPUT.
+    (raise (condition
+            (&nar-error (port input)
+                        (file (port-filename output))))))
+
+  (define (read! bv start count)
+    ;; Read at most LEN bytes in total.
+    (let ((count (min count (- len bytes-read))))
+      (let loop ((ret (get-bytevector-n! input bv start count)))
+        (cond ((eof-object? ret)
+               (if (= bytes-read len)
+                   0                              ; EOF
+                   (fail)))
+              ((and (zero? ret) (> count 0))
+               ;; Do not return zero since zero means EOF, so try again.
+               (loop (get-bytevector-n! input bv start count)))
+              (else
+               (put-bytevector output bv start ret)
+               (set! bytes-read (+ bytes-read ret))
+               ret)))))
+
+  (make-custom-binary-input-port "tee input port" read! #f #f #f))
+
+(define* (dump-file/deduplicate file input size type
+                                #:key (store (%store-directory)))
+  "Write SIZE bytes read from INPUT to FILE.  TYPE is a symbol, either
+'regular or 'executable.
+
+This procedure is suitable as a #:dump-file argument to 'restore-file'.  When
+used that way, it deduplicates files on the fly as they are restored, thereby
+removing the need to a deduplication pass that would re-read all the files
+down the road."
+  (define hash
+    (call-with-output-file file
+      (lambda (output)
+        (let-values (((hash-port get-hash)
+                      (open-hash-port (hash-algorithm sha256))))
+          (write-file-tree file hash-port
+                           #:file-type+size (lambda (_) (values type size))
+                           #:file-port
+                           (const (tee input size output)))
+          (close-port hash-port)
+          (get-hash)))))
+
+  (deduplicate file hash #:store store))

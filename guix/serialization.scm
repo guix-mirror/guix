@@ -457,9 +457,22 @@ depends on TYPE."
            (&message (message "unsupported nar entry type"))
            (&nar-read-error (port port) (file file) (token x)))))))))
 
-(define (restore-file port file)
+(define (dump-file file input size type)
+  "Dump SIZE bytes from INPUT to FILE."
+  (call-with-output-file file
+    (lambda (output)
+      (dump input output size))))
+
+(define* (restore-file port file
+                       #:key (dump-file dump-file))
   "Read a file (possibly a directory structure) in Nar format from PORT.
-Restore it as FILE with canonical permissions and timestamps."
+Restore it as FILE with canonical permissions and timestamps.  To write a
+regular or executable file, call:
+
+  (DUMP-FILE FILE INPUT SIZE TYPE)
+
+The default is to dump SIZE bytes from INPUT to FILE, but callers can provide
+a custom procedure, for instance to deduplicate FILE on the fly."
   (fold-archive (lambda (file type content result)
                   (match type
                     ('directory
@@ -473,12 +486,10 @@ Restore it as FILE with canonical permissions and timestamps."
                     ((or 'regular 'executable)
                      (match content
                        ((input . size)
-                        (call-with-output-file file
-                          (lambda (output)
-                            (dump input output size)
-                            (chmod output (if (eq? type 'executable)
-                                              #o555
-                                              #o444))))
+                        (dump-file file input size type)
+                        (chmod file (if (eq? type 'executable)
+                                        #o555
+                                        #o444))
                         (utime file 1 1 0 0))))))
                 #t
                 port
