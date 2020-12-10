@@ -357,7 +357,18 @@ used throughout the world.")
               (base32
                "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
    (build-system gnu-build-system)
-   (arguments '())))
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-after 'configure 'disable-layout-test
+                   (lambda _
+                     ;; This test requires that fontconfig uses bitmap fonts
+                     ;; such as "gs-fonts"; however providing such a package
+                     ;; alone is not enough, as the requirement comes from
+                     ;; deeper in the font stack.  Since this version of Pango
+                     ;; is only used for librsvg, simply disable the test.
+                     (substitute* "tests/Makefile"
+                       (("test-layout\\$\\(EXEEXT\\)") ""))
+                     #t)))))))
 
 (define-public pangox-compat
   (package
