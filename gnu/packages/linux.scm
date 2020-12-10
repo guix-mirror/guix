@@ -4045,18 +4045,18 @@ thanks to the use of namespaces.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-references
            (lambda _
-             (substitute* "libexec/cli/build.exec"
-               (("if ! singularity_which mksquashfs") "if 0")
-               (("if ! mksquashfs")
-                (string-append "if ! " (which "mksquashfs"))))
-             (substitute* (list "libexec/cli/help.exec"
-                                "libexec/bootstrap-scripts/functions"
-                                "libexec/bootstrap-scripts/post.sh"
-                                "libexec/functions")
+             (substitute* "libexec/cli/build.exec.in"
+               (("-mksquashfs") (string-append "-" (which "mksquashfs"))))
+             (substitute* (append
+                            (find-files "libexec" "functions")
+                            (find-files "libexec/bootstrap-scripts" ".*sh$")
+                            (find-files "libexec/cli" ".*exec$"))
                (("\\| grep ")
                 (string-append "| " (which "grep") " "))
                (("egrep ")
-                (string-append (which "egrep") " ")))
+                (string-append (which "egrep") " "))
+               ((" sed ")
+                (string-append " " (which "sed") " ")))
              #t))
          (add-after 'install 'set-PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
