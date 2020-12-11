@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1557,6 +1558,27 @@ modules for building a Wayland compositor.")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
 Wlroots based compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public wlr-randr
+  (package
+    (name "wlr-randr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/wlr-randr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10c8zzp78s5bw34vvjhilipa28bsdx3jbyhnxgp8f8kawh3cvgsc"))))
+    (build-system meson-build-system)
+    (inputs `(("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/emersion/wlr-randr")
+    (synopsis "Utility to manage Wayland compositor outputs")
+    (description "wlr-randr is a utility to manage outputs of a Wayland compositor.")
     (license license:expat))) ; MIT license
 
 (define-public mako
