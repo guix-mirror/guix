@@ -13,7 +13,7 @@ if test "x$guix_build_daemon" = "xyes"; then
   GUIX_ASSERT_CXX11
 
   AC_PROG_RANLIB
-  AC_CONFIG_HEADER([nix/config.h])
+  AC_CONFIG_HEADERS([nix/config.h])
 
   dnl Use 64-bit file system calls so that we can support files > 2 GiB.
   AC_SYS_LARGEFILE

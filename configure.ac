@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.68)
+AC_PREREQ([2.69])
 AC_INIT([GNU Guix],
   [m4_esyscmd([build-aux/git-version-gen .tarball-version])],
   [bug-guix@gnu.org], [guix],
@@ -29,35 +29,35 @@ GUIX_ASSERT_SUPPORTED_SYSTEM
 AM_CONDITIONAL([CROSS_COMPILING], [test "x$cross_compiling" = "xyes"])
 
 AC_ARG_WITH(store-dir,
-  AC_HELP_STRING([--with-store-dir=PATH],
+  AS_HELP_STRING([--with-store-dir=PATH],
     [file name of the store (defaults to /gnu/store)]),
   [storedir="$withval"],
   [storedir="/gnu/store"])
 AC_SUBST(storedir)
 
 AC_ARG_WITH([bash-completion-dir],
-  AC_HELP_STRING([--with-bash-completion-dir=DIR],
+  AS_HELP_STRING([--with-bash-completion-dir=DIR],
     [name of the Bash completion directory]),
   [bashcompletiondir="$withval"],
   [bashcompletiondir='${sysconfdir}/bash_completion.d'])
 AC_SUBST([bashcompletiondir])
 
 AC_ARG_WITH([zsh-completion-dir],
-  AC_HELP_STRING([--with-zsh-completion-dir=DIR],
+  AS_HELP_STRING([--with-zsh-completion-dir=DIR],
     [name of the Zsh completion directory]),
   [zshcompletiondir="$withval"],
   [zshcompletiondir='${datadir}/zsh/site-functions'])
 AC_SUBST([zshcompletiondir])
 
 AC_ARG_WITH([fish-completion-dir],
-  AC_HELP_STRING([--with-fish-completion-dir=DIR],
+  AS_HELP_STRING([--with-fish-completion-dir=DIR],
     [name of the Fish completion directory]),
   [fishcompletiondir="$withval"],
   [fishcompletiondir='${datadir}/fish/vendor_completions.d'])
 AC_SUBST([fishcompletiondir])
 
 AC_ARG_WITH([selinux-policy-dir],
-  AC_HELP_STRING([--with-selinux-policy-dir=DIR],
+  AS_HELP_STRING([--with-selinux-policy-dir=DIR],
     [name of the SELinux policy directory]),
   [selinux_policydir="$withval"],
   [selinux_policydir='${datadir}/selinux/'])
