@@ -39,6 +39,7 @@
   #:export (sql-schema
             %default-database-file
             store-database-file
+            call-with-database
             with-database
             path-id
             sqlite-register
