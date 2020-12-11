@@ -4931,6 +4931,25 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
     (home-page "https://metacpan.org/release/Getopt-Tabular")
     (license (package-license perl))))
 
+(define-public perl-gettext
+  (package
+    (name "perl-gettext")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/P/PV/PVANDRY"
+                                  "/gettext-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05cwqjxxary11di03gg3fm6j9lbvg1dr2wpr311c1rwp8salg7ch"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/gettext")
+    (synopsis "Perl bindings for POSIX i18n gettext functions")
+    (description
+     "Locale::gettext provides an object oriented interface to the
+internationalization functions provided by the C library.")
+    (license license:perl-license)))
+
 (define-public perl-graph
   (package
     (name "perl-graph")
