@@ -34,6 +34,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages perl)
@@ -257,6 +258,8 @@ Linux kernel and C library interfaces employed by user-space programs.")
     (license license:gpl2+)))
 
 (define-public help2man
+  ;; TODO: Manual pages for languages not available from the implicit
+  ;; input "locales" contain the original (English) text.
   (package
     (name "help2man")
     (version "1.47.13")
@@ -270,15 +273,23 @@ Linux kernel and C library interfaces employed by user-space programs.")
         "08q5arxz4j4pyx5q4712c2rn7p7dw7as9xg38yvmsh1c3ynvpy5p"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
-                 #:tests? #f))
+                 #:tests? #f
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-help2man-with-perl-gettext
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((lib (assoc-ref inputs "perl-gettext"))
+                             (fmt "use lib '~a/lib/perl5/site_perl';~%~a"))
+                         (substitute* "help2man.PL"
+                           (("^use Locale::gettext.*$" load)
+                            (format #f fmt lib load))))
+                       #t)))))
     (inputs
      `(("perl" ,perl)
-       ;; TODO: Add these optional dependencies.
-       ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
-       ;; ("gettext" ,gettext-minimal)
-       ))
+       ("perl-gettext" ,perl-gettext)))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("gettext" ,gettext-minimal)))
     (home-page "https://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
