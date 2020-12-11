@@ -43,7 +43,6 @@
             with-database
             path-id
             sqlite-register
-            register-path
             register-items
             %epoch
             reset-timestamps))
@@ -382,32 +381,6 @@ is true."
        (unless preserve-permissions?
          (chmod file (if (executable-file? file) #o555 #o444)))
        (utime file 1 1 0 0)))))
-
-(define* (register-path path
-                        #:key (references '()) deriver prefix
-                        state-directory
-                        (schema (sql-schema)))
-  "Register PATH as a valid store file, with REFERENCES as its list of
-references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
-given, it must be the name of the directory containing the new store to
-initialize; if STATE-DIRECTORY is given, it must be a string containing the
-absolute file name to the state directory of the store being initialized.
-Return #t on success.
-
-Use with care as it directly modifies the store!  This is primarily meant to
-be used internally by the daemon's build hook.
-
-PATH must be protected from GC and locked during execution of this, typically
-by adding it as a temp-root."
-  (define db-file
-    (store-database-file #:prefix prefix
-                         #:state-directory state-directory))
-
-  (parameterize ((sql-schema schema))
-    (with-database db-file db
-      (register-items db (list (store-info path deriver references))
-                      #:prefix prefix
-                      #:log-port (%make-void-port "w")))))
 
 (define %epoch
   ;; When it all began.

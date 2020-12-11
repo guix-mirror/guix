@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix store database)
+  #:use-module (guix build store-copy)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:use-module ((guix build utils)
                 #:select (mkdir-p delete-file-recursively))
@@ -34,7 +35,7 @@
 
 (test-begin "store-database")
 
-(test-assert "register-path"
+(test-assert "register-items"
   (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
                              "-fake")))
     (when (valid-path? %store file)
@@ -46,9 +47,8 @@
       (call-with-output-file file
         (cut display "This is a fake store item.\n" <>))
       (reset-timestamps file)
-      (register-path file
-                     #:references (list ref)
-                     #:deriver drv)
+      (with-database (store-database-file) db
+        (register-items db (list (store-info file drv (list ref)))))
 
       (and (valid-path? %store file)
            (equal? (references %store file) (list ref))
@@ -57,7 +57,7 @@
            (list (stat:mtime (lstat file))
                  (stat:mtime (lstat ref)))))))
 
-(test-equal "register-path, directory"
+(test-equal "register-items, directory"
   '(1 1 1)
   (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
                              "-fake-directory")))
@@ -70,7 +70,8 @@
       (call-with-output-file (string-append file "/a/b")
         (const #t))
       (reset-timestamps file)
-      (register-path file #:deriver drv)
+      (with-database (store-database-file) db
+        (register-items db (list (store-info file drv '()))))
 
       (and (valid-path? %store file)
            (null? (references %store file))
@@ -102,7 +103,7 @@
          (list (path-id db "/gnu/foo")
                (path-id db "/gnu/bar")))))))
 
-(test-assert "register-path with unregistered references"
+(test-assert "sqlite-register with unregistered references"
   ;; Make sure we get a "NOT NULL constraint failed: Refs.reference" error
   ;; when we try to add references that are not registered yet.  Better safe
   ;; than sorry.
