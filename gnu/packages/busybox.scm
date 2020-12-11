@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,7 +32,7 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.31.1")
+    (version "1.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,10 +40,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1659aabzp8w4hayr4z8kcpbk2z1q2wqhw7i1yb0l72b45ykl1yfh"))
-              (patches
-               (search-patches
-                "busybox-1.31.1-fix-build-with-glibc-2.31.patch"))))
+                "12g63zsvzfz04wbyga8riyl8ils05riw4xf26cyiaasbs3qqfpf3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -90,7 +87,7 @@
              ;; true in guix build environment
              (substitute* "testsuite/pidof.tests"
                (("-s init") "-s $(cat /proc/1/comm)"))
-  
+
              ;; This test cannot possibly pass.
              ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
              ;; However, this relies on /bin/ls existing.  Which it does not in guix.
