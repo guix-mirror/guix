@@ -3534,7 +3534,7 @@ format in Go.")
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
     (arguments
      '(#:import-path "github.com/kr/pretty"))
-    (synopsis "A pretty printer for Go values")
+    (synopsis "Pretty printer for Go values")
     (description "This package provides a pretty printer for Go values.")
     (home-page "https://github.com/kr/pretty")
     (license license:expat)))
