@@ -366,10 +366,10 @@ permissions.  Write verbose output to the LOG port."
                              (symlink target dest)))
                           (else
                            (copy-file file dest)
-                           (when keep-mtime?
-                             (set-file-time dest stat))
                            (when keep-permissions?
-                             (chmod dest (stat:perms stat)))))))
+                             (chmod dest (stat:perms stat)))))
+                        (when keep-mtime?
+                          (set-file-time dest stat))))
                     (lambda (dir stat result)     ; down
                       (let ((target (string-append destination
                                                    (strip-source dir))))
