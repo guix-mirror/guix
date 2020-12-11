@@ -38,6 +38,7 @@
 
             file-size
             closure-size
+            copy-store-item
             populate-store))
 
 ;;; Commentary:
@@ -242,6 +243,24 @@ permissions.  Write verbose output to the LOG port."
                         stat
                         lstat)))
 
+(define* (copy-store-item item target
+                          #:key
+                          (deduplicate? #t)
+                          (log-port (%make-void-port "w")))
+  "Copy ITEM, a store item, to the store under TARGET, the target root
+directory.  When DEDUPLICATE? is true, deduplicate it within TARGET."
+  (define store
+    (string-append target (%store-directory)))
+
+  (copy-recursively item (string-append target item)
+                    #:keep-mtime? #t
+                    #:keep-permissions? #t
+                    #:copy-file
+                    (if deduplicate?
+                        (cut copy-file/deduplicate <> <> #:store store)
+                        copy-file)
+                    #:log log-port))
+
 (define* (populate-store reference-graphs target
                          #:key
                          (deduplicate? #t)
@@ -273,16 +292,8 @@ regular files as they are copied to TARGET."
     (call-with-progress-reporter progress
       (lambda (report)
         (for-each (lambda (thing)
-                    (copy-recursively thing
-                                      (string-append target thing)
-                                      #:keep-mtime? #t
-                                      #:keep-permissions? #t
-                                      #:copy-file
-                                      (if deduplicate?
-                                          (cut copy-file/deduplicate <> <>
-                                               #:store store)
-                                          copy-file)
-                                      #:log (%make-void-port "w"))
+                    (copy-store-item thing target
+                                     #:deduplicate? deduplicate?)
                     (report))
                   things)))))
 

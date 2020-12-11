@@ -30,6 +30,7 @@
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
   #:autoload   (guix store database) (register-path)
+  #:autoload   (guix build store-copy) (copy-store-item)
   #:use-module (guix describe)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
@@ -147,8 +148,8 @@ REFERENCES as its set of references."
                             #:directories? #t))
       (delete-file-recursively dest))
 
-    (copy-recursively item dest
-                      #:log (%make-void-port "w"))
+    (copy-store-item item target
+                     #:deduplicate? #t)
 
     ;; Register ITEM; as a side-effect, it resets timestamps, etc.
     ;; Explicitly use "TARGET/var/guix" as the state directory, to avoid
@@ -157,7 +158,11 @@ REFERENCES as its set of references."
     (unless (register-path item
                            #:prefix target
                            #:state-directory state
-                           #:references references)
+                           #:references references
+
+                           ;; Those are taken care of by 'copy-store-item'.
+                           #:reset-timestamps? #f
+                           #:deduplicate? #f)
       (leave (G_ "failed to register '~a' under '~a'~%")
              item target))))
 
