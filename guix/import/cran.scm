@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 receive)
   #:use-module (web uri)
   #:use-module (guix memoization)
@@ -585,7 +586,10 @@ s-expression corresponding to that package, or #f on failure."
              ((bioconductor)
               ;; Retry import from CRAN
               (cran->guix-package package-name #:repo 'cran))
-             (else (values #f '()))))))))
+             (else
+              (raise (condition
+                      (&message
+                       (message "couldn't find meta-data for R package")))))))))))
 
 (define* (cran-recursive-import package-name #:key (repo 'cran))
   (recursive-import package-name
