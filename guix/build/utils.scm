@@ -924,13 +924,21 @@ a thunk."
                                              (min len buffer-size)
                                              buffer-size))))))
 
+(define AT_SYMLINK_NOFOLLOW
+  ;; Guile 2.0 did not define this constant, hence this hack.
+  (let ((variable (module-variable the-root-module 'AT_SYMLINK_NOFOLLOW)))
+    (if variable
+        (variable-ref variable)
+        256)))                                    ;for GNU/Linux
+
 (define (set-file-time file stat)
   "Set the atime/mtime of FILE to that specified by STAT."
   (utime file
          (stat:atime stat)
          (stat:mtime stat)
          (stat:atimensec stat)
-         (stat:mtimensec stat)))
+         (stat:mtimensec stat)
+         AT_SYMLINK_NOFOLLOW))
 
 (define (get-char* p)
   ;; We call it `get-char', but that's really a binary version
