@@ -384,16 +384,14 @@ is true."
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
-                        state-directory (deduplicate? #t)
-                        (reset-timestamps? #t)
+                        state-directory
                         (schema (sql-schema)))
   "Register PATH as a valid store file, with REFERENCES as its list of
 references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
 given, it must be the name of the directory containing the new store to
 initialize; if STATE-DIRECTORY is given, it must be a string containing the
 absolute file name to the state directory of the store being initialized.
-Return #t on success.  As a side effect, reset timestamps on PATH, unless
-RESET-TIMESTAMPS? is false.
+Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook.
@@ -403,17 +401,6 @@ by adding it as a temp-root."
   (define db-file
     (store-database-file #:prefix prefix
                          #:state-directory state-directory))
-
-  (define real-file-name
-    (string-append (or prefix "") path))
-
-  (when deduplicate?
-    (deduplicate real-file-name (nar-sha256 real-file-name)
-                 #:store (string-append (or prefix "")
-                                        %store-directory)))
-
-  (when reset-timestamps?
-    (reset-timestamps real-file-name))
 
   (parameterize ((sql-schema schema))
     (with-database db-file db

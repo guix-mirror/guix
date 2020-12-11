@@ -158,11 +158,7 @@ REFERENCES as its set of references."
     (unless (register-path item
                            #:prefix target
                            #:state-directory state
-                           #:references references
-
-                           ;; Those are taken care of by 'copy-store-item'.
-                           #:reset-timestamps? #f
-                           #:deduplicate? #f)
+                           #:references references)
       (leave (G_ "failed to register '~a' under '~a'~%")
              item target))))
 

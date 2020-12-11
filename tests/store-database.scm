@@ -34,8 +34,7 @@
 
 (test-begin "store-database")
 
-(test-equal "register-path"
-  '(1 1)
+(test-assert "register-path"
   (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
                              "-fake")))
     (when (valid-path? %store file)
@@ -46,6 +45,7 @@
           (drv (string-append file ".drv")))
       (call-with-output-file file
         (cut display "This is a fake store item.\n" <>))
+      (reset-timestamps file)
       (register-path file
                      #:references (list ref)
                      #:deriver drv)
@@ -69,6 +69,7 @@
       (mkdir-p (string-append file "/a"))
       (call-with-output-file (string-append file "/a/b")
         (const #t))
+      (reset-timestamps file)
       (register-path file #:deriver drv)
 
       (and (valid-path? %store file)
