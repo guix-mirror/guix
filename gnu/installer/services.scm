@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -93,11 +93,7 @@
      (system-service
       (name (G_ "OpenSSH secure shell daemon (sshd)"))
       (type 'networking)
-      (snippet '((service openssh-service-type
-                          (openssh-configuration
-                           ;; Currently the default is #t but it's considered
-                           ;; unsafe.  Explicitly pass #f.
-                           (password-authentication? #f))))))
+      (snippet '((service openssh-service-type))))
      (system-service
       (name (G_ "Tor anonymous network router"))
       (type 'networking)
