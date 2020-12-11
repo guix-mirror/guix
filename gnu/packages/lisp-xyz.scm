@@ -11234,17 +11234,18 @@ XML to Lisp structures or s-expressions and back.")
 (define-public sbcl-geco
   (package
     (name "sbcl-geco")
-    (version "2.01a")
+    (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://common-lisp.net/project/geco/download/"
-                           "geco-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gpwwjr/GECO")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "geco" version))
        (sha256
-        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))
-       (patches (search-patches "sbcl-geco-fix-organism-class.patch"))))
+        (base32 "1rc8a4mk40hjx5qy980hjylv6xxqdbq38hg8c4w30y93abfd519s"))))
     (build-system asdf-build-system/sbcl)
-    (home-page "https://common-lisp.net/project/geco/")
+    (home-page "http://hiwaay.net/~gpw/geco/geco.html")
     (synopsis "Genetic algorithm toolkit for Common Lisp")
     (description
      "GECO (Genetic Evolution through Combination of Objects) is an extensible,
