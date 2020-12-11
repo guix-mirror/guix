@@ -12405,3 +12405,44 @@ Service (S3) and CloudFront service from Common Lisp.")
 
 (define-public ecl-zs3
   (sbcl-package->ecl-package sbcl-zs3))
+
+(define-public sbcl-simple-neural-network
+  (package
+    (name "sbcl-simple-neural-network")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/glv2/simple-neural-network")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "simple-neural-network" version))
+       (sha256
+        (base32 "1jj1c90fr5clwka0jv32hv6xp1bkdlpa6x5jh19an13rhx8ll4zr"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("chipz" ,sbcl-chipz)
+       ("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("cl-store" ,sbcl-cl-store)
+       ("lparallel" ,sbcl-lparallel)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'remove-test-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each delete-file (find-files out "\\.gz$"))))))))
+    (synopsis "Simple neural network in Common Lisp")
+    (description
+     "@code{simple-neural-network} is a Common Lisp library for creating,
+training and using basic neural networks.  The networks created by this
+library are feedforward neural networks trained using backpropagation.")
+    (home-page "https://github.com/glv2/simple-neural-network")
+    (license license:gpl3+)))
+
+(define-public cl-simple-neural-network
+  (sbcl-package->cl-source-package sbcl-simple-neural-network))
+
+(define-public ecl-simple-neural-network
+  (sbcl-package->ecl-package sbcl-simple-neural-network))
