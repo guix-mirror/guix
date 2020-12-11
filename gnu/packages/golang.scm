@@ -3519,7 +3519,7 @@ format in Go.")
 (define-public go-github-com-kr-pretty
   (package
     (name "go-github-com-kr-pretty")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3528,7 +3528,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ywbfzz1h3a3qd8rpkiqwi1dm4w8ls9ijb4x1b7567grns9f0vnp"))))
+                "0vzfz06y9q8gs2nxx0kys0591vzp78k0fvpb8digi5n15h3b25hy"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
