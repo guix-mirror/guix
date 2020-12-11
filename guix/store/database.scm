@@ -323,8 +323,19 @@ ids of items referred to."
                 (sqlite-fold cons '() stmt))
               references)))
 
+(define (timestamp)
+  "Return a timestamp, either the current time of SOURCE_DATE_EPOCH."
+  (match (getenv "SOURCE_DATE_EPOCH")
+    (#f
+     (current-time time-utc))
+    ((= string->number seconds)
+     (if seconds
+         (make-time time-utc 0 seconds)
+         (current-time time-utc)))))
+
 (define* (sqlite-register db #:key path (references '())
-                          deriver hash nar-size time)
+                          deriver hash nar-size
+                          (time (timestamp)))
   "Registers this stuff in DB.  PATH is the store item to register and
 REFERENCES is the list of store items PATH refers to; DERIVER is the '.drv'
 that produced PATH, HASH is the base16-encoded Nix sha256 hash of
@@ -337,9 +348,7 @@ Every store item in REFERENCES must already be registered."
                               #:deriver deriver
                               #:hash hash
                               #:nar-size nar-size
-                              #:time (time-second
-                                      (or time
-                                          (current-time time-utc))))))
+                              #:time (time-second time))))
     ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
     ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
     (add-references db id
@@ -388,7 +397,7 @@ is true."
 
 (define* (register-items db items
                          #:key prefix
-                         registration-time
+                         (registration-time (timestamp))
                          (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in DB.  ITEMS must be in topological order (with
