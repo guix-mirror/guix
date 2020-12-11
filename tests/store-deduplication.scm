@@ -95,7 +95,7 @@
          (lambda ()
            (set! link (lambda (old new)
                         (set! links (+ links 1))
-                        (if (<= links 3)
+                        (if (<= links 4)
                             (true-link old new)
                             (throw 'system-error "link" "~A" '("Whaaat?!")
                                    (list ENOSPC))))))

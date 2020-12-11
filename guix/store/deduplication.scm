@@ -159,52 +159,56 @@ under STORE."
   (define links-directory
     (string-append store "/.links"))
 
-    (mkdir-p links-directory)
-    (let loop ((path path)
-               (type (stat:type (lstat path)))
-               (hash hash))
-      (if (eq? 'directory type)
-          ;; Can't hardlink directories, so hardlink their atoms.
-          (for-each (match-lambda
-                      ((file . properties)
-                       (unless (member file '("." ".."))
-                         (let* ((file (string-append path "/" file))
-                                (type (match (assoc-ref properties 'type)
-                                        ((or 'unknown #f)
-                                         (stat:type (lstat file)))
-                                        (type type))))
-                           (loop file type
-                                 (and (not (eq? 'directory type))
-                                      (nar-sha256 file)))))))
-                    (scandir* path))
-          (let ((link-file (string-append links-directory "/"
-                                          (bytevector->nix-base32-string hash))))
-            (if (file-exists? link-file)
-                (replace-with-link link-file path
-                                   #:swap-directory links-directory
-                                   #:store store)
-                (catch 'system-error
-                  (lambda ()
-                    (link path link-file))
-                  (lambda args
-                    (let ((errno (system-error-errno args)))
-                      (cond ((= errno EEXIST)
-                             ;; Someone else put an entry for PATH in
-                             ;; LINKS-DIRECTORY before we could.  Let's use it.
-                             (replace-with-link path link-file
-                                                #:swap-directory
-                                                links-directory
-                                                #:store store))
-                            ((= errno ENOSPC)
-                             ;; There's not enough room in the directory index for
-                             ;; more entries in .links, but that's fine: we can
-                             ;; just stop.
-                             #f)
-                            ((= errno EMLINK)
-                             ;; PATH has reached the maximum number of links, but
-                             ;; that's OK: we just can't deduplicate it more.
-                             #f)
-                            (else (apply throw args)))))))))))
+  (let loop ((path path)
+             (type (stat:type (lstat path)))
+             (hash hash))
+    (if (eq? 'directory type)
+        ;; Can't hardlink directories, so hardlink their atoms.
+        (for-each (match-lambda
+                    ((file . properties)
+                     (unless (member file '("." ".."))
+                       (let* ((file (string-append path "/" file))
+                              (type (match (assoc-ref properties 'type)
+                                      ((or 'unknown #f)
+                                       (stat:type (lstat file)))
+                                      (type type))))
+                         (loop file type
+                               (and (not (eq? 'directory type))
+                                    (nar-sha256 file)))))))
+                  (scandir* path))
+        (let ((link-file (string-append links-directory "/"
+                                        (bytevector->nix-base32-string hash))))
+          (if (file-exists? link-file)
+              (replace-with-link link-file path
+                                 #:swap-directory links-directory
+                                 #:store store)
+              (catch 'system-error
+                (lambda ()
+                  (link path link-file))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (cond ((= errno EEXIST)
+                           ;; Someone else put an entry for PATH in
+                           ;; LINKS-DIRECTORY before we could.  Let's use it.
+                           (replace-with-link path link-file
+                                              #:swap-directory
+                                              links-directory
+                                              #:store store))
+                          ((= errno ENOENT)
+                           ;; This most likely means that LINKS-DIRECTORY does
+                           ;; not exist.  Attempt to create it and try again.
+                           (mkdir-p links-directory)
+                           (loop path type hash))
+                          ((= errno ENOSPC)
+                           ;; There's not enough room in the directory index for
+                           ;; more entries in .links, but that's fine: we can
+                           ;; just stop.
+                           #f)
+                          ((= errno EMLINK)
+                           ;; PATH has reached the maximum number of links, but
+                           ;; that's OK: we just can't deduplicate it more.
+                           #f)
+                          (else (apply throw args)))))))))))
 
 (define (tee input len output)
   "Return a port that reads up to LEN bytes from INPUT and writes them to
