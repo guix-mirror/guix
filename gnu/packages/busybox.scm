@@ -22,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -132,11 +133,11 @@ any small or embedded system.")
                 "00aw9d809wj1bqlb2fsssdgz7rj0363ya14py0gfdm0rkp98zcpa"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-environment-variables
            (lambda _
-             (setenv "CC" (which "gcc"))
+             (setenv "CC" ,(cc-for-target))
              (setenv "HOSTCC" (which "gcc"))
              #t))
          (replace 'configure
