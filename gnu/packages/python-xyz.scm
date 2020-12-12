@@ -719,18 +719,6 @@ etc. ")
 (define-public python2-babel
   (package-with-python2 python-babel))
 
-;; Sphinx < 2.0 requires this version.  Remove once no longer needed.
-(define-public python2-babel-2.6
-  (package
-    (inherit python2-babel)
-    (version "2.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "Babel" version))
-              (sha256
-               (base32
-                "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))))
-
 (define-public python2-backport-ssl-match-hostname
   (package
     (name "python2-backport-ssl-match-hostname")
