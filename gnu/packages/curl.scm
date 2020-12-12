@@ -54,7 +54,7 @@
   (package
    (name "curl")
    (version "7.69.1")
-   (replacement curl-7.71.0)
+   (replacement curl-7.74.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -171,18 +171,18 @@ tunneling, and so on.")
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
 
-;; Replacement package to fix CVE-2020-8169 and CVE-2020-8177.
-(define curl-7.71.0
+;; Replacement package to fix multiple security vulnerabilities.
+(define curl-7.74.0
   (package
     (inherit curl)
-    (version "7.71.0")
+    (version "7.74.0")
     (source (origin
               (inherit (package-source curl))
               (uri (string-append "https://curl.haxx.se/download/curl-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
+                "12w7gskrglg6qrmp822j37fmbr0icrcxv7rib1fy5xiw80n5z7cr"))))
     (arguments
      (substitute-keyword-arguments (package-arguments curl)
        ((#:phases phases)
