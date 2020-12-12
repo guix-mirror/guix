@@ -518,7 +518,7 @@ numbers.")
 (define-public sleef
   (package
     (name "sleef")
-    (version "3.4.1")
+    (version "3.5.1")
     (source
      (origin
        (method git-fetch)
@@ -527,7 +527,7 @@ numbers.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gvf7cfvszmgjrsqivwmyy1jnp3hy80dmszxx827lhjz8yqq5019"))))
+        (base32 "1jybqrl2dvjxzg30xrhh847s375n2jr1pix644wi6hb5wh5mx3f7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list "-DCMAKE_BUILD_TYPE=Release"
