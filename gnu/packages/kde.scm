@@ -130,7 +130,7 @@ This package contains GUI widgets for baloo.")
        ("kiconthemes" ,kiconthemes)
        ("knewstuff" ,knewstuff)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/grantleetheme.git")
+    (home-page "https://invent.kde.org/pim/grantleetheme")
     (synopsis "Library providing Grantlee theme support")
     (description "This library provides Grantlee theme support.")
     (license ;; LGPL for libraries, FDL for documentation
@@ -362,7 +362,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
-    (home-page "https://cgit.kde.org/kdiagram.git/")
+    (home-page "https://invent.kde.org/graphics/kdiagram")
     (synopsis "Libraries for creating business diagrams")
     (description "This package provides libraries for integrating business
 diagrams in Qt-based applications.

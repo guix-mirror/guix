@@ -391,7 +391,7 @@ Akonadi PIM data server.  It uses Xapian for indexing and querying.")
        ("kwallat" ,kwallet)
        ("libkdepim" ,libkdepim)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/incidenceeditor.git")
+    (home-page "https://invent.kde.org/pim/incidenceeditor")
     (synopsis "KDE PIM library for editing incidences")
     (description "This library provides an incidence editor for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
@@ -518,7 +518,7 @@ calendar data.")
        ("qtbase" ,qtbase)
        ("syndication" ,syndication)))
     ;; Note: Some tests take up to 90 sec.
-    (home-page "https://cgit.kde.org/kblog.git")
+    (home-page "https://invent.kde.org/pim/kblog")
     (synopsis "Client-side support library for web application remote blogging
 APIs")
     (description "KBlog is a library for calling functions on Blogger 1.0,
@@ -634,7 +634,7 @@ functions for accessing calendar data using the kcalcore API.")
        ("kio" ,kio)
        ("qtbase" ,qtbase)
        ("qtxmlpatterns" ,qtxmlpatterns)))
-    (home-page "https://cgit.kde.org/kdav.git")
+    (home-page "https://invent.kde.org/frameworks/kdav")
     (synopsis "DAV protocol implementation with KJobs")
     (description "This is a DAV protocol implementation with KJobs.  Calendars
 and todos are supported, using either GroupDAV or CalDAV, and contacts are
@@ -679,7 +679,7 @@ supported using GroupDAV or CardDAV.")
        ("prison" ,prison)
        ("qgpgme" ,qgpgme)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/kdepim-apps-libs.git")
+    (home-page "https://invent.kde.org/pim/kdepim-apps-libs")
     (synopsis "KDE PIM mail related libraries and data files")
     (description "This package provides mail related libraries and data files
 for KDE PIM.")
@@ -761,7 +761,7 @@ for KDE PIM.")
                                              "/include/KF5:"
                                              (or (getenv "CPLUS_INCLUDE_PATH") "")))
                       #t)))))
-    (home-page "https://cgit.kde.org/kdepim-runtime.git")
+    (home-page "https://invent.kde.org/pim/kdepim-runtime")
     (synopsis "Runtime components for Akonadi KDE")
     (description "This package contains Akonadi agents written using KDE
 Development Platform libraries.  Any package that uses Akonadi should probably
@@ -816,7 +816,7 @@ package.")
        ("kxmlgui" ,kxmlgui)
        ("libkdepim" ,libkdepim)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/eventviews.git")
+    (home-page "https://invent.kde.org/pim/eventviews")
     (synopsis "KDE PIM library for creating events")
     (description "This library provides an event creator for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
@@ -1180,7 +1180,7 @@ manager from KDE.")
        ("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f))  ;; TODO: 4/56 tests fail, even with "offscreen" and dbus
-    (home-page "https://cgit.kde.org/mailcommon.git")
+    (home-page "https://invent.kde.org/pim/mailcommon")
     (synopsis "KDE email utility library")
     (description "The mail common library provides utility functions for
 dealing with email.")
@@ -1219,7 +1219,7 @@ dealing with email.")
        ("kxmlgui" ,kxmlgui)
        ("libkdepim" ,libkdepim)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/mailimporter.git")
+    (home-page "https://invent.kde.org/pim/mailimporter")
     (synopsis "KDE mail importer library")
     (description "This package provides libraries for importing mails other
 e-mail client programs into KMail and KDE PIM.")
@@ -1373,7 +1373,7 @@ using a Qt/KMime C++ API.")
                                              "/include/KF5:"
                                              (or (getenv "CPLUS_INCLUDE_PATH") "")))
                       #t)))))
-    (home-page "https://cgit.kde.org/messagelib.git")
+    (home-page "https://invent.kde.org/pim/messagelib")
     (synopsis "KDE PIM messaging libraries")
     (description "This package provides several libraries for messages,
 e.g. a message list, a mime tree parse, a template parser and the
@@ -1701,7 +1701,7 @@ Virtual Contact File}) files to the KPeople contact management library.")
        ("qtwebengine" ,qtwebengine)))
     (arguments
      `(#:tests? #f)) ;; TODO tests hang
-    (home-page "https://cgit.kde.org/pimcommon.git")
+    (home-page "https://invent.kde.org/pim/pimcommon")
     (synopsis "Common libraries for KDE PIM")
     (description "This package provides common libraries for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
@@ -1782,7 +1782,7 @@ text in the text edit to all kinds of markup, like HTML or BBCODE.")
                  _ prefix)
                 (string-append prefix "${KDE_INSTALL_TARGETS_DEFAULT_ARGS})")))
              #t)))))
-    (home-page "https://cgit.kde.org/ksmtp.git")
+    (home-page "https://invent.kde.org/pim/ksmtp")
     (synopsis "Library for sending email through an SMTP server")
     (description "This library provides an API for handling SMTP
 services.  SMTP (Simple Mail Transfer Protocol) is the most prevalent Internet
@@ -1863,7 +1863,7 @@ and allows one to view/extract message formatted text in Rich Text Format.")
        ("kwallet" ,kwallet)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/libkdepim.git")
+    (home-page "https://invent.kde.org/pim/libkdepim")
     (synopsis "Libraries for common KDE PIM apps")
     (description "This package provided libraries for common KDE PIM apps.")
     (license ;; GPL for programs, LGPL for libraries
@@ -1898,7 +1898,7 @@ and allows one to view/extract message formatted text in Rich Text Format.")
        ("qtwebengine" ,qtwebengine)))
     (arguments
      `(#:tests? #f)) ;; TODO 6/48 tests fail
-    (home-page "https://cgit.kde.org/libkgapi.git")
+    (home-page "https://invent.kde.org/pim/libkgapi")
     (synopsis "Library for accessing various Google services via their public
 API")
     (description "@code{LibKGAPI} is a C++ library that implements APIs for
@@ -1936,7 +1936,7 @@ various Google services.")
        ("kpimtextedit" ,kpimtextedit)
        ("qgpgme" ,qgpgme)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/libkleo.git/")
+    (home-page "https://invent.kde.org/pim/libkleo")
     (synopsis "KDE PIM cryptographic library")
     (description "@code{libkleo} is a library for Kleopatra and other parts of
 KDE using certificate-based crypto.")
@@ -1999,7 +1999,7 @@ KDE using certificate-based crypto.")
                ((".*sieveeditorgraphicalmodewidgettest\\.cpp.*")
                 ""))
              #t)))))
-    (home-page "https://cgit.kde.org/libksieve.git")
+    (home-page "https://invent.kde.org/pim/libksieve")
     (synopsis "KDE Sieve library")
     (description "Sieve is a language that can be used filter emails.  KSieve
 is a Sieve parser and interpreter library for KDE.")
