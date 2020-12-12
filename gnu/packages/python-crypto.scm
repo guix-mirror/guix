@@ -498,14 +498,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "3.1.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1xp2j79c1y8qj4b97ygx451gzp8l4cp830hnvg3zw8j134bcaaam"))))
+         "192wix3sr678x21brav5hgc6j93l7ab1kh69p2scr3fsblq9qy03"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -520,14 +520,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "3.1.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0z81q4d1nangw3r0v5f41mfl4d9r04qnbayl5ll5v5jpcfhwd7wx"))))
+         "1ribd1vxq9wwz564mg60dzcy699gng54admihjjkgs9dx95pw5vy"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
