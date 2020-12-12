@@ -185,7 +185,8 @@ This package contains GUI widgets for baloo.")
          ("qtquickcontrols" ,qtquickcontrols)
          ("qtquickcontrols2" ,qtquickcontrols2)
          ("kiconthemes" ,kiconthemes)
-         ("breeze" ,breeze)
+         ("breeze" ,breeze) ; make dark them available easily
+         ("breeze-icons" ,breeze-icons) ; recommended icon set
          ("purpose" ,purpose)
          ("qtwebkit" ,qtwebkit)
          ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -200,12 +201,14 @@ This package contains GUI widgets for baloo.")
                       (qtbase (assoc-ref inputs "qtbase"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
                       (ffmpeg (assoc-ref inputs "ffmpeg"))
-                      (breeze (assoc-ref inputs "breeze")))
+                      (breeze (assoc-ref inputs "breeze"))
+                      (breeze-icons (assoc-ref inputs "breeze-icons")))
                  (wrap-program (string-append out "/bin/kdenlive")
                    `("PATH" ":" prefix
                      ,(list (string-append ffmpeg "/bin")))
                    `("XDG_DATA_DIRS" ":" prefix
-                     ,(list (string-append breeze "/share")))
+                     ,(list (string-append breeze "/share")
+                            (string-append breeze-icons "/share")))
                    `("QT_PLUGIN_PATH" ":" prefix
                      ,(list (getenv "QT_PLUGIN_PATH")))
                    `("FREI0R_PATH" ":" =
