@@ -298,7 +298,7 @@ API.")
 (define-public shaderc
   (package
     (name "shaderc")
-    (version "2020.0")
+    (version "2020.4")
     (source
      (origin
        (method git-fetch)
@@ -308,12 +308,16 @@ API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kqqvsvib01bsmfbdy3fbwwpvkcdlfb6k71kjvzb3crql7w0rxff"))))
+         "07h78nd964h2bdm4drzws8i1gvyal8a3wlhbcm5qxqk6vknv8hrk"))))
     (build-system cmake-build-system)
     (arguments
      `(;; FIXME: Skip most of the tests, because enabling system gtest breaks
        ;; the build: <https://github.com/google/shaderc/issues/470>.
-       #:configure-flags '("-DSHADERC_SKIP_TESTS=ON")
+       #:configure-flags
+       (list "-DSHADERC_SKIP_TESTS=ON"
+             ;; Note: despite the name, this just specifies the headers.
+             (string-append "-Dglslang_SOURCE_DIR="
+                            (assoc-ref %build-inputs "glslang") "/include/glslang"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-look-for-bundled-sources
