@@ -539,7 +539,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.102")
+    (version "2.4.103")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -547,7 +547,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0nx0bd9dhymdsd99v4ifib77yjirkvkxf5hzdkbr7qr8dhrzkjwb"))))
+                "08h2nnf4w96b4ql7485mvjgbbsb8rwc0qa93fdm1cq34pbyszq1z"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
