@@ -207,7 +207,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.2.148")
+    (version "1.2.162")
     (source
      (origin
        (method git-fetch)
@@ -217,7 +217,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rxh4q09k0pdl3xlvxdv5qkak4d7az25gijxr5w170fjnd8yfrhk"))))
+         "15gx9ab6w1sjq9hkpbas7z2f8f47j6mlln6p3w26qmydjj8gfjjv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
