@@ -680,14 +680,14 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.8.0")
+    (version "2.9.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0f0f2vvs1mpdpz2c0mg1mnc3sih8bizmc1h9m67kdsnqs3i2mb0s"))))
+        "018yg7g2pa6vjixx1nx41cfispgfi0azzp0a1chlycbj8jsil0ys"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -698,13 +698,7 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (invoke "pytest" "-vv" "-k"
-                              (string-append
-                               ;; XXX: These tests fail when using Pytest 4.x and
-                               ;; Babel 2.6.0.  Try removing this for later versions.
-                               "not test_no_inherit_metazone_marker_never_in_output"
-                               " and not test_smoke_dates"
-                               " and not test_smoke_numbers")))))))
+                      (invoke "pytest" "-vv"))))))
     (home-page "http://babel.pocoo.org/")
     (synopsis
      "Tools for internationalizing Python applications")
