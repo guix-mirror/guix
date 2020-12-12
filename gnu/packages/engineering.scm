@@ -1133,22 +1133,23 @@ use on a given system.")
 (define-public libredwg
   (package
     (name "libredwg")
-    (version "0.11")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/libredwg/libredwg-"
              version ".tar.xz"))
        (sha256
-        (base32 "1vd7ii32k5447z7k4w9s005hv1ffpj6dyf1w40x6c53qksrblny2"))))
+        (base32 "1xx6y6ckm4mzqln8y8lqf5frcn2b32ypc0d0h9dzpz6363zh7pdn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bindings")))
     (native-inputs
      `(("libxml2" ,libxml2)
        ("parallel" ,parallel)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("python-libxml2" ,python-libxml2)))
     (inputs
      `(("pcre2" ,pcre2)))
