@@ -84,7 +84,6 @@
        ("libofx" ,libofx)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("swig" ,swig)
        ("webkitgtk" ,webkitgtk)
        ("aqbanking" ,aqbanking)
        ("python" ,python)
@@ -97,6 +96,7 @@
        ("googlemock" ,(package-source googletest))
        ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
+       ("swig" ,swig)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; dconf is required at runtime according to README.dependencies.
