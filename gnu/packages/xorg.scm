@@ -5436,19 +5436,10 @@ draggable titlebars and borders.")
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
-;; TODO: Inherit source from xorg-server in a future rebuild cycle.
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.9")
-     (source (origin
-               (inherit (package-source xorg-server))
-               (uri (string-append "mirror://xorg/individual/xserver/"
-                                   "xorg-server-" version ".tar.bz2"))
-               (sha256
-                (base32
-                 "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server
