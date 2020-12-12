@@ -261,7 +261,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.2.148")
+    (version "1.2.162")
     (source
      (origin
        (method git-fetch)
@@ -271,7 +271,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1908fw4rvg5iaim8ph0c0bzhac6jplg8dhfs6dpxd1dapzwqllkf"))))
+         "129wzk7xj3vn3c8b4p7fzkd0npl58118s2i1d88gsfnlix54nagq"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
