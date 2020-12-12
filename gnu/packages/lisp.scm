@@ -280,7 +280,8 @@ interface to the Tk widget system.")
                            (input-path lib "/include"))
                          `("kernel-headers" ,@libraries)))
                  `("LIBRARY_PATH" suffix ,library-directories)
-                 `("LD_LIBRARY_PATH" suffix ,library-directories)))))
+                 `("LD_LIBRARY_PATH" suffix ,library-directories))
+               #t)))
          (add-after 'wrap 'check (assoc-ref %standard-phases 'check))
          (add-before 'check 'fix-path-to-ecl
            (lambda _
