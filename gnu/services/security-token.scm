@@ -57,7 +57,7 @@
         (modules '((gnu build shepherd)))
         (start #~(lambda _
                    (invoke #$(file-append pcsc-lite "/sbin/pcscd"))
-                   (call-with-input-file "/var/run/pcscd/pcscd.pid" read)))
+                   (call-with-input-file "/run/pcscd/pcscd.pid" read)))
         (stop #~(make-kill-destructor)))))))
 
 (define pcscd-activation
