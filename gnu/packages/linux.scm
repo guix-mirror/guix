@@ -4544,7 +4544,7 @@ arrays when needed.")
        ;; For tests.
        ("cmocka" ,cmocka)))
     (inputs
-     `(("json-c" ,json-c-0.13)
+     `(("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)
