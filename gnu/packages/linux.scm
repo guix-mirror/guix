@@ -4649,14 +4649,14 @@ event traces from the kernel (via the relaying through the debug file system).")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
+                "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))
