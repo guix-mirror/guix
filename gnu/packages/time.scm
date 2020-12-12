@@ -117,14 +117,14 @@ expressions.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2019.1")
+    (version "2020.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "0hg1r2c41gnmljdsdmdgy6kb1zkfmxsf49imd96g8znp4cyxsiyp"))))
+        "0s72lz9q7rm2xgl2in0nvhn5cp0cyrxa257fpj2919g0s797ssry"))))
     (build-system python-build-system)
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
