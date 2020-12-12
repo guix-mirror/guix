@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -313,6 +315,32 @@ e-books for convenient reading.")
                    license:public-domain
                    license:silofl1.1
                    license:cc-by-sa3.0))))
+
+(define-public ebook-tools
+  (package
+    (name "ebook-tools")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/ebook-tools/ebook-tools/"
+                           version "/ebook-tools-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bi7wsz3p5slb43kj7lgb3r6lb91lvb6ldi556k4y50ix6b5khyb"))))
+    (arguments
+     `(#:tests? #f)) ; No 'test' target
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libzip" ,libzip)
+       ("libxml2" ,libxml2)))
+    (home-page "http://ebook-tools.sourceforge.net")
+    (synopsis "Tools and library for dealing with various ebook file formats")
+    (description "This package provides command-line tools and a library for
+accessing and converting various ebook file formats.")
+    (license license:expat)))
 
 (define-public liblinebreak
   (package
