@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -765,6 +766,28 @@ Python, PHP, and Perl.")
     (description "Runtime library for kdegames")
     (license (list license:gpl2+  license:fdl1.2+))))
 
+(define-public kdegraphics-mobipocket
+  (package
+    (name "kdegraphics-mobipocket")
+    (version "20.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0fm880lp9g60zgrkjyh4jxws6x0s77l9ia4f8pza3w8sxcbbswk5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (home-page "https://apps.kde.org/en/kdegraphics_mobipocket")
+    (synopsis "KDE thumbnailer for Mobipocket files")
+    (description "This package provides a KDE plugin that shows thumbnails of
+Mobipocket e-books in Dolphin and other KDE apps.")
+    (license license:gpl2+)))
 (define-public zeroconf-ioslave
   (package
     (name "zeroconf-ioslave")
