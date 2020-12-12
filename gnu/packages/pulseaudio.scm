@@ -180,7 +180,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "13.0")
+    (version "14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -188,7 +188,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0mw0ybrqj7hvf8lqs5gjzip464hfnixw453lr0mqzlng3b5266wn"))
+               "0qf20rgg0ysrnvg3359j56ndls07qmfn5rsy9r85bc42jdfpfd58"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -241,7 +241,7 @@ rates.")
 
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("check" ,check-0.14)
+     `(("check" ,check)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("m4" ,m4)
