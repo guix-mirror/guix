@@ -107,6 +107,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages mpi)
@@ -1343,9 +1344,11 @@ at once based on a Perl regular expression.")
 
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-paths
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/rc"
-                        (("/usr/sbin/sendmail") "sendmail"))
+                        (("/usr/sbin/sendmail")
+                         (string-append (assoc-ref inputs "mailutils")
+                                        "/bin/mail")))
                       #t))
                   (add-after 'unpack 'fix-configure
                     (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -1384,7 +1387,8 @@ at once based on a Perl regular expression.")
     (native-inputs `(("texinfo" ,texinfo)
                      ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
-    (inputs `(("coreutils*" ,coreutils)))
+    (inputs `(("coreutils*" ,coreutils)
+              ("mailutils" ,mailutils)))
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
