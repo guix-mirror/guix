@@ -150,7 +150,7 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
 (define-public glslang
   (package
     (name "glslang")
-    (version "8.13.3743")
+    (version "10-11.0.0")
     (source
      (origin
        (method git-fetch)
@@ -159,7 +159,7 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
              (commit version)))
        (sha256
         (base32
-         "0d20wfpp2fmbnz1hnsjr9xc62lxpj86ik2qyviqbni0pqj212cry"))
+         "14mn2awswl022ls75mfpsnpsl0ai0jgfbqj3sxcsqawyj5f432py"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
