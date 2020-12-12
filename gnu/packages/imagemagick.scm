@@ -49,14 +49,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.11-34")
+    (version "6.9.11-48")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0acdjkkgjgpfcwj9h9zncywjjrrgb9sh0cvfn3jamjxh5byf638s"))))
+               "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
@@ -124,20 +124,6 @@ and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
     (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
-
-;; XXX: 'transcode' fails to detect the above ImageMagick, so we provide
-;; this newer version.
-(define-public imagemagick-next
-  (package
-    (inherit imagemagick)
-    (version "6.9.11-37")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://imagemagick/ImageMagick-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "19r6fyhr1bycx0p6jz034mil1zh2k7hfr02is40h4g3wf9b9sdni"))))))
 
 (define-public perl-image-magick
   (package
