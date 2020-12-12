@@ -2211,13 +2211,13 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public veusz
   (package
     (name "veusz")
-    (version "3.2.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "veusz" version))
        (sha256
-        (base32 "00vmfpvyd6f33l5awlf02qdik3gmbhzyfizfwwbx7qnam2i9bbwy"))))
+        (base32 "1q7hi1qwwg4pgiz62isvv1pia85m13bspdpp1q3mrnwl11in0ag0"))))
     (build-system python-build-system)
     (arguments
      `(;; Tests will fail because they depend on optional packages like
