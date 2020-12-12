@@ -788,6 +788,30 @@ Python, PHP, and Perl.")
     (description "This package provides a KDE plugin that shows thumbnails of
 Mobipocket e-books in Dolphin and other KDE apps.")
     (license license:gpl2+)))
+
+(define-public libkexiv2
+  (package
+    (name "libkexiv2")
+    (version "20.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0k0iinf7s8qlk3fwvq7iic1b4zn2gm65rfd58q7d3wb1i1j2hjjk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/graphics/libkexiv2")
+    (synopsis "Manipulate the metadata of images")
+    (description "Libkexiv2 wraps the Exiv2 library, allowing to manipulate
+picture metadata as EXIF/IPTC and XMP.")
+    (license license:gpl2+)))
+
 (define-public zeroconf-ioslave
   (package
     (name "zeroconf-ioslave")
