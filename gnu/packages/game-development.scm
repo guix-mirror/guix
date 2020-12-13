@@ -1071,7 +1071,14 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))))
+         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; drop generated sources
+             (delete-file-recursively "gen")
+             (delete-file-recursively "gen3")
+             #t))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f                ; tests require pygame to be installed first
@@ -1090,11 +1097,6 @@ to create fully featured games and multimedia programs in the python language.")
                                       "/lib -Wl,-rpath,"
                                       (assoc-ref inputs "sdl-union")
                                       "/lib -Wl,--enable-new-dtags -lSDL2"))
-               #t))
-           (add-before 'build 'drop-generated-files
-             (lambda args
-               (delete-file-recursively "gen")
-               (delete-file-recursively "gen3")
                #t)))))
       (inputs
        `(("sdl-union"
@@ -1118,7 +1120,18 @@ developed mainly for Ren'py.")
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1anr5cfbvbsbik4v4rvrkdkciwhg700k4lydfbs4n85raimz9mw4"))))
+       (sha256 (base32 "1anr5cfbvbsbik4v4rvrkdkciwhg700k4lydfbs4n85raimz9mw4"))
+       (modules '((guix build utils)))
+       (patches
+        (search-patches
+         "renpy-use-system-fribidi.patch"))
+       (snippet
+        '(with-directory-excursion "module"
+           ;; drop generated sources
+           (delete-file-recursively "gen")
+           ;; drop fribidi sources
+           (delete-file-recursively "fribidi-src")
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Ren'py doesn't seem to package tests
@@ -1130,6 +1143,13 @@ developed mainly for Ren'py.")
              (substitute* "renpy/editor.py"
                (("xdg-open")
                 (which "xdg-open")))
+             #t))
+         (add-after 'unpack 'fix-include-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "module/setup.py"
+               (("/usr/include/fribidi")
+                (string-append (assoc-ref inputs "fribidi")
+                               "/include/fribidi")))
              #t))
          (add-after 'set-paths 'set-build-vars
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1168,6 +1188,7 @@ developed mainly for Ren'py.")
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
        ("glew" ,glew)
        ("libpng" ,libpng)
        ("python2-pygame" ,python2-pygame-sdl2)

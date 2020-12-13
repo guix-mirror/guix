@@ -59,8 +59,10 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -2149,6 +2152,66 @@ It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
     (license license:gpl3+)))
+
+(define-public mypaint
+  (package
+    (name "mypaint")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mypaint/mypaint/"
+                                  "releases/download/v" version "/mypaint-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "05mvay73vb9d2sh1ckv4vny45n059dmsps1jcppjizfmrpbkgr7k"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gdk-pixbuf (assoc-ref inputs "gdk-pixbuf"))
+                    (gtk+ (assoc-ref inputs "gtk+")))
+               (wrap-program (string-append out "/bin/mypaint")
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH"))))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests need writing access
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("swig" ,swig)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libmypaint" ,libmypaint)
+       ("mypaint-brushes" ,mypaint-brushes)
+       ("json-c" ,json-c)
+       ("lcms" ,lcms)
+       ("python-numpy" ,python-numpy)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "http://mypaint.org/")
+    (synopsis "Fast and simple painting app for artists")
+    (description
+     "MyPaint is a simple drawing and painting program that works well with
+Wacom-style graphics tablets.")
+    (license license:gpl2+)))
 
 (define-public phockup
   (package

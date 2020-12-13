@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -33,9 +33,6 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
-  #:use-module ((guix i18n) #:select (G_))
-  #:use-module ((guix diagnostics) #:select (warning source-properties->location))
-  #:use-module ((guix memoization) #:select (mlambda))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -279,16 +276,6 @@ The other options should be self-descriptive."
 ;;; OpenSSH.
 ;;;
 
-(define true-but-soon-false
-  (mlambda (loc)
-    ;; The plan is to change the default 'password-authentication?' to #f in
-    ;; Guix 1.3.0 or so.  See <https://issues.guix.gnu.org/44808>.
-    (warning (source-properties->location loc)
-             (G_ "The default value of the 'password-authentication?'
-field of 'openssh-configuration' will change from #true to #false in the
-future.  Explicitly set it to #true to allow password authentication.~%"))
-    #t))
-
 (define-record-type* <openssh-configuration>
   openssh-configuration make-openssh-configuration
   openssh-configuration?
@@ -309,8 +296,7 @@ future.  Explicitly set it to #true to allow password authentication.~%"))
                           (default #f))
   ;; Boolean
   (password-authentication? openssh-configuration-password-authentication?
-                            (default (true-but-soon-false
-                                      (current-source-location))))
+                            (default #t))
   ;; Boolean
   (public-key-authentication? openssh-configuration-public-key-authentication?
                               (default #t))

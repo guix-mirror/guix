@@ -11504,7 +11504,7 @@ and toolbars.")
 (define-public setzer
   (package
     (name "setzer")
-    (version "0.3.6")
+    (version "0.3.8")
     (source
      (origin
        (method git-fetch)
@@ -11513,7 +11513,7 @@ and toolbars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "118gip6bv4mcsq4nrai7kl0vmqqbyzpsd4ky9vhxb1x2cvg048s8"))))
+        (base32 "1f5qmkz4hzn54sh56z3hw8zrvg93xlz62ggzlzyg7vgsr83kpns9"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

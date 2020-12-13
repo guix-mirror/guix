@@ -649,18 +649,26 @@ load path."
 
   (program-file "guix-command"
                 #~(begin
+                    ;; Remove the empty extension from the search path.
+                    (set! %load-extensions '(".scm"))
+
                     (set! %load-path
-                      (cons (string-append #$module-directory
-                                           "/share/guile/site/"
-                                           (effective-version))
-                            %load-path))
+                      (append (list (string-append #$module-directory
+                                                   "/share/guile/site/"
+                                                   (effective-version))
+                                    (string-append #$guile "/share/guile/"
+                                                   (effective-version)))
+                              %load-path))
 
                     (set! %load-compiled-path
-                      (cons (string-append #$module-directory
-                                           "/lib/guile/"
-                                           (effective-version)
-                                           "/site-ccache")
-                            %load-compiled-path))
+                      (append (list (string-append #$module-directory
+                                                   "/lib/guile/"
+                                                   (effective-version)
+                                                   "/site-ccache")
+                                    (string-append #$guile "/lib/guile/"
+                                                   (effective-version)
+                                                   "/ccache"))
+                              %load-compiled-path))
 
                     ;; To maximize the chances that locales are set up right
                     ;; out-of-the-box, bundle "common" UTF-8 locales.

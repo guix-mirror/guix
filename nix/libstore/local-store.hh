@@ -38,21 +38,14 @@ struct OptimiseStats
 };
 
 
-struct RunningSubstituter
-{
-    Pid pid;
-    AutoCloseFD to, from, error;
-    FdSource fromBuf;
-    bool disabled;
-    RunningSubstituter() : disabled(false) { };
-};
-
-
 class LocalStore : public StoreAPI
 {
 private:
     /* The currently running substituter or empty.  */
-    std::unique_ptr<RunningSubstituter> runningSubstituter;
+    std::shared_ptr<Agent> runningSubstituter;
+
+    /* Ensure the substituter is running and return it.  */
+    std::shared_ptr<Agent> substituter();
 
     Path linksDir;
 
@@ -178,8 +171,6 @@ public:
 
     void markContentsGood(const Path & path);
 
-    void setSubstituterEnv();
-
     void createUser(const std::string & userName, uid_t userId);
 
 private:
@@ -212,8 +203,6 @@ private:
 
     /* Cache for pathContentsGood(). */
     std::map<Path, bool> pathContentsGoodCache;
-
-    bool didSetSubstituterEnv;
 
     /* The file to which we write our temporary roots. */
     Path fnTempRoots;
@@ -262,11 +251,9 @@ private:
 
     void removeUnusedLinks(const GCState & state);
 
-    void startSubstituter(RunningSubstituter & runningSubstituter);
+    string getLineFromSubstituter(Agent & run);
 
-    string getLineFromSubstituter(RunningSubstituter & run);
-
-    template<class T> T getIntLineFromSubstituter(RunningSubstituter & run);
+    template<class T> T getIntLineFromSubstituter(Agent & run);
 
     Path createTempDirInStore();
 

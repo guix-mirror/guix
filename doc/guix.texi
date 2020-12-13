@@ -11291,6 +11291,25 @@ in Guix.
 @cindex OCaml
 Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
 repository used by the OCaml community.
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@item --repo
+Select the given repository (a repository name).  Possible values include:
+@itemize
+@item @code{opam}, the default opam repository,
+@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
+@item @code{coq-core-dev}, the repository that contains development versions of coq,
+@item @code{coq-extra-dev}, the repository that contains development versions
+      of coq packages.
+@end itemize
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -15333,6 +15352,14 @@ The TCP port to listen for connections.
 @item @code{host} (default: @code{"localhost"})
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
+
+@item @code{advertise?} (default: @code{#f})
+When true, advertise the service on the local network @i{via} the DNS-SD
+protocol, using Avahi.
+
+This allows neighboring Guix devices with discovery on (see
+@code{guix-configuration} above) to discover this @command{guix publish}
+instance and to automatically download substitutes from it.
 
 @item @code{compression} (default: @code{'(("gzip" 3))})
 This is a list of compression method/level tuple used when compressing
@@ -25694,6 +25721,9 @@ Owner's group of the @code{cuirass} process.
 @item @code{interval} (default: @code{60})
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
+
+@item @code{queue-size} (default: @code{1})
+Size of the database writer queue.
 
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously

@@ -512,6 +512,35 @@ way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
 
+(define-public go-github-com-aws-sdk
+  (package
+    (name "go-github-com-aws-sdk")
+    (version "1.35.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aws/aws-sdk-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ky5lw2s2zpslnnqcs6hgsrwvwbxwgflb5jwf16dd4aga3vrg10c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/aws/aws-sdk-go/aws"
+       #:unpack-path "github.com/aws/aws-sdk-go"))
+    (propagated-inputs
+     `(("go-github-com-go-sql-driver-mysql" ,go-github-com-go-sql-driver-mysql)
+       ("go-github-com-jmespath-go-jmespath" ,go-github-com-jmespath-go-jmespath)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/aws/aws-sdk-go")
+    (synopsis "Library to access Amazon Web Services (AWS)")
+    (description
+     "This is the official AWS SDK for the Go programming language.")
+    (license license:asl2.0)))
+
 (define-public go-gopkg.in-tomb.v2
   (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
         (revision "0"))
@@ -3582,6 +3611,31 @@ without requiring a real database connection.")
       (home-page "https://github.com/DATA-DOG/go-sqlmock")
       (license license:expat))))
 
+(define-public go-github-com-go-sql-driver-mysql
+  (package
+    (name "go-github-com-go-sql-driver-mysql")
+    (version "1.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-sql-driver/mysql")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11x0m9yf3kdnf6981182r824psgxwfaqhn3x3in4yiidp0w0hk3v"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:tests? #f ;; tests require a network connection
+       #:import-path "github.com/go-sql-driver/mysql"))
+    (home-page "https://github.com/go-sql-driver/mysql")
+    (synopsis "MySQL driver for golang")
+    (description
+     "This is a pure Go implementaton of the MySQL API, compatible with
+golang's database/sql package.")
+    (license license:mpl2.0)))
+
 (define-public go-golang-org-colorful
   (package
     (name "go-golang-org-colorful")
@@ -5103,6 +5157,34 @@ the parse trees produced by the html package.")
     (description "@code{goquery} brings a syntax and a set of features similar
 to jQuery to the Go language.")
     (license license:bsd-3)))
+
+(define-public go-github-com-jmespath-go-jmespath
+  (package
+    (name "go-github-com-jmespath-go-jmespath")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmespath/go-jmespath")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18zyr9nlywmwp3wpzcjxrgq9s9d2mmc6zg6xhsna00m663nkyc3n"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jmespath/go-jmespath"))
+    (native-inputs
+     `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+       ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/jmespath/go-jmespath")
+    (synopsis "Golang implementation of JMESPath")
+    (description
+     "This package implements JMESPath, a query language for JSON.  It
+transforms one JSON document into another through a JMESPath expression.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-aymerick-douceur
   (package

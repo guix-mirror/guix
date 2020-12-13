@@ -54,6 +54,7 @@
   (package
    (name "curl")
    (version "7.73.0")
+   (replacement curl-7.74.0)
    (source (origin
              (method url-fetch)
              (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -149,6 +150,19 @@ tunneling, and so on.")
     curl
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
+
+;; Replacement package to fix multiple security vulnerabilities.
+(define curl-7.74.0
+  (package
+    (inherit curl)
+    (version "7.74.0")
+    (source (origin
+              (inherit (package-source curl))
+              (uri (string-append "https://curl.haxx.se/download/curl-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "12w7gskrglg6qrmp822j37fmbr0icrcxv7rib1fy5xiw80n5z7cr"))))))
 
 (define-public kurly
   (package

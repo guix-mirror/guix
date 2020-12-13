@@ -68,8 +68,8 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "fd432b8e8f449d691773e96e7d90f44761e01aa3")
-        (revision "55"))
+  (let ((commit "697fa14584551d9595cd042f1ffeba240e45a127")
+        (revision "56"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -81,7 +81,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "10j3w3px0250avwry2x8wsa0m0plvm957g4qqgnajsbc9gvka554"))))
+                  "0gw9cja8fiyra9vnn3y384gwanvsqdq6gwjcvmz91sy5lvfwv34m"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -94,7 +94,7 @@
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'disable-repo-tests
-             (λ _
+             (lambda _
                ;; Disable tests that use a connection to the Guix daemon.
                (substitute* "Makefile.am"
                  (("tests/repo.scm \\\\") "\\"))

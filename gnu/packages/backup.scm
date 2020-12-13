@@ -696,50 +696,6 @@ to not fully trusted targets.  Borg is a fork of Attic.")
     (home-page "https://www.borgbackup.org/")
     (license license:bsd-3)))
 
-(define-public attic
-  (package
-    (name "attic")
-    (version "0.16")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "Attic" version))
-              (sha256
-               (base32
-                "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
-    (build-system python-build-system)
-    (arguments
-     `(;; The tests assume they are run as root:
-       ;; https://github.com/jborg/attic/issues/7
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'build 'set-openssl-prefix
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "ATTIC_OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
-            #t)))))
-    (inputs
-     `(("acl" ,acl)
-       ("openssl" ,openssl)
-       ("python-msgpack" ,python-msgpack)
-
-       ;; Attic is probably incompatible with llfuse > 0.41.
-       ;; These links are to discussions of llfuse compatibility from
-       ;; the borg project. Borg is a recent fork of attic, and attic
-       ;; has not been updated since the fork, so it's likely that
-       ;; llfuse compatibility requirements are still the same.
-       ;; https://github.com/borgbackup/borg/issues/642
-       ;; https://github.com/borgbackup/borg/issues/643
-       ("python-llfuse" ,python-llfuse-0.41)))
-    (synopsis "Deduplicating backup program")
-    (description "Attic is a deduplicating backup program.  The main goal of
-Attic is to provide an efficient and secure way to backup data.  The data
-deduplication technique used makes Attic suitable for daily backups since only
-changes are stored.")
-    (home-page "https://attic-backup.org/")
-    (license license:bsd-3)
-    (properties `((superseded . ,borg)))))
-
 (define-public wimlib
   (package
     (name "wimlib")

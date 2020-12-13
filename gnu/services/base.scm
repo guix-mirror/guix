@@ -1825,7 +1825,9 @@ raise a deprecation warning if the 'compression-level' field was used."
           advertise?)
     (list (shepherd-service
            (provision '(guix-publish))
-           (requirement '(guix-daemon))
+           (requirement `(user-processes
+                          guix-daemon
+                          ,@(if advertise? '(avahi-daemon) '())))
            (start #~(make-forkexec-constructor
                      (list #$(file-append guix "/bin/guix")
                            "publish" "-u" "guix-publish"

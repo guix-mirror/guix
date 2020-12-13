@@ -97,10 +97,11 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
       ((package-name)
        (if (assoc-ref opts 'recursive)
            ;; Recursive import
-           (map package->definition
-                (filter identity
-                        (cran-recursive-import package-name
-                                               #:repo (or (assoc-ref opts 'repo) 'cran))))
+           (with-error-handling
+             (map package->definition
+                  (filter identity
+                          (cran-recursive-import package-name
+                                                 #:repo (or (assoc-ref opts 'repo) 'cran)))))
            ;; Single import
            (let ((sexp (cran->guix-package package-name
                                            #:repo (or (assoc-ref opts 'repo) 'cran))))

@@ -26,7 +26,7 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
   AC_REQUIRE([AC_CANONICAL_HOST])
   AC_PATH_PROG([SED], [sed])
 
-  AC_ARG_WITH(system, AC_HELP_STRING([--with-system=SYSTEM],
+  AC_ARG_WITH(system, AS_HELP_STRING([--with-system=SYSTEM],
     [Platform identifier (e.g., `i686-linux').]),
     [guix_system="$withval"],
     [case "$host_cpu" in
@@ -78,7 +78,7 @@ dnl Assert that this is a system to which the distro is ported.
 AC_DEFUN([GUIX_ASSERT_SUPPORTED_SYSTEM], [
   AC_REQUIRE([GUIX_SYSTEM_TYPE])
 
-  AC_ARG_WITH([courage], [AC_HELP_STRING([--with-courage],
+  AC_ARG_WITH([courage], [AS_HELP_STRING([--with-courage],
     [Assert that even if this platform is unsupported, you will be
 courageous and port the GNU System distribution to it (see
 "GNU Distribution" in the manual.)])],

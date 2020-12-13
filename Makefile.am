@@ -39,6 +39,7 @@ do_subst = $(SED)					\
   -e 's,[@]GUILE[@],$(GUILE),g'				\
   -e 's,[@]guilemoduledir[@],$(guilemoduledir),g'	\
   -e 's,[@]guileobjectdir[@],$(guileobjectdir),g'	\
+  -e 's,[@]abs_top_builddir[@],$(abs_top_builddir),g'	\
   -e 's,[@]localedir[@],$(localedir),g'
 
 scripts/guix: scripts/guix.in Makefile

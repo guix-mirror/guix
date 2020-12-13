@@ -1810,7 +1810,8 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
         (base32 "1dq04p6ms0zx4awlypp4crkz7dzal4xg8ac7p8fqacz196rczssp"))))
     (build-system emacs-build-system)
     (inputs
-     `(("bluez" ,bluez)))
+     `(("bluez" ,bluez)
+       ("dbus" ,dbus)))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
     (home-page "https://gitlab.com/rstocker/emacs-bluetooth")
@@ -2764,20 +2765,21 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (let ((commit "58a840d0671091e3064e36244790ef8839da87d6")
-        (revision "2"))
+  (let* ((commit "a694fdbcedb6edd2239a31d326e475c763ee32f8")
+         (revision "3"))
     (package
       (name "emacs-guix")
       (version (git-version "0.5.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/emacs-guix/emacs-guix")
+                      ;; TODO: Use the official version when it has a new home
+                      (url "https://github.com/jsoo1/guix.el")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qnr5sixmvrhr9rinrhfy7sy20mikjvvwbdixwkbx30qpcdwgwj1"))))
+                  "1pqw7zbgxzwpig4xr0izc3z8h80c72i6bl5yi12br0d7aq6dbkvj"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -2786,7 +2788,8 @@ type, for example: packages, buffers, files, etc.")
          ("texinfo" ,texinfo)
          ("emacs" ,emacs-minimal)))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       `(("guile"
+          ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guix" ,guix)))
       (propagated-inputs
        `(("geiser" ,emacs-geiser)
@@ -3245,7 +3248,7 @@ files and directories.")
 (define-public emacs-fountain-mode
   (package
     (name "emacs-fountain-mode")
-    (version "3.3.0")
+    (version "3.3.3")
     (source
      (origin
        (method git-fetch)
@@ -3254,7 +3257,7 @@ files and directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04jrv6i4ah3i8c9hcd9wyaw2vrxr46f50qb9qwna2v7qa5vaway3"))))
+        (base32 "095nrkg2bap6rcg9hy3bh0nis4v2f8w8d9hnahkzsa3njlpqa4ka"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/fountain-mode")
     (synopsis "Major mode for screenwriting in Fountain markup")
@@ -4840,14 +4843,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.26")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                            version ".tar"))
        (sha256
-        (base32 "14n2rrs3ccvlp8fhxs08awlqdfawxwbj8nq1xpa0wwlbfvxnf24c"))))
+        (base32 "1zn9p9vmfv5ihrp8d06b6abs48q225v42cgwa01s39hld6zg6wbv"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -6624,14 +6627,14 @@ board and goal value can be customized.")
 (define-public emacs-chess
   (package
     (name "emacs-chess")
-    (version "2.0.4")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "chess-" version ".tar"))
        (sha256
-        (base32 "1sq1bjmp513vldfh7hc2bbfc54665abqiz0kqgqq3gijckaxn5js"))))
+        (base32 "1a4iwjdh6k348df6qywjws9z9f862d62m0b2sz57z4xhywiyxpr7"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -10263,6 +10266,30 @@ lists, and project planning with a fast and effective plain-text system.
 
 This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
+
+(define-public emacs-org-pretty-table
+  ;; There is no release yet.
+  (let ((commit "1331c600b83d95b28730b1bfcb48369ac1cf12ef")
+        (revision "0"))
+    (package
+      (name "emacs-org-pretty-table")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Fuco1/org-pretty-table")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0yvqxh66y400n2n5ykmb1zrzd80bakffpwn6nmf37728x4cj8krh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/Fuco1/org-pretty-table")
+      (synopsis "Make tables in Org mode and OrgTbl mode prettier")
+      (description
+       "This package displays tables in Org mode and OrgTbl mode using Unicode
+characters.")
+      (license license:gpl3+))))
 
 (define-public emacs-ob-sclang
   (package
@@ -15235,6 +15262,14 @@ and @code{erc-send-modify-hook} to download and show images.")
        (sha256
         (base32 "07hbz2md52ccy95gv4d5n6szrfmpfqf3w4kwqdg2cf54c7kgf7hw"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-require-cl
+           (lambda _
+             (substitute* "list-utils.el"
+               (("\\(require 'cl\\)") "(require 'cl-lib)"))
+             #t)))))
     (home-page "https://github.com/rolandwalker/list-utils")
     (synopsis "List-manipulation utility functions")
     (description "This package provides a list manipulation library for Emacs.")
@@ -21011,31 +21046,29 @@ and code peeking.")
       (license license:gpl3+))))
 
 (define-public emacs-lsp-ivy
-  (let ((commit "caf1e1d7e22ed0b5fe18dd508d1a6f83dd163288")
-        (revision "2"))
-    (package
-      (name "emacs-lsp-ivy")
-      (version (git-version "0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-lsp/lsp-ivy")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "084ds4qhzhivfnicy3h7z4mblxgcqx8pfnkbjr9qjrfng7cisy4z"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ivy" ,emacs-ivy)
-         ("emacs-lsp-mode" ,emacs-lsp-mode)
-         ("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/emacs-lsp/lsp-ivy")
-      (synopsis "Provide LSP-enhanced completion for symbols")
-      (description
-       "This package enhances @code{ivy} with completion for symbols from
+  (package
+    (name "emacs-lsp-ivy")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-lsp/lsp-ivy")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08dpn0vcfdwwysijwdpnnj91m69yw0q464i0wmp51zpj3dyd4kb1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)))
+    (home-page "https://github.com/emacs-lsp/lsp-ivy")
+    (synopsis "Provide LSP-enhanced completion for symbols")
+    (description
+     "This package enhances @code{ivy} with completion for symbols from
 workspaces with a LSP-compliant server running.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-lsp
   (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
@@ -21946,8 +21979,8 @@ copied into @code{org-mode} buffers.")
       (license license:gpl3+))))
 
 (define-public emacs-dash-docs
-  (let ((commit "111fd9b97001f1ad887b45e5308a14ddd68ce70a")
-        (revision "1"))
+  (let ((commit "dafc8fc9f1ddb2e4e39e0b8d066c42d5d7ce8d06")
+        (revision "2"))
     (package
       (name "emacs-dash-docs")
       (version (git-version "1.4.0" revision commit))
@@ -21960,7 +21993,7 @@ copied into @code{org-mode} buffers.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0sckb7z0ylflva212bns7iq9mfnffgjghi0qspsbfwra35zb9xng"))))
+           "0n6d3mm43gj16v8kjjradcfik93wb89dsqnfcbskb28bvcamafid"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-async" ,emacs-async)))
@@ -22680,10 +22713,10 @@ it forcibly
            (lambda _
              (invoke "makeinfo" "elpher.texi"))))))
     (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
-    (synopsis "Gopher client for Emacs")
-    (description "Elpher is a full-featured gopher client for Emacs.  Its
-features include intuitive keyboard and mouse-driven browsing, out-of-the-box
-compatibility with evil-mode, clickable web and gopher links in plain text,
+    (synopsis "Gopher and gemini client for Emacs")
+    (description "Elpher is a full-featured gopher and gemini client for
+Emacs.  Its features include intuitive keyboard and mouse-driven browsing,
+out-of-the-box compatibility with evil-mode, clickable links in plain text,
 caching of visited sites, pleasant and configurable visualization of Gopher
 directories, direct visualisation of image files, jumping directly to links by
 name (with autocompletion), a simple bookmark management system and
@@ -23534,6 +23567,30 @@ Google guidelines.")
     (synopsis "Helm interface for Emacs fish-completion")
     (description "Helm Fish Completion is a Helm interface for Emacs
 fish-completion.  It can be used in both Eshell and M-x shell.")
+    (license license:gpl3+)))
+
+(define-public emacs-helm-switch-to-repl
+  (package
+    (name "emacs-helm-switch-to-repl")
+    (version "0.1.0")
+    (home-page "https://github.com/emacs-helm/helm-switch-to-repl")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n19brymwnawhi0y10m54cas3qg64pmkqq1ajvjw1rfibmw3n6nk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("helm" ,emacs-helm)))
+    (synopsis "Helm action to switch directory in Emacs REPLs")
+    (description "Helm \"Switch-to-REPL\" offers the
+@code{helm-switch-to-repl} action, a generalized and extensible version of
+@code{helm-ff-switch-to-shell}.  It can be added to @code{helm-find-files} and
+other @code{helm-type-file} sources such as @code{helm-locate}.")
     (license license:gpl3+)))
 
 (define-public emacs-telega
@@ -24816,7 +24873,7 @@ variables.")
 (define-public emacs-company-emoji
   (package
     (name "emacs-company-emoji")
-    (version "2.5.2")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -24825,7 +24882,7 @@ variables.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r9zcbm3nb3zw5cwrkl098v5b49jbga5404bj7j55g6k4rwkjar2"))))
+        (base32 "0pa67yfcr8lrxdbvln8hs663gsxz38ggwpva7121ngascqgx42wp"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)))
@@ -25767,4 +25824,68 @@ window configurations in Emacs, including buffers that may not be live
 anymore.  In this way, it's like a lightweight \"workspace\" manager, allowing
 you to easily restore one or more frames, including their windows, the
 windows' layout, and their buffers.")
+    (license license:gpl3+)))
+
+(define-public emacs-smart-hungry-delete
+  (let ((commit "7c1d56a92481594e14d40b5fdf6c48657a0108a0"))
+    (package
+      (name "emacs-smart-hungry-delete")
+      (version "0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hrehfeld/emacs-smart-hungry-delete")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0mxaslx5823s68a8ggbbnmfk1jiswjvip5s4sg7ihfagnci72wni"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/hrehfeld/emacs-smart-hungry-delete")
+      (synopsis "Smart hungry deletion of whitespace")
+      (description "@code{emacs-smart-hungry-delete} hungrily deletes whitespace
+between cursor and next word, parenthesis or delimiter while honoring some
+rules about where space should be left to separate words and parentheses.")
+      (license license:gpl2+))))
+
+(define-public emacs-webpaste
+  (package
+    (name "emacs-webpaste")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etu/webpaste.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08545ihkzflw80rwklnxiswrpdrl8kr74xzxm5wsgrf36fkj9rn2"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "unit" "integration")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Do not use cask to run tests.
+             (substitute* "Makefile"
+               (("\\$\\{CASK\\} exec ") ""))
+             ;; Disable tests that need network access.
+             (substitute* (list "tests/unit/test-webpaste-provider-creation.el"
+                                "tests/integration/test-webpaste-providers.el")
+               (("describe") "xdescribe")))))))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (propagated-inputs
+     `(("emacs-request" ,emacs-request)))
+    (home-page "https://github.com/etu/webpaste.el")
+    (synopsis "Paste to pastebin-like services")
+    (description "This mode allows to paste whole buffers or parts of buffers
+to pastebin-like services.  It supports more than one service and will
+failover if one service fails.  More services can easily be added over time
+and prefered services can easily be configured.")
     (license license:gpl3+)))

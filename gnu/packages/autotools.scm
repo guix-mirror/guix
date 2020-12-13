@@ -43,7 +43,7 @@
   #:use-module (ice-9 match)
   #:export (autoconf-wrapper))
 
-(define-public autoconf
+(define-public autoconf-2.69
   (package
     (name "autoconf")
     (version "2.69")
@@ -102,6 +102,39 @@ automatically their software package to these systems.  The resulting shell
 scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
+
+(define-public autoconf-2.70
+  (package
+    (inherit autoconf-2.69)
+    (version "2.70")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/autoconf/autoconf-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1ipckz0wr2mvhj9n3ys54fmf2aksin6bhqvzl304bn6rc1w257ps"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments autoconf-2.69)
+       ((#:tests? _ #f)
+        ;; FIXME: To run the test suite, fix all the instances where scripts
+        ;; generates "#! /bin/sh" shebangs.
+        #f)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'prepare-tests
+             (lambda _
+               (for-each patch-shebang
+                         (append (find-files "tests"
+                                             (lambda (file stat)
+                                               (executable-file? file)))
+                                 (find-files "bin"
+                                             (lambda (file stat)
+                                               (executable-file? file)))))
+               #t))))))))
+
+(define-public autoconf autoconf-2.69)
 
 (define-public autoconf-2.68
   (package (inherit autoconf)

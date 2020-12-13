@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages emacs)
@@ -886,8 +888,8 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (license license:bsd-3)))
 
 (define-public guile-prometheus
-  (let ((commit "2549c482fb04db84481d595f0bf99a1c8bb97c4c")
-        (revision "3"))
+  (let ((commit "35dc26c0ea44c3d70f1819f240d84e2cbb4b7b4c")
+        (revision "5"))
     (package
     (name "guile-prometheus")
     (version (git-version "0" revision commit))
@@ -898,7 +900,7 @@ Vicare Scheme and IronScheme.  Right now it contains:
                     (commit commit)))
               (sha256
                (base32
-                "0wfaspy3gvn2bkfzlvgx9ncz6114ldxxj25vnj4frcgbzqbdsair"))
+                "07822jj4appw37lf444kc4xlgl7nm64mgldag56072l55kwashgb"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -966,8 +968,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "5fc3b7190d31c258ce969c2a5d2ad38c66a09d09")
-        (revision "4"))
+  (let ((commit "f8b7d81afb38525750f8818ed2956ca18c828ee8")
+        (revision "5"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -979,7 +981,7 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "0inhvl5jssvbw3nd129wdahfwyvy1iciq403wzf0algbvl1fqs7z"))
+           "1gpzlpcq7bxw7sxyrg8zslwb3631vizw56lgg1aavw4gafh0hxb3"))
          (file-name (git-file-name name version))))
       (build-system guile-build-system)
       (arguments
@@ -4176,3 +4178,65 @@ recursively.  It also provides new versions of @code{open-output-file},
 directory of its argument if it does not exist.")
     (home-page "https://mkdir-p.divoplade.fr")
     (license license:asl2.0)))
+
+(define-public guile-sodium
+  (package
+    (name "guile-sodium")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://inqlab.net/git/guile-sodium.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256 (base32 "189jsj87hycs57a54x0b9lifwvhr63nypb9vfxdrq7rwrpcvi5f8"))))
+    (build-system gnu-build-system)
+    (arguments `())
+    (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("pkg-config" ,pkg-config)
+        ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs `(("libsodium" ,libsodium)))
+    (synopsis "Guile bindings to the libsodium cryptographic library")
+    (description
+     "This package provides Guile bindings to the libsodium cryptographic library
+which provides core cryptographic primitives needed to build higher-level
+tools.")
+    (home-page "https://inqlab.net/git/guile-sodium.git")
+    (license license:gpl3+)))
+
+(define-public guile-eris
+  (package
+    (name "guile-eris")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://inqlab.net/git/eris.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "1ijglmwkdy1l87gj429qfjis0v8b1zlxhbyfhx5za8664h68nqka"))))
+    (build-system gnu-build-system)
+    (arguments '())
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ;; test dependency
+       ("guile-srfi-180" ,guile-srfi-180)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-sodium" ,guile-sodium)))
+    (synopsis "Guile implementation of the Encoding for Robust Immutable Storage (ERIS)")
+    (description
+     "Guile-ERIS is the reference implementation of the Encoding for Robust
+Immutable Storage (ERIS).  ERIS allows arbirtary content to be encoded into
+uniformly sized, encrypted blocks that can be reassembled using a short
+read-capability.")
+    (home-page "https://inqlab.net/git/eris.git")
+    (license license:gpl3+)))

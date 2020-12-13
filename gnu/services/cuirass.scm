@@ -69,6 +69,8 @@
                     (default "cuirass"))
   (interval         cuirass-configuration-interval ;integer (seconds)
                     (default 60))
+  (queue-size       cuirass-configuration-queue-size
+                    (default 1))
   (database         cuirass-configuration-database ;string (file-name)
                     (default "/var/lib/cuirass/cuirass.db"))
   (port             cuirass-configuration-port ;integer (port)
@@ -98,6 +100,7 @@
         (user             (cuirass-configuration-user config))
         (group            (cuirass-configuration-group config))
         (interval         (cuirass-configuration-interval config))
+        (queue-size       (cuirass-configuration-queue-size config))
         (database         (cuirass-configuration-database config))
         (ttl              (cuirass-configuration-ttl config))
         (port             (cuirass-configuration-port config))
@@ -119,6 +122,7 @@
                            "--database" #$database
                            "--ttl" #$(string-append (number->string ttl) "s")
                            "--interval" #$(number->string interval)
+                           "--queue-size" #$(number->string queue-size)
                            #$@(if queries-log-file
                                   (list (string-append "--log-queries="
                                                        queries-log-file))

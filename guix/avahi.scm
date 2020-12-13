@@ -92,6 +92,7 @@ when STOP-LOOP? procedure returns true."
 (define* (avahi-browse-service-thread proc
                                       #:key
                                       types
+                                      (ignore-local? #t)
                                       (family AF_INET)
                                       (stop-loop? (const #f))
                                       (timeout 100))
@@ -116,7 +117,9 @@ when STOP-LOOP? procedure returns true."
            ;; Add the service if the host is unknown.  This means that if a
            ;; service is available on multiple network interfaces for a single
            ;; host, only the first interface found will be considered.
-           (unless (hash-ref %known-hosts service-name)
+           (unless (or (hash-ref %known-hosts service-name)
+                       (and ignore-local?
+                            (member lookup-result-flag/local flags)))
              (let* ((address (inet-ntop family address))
                     (local-address (interface->ip-address interface))
                     (service* (avahi-service
@@ -144,8 +147,8 @@ when STOP-LOOP? procedure returns true."
      ((eq? event browser-event/remove)
       (let ((service (hash-ref %known-hosts service-name)))
         (when service
-            (proc 'remove-service service)
-            (hash-remove! %known-hosts service-name))))))
+          (proc 'remove-service service)
+          (hash-remove! %known-hosts service-name))))))
 
   (define client-callback
     (lambda (client state)

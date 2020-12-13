@@ -16,23 +16,23 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu installer proxy)
+(define-module (gnu installer substitutes)
   #:use-module (gnu installer utils)
   #:use-module (gnu services herd)
-  #:export (set-http-proxy
-            clear-http-proxy))
+  #:export (enable-discovery
+            disable-discovery))
 
-(define (set-http-proxy proxy)
+(define (enable-discovery)
   (with-silent-shepherd
     (with-shepherd-action 'guix-daemon
-        ('set-http-proxy proxy)
+        ('discover "on")
         result
       result)))
 
-(define (clear-http-proxy)
+(define (disable-discovery)
   (with-silent-shepherd
     (with-shepherd-action 'guix-daemon
-        ('set-http-proxy)
+        ('discover "off")
         result
       result)))
 

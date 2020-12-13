@@ -1173,7 +1173,7 @@ void commonChildInit(Pipe & logPipe)
 
 //////////////////////////////////////////////////////////////////////
 
-Agent::Agent(const string &command, const Strings &args)
+Agent::Agent(const string &command, const Strings &args, const std::map<string, string> &env)
 {
     debug(format("starting agent '%1%'") % command);
 
@@ -1190,6 +1190,10 @@ Agent::Agent(const string &command, const Strings &args)
     pid = startProcess([&]() {
 
         commonChildInit(fromAgent);
+
+	for (auto pair: env) {
+	    setenv(pair.first.c_str(), pair.second.c_str(), 1);
+	}
 
         if (chdir("/") == -1) throw SysError("changing into `/");
 

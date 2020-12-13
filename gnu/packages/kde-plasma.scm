@@ -52,7 +52,7 @@
     (inputs
      `(("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/kdecoration.git")
+    (home-page "https://invent.kde.org/plasma/kdecoration")
     (synopsis "Plugin based library to create window decorations")
     (description "KDecoration is a library to create window decorations.
 These window decorations can be used by for example an X11 based window
@@ -119,7 +119,7 @@ manager which re-parents a Client window to a window decoration frame.")
        ("solid" ,solid)
        ("wayland" ,wayland)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (home-page "https://cgit.kde.org/kscreenlocker.git")
+    (home-page "https://invent.kde.org/plasma/kscreenlocker")
     (synopsis "Screen locking library")
     (description
      "@code{kscreenlocker} is a library for creating secure lock screens.")

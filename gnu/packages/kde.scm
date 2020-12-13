@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,7 +131,7 @@ This package contains GUI widgets for baloo.")
        ("kiconthemes" ,kiconthemes)
        ("knewstuff" ,knewstuff)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/grantleetheme.git")
+    (home-page "https://invent.kde.org/pim/grantleetheme")
     (synopsis "Library providing Grantlee theme support")
     (description "This library provides Grantlee theme support.")
     (license ;; LGPL for libraries, FDL for documentation
@@ -362,7 +363,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
-    (home-page "https://cgit.kde.org/kdiagram.git/")
+    (home-page "https://invent.kde.org/graphics/kdiagram")
     (synopsis "Libraries for creating business diagrams")
     (description "This package provides libraries for integrating business
 diagrams in Qt-based applications.
@@ -764,6 +765,52 @@ Python, PHP, and Perl.")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
     (license (list license:gpl2+  license:fdl1.2+))))
+
+(define-public kdegraphics-mobipocket
+  (package
+    (name "kdegraphics-mobipocket")
+    (version "20.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0fm880lp9g60zgrkjyh4jxws6x0s77l9ia4f8pza3w8sxcbbswk5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kio" ,kio)
+       ("qtbase" ,qtbase)))
+    (home-page "https://apps.kde.org/en/kdegraphics_mobipocket")
+    (synopsis "KDE thumbnailer for Mobipocket files")
+    (description "This package provides a KDE plugin that shows thumbnails of
+Mobipocket e-books in Dolphin and other KDE apps.")
+    (license license:gpl2+)))
+
+(define-public libkexiv2
+  (package
+    (name "libkexiv2")
+    (version "20.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0k0iinf7s8qlk3fwvq7iic1b4zn2gm65rfd58q7d3wb1i1j2hjjk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/graphics/libkexiv2")
+    (synopsis "Manipulate the metadata of images")
+    (description "Libkexiv2 wraps the Exiv2 library, allowing to manipulate
+picture metadata as EXIF/IPTC and XMP.")
+    (license license:gpl2+)))
 
 (define-public zeroconf-ioslave
   (package

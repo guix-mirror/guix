@@ -248,22 +248,13 @@
       (imagemagick
        ;; from http://www.imagemagick.org/script/download.php
        ;; (without mirrors that are unavailable or not up to date)
-       ;; mirrors keeping old versions at the top level
-       "https://sunsite.icm.edu.pl/packages/ImageMagick/"
-       ;; mirrors moving old versions to "legacy"
-       "http://mirror.checkdomain.de/imagemagick/"
-       "http://ftp.surfnet.nl/pub/ImageMagick/"
-       "http://mirror.searchdaimon.com/ImageMagick"
-       "http://mirror.is.co.za/pub/imagemagick/"
-       "http://www.imagemagick.org/download/"
-       "ftp://mirror.aarnet.edu.au/pub/imagemagick/"
-       "ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/"
-       "ftp://ftp.u-aizu.ac.jp/pub/graphics/image/ImageMagick/imagemagick.org/"
+       "https://sunsite.icm.edu.pl/packages/ImageMagick/releases"
+       "http://mirror.checkdomain.de/imagemagick/releases"
+       "ftp://ftp.u-aizu.ac.jp/pub/graphics/image/ImageMagick/imagemagick.org/releases"
        "ftp://ftp.nluug.nl/pub/ImageMagick/"
-       "ftp://ftp.tpnet.pl/pub/graphics/ImageMagick/"
-       "ftp://ftp.fifi.org/pub/ImageMagick/"
-       ;; one legacy location as a last resort
-       "http://www.imagemagick.org/download/legacy/")
+       "http://www.imagemagick.org/download/releases/"
+       ;; Try this if all else fails (normally contains just the latest version).
+       "http://www.imagemagick.org/download/")
       (debian
        "http://ftp.de.debian.org/debian/"
        "http://ftp.fr.debian.org/debian/"

@@ -30,6 +30,7 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt partition)
   #:use-module (gnu installer newt services)
+  #:use-module (gnu installer newt substitutes)
   #:use-module (gnu installer newt timezone)
   #:use-module (gnu installer newt user)
   #:use-module (gnu installer newt utils)
@@ -101,6 +102,9 @@ problem. The backtrace is displayed below. Please report it by email to \
 (define (network-page)
   (run-network-page))
 
+(define (substitutes-page)
+  (run-substitutes-page))
+
 (define (hostname-page)
   (run-hostname-page))
 
@@ -130,6 +134,7 @@ problem. The backtrace is displayed below. Please report it by email to \
    (locale-page locale-page)
    (menu-page menu-page)
    (network-page network-page)
+   (substitutes-page substitutes-page)
    (timezone-page timezone-page)
    (hostname-page hostname-page)
    (user-page user-page)

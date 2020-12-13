@@ -811,7 +811,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
-    (home-page "https://cgit.kde.org/kholidays.git")
+    (home-page "https://invent.kde.org/frameworks/kholidays")
     (synopsis "Library for regional holiday information")
     (description "This library provides a C++ API that determines holiday and
 other special events for a geographical region.")

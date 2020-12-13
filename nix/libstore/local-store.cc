@@ -57,7 +57,6 @@ void checkStoreNotSymlink()
 
 
 LocalStore::LocalStore(bool reserveSpace)
-    : didSetSubstituterEnv(false)
 {
     schemaPath = settings.nixDBPath + "/schema";
 
@@ -182,21 +181,6 @@ LocalStore::LocalStore(bool reserveSpace)
 
 LocalStore::~LocalStore()
 {
-    try {
-	if (runningSubstituter) {
-	    RunningSubstituter &i = *runningSubstituter;
-            if (!i.disabled) {
-		i.to.close();
-		i.from.close();
-		i.error.close();
-		if (i.pid != -1)
-		    i.pid.wait(true);
-	    }
-        }
-    } catch (...) {
-        ignoreException();
-    }
-
     try {
         if (fdTempRoots != -1) {
             fdTempRoots.close();
@@ -796,96 +780,31 @@ Path LocalStore::queryPathFromHashPart(const string & hashPart)
     });
 }
 
-
-void LocalStore::setSubstituterEnv()
-{
-    if (didSetSubstituterEnv) return;
-
-    /* Pass configuration options (including those overridden with
-       --option) to substituters. */
-    setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
-
-    didSetSubstituterEnv = true;
-}
-
-
-void LocalStore::startSubstituter(RunningSubstituter & run)
-{
-    if (run.disabled || run.pid != -1) return;
-
-    debug(format("starting substituter program `%1% substitute'")
-	  % settings.guixProgram);
-
-    Pipe toPipe, fromPipe, errorPipe;
-
-    toPipe.create();
-    fromPipe.create();
-    errorPipe.create();
-
-    setSubstituterEnv();
-
-    run.pid = startProcess([&]() {
-        if (dup2(toPipe.readSide, STDIN_FILENO) == -1)
-            throw SysError("dupping stdin");
-        if (dup2(fromPipe.writeSide, STDOUT_FILENO) == -1)
-            throw SysError("dupping stdout");
-        if (dup2(errorPipe.writeSide, STDERR_FILENO) == -1)
-            throw SysError("dupping stderr");
-        execl(settings.guixProgram.c_str(), "guix", "substitute", "--query", NULL);
-        throw SysError(format("executing `%1%'") % settings.guixProgram);
-    });
-
-    run.to = toPipe.writeSide.borrow();
-    run.from = run.fromBuf.fd = fromPipe.readSide.borrow();
-    run.error = errorPipe.readSide.borrow();
-
-    toPipe.readSide.close();
-    fromPipe.writeSide.close();
-    errorPipe.writeSide.close();
-
-    /* The substituter may exit right away if it's disabled in any way
-       (e.g. copy-from-other-stores.pl will exit if no other stores
-       are configured). */
-    try {
-        getLineFromSubstituter(run);
-    } catch (EndOfFile & e) {
-        run.to.close();
-        run.from.close();
-        run.error.close();
-        run.disabled = true;
-        if (run.pid.wait(true) != 0) throw;
-    }
-}
-
-
 /* Read a line from the substituter's stdout, while also processing
    its stderr. */
-string LocalStore::getLineFromSubstituter(RunningSubstituter & run)
+string LocalStore::getLineFromSubstituter(Agent & run)
 {
     string res, err;
-
-    /* We might have stdout data left over from the last time. */
-    if (run.fromBuf.hasData()) goto haveData;
 
     while (1) {
         checkInterrupt();
 
         fd_set fds;
         FD_ZERO(&fds);
-        FD_SET(run.from, &fds);
-        FD_SET(run.error, &fds);
+        FD_SET(run.fromAgent.readSide, &fds);
+        FD_SET(run.builderOut.readSide, &fds);
 
         /* Wait for data to appear on the substituter's stdout or
            stderr. */
-        if (select(run.from > run.error ? run.from + 1 : run.error + 1, &fds, 0, 0, 0) == -1) {
+        if (select(std::max(run.fromAgent.readSide, run.builderOut.readSide) + 1, &fds, 0, 0, 0) == -1) {
             if (errno == EINTR) continue;
             throw SysError("waiting for input from the substituter");
         }
 
         /* Completely drain stderr before dealing with stdout. */
-        if (FD_ISSET(run.error, &fds)) {
+        if (FD_ISSET(run.builderOut.readSide, &fds)) {
             char buf[4096];
-            ssize_t n = read(run.error, (unsigned char *) buf, sizeof(buf));
+            ssize_t n = read(run.builderOut.readSide, (unsigned char *) buf, sizeof(buf));
             if (n == -1) {
                 if (errno == EINTR) continue;
                 throw SysError("reading from substituter's stderr");
@@ -903,23 +822,20 @@ string LocalStore::getLineFromSubstituter(RunningSubstituter & run)
         }
 
         /* Read from stdout until we get a newline or the buffer is empty. */
-        else if (run.fromBuf.hasData() || FD_ISSET(run.from, &fds)) {
-        haveData:
-            do {
-                unsigned char c;
-                run.fromBuf(&c, 1);
-                if (c == '\n') {
-                    if (!err.empty()) printMsg(lvlError, "substitute: " + err);
-                    return res;
-                }
-                res += c;
-            } while (run.fromBuf.hasData());
+        else if (FD_ISSET(run.fromAgent.readSide, &fds)) {
+	    unsigned char c;
+	    readFull(run.fromAgent.readSide, (unsigned char *) &c, 1);
+	    if (c == '\n') {
+		if (!err.empty()) printMsg(lvlError, "substitute: " + err);
+		return res;
+	    }
+	    res += c;
         }
     }
 }
 
 
-template<class T> T LocalStore::getIntLineFromSubstituter(RunningSubstituter & run)
+template<class T> T LocalStore::getIntLineFromSubstituter(Agent & run)
 {
     string s = getLineFromSubstituter(run);
     T res;
@@ -934,51 +850,47 @@ PathSet LocalStore::querySubstitutablePaths(const PathSet & paths)
 
     if (!settings.useSubstitutes || paths.empty()) return res;
 
-    if (!runningSubstituter) {
-	std::unique_ptr<RunningSubstituter>fresh(new RunningSubstituter);
-	runningSubstituter.swap(fresh);
-    }
+    Agent & run = *substituter();
 
-    RunningSubstituter & run = *runningSubstituter;
-    startSubstituter(run);
-
-    if (!run.disabled) {
-	string s = "have ";
-	foreach (PathSet::const_iterator, j, paths)
-	    if (res.find(*j) == res.end()) { s += *j; s += " "; }
-	writeLine(run.to, s);
-	while (true) {
-	    /* FIXME: we only read stderr when an error occurs, so
-	       substituters should only write (short) messages to
-	       stderr when they fail.  I.e. they shouldn't write debug
-	       output. */
-	    Path path = getLineFromSubstituter(run);
-	    if (path == "") break;
-	    res.insert(path);
-	}
+    string s = "have ";
+    foreach (PathSet::const_iterator, j, paths)
+	if (res.find(*j) == res.end()) { s += *j; s += " "; }
+    writeLine(run.toAgent.writeSide, s);
+    while (true) {
+	/* FIXME: we only read stderr when an error occurs, so
+	   substituters should only write (short) messages to
+	   stderr when they fail.  I.e. they shouldn't write debug
+	   output. */
+	Path path = getLineFromSubstituter(run);
+	if (path == "") break;
+	res.insert(path);
     }
 
     return res;
 }
 
 
+std::shared_ptr<Agent> LocalStore::substituter()
+{
+    if (!runningSubstituter) {
+	const Strings args = { "substitute", "--query" };
+	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
+	runningSubstituter = std::make_shared<Agent>(settings.guixProgram, args, env);
+    }
+
+    return runningSubstituter;
+}
+
 void LocalStore::querySubstitutablePathInfos(PathSet & paths, SubstitutablePathInfos & infos)
 {
     if (!settings.useSubstitutes) return;
 
-    if (!runningSubstituter) {
-	std::unique_ptr<RunningSubstituter>fresh(new RunningSubstituter);
-	runningSubstituter.swap(fresh);
-    }
-
-    RunningSubstituter & run = *runningSubstituter;
-    startSubstituter(run);
-    if (run.disabled) return;
+    Agent & run = *substituter();
 
     string s = "info ";
     foreach (PathSet::const_iterator, i, paths)
         if (infos.find(*i) == infos.end()) { s += *i; s += " "; }
-    writeLine(run.to, s);
+    writeLine(run.toAgent.writeSide, s);
 
     while (true) {
         Path path = getLineFromSubstituter(run);
