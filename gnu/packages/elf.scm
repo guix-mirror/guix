@@ -5,7 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Mark Wielaard <mark@klomp.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
@@ -46,14 +46,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.176")
+    (version "0.182")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "08qhrl4g6qqr4ga46jhh78y56a47p3msa5b2x1qhzbxhf71lfmzb"))
+                "0n48dcadjy0wiilddzav2zaxdi30qkkfp160gw5mycyz9s8hdi7c"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
@@ -68,7 +68,16 @@
      ;; know where to find each other.
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib")
+                               ;; TODO: Enable the debuginfo server.  It
+                               ;; increases the closure size significantly
+                               ;; and presents bootstrapping problems, so
+                               ;; we disable it for now.  See
+                               ;; https://issues.guix.gnu.org/38803 and
+                               ;; https://sourceware.org/bugzilla/show_bug.cgi?id=25509
+                               ;; for more information.
+                               "--disable-libdebuginfod"
+                               "--disable-debuginfod")
 
        ;; Disable tests on MIPS and PowerPC (without changing
        ;; the arguments list on other systems).
