@@ -787,6 +787,61 @@
                (build-derivations s (list d))
                #f))))))
 
+(test-assert "substitute, corrupt output hash, build trace"
+  ;; Likewise, and check the build trace.
+  (with-store s
+    (let* ((c   "hello, world")                   ; contents of the output
+           (d   (build-expression->derivation
+                 s "corrupt-substitute"
+                 `(mkdir %output)
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d)))
+      ;; Make sure we use 'guix substitute'.
+      (set-build-options s
+                         #:print-build-trace #t
+                         #:use-substitutes? #t
+                         #:fallback? #f
+                         #:substitute-urls (%test-substitute-urls))
+
+      (with-derivation-substitute d c
+        (sha256 => (make-bytevector 32 0)) ;select a hash that doesn't match C
+
+        (define output
+          (call-with-output-string
+            (lambda (port)
+              (parameterize ((current-build-output-port port))
+                (guard (c ((store-protocol-error? c) #t))
+                  (build-derivations s (list d))
+                  #f)))))
+
+        (define actual-hash
+          (let-values (((port get-hash)
+                        (gcrypt:open-hash-port
+                         (gcrypt:hash-algorithm gcrypt:sha256))))
+            (write-file-tree "foo" port
+                             #:file-type+size
+                             (lambda _
+                               (values 'regular (string-length c)))
+                             #:file-port
+                             (lambda _
+                               (open-input-string c)))
+            (close-port port)
+            (bytevector->nix-base32-string (get-hash))))
+
+        (define expected-hash
+          (bytevector->nix-base32-string (make-bytevector 32 0)))
+
+        (define mismatch
+          (string-append "@ hash-mismatch " o " sha256 "
+                         expected-hash " " actual-hash "\n"))
+
+        (define failure
+          (string-append "@ substituter-failed " o))
+
+        (and (string-contains output mismatch)
+             (string-contains output failure))))))
+
 (test-assert "substitute --fallback"
   (with-store s
     (let* ((t   (random-text))                    ; contents of the output
