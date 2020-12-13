@@ -3905,27 +3905,25 @@ alternative implementations like XRandR or TwinView.")
     (license license:x11)))
 
 
-(define xkbcomp-intermediate ; used as input for xkeyboard-config
+(define xkbcomp-intermediate            ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xkbcomp-"
-               version
-               ".tar.bz2"))
-        (sha256
-         (base32
-          "0dflr250nlj6rrnv658f6dm8qx37sj0xfimc3ihay761kwb2q906"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xkbcomp-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0zpjkbap9160pdd6jpgb5f0yg5281w0rkkx1l0i7g887lq1ydk2r"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxkbfile" ,libxkbfile)
-        ("libx11" ,libx11)))
+     `(("xorgproto" ,xorgproto)
+       ("libxkbfile" ,libxkbfile)
+       ("libx11" ,libx11)))
     (native-inputs
-        `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Compile XKB keyboard description")
     (description
