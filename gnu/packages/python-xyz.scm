@@ -4137,14 +4137,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.36.1")
+    (version "0.36.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "0ljzc50z5v08is8fis1fg2dk9sb6275jlvzxb6nij0w6ys772pf8"))))
+         "1c0pnk2aibfhfaanrs0a5gkabkvz81gj20z7r0152b7fcx5ci14r"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-autopep8" ,python-autopep8)
