@@ -4322,23 +4322,21 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xprop-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0lzp7kyhpwd5hm83j2zm6j3w3z1z5i4ykgg2nwr01ij6dq4znxwc"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xprop-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "18ckr8g1z50zkc01hprkpm1npwbq32yqib4b3l98c95z2q1yv4lv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+     `(("libx11" ,libx11)
+       ("xorgproto" ,xorgproto)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display X server properties")
     (description
