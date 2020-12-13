@@ -555,7 +555,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
 (define-public noisetorch
   (package
     (name "noisetorch")
-    (version "0.7.2-beta")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -564,7 +564,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06xlqjma8h7lcnqgc9226blps6m9dp487hk71lslfxj0jkay548k"))))
+        (base32 "115sq4waq048bv82lnq5sblf62m50yvyakx7x06qq359v7qf5ji1"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lawl/NoiseTorch"
