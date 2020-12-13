@@ -13,7 +13,7 @@ if test "x$guix_build_daemon" = "xyes"; then
   GUIX_ASSERT_CXX11
 
   AC_PROG_RANLIB
-  AC_CONFIG_HEADER([nix/config.h])
+  AC_CONFIG_HEADERS([nix/config.h])
 
   dnl Use 64-bit file system calls so that we can support files > 2 GiB.
   AC_SYS_LARGEFILE
@@ -34,7 +34,6 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Look for SQLite, a required dependency.
   PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.6.19])
 
-  AC_DEFINE([NIX_VERSION], ["0.0.0"], [Fake Nix version number.])
   AC_DEFINE_UNQUOTED([SYSTEM], ["$guix_system"],
     [Guix host system type--i.e., platform and OS kernel tuple.])
 

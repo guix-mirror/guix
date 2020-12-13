@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,7 +130,7 @@
     (list (shepherd-service
            (documentation "Run the Avahi mDNS/DNS-SD responder.")
            (provision '(avahi-daemon))
-           (requirement '(dbus-system networking))
+           (requirement '(user-processes dbus-system networking))
 
            (start #~(make-forkexec-constructor
                      (list #$(file-append avahi "/sbin/avahi-daemon")

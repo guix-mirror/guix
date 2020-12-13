@@ -228,7 +228,7 @@ a focus on simplicity and productivity.")
 (define-public mruby
   (package
     (name "mruby")
-    (version "2.0.0")
+    (version "2.1.2")
     (source
      (origin
        (method git-fetch)
@@ -238,7 +238,7 @@ a focus on simplicity and productivity.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1r6w1asjshff43ymdwa6xmrkggza99mi2kw88k7ic6ag2j81hcj5"))))
+         "0fhfv8pi7i8jn2vgk2n2rjnbnfa12nhj514v8i4k353n7q4pmkh3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

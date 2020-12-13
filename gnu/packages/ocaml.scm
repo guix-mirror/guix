@@ -739,8 +739,7 @@ Emacs.")
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")
-    ;; More recent versions can be built after we have dune >= 2.0
-    (version "20190626")
+    (version "20200211")
     (source
      (origin
        (method git-fetch)
@@ -749,19 +748,12 @@ Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v8av4pw6rykzb7wx54xhbsx0jhh8xyb4x0k4yrxi0w5ylkck6mb"))))
-    (build-system ocaml-build-system)
+        (base32 "019izf51kdc7pzkw68zg8a2alc8lxw1gwdp7in970mr90n16b5zj"))))
+    (build-system dune-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
-    (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
     (arguments
-     `(#:make-flags `("USE_OCAMLFIND=true"
-                      ,(string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; No check target
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:tests? #f)) ; No check target
     (home-page "http://gallium.inria.fr/~fpottier/menhir/")
     (synopsis "Parser generator")
     (description "Menhir is a parser generator.  It turns high-level grammar

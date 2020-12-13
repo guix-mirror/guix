@@ -352,7 +352,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernel. That is, the most recently released major
 ;; version.
-(define-public linux-libre-5.9-version "5.9.12")
+(define-public linux-libre-5.9-version "5.9.14")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
@@ -360,7 +360,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "1gfrn3sz3h4cbsf3r8f9jxja400qsmbrk8sclk4cjx1l5qcmczyr")))
+        (hash (base32 "0jbb3rzbkh0l75zq9bnc60w55ryvrvcg7vw85fsbcwfzvi0zpz1r")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,7 +368,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.81")
+(define-public linux-libre-5.4-version "5.4.83")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +376,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "09w4bpr3v9rzcvxics5wddabplwbpk1mynl45lh9csbjfpjbsw4l")))
+        (hash (base32 "1ik14pfgynkn1sjhgyhgmxjvviq0mgvk0ygj76w8mplkpc5rgv5y")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.161")
+(define-public linux-libre-4.19-version "4.19.163")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +389,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0h9wskmz9wridwnicnjlcmj1112qnlvqk01bhjkxv6b8jsajjh87")))
+        (hash (base32 "1z65iwwyx2b01fncygckmhpxirzs52qfqmv3agirn4laxgjw9viy")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.210")
+(define-public linux-libre-4.14-version "4.14.212")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "067xqi6sgf50p7s3n6y77cgf5bj5062s3bz3kqpp6f9wnk85267r")))
+        (hash (base32 "0y8ck8pfxm8862wi4cz8qp9x9b18yl448i8m7bpbphs290nc66qf")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.247")
+(define-public linux-libre-4.9-version "4.9.248")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1mngdbsq8pdzd0x9hif4715cc7wzc3ahgp1yrknnqk598q0fnfpp")))
+        (hash (base32 "1kzczy0lz3lnjkhvx90dgjmzn3d3y55qxlihiclkr4y9c602d1s6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.247")
+(define-public linux-libre-4.4-version "4.4.248")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1jh7vmyx55krk6y2r9v48liifs5wwkgns3gp8rs5sm4klfm36r2a")))
+        (hash (base32 "1z1xbkm0z0v6k3scszii5hi24pn391332g0li93p3n1rnv74jap5")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4050,18 +4050,18 @@ thanks to the use of namespaces.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-references
            (lambda _
-             (substitute* "libexec/cli/build.exec"
-               (("if ! singularity_which mksquashfs") "if 0")
-               (("if ! mksquashfs")
-                (string-append "if ! " (which "mksquashfs"))))
-             (substitute* (list "libexec/cli/help.exec"
-                                "libexec/bootstrap-scripts/functions"
-                                "libexec/bootstrap-scripts/post.sh"
-                                "libexec/functions")
+             (substitute* "libexec/cli/build.exec.in"
+               (("-mksquashfs") (string-append "-" (which "mksquashfs"))))
+             (substitute* (append
+                            (find-files "libexec" "functions")
+                            (find-files "libexec/bootstrap-scripts" ".*sh$")
+                            (find-files "libexec/cli" ".*exec$"))
                (("\\| grep ")
                 (string-append "| " (which "grep") " "))
                (("egrep ")
-                (string-append (which "egrep") " ")))
+                (string-append (which "egrep") " "))
+               ((" sed ")
+                (string-append " " (which "sed") " ")))
              #t))
          (add-after 'install 'set-PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4549,7 +4549,7 @@ arrays when needed.")
        ;; For tests.
        ("cmocka" ,cmocka)))
     (inputs
-     `(("json-c" ,json-c-0.13)
+     `(("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)

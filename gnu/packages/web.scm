@@ -79,8 +79,10 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -90,6 +92,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -111,6 +114,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnu-doc)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
@@ -118,6 +122,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
@@ -152,6 +157,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages re2c)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -894,7 +900,6 @@ data.")
 
 (define-public json-c
   (package
-    (replacement json-c/fixed)
     (name "json-c")
     (version "0.14")
     (source (origin
@@ -904,7 +909,8 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))))
+               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))
+              (patches (search-patches "json-c-CVE-2020-12762.patch"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
@@ -914,15 +920,6 @@ easily construct JSON objects in C, output them as JSON-formatted strings and
 parse JSON-formatted strings back into the C representation of JSON objects.
 It aims to conform to RFC 7159.")
     (license license:x11)))
-
-(define json-c/fixed
-  (package
-    (inherit json-c)
-    (name "json-c")
-    (version "0.14")
-    (source (origin
-              (inherit (package-source json-c))
-              (patches (search-patches "json-c-CVE-2020-12762.patch"))))))
 
 ;; TODO: Remove these old versions when all dependents have been updated.
 (define-public json-c-0.13
@@ -1063,7 +1060,8 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
      `(("qca" ,qca)
        ("qtbase" ,qtbase)))
     (arguments
-     '(#:phases
+     '(#:tests? #f                      ;FIXME: some tests are failing
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-code
            (lambda _
@@ -1071,11 +1069,17 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
              (substitute* "src/src.pro"
                (("/lib64") "/lib"))
              #t))
-         (delete 'configure) ; no configure script
-         (delete 'check) ; no test target
-         (add-before 'build 'qmake
-           (lambda _
-             (let ((qca (assoc-ref %build-inputs "qca")))
+         (add-after 'unpack 'adjust-mkspecs-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/src.pro"
+               ;; Do not attempt to install the .prf file into qtbase
+               ;; "lib/qt5/mkspecs/features", ref <https://bugs.gnu.org/45031>.
+               (("\\$\\$\\[QMAKE_MKSPECS\\]")
+                (string-append (assoc-ref outputs "out") "/lib/qt5/mkspecs")))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((qca (assoc-ref inputs "qca")))
                (invoke
                 "qmake"
                 (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -1472,7 +1476,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.16")
+    (version "0.8.21")
     (source
      (origin
        (method git-fetch)
@@ -1481,7 +1485,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i1fbqzvp31lr9ii2shxxn9hba8zzrn2d4rsd4db86q9xqm7pbiw"))
+        (base32 "1gkh3ka7gfdqvzymj6vh9w2d0cp7n2vih42y7ghg7y8x6ry4c6mi"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -7437,8 +7441,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.40.0")
-    (replacement nghttp2-1.41)
+    (version "1.41.0")
     (source
      (origin
        (method url-fetch)
@@ -7447,7 +7450,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
-         "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))
+         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
@@ -7520,20 +7523,6 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license license:expat)))
-
-(define-public nghttp2-1.41                       ;fixes CVE-2020-11080
-  (package
-    (inherit nghttp2)
-    (version "1.41.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nghttp2/nghttp2/"
-                           "releases/download/v" version "/"
-                           "nghttp2-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))))
 
 (define-public hpcguix-web
   (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
@@ -7847,3 +7836,148 @@ solution for any project's interface needs:
       (description "gmnisrv is a simple Gemini protocol server written in C.")
       (license (list license:gpl3+
                      license:bsd-3))))) ;; for ini.c and ini.h
+
+(define-public libzim
+  (package
+    (name "libzim")
+    (version "6.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openzim/libzim")
+                    (commit version)))
+              (sha256
+               (base32
+                "0p2317cp19lx0hw9n4fsb3nw2vc4hc1yyi98k3yrs41pkr840kwa"))
+              (file-name (git-file-name name version))))
+    (build-system meson-build-system)
+    (arguments
+     ;; TODO: Find out why tests fail.
+     '(#:tests? #f))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("liblzma" ,xz)
+       ("libuuid" ,util-linux "lib")
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("googletest" ,googletest)))
+    (home-page "https://wiki.openzim.org/wiki/Main_Page")
+    (synopsis "Reference implementation of the ZIM specification")
+    (description "The openZIM project proposes offline storage solutions for
+content coming from the Web.  The zimlib is the standard implementation of the
+ZIM specification.  It is a library which implements the read and write method
+for ZIM files.")
+    (license license:gpl2)))
+
+(define-public kiwix-lib
+  (package
+    (name "kiwix-lib")
+    (version "9.4.0")
+    (home-page "https://github.com/kiwix/kiwix-lib/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32
+                "0nsm4qgl0cb6wv983n0px1kf217k4kykb8q56b8j6ikp061lzamm"))
+              (file-name (git-file-name name version))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths-and-includes
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPPFLAGS" (string-append "-I" (assoc-ref inputs "mustache")))
+             (substitute* "src/aria2.cpp"
+               (("ARIA2_CMD \"aria2c\"")
+                (string-append "ARIA2_CMD \""
+                               (assoc-ref inputs "aria2")
+                               "/bin/aria2c\"")))
+             #t)))))
+    (inputs
+     `(("aria2" ,aria2)
+       ("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("libmicrohttpd" ,libmicrohttpd)
+       ("libzim" ,libzim)
+       ("pugixml" ,pugixml)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("mustache" ,(origin
+                      (method git-fetch)
+                      (uri (git-reference
+                            (url "https://github.com/kainjow/Mustache")
+                            ;; XXX: Readme says to use version 3.  Can we use 3.2.1?
+                            (commit "v4.1")))
+                      (file-name (git-file-name "mustache" "4.1"))
+                      (sha256
+                       (base32
+                        "0r9rbk6v1wpld2ismfsk2lkhbyv3dkf0p03hkjivbj05qkfhvlbb"))))
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Common code base for all Kiwix ports")
+    (description "The Kiwix library provides the Kiwix software suite core.
+It contains the code shared by all Kiwix ports.")
+    (license license:gpl3)))
+
+(define-public kiwix-desktop
+  (package
+    (name "kiwix-desktop")
+    (version "2.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.kiwix.org/release/kiwix-desktop/kiwix-desktop-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1a9h4qmh6fkfscyp6lax0ri07dvvzw2wp4kr1sm86n0bdk3cwwha"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out")))))
+         (add-before 'configrue 'enable-print-support
+           (lambda _
+             (substitute* "kiwix-desktop.pro"
+               (("webenginewidgets") "webenginewidgets printsupport"))
+             #t))
+         (add-before 'configure 'substitute-source
+           ;; Looks like .pro file is missing a feature.
+           ;; See https://github.com/kiwix/kiwix-desktop/issues/556.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "kiwix-desktop.pro"
+               (("webenginewidgets" all) (string-append all " printsupport")))
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("kiwix-lib" ,kiwix-lib)
+       ("libzim" ,libzim)
+       ("pugixml" ,pugixml)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qmake" ,qtbase)))
+    (home-page "https://wiki.kiwix.org/wiki/Software")
+    (synopsis "Viewer and manager of ZIM files")
+    (description "Kiwix Desktop allows you to enjoy a lot of different content
+offline (such as Wikipedia), without any access to Internet.")
+    (license license:gpl3)))

@@ -515,7 +515,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.2")
+    (version "3.0.3")
     (source
      (origin
        (method git-fetch)
@@ -523,7 +523,7 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "1qmqhbnc5yw4brd24yrp85k09770c1c00nl03mkv5pdz2bvqivk7"))
+        (base32 "0ylig6g2w4r3qfb16cf922iriqyn64frkzpk87vpga16kclvf08y"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -3416,7 +3416,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "2.4")
+    (version "2.4.1")
     (source
      (origin
       (method git-fetch)
@@ -3425,7 +3425,7 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "08sy6v09drcy3nwv7za543vajn4bm8jvwk9iwwf7i9azmk47jgna"))))
+       (base32 "0rlac7v1b59m7gh767hkd8a0r4p001nd24786fnmryygbxynd2s6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3934,19 +3934,14 @@ tcpdump and snoop.")
 (define-public pam-mount
   (package
     (name "pam-mount")
-    (version "2.16")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pam-mount/pam_mount/"
-                           version "/pam_mount-" version ".tar.xz"))
+                           "pam_mount-" version ".tar.xz"))
        (sha256
-        (base32
-         "1rvi4irb7ylsbhvx1cr6islm2xxw1a4b19q6z4a9864ndkm0f0mf"))
-       (patches
-        ;; Patch adding support for encrypted volumes in LUKS2 format.
-        ;; It comes from the Gentoo package definition for sys-auth/pam_mount.
-        (search-patches "pam-mount-luks2-support.patch"))))
+        (base32 "1q2n6a2ah6nghdn8i6ad2wj247njwb5nx48cggxknaa6lqxylidy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)

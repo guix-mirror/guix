@@ -131,8 +131,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "c952a9312a94bb236495ec654bf184685cf9fe79")
-        (revision 5))
+        (commit "799f066768bacb321ebad84c75b2bbfd269e7cd8")
+        (revision 6))
     (package
       (name "guix")
 
@@ -148,7 +148,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1k32p37ikwls086mgxjhz9qhrbc7lgvfpbnk0ikfg4p40rxjp4w8"))
+                  "04k8q5yjmxazskl13ap210jki2zh73zlzd0xdx06v08liskgz10q"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -405,7 +405,7 @@ $(prefix)/etc/init.d\n")))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
-       `(("gnutls" ,(if (%current-target-system) gnutls/fixed gnutls))
+       `(("gnutls" ,gnutls)
          ;; Avahi requires "glib" which doesn't cross-compile yet.
          ,@(if (%current-target-system)
                '()
@@ -1026,8 +1026,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "49c0596c6d5589f0e46268c9b28e7e31932a7964")
-        (revision "9"))
+  (let ((commit "79e28fbfd7298eecd754f75170c09c59c0943f67")
+        (revision "10"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1038,7 +1038,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "16mdf4fw83ni5qwx48f8z4p8fwln4q92nk5fljlx726inyrx451k"))
+                  "02yk56iisfwg8k4l1allxlanisp1cm13v6yifgl90b7msvy7qz3a"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1097,9 +1097,13 @@ environments.")
       (inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("sqlite" ,sqlite)
-         ("sqitch" ,sqitch)))
+         ,@(if (hurd-target?)
+               '()
+               `(("sqitch" ,sqitch)))))
       (propagated-inputs
-       `(("guile-fibers" ,guile-fibers)
+       `(,@(if (hurd-target?)
+               '()
+               `(("guile-fibers" ,guile-fibers)))
          ("guile-prometheus" ,guile-prometheus)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)

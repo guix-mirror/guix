@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 receive)
   #:use-module (web uri)
   #:use-module (guix memoization)
@@ -142,9 +143,9 @@ package definition."
 (define %cran-url "https://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.11.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.12.  Bioconductor packages should be
 ;; updated together.
-(define %bioconductor-version "3.11")
+(define %bioconductor-version "3.12")
 
 (define* (bioconductor-packages-list-url #:optional type)
   (string-append "https://bioconductor.org/packages/"
@@ -585,7 +586,10 @@ s-expression corresponding to that package, or #f on failure."
              ((bioconductor)
               ;; Retry import from CRAN
               (cran->guix-package package-name #:repo 'cran))
-             (else (values #f '()))))))))
+             (else
+              (raise (condition
+                      (&message
+                       (message "couldn't find meta-data for R package")))))))))))
 
 (define* (cran-recursive-import package-name #:key (repo 'cran))
   (recursive-import package-name

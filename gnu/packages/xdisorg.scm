@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2618,3 +2619,43 @@ and execute @file{.desktop} files of the Application type.")
      "@command{sx} is a simple alternative to both @command{xinit} and
 @command{startx} for starting an Xorg server.")
     (license license:x11)))
+
+(define-public hsetroot
+  (package
+    (name "hsetroot")
+    (version "1.0.5")
+    (home-page "https://github.com/himdel/hsetroot")
+    (source (origin
+              (method git-fetch)
+              (file-name (git-file-name name version))
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32
+                "1jbk5hlxm48zmjzkaq5946s58rqwg1v1ds2sdyd2ba029hmvr722"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list
+        "CC=gcc"
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'mkdir-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))))))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("imlib2" ,imlib2)
+       ("libxinerama" ,libxinerama)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Imlib2-based wallpaper changer")
+    (description
+     "The @command{hsetroot} command composes wallpapers for X.
+This package is the fork of hsetroot by Hyriand.")
+    (license license:gpl2+)))

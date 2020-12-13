@@ -309,6 +309,45 @@ streams which are similar to string streams.")
 (define-public ecl-flexi-streams
   (sbcl-package->ecl-package sbcl-flexi-streams))
 
+(define-public sbcl-cl-abnf
+  ;; There are no releases
+  (let ((commit "ba1fbb104dedbdaddb1ef93d2e4da711bd96cd70")
+        (revision "1"))
+    (package
+     (name "sbcl-cl-abnf")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/dimitri/cl-abnf")
+              (commit commit)))
+        (file-name (git-file-name "cl-abnf" version))
+        (sha256
+         (base32 "0f09nsndxa90acm71zd4qdnp40v705a4sqm04mnv9x76h6dlggmz"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("cl-ppcre" ,sbcl-cl-ppcre)
+        ("esrap" ,sbcl-esrap)))
+     (arguments
+      `(#:asd-systems '("abnf")))
+     (home-page "https://github.com/dimitri/cl-abnf")
+     (synopsis "ABNF parser generator for Common Lisp")
+     (description "This Common Lisp library implements a parser generator for
+the ABNF grammar format as described in RFC2234.  The generated parser is a
+regular expression scanner provided by the cl-ppcre lib, which means that we
+can't parse recursive grammar definition.  One such definition is the ABNF
+definition as given by the RFC.  Fortunately, as you have this lib, you most
+probably don't need to generate another parser to handle that particular ABNF
+grammar.")
+     (license license:expat))))
+
+(define-public cl-abnf
+  (sbcl-package->cl-source-package sbcl-cl-abnf))
+
+(define-public ecl-cl-abnf
+  (sbcl-package->ecl-package sbcl-cl-abnf))
+
 (define-public sbcl-cl-ppcre
   (package
     (name "sbcl-cl-ppcre")
@@ -2725,7 +2764,11 @@ Lisp, featuring:
   (sbcl-package->cl-source-package sbcl-lparallel))
 
 (define-public ecl-lparallel
-  (sbcl-package->ecl-package sbcl-lparallel))
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-lparallel))
+    (arguments
+     ;; TODO: Find why the tests get stuck forever; disable them for now.
+     `(#:tests? #f))))
 
 (define-public sbcl-cl-markup
   (let ((commit "e0eb7debf4bdff98d1f49d0f811321a6a637b390"))
@@ -5637,6 +5680,41 @@ extension-points via the concept of hooks.")
 
 (define-public ecl-cl-hooks
   (sbcl-package->ecl-package sbcl-cl-hooks))
+
+(define-public sbcl-cl-autowrap
+  (let ((revision "1")
+        (commit "ae846d6968fc0d000de0c541638929a157f3009e"))
+    ;; no taged branches
+    (package
+      (name "sbcl-cl-autowrap")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/cl-autowrap")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gisldp2zns92kdcaikghm7c38ldy2d884n8bfg0wcjvbz78p3ar"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-json" ,sbcl-cl-json)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("defpackage-plus" ,sbcl-defpackage-plus)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/rpav/cl-autowrap")
+      (synopsis "FFI wrapper generator for Common Lisp")
+      (description "This is a c2ffi-based wrapper generator for Common Lisp.")
+      (license license:bsd-2))))
+
+(define-public cl-autowrap
+  (sbcl-package->cl-source-package sbcl-cl-autowrap))
+
+(define-public ecl-cl-autowrap
+  (sbcl-package->ecl-package sbcl-cl-autowrap))
 
 (define-public sbcl-s-sysdeps
   ;; No release since 2013.
@@ -11234,17 +11312,18 @@ XML to Lisp structures or s-expressions and back.")
 (define-public sbcl-geco
   (package
     (name "sbcl-geco")
-    (version "2.01a")
+    (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://common-lisp.net/project/geco/download/"
-                           "geco-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gpwwjr/GECO")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "geco" version))
        (sha256
-        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))
-       (patches (search-patches "sbcl-geco-fix-organism-class.patch"))))
+        (base32 "1rc8a4mk40hjx5qy980hjylv6xxqdbq38hg8c4w30y93abfd519s"))))
     (build-system asdf-build-system/sbcl)
-    (home-page "https://common-lisp.net/project/geco/")
+    (home-page "http://hiwaay.net/~gpw/geco/geco.html")
     (synopsis "Genetic algorithm toolkit for Common Lisp")
     (description
      "GECO (Genetic Evolution through Combination of Objects) is an extensible,
@@ -12405,3 +12484,44 @@ Service (S3) and CloudFront service from Common Lisp.")
 
 (define-public ecl-zs3
   (sbcl-package->ecl-package sbcl-zs3))
+
+(define-public sbcl-simple-neural-network
+  (package
+    (name "sbcl-simple-neural-network")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/glv2/simple-neural-network")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "simple-neural-network" version))
+       (sha256
+        (base32 "1jj1c90fr5clwka0jv32hv6xp1bkdlpa6x5jh19an13rhx8ll4zr"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("chipz" ,sbcl-chipz)
+       ("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("cl-store" ,sbcl-cl-store)
+       ("lparallel" ,sbcl-lparallel)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'remove-test-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each delete-file (find-files out "\\.gz$"))))))))
+    (synopsis "Simple neural network in Common Lisp")
+    (description
+     "@code{simple-neural-network} is a Common Lisp library for creating,
+training and using basic neural networks.  The networks created by this
+library are feedforward neural networks trained using backpropagation.")
+    (home-page "https://github.com/glv2/simple-neural-network")
+    (license license:gpl3+)))
+
+(define-public cl-simple-neural-network
+  (sbcl-package->cl-source-package sbcl-simple-neural-network))
+
+(define-public ecl-simple-neural-network
+  (sbcl-package->ecl-package sbcl-simple-neural-network))

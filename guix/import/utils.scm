@@ -275,9 +275,9 @@ version. If APPEND-VERSION?/string is a string, append this string."
                        (cond
                         ((string? append-version?/string)
                          (string-append name "-" append-version?/string))
-                        ((= append-version?/string #t)
+                        ((eq? append-version?/string #t)
                          (string-append name "-" (version-major+minor version)))
-                        ((#t) version)))
+                        (else name)))
         ,guix-package))))
 
 (define (build-system-modules)

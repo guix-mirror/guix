@@ -2053,14 +2053,14 @@ use with virtualization provisioning tools")
 (define-public python-transient
   (package
     (name "python-transient")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "transient" version))
        (sha256
         (base32
-         "1pcyw8j2l354qa6c8gr58xd7fmxcx1svnfyr2rj5nh04ircx3x7l"))))
+         "148yiqrmcscsi6787y0f27i1y9cf0gcw3mqfv5frhpmsmv62mv5z"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Requires behave

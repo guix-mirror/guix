@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,8 @@
  "foo[abc]bar" => '("foo" (set #\a #\b #\c) "bar")
  "foo[a[b]c]bar" => '("foo" (set #\a #\[ #\b #\] #\c) "bar")
  "[123]x" => '((set #\1 #\2 #\3) "x")
- "[a-z]" => '((range #\a #\z)))
+ "[a-z]" => '((range #\a #\z))
+ "**/*.scm" => '(**/ * ".scm"))
 
 (test-glob-match
  ("foo" matches "foo" (and not "foobar" "barfoo"))
@@ -64,6 +66,8 @@
  ("ab[0-9]c" matches "ab0c" "ab7c" "ab9c"
   (and not "ab-c" "ab00c" "ab3"))
  ("ab[cdefg]" matches "abc" "abd" "abg"
-  (and not "abh" "abcd" "ab[")))
+  (and not "abh" "abcd" "ab["))
+ ("foo/**/*.scm" matches "foo/bar/baz.scm" "foo/bar.scm" "foo/bar/baz/zab.scm"
+  (and not "foo/bar/baz.java" "foo/bar.smc")))
 
 (test-end "glob")

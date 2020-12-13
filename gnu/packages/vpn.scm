@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
+;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -263,9 +264,7 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
    (build-system gnu-build-system)
    (propagated-inputs
     `(("libxml2" ,libxml2)
-      ;; XXX ‘DTLS is insecure in GnuTLS v3.6.3 through v3.6.12.’
-      ;; See <https://gitlab.com/gnutls/gnutls/-/issues/960>.
-      ("gnutls" ,gnutls/fixed)
+      ("gnutls" ,gnutls)
       ("zlib" ,zlib)))
    (inputs
     `(("lz4" ,lz4)
@@ -286,6 +285,34 @@ supported by the ASA5500 Series, by IOS 12.4(9)T or later on Cisco SR500,
 and probably others.")
    (license license:lgpl2.1)
    (home-page "https://www.infradead.org/openconnect/")))
+
+(define-public openfortivpn
+  (package
+    (name "openfortivpn")
+    (version "1.15.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/adrienverge/openfortivpn")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qsfgpxg553s8rc9cyrc4k96z0pislxsdxb9wyhp8fdprkak2mw2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autotools" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("ppp" ,ppp)))
+    (home-page "https://github.com/adrienverge/openfortivpn")
+    (synopsis "Client for PPP+SSL VPN tunnel services")
+    (description "Openfortivpn is a client for PPP+SSL VPN tunnel services.  It
+spawns a pppd process and operates the communication between the gateway and
+this process.  It is compatible with Fortinet VPNs.")
+    (license license:gpl3+)))
 
 (define-public openvpn
   (package

@@ -518,7 +518,7 @@ numbers.")
 (define-public sleef
   (package
     (name "sleef")
-    (version "3.4.1")
+    (version "3.5.1")
     (source
      (origin
        (method git-fetch)
@@ -527,7 +527,7 @@ numbers.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gvf7cfvszmgjrsqivwmyy1jnp3hy80dmszxx827lhjz8yqq5019"))))
+        (base32 "1jybqrl2dvjxzg30xrhh847s375n2jr1pix644wi6hb5wh5mx3f7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list "-DCMAKE_BUILD_TYPE=Release"
@@ -2211,13 +2211,13 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public veusz
   (package
     (name "veusz")
-    (version "3.2.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "veusz" version))
        (sha256
-        (base32 "00vmfpvyd6f33l5awlf02qdik3gmbhzyfizfwwbx7qnam2i9bbwy"))))
+        (base32 "1q7hi1qwwg4pgiz62isvv1pia85m13bspdpp1q3mrnwl11in0ag0"))))
     (build-system python-build-system)
     (arguments
      `(;; Tests will fail because they depend on optional packages like
@@ -4194,7 +4194,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "9.1.1")
+    (version "9.2.0")
     (source
      (origin
        (method url-fetch)
@@ -4202,7 +4202,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "0xhjv0gzswpjbc43xbrpwfc5848g508l01855nszx3g5gwzlhnzw"))
+         "0fm4xzrnb7dfn4415j24d8v3jkh0lssi86250x2f5wgi83xq4nnh"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -4986,6 +4986,58 @@ terminal do calculations simply and quickly.  The formula to be calculated can
 be fed to @command{tcalc} through the command line.")
   (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
   (license license:gpl3+)))
+
+(define-public tiny-bignum
+  (let ((commit "1d7a1f9b8e77316187a6b3eae8e68d60a6f9a4d4"))
+    (package
+     (name "tiny-bignum")
+     (version (git-version "0" "0" commit))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/kokke/tiny-bignum-c")
+              (commit commit)))
+        (file-name (git-file-name "tiny-bignum" commit))
+        (sha256
+         (base32 "0vj71qlhlaa7d92bfar1kwqv6582dqrby8x3kdw0yzh82k2023g6"))))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (delete 'configure)
+          (add-after 'unpack 'patch-tests
+            (lambda _
+              (substitute* "scripts/test_rand.py"
+                (("\t") "  ")
+                (("\" % (\\w+)" _ symbol) (string-append "\" % int(" symbol ")")))
+              #t))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "make" "test"))
+              #t))
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (doc (string-append (assoc-ref outputs "out") "/doc")))
+                (mkdir-p share)
+                (install-file "bn.c" share)
+                (install-file "bn.h" share)
+                (mkdir-p doc)
+                (install-file "LICENSE" doc)
+                (install-file "README.md" doc))
+              #t)))))
+     (native-inputs
+      `(("python" ,python-wrapper)))
+     (home-page "https://github.com/kokke/tiny-bignum-c")
+     (synopsis "Small portable multiple-precision unsigned integer arithmetic in C")
+     (description
+      "This library provides portable Arbitrary-precision unsigned integer
+arithmetic in C, for calculating with large numbers.  Basic arithmetic (+, -,
+*, /, %) and bitwise operations (&, |, ^. <<, >>) plus increments, decrements
+and comparisons are supported.")
+     (license license:unlicense))))
 
 (define-public sundials
   (package

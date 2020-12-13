@@ -38,6 +38,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
@@ -592,11 +593,21 @@ keys for controlling the audio volume.")
     (inputs
      `(("xfce4-panel" ,xfce4-panel)
        ("garcon" ,garcon)
+       ("gettext" ,gettext-minimal)
        ("exo" ,exo)
        ("gtk+" ,gtk+)
        ("libxfce4ui" ,libxfce4ui)))
     (arguments
-      `(#:tests? #f)) ; no tests
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-shell-script
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (string-append "panel-plugin/xfce4-popup-whiskermenu.in")
+               (("@CMAKE_INSTALL_FULL_BINDIR@")
+                (string-append (assoc-ref inputs "xfce4-panel") "/bin"))
+               (("gettext") (which "gettext")))
+             #t)))))
     (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-whiskermenu-plugin")
     (synopsis "Application menu panel plugin for Xfce")
     (description

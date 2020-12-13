@@ -399,22 +399,24 @@ denoting a specific output of a package."
                 'inferior-package->manifest-entry))
 
   (manifest
-   (map (match-lambda
-          (((? package? package) output)
-           (package->manifest-entry package output))
-          ((? package? package)
-           (package->manifest-entry package))
-          ((thing output)
-           (if inferiors-loaded?
-               ((inferior->entry) thing output)
-               (throw 'wrong-type-arg 'packages->manifest
-                      "Wrong package object: ~S" (list thing) (list thing))))
-          (thing
-           (if inferiors-loaded?
-               ((inferior->entry) thing)
-               (throw 'wrong-type-arg 'packages->manifest
-                      "Wrong package object: ~S" (list thing) (list thing)))))
-        packages)))
+   (delete-duplicates
+    (map (match-lambda
+           (((? package? package) output)
+            (package->manifest-entry package output))
+           ((? package? package)
+            (package->manifest-entry package))
+           ((thing output)
+            (if inferiors-loaded?
+                ((inferior->entry) thing output)
+                (throw 'wrong-type-arg 'packages->manifest
+                       "Wrong package object: ~S" (list thing) (list thing))))
+           (thing
+            (if inferiors-loaded?
+                ((inferior->entry) thing)
+                (throw 'wrong-type-arg 'packages->manifest
+                       "Wrong package object: ~S" (list thing) (list thing)))))
+         packages)
+    manifest-entry=?)))
 
 (define (manifest->gexp manifest)
   "Return a representation of MANIFEST as a gexp."
@@ -716,6 +718,12 @@ replace it."
     (manifest-pattern
       (name   (manifest-entry-name entry))
       (output (manifest-entry-output entry))))
+  (define manifest-entry-pair=?
+    (match-lambda*
+      (((m1a . m2a) (m1b . m2b))
+       (and (manifest-entry=? m1a m1b)
+            (manifest-entry=? m2a m2b)))
+      (_ #f)))
 
   (let loop ((input     (manifest-transaction-install transaction))
              (install   '())
@@ -724,8 +732,16 @@ replace it."
     (match input
       (()
        (let ((remove (manifest-transaction-remove transaction)))
-         (values (manifest-matching-entries manifest remove)
-                 (reverse install) (reverse upgrade) (reverse downgrade))))
+         (values (delete-duplicates
+                  (manifest-matching-entries manifest remove)
+                  manifest-entry=?)
+                 (delete-duplicates (reverse install) manifest-entry=?)
+                 (delete-duplicates
+                  (reverse upgrade)
+                  manifest-entry-pair=?)
+                 (delete-duplicates
+                  (reverse downgrade)
+                  manifest-entry-pair=?))))
       ((entry rest ...)
        ;; Check whether installing ENTRY corresponds to the installation of a
        ;; new package or to an upgrade.

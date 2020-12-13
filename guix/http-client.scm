@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -70,6 +70,7 @@
 
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
+                     (keep-alive? #f)
                      (verify-certificate? #t)
                      (headers '((user-agent . "GNU Guile")))
                      timeout)
@@ -78,6 +79,9 @@ bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
 unbuffered port, suitable for use in `filtered-port'.  HEADERS is an alist of
 extra HTTP headers.
+
+When KEEP-ALIVE? is true, the connection is marked as 'keep-alive' and PORT is
+not closed upon completion.
 
 When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
 
@@ -104,11 +108,7 @@ Raise an '&http-get-error' condition if downloading fails."
         (setvbuf port 'none))
       (let*-values (((resp data)
                      (http-get uri #:streaming? #t #:port port
-                               ;; XXX: When #:keep-alive? is true, if DATA is
-                               ;; a chunked-encoding port, closing DATA won't
-                               ;; close PORT, leading to a file descriptor
-                               ;; leak.
-                               #:keep-alive? #f
+                               #:keep-alive? keep-alive?
                                #:headers headers))
                     ((code)
                      (response-code resp)))

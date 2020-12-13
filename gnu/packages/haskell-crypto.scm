@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -837,4 +838,39 @@ implementation of SSL.")
     (synopsis "OpenSSL network support for io-streams")
     (description "This library contains io-streams routines for secure
 networking using OpenSSL (by way of HsOpenSSL).")
+    (license license:bsd-3)))
+
+(define-public ghc-cryptonite-conduit
+  (package
+    (name "ghc-cryptonite-conduit")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cryptonite-conduit/cryptonite-conduit-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1bldcmda4xh52mw1wfrjljv8crhw3al7v7kv1j0vidvr7ymnjpbh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1hh2nzfz4qpxgivfilgk4ll416lph8b2fdkzpzrmqfjglivydfmz")))
+    (home-page "https://github.com/haskell-crypto/cryptonite-conduit")
+    (synopsis "Cryptonite bridge for conduit")
+    (description "This package provides conduit interfaces for some of
+cryptonite's implementations of cryptographic primitives.")
     (license license:bsd-3)))

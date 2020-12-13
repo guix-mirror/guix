@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1258,7 +1259,7 @@ avoid any issues with characters.")
 (define-public ghc-yesod-core
   (package
     (name "ghc-yesod-core")
-    (version "1.6.16.1")
+    (version "1.6.17.2")
     (source
      (origin
        (method url-fetch)
@@ -1267,7 +1268,7 @@ avoid any issues with characters.")
                            "yesod-core-" version ".tar.gz"))
        (sha256
         (base32
-         "0a0yv7wkwvb0n6iia532y9nzrirgnm09pjc8hpm0lx4ff609pgd2"))))
+         "0rcfksbxnwcpg5qh9vjkddv39q95mx4nxzgix51bbwa128hhzcwf"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-wai" ,ghc-wai)
               ("ghc-extra" ,ghc-extra)
@@ -2024,3 +2025,248 @@ Bower's package manifest file, bower.json.")
 Authoring and Versioning (WebDAV) extensions to HTTP as well an executable,
 @command{hdav}, for command-line operation.")
     (license license:gpl3)))
+
+(define-public ghc-yesod-test
+  (package
+    (name "ghc-yesod-test")
+    (version "1.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-test/yesod-test-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v25lqq7hgd5lggnyfd9kamkzd4126rd7vlhc131n253n4by4yak"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-hspec-core" ,ghc-hspec-core)
+       ("ghc-html-conduit" ,ghc-html-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-network" ,ghc-network)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-xml-types" ,ghc-xml-types)
+       ("ghc-yesod-core" ,ghc-yesod-core)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Integration testing for WAI/Yesod Applications")
+    (description "This package's main goal is to encourage integration
+and system testing of web applications by making everything easy to
+test.  Tests are like browser sessions that keep track of cookies and
+the last visited page.  You can perform assertions on the content of
+HTML responses using CSS selectors.")
+    (license license:expat)))
+
+(define-public ghc-wai-app-static
+  (package
+    (name "ghc-wai-app-static")
+    (version "3.1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-app-static/wai-app-static-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "10k6jb450p89r6dgpnwh428gg0wfw2qbx9n126jkvbchcjr1f4v8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-http-date" ,ghc-http-date)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-mime-types" ,ghc-mime-types)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-warp" ,ghc-warp)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-network" ,ghc-network)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-mockery" ,ghc-mockery)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "0bkmml30rzifvb7nxddj3pxczk0kniahra19mjn0qrkzy1n5752p")))
+    (home-page "https://www.yesodweb.com/book/web-application-interface")
+    (synopsis "WAI application for static serving")
+    (description "This package provides a Web Application
+Interface (WAI) application for static serving.  It also provides some
+helper functions and datatypes for use outside of WAI.")
+    (license license:expat)))
+
+(define-public ghc-hjsmin
+  (package
+    (name "ghc-hjsmin")
+    (version "0.2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hjsmin/hjsmin-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r2p5rjdjr25j3w4s57q5hxw2c3ymw12x7ms18yvglnq2ivr9fc1"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dist-directory-for-tests
+           (lambda _
+             (substitute* '("test/test-cli.hs" "test/cli/core/runner")
+               (("dist-newstyle") "dist")))))))
+    (inputs
+     `(("ghc-language-javascript" ,ghc-language-javascript)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-extra" ,ghc-extra)))
+    (home-page "https://github.com/erikd/hjsmin")
+    (synopsis "Haskell implementation of a JavaScript minifier")
+    (description "This library provides tools reduce the size of
+JavaScript files by stripping out extraneous whitespace and other
+syntactic elements, without changing the semantics.")
+    (license license:bsd-3)))
+
+(define-public ghc-yesod-static
+  (package
+    (name "ghc-yesod-static")
+    (version "1.6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-static/yesod-static-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jd0ryfr2vyrwasyvbqmc6j4ngv1lgz78w427f169l7gyl1firxb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-cryptonite-conduit" ,ghc-cryptonite-conduit)
+       ("ghc-css-text" ,ghc-css-text)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-hjsmin" ,ghc-hjsmin)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-mime-types" ,ghc-mime-types)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-app-static" ,ghc-wai-app-static)
+       ("ghc-yesod-core" ,ghc-yesod-core)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-yesod-test" ,ghc-yesod-test)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-rio" ,ghc-rio)))
+    (home-page "https://www.yesodweb.com/")
+    (synopsis "Static file serving subsite for Yesod")
+    (description "This package provides a static file serving subsite
+for the Yesod Web Framework.")
+    (license license:expat)))
+
+(define-public ghc-wai-handler-launch
+  (package
+    (name "ghc-wai-handler-launch")
+    (version "3.0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-handler-launch/wai-handler-launch-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1ifqgyc1ccig5angh5l1iq7vyms4lvi8wzvysg5dw82nml49n02m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-async" ,ghc-async)))
+    (home-page "https://hackage.haskell.org/package/wai-handler-launch")
+    (synopsis "Launch a Web application in the default browser")
+    (description "This package handles cross-platform Web browser
+launching and inserts JavaScript code to ping the server.  When the
+server no longer receives pings, it shuts down.")
+    (license license:expat)))
+
+(define-public ghc-wai-cors
+  (package
+    (name "ghc-wai-cors")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "wai-cors/wai-cors-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10gv3jjlkcb13031frr818p56v2s0qf6dqjsfpwlhwdxdssvx5r5"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; As of version 0.2.7, there are two test suites: "unit-tests"
+         ;; and "phantomjs".  Since we do not have a PhantomJS package,
+         ;; we only run the unit tests.
+         (replace 'check
+           (lambda _
+             (invoke "runhaskell" "Setup.hs" "test" "unit-tests"))))))
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base-unicode-symbols" ,ghc-base-unicode-symbols)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-wai" ,ghc-wai)))
+    (native-inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-wai-websockets" ,ghc-wai-websockets)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-websockets" ,ghc-websockets)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-wai-websockets" ,ghc-wai-websockets)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-websockets" ,ghc-websockets)))
+    (home-page "https://github.com/larskuhtz/wai-cors")
+    (synopsis "Cross-Origin Resource Sharing (CORS) for WAI")
+    (description "This package provides an implemenation of Cross-Origin
+Resource Sharing (CORS) for the Web Application Framework (WAI) that
+aims to be compliant with @url{https://www.w3.org/TR/cors}.")
+    (license license:expat)))

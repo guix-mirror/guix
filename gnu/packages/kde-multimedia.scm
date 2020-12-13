@@ -695,7 +695,7 @@ Its features include:
        ("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f)) ; Most tests require network
-    (home-page "https://cgit.kde.org/libkcddb.git")
+    (home-page "https://invent.kde.org/multimedia/libkcddb")
     (synopsis "CDDB library for KDE Platform (runtime)")
     (description "A library for retrieving and sending cddb information.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
@@ -722,7 +722,7 @@ Its features include:
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
        ("solid" ,solid)))
-    (home-page "https://cgit.kde.org/libkcompactdisc.git/")
+    (home-page "https://invent.kde.org/multimedia/libkcompactdisc")
     (synopsis "KDE library for playing & ripping CDs")
     (description "The KDE Compact Disc library provides an API for
 applications using the KDE Platform to interface with the CD drives for audio

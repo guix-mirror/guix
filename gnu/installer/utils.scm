@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer utils)
+  #:use-module (gnu services herd)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix i18n)
@@ -43,7 +44,9 @@
             with-server-socket
             current-server-socket
             current-clients
-            send-to-clients))
+            send-to-clients
+
+            with-silent-shepherd))
 
 (define* (read-lines #:optional (port (current-input-port)))
   "Read lines from PORT and return them as a list."
@@ -233,3 +236,9 @@ accepting socket."
 
   (current-clients (reverse remainder))
   exp)
+
+(define-syntax-rule (with-silent-shepherd exp ...)
+  "Evaluate EXP while discarding shepherd messages."
+  (parameterize ((shepherd-message-port
+                  (%make-void-port "w")))
+    exp ...))

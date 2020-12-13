@@ -1568,6 +1568,27 @@ proxy of 'guix-daemon'...~%")
                     (environ environment)
                     #t)))))
 
+(define shepherd-discover-action
+  ;; Shepherd action to enable or disable substitute servers discovery.
+  (shepherd-action
+   (name 'discover)
+   (documentation
+    "Enable or disable substitute servers discovery and restart the
+'guix-daemon'.")
+   (procedure #~(lambda* (_ status)
+                  (let ((environment (environ)))
+                    (if (and status
+                             (string=? status "on"))
+                        (begin
+                          (format #t "enable substitute servers discovery~%")
+                          (setenv "discover" "on"))
+                        (begin
+                          (format #t "disable substitute servers discovery~%")
+                          (unsetenv "discover")))
+                    (action 'guix-daemon 'restart)
+                    (environ environment)
+                    #t)))))
+
 (define (guix-shepherd-service config)
   "Return a <shepherd-service> for the Guix daemon service with CONFIG."
   (match-record config <guix-configuration>
@@ -1579,7 +1600,8 @@ proxy of 'guix-daemon'...~%")
            (documentation "Run the Guix daemon.")
            (provision '(guix-daemon))
            (requirement '(user-processes))
-           (actions (list shepherd-set-http-proxy-action))
+           (actions (list shepherd-set-http-proxy-action
+                          shepherd-discover-action))
            (modules '((srfi srfi-1)
                       (ice-9 match)
                       (gnu build shepherd)))
@@ -1593,6 +1615,9 @@ proxy of 'guix-daemon'...~%")
                     ;; HTTP/HTTPS proxy.  The 'http_proxy' variable is set by
                     ;; the 'set-http-proxy' action.
                     (or (getenv "http_proxy") #$http-proxy))
+
+                  (define discover?
+                    (or (getenv "discover") #$discover?))
 
                   ;; Start the guix-daemon from a container, when supported,
                   ;; to solve an installation issue. See the comment below for
@@ -1608,9 +1633,8 @@ proxy of 'guix-daemon'...~%")
                           #$@(if use-substitutes?
                                  '()
                                  '("--no-substitutes"))
-                          #$@(if discover?
-                                 '("--discover=yes")
-                                 '())
+                          (string-append "--discover="
+                                         (if discover? "yes" "no"))
                           "--substitute-urls" #$(string-join substitute-urls)
                           #$@extra-options
 
@@ -1801,7 +1825,9 @@ raise a deprecation warning if the 'compression-level' field was used."
           advertise?)
     (list (shepherd-service
            (provision '(guix-publish))
-           (requirement '(guix-daemon))
+           (requirement `(user-processes
+                          guix-daemon
+                          ,@(if advertise? '(avahi-daemon) '())))
            (start #~(make-forkexec-constructor
                      (list #$(file-append guix "/bin/guix")
                            "publish" "-u" "guix-publish"

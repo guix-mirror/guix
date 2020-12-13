@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -511,6 +512,35 @@ way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
 
+(define-public go-github-com-aws-sdk
+  (package
+    (name "go-github-com-aws-sdk")
+    (version "1.35.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aws/aws-sdk-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ky5lw2s2zpslnnqcs6hgsrwvwbxwgflb5jwf16dd4aga3vrg10c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/aws/aws-sdk-go/aws"
+       #:unpack-path "github.com/aws/aws-sdk-go"))
+    (propagated-inputs
+     `(("go-github-com-go-sql-driver-mysql" ,go-github-com-go-sql-driver-mysql)
+       ("go-github-com-jmespath-go-jmespath" ,go-github-com-jmespath-go-jmespath)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/aws/aws-sdk-go")
+    (synopsis "Library to access Amazon Web Services (AWS)")
+    (description
+     "This is the official AWS SDK for the Go programming language.")
+    (license license:asl2.0)))
+
 (define-public go-gopkg.in-tomb.v2
   (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
         (revision "0"))
@@ -544,6 +574,32 @@ way of specifying command line options.")
 termination.")
       (home-page "https://gopkg.in/tomb.v2")
       (license license:bsd-3))))
+
+(define-public go-gopkg-in-natefinch-lumberjack.v2
+  (package
+    (name "go-gopkg-in-natefinch-lumberjack.v2")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/natefinch/lumberjack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1l3vlv72b7rfkpy1164kwd3qzrqmmjnb67akzxqp2mlvc66k6p3d"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/natefinch/lumberjack.v2"))
+    (propagated-inputs
+     `(("github.com/burntsush/toml" ,go-github-com-burntsushi-toml)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/natefinch/lumberjack")
+    (synopsis "Rolling logger for Go")
+    (description
+     "Lumberjack is a Go package for writing logs to rolling files.")
+    (license license:expat)))
 
 (define-public go-github.com-jtolds-gls
   (package
@@ -1307,30 +1363,106 @@ values for the purpose of fuzz testing.")
       (license license:bsd-3))))
 
 (define-public go-github-com-gorilla-mux
-  (let ((commit "599cba5e7b6137d46ddf58fb1765f5d928e69604")
-        (revision "0"))
-    (package
-      (name "go-github-com-gorilla-mux")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/gorilla/mux")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0wd6jjii1kg5s0nk3ri6gqriz6hbd6bbcn6x4jf8n7ncrb8qsxyz"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/gorilla/mux"))
-      (home-page "https://github.com/gorilla/mux")
-      (synopsis "URL router and dispatcher for Go")
-      (description
-       "Gorilla/Mux implements a request router and dispatcher for matching
+  (package
+    (name "go-github-com-gorilla-mux")
+    (version "1.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorilla/mux")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18f0q9qxgq1yh4ji07mqhiydfcwvi56z9d775v7dc7yckj33kpdk"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/gorilla/mux"))
+    (home-page "https://github.com/gorilla/mux")
+    (synopsis "URL router and dispatcher for Go")
+    (description
+     "Gorilla/Mux implements a request router and dispatcher for matching
 incoming requests with their respective handler.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
+
+(define-public go-github-com-gorilla-handlers
+  (package
+    (name "go-github-com-gorilla-handlers")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorilla/handlers")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15gycdz9lkjnsvvichsbdf25vf6pi1sfn41khhz53iqf300l0w0s"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("github.com/felixge/httpsnoop" ,go-github-com-felixge-httpsnoop)))
+    (arguments
+     '(#:tests? #f                      ; Tries to download from the internet
+       #:import-path "github.com/gorilla/handlers"))
+    (home-page "https://github.com/gorilla/handlers")
+    (synopsis "Middleware for Go HTTP services and web applications")
+    (description "A collection of useful middleware for Go HTTP services
+and web applications.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-gorilla-securecookie
+  (package
+    (name "go-github-com-gorilla-securecookie")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorilla/securecookie")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16bqimpxs9vj5n59vm04y04v665l7jh0sddxn787pfafyxcmh410"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/gorilla/securecookie"))
+    (home-page "https://github.com/gorilla/securecookie")
+    (synopsis "Encodes and decodes authenticated and optionally encrypted
+cookie values")
+    (description
+     "Gorilla/securecookie encodes and decodes authenticated and optionally
+encrypted cookie values for Go web applications.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-gorilla-csrf
+  (package
+    (name "go-github-com-gorilla-csrf")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorilla/csrf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0iryq0z48yi7crfbd8jxyn7lh1gsglpiglvjgnf23bz6xfisssav"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("github.com/gorilla/securecookie" ,go-github-com-gorilla-securecookie)
+       ("github.com/pkg/errors" ,go-github-com-pkg-errors)))
+    (arguments
+     '(#:import-path "github.com/gorilla/csrf"))
+    (home-page "https://github.com/gorilla/csrf")
+    (synopsis "Cross Site Request Forgery (CSRF) prevention middleware")
+    (description
+     "Gorilla/csrf provides Cross Site Request Forgery (CSRF) prevention
+middleware for Go web applications and services.")
+    (license license:bsd-3)))
 
 (define-public go-github-com-jonboulle-clockwork
   (let ((commit "e3653ace2d63753697e0e5b07b9393971c0bba9d")
@@ -1522,6 +1654,31 @@ GNU extensions} to the POSIX recommendations for command-line options.")
      "Viper is a complete configuration solution for Go applications including
 12-Factor apps.  It is designed to work within an application, and can handle
 all types of configuration needs and formats.")
+    (license license:expat)))
+
+(define-public go-github-com-felixge-httpsnoop
+  (package
+    (name "go-github-com-felixge-httpsnoop")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/felixge/httpsnoop")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ncd8lar5zxiwjhsp315s4hsl4bhnm271h49jhyxc66r5yffgmac"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/felixge/httpsnoop"))
+    (home-page "https://github.com/felixge/httpsnoop/")
+    (synopsis "Capture http related metrics")
+    (description
+     "Httpsnoop provides an easy way to capture http related
+metrics (i.e. response time, bytes written, and http status code) from your
+application's http.Handlers.")
     (license license:expat)))
 
 (define-public go-github-com-fsnotify-fsnotify
@@ -3454,6 +3611,31 @@ without requiring a real database connection.")
       (home-page "https://github.com/DATA-DOG/go-sqlmock")
       (license license:expat))))
 
+(define-public go-github-com-go-sql-driver-mysql
+  (package
+    (name "go-github-com-go-sql-driver-mysql")
+    (version "1.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-sql-driver/mysql")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11x0m9yf3kdnf6981182r824psgxwfaqhn3x3in4yiidp0w0hk3v"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:tests? #f ;; tests require a network connection
+       #:import-path "github.com/go-sql-driver/mysql"))
+    (home-page "https://github.com/go-sql-driver/mysql")
+    (synopsis "MySQL driver for golang")
+    (description
+     "This is a pure Go implementaton of the MySQL API, compatible with
+golang's database/sql package.")
+    (license license:mpl2.0)))
+
 (define-public go-golang-org-colorful
   (package
     (name "go-golang-org-colorful")
@@ -4975,6 +5157,34 @@ the parse trees produced by the html package.")
     (description "@code{goquery} brings a syntax and a set of features similar
 to jQuery to the Go language.")
     (license license:bsd-3)))
+
+(define-public go-github-com-jmespath-go-jmespath
+  (package
+    (name "go-github-com-jmespath-go-jmespath")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmespath/go-jmespath")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18zyr9nlywmwp3wpzcjxrgq9s9d2mmc6zg6xhsna00m663nkyc3n"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jmespath/go-jmespath"))
+    (native-inputs
+     `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)
+       ("go-github-com-pmezard-go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("go-gopkg-in-yaml-v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/jmespath/go-jmespath")
+    (synopsis "Golang implementation of JMESPath")
+    (description
+     "This package implements JMESPath, a query language for JSON.  It
+transforms one JSON document into another through a JMESPath expression.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-aymerick-douceur
   (package

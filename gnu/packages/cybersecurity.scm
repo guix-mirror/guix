@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +27,13 @@
 (define-public ropgadget
   (package
     (name "ropgadget")
-    (version "6.3")
+    (version "6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ROPGadget" version))
        (sha256
-        (base32 "0v34w88if3p4vn46aby24msfnxj6znmkf4848n4d24jnykxcsqk9"))))
+        (base32 "1hz6y5a8d4gc2sryz5alpz9mivrk8kj4l3dw00zkz2xca7gwpmsi"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-capstone" ,python-capstone)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
         (modules '((gnu build shepherd)))
         (start #~(lambda _
                    (invoke #$(file-append pcsc-lite "/sbin/pcscd"))
-                   (call-with-input-file "/var/run/pcscd/pcscd.pid" read)))
+                   (call-with-input-file "/run/pcscd/pcscd.pid" read)))
         (stop #~(make-kill-destructor)))))))
 
 (define pcscd-activation

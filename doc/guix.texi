@@ -1606,6 +1606,14 @@ Servers may serve substitute over HTTP, unencrypted, so anyone on the
 LAN can see what software you’re installing.
 @end enumerate
 
+It is also possible to enable or disable substitute server discovery at
+run-time by running:
+
+@example
+herd discover guix-daemon on
+herd discover guix-daemon off
+@end example
+
 @item --disable-deduplication
 @cindex deduplication
 Disable automatic file ``deduplication'' in the store.
@@ -2383,9 +2391,9 @@ bootloaders.
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
-Guix System only supports ext4, btrfs, and JFS file systems.  In particular,
-code that reads file system UUIDs and labels only works for these file system
-types.}.  For the ESP, if you have one and assuming it is
+Guix System only supports ext4, btrfs, JFS, and F2FS file systems.  In
+particular, code that reads file system UUIDs and labels only works for these
+file system types.}.  For the ESP, if you have one and assuming it is
 @file{/dev/sda1}, run:
 
 @example
@@ -2778,7 +2786,7 @@ the command prints and, similar to what we saw above, paste these two
 lines in your terminal and @file{.bash_profile}:
 
 @example
-GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+GUIX_PROFILE="$HOME/.config/guix/current"
 . "$GUIX_PROFILE/etc/profile"
 @end example
 
@@ -11283,6 +11291,25 @@ in Guix.
 @cindex OCaml
 Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
 repository used by the OCaml community.
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@item --repo
+Select the given repository (a repository name).  Possible values include:
+@itemize
+@item @code{opam}, the default opam repository,
+@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
+@item @code{coq-core-dev}, the repository that contains development versions of coq,
+@item @code{coq-extra-dev}, the repository that contains development versions
+      of coq packages.
+@end itemize
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -15326,6 +15353,14 @@ The TCP port to listen for connections.
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
 
+@item @code{advertise?} (default: @code{#f})
+When true, advertise the service on the local network @i{via} the DNS-SD
+protocol, using Avahi.
+
+This allows neighboring Guix devices with discovery on (see
+@code{guix-configuration} above) to discover this @command{guix publish}
+instance and to automatically download substitutes from it.
+
 @item @code{compression} (default: @code{'(("gzip" 3))})
 This is a list of compression method/level tuple used when compressing
 substitutes.  For example, to compress all substitutes with @emph{both} lzip
@@ -18555,6 +18590,12 @@ This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password.
+
+Note that @code{xfce4-panel} and its plugin packages should be installed in
+the same profile to ensure compatibility.  When using this service, you should
+add extra plugins (@code{xfce4-whiskermenu-plugin},
+@code{xfce4-weather-plugin}, etc.) to the @code{packages} field of your
+@code{operating-system}.
 @end defvr
 
 @deftp {Data Type} xfce-desktop-configuration
@@ -22021,13 +22062,10 @@ where monitoring these statistics is desirable.
 @defvar {Scheme variable} prometheus-node-exporter-service-type
 This is the service type for the
 @uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
-service, its value must be a @code{prometheus-node-exporter-configuration}
-record as in this example:
+service, its value must be a @code{prometheus-node-exporter-configuration}.
 
 @lisp
-(service prometheus-node-exporter-service-type
-         (prometheus-node-exporter-configuration
-           (web-listen-address ":9100")))
+(service prometheus-node-exporter-service-type)
 @end lisp
 @end defvar
 
@@ -22040,6 +22078,14 @@ The prometheus-node-exporter package to use.
 
 @item @code{web-listen-address} (default: @code{":9100"})
 Bind the web interface to the specified address.
+
+@item @code{textfile-directory} (default: @code{"/var/lib/prometheus/node-exporter"})
+This directory can be used to export metrics specific to this machine.
+Files containing metrics in the text format, with the filename ending in
+@code{.prom} should be placed in this directory.
+
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass to the Prometheus node exporter.
 
 @end table
 @end deftp
@@ -25675,6 +25721,9 @@ Owner's group of the @code{cuirass} process.
 @item @code{interval} (default: @code{60})
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
+
+@item @code{queue-size} (default: @code{1})
+Size of the database writer queue.
 
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
@@ -32789,10 +32838,15 @@ Bootstrapping in our context refers to how the distribution gets built
 ``from nothing''.  Remember that the build environment of a derivation
 contains nothing but its declared inputs (@pxref{Introduction}).  So
 there's an obvious chicken-and-egg problem: how does the first package
-get built?  How does the first compiler get compiled?  Note that this is
-a question of interest only to the curious hacker, not to the regular
-user, so you can shamelessly skip this section if you consider yourself
-a ``regular user''.
+get built?  How does the first compiler get compiled?
+
+It is tempting to think of this question as one that only die-hard
+hackers may care about.  However, while the answer to that question is
+technical in nature, its implications are wide-ranging.  How the
+distribution is bootstrapped defines the extent to which we, as
+individuals and as a collective of users and hackers, can trust the
+software we run.  It is a central concern from the standpoint of
+@emph{security} and from a @emph{user freedom} viewpoint.
 
 @cindex bootstrap binaries
 The GNU system is primarily made of C code, with libc at its core.  The

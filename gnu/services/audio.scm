@@ -163,7 +163,11 @@ audio_output {
 
         (let ((directory #$(mpd-file-name config ".mpd")))
           (mkdir-p directory)
-          (chown directory (passwd:uid %user) (passwd:gid %user))))))
+          (chown directory (passwd:uid %user) (passwd:gid %user))
+
+          ;; Make /var/run/mpd/USER user-owned as well.
+          (chown (dirname directory)
+                 (passwd:uid %user) (passwd:gid %user))))))
 
 
 (define %mpd-accounts

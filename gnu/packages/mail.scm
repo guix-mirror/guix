@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -444,7 +445,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -454,7 +455,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "1j0i2jmlk5sc78af9flj3ynj0iiwa8biw7jgf12qm5lppsx1h4j7"))
+               "1vf1ab3mnx7p4s4n4pssajj211s3zr4730bwgsjx9gxcnyppqclw"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1700,7 +1701,13 @@ delivery.")
                  (("(ZCAT_COMMAND=).*" all var)
                   (string-append var gzip "/bin/zcat\n"))
                  (("# (USE_GNUTLS(|_PC)=.*)" all line)
-                  (string-append line "\n")))
+                  (string-append line "\n"))
+                 (("# (AUTH_CRAM_MD5=yes)" all line) line)
+                 (("# (AUTH_DOVECOT=yes)" all line) line)
+                 (("# (AUTH_EXTERNAL=yes)" all line) line)
+                 (("# (AUTH_PLAINTEXT=yes)" all line) line)
+                 (("# (AUTH_SPA=yes)" all line) line)
+                 (("# (AUTH_TLS=yes)" all line) line))
                ;; This file has hard-coded relative file names for tools despite
                ;; the zcat configuration above.
                (substitute* '("src/exigrep.src")
@@ -1993,7 +2000,7 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
     (inputs
      `(("bdb" ,bdb)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl-1.0)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://isync.sourceforge.io/")
     (synopsis "Mailbox synchronization program")
@@ -3746,7 +3753,7 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.7.4")
+    (version "2.7.5")
     (source
      (origin
        (method git-fetch)
@@ -3755,7 +3762,7 @@ PGP handling, multiple servers, and secure connections.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nb0ysdp91r6dr3jgx24halbf4f56g4imx9112hkbz1abzgrmxs3"))))
+        (base32 "0a7f85r3axwclzw1s79zl2l8222nj2gklvvq33w9qv0dz5n71dcx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

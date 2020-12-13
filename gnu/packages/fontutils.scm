@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -73,14 +73,14 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.10.1")
-   (replacement freetype/fixed)
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://savannah/freetype/freetype-"
-                                version ".tar.xz"))
-            (sha256 (base32
-                     "0vx2dg1jh5kq34dd6ifpjywkpapp8a7p1bvyq9yq5zi1i94gmnqn"))))
+   (version "2.10.4")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://savannah/freetype/freetype-"
+                          version ".tar.xz"))
+      (sha256
+       (base32 "112pyy215chg7f7fmp2l9374chhhpihbh8wgpj5nj6avj3c59a46"))))
    (build-system gnu-build-system)
    (arguments
     ;; The use of "freetype-config" is deprecated, but other packages still
@@ -102,19 +102,6 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
-
-(define freetype/fixed
-  ;; Security fix for CVE-2020-15999.
-  (package
-    (inherit freetype)
-    (version "2.10.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://savannah/freetype/freetype-"
-                           version ".tar.xz"))
-       (sha256
-        (base32 "112pyy215chg7f7fmp2l9374chhhpihbh8wgpj5nj6avj3c59a46"))))))
 
 (define-public ttfautohint
   (package
@@ -331,12 +318,6 @@ Font Format (WOFF).")
 (define-public fontconfig
   (package
    (name "fontconfig")
-
-   ;; This replacement is not security-related, but works around the fact
-   ;; that gs-fonts are not recognized by newer versions of Pango, causing
-   ;; many applications to fail to find fonts otherwise.
-   (replacement fontconfig/font-dejavu)
-
    (version "2.13.1")
    (source (origin
             (method url-fetch)
@@ -351,16 +332,19 @@ Font Format (WOFF).")
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)
                         ("libuuid" ,util-linux "lib")))
-   (inputs `(("gs-fonts" ,gs-fonts)))
+   (inputs
+    ;; We use to use 'gs-fonts' but they are not recognized by newer versions
+    ;; of Pango, causing many applications to fail to find fonts otherwise.
+    `(("font-dejavu" ,font-dejavu)))
    (native-inputs
     `(("gperf" ,gperf)
       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags
       (list "--with-cache-dir=/var/cache/fontconfig"
-            ;; register gs-fonts as default fonts
+            ;; register the default fonts
             (string-append "--with-default-fonts="
-                           (assoc-ref %build-inputs "gs-fonts")
+                           (assoc-ref %build-inputs "font-dejavu")
                            "/share/fonts")
 
             ;; Register fonts from user and system profiles.
@@ -392,13 +376,6 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
-
-(define fontconfig/font-dejavu
-  (package
-    (inherit fontconfig)
-    (inputs
-     ;; XXX: Reuse the name to avoid having to override the configure flags.
-     `(("gs-fonts" ,font-dejavu)))))
 
 (define-public t1lib
   (package
@@ -575,16 +552,15 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "20190731")
-    (replacement libspiro-20200505)
+    (version "20200505")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/fontforge/libspiro/releases"
-                          "/download/" version "/libspiro-" version ".tar.gz"))
+                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
-        "0m63x97b7aciviijprvy85gm03p2jsgslxn323zl9zn7qz6d3ir4"))))
+        "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -594,19 +570,6 @@ using the above tables.")
 smooth contours with constant curvature at the spline joins.")
     (license license:gpl2+)
     (home-page "http://libspiro.sourceforge.net/")))
-
-(define libspiro-20200505
-  (package
-    (inherit libspiro)
-    (version "20200505")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/fontforge/libspiro/releases"
-                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
-      (sha256
-       (base32
-        "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))))
 
 (define-public libuninameslist
   (package

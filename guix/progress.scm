@@ -337,9 +337,10 @@ should be a <progress-reporter> object."
               (report total)
               (loop total (get-bytevector-n! in buffer 0 buffer-size))))))))
 
-(define (progress-report-port reporter port)
+(define* (progress-report-port reporter port #:key (close? #t))
   "Return a port that continuously reports the bytes read from PORT using
-REPORTER, which should be a <progress-reporter> object."
+REPORTER, which should be a <progress-reporter> object.  When CLOSE? is true,
+PORT is closed when the returned port is closed."
   (match reporter
     (($ <progress-reporter> start report stop)
      (let* ((total 0)
@@ -364,5 +365,6 @@ REPORTER, which should be a <progress-reporter> object."
                                         ;; trace.
                                         (unless (zero? total)
                                           (stop))
-                                        (close-port port)))))))
+                                        (when close?
+                                          (close-port port))))))))
 

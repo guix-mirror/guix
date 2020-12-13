@@ -370,6 +370,7 @@ data types.")
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
+                        "python-CVE-2020-26116.patch"
                         "python-3-fix-tests.patch"
                         "python-3.8-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"

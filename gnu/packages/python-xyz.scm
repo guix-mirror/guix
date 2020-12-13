@@ -719,18 +719,6 @@ etc. ")
 (define-public python2-babel
   (package-with-python2 python-babel))
 
-;; Sphinx < 2.0 requires this version.  Remove once no longer needed.
-(define-public python2-babel-2.6
-  (package
-    (inherit python2-babel)
-    (version "2.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "Babel" version))
-              (sha256
-               (base32
-                "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))))
-
 (define-public python2-backport-ssl-match-hostname
   (package
     (name "python2-backport-ssl-match-hostname")
@@ -2184,14 +2172,14 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse
   (package
     (name "python-parse")
-    (version "1.8.4")
+    (version "1.18.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "0f8997xr8nq2nq35iiviq8ningd1zvy59fg503xfpbi2dwhgdkf3"))))
+        "19063x4xdjpaf7rfxai6jpgm2k4yvkq7wha8aa8cagbjsqr60rli"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -8813,13 +8801,13 @@ third-party code.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.6")
+    (version "1.3.8")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "llfuse" version ".tar.bz2"))
+              (uri (pypi-uri "llfuse" version))
               (sha256
                (base32
-                "1j9fzxpgmb4rxxyl9jcf84zvznhgi3hnh4hg5vb0qaslxkvng8ii"))))
+                "1g2cdhdqrb6m7655qp61pn61pwj1ql61cdzhr2jvl3w4i8877ddr"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -8837,22 +8825,6 @@ third-party code.")
   (package (inherit (package-with-python2
                  (strip-python2-variant python-llfuse)))
     (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
-
-;; For attic-0.16
-(define-public python-llfuse-0.41
-  (package (inherit python-llfuse)
-    (version "0.41.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
-                    "llfuse-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1imlqw9b73086y97izr036f58pgc5akv4ihc2rrf8j5h75jbrlaa"))))
-    ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
-    ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
-    (license (list license:expat license:lgpl2.0+))))
 
 (define-public python-msgpack
   (package

@@ -44,7 +44,7 @@
   (let ((userns-file "/proc/sys/kernel/unprivileged_userns_clone"))
     (if (file-exists? userns-file)
         (eqv? #\1 (call-with-input-file userns-file read-char))
-        #f)))
+        #t)))
 
 (define (setgroups-supported?)
   "Return #t if the setgroups proc file, introduced in Linux-libre 3.19,

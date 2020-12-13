@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
+;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2189,14 +2190,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.29")
+    (version "2020.12.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "10px5wnsjw4lzdh75810q4sjbhnd7cjxwpa3crapd3yj0f3bwa76"))))
+                "0iv4l78ylzx8q6myv4v7xq6r5y0hacz6l30bqk1szncfikvfc3cf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -4637,7 +4638,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
       (origin
         (method url-fetch)
@@ -4646,17 +4647,18 @@ result in several formats:
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "053bh8hc6jj81ydq4gcak01b0ady59hvkl7d87im3y8nafg7xzb4"))))
+          "1mx6jlx2rdhmyh68h9h34kn9ssa7lv0y97j8fd9qm7qhs2q1n0cj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-aom-sys" ,rust-aom-sys-0.1)
+       (("rust-aom-sys" ,rust-aom-sys-0.2)
         ("rust-arbitrary" ,rust-arbitrary-0.2)
         ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
         ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-cc" ,rust-cc-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.11)
@@ -4668,6 +4670,7 @@ result in several formats:
         ("rust-ivf" ,rust-ivf-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
+        ("rust-nasm-rs" ,rust-nasm-rs-0.2)
         ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.2)
         ("rust-num-derive" ,rust-num-derive-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
@@ -4676,17 +4679,15 @@ result in several formats:
         ("rust-rand-chacha" ,rust-rand-chacha-0.2)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-scan-fmt" ,rust-scan-fmt-0.2)
         ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-y4m" ,rust-y4m-0.5)
-        ("rust-cc" ,rust-cc-1)
-        ("rust-nasm-rs" ,rust-nasm-rs-0.1)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-vergen" ,rust-vergen-3.1))
+        ("rust-vergen" ,rust-vergen-3.1)
+        ("rust-y4m" ,rust-y4m-0.5))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
         ("rust-criterion" ,rust-criterion-0.3)
