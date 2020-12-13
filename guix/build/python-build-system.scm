@@ -30,6 +30,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -274,7 +275,7 @@ by Cython."
       (let ((generated-file
               (string-append (string-drop-right file 3) "c")))
         (when (file-exists? generated-file)
-          (warning (G_ "Possible Cythonized file found: ~a~%") generated-file))))
+          (format #t "Possible Cythonized file found: ~a~%" generated-file))))
     (find-files "." "\\.pyx$"))
   #t)
 
