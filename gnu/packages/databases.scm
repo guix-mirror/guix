@@ -1173,17 +1173,17 @@ developed in C/C++ to MariaDB and MySQL databases.")
     (license license:lgpl2.1+)))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
-(define-public postgresql
+(define-public postgresql-13
   (package
     (name "postgresql")
-    (version "10.13")
+    (version "13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))
+                "07z6zwr58dckaa97yl9ml240z83d1lhgaxw9aq49i8lsp21mqd0j"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1219,45 +1219,44 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
-(define-public postgresql-10 postgresql)
-
-(define-public postgresql-13
-  (package
-    (inherit postgresql)
-    (version "13.1")
-    (source (origin
-              (inherit (package-source postgresql))
-              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
-                                  version "/postgresql-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "07z6zwr58dckaa97yl9ml240z83d1lhgaxw9aq49i8lsp21mqd0j"))))))
-
 (define-public postgresql-11
   (package
-    (inherit postgresql)
+    (inherit postgresql-13)
     (name "postgresql")
     (version "11.6")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
+(define-public postgresql-10
+  (package
+    (inherit postgresql-11)
+    (version "10.13")
+    (source (origin
+              (inherit (package-source postgresql-11))
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))))))
+
 (define-public postgresql-9.6
   (package
-    (inherit postgresql)
-    (name "postgresql")
+    (inherit postgresql-10)
     (version "9.6.16")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-10))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "1rr2dgv4ams8r2lp13w85c77rkmzpb88fjlc28mvlw6zq2fblv2w"))))))
+
+(define-public postgresql postgresql-13)
 
 (define-public python-pymysql
   (package
