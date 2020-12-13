@@ -989,13 +989,13 @@ to users of that module.")
 (define-public python-license-expression
   (package
     (name "python-license-expression")
-    (version "0.999")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "license-expression" version))
        (sha256
-        (base32 "08ppb0bxbrsxazy88sgpl9yffvdsabw6dkk1nc332wcz2mphwwyf"))))
+        (base32 "1g0sgphss8hbi1rpl4avy1nmbixmy9v194xdbvkjgl90vzgy2q3r"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-boolean.py" ,python-boolean.py)))
