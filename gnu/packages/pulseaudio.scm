@@ -522,7 +522,7 @@ module-gsettings is loaded in the sound server.")
 (define-public rnnoise
   (package
     (name "rnnoise")
-    (version "0.9")
+    (version "0.91")
     (source
      (origin
        (method git-fetch)
@@ -531,7 +531,7 @@ module-gsettings is loaded in the sound server.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18bq5b50xw3d4r1ildinafpg3isb9y216430h4mm9wr3ir7h76a7"))))
+        (base32 "11pwisbcks7g0mdgcrrv49v3ci1l6m26bbb7f67xz4pr1hai5dwc"))))
     (build-system cmake-build-system)
     (arguments
      ;; No tests.
