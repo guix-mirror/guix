@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -412,6 +413,149 @@ in C/C++.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))))
+
+(define-public mozjs-78
+  (package
+    (inherit mozjs-60)
+    (version "78.5.0")
+    (source (origin
+              (method url-fetch)
+              ;; TODO: Switch to IceCat source once available on ftp.gnu.org.
+              (uri (string-append "https://archive.mozilla.org/pub/firefox"
+                                  "/releases/" version "esr/source/firefox-"
+                                  version "esr.source.tar.xz"))
+              (sha256
+               (base32
+                "1442yjmwz69hkfcvh8kkb60jf4c9ms0pac04nc3xw2da13v4zxai"))))
+    (arguments
+     `(#:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
+       #:modules ((guix build cargo-utils)
+                  ,@%gnu-build-system-modules)
+       #:test-target "check-jstests"
+       #:configure-flags
+       '(;; Disable debugging symbols to save space.
+         "--disable-debug"
+         "--disable-debug-symbols"
+         ;; This is important because without it gjs will segfault during the
+         ;; configure phase.  With jemalloc only the standalone mozjs console
+         ;; will work.
+         "--disable-jemalloc"
+         "--enable-tests"
+         "--enable-hardening"
+         "--enable-optimize"
+         "--enable-release"
+         "--enable-rust-simd"
+         "--enable-readline"
+         "--enable-shared-js"
+         "--with-system-icu"
+         "--with-system-nspr"
+         "--with-system-zlib"
+         "--with-intl-api")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-cargo-checksums
+           (lambda _
+             (let ((null-hash
+                    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
+               (for-each (lambda (file)
+                           (format #t "patching checksums in ~a~%" file)
+                           (substitute* file
+                             (("^checksum = \".*\"")
+                              (string-append "checksum = \"" null-hash "\""))))
+                         (find-files "." "Cargo\\.lock$"))
+               (for-each generate-all-checksums
+                         '("js" "third_party/rust"))
+               #t)))
+         (replace 'configure
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
+             ;; The configure script does not accept environment variables as
+             ;; arguments.  It also must be run from a different directory,
+             ;; but not the root directory either.
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir "run-configure-from-here")
+               (chdir "run-configure-from-here")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
+                                                 "/bin/autoconf"))
+               (apply invoke "../js/src/configure"
+                      (cons (string-append "--prefix=" out)
+                            configure-flags))
+               #t)))
+         (add-after 'unpack 'adjust-for-icu-68
+           (lambda _
+             (with-directory-excursion "js/src/tests"
+               ;; The test suite expects a lightly patched ICU 67.  Since
+               ;; Guix is about to switch to ICU 68, massage the tests to
+               ;; work with that instead of patching ICU.  Try removing this
+               ;; phase for newer versions of mozjs.
+
+               ;; These tests look up locale names and expects to get
+               ;; "GB" instead of "UK".
+               (substitute* "non262/Intl/DisplayNames/language.js"
+                 (("Traditionell, GB")
+                  "Traditionell, UK"))
+               (substitute* "non262/Intl/DisplayNames/region.js"
+                 (("\"GB\": \"GB\"")
+                  "\"GB\": \"UK\""))
+
+               ;; XXX: Some localized time formats have changed, and
+               ;; substitution fails for accented characters, even though
+               ;; it works in the REPL(?).  Just delete these for now.
+               (delete-file "non262/Intl/Date/toLocaleString_timeZone.js")
+               (delete-file "non262/Intl/Date/toLocaleDateString_timeZone.js")
+
+               ;; Similarly, these get an unexpected "A" suffix when looking
+               ;; up a time in the "ar-MA-u-ca-islamicc" locale, which is
+               ;; tricky to substitute.
+               (delete-file "non262/Intl/DateTimeFormat/format_timeZone.js")
+               (delete-file "non262/Intl/DateTimeFormat/format.js")
+
+               ;; This file compares a generated list of ICU locale names
+               ;; with actual lookups.  Some have changed slightly, i.e.
+               ;; daf-Latn-ZZ -> daf-Latn-CI, so drop it for simplicity.
+               (delete-file "non262/Intl/Locale/likely-subtags-generated.js"))
+
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (with-directory-excursion "../js/src/tests"
+               (substitute* "shell/os.js"
+                 ;; FIXME: Why does the killed process have an exit status?
+                 ((".*killed process should not have exitStatus.*")
+                  ""))
+
+               ;; XXX: Delete all tests that test time zone functionality,
+               ;; because the test suite uses /etc/localtime to figure out
+               ;; the offset from the hardware clock, which does not work
+               ;; in the build container.  See <tests/non262/Date/shell.js>.
+               (delete-file-recursively "non262/Date")
+               (delete-file "non262/Intl/DateTimeFormat/tz-environment-variable.js")
+
+               (setenv "JSTESTS_EXTRA_ARGS"
+                       (string-join
+                        (list
+                         ;; Do not run tests marked as "random".
+                         "--exclude-random"
+                         ;; Exclude web platform tests.
+                         "--wpt=disabled"
+                         ;; Respect the daemons configured number of jobs.
+                         (string-append "--worker-count="
+                                        (number->string (parallel-job-count)))))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf-2.13)
+       ("automake" ,automake)
+       ("llvm" ,llvm)                   ;for llvm-objdump
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-3)
+       ("rust" ,rust)
+       ("cargo" ,rust "cargo")))
+    (inputs
+     `(("icu4c" ,icu4c-68)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))))
 
 (define mozilla-compare-locales
   (origin
