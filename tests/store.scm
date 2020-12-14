@@ -718,6 +718,30 @@
              (canonical-file? o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
+(test-assert "substitute, deduplication"
+  (with-store s
+    (let* ((c   (random-text))                     ; contents of the output
+           (g   (package-derivation s %bootstrap-guile))
+           (d1  (build-expression->derivation s "substitute-me"
+                                              `(begin ,c (exit 1))
+                                              #:guile-for-build g))
+           (d2  (build-expression->derivation s "build-me"
+                                              `(call-with-output-file %output
+                                                 (lambda (p)
+                                                   (display ,c p)))
+                                              #:guile-for-build g))
+           (o1  (derivation->output-path d1))
+           (o2  (derivation->output-path d2)))
+      (with-derivation-substitute d1 c
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
+        (and (has-substitutes? s o1)
+             (build-derivations s (list d2))      ;build
+             (build-derivations s (list d1))      ;substitute
+             (canonical-file? o1)
+             (equal? c (call-with-input-file o1 get-string-all))
+             (= (stat:ino (stat o1)) (stat:ino (stat o2))))))))
+
 (test-assert "substitute + build-things with output path"
   (with-store s
     (let* ((c   (random-text))                    ;contents of the output
