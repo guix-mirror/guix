@@ -2984,7 +2984,12 @@ void SubstitutionGoal::tryToRun()
 
     if (!worker.substituter) {
 	const Strings args = { "substitute", "--substitute" };
-	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
+	const std::map<string, string> env = {
+	    { "_NIX_OPTIONS",
+	      settings.pack() + "deduplicate="
+	      + (settings.autoOptimiseStore ? "yes" : "no")
+	    }
+	};
 	worker.substituter = std::make_shared<Agent>(settings.guixProgram, args, env);
     }
 
@@ -3085,10 +3090,8 @@ void SubstitutionGoal::finished()
 
     if (repair) replaceValidPath(storePath, destPath);
 
-    /* Note: 'guix substitute' takes care of resetting timestamps and
-       permissions on 'destPath', so no need to do it here.  */
-
-    worker.store.optimisePath(storePath); // FIXME: combine with hashPath()
+    /* Note: 'guix substitute' takes care of resetting timestamps and of
+       deduplicating 'destPath', so no need to do it here.  */
 
     ValidPathInfo info2;
     info2.path = storePath;

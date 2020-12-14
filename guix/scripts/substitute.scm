@@ -28,7 +28,8 @@
   #:use-module (guix records)
   #:use-module (guix diagnostics)
   #:use-module (guix i18n)
-  #:use-module ((guix serialization) #:select (restore-file))
+  #:use-module ((guix serialization) #:select (restore-file dump-file))
+  #:autoload   (guix store deduplication) (dump-file/deduplicate)
   #:autoload   (guix scripts discover) (read-substitute-urls)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -1045,14 +1046,26 @@ one.  Return #f if URI's scheme is 'file' or #f."
   (call-with-cached-connection uri (lambda (port) exp ...)))
 
 (define* (process-substitution store-item destination
-                               #:key cache-urls acl print-build-trace?)
+                               #:key cache-urls acl
+                               deduplicate? print-build-trace?)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL, and verify its
-hash against what appears in the narinfo.  Print a status line on the current
-output port."
+hash against what appears in the narinfo.  When DEDUPLICATE? is true, and if
+DESTINATION is in the store, deduplicate its files.  Print a status line on
+the current output port."
   (define narinfo
     (lookup-narinfo cache-urls store-item
                     (cut valid-narinfo? <> acl)))
+
+  (define destination-in-store?
+    (string-prefix? (string-append (%store-prefix) "/")
+                    destination))
+
+  (define (dump-file/deduplicate* . args)
+    ;; Make sure deduplication looks at the right store (necessary in test
+    ;; environments).
+    (apply dump-file/deduplicate
+           (append args (list #:store (%store-prefix)))))
 
   (unless narinfo
     (leave (G_ "no valid substitute for '~a'~%")
@@ -1100,7 +1113,11 @@ output port."
                   ((hashed get-hash)
                    (open-hash-input-port algorithm input)))
       ;; Unpack the Nar at INPUT into DESTINATION.
-      (restore-file hashed destination)
+      (restore-file hashed destination
+                    #:dump-file (if (and destination-in-store?
+                                         deduplicate?)
+                                    dump-file/deduplicate*
+                                    dump-file))
       (close-port hashed)
       (close-port input)
 
@@ -1248,6 +1265,9 @@ default value."
       ((= string->number number) (> number 0))
       (_ #f)))
 
+  (define deduplicate?
+    (find-daemon-option "deduplicate"))
+
   ;; The daemon's agent code opens file descriptor 4 for us and this is where
   ;; stderr should go.
   (parameterize ((current-error-port (if (%error-to-file-descriptor-4?)
@@ -1307,6 +1327,7 @@ default value."
                  (process-substitution store-path destination
                                        #:cache-urls (substitute-urls)
                                        #:acl (current-acl)
+                                       #:deduplicate? deduplicate?
                                        #:print-build-trace?
                                        print-build-trace?)
                  (loop))))))

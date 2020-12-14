@@ -51,7 +51,8 @@
             write-file
             write-file-tree
             fold-archive
-            restore-file))
+            restore-file
+            dump-file))
 
 ;;; Comment:
 ;;;
@@ -458,7 +459,10 @@ depends on TYPE."
            (&nar-read-error (port port) (file file) (token x)))))))))
 
 (define (dump-file file input size type)
-  "Dump SIZE bytes from INPUT to FILE."
+  "Dump SIZE bytes from INPUT to FILE.
+
+This procedure is suitable for use as the #:dump-file argument to
+'restore-file'."
   (call-with-output-file file
     (lambda (output)
       (dump input output size))))
