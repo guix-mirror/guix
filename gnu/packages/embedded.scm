@@ -41,6 +41,7 @@
   #:use-module ((gnu packages base) #:prefix base:)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
@@ -1466,7 +1467,7 @@ and Zilog Z80 families, plus many of their variants.")
 (define-public sdcc
   (package
     (name "sdcc")
-    (version "3.7.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1474,7 +1475,7 @@ and Zilog Z80 families, plus many of their variants.")
                     "/" version "/sdcc-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "13llvx0j3v5qa7qd4fh7nix4j3alpd3ccprxvx163c4q8q4lfkc5"))
+                "042fxw5mnsfhpc0z9lxfsw88kdkm32pwrxacp88kj2n2dy0814a8"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1490,7 +1491,8 @@ and Zilog Z80 families, plus many of their variants.")
        ("boost" ,boost)
        ("flex" ,flex)
        ("python-2" ,python-2)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("zlib" ,zlib)))
     (arguments
      `(;; GPUTILS is required for the PIC ports, but the licensing status of
        ;; some of the files contained in its distribution is unclear (see
@@ -1508,9 +1510,9 @@ and Zilog Z80 families, plus many of their variants.")
     (home-page "http://sdcc.sourceforge.net")
     (synopsis "C compiler suite for 8-bit microcontrollers")
     (description "SDCC is a retargetable, optimizing Standard C compiler suite
-that targets 8-bit microcontrollers in the Intel MCS-51 (8051), Motorola
-68HC08, STMicroelectronics STM8, and Zilog Z80 families, plus many of their
-variants.")
+that targets 8-bit microcontrollers in the Intel MCS-51 (8051); Motorola
+68HC08; Padauk PDK13, PDK14 and PDK15; STMicroelectronics STM8; and Zilog Z80
+families, plus many of their variants.")
     (license (list license:gpl2+
                    license:gpl3+
                    license:lgpl2.0+
