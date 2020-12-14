@@ -34,7 +34,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix build utils) #:select (alist-replace))
+  #:use-module ((guix build utils) #:select (alist-replace delete-file-recursively))
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -1420,3 +1420,44 @@ handling communication with eBUS devices connected to a 2-wire bus system
 (\"energy bus\" used by numerous heating systems).")
     (home-page "https://ebusd.eu/")
     (license license:gpl3+)))
+
+(define-public ucsim
+  (package
+    (name "ucsim")
+    (version "0.6-pre67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mazsola.iit.uni-miskolc.hu/ucsim/download/unix/"
+                    "devel/ucsim-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0aahj9pbfjphjrm4hgs9pfmp6d5aikaq4yvxlrvhywjinnnf0qp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-avr-port"
+                           "--enable-m6809-port"
+                           "--enable-p1516-port"
+                           "--enable-st7-port")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefiles
+           (lambda _
+             (substitute* (find-files "." "(\\.mk$|\\.in$)")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'install 'remove-empty-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out") "/share/man"))
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (home-page "http://mazsola.iit.uni-miskolc.hu/ucsim/")
+    (synopsis "Simulators for various microcontroller families")
+    (description "μCsim is a collection of software simulators for
+microcontrollers in the Atmel AVR; Intel MCS-51 (8051); Motorola 68HC08 and
+6809; P1516; Padauk PDK13, PDK14 and PDK15; STMicroelectronics ST7 and STM8;
+and Zilog Z80 families, plus many of their variants.")
+    (license license:gpl2+)))
