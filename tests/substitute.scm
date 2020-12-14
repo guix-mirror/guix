@@ -378,7 +378,7 @@ System: mips64el-linux\n")))
         (guix-substitute "--substitute")))))
 
 (test-equal "substitute, authorized key"
-  "Substitutable data."
+  '("Substitutable data." 1 #o444)
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field %narinfo))
     (dynamic-wind
@@ -387,7 +387,9 @@ System: mips64el-linux\n")))
         (request-substitution (string-append (%store-prefix)
                                              "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                               "substitute-retrieved")
-        (call-with-input-file "substitute-retrieved" get-string-all))
+        (list (call-with-input-file "substitute-retrieved" get-string-all)
+              (stat:mtime (lstat "substitute-retrieved"))
+              (stat:perms (lstat "substitute-retrieved"))))
       (lambda ()
         (false-if-exception (delete-file "substitute-retrieved"))))))
 

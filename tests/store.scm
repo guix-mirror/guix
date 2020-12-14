@@ -715,6 +715,7 @@
                            #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (build-derivations s (list d))
+             (canonical-file? o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
 (test-assert "substitute + build-things with output path"
@@ -735,6 +736,7 @@
         (and (has-substitutes? s o)
              (build-things s (list o))            ;give the output path
              (valid-path? s o)
+             (canonical-file? o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
 (test-assert "substitute + build-things with specific output"
@@ -755,6 +757,7 @@
              (build-things s `((,(derivation-file-name d) . "out")))
 
              (valid-path? s o)
+             (canonical-file? o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
 (test-assert "substitute, corrupt output hash"
