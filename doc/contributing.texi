@@ -864,7 +864,8 @@ to proper type error reports.
 Guix code should define appropriate data types (for instance, using
 @code{define-record-type*}) rather than abuse lists.  In addition, it
 should use pattern matching, via Guile’s @code{(ice-9 match)} module,
-especially when matching lists.
+especially when matching lists (@pxref{Pattern Matching,,, guile, GNU
+Guile Reference Manual}).
 
 @node Formatting Code
 @subsection Formatting Code
