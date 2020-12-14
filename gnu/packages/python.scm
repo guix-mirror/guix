@@ -520,6 +520,31 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
+(define-public python-3.9
+  (package (inherit python-3.8)
+    (name "python-next")
+    (version "3.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.python.org/ftp/python/"
+                                  version "/Python-" version ".tar.xz"))
+              (patches (search-patches
+                        "python-3.9-fix-tests.patch"
+                        "python-3-deterministic-build-info.patch"
+                        "python-3-search-paths.patch"))
+              (sha256
+               (base32
+                "1zq3k4ymify5ig739zyvx9s2ainvchxb1zpy139z74krr653y74r"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete the bundled copy of libexpat.
+                  (delete-file-recursively "Modules/expat")
+                  (substitute* "Modules/Setup"
+                    ;; Link Expat instead of embedding the bundled one.
+                    (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+                  #t))))))
+
 ;; Current 3.x version.
 (define-public python-3 python-3.8)
 
