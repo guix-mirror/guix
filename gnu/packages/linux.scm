@@ -2067,7 +2067,7 @@ trace of all the system calls made by a another process/program.")
               (base32
                "00wmbdghqbz6x95m1mcdd3wd46l6hgcr4wggdp049dbifh3qqvqf"))))
     (build-system gnu-build-system)
-    (inputs `(("libelf" ,libelf)))
+    (inputs `(("libelf" ,elfutils)))
     (arguments
      ;; Compilation uses -Werror by default, but it fails.
      '(#:configure-flags '("--disable-werror")))
