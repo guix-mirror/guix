@@ -15005,6 +15005,41 @@ timestamps by providing a @code{ts} struct.")
 according to a parsing expression grammar.")
     (license license:gpl3+)))
 
+(define-public emacs-with-simulated-input
+  (package
+    (name "emacs-with-simulated-input")
+    (version "2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DarwinAwardWinner/with-simulated-input")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12d3mhvzj74qwc4rdcb236jbqnf5lam8pk78j92kwbwjk1jaz2cf"))))
+    (build-system emacs-build-system)
+    (arguments
+     ;; The test suite fails with error: "Spies can only be created in
+     ;; ‘before-each’".
+     `(#:tests? #f
+       #:test-command '("buttercup" "-L" ".")))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)
+       ("emacs-undercover" ,emacs-undercover)))
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/DarwinAwardWinner/with-simulated-input")
+    (synopsis "Non-interactive testing Emacs library")
+    (description "This package provides an Emacs Lisp macro,
+@code{with-simulated-input}, which evaluates one or more forms while
+simulating a sequence of input events for those forms to read.  The result is
+the same as if a user had evaluated the forms and then manually typed in the
+same input.  This macro is useful for non-interactive testing of normally
+interactive commands and functions, such as @code{completing-read}.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
