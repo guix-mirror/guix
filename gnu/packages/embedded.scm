@@ -40,6 +40,7 @@
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages base) #:prefix base:)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
@@ -1460,4 +1461,54 @@ handling communication with eBUS devices connected to a 2-wire bus system
 microcontrollers in the Atmel AVR; Intel MCS-51 (8051); Motorola 68HC08 and
 6809; P1516; Padauk PDK13, PDK14 and PDK15; STMicroelectronics ST7 and STM8;
 and Zilog Z80 families, plus many of their variants.")
+    (license license:gpl2+)))
+
+(define-public sdcc
+  (package
+    (name "sdcc")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/sdcc/sdcc"
+                    "/" version "/sdcc-src-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13llvx0j3v5qa7qd4fh7nix4j3alpd3ccprxvx163c4q8q4lfkc5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove non-free source files
+                  (delete-file-recursively "device/non-free")
+                  ;; Remove bundled μCsim source
+                  (delete-file-recursively "sim")
+                  #t))
+              (patches (search-patches "sdcc-disable-non-free-code.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("boost" ,boost)
+       ("flex" ,flex)
+       ("python-2" ,python-2)
+       ("texinfo" ,texinfo)))
+    (arguments
+     `(;; gputils is required for PIC ports
+       #:configure-flags
+       '("--disable-pic14-port" "--disable-pic16-port" "--disable-ucsim")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile
+           (lambda _
+             (substitute* (find-files "." "(\\.mk$|\\.in$)")
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (home-page "http://sdcc.sourceforge.net")
+    (synopsis "Small devices C compiler")
+    (description "SDCC is a retargetable, optimizing Standard C compiler suite
+that targets the Intel MCS51-based microprocessors (8031, 8032, 8051, 8052, ...),
+Maxim (formerly Dallas) DS80C390 variants, Freescale (formerly Motorola)
+HC08-based (hc08, s08), Zilog Z80-based MCUs (z80, z180, gbz80, Rabbit
+2000/3000, Rabbit 3000A, TLCS-90) and STMicroelectronics STM8.
+Work is in progress on supporting the Microchip PIC16 and PIC18 targets.
+It can be retargeted for other microprocessors.")
     (license license:gpl2+)))
