@@ -46,6 +46,8 @@
                '(begin
                   ;; Remove non-free source files
                   (delete-file-recursively "device/non-free")
+                  ;; Remove bundled μCsim source
+                  (delete-file-recursively "sim")
                   #t))
               (patches (search-patches "sdcc-disable-non-free-code.patch"))))
     (build-system gnu-build-system)
@@ -58,7 +60,7 @@
     (arguments
      `(;; gputils is required for PIC ports
        #:configure-flags
-       '("--disable-pic14-port" "--disable-pic16-port" "--enable-ucsim")
+       '("--disable-pic14-port" "--disable-pic16-port" "--disable-ucsim")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile
