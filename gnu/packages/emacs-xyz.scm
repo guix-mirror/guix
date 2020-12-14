@@ -23560,7 +23560,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
 (define-public emacs-helm-switch-to-repl
   (package
     (name "emacs-helm-switch-to-repl")
-    (version "0.1.0")
+    (version "0.1.1")
     (home-page "https://github.com/emacs-helm/helm-switch-to-repl")
     (source
      (origin
@@ -23570,7 +23570,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n19brymwnawhi0y10m54cas3qg64pmkqq1ajvjw1rfibmw3n6nk"))))
+        (base32 "1zwzpar34b98p0fiwy9q1bxrb67nv79pv9cz4kmyypclrmrhgqa2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("helm" ,emacs-helm)))
