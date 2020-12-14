@@ -3085,7 +3085,8 @@ void SubstitutionGoal::finished()
 
     if (repair) replaceValidPath(storePath, destPath);
 
-    canonicalisePathMetaData(storePath, -1);
+    /* Note: 'guix substitute' takes care of resetting timestamps and
+       permissions on 'destPath', so no need to do it here.  */
 
     worker.store.optimisePath(storePath); // FIXME: combine with hashPath()
 
