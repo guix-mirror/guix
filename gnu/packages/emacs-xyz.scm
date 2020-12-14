@@ -15043,7 +15043,7 @@ interactive commands and functions, such as @code{completing-read}.")
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.3.2")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15051,7 +15051,7 @@ interactive commands and functions, such as @code{completing-read}.")
                     (commit version)))
               (sha256
                (base32
-                "11bhpi2l28vp8mm9nx18jljbqdnh9vxpv9kp1dn9lpsgivcdbc34"))
+                "14nsy2dbln3m5bpqzyfqycn18sb3qh407hjbkk1l0x2nqs3lrkqn"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -15064,20 +15064,24 @@ interactive commands and functions, such as @code{completing-read}.")
        ("emacs-org" ,emacs-org)
        ("emacs-helm" ,emacs-helm)
        ("emacs-helm-org" ,emacs-helm-org)
-       ("emacs-dash" ,emacs-dash)))
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-transient" ,emacs-transient)))
     (native-inputs
-     `(("emacs-buttercup" ,emacs-buttercup)))
+     `(("emacs-buttercup" ,emacs-buttercup)
+       ("emacs-with-simulated-input" ,emacs-with-simulated-input)))
     (arguments
-     `(#:phases
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'require-helm
+         (add-after 'unpack 'disable-failing-tests
            (lambda _
-             (substitute* "helm-org-ql.el"
-               (("^;;;; Requirements")
-                ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
-             #t)))
-       #:tests? #t
-       #:test-command '("buttercup" "-L" ".")))
+             (substitute* "tests/test-org-ql.el"
+               ;; This test fails on Emacs 27.1 (see:
+               ;; https://github.com/alphapapa/org-super-agenda/issues/183).
+               (("it \"Can search buffer containing the link\"" all)
+                (string-append "x" all)))
+             #t)))))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
     (description "This package provides a Lispy query language for Org
