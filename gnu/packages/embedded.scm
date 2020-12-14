@@ -1492,7 +1492,10 @@ and Zilog Z80 families, plus many of their variants.")
        ("python-2" ,python-2)
        ("texinfo" ,texinfo)))
     (arguments
-     `(;; gputils is required for PIC ports
+     `(;; GPUTILS is required for the PIC ports, but the licensing status of
+       ;; some of the files contained in its distribution is unclear (see
+       ;; https://issues.guix.gnu.org/44557).  For this reason it is not yet
+       ;; available as a package in Guix.
        #:configure-flags
        '("--disable-pic14-port" "--disable-pic16-port" "--disable-ucsim")
        #:phases
