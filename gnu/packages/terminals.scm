@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +65,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -989,7 +991,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.16.0")
+    (version "0.19.2")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -999,7 +1001,7 @@ tmux.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bszyddar0g1gdz67h8rd3gbrdhi6ahjg7j14cjiqxm1938z9ajf"))
+        (base32 "06mlrc283k5f75y36fmmaxnj29jfc1s8vaykjph6a86m1gcl5wgi"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1015,11 +1017,12 @@ tmux.")
            #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python)
+     `(("python" ,python-wrapper)
        ("harfbuzz" ,harfbuzz)
        ("zlib" ,zlib)
        ("libcanberra" ,libcanberra)
        ("libpng" ,libpng)
+       ("lcms" ,lcms)
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
        ("pygments" ,python-pygments)
@@ -1038,22 +1041,28 @@ tmux.")
        ("wayland-protocols" ,wayland-protocols)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  ;; Wayland backend requires EGL, which isn't found
-                  ;; out-of-the-box for some reason. Hard-code it instead.
-                  (add-after 'unpack 'hard-code-libegl
-                    (lambda _
-                      (let* ((mesa (assoc-ref %build-inputs "libgl1-mesa"))
-                             (libegl (string-append mesa "/lib/libEGL.so.1")))
-                        (substitute* "glfw/egl_context.c"
-                                     (("libEGL.so.1") libegl)))
-                      #t))
+                  (delete 'configure)   ;no configure script
                   (replace 'build
-                    (lambda _
-                      (invoke "python3" "setup.py" "linux-package")))
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; The "kitty" sub-directory must be writable prior to
+                      ;; configuration (e.g., un-setting updates).
+                      (for-each make-file-writable (find-files "kitty"))
+
+                      (invoke "python3" "setup.py" "linux-package"
+                              ;; Do not phone home.
+                              "--update-check-interval=0"
+                              ;; Wayland backend requires EGL, which isn't
+                              ;; found out-of-the-box for some reason.
+                              (string-append "--egl-library="
+                                             (assoc-ref inputs "libgl1-mesa")
+                                             "/lib/libEGL.so.1"))))
                   (replace 'check
                     (lambda _
-                      (invoke "python3" "setup.py" "test")))
+                      ;; Fix "cannot find kitty executable" error when running
+                      ;; tests.
+                      (setenv "PATH" (string-append "linux-package/bin:"
+                                                    (getenv "PATH")))
+                      (invoke "python3" "test.py")))
                   (add-before 'install 'rm-pycache
                     ;; created python cache __pycache__ are non deterministic
                     (lambda _
