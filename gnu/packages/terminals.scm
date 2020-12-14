@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1420,3 +1421,39 @@ blazingly fast.  By making sane choices for defaults, Alacritty requires no
 additional setup.  However, it does allow configuration of many aspects of the
 terminal.  Note that you need support for OpenGL 3.2 or higher.")
     (license license:asl2.0)))
+
+(define-public bootterm
+  (package
+    (name "bootterm")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/wtarreau/bootterm")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1mh2i47ppcrw027nmkpjgbmx55ml21bmqihvwkhlvj1jr0vv8pva"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; No ./configure script
+         (delete 'configure)
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "README.md" doc)
+               #t))))))
+    (home-page "https://github.com/wtarreau/bootterm")
+    (synopsis "Serial terminal")
+    (description "Bootterm is a terminal designed to ease connection to
+ephemeral serial ports.  It features automatic port detection, port enumeration,
+support for non-standard baud rates, the ability to wait for ports to appear,
+and the ability to read and write via stdin and stdout.")
+    (license license:expat)))
