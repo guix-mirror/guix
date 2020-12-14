@@ -1511,4 +1511,10 @@ HC08-based (hc08, s08), Zilog Z80-based MCUs (z80, z180, gbz80, Rabbit
 2000/3000, Rabbit 3000A, TLCS-90) and STMicroelectronics STM8.
 Work is in progress on supporting the Microchip PIC16 and PIC18 targets.
 It can be retargeted for other microprocessors.")
-    (license license:gpl2+)))
+    (license (list license:gpl2+
+                   license:gpl3+
+                   license:lgpl2.0+
+                   license:lgpl2.1+
+                   license:lgpl3+
+                   license:public-domain
+                   license:zlib))))
