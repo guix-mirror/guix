@@ -565,7 +565,7 @@ memory, disks, network and processes.")
 (define-public pies
   (package
     (name "pies")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
@@ -573,7 +573,7 @@ memory, disks, network and processes.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "14jb4pa4zs26d5j2skxbaypnwhsx2lw8jgj1irrgs03c2dnf7gp6"))))
+         "11j168qljsinaj5dwmg7nkm2z1aghi6gc3d0wf0pikflnh2q2wqf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
