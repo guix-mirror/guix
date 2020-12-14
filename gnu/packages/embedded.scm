@@ -1497,7 +1497,7 @@ and Zilog Z80 families, plus many of their variants.")
        '("--disable-pic14-port" "--disable-pic16-port" "--disable-ucsim")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile
+         (add-after 'unpack 'patch-makefiles
            (lambda _
              (substitute* (find-files "." "(\\.mk$|\\.in$)")
                (("/bin/sh") (which "sh")))
