@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1568,14 +1569,17 @@ application stack itself.")
 (define-public httpstat
   (package
     (name "httpstat")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "httpstat" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/reorx/httpstat")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1chw2nk56vaq87aba012a270k9na06hfx1pfbsrc3jfvlc2kb9hb"))))
+         "18k2glnyzxlmry19ijmndim2vqqn3c86smd7xc3haw6k7qafifx1"))))
     (build-system python-build-system)
     (inputs `(("curl" ,curl)))
     (arguments
@@ -1587,7 +1591,10 @@ application stack itself.")
                (("ENV_CURL_BIN.get\\('curl'\\)")
                 (string-append "ENV_CURL_BIN.get('"
                                (assoc-ref inputs "curl")
-                               "/bin/curl')")))
+                               "/bin/curl')"))
+               ;; "curl -w time_*" units seems to have
+               ;; changed from seconds to nanoseconds.
+               (("d\\[k\\] \\* 1000") "d[k] / 1000"))
              #t)))))
     (home-page "https://github.com/reorx/httpstat")
     (synopsis "Visualize curl statistics")
