@@ -25212,6 +25212,28 @@ estimation in measurement error models: The R package decon.
 Journal of Statistical Software, 39(10), 1-24.")
     (license license:gpl3+)))
 
+(define-public r-locpol
+  (package
+    (name "r-locpol")
+    (version "0.7-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "locpol" version))
+        (sha256
+          (base32
+            "1p915n0l09kbwkly627074jslxl01yssp1rf0c7sygvsw6sgy5lm"))))
+    (properties `((upstream-name . "locpol")))
+    (build-system r-build-system)
+    (home-page
+      "https://cran.r-project.org/web/packages/locpol/")
+    (synopsis "Kernel Local Polynomial Regression")
+    (description
+      "Computes local polynomial estimators for the regression and
+also density.  It comprises several different utilities to handle
+kernel estimators.")
+    (license license:gpl2+)))
+
 (define-public r-aws-signature
   (package
     (name "r-aws-signature")
