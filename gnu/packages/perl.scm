@@ -5553,18 +5553,18 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.004000")
+    (version "1.004003")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
+         "1grg8saa318bs4x2wqnww7y0nra7azrzg35bk5pgvkwxzwbkpvjv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-without-module" ,perl-test-without-module)))
+     `(("perl-test-needs" ,perl-test-needs)))
     (inputs
      `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
     (home-page "https://metacpan.org/release/JSON-MaybeXS")
