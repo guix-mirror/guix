@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,13 +46,8 @@
   (list (readline-patch version seqno (base32 hash))
         ...))
 
-(define %patch-series-8.0
-  (patch-series
-   "8.0"
-   (1 "0sfh7wn0pr743xspnb1zndxndlv9rc0hcg14cbw5cmyg6f4ykrfq")
-   (2 "1xy8mv8xm8hsfixwp3ci9kfx3dii3y92cq27wwd0jq75y6zzxc1n")
-   (3 "1vza7sxjcsr2z295ij12nzgncdil1vb6as3mqy4m7svi1chv5pcl")
-   (4 "0k1rfx9w32lglxg564yvp0mw6jg6883p8ac2f2lxxqpf80m3vami")))
+(define %patch-series-8.1
+  '())
 
 (define %patch-series-7.0
   (patch-series
@@ -66,16 +61,16 @@
 (define-public readline
   (package
     (name "readline")
-    (version (string-append "8.0."
-                            (number->string (length %patch-series-8.0))))
+    (version (string-append "8.1."
+                            (number->string (length %patch-series-8.1))))
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
                                   (version-major+minor version) ".tar.gz"))
               (sha256
                (base32
-                "0qg4924hf4hg0r0wbx2chswsr08734536fh5iagkd3a7f4czafg3"))
-              (patches (append %patch-series-8.0
+                "00ibp0n9crbwx15k9vvckq5wsipw98b1px8pd8i34chy2gpb9kpq"))
+              (patches (append %patch-series-8.1
                                (search-patches "readline-link-ncurses.patch")))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
