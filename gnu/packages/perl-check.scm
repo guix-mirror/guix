@@ -972,7 +972,7 @@ bit more fine-grained control over test suites.")
 (define-public perl-test-needs
   (package
     (name "perl-test-needs")
-    (version "0.002005")
+    (version "0.002006")
     (source
      (origin
        (method url-fetch)
@@ -982,7 +982,7 @@ bit more fine-grained control over test suites.")
              ".tar.gz"))
        (sha256
         (base32
-         "16gkgpmr9hvkz382iaqd3500269lk2d44fqaw3dsrvc66nc36kss"))))
+         "1rgh6gs5kbbjh27zxxxi1g6zf69k7i9v65h49prhjpkcr7qgzybp"))))
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/Test-Needs")
