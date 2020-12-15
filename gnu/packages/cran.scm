@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25173,6 +25174,43 @@ Hessian, Divergence, Curl, Laplacian) and numerical integration in arbitrary
 orthogonal coordinate systems: cartesian, polar, spherical, cylindrical,
 parabolic or user defined by custom scale factors.")
     (license license:gpl3)))
+
+(define-public r-decon
+  (package
+    (name "r-decon")
+    (version "1.2-4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "decon" version))
+        (sha256
+          (base32
+            "1v4l0xq29rm8mks354g40g9jxn0didzlxg3g7z08m0gvj29zdj7s"))))
+    (properties `((upstream-name . "decon")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page
+      "https://cran.r-project.org/web/packages/decon/")
+    (synopsis "Deconvolution Estimation in Measurement Error Models")
+    (description
+      "This package contains a collection of functions to deal with
+nonparametric measurement error problems using deconvolution
+kernel methods.  We focus two measurement error models in the
+package: (1) an additive measurement error model, where the
+goal is to estimate the density or distribution function from
+contaminated data; (2) nonparametric regression model with
+errors-in-variables.  The R functions allow the measurement errors
+to be either homoscedastic or heteroscedastic.  To make the
+deconvolution estimators computationally more efficient in R,
+we adapt the \"Fast Fourier Transform\" (FFT) algorithm for
+density estimation with error-free data to the deconvolution
+kernel estimation.  Several methods for the selection of the
+data-driven smoothing parameter are also provided in the package.
+See details in: Wang, X.F.  and Wang, B. (2011).  Deconvolution
+estimation in measurement error models: The R package decon.
+Journal of Statistical Software, 39(10), 1-24.")
+    (license license:gpl3+)))
 
 (define-public r-aws-signature
   (package
