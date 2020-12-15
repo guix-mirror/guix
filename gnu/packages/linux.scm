@@ -2299,6 +2299,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
        #:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
+                            (string-append "CC=" ,(cc-for-target))
+                            "HOSTCC=gcc"
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
@@ -2314,7 +2316,16 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
                         (("^.*ARPDDIR.*$") ""))
-                      #t)))))
+                      #t))
+                  (add-after 'unpack 'patch-configure
+                    (lambda _
+                      (let ((target ,(%current-target-system)))
+                        (substitute* "configure"
+                          (("pkg-config")
+                            (if target
+                              (string-append target "-pkg-config")
+                              "pkg-config")))
+                        #t))))))
     (inputs
      `(("db4" ,bdb)
        ("iptables" ,iptables)
