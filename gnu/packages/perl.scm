@@ -1712,7 +1712,7 @@ and objects.")
 (define-public perl-common-sense
   (package
     (name "perl-common-sense")
-    (version "3.74")
+    (version "3.75")
     (source
      (origin
        (method url-fetch)
@@ -1720,7 +1720,7 @@ and objects.")
                            "common-sense-" version ".tar.gz"))
        (sha256
         (base32
-         "1wxv2s0hbjkrnssvxvsds0k213awg5pgdlrpkr6xkpnimc17s7vp"))))
+         "0zhfp8f0czg69ycwn7r6ayg6idm5kyh2ai06g5s6s07kli61qsm8"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/common-sense")
     (synopsis "Sane defaults for Perl programs")
