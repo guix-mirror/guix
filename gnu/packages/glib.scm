@@ -60,7 +60,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages selinux)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -198,7 +197,6 @@ shared NFS home directories.")
       ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
       ;; These are in the Requires.private field of gio-2.0.pc
       ("util-linux" ,util-linux "lib")  ;for libmount
-      ("libselinux" ,libselinux)
       ("zlib" ,zlib)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
@@ -210,6 +208,7 @@ shared NFS home directories.")
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
     `(#:disallowed-references (,tzdata-for-tests)
+      #:configure-flags '("-Dselinux=disabled")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-dbus-launch-path
