@@ -16874,6 +16874,39 @@ IO of Windows's named pipes.")
      "This package provides a crate to perform natural ordering for Rust.")
     (license license:expat)))
 
+(define-public rust-ndarray-0.12
+  (package
+    (name "rust-ndarray")
+    (version "0.12.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ndarray" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0a5rfwcbqnvbwi3nw5sfz6kf0flhmjxs64s0b4kxc6lhmyl81wvw"))
+        (patches (search-patches "rust-ndarray-remove-blas-src-dep.patch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-itertools" ,rust-itertools-0.7)
+        ("rust-matrixmultiply" ,rust-matrixmultiply-0.1)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-cblas-sys" ,rust-cblas-sys-0.1)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-defmac" ,rust-defmac-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.7)
+        ("rust-rawpointer" ,rust-rawpointer-0.1))))
+    (home-page "https://github.com/rust-ndarray/ndarray")
+    (synopsis "N-dimensional container for general elements and for numerics")
+    (description "@code{ndarray} implements an n-dimensional container for
+general elements and for numerics.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-net2-0.2
   (package
     (name "rust-net2")
