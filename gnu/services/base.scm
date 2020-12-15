@@ -1718,17 +1718,18 @@ proxy of 'guix-daemon'...~%")
   "Return a file that contains the list of references of ITEM."
   (if (struct? item)                              ;lowerable object
       (computed-file name
-                     (with-imported-modules (source-module-closure
-                                             '((guix build store-copy)))
-                       #~(begin
-                           (use-modules (guix build store-copy))
+                     (with-extensions (list guile-gcrypt) ;for store-copy
+                       (with-imported-modules (source-module-closure
+                                               '((guix build store-copy)))
+                         #~(begin
+                             (use-modules (guix build store-copy))
 
-                           (call-with-output-file #$output
-                             (lambda (port)
-                               (write (map store-info-item
-                                           (call-with-input-file "graph"
-                                             read-reference-graph))
-                                      port)))))
+                             (call-with-output-file #$output
+                               (lambda (port)
+                                 (write (map store-info-item
+                                             (call-with-input-file "graph"
+                                               read-reference-graph))
+                                        port))))))
                      #:options `(#:local-build? #f
                                  #:references-graphs (("graph" ,item))))
       (plain-file name "()")))
