@@ -916,7 +916,7 @@ provides the GNU compiler for the Go programming language."))
 (define-public isl
   (package
     (name "isl")
-    (version "0.22.1")
+    (version "0.23")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -927,7 +927,7 @@ provides the GNU compiler for the Go programming language."))
                                        name "-" version ".tar.bz2")))
              (sha256
               (base32
-               "1kf54jib0nind1pvakblnfhimmwzm0y1llz8470ag0di5vwqwrhs"))))
+               "0k91zck10zxs9sk3yrbb92y1j3w981w3fbwkfwd7kl779b0j52f5"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
