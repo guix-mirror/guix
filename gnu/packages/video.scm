@@ -1702,7 +1702,10 @@ audio/video codec library.")
                     (path (string-join (map dirname dso) ":")))
                (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
                (setenv "LD_LIBRARY_PATH" path)
-               #t))))))))
+               #t))))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("dav1d" "libaom" "rav1e" "srt")))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
