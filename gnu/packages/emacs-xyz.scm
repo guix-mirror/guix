@@ -13450,7 +13450,7 @@ in a generalized CSV (character-separated values) format.")
 (define-public emacs-transmission
   (package
     (name "emacs-transmission")
-    (version "0.12.1")
+    (version "0.12.2")
     (source
      (origin
        (method git-fetch)
@@ -13459,7 +13459,7 @@ in a generalized CSV (character-separated values) format.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kvg2gawsgy440x1fsl2c4pkxwp3zirq9rzixanklk0ryijhd3ry"))))
+        (base32 "16bn8y2sd7kzihp8bxh4vyay16y91q3yc0gcd0bzywcx3hijqlfc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/holomorph/transmission")
     (synopsis "Emacs interface to a Transmission session")
