@@ -3627,8 +3627,7 @@ used in argon2rs' bench suite.")
           "0rgsn3klhhh09d8qf3b87zl4rwk93l2g0qzh9hhb0lff5kcfrzmn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/blas-lapack-rs/cblas-sys")
     (synopsis "Bindings to CBLAS (C)")
     (description
