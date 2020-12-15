@@ -25234,6 +25234,35 @@ also density.  It comprises several different utilities to handle
 kernel estimators.")
     (license license:gpl2+)))
 
+(define-public r-lpme
+  (package
+    (name "r-lpme")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "lpme" version))
+        (sha256
+          (base32
+            "0si90nkgl8bqk8yvd2igdsrngiwqh8891072pfpzipifnd0f5448"))))
+    (properties `((upstream-name . "lpme")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-decon" ,r-decon)
+        ("r-flexmix" ,r-flexmix)
+        ("r-locpol" ,r-locpol)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page
+      "https://cran.r-project.org/web/packages/lpme/")
+    (synopsis "Nonparametric Estimation of Measurement Error Models")
+    (description
+      "Provide nonparametric methods for mean regression model,
+modal regression and conditional density estimation in the
+presence/absence of measurement error. Bandwidth selection is
+also provided for each method.")
+    (license license:gpl2+)))
+
 (define-public r-aws-signature
   (package
     (name "r-aws-signature")
