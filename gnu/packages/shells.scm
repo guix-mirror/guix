@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -372,7 +373,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.22.02")
+    (version "6.22.03")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -382,7 +383,7 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "0nw8prz1n0lmr82wnpyhrzmki630afn7p9cfgr3vl00vr9c72a7d"))
+                "1dv24bsp6faayinvwds092ylk9sb6894rl9ddm87y31a7mjzsb5y"))
               (patches (search-patches "tcsh-fix-autotest.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
@@ -407,6 +408,16 @@ written by Paul Haahr and Byron Rakitzis.")
               ;; Take care of pwd
               (substitute* '("tests/commands.at" "tests/variables.at")
                 (("/bin/pwd") (which "pwd")))
+              (substitute* "Makefile"
+                ;; Likewise for /usr/bin/env.
+                (("/usr/bin/env") "env")
+                ;; Don't reset the environment (PATH, etc).
+                (("\\$\\(ENVCMD\\) -") "$(ENVCMD)"))
+              ;; This test does not expect the home directory from
+              ;; /etc/passwd to be '/'.
+              (substitute* "tests/subst.at"
+                (("\\$\\(id -un\\)/foo")
+                 "$(id -un)//foo"))
               ;; The .at files create shell scripts without shebangs. Erk.
               (substitute* "tests/commands.at"
                 (("./output.sh") "/bin/sh output.sh"))
