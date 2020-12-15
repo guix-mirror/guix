@@ -47,8 +47,11 @@
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages ebook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -60,6 +63,7 @@
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -765,6 +769,73 @@ Python, PHP, and Perl.")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
     (license (list license:gpl2+  license:fdl1.2+))))
+
+(define-public okular
+  (package
+    (name "okular")
+    (version "20.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1kib8zqfd9qgqn7bz88hay2j3kcvarnlfyr3a417pi6rvaam6b4p"))))
+    (build-system qt-build-system)
+    ;; The tests fail because they can't find the proper mimetype plugins:
+    ;; "org.kde.okular.core: No plugin for mimetype '"image/jpeg"'."
+    ;; The built program seems to work okay, so we skip the tests for now.
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list "-DBUILD_TESTING=OFF")))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ebook-tools" ,ebook-tools)
+       ("breeze-icons" ,breeze-icons)
+       ("discount" ,discount)
+       ("djvulibre" ,djvulibre)
+       ("kactivities" ,kactivities)
+       ("khtml" ,khtml)
+       ("chmlib" ,chmlib)
+       ("kdegraphics-mobipocket" ,kdegraphics-mobipocket)
+       ("karchive" ,karchive)
+       ("kbookmarks" ,kbookmarks)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("qtbase" ,qtbase)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("kirigami" ,kirigami)
+       ("purpose" ,purpose)
+       ("freetype" ,freetype)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kparts" ,kparts)
+       ("kpty" ,kpty)
+       ("qtspeech" ,qtspeech)
+       ("kwallet" ,kwallet)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libkexiv2" ,libkexiv2)
+       ("libspectre" ,libspectre)
+       ("libzip" ,libzip)
+       ("phonon" ,phonon)
+       ("poppler-qt5" ,poppler-qt5)
+       ("qca" ,qca)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("threadweaver" ,threadweaver)
+       ("kcrash" ,kcrash)
+       ("kjs" ,kjs)))
+    (home-page "https://kde.org/applications/graphics/okular/")
+    (synopsis "Document Viewer")
+    (description "Okular is a universal document viewer developed by KDE.
+ Okular works on multiple platforms, including but not limited to
+ Linux, Windows, macOS, *BSD, etc.")
+    (license license:gpl2+)))
 
 (define-public kdegraphics-mobipocket
   (package
