@@ -139,6 +139,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
+              (patches (search-patches "gdbm-gcc-compat.patch"))
               (sha256
                (base32
                 "1p4ibds6z3ccy65lkmd6lm7js0kwifvl53r0fd759fjxgr917rl6"))))
