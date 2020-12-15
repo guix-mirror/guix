@@ -1609,6 +1609,30 @@ Wlroots based compositors.")
 compositors that support the layer-shell protocol.")
     (license license:expat))) ; MIT license
 
+(define-public kanshi
+  (package
+    (name "kanshi")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/kanshi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nbpgm8qnn7ljsg9vgs35kl8l4rrk542vdcbx8wrn9r909ld3x92"))))
+    (build-system meson-build-system)
+    (inputs `(("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)))
+    (home-page "https://wayland.emersion.fr/kanshi")
+    (synopsis "Hotswappable output profiles for Wayland")
+    (description "Kanshi allows you to define output profiles that are
+automatically enabled and disabled on hotplug.  Kanshi can be used with
+Wayland compositors supporting the wlr-output-management protocol.")
+    (license license:expat))) ; MIT license
+
 (define-public stumpwm
   (package
     (name "stumpwm")
