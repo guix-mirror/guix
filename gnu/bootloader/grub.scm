@@ -191,18 +191,9 @@ fi~%"
   (define font-file
     (let* ((bootloader (bootloader-configuration-bootloader config))
            (grub (bootloader-package bootloader)))
-      ;; The bootloader-package may be a profile with only symlinks.
-      ;; If network booting, then a symlink to the font may not work on the
-      ;; server side.  Therefore we canonicalize the file name of the font.
-      ;; TODO:  The font gets installed by (install-grub-efi-netboot) and
-      ;; (install-grub-efi).  The installed font could be referred to as
-      ;; "unicode".  But it is currently unclear if (install-grub-disk-image)
-      ;; and (install-grub) both install the font as well.
-      ;; Actually this should be preferred.
-      #~(canonicalize-path
-         #+(normalize-file (file-append grub "/share/grub/unicode.pf2")
-                           store-mount-point
-                           store-directory-prefix))))
+      (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                      store-mount-point
+                      store-directory-prefix)))
 
   (define image
     (normalize-file (grub-background-image config)
