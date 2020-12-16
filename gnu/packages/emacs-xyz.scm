@@ -87,6 +87,7 @@
 ;;; Copyright © 2020 Noah Landis <noahlandis@posteo.net>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
+;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25788,6 +25789,25 @@ s-expression.")
     (description "This package provides Emacs map-manipulation functions that
 work on alists, hash-table and arrays.  All functions are prefixed with
 @code{map-}.")
+    (license license:gpl3+)))
+
+(define-public emacs-xref
+  (package
+    (name "emacs-xref")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "xref-" version ".el"))
+       (sha256
+        (base32 "1r531gl73y1br8g4n77gxbyj26yiaw7snjad21fgs5m80cka8fi3"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/xref.html")
+    (synopsis "Cross-referencing commands")
+    (description
+     "This library provides a generic infrastructure for cross referencing
+commands, in particular @code{find-definition}.")
     (license license:gpl3+)))
 
 (define-public emacs-burly
