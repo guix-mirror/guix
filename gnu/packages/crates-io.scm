@@ -7983,6 +7983,31 @@ Transparency logs for use with sct crate.")
      "This package provides an @code{__attribute__((constructor))} for Rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-ctr-0.6
+  (package
+    (name "rust-ctr")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ctr" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0zvyf13675hrlc37myj97k5ng7m1mj3d9p4ic4yvyhvl9zak0jpv"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-cipher" ,rust-cipher-0.2))))
+    (home-page "https://docs.rs/ctr/")
+    (synopsis "CTR block mode of operation")
+    (description "This package provides a generic implementations of CTR mode
+for block ciphers.
+
+Mode functionality is accessed using traits from re-exported cipher crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ctrlc-3.1
   (package
     (name "rust-ctrlc")
