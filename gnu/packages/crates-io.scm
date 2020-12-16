@@ -12800,7 +12800,7 @@ ignore files such as .gitignore against file paths.")
 (define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
-    (version "1.4.0")
+    (version "1.6.1")
     (source
       (origin
         (method url-fetch)
@@ -12809,20 +12809,22 @@ ignore files such as .gitignore against file paths.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1ziabh0lc4wwahv3qgv6aqckyydcrczpagpfp770jn5m2fqv5663"))))
+          "0friqyzr4ssyayks7nirqbc36zcsf8fdi67jmvl4vpjh8a9zmcag"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1.0)
+        ("rust-hashbrown" ,rust-hashbrown-0.9)
         ("rust-serde" ,rust-serde-1)
         ("rust-rayon" ,rust-rayon-1))
        #:cargo-development-inputs
        (("rust-fnv" ,rust-fnv-1)
-        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-itertools" ,rust-itertools-0.9)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-serde-test" ,rust-serde-test-1))))
+        ("rust-serde-derive" ,rust-serde-derive-1))))
     (home-page "https://github.com/bluss/indexmap")
     (synopsis "Hash table with consistent order and fast iteration.")
     (description
