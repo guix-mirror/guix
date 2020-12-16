@@ -50,6 +50,33 @@
 
 ;;; Annotations
 
+(define-public r-org-eck12-eg-db
+  (package
+    (name "r-org-eck12-eg-db")
+    (version "3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "org.EcK12.eg.db" version 'annotation))
+       (sha256
+        (base32 "0c4p6jr83k0gm6pvn760yr8xf33wggrfcr6fg7a42a96bcf817gs"))))
+    (properties
+     `((upstream-name . "org.EcK12.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/org.EcK12.eg.db")
+    (synopsis "Genome wide annotation for E coli strain K12")
+    (description
+     "This package provides genome wide annotation for E coli strain K12,
+primarily based on mapping using Entrez Gene identifiers.  Entrez Gene is
+National Center for Biotechnology Information (NCBI)’s database for
+gene-specific information.  Entrez Gene maintains records from genomes which
+have been completely sequenced, which have an active research community to
+submit gene-specific information, or which are scheduled for intense sequence
+analysis.")
+    (license license:artistic2.0)))
+
 (define-public r-reactome-db
   (package
     (name "r-reactome-db")
