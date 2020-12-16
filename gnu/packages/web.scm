@@ -6323,7 +6323,7 @@ command-line arguments or read from stdin.")
     (home-page "https://github.com/jjjake/internetarchive")
     (synopsis "Command-line interface to archive.org")
     (description "@code{ia} is a command-line tool for using
-@url{archive.org} from the command-line.  It also emplements the
+@url{archive.org} from the command-line.  It also implements the
 internetarchive python module for programmatic access to archive.org.")
     (license license:agpl3+)))
 
