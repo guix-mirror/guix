@@ -31482,6 +31482,36 @@ functionality and without weak references.")
      "Assembly implementation of SHA-1 compression function.")
     (license license:expat)))
 
+(define-public rust-sha1collisiondetection-0.2
+  (package
+    (name "rust-sha1collisiondetection")
+    (version "0.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sha1collisiondetection" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "10nh7s3d02136kkz93pxyfv628ls5xz8ndg27pkb6na0ghccz9np"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-digest" ,rust-digest-0.9)
+         ("rust-generic-array" ,rust-generic-array-0.14)
+         ("rust-libc" ,rust-libc-0.2)
+         ("rust-sha-1" ,rust-sha-1-0.9)
+         ("rust-structopt" ,rust-structopt-0.3))))
+    (home-page "https://docs.rs/sha1collisiondetection")
+    (synopsis "SHA-1 hash function with collision detection and mitigation")
+    (description
+      "This package implementation of the SHA-1 cryptographic hash algorithm.
+
+This is a port of Marc Stevens' sha1collisiondetection algorithm to Rust.  The
+code is translated from C to Rust using c2rust.")
+    (license license:expat)))
+
 (define-public rust-sha2-0.9
   (package
     (name "rust-sha2")
