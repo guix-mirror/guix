@@ -7930,6 +7930,7 @@ Which D compiler is used can be specified with the @code{#:ldc}
 parameter which defaults to @code{ldc}.
 @end defvr
 
+@anchor{emacs-build-system}
 @defvr {Scheme Variable} emacs-build-system
 This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system
