@@ -9213,3 +9213,29 @@ CATALYST (Cytometry dATa anALYSis Tools) to provide a pipeline for
 preprocessing of cytometry data, including i) normalization using bead
 standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
     (license license:gpl2+)))
+
+(define-public r-kegggraph
+  (package
+    (name "r-kegggraph")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "KEGGgraph" version))
+       (sha256
+        (base32 "1h293hn02ysm923bh9gxk87xv663xiqchqcvpaxpla9c3yrgkx2v"))))
+    (properties `((upstream-name . "KEGGgraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/KEGGgraph")
+    (synopsis "Graph approach to Kegg Pathway database in R and Bioconductor")
+    (description
+     "@code{r-kegggraph} is an interface between Kegg Pathway database and graph
+object as well as a collection of tools to analyze, dissect and visualize these
+graphs.  It parses the regularly updated kgml (Kegg XML) files into graph models
+maintaining all essential pathway attributes.  The package offers
+functionalities including parsing, graph operation, visualization and etc.")
+    (license license:gpl2+)))
