@@ -27807,6 +27807,7 @@ variants in pure Rust.")
 data type.")
     (license license:expat)))
 
+;; TODO: Unbundle sleef.
 (define-public rust-sleef-sys-0.1
   (package
     (name "rust-sleef-sys")
@@ -27825,9 +27826,8 @@ data type.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-bindgen" ,rust-bindgen-0.50)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-bindgen" ,rust-bindgen-0.46)
         ("rust-cmake" ,rust-cmake-0.1)
         ("rust-env-logger" ,rust-env-logger-0.6))))
     (home-page "https://github.com/gnzlbg/sleef-sys")
