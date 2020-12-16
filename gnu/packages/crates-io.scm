@@ -5068,24 +5068,25 @@ directories and @code{CACHEDIR.TAG} files.")
 encoding.")
     (license license:expat)))
 
-(define-public rust-capnp-futures-0.10
+(define-public rust-capnp-futures-0.13
   (package
     (name "rust-capnp-futures")
-    (version "0.10.1")
+    (version "0.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "capnp-futures" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0qdiqkp9mh4acpa0dqhpzv2gwf949rj3m85mgwl1rih6gvgbh1zs"))))
+        (base32 "18q93ncbfcnjq7zhvy9idnifypmi2qcp775q7454y3r4lvvdcyyw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-capnp" ,rust-capnp-0.10)
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.13)
         ("rust-futures" ,rust-futures-0.1))
        #:cargo-development-inputs
-       (("rust-capnp" ,rust-capnp-0.10)
+       (("rust-capnp" ,rust-capnp-0.13)
         ("rust-quickcheck" ,rust-quickcheck-0.2))))
     (home-page "https://github.com/capnproto/capnproto-rust")
     (synopsis "Async serialization for Cap'n Proto messages")
