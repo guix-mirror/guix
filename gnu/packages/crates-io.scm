@@ -24161,6 +24161,25 @@ written with declarative macros.")
         ("rust-static-assertions" ,rust-static-assertions-1)
         ("rust-trybuild" ,rust-trybuild-1))))))
 
+(define-public rust-pin-utils-0.1
+  (package
+    (name "rust-pin-utils")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pin-utils" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "117ir7vslsl2z1a7qzhws4pd01cg2d3338c47swjyvqv2n60v1wb"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://docs.rs/pin-utils")
+    (synopsis "Utilities for pinning")
+    (description "This package provides utilities for pinning.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
