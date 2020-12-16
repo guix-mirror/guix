@@ -5863,6 +5863,31 @@ contains all syscalls and related types.")
             license:asl2.0
             license:zlib))))
 
+(define-public rust-cmac-0.5
+  (package
+    (name "rust-cmac")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cmac" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0wj2kd4lb5hb7dvxfad4hi8gklmbq8vvvcnzmmqgxr94fx7xxm3k"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-crypto-mac" ,rust-crypto-mac-0.10)
+         ("rust-dbl" ,rust-dbl-0.3))))
+    (home-page "https://docs.rs/cmac/")
+    (synopsis "Generic implementation of Cipher-based Message Authentication
+Code")
+    (description "This package provides a pure Rust implementation of the
+Cipher-based Message Authentication Code (CMAC).")
+    (license (list license:expat license:asl2.0))))  ; at your choice
+
 (define-public rust-cmake-0.1
   (package
     (name "rust-cmake")
