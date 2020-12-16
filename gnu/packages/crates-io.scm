@@ -5043,20 +5043,21 @@ directories and @code{CACHEDIR.TAG} files.")
      "This package provides a callback-based event loop")
     (license license:expat)))
 
-(define-public rust-capnp-0.10
+(define-public rust-capnp-0.13
   (package
     (name "rust-capnp")
-    (version "0.10.3")
+    (version "0.13.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "capnp" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "17hsnmlcrzksjjpwpz51y8g36xzq8042i2cwns0lsg7rixfw2rxq"))))
+        (base32 "1bx2pj0ysmyd1ryd5s43m3c7n5k067x1aciqiiyg4kjswlcs6xjf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-quickcheck" ,rust-quickcheck-0.2))
        #:cargo-development-inputs
