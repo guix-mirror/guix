@@ -9945,6 +9945,37 @@ waiting for them to complete.  Threads are allowed to borrow local variables
 from the main thread.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-eax-0.3
+  (package
+    (name "rust-eax")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "eax" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0vmpbqncpbj2ldm3fhfz87ija1sk4zk9vad91yd2jjsrbrx6xxz1"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-aead" ,rust-aead-0.3)
+         ("rust-cipher" ,rust-cipher-0.2)
+         ("rust-cmac" ,rust-cmac-0.5)
+         ("rust-ctr" ,rust-ctr-0.6)
+         ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://docs.rs/eax/")
+    (synopsis "Pure Rust implementation of the EAX Authenticated Encryption
+with Associated Data (AEAD)")
+    (description "This package provides a pure Rust implementation of the EAX
+Authenticated Encryption with Associated Data (AEAD) Cipher with optional
+architecture-specific hardware acceleration.  This scheme is only based on a
+block cipher.  It uses counter mode (CTR) for encryption and CBC mode for
+generating a OMAC/CMAC/CBCMAC (all names for the same thing).")
+    (license (list license:asl2.0 license:expat))))  ; at your choice
+
 (define-public rust-ed25519-1
   (package
     (name "rust-ed25519")
