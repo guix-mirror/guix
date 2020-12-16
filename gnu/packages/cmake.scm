@@ -207,7 +207,7 @@
              (apply invoke "./configure" configure-flags))))))
     (inputs
      `(("bzip2" ,bzip2)
-       ("curl" ,curl-minimal)
+       ("curl" ,curl)
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
@@ -259,9 +259,8 @@ and workspaces that can be used in the compiler environment of your choice.")
                              (define preserved-files ',%preserved-third-party-files))
                           exp))))))
     (inputs
-     `(("curl" ,curl)
-       ("jsoncpp" ,jsoncpp)
-       ,@(alist-delete "curl" (package-inputs cmake-bootstrap))))
+     `(("jsoncpp" ,jsoncpp)
+       ,@(package-inputs cmake-bootstrap)))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

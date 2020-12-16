@@ -142,14 +142,8 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-;; This package exists mainly to bootstrap CMake.  It must not depend on
-;; anything that uses cmake-build-system.
 (define-public curl-minimal
-  (hidden-package
-   (package/inherit
-    curl
-    (name "curl-minimal")
-    (inputs (alist-delete "openldap" (package-inputs curl))))))
+  (deprecated-package "curl-minimal" curl))
 
 (define-public kurly
   (package

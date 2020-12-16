@@ -6856,7 +6856,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl-minimal)
+     `(("curl" ,curl)
        ("libvorbis" ,libvorbis)
        ("mesa" ,mesa)
        ("openal" ,openal)
