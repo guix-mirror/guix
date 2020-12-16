@@ -5122,20 +5122,21 @@ messages.")
 remote procedure call protocol")
     (license license:expat)))
 
-(define-public rust-capnpc-0.10
+(define-public rust-capnpc-0.13
   (package
     (name "rust-capnpc")
-    (version "0.10.2")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "capnpc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1zxbmdkr0xfzkfq9p8zn7pp9jjq275qhr8fh9a0cc0ab37yfvbyj"))))
+        (base32 "1hbm5xqpam3f0ha5ds39wjmpqpzdalpbrls9wlp7m3slh3p5r1c1"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-capnp" ,rust-capnp-0.10))))
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-capnp" ,rust-capnp-0.13))))
     (home-page "https://github.com/capnproto/capnproto-rust")
     (synopsis "Cap'n Proto code generation")
     (description "Cap'n Proto code generation")
