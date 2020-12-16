@@ -23731,7 +23731,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
       (description
        "Telega is a full-featured, unofficial GNU Emacs-based client for the
 Telegram messaging platform.")
-      (home-page "https://github.com/zevlg/telega.el")
+      (home-page "https://zevlg.github.io/telega.el/")
       (license license:gpl3+))))
 
 (define-public emacs-doom-modeline
