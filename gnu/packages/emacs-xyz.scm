@@ -17774,7 +17774,8 @@ be changed by customizing the appropriate variables.")
        `(("emacs-org" ,emacs-org)))
       (home-page "https://github.com/dengste/org-caldav")
       (synopsis "Sync Org files with external calendars via the CalDAV protocol")
-      (description "Synchronize between events in Org files and a CalDAV
+      (description
+       "Org CalDAV synchronizes events between Org files and a CalDAV
 calendar.")
       (license license:gpl3+))))
 
