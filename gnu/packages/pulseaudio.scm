@@ -232,6 +232,7 @@ rates.")
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
+       ("webrtc-audio-processing", webrtc-audio-processing)
 
        ;; For the optional X11 modules.
        ("libice" ,libice)
