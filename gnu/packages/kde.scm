@@ -831,10 +831,10 @@ Python, PHP, and Perl.")
        ("kcrash" ,kcrash)
        ("kjs" ,kjs)))
     (home-page "https://kde.org/applications/graphics/okular/")
-    (synopsis "Document Viewer")
-    (description "Okular is a universal document viewer developed by KDE.
- Okular works on multiple platforms, including but not limited to
- Linux, Windows, macOS, *BSD, etc.")
+    (synopsis "Document viewer")
+    (description
+     "Okular is a document viewer developed for KDE.  It can display files in
+a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
     (license license:gpl2+)))
 
 (define-public kdegraphics-mobipocket
