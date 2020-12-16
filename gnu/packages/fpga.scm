@@ -26,6 +26,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
@@ -374,3 +375,21 @@ simulator trace files (@dfn{FST}).")
     (home-page "http://gtkwave.sourceforge.net/")
     ;; Exception against free government use in tcl_np.c and tcl_np.h.
     (license (list license:gpl2+ license:expat license:tcl/tk))))
+
+(define-public python-myhdl
+  (package
+    (name "python-myhdl")
+    (version "0.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "myhdl" version))
+        (sha256
+          (base32
+            "04fi59cyn5dsci0ai7djg74ybkqfcjzhj1jfmac2xanbcrw9j3yk"))))
+    (build-system python-build-system)
+    (home-page "http://www.myhdl.org/")
+    (synopsis "Python as a Hardware Description Language")
+    (description "This package provides a library to turn Python into
+a hardware description and verification language. ")
+    (license license:lgpl2.1+)))
