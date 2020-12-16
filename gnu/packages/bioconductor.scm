@@ -9239,3 +9239,37 @@ graphs.  It parses the regularly updated kgml (Kegg XML) files into graph models
 maintaining all essential pathway attributes.  The package offers
 functionalities including parsing, graph operation, visualization and etc.")
     (license license:gpl2+)))
+
+(define-public r-pathview
+  (package
+    (name "r-pathview")
+    (version "1.30.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "pathview" version))
+       (sha256
+        (base32 "11fisiksw1y64ii9q8p2znyp9w8mlqzgiaacmycw59rngkjlmbs4"))))
+    (properties `((upstream-name . "pathview")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-graph" ,r-graph)
+       ("r-kegggraph" ,r-kegggraph)
+       ("r-keggrest" ,r-keggrest)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-png" ,r-png)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-xml" ,r-xml)))
+    (home-page "https://pathview.uncc.edu/")
+    (synopsis "Tool set for pathway based data integration and visualization")
+    (description
+     "@code{r-pathview} is a tool set for pathway based data integration and
+visualization.  It maps and renders a wide variety of biological data on
+relevant pathway graphs.  All users need is to supply their data and specify
+the target pathway.  This package automatically downloads the pathway graph
+data, parses the data file, maps user data to the pathway, and render pathway
+graph with the mapped data.  In addition, @code{r-pathview} also seamlessly
+integrates with pathway and gene set (enrichment) analysis tools for
+large-scale and fully automated analysis.")
+    (license license:gpl3+)))
