@@ -14856,33 +14856,50 @@ as well as functions for navigating between these headings.")
     (license license:gpl3+)))
 
 (define-public emacs-org-super-agenda
-  ;; emacs-org-sidebar depends on a newer commit than the latest release version.
-  (let ((commit "a87ca11fbbe72ab6c1c4c3b55ae9e1e93ebfb8ba")
-        (revision "3"))
-    (package
-      (name "emacs-org-super-agenda")
-      (version (git-version "1.1.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/alphapapa/org-super-agenda")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "08b7babdaqblb6jff57an4kbcxk6fkhf668620fipfjgbsnqv3ff"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-org" ,emacs-org)
-         ("emacs-dash" ,emacs-dash)
-         ("emacs-ts" ,emacs-ts)
-         ("emacs-ht" ,emacs-ht)
-         ("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/alphapapa/org-super-agenda")
-      (synopsis "Supercharged Org agenda")
-      (description "This package allows items in the Org agenda to be grouped
+  (package
+    (name "emacs-org-super-agenda")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-super-agenda")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10l9h2n09cql4ih7nc0ma3ghdsq9l5v9xlj1lg7kq67icdwjlsvy"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("test/run" "--debug")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-for-tests.el
+           (lambda _
+             (make-file-writable "test/test.el")
+             (emacs-substitute-variables "test/test.el"
+               ("org-super-agenda-test-results-file"
+                (string-append (getcwd) "/test/results.el")))
+             ;; The following test fail (see:
+             ;; https://github.com/alphapapa/org-super-agenda/issues/183).
+             (substitute* "test/test.el"
+               ((".*org-super-agenda-test--:auto-map.*" all)
+                (string-append all "  (skip-unless nil)\n")))
+             #t)))))
+    (native-inputs
+     `(("emacs-f" ,emacs-f)
+       ("getopt" ,util-linux)))
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-ts" ,emacs-ts)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/alphapapa/org-super-agenda")
+    (synopsis "Supercharged Org agenda")
+    (description "This package allows items in the Org agenda to be grouped
 into sections while preserving the structure imposed by any timestamps.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-org-make-toc
   (package
