@@ -23585,8 +23585,8 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "04e53d44f5a5ccffeef40ba8c3d58f1572e5c752")
-	(revision "0")
+  (let ((commit "1d28dc209e2acf1a3bf2852cc620b6e412ea73f9")
+	(revision "1")
 	(version "0.7.1"))
     (package
       (name "emacs-telega")
@@ -23599,7 +23599,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                (commit commit)))
          (sha256
           (base32
-           "1zrfwa7wqica93399k7myy8zxixzv8dqkqy7ky81bgxsngjxir97"))
+           "0h6kj3r36x26v6p4gkzg5s6fv0brlvrf6ycsdwnz27fw5sdb99k7"))
          (patches (search-patches
                    "emacs-telega-patch-server-functions.patch"
                    "emacs-telega-test-env.patch"))
