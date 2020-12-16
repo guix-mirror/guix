@@ -342,6 +342,26 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
+(define-public emacs-project
+  (package
+    (name "emacs-project")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "project-" version ".el"))
+       (sha256
+        (base32 "181hls4phhj8kgpfcky6h0mgzpl9xj616abvcvx8mrn4nmpyh655"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-xref" ,emacs-xref)))
+    (home-page "http://elpa.gnu.org/packages/project.html")
+    (synopsis "Operations on the current project")
+    (description
+     "This library contains generic infrastructure for dealing with projects,
+some utility functions, and commands using that infrastructure.")
+    (license license:gpl3+)))
+
 (define-public git-modes
   (package
     (name "emacs-git-modes")
