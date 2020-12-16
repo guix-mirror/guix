@@ -5094,27 +5094,28 @@ encoding.")
 messages.")
     (license license:expat)))
 
-(define-public rust-capnp-rpc-0.10
+(define-public rust-capnp-rpc-0.13
   (package
     (name "rust-capnp-rpc")
-    (version "0.10.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "capnp-rpc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1j6xg7yays1hlm1045wviyn1642yvvi2p4kba26yk07a0kafr3jn"))))
+        (base32 "17p0y0yk68pzsnpmaklhiqrrlrrv0ld8nhbg4qflmgibshi8b69p"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("capnproto" ,capnproto)))
     (arguments
-     `(#:cargo-inputs
-       (("rust-capnp" ,rust-capnp-0.10)
-        ("rust-capnp-futures" ,rust-capnp-futures-0.10)
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.13)
+        ("rust-capnp-futures" ,rust-capnp-futures-0.13)
         ("rust-futures" ,rust-futures-0.1))
        #:cargo-development-inputs
-       (("rust-capnpc" ,rust-capnpc-0.10))))
+       (("rust-capnpc" ,rust-capnpc-0.13))))
     (home-page "https://github.com/capnproto/capnproto-rust")
     (synopsis "Cap'n Proto remote procedure call protocol implementation")
     (description "This package provides an implementation of the Cap'n Proto
