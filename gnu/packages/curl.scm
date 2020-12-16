@@ -43,7 +43,6 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libidn)
-  #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -68,7 +67,6 @@
               "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
-             ("openldap" ,openldap)
              ("mit-krb5" ,mit-krb5)
              ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
