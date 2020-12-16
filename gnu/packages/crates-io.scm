@@ -8553,6 +8553,31 @@ hexadecimal, base32, and base64.")
 and arithmetic.")
     (license license:expat)))
 
+(define-public rust-dbl-0.3
+  (package
+    (name "rust-dbl")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dbl" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1pihf6zrzncbs3lsyqkzxxxqmjf8rfpwvs1sg8nmz8cv7df18d97"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-generic-array" ,rust-generic-array-0.14))))
+    (home-page "https://docs.rs/dbl")
+    (synopsis "Double operation in Galois Field")
+    (description
+      "This package provides double and inverse double over Galois Field -
+GF(2^n).  This trait is implemented for 64, 128 and 256 bit block
+sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-decimal-2.0
   (package
     (name "rust-decimal")
