@@ -16660,7 +16660,8 @@ and doesn't require memorisation of commands.
        (sha256
         (base32 "1qhzs75pxnaksbhczmpdcy2zmrqavlzkzss7ik5nv2wf9vs0sn02"))))
     (propagated-inputs
-     `(("emacs-datetime" ,emacs-datetime)))
+     `(("emacs-datetime" ,emacs-datetime)
+       ("emacs-extmap" ,emacs-extmap)))
     (build-system emacs-build-system)
     (home-page "https://github.com/doublep/logview/")
     (synopsis "Emacs mode for viewing log files")
