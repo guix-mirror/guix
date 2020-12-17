@@ -748,30 +748,6 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
-(define-public r-ideoviz
-  (package
-    (name "r-ideoviz")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "IdeoViz" version))
-              (sha256
-               (base32
-                "1k5c0skr6pvpcvkak9f0a088w5wsx4fl3jb9a76gyyni4nkj7djq"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-iranges" ,r-iranges)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-genomeinfodb" ,r-genomeinfodb)))
-    (home-page "https://bioconductor.org/packages/IdeoViz/")
-    (synopsis "Plots data along a chromosomal ideogram")
-    (description "This package provides functions to plot data associated with
-arbitrary genomic intervals along chromosomal ideogram.")
-    (license license:gpl2)))
-
 ;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
 ;; from Bioconductor.
 (define-public r-deconstructsigs
@@ -1288,6 +1264,30 @@ extended S4 framework.  Backends are implemented for hierarchical, k-means
 and graph-based clustering.  Several utilities are also provided to compare
 and evaluate clustering results.")
    (license license:gpl3)))
+
+(define-public r-ideoviz
+  (package
+    (name "r-ideoviz")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "IdeoViz" version))
+              (sha256
+               (base32
+                "1k5c0skr6pvpcvkak9f0a088w5wsx4fl3jb9a76gyyni4nkj7djq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomeinfodb" ,r-genomeinfodb)))
+    (home-page "https://bioconductor.org/packages/IdeoViz/")
+    (synopsis "Plots data along a chromosomal ideogram")
+    (description "This package provides functions to plot data associated with
+arbitrary genomic intervals along chromosomal ideogram.")
+    (license license:gpl2)))
 
 (define-public r-affycomp
   (package
