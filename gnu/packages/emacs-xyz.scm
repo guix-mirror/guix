@@ -24204,7 +24204,7 @@ interface.")
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "ivy-posframe-" version ".el"))
+                           "ivy-posframe-" version ".tar"))
        (sha256
         (base32 "184730grclxmlw6nfs41d4g6fvz9c6xnclvwgqx1ii0xm7p9xy95"))))
     (build-system emacs-build-system)
