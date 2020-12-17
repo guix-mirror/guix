@@ -15199,6 +15199,60 @@ timestamps by providing a @code{ts} struct.")
 according to a parsing expression grammar.")
     (license license:gpl3+)))
 
+(define-public emacs-eldev
+  (package
+    (name "emacs-eldev")
+    (version "0.7.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/doublep/eldev")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xxcxgycn0a03irjcdq2pcb4p1bddhfjspni7lliwpv6zjqgkyhb"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("./bin/eldev" "-p" "-dtTC" "test")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-for-tests
+           (lambda _
+             (setenv "ELDEV_LOCAL" (getcwd))
+             (make-file-writable
+              "test/project-i/project-i-autoloads.el")
+             #t))
+         (add-after 'install 'install-eldev-executable
+           ;; This constructs the eldev executable from templates and
+           ;; installs it in the specified directory.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (site-lisp (string-append out "/share/emacs/site-lisp")))
+               (mkdir-p bin)
+               (setenv "HOME" (getcwd))
+               (invoke "./install.sh" bin)
+               (substitute* (string-append bin "/eldev")
+                 ;; Point ELDEV_LOCAL to the installation directory so that
+                 ;; eldev doesn't try to bootstrap itself from MELPA when
+                 ;; invoked.
+                 (("export ELDEV_EMACS.*" all)
+                  (string-append "export ELDEV_LOCAL=" site-lisp "\n" all)))
+               #t))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))           ;for tests
+    (home-page "https://github.com/doublep/eldev/")
+    (synopsis "Emacs-based build tool for Elisp")
+    (description "Eldev (Elisp Development Tool) is an Emacs-based build tool,
+targeted solely at Elisp projects.  It is an alternative to Cask.  Unlike
+Cask, Eldev itself is fully written in Elisp and its configuration files are
+also Elisp programs.  For those familiar with the Java world, Cask can be seen
+as a parallel to Maven — it uses project description, while Eldev is sort of a
+parallel to Gradle — its configuration is a program on its own.")
+    (license license:gpl3+)))
+
 (define-public emacs-with-simulated-input
   (package
     (name "emacs-with-simulated-input")
