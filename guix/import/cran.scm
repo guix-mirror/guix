@@ -51,7 +51,9 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (gnu packages)
-  #:export (cran->guix-package
+  #:export (%input-style
+
+            cran->guix-package
             bioconductor->guix-package
             cran-recursive-import
             %cran-updater
@@ -73,6 +75,9 @@
 ;;; cran.r-project.org.
 ;;;
 ;;; Code:
+
+(define %input-style
+  (make-parameter 'variable)) ; or 'specification
 
 (define string->license
   (match-lambda
@@ -128,7 +133,11 @@
 (define (format-inputs names)
   "Generate a sorted list of package inputs from a list of package NAMES."
   (map (lambda (name)
-         (list name (list 'unquote (string->symbol name))))
+         (case (%input-style)
+           ((specification)
+            (list name (list 'unquote (list 'specification->package name))))
+           (else
+            (list name (list 'unquote (string->symbol name))))))
        (sort names string-ci<?)))
 
 (define* (maybe-inputs package-inputs #:optional (type 'inputs))

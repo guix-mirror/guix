@@ -11009,6 +11009,13 @@ When @option{--recursive} is added, the importer will traverse the
 dependency graph of the given upstream package recursively and generate
 package expressions for all those packages that are not yet in Guix.
 
+When @option{--style=specification} is added, the importer will generate
+package definitions whose inputs are package specifications instead of
+references to package variables.  This is useful when generated package
+definitions are to be appended to existing user modules, as the list of
+used package modules need not be changed.  The default is
+@option{--style=variable}.
+
 When @option{--archive=bioconductor} is added, metadata is imported from
 @uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
 packages for the analysis and comprehension of high-throughput
