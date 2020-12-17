@@ -611,14 +611,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.48.0")
+    (version "5.48.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "12bd53r841r8zsn3v1kzws2qar908p6g6mlnm50kmjkxramr63ga"))))
+        (base32 "0k728l6zi0lkhzyipsb0f2jw53s4xicm7arp33ikhrvc4jlwcp4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
