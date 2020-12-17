@@ -15641,6 +15641,8 @@ navigate and display hierarchy structures.")
         (base32
          "0a3q667pybpmsjkbgf6287jwgpnx8brp5314wb8zbczw6ncygnbi"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons "^[^/]*\\.extmap$" %default-include)))
     (inputs
      `(("emacs-extmap" ,emacs-extmap)))
     (home-page "https://github.com/doublep/datetime/")
