@@ -37,38 +37,14 @@
             dump-file/deduplicate
             copy-file/deduplicate))
 
-;; XXX: This port is used as a workaround on Guile <= 2.2.4 where
-;; 'port-position' throws to 'out-of-range' when the offset is great than or
-;; equal to 2^32: <https://bugs.gnu.org/32161>.
-(define (counting-wrapper-port output-port)
-  "Return two values: an output port that wraps OUTPUT-PORT, and a thunk to
-retrieve the number of bytes written to OUTPUT-PORT."
-  (let ((byte-count 0))
-    (values (make-custom-binary-output-port "counting-wrapper"
-                                            (lambda (bytes offset count)
-                                              (put-bytevector output-port bytes
-                                                              offset count)
-                                              (set! byte-count
-                                                (+ byte-count count))
-                                              count)
-                                            (lambda ()
-                                              byte-count)
-                                            #f
-                                            (lambda ()
-                                              (close-port output-port)))
-            (lambda ()
-              byte-count))))
-
 (define (nar-sha256 file)
   "Gives the sha256 hash of a file and the size of the file in nar form."
-  (let*-values (((port get-hash) (open-sha256-port))
-                ((wrapper get-size) (counting-wrapper-port port)))
-    (write-file file wrapper)
-    (force-output wrapper)
+  (let-values (((port get-hash) (open-sha256-port)))
+    (write-file file port)
     (force-output port)
     (let ((hash (get-hash))
-          (size (get-size)))
-      (close-port wrapper)
+          (size (port-position port)))
+      (close-port port)
       (values hash size))))
 
 (define (tempname-in directory)

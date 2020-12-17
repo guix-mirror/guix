@@ -469,22 +469,13 @@ is similar to the sexp returned by 'package-provenance' for regular packages."
   "Proxy communication between CLIENT and BACKEND until CLIENT closes the
 connection, at which point CLIENT is closed (both CLIENT and BACKEND must be
 input/output ports.)"
-  (define (select* read write except)
-    ;; This is a workaround for <https://bugs.gnu.org/30365> in Guile < 2.2.4:
-    ;; since 'select' sometimes returns non-empty sets for no good reason,
-    ;; call 'select' a second time with a zero timeout to filter out incorrect
-    ;; replies.
-    (match (select read write except)
-      ((read write except)
-       (select read write except 0))))
-
   ;; Use buffered ports so that 'get-bytevector-some' returns up to the
   ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
   (setvbuf client 'block 65536)
   (setvbuf backend 'block 65536)
 
   (let loop ()
-    (match (select* (list client backend) '() '())
+    (match (select (list client backend) '() '())
       ((reads () ())
        (when (memq client reads)
          (match (get-bytevector-some client)
