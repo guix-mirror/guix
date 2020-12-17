@@ -38,6 +38,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -48,6 +49,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
@@ -352,7 +354,24 @@ from a mounted file system.")
                "PYTEST=pytest")
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure))         ; no configure script
+           (delete 'configure)          ; no configure script
+           (add-after 'install 'promote-mount.bcachefs.sh
+             ;; XXX The (optional) mount.bcachefs helper requires rust:cargo.
+             ;; This alternative shell script does the job well enough for now.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion (string-append out "/sbin")
+                 (rename-file "mount.bcachefs.sh" "mount.bcachefs")
+                 ;; WRAP-SCRIPT causes bogus ‘Insufficient arguments’ errors.
+                 (wrap-program "mount.bcachefs"
+                   `("PATH" ":" prefix
+                     ,(cons (string-append out "/sbin")
+                            (map (lambda (input)
+                                     (string-append (assoc-ref inputs input)
+                                                    "/bin"))
+                                   (list "coreutils"
+                                         "gawk"
+                                         "util-linux"))))))))))
          #:tests? #f))                  ; XXX 6 valgrind tests fail
       (native-inputs
        `(("pkg-config" ,pkg-config)
@@ -367,10 +386,15 @@ from a mounted file system.")
          ("libscrypt" ,libscrypt)
          ("libsodium" ,libsodium)
          ("liburcu" ,liburcu)
-         ("util-linux" ,util-linux "lib") ; lib{blkid,uuid}
+         ("util-linux:lib" ,util-linux "lib") ; lib{blkid,uuid}
          ("lz4" ,lz4)
          ("zlib" ,zlib)
-         ("zstd:lib" ,zstd "lib")))
+         ("zstd:lib" ,zstd "lib")
+
+         ;; Only for mount.bcachefs.sh.
+         ("coreutils" ,coreutils-minimal)
+         ("gawk" ,gawk)
+         ("util-linux" ,util-linux)))
       (home-page "https://bcachefs.org/")
       (synopsis "Tools to create and manage bcachefs file systems")
       (description
