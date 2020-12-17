@@ -1286,7 +1286,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtirpc-hurd.patch			\
-  %D%/packages/patches/libtirpc-hurd-client.patch		\
   %D%/packages/patches/libtommath-fix-linkage.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
