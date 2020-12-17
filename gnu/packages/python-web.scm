@@ -5685,7 +5685,8 @@ as a Python package.")
              (substitute* "setup.py"
                (("httpcore==0.3.0") "httpcore")
                (("pytest==5.2.1") "pytest")
-               (("multidict==5.0.0") "multidict"))
+               (("multidict==5.0.0") "multidict")
+               (("httpx==0\\.15\\.4") "httpx"))
              #t))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
