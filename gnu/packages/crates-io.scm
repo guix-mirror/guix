@@ -8090,8 +8090,7 @@ encodings.")
          "10xjcafwbxvm2kfsyymxlz8wc9s4bmdj1xzlc809rxyp2yrbl6w0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-packed-simd" ,rust-packed-simd-2-0.3)
         ("rust-serde" ,rust-serde-1))
