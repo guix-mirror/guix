@@ -8357,7 +8357,8 @@ available.")
          "01xifj83dv492lxixijmg6va02rf3ydlxly0a9slmx22r6qa1drh"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-symdump" ,perl-devel-symdump)))
+     `(("perl-devel-symdump" ,perl-devel-symdump)
+       ("perl-pod-parser" ,perl-pod-parser)))
     (home-page "https://metacpan.org/release/Pod-Coverage")
     (synopsis "Check for comprehensive documentation of a module")
     (description "This module provides a mechanism for determining if the pod
