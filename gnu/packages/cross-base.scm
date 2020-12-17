@@ -536,6 +536,11 @@ and the cross tool chain."
 
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)
+                         ,@(if (hurd-triplet? target)
+                               `(("cross-mig"
+                                  ,@(assoc-ref (package-native-inputs xheaders)
+                                               "cross-mig")))
+                               '())
                          ,@(package-inputs libc)  ;FIXME: static-bash
                          ,@(package-native-inputs libc))))))
 
