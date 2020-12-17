@@ -1287,6 +1287,20 @@ programming.  Iosevka is completely generated from its source code.")
        (sha256
         (base32 "0n52lfn7awc28a4f5yh4my8q4ikzza705kp69chfw9jm2xx79npc"))))))
 
+(define-public font-iosevka-curly-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-curly-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka/"
+                           "releases/download/v" version  "/"
+                           "ttc-iosevka-curly-slab-" version ".zip"))
+       (sha256
+        (base32 "0ffiz2kg43kc2dxv48sjji33ra3kc6sy8vlard93c601fqjmrjws"))))))
+
 (define-public font-iosevka-etoile
   (package
     (inherit font-iosevka)
