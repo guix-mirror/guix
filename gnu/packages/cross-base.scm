@@ -534,16 +534,6 @@ and the cross tool chain."
         ;; "kernel-headers" input to point to the right thing.
         (propagated-inputs `(("kernel-headers" ,xheaders)))
 
-        ;; FIXME: 'static-bash' should really be an input, not a native input, but
-        ;; to do that will require building an intermediate cross libc.
-        (inputs (if (hurd-triplet? target)
-                    `(;; TODO: move to glibc in the next rebuild cycle
-                      ("hurd-mach-print.patch"
-                       ,(search-patch "glibc-hurd-mach-print.patch"))
-                      ("hurd-gettyent.patch"
-                       ,(search-patch "glibc-hurd-gettyent.patch")))
-                    '()))
-
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)
                          ,@(package-inputs libc)  ;FIXME: static-bash
