@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -8363,6 +8363,31 @@ available.")
     (description "This module provides a mechanism for determining if the pod
 for a given module is comprehensive.")
     (license (package-license perl))))
+
+(define-public perl-pod-parser
+  (package
+    (name "perl-pod-parser")
+    (version "1.63")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/M/MA/MAREKR/Pod-Parser-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1k8clxxdjag56zm6cv38c3q81gj7xphfhh98l21jynwp55hvbq6v"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Pod-Parser")
+    (synopsis "Modules for parsing/translating POD format documents")
+    (description
+     "@code{Pod::Parser} is a base class for creating POD filters and
+translators.  It handles most of the effort involved with parsing the POD
+sections from an input stream, leaving subclasses free to be concerned only
+with performing the actual translation of text.
+
+@emph{NOTE}: This module is considered legacy.  New projects should prefer
+@code{Pod::Simple} instead.")
+    (license license:perl-license)))
 
 (define-public perl-pod-simple
   (package
