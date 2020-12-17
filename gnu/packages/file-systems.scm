@@ -328,8 +328,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "742dbbdbb90efb786f05a8576917fcd0e9cbd57e")
-        (revision "1"))
+  (let ((commit "db931a4571817d7d61be6bce306f1d42f7cd3398")
+        (revision "2"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -341,7 +341,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0kn8y3kqylz6scv47mzfmwrlh21kbb14z5vs65vks8w50i26sxnc"))))
+          (base32 "1zl8lda6ni6rhsmsng6smrcjihy2irjf03h1m7nvkqmkhq44j80s"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
