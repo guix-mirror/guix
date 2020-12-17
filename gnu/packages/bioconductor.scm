@@ -748,34 +748,6 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
-;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
-;; from Bioconductor.
-(define-public r-deconstructsigs
-  (package
-    (name "r-deconstructsigs")
-    (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "deconstructSigs" version))
-              (sha256
-               (base32
-                "014x0nb23jb98666kaav2phkvmkr38pi38jv0dqd4jv7zp0gdf1a"))))
-    (properties
-     `((upstream-name . "deconstructSigs")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-bsgenome" ,r-bsgenome)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-reshape2" ,r-reshape2)))
-    (home-page "https://github.com/raerose01/deconstructSigs")
-    (synopsis "Identifies signatures present in a tumor sample")
-    (description "This package takes sample information in the form of the
-fraction of mutations in each of 96 trinucleotide contexts and identifies
-the weighted combination of published signatures that, when summed, most
-closely reconstructs the mutational profile.")
-    (license license:gpl2+)))
-
 ;; This is a CRAN package, but it depends on Bioconductor packages.
 (define-public r-nmf
   (package
@@ -1288,6 +1260,34 @@ and evaluate clustering results.")
     (description "This package provides functions to plot data associated with
 arbitrary genomic intervals along chromosomal ideogram.")
     (license license:gpl2)))
+
+;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
+;; from Bioconductor.
+(define-public r-deconstructsigs
+  (package
+    (name "r-deconstructsigs")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "deconstructSigs" version))
+              (sha256
+               (base32
+                "014x0nb23jb98666kaav2phkvmkr38pi38jv0dqd4jv7zp0gdf1a"))))
+    (properties
+     `((upstream-name . "deconstructSigs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/raerose01/deconstructSigs")
+    (synopsis "Identifies signatures present in a tumor sample")
+    (description "This package takes sample information in the form of the
+fraction of mutations in each of 96 trinucleotide contexts and identifies
+the weighted combination of published signatures that, when summed, most
+closely reconstructs the mutational profile.")
+    (license license:gpl2+)))
 
 (define-public r-affycomp
   (package
