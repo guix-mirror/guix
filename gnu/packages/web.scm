@@ -3876,8 +3876,7 @@ exists it is used instead.")
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-libwww" ,perl-libwww)
-       ;; Users should instead make sure SSL_ca_path is set properly.
-       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-http" ,perl-net-http)))
     (home-page "https://metacpan.org/release/LWP-Protocol-https")
     (synopsis "HTTPS support for LWP::UserAgent")
