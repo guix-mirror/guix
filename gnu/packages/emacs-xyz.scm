@@ -9716,6 +9716,31 @@ Emacs that Evil does not cover properly by default, such as @code{help-mode},
 @code{M-x calendar}, Eshell and more.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-goggles
+  (let ((commit "08a22058fd6a167f9f1b684c649008caef571459")
+        (version "0.0.1")
+        (revision "0"))
+    (package
+      (name "emacs-evil-goggles")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edkolev/evil-goggles")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1p3vjrij63v9nrcyj3b5jsqzv9y7dgv9i1inx1q7x3s90vndavac"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/edkolev/evil-goggles")
+      (synopsis "Displays visual hints when editing with evil")
+      (description "Creates a visual pulse to indicate the region that is
+being deleted, changed, yanked, or pasted when using evil commands")
+      (license license:gpl3+))))
+
 (define-public emacs-goto-chg
   (let ((commit "1829a13026c597e358f716d2c7793202458120b5")
         (version "1.7.3")
