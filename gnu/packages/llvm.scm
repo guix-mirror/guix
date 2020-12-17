@@ -92,68 +92,6 @@ as \"x86_64-linux\"."
       (string-append "https://releases.llvm.org/" version "/" component "-"
                      version ".src.tar.xz")))
 
-(define-public llvm-10
-  (package
-    (name "llvm")
-    (version "10.0.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (llvm-uri "llvm" version))
-      (sha256
-       (base32
-        "1wydhbp9kyjp5y0rc627imxgkgqiv3dfirbqil9dgpnbaw5y7n65"))))
-    (build-system cmake-build-system)
-    (outputs '("out" "opt-viewer"))
-    (native-inputs
-     `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
-       ("perl"   ,perl)))
-    (inputs
-     `(("libffi" ,libffi)))
-    (propagated-inputs
-     `(("zlib" ,zlib)))                 ;to use output from llvm-config
-    (arguments
-     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
-                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
-                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
-                           "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
-
-       ;; Don't use '-g' during the build, to save space.
-       #:build-type "Release"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'shared-lib-workaround
-           ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
-           ;; doesn't seem to get the correct rpath to be able to run
-           ;; from the build directory.  Set LD_LIBRARY_PATH as a
-           ;; workaround.
-           (lambda _
-             (setenv "LD_LIBRARY_PATH"
-                     (string-append (getcwd) "/lib"))
-             #t))
-         (add-after 'install 'install-opt-viewer
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (opt-viewer-out (assoc-ref outputs "opt-viewer"))
-                    (opt-viewer-share-dir (string-append opt-viewer-out "/share"))
-                    (opt-viewer-dir (string-append opt-viewer-share-dir "/opt-viewer")))
-               (mkdir-p opt-viewer-share-dir)
-               (rename-file (string-append out "/share/opt-viewer")
-                            opt-viewer-dir))
-             #t)))))
-    (home-page "https://www.llvm.org")
-    (synopsis "Optimizing compiler infrastructure")
-    (description
-     "LLVM is a compiler infrastructure designed for compile-time, link-time,
-runtime, and idle-time optimization of programs from arbitrary programming
-languages.  It currently supports compilation of C and C++ programs, using
-front-ends derived from GCC 4.0.1.  A new front-end for the C family of
-languages is in development.  The compiler infrastructure includes mirror sets
-of programming tools as well as libraries with equivalent functionality.")
-    (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
-
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
   (package
@@ -683,36 +621,6 @@ of programming tools as well as libraries with equivalent functionality.")
 
 (define-public clang-toolchain-9
   (make-clang-toolchain clang-9))
-
-;; Default LLVM and Clang version.
-(define-public llvm llvm-9)
-(define-public clang-runtime clang-runtime-9)
-(define-public clang clang-9)
-(define-public clang-toolchain clang-toolchain-9)
-
-(define-public lld
-  (package
-    (name "lld")
-    (version (package-version llvm-10))
-    (source (origin
-              (method url-fetch)
-              (uri (llvm-uri "lld" version))
-              (sha256
-               (base32
-                "0ynzi35r4fckvp6842alpd43qr810j3728yfslc66fk2mbh4j52r"))))
-    (build-system cmake-build-system)
-    (inputs
-     `(("llvm" ,llvm-10)))
-    (arguments
-     `(#:build-type "Release"
-       ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
-       ;; package.
-       #:tests? #f))
-    (home-page "https://lld.llvm.org/")
-    (synopsis "Linker from the LLVM project")
-    (description "LLD is a high-performance linker, built as a set of reusable
-components which highly leverage existing libraries in the larger LLVM Project.")
-    (license license:asl2.0))) ; With LLVM exception
 
 (define-public llvm-8
   (package
