@@ -645,14 +645,14 @@ more information (@pxref{origin Reference}).
 Emacs packages should preferably use the Emacs build system
 (@pxref{emacs-build-system}), for uniformity and the benefits provided
 by its build phases, such as the auto-generation of the autoloads file
-and the byte compilation of the sources.  Because there are no
+and the byte compilation of the sources.  Because there is no
 standardized way to run a test suite for Emacs packages, tests are
 disabled by default.  When a test suite is available, it should be
-enabled by setting the @code{#:tests?}  argument to @code{#true}.  By
+enabled by setting the @code{#:tests?} argument to @code{#true}.  By
 default, the command to run the test is @command{make check}, but any
 command can be specified via the @code{#:test-command} argument.  The
 @code{#:test-command} argument expects a list containing a command and
-its arguments, to be invoked during the @code{'check} phase.
+its arguments, to be invoked during the @code{check} phase.
 
 The Elisp dependencies of Emacs packages are typically provided as
 @code{propagated-inputs} when required at run time.  As for other
