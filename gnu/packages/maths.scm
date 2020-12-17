@@ -575,7 +575,8 @@ It can utilize SIMD instructions that are available on modern processors.")
     (inputs
      `(("gmp" ,gmp)))
     (arguments
-     `(#:configure-flags '("--with-gmp")))
+     `(#:configure-flags '("--with-gmp"
+                           "--disable-static")))
     (home-page "https://www.gnu.org/software/glpk/")
     (synopsis "GNU Linear Programming Kit, supporting the MathProg language")
     (description
