@@ -4756,14 +4756,17 @@ color scales, and color space conversion easy.  It has support for:
        ("texinfo" ,texinfo)
        ("perl" ,perl)
        ("scipy-sphinx-theme"
-        ,(origin ; The build script expects scipy-sphinx-theme as a git submodule
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://github.com/scipy/scipy-sphinx-theme")
-                 (commit "c466764e2231ba132c09826b5b138fffa1cfcec3")))
-           (sha256
-            (base32
-             "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
+        ,(let ((commit "c466764e2231ba132c09826b5b138fffa1cfcec3"))
+           (origin ;the build script expects scipy-sphinx-theme as a git submodule
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/scipy/scipy-sphinx-theme")
+                   (commit commit)))
+             (file-name (git-file-name "python-scipy-sphinx-theme"
+                                       (string-take commit 7)))
+             (sha256
+              (base32
+               "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl")))))
        ,@(package-native-inputs python-numpy)))
     (arguments
      `(#:tests? #f ; we're only generating the documentation
