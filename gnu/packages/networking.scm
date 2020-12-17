@@ -702,6 +702,13 @@ or, more generally, MAC addresses of the same category of hardware.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-iproute2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((iproute (assoc-ref inputs "iproute"))
+                    (ip (string-append iproute "/sbin/ip")))
+               (substitute* "misc/client-hook.iproute"
+                 (("/sbin/ip") ip))
+               #t)))
          ;; The checkconf test in src/ requires network access.
          (add-before
           'check 'disable-checkconf-test
@@ -709,6 +716,8 @@ or, more generally, MAC addresses of the same category of hardware.")
             (substitute* "src/Makefile"
               (("^TESTS = .*") "TESTS = \n"))
             #t)))))
+    (inputs
+     `(("iproute" ,iproute)))
     (home-page "https://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
