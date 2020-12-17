@@ -748,51 +748,6 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
-;; This is a CRAN package, but it depends on Bioconductor packages.
-(define-public r-nmf
-  (package
-    (name "r-nmf")
-    (version "0.23.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "NMF" version))
-       (sha256
-        (base32
-         "0ls7q9yc9l1z10jphq5a11wkfgcxc3gm3sfjj376zx3vnc0wl30g"))))
-    (properties `((upstream-name . "NMF")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-cluster" ,r-cluster)
-       ("r-biobase" ,r-biobase)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-bigmemory" ,r-bigmemory) ; suggested
-       ("r-synchronicity" ,r-synchronicity) ; suggested
-       ("r-colorspace" ,r-colorspace)
-       ("r-digest" ,r-digest)
-       ("r-doparallel" ,r-doparallel)
-       ("r-foreach" ,r-foreach)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-gridbase" ,r-gridbase)
-       ("r-pkgmaker" ,r-pkgmaker)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-registry" ,r-registry)
-       ("r-reshape2" ,r-reshape2)
-       ("r-rngtools" ,r-rngtools)
-       ("r-stringr" ,r-stringr)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "http://renozao.github.io/NMF")
-    (synopsis "Algorithms and framework for nonnegative matrix factorization")
-    (description
-     "This package provides a framework to perform Non-negative Matrix
-Factorization (NMF).  The package implements a set of already published
-algorithms and seeding methods, and provides a framework to test, develop and
-plug new or custom algorithms.  Most of the built-in algorithms have been
-optimized in C++, and the main interface function provides an easy way of
-performing parallel computations on multicore machines.")
-    (license license:gpl2+)))
-
 (define-public r-do-db
   (package
     (name "r-do-db")
@@ -1287,6 +1242,51 @@ arbitrary genomic intervals along chromosomal ideogram.")
 fraction of mutations in each of 96 trinucleotide contexts and identifies
 the weighted combination of published signatures that, when summed, most
 closely reconstructs the mutational profile.")
+    (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on Bioconductor packages.
+(define-public r-nmf
+  (package
+    (name "r-nmf")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NMF" version))
+       (sha256
+        (base32
+         "0ls7q9yc9l1z10jphq5a11wkfgcxc3gm3sfjj376zx3vnc0wl30g"))))
+    (properties `((upstream-name . "NMF")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-bigmemory" ,r-bigmemory) ; suggested
+       ("r-synchronicity" ,r-synchronicity) ; suggested
+       ("r-colorspace" ,r-colorspace)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-pkgmaker" ,r-pkgmaker)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-registry" ,r-registry)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rngtools" ,r-rngtools)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://renozao.github.io/NMF")
+    (synopsis "Algorithms and framework for nonnegative matrix factorization")
+    (description
+     "This package provides a framework to perform Non-negative Matrix
+Factorization (NMF).  The package implements a set of already published
+algorithms and seeding methods, and provides a framework to test, develop and
+plug new or custom algorithms.  Most of the built-in algorithms have been
+optimized in C++, and the main interface function provides an easy way of
+performing parallel computations on multicore machines.")
     (license license:gpl2+)))
 
 (define-public r-affycomp
