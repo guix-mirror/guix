@@ -88,6 +88,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
+;;; Copyright © 2020 Noah Evans <noah@nevans.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1344,6 +1345,28 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
        "This package allows common parts of regexps to be easily picked out
 and reused.")
       (license license:gpl3+))))
+
+(define-public emacs-airline-themes
+  (package
+    (name "emacs-airline-themes")
+    (version "1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AnthonyDiGirolamo/airline-themes")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jx17g8a6pxkw4zlx3fwhqgxfzcf3019k8fklykamfrkharzsc2l"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-powerline" ,emacs-powerline)))
+    (home-page "https://github.com/AnthonyDiGirolamo/airline-themes")
+    (synopsis "Vim-airline themes for Emacs Powerline")
+    (description
+     "This is a port of the themes in Vim-airline to Emacs Powerline.")
+    (license license:expat)))
 
 (define-public emacs-ample-theme
   (let ((commit "536966adf882446165a1f756830028faa792c7a9")
