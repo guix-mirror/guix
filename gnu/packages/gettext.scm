@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -199,12 +199,14 @@ color, font attributes (weight, posture), or underlining.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-programs
-          (lambda* (#:key outputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure all executables in "bin" find the Perl modules
-            ;; provided by this package at runtime.
+            ;; required by this package at runtime.
             (let* ((out  (assoc-ref outputs "out"))
                    (bin  (string-append out "/bin/"))
-                   (path (string-append out "/lib/perl5/site_perl")))
+                   (Pod::Parser (assoc-ref inputs "perl-pod-parser"))
+                   (path (string-append out "/lib/perl5/site_perl:"
+                                        Pod::Parser "/lib/perl5/site_perl")))
               (for-each (lambda (file)
                           (wrap-program file
                             `("PERL5LIB" ":" prefix (,path))))
@@ -224,6 +226,13 @@ color, font attributes (weight, posture), or underlining.")
                 (string-append (assoc-ref inputs "docbook-xml")
                                "/xml/dtd/docbook/")))
              #t))
+         (add-before 'build 'do-not-override-PERL5LIB
+           (lambda _
+             ;; Don't hard-code PERL5LIB to include just the build directory
+             ;; so that the build script finds modules from inputs.
+             (substitute* "Po4aBuilder.pm"
+               (("PERL5LIB=lib") ""))
+             (setenv "PERL5LIB" (string-append (getenv "PERL5LIB") ":lib"))))
          (add-before 'check 'disable-failing-tests
            (lambda _
              ;; FIXME: these tests require SGMLS.pm.
@@ -247,6 +256,8 @@ color, font attributes (weight, posture), or underlining.")
        ("perl-test-pod" ,perl-test-pod)
        ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("texlive" ,texlive-tiny)))
+    (inputs
+     `(("perl-pod-parser" ,perl-pod-parser)))
     (home-page "https://po4a.org/")
     (synopsis "Scripts to ease maintenance of translations")
     (description
