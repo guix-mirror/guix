@@ -791,16 +791,15 @@ display all Unicode symbols.")
 (define-public font-google-roboto
   (package
     (name "font-google-roboto")
-    (version "2.136")
+    (version "2.138")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/google/roboto/releases/download/"
-                           "v" version "/roboto-hinted.zip"))
+                           "v" version "/roboto-unhinted.zip"))
        (file-name (string-append name "-" version ".zip"))
        (sha256
-        (base32
-         "0spscx08fad7i8qs7icns96iwcapniq8lwwqqvbf7bamvs8qfln4"))))
+        (base32 "0a57f957qy49kildqx2lp2paqk9i8kkayakmrzxh39hhhmqlrxkh"))))
     (build-system font-build-system)
     (home-page "https://github.com/google/roboto")
     (synopsis "The Roboto family of fonts")
