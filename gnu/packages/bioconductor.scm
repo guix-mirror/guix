@@ -1156,36 +1156,6 @@ mouse, rat and budding yeast.  Mapping data between common gene IDs for budding
 yeast are also included.")
     (license license:gpl2+)))
 
-(define-public r-cummerbund
-  (package
-   (name "r-cummerbund")
-   (version "2.32.0")
-   (source (origin
-             (method url-fetch)
-             (uri (bioconductor-uri "cummeRbund" version))
-             (sha256
-              (base32
-               "1x7rby50api1c66al6a0i92q82ydjmh3h8l2k7hj0ffpn8c5pdgj"))))
-   (build-system r-build-system)
-   (propagated-inputs
-    `(("r-biobase" ,r-biobase)
-      ("r-biocgenerics" ,r-biocgenerics)
-      ("r-fastcluster" ,r-fastcluster)
-      ("r-ggplot2" ,r-ggplot2)
-      ("r-gviz" ,r-gviz)
-      ("r-plyr" ,r-plyr)
-      ("r-reshape2" ,r-reshape2)
-      ("r-rsqlite" ,r-rsqlite)
-      ("r-rtracklayer" ,r-rtracklayer)
-      ("r-s4vectors" ,r-s4vectors)))
-   (home-page "https://bioconductor.org/packages/cummeRbund/")
-   (synopsis "Analyze Cufflinks high-throughput sequencing data")
-   (description "This package allows for persistent storage, access,
-exploration, and manipulation of Cufflinks high-throughput sequencing
-data.  In addition, provides numerous plotting functions for commonly
-used visualizations.")
-   (license license:artistic2.0)))
-
 (define-public r-curatedtcgadata
   (package
     (name "r-curatedtcgadata")
@@ -1288,6 +1258,36 @@ be also used for genome-wide nucleosome positioning experiments or other
 experiment types where it is important to have a framework in order to inspect
 how the coverage distributed across the genome.")
     (license license:artistic2.0)))
+
+(define-public r-cummerbund
+  (package
+   (name "r-cummerbund")
+   (version "2.32.0")
+   (source (origin
+             (method url-fetch)
+             (uri (bioconductor-uri "cummeRbund" version))
+             (sha256
+              (base32
+               "1x7rby50api1c66al6a0i92q82ydjmh3h8l2k7hj0ffpn8c5pdgj"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biobase" ,r-biobase)
+      ("r-biocgenerics" ,r-biocgenerics)
+      ("r-fastcluster" ,r-fastcluster)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-gviz" ,r-gviz)
+      ("r-plyr" ,r-plyr)
+      ("r-reshape2" ,r-reshape2)
+      ("r-rsqlite" ,r-rsqlite)
+      ("r-rtracklayer" ,r-rtracklayer)
+      ("r-s4vectors" ,r-s4vectors)))
+   (home-page "https://bioconductor.org/packages/cummeRbund/")
+   (synopsis "Analyze Cufflinks high-throughput sequencing data")
+   (description "This package allows for persistent storage, access,
+exploration, and manipulation of Cufflinks high-throughput sequencing
+data.  In addition, provides numerous plotting functions for commonly
+used visualizations.")
+   (license license:artistic2.0)))
 
 (define-public r-affycomp
   (package
