@@ -569,30 +569,6 @@ as provided by UCSC (hg38, Dec. 2013) and stored in Biostrings objects.")
      "This package exposes an annotation database generated from Ensembl.")
     (license license:artistic2.0)))
 
-(define-public r-genelendatabase
-  (package
-    (name "r-genelendatabase")
-    (version "1.18.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
-       (sha256
-        (base32
-         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
-    (properties
-     `((upstream-name . "geneLenDataBase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-rtracklayer" ,r-rtracklayer)
-       ("r-genomicfeatures" ,r-genomicfeatures)))
-    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
-    (synopsis "Lengths of mRNA transcripts for a number of genomes")
-    (description
-     "This package provides the lengths of mRNA transcripts for a number of
-genomes and gene ID formats, largely based on the UCSC table browser.")
-    (license license:lgpl2.0+)))
-
 (define-public r-txdb-hsapiens-ucsc-hg19-knowngene
   (package
     (name "r-txdb-hsapiens-ucsc-hg19-knowngene")
@@ -1024,6 +1000,30 @@ All datasets are restricted to protein coding genes.")
      "This package provides raw beta values from 36 samples across 3 groups
 from Illumina 450k methylation arrays.")
     (license license:artistic2.0)))
+
+(define-public r-genelendatabase
+  (package
+    (name "r-genelendatabase")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
+       (sha256
+        (base32
+         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
+    (properties
+     `((upstream-name . "geneLenDataBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
+    (synopsis "Lengths of mRNA transcripts for a number of genomes")
+    (description
+     "This package provides the lengths of mRNA transcripts for a number of
+genomes and gene ID formats, largely based on the UCSC table browser.")
+    (license license:lgpl2.0+)))
 
 (define-public r-hsmmsinglecell
   (package
