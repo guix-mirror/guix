@@ -14901,6 +14901,31 @@ as well as functions for navigating between these headings.")
 into sections while preserving the structure imposed by any timestamps.")
     (license license:gpl3+)))
 
+(define-public emacs-elegant-agenda-mode
+  (let ((commit "c72f42e0f551c3dd81e68262f07a96c0ec90a589")
+        (revision "1"))
+    (package
+      (name "emacs-elegant-agenda-mode")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/justinbarclay/elegant-agenda-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f8qk3vd41ffbkfqw5nks3bld0qpjrlnk9sb46wcbsyfnrs2v082"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/justinbarclay/elegant-agenda-mode")
+      (synopsis "Elegant theme for your org-agenda")
+      (description
+       "The elegant-agenda-mode package uses fonts and typography to give your
+org-agenda some breathing room and elegance.  This package was inspired by the
+work Nicolas Rougier.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-make-toc
   (package
     (name "emacs-org-make-toc")
