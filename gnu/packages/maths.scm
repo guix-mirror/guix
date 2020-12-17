@@ -562,7 +562,7 @@ It can utilize SIMD instructions that are available on modern processors.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.65")
+    (version "5.0")
     (source
      (origin
       (method url-fetch)
@@ -570,7 +570,7 @@ It can utilize SIMD instructions that are available on modern processors.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "040sfaa9jclg2nqdh83w71sv9rc1sznpnfiripjdyr48cady50a2"))))
+        "05bgxidxj8d9xdp82niy7cy36w181cxq7p8vc3y2ixshpgp1642a"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -585,6 +585,20 @@ GNU MathProg modeling language, a subset of the AMPL language, and features a
 translator for the language.  In addition to the C library, a stand-alone
 LP/MIP solver is included in the package.")
     (license license:gpl3+)))
+
+(define-public glpk-4
+  (package
+    (inherit glpk)
+    (name "glpk")
+    (version "4.65")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/glpk/glpk-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "040sfaa9jclg2nqdh83w71sv9rc1sznpnfiripjdyr48cady50a2"))))))
 
 (define-public 4ti2
   (package

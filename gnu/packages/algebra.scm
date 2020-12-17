@@ -410,7 +410,7 @@ precision.")
     (inputs
      ;; TODO: Add libnauty, unbundle "libmicropython.a".
      `(("fltk" ,fltk)
-       ("glpk" ,glpk)
+       ("glpk" ,glpk-4)
        ("gmp" ,gmp)
        ("gsl" ,gsl)
        ("lapack" ,lapack)
