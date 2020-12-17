@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020 Jens Mølgaard <jens@zete.tk>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
@@ -1033,15 +1033,15 @@ Sans Pro family.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.206")
-    (source (origin
-              (method url-fetch/zipbomb)
-              (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
-                                  "download/" version
-                                  "/FiraCode_" version ".zip"))
-              (sha256
-               (base32
-                "02r1lcp0c9135ps71v66wdvbsrcxwirrp0blqsa1xbjkkq2rwgj3"))))
+    (version "5.2")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
+                           "download/" version
+                           "/Fira_Code_v" version ".zip"))
+       (sha256
+        (base32 "1zayrb6k0gd7xdvx7yx44dpip767q0bzhqwf4j6nf8nx02z746jj"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")
