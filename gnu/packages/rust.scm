@@ -452,6 +452,7 @@ test = { path = \"../libtest\" }
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
 
+    (supported-systems '("x86_64-linux"))
     (synopsis "Compiler for the Rust programming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
