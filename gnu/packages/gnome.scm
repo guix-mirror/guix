@@ -10330,7 +10330,8 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("glib-networking" ,glib-networking)
+       ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnotify" ,libnotify)
