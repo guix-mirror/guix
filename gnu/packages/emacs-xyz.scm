@@ -12319,14 +12319,14 @@ Emacs.")
 (define-public emacs-eglot
   (package
     (name "emacs-eglot")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "eglot-" version ".tar"))
        (sha256
-        (base32 "15hd6sx7qrpvlvhwwkcgdiki8pswwf4mm7hkm0xvznskfcp44spx"))))
+        (base32 "1zvs144hxq2mmq1h0ynx9hy7yyccb46f3pjg9mgq8v9cw5y678vk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-jsonrpc" ,emacs-jsonrpc)))
