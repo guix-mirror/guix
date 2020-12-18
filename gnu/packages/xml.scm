@@ -1120,6 +1120,9 @@ Libxml2).")
     (inputs
      `(("nss" ,nss)
        ("libltdl" ,libltdl)))
+    (arguments
+     ;; NSS no longer supports MD5 since 3.59, don't attempt to use it.
+     '(#:configure-flags '("--disable-md5")))
     (synopsis "XML Security Library (using NSS instead of GnuTLS)")))
 
 (define-public minixml
