@@ -5877,7 +5877,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -5886,7 +5886,7 @@ developers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
+        (base32 "0ay6vl9zsz9b2scy0fnsy482pzizj52i27syxwny4z4i9wrk2wmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
