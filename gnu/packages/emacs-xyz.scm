@@ -4739,7 +4739,8 @@ respective @code{*Help*} buffers.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
-       ("emacs-f" ,emacs-f)))
+       ("emacs-f" ,emacs-f)
+       ("emacs-yaml-mode" ,emacs-yaml-mode)))
     (home-page "https://github.com/meqif/docker-compose-mode/")
     (synopsis "Major mode for editing @file{docker-compose} files")
     (description
