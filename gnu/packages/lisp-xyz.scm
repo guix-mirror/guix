@@ -6211,11 +6211,11 @@ cl-plumbing libraries.")
   (sbcl-package->ecl-package sbcl-cl-octet-streams))
 
 (define-public sbcl-lzlib
-  (let ((commit "0de1db7129fef9a58a059d35a2fa2ecfc5b47b47")
+  (let ((commit "c3470260454ff6992164b6ed4918c0f1ab7f0720")
         (revision "1"))
     (package
       (name "sbcl-lzlib")
-      (version (git-version "1.0" revision commit))
+      (version (git-version "1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -6224,14 +6224,14 @@ cl-plumbing libraries.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "12ny7vj52fgnd8hb8fc8mry92vq4c1x72x2350191m4476j95clz"))))
+          (base32 "1p8b75h3lmkay1lngj4b80c99lfxl2mp532dlrn98kvfa9cq7xdn"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (inputs
        `(("cffi" ,sbcl-cffi)
          ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("lparallel" ,sbcl-lparallel)
          ("lzlib" ,lzlib)))
       (arguments
        '(#:phases
