@@ -799,12 +799,12 @@ deliver data to mobile and web apps.")
     (license license:gpl3+)))
 
 (define-public emacs-graphql-mode
-  ;; No tagged commit.
+  ;; No tagged commit.  No "Version" keyword either.
   (let ((commit "9bed568ec86242dbe30bdbab324aa0eb2cd9bf08")
         (revision "1"))
     (package
       (name "emacs-graphql-mode")
-      (version commit)
+      (version (git-version "0" revision commit))
       (source
        (origin
          (method git-fetch)
