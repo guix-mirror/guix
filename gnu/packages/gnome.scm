@@ -11936,7 +11936,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.23.0")
+    (version "0.24.0")
     (source
      (origin
        (method git-fetch)
@@ -11946,7 +11946,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xh3qmf2pk80qxj528lajjcwg7mps72s1zz8cj388av58p8l3hyw"))))
+         "010p32zrim245y0l784yp0rasqcqlyr3lrxwl3r1876x83qhs6q3"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11978,7 +11978,6 @@ integrated profiler via Sysprof, debugging support, and more.")
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-cloudscraper" ,python-cloudscraper)
        ("python-dateparser" ,python-dateparser)
        ("python-keyring" ,python-keyring)
        ("python-lxml" ,python-lxml)
@@ -11987,6 +11986,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        ("python-pure-protobuf" ,python-pure-protobuf)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
+       ("python-requests" ,python-requests)
        ("python-unidecode" ,python-unidecode)))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
