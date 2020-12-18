@@ -10293,14 +10293,14 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.4.2")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1hfl68gkvqy5kxlmrsalz78mw1bs1yvqvy2rhg7pzgwiazsdvwzz"))))
+        (base32 "1hlahr50gsagx1ifcdk4yn43xps6w0vqn0gnd6xckfc7qmg1pgq7"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules
