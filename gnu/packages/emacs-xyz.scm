@@ -4804,8 +4804,9 @@ Gnus, e.g., for applying patches received by email.")
       (license license:gpl2+))))
 
 (define-public emacs-sudo-edit
-  (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
-        (revision "6"))
+  ;; No proper release nor tag.
+  (let ((commit "0e2c32b5e5242d30f8780cbe8e1b1649476cac4d")
+        (revision "0"))
     (package
       (name "emacs-sudo-edit")
       (version (git-version "0.1.0" revision commit))
@@ -4818,12 +4819,13 @@ Gnus, e.g., for applying patches received by email.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1qv58x5j5a3v1s2ylhck1ykbfclq0mbi0gsvaql3nyv8cxazqlwl"))))
+           "1z26i4hzi2mksl4nr8szzlnrnyv96fg7jjddbm5dp5dlmh2pndk1"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("emacs-undercover" ,emacs-undercover)))
       (arguments
-       `(#:phases
+       `(#:emacs ,emacs
+         #:phases
          (modify-phases %standard-phases
            (add-before 'check 'fix-makefile
              (lambda _
