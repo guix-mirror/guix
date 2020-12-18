@@ -634,7 +634,8 @@ daemon is not running."
                            (and add-text-to-store 'alright))
                         node)
     ('alright #t)
-    (_ (report-module-error name)))
+    (_ (leave (G_ "(guix) module not usable on remote host '~a'")
+              name)))
 
   (match (inferior-eval '(begin
                            (use-modules (guix))

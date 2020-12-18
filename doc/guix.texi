@@ -1296,7 +1296,7 @@ master node:
 @end example
 
 This will attempt to connect to each of the build machines specified in
-@file{/etc/guix/machines.scm}, make sure Guile and the Guix modules are
+@file{/etc/guix/machines.scm}, make sure Guix is
 available on each machine, attempt to export to the machine and import
 from it, and report any error in the process.
 
