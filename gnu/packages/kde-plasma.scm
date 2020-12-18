@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,6 +106,35 @@ the Plasma Desktop.  Breeze is the default theme for the KDE Plasma desktop.")
 These window decorations can be used by for example an X11 based window
 manager which re-parents a Client window to a window decoration frame.")
     (license license:lgpl3+)))
+
+(define-public ksshaskpass
+  (package
+    (name "ksshaskpass")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version
+                                  "/ksshaskpass-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1k2va2v9051f71w78dn3gihk642iyy5yzrkcfnp97fag8g6dpisi"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/plasma/ksshaskpass")
+    (synopsis "Front-end for ssh-add using kwallet")
+    (description "Ksshaskpass is a front-end for @code{ssh-add} which stores the
+password of the ssh key in KWallet.  Ksshaskpass is not meant to be executed
+directly, you need to tell @code{ssh-add} about it.  @code{ssh-add} will then
+call it if it is not associated to a terminal.")
+    (license license:gpl2+)))
 
 (define-public kscreenlocker
   (package
