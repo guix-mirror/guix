@@ -3613,7 +3613,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.09-1")
+      (version "3.2.01-1")
       (source
        (origin
          (method git-fetch)
@@ -3622,7 +3622,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0m6s8kxjppy3jm39is5i1lbrah29cw86rq0vamvx46izbdyf84y5"))))
+          (base32 "15bakrv3jzj5h88c3bd0cfhh6hb8b4hm79924k1ygn29sqzgyw65"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3715,6 +3715,8 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-json-xs" ,perl-json-xs)
        ("perl-time-hires" ,perl-time-hires)
+       ("lvm2" ,lvm2)                   ; lvs
+       ("mdadm" ,mdadm)
        ;; TODO: Add more inputs:
        ;; ipmi-sensors
        ;; hddtemp
