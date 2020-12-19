@@ -490,7 +490,7 @@ output), and Binutils.")
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
-     `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
+     `(("python" ,python-wrapper)
        ("perl"   ,perl)))
     (inputs
      `(("libffi" ,libffi)))
