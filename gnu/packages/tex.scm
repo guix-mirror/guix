@@ -4244,6 +4244,25 @@ re-processing.")
 (define-public texlive-latex-pstool
   (deprecated-package "texlive-latex-pstool" texlive-pstool))
 
+(define-public texlive-latex-refcount
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-refcount"
+              (list "/doc/latex/refcount/"
+                    "/tex/latex/refcount/")
+              (base32
+               "0pkmqj2qihndlv3ks33xzqw91q46jx79r3aygj68d8dflyddi583")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/refcount")
+    (synopsis "Counter operations with label references")
+    (description
+     "This package provides the @code{\\setcounterref} and
+@code{\\addtocounterref} commands which use the section (or other) number
+from the reference as the value to put into the counter.  It also provides
+@code{\\setcounterpageref} and @code{\\addtocounterpageref} that do the
+corresponding thing with the page reference of the label.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-seminar
   (package
     (inherit (simple-texlive-package
