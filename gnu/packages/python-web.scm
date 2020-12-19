@@ -3878,9 +3878,6 @@ thread-local variable.")
 authentication for Flask routes.")
     (license license:expat)))
 
-(define-public python2-flask-httpauth
-  (package-with-python2 python-flask-httpauth))
-
 (define-public python-uritemplate
   (package
     (name "python-uritemplate")
