@@ -9787,7 +9787,7 @@ pseudorandom number generator")
 (define-public rust-futures-0.3
   (package
     (name "rust-futures")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -9796,7 +9796,7 @@ pseudorandom number generator")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11srrbc0hp7pgz142qjfx2z07kfhc98rbfwqyrgm4mxvxib61wdn"))))
+         "1l434mh7p5na5c3c7lih575hszqc515r9idk62fm5rhz1820qfwv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
