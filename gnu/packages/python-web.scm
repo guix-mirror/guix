@@ -3037,13 +3037,13 @@ for the basic TCP/IP protocols.")
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
-    (version "1.3.1")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "geventhttpclient" version))
               (sha256
                (base32
-                "07d0q3wzmml75227r6y6mrl5a0zpf4v9gj0ni5rhbyzmaj4az1xx"))
+                "1hy4qm9d3r69n5199i7qjji1v7718n7cxbj8ggi0njify99m37pm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3071,7 +3071,8 @@ for the basic TCP/IP protocols.")
                      "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-dpkt" ,python-dpkt)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
        ("python-gevent" ,python-gevent)
