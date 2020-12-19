@@ -3016,6 +3016,24 @@ library.")
 @code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
     (license license:bsd-2)))
 
+(define-public python-dpkt
+  (package
+    (name "python-dpkt")
+    (version "1.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dpkt" version))
+       (sha256
+        (base32
+         "1d28r8pmhzjjd6hrn1xcddinfhwv8lcl1s59ygmqa8kfmz5pkrgl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kbandla/dpkt")
+    (synopsis "Packet generator and parser for TCP/IP protocols")
+    (description "The dpkt module is a fast, simple packet generator and parser
+for the basic TCP/IP protocols.")
+    (license license:bsd-3)))
+
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
