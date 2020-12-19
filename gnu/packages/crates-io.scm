@@ -10085,7 +10085,7 @@ for the futures-rs library.")
 (define-public rust-futures-macro-0.3
   (package
     (name "rust-futures-macro")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -10094,7 +10094,7 @@ for the futures-rs library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0r3px32wgqfbmfyb1lrj9wplvjris5magdyhfr7xnyjk2mncbrsj"))))
+         "0mjmb46zapb59iilsbljpj7l0hq6w19df0f03p3br5qz5xlqlh3p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
