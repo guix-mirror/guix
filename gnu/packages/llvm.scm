@@ -562,14 +562,14 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public llvm-10
   (package
     (inherit llvm-11)
-    (version "10.0.0")
+    (version "10.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))))
+        "1wydhbp9kyjp5y0rc627imxgkgqiv3dfirbqil9dgpnbaw5y7n65"))))))
 
 (define-public clang-runtime-10
   (clang-runtime-from-llvm
