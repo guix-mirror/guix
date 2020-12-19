@@ -9893,7 +9893,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
 (define-public rust-futures-core-0.3
   (package
     (name "rust-futures-core")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -9902,7 +9902,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rh8q6pg08dizk5hwksvjgvkw26s3sr3b199nggv3ypyg914qmkr"))))
+         "0j0pixxv8dmqas1h5cgy92z4r9lpmnlis8ls22v17yrgnwqy2z44"))))
     (build-system cargo-build-system)
     (arguments '(#:tests? #f))
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
