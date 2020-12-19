@@ -9368,6 +9368,38 @@ implement features such as look-around and backtracking, which are not
 supported in purely NFA-based implementations.")
     (license license:expat)))
 
+(define-public rust-femme-1
+  (package
+    (name "rust-femme")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "femme" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0spf66m22dvnz6x077znybk906lh4p5z30nh8c37mad2c3dc56jd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-async-log" ,rust-async-log-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-console" ,rust-console-0.7)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/lrlna/femme")
+    (synopsis "Pretty-printer and @code{ndjson} logger for @code{log} crate")
+    (description
+     "This package provides a pretty-printer and @code{ndjson} logger for
+@code{log} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fern-0.6
   (package
     (name "rust-fern")
