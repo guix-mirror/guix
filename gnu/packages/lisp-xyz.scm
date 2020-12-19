@@ -1644,26 +1644,29 @@ Common Lisp.")
   (sbcl-package->ecl-package sbcl-rt))
 
 (define-public sbcl-nibbles
-  (package
-    (name "sbcl-nibbles")
-    (version "0.14")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/sharplispers/nibbles/")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32
-         "1v7qfgpvdr6nz7v63dj69d26dis0kff3rd8xamr1llfdvza2pm8f"))
-       (file-name (git-file-name "nibbles" version))))
-    (build-system asdf-build-system/sbcl)
-    (native-inputs
-     ;; Tests only.
-     `(("rt" ,sbcl-rt)))
-    (synopsis "Common Lisp library for accessing octet-addressed blocks of data")
-    (description
-     "When dealing with network protocols and file formats, it's common to
+  ;; No tagged release since 2018.
+  (let ((commit "8e6b9b42d9f69000f55e5c45ad974d9e376ffdbd")
+        (revision "1"))
+    (package
+      (name "sbcl-nibbles")
+      (version (git-version "0.14" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/nibbles/")
+               (commit commit)))
+         (sha256
+          (base32 "15qlsm82h36pjgvfnbzdg60l21qxbaii4d049jc5y0dn56y93amb"))
+         (file-name (git-file-name "nibbles" version))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       ;; Tests only.
+       `(("rt" ,sbcl-rt)))
+      (synopsis
+       "Common Lisp library for accessing octet-addressed blocks of data")
+      (description
+       "When dealing with network protocols and file formats, it's common to
 have to read or write 16-, 32-, or 64-bit datatypes in signed or unsigned
 flavors.  Common Lisp sort of supports this by specifying :element-type for
 streams, but that facility is underspecified and there's nothing similar for
@@ -1677,8 +1680,8 @@ SETFable.  Since it's sometimes desirable to read/write directly from streams,
 functions for doing so are also provided.  On some implementations,
 reading/writing IEEE singles/doubles (i.e. single-float and double-float) will
 also be supported.")
-    (home-page "https://github.com/sharplispers/nibbles")
-    (license license:bsd-3)))
+      (home-page "https://github.com/sharplispers/nibbles")
+      (license license:bsd-3))))
 
 (define-public cl-nibbles
   (sbcl-package->cl-source-package sbcl-nibbles))
