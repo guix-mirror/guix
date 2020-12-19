@@ -2877,6 +2877,35 @@ algorithms.  This package is deprecated.  Please use block-cipher instead")
 Bresenham's line algorithm.")
     (license license:expat)))
 
+(define-public rust-broadcaster-0.2
+  (package
+    (name "rust-broadcaster")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "broadcaster" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1848lwapy955rs8kbiv87adj68vdlh6vlj8n4wq10vx541j49887"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-slab" ,rust-slab-0.4))
+       #:cargo-development-inputs
+       (("rust-futures-executor-preview" ,rust-futures-executor-preview-0.3))))
+    (home-page "https://github.com/leo60228/broadcaster")
+    (synopsis "Broadcasting futures mpmc channel")
+    (description
+     "This package provides a wrapper for any Stream and Sink implementing the
+@code{mpsc} pattern to enable broadcasting items.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-brotli-3
   (package
     (name "rust-brotli")
