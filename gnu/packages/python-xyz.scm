@@ -3016,9 +3016,6 @@ of state and cooperation between execution units, which makes it
 easier to build concurrent applications.")
     (license license:asl2.0)))
 
-(define-public python2-pykka
-  (package-with-python2 python-pykka))
-
 (define-public python-pymsgbox
   (package
     (name "python-pymsgbox")
