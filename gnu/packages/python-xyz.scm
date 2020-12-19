@@ -12635,17 +12635,7 @@ graphviz.")
      "@code{gevent} is a coroutine-based Python networking library that uses
 @code{greenlet} to provide a high-level synchronous API on top of the
 @code{libev} event loop.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-gevent))))))
-
-(define-public python2-gevent
-  (let ((base (package-with-python2
-               (strip-python2-variant python-gevent))))
-    (package
-      (inherit base)
-      (native-inputs `(,@(package-native-inputs base)
-                       ("python-mock" ,python2-mock)
-                       ("python2-selectors2" ,python2-selectors2))))))
+    (license license:expat)))
 
 (define-public python-fastimport
   (package
