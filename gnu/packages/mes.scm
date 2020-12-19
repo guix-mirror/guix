@@ -293,21 +293,30 @@ get_machine.")
   (package
     (inherit mescc-tools-0.5.2)
     (name "mescc-tools")
-    (version "0.6.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
-                    (commit (string-append "Release_" version))))
-              (file-name (string-append "mescc-tools-" version "-checkout"))
-              (sha256
-               (base32
-                "1cgxcdza6ws725x84i31la7jxmlk5a3nsij5shz1zljg0i36kj99"))))
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+             name "-Release_" version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p1ijia4rm3002f5sypidl9v5gq0mlch9b0n61rpxkdsaaxjqax3"))))
     (arguments
      (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
        ((#:make-flags _)
         `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-               "CC=gcc"))))))
+               "CC=gcc"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-prefix
+             (lambda _
+               (substitute* "sha256.sh"
+                 (("/usr/bin/sha256sum") (which "sha256sum")))
+               #t))))))))
 
 (define-public m2-planet
   (let ((commit "b87ddb0051b168ea45f8d49a610dcd069263336a")
