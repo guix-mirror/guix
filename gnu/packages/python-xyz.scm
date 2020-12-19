@@ -14195,16 +14195,7 @@ from Facebook.")
      "Graphene is a Python library for building GraphQL schemas/types.
 A GraphQL schema describes your data model, and provides a GraphQL server
 with an associated set of resolve methods that know how to fetch data.")
-    (properties `((python2-variant . ,(delay python2-graphene))))
     (license license:expat)))
-
-(define-public python2-graphene
-  (let ((base (package-with-python2
-                (strip-python2-variant python-graphene))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-sqlalchemy" ,python2-sqlalchemy)
-         ,@(package-native-inputs base))))))
 
 (define-public python-nautilus
   (package
