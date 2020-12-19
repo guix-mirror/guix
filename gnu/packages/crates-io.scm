@@ -1220,6 +1220,30 @@ standard library.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-log-1
+  (package
+    (name "rust-async-log")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-log" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16ymra7f8169br9ss9m9n4l6rjcav9ns6r9mv4nr4r9i9wq37fpm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-log-attributes" ,rust-async-log-attributes-1)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-log" ,rust-log-0.4))))
+    (home-page "https://github.com/async-rs/async-log")
+    (synopsis "Async tracing capabilities for the @code{log} crate")
+    (description
+     "This crate provides extension types and hooks to @code{log} to enable
+asynchronous logging.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-log-attributes-1
   (package
     (name "rust-async-log-attributes")
