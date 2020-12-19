@@ -21246,7 +21246,7 @@ in your code.")
 (define-public rust-proc-macro-hack-0.5
   (package
     (name "rust-proc-macro-hack")
-    (version "0.5.16")
+    (version "0.5.19")
     (source
      (origin
        (method url-fetch)
@@ -21255,7 +21255,7 @@ in your code.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1r657v7d9vh1ivrvq65rvg9gjb29dpa0l3zg2fgrn5j8znz5c13y"))))
+         "1rg0kzsj7lj00qj602d3h77spwfz48vixn1wbjp7a4yrq65w9w6v"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
