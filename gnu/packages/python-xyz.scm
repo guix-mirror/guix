@@ -1742,14 +1742,6 @@ The event dispatch is implicit, which means you can easily use @code{Eventlet}
 from the Python interpreter, or as a small part of a larger application.")
   (license license:expat)))
 
-(define-public python2-eventlet
-  (let ((base (package-with-python2
-                (strip-python2-variant python-eventlet))))
-    (package (inherit base)
-      (propagated-inputs
-       `(("python2-enum34" ,python2-enum34)
-         ,@(package-propagated-inputs base))))))
-
 (define-public python-six
   (package
     (name "python-six")
