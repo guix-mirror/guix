@@ -212,9 +212,6 @@ Google mox framework} to Python 3.  It was meant to be as compatible
 with mox as possible, but small enhancements have been made.")
     (license asl2.0)))
 
-(define-public python2-mox3
-  (package-with-python2 python-mox3))
-
 (define-public python-openstackdocstheme
   (package
     (name "python-openstackdocstheme")
