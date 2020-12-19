@@ -14542,6 +14542,29 @@ kernel32.")
      "The Khronos XML API Registry, exposed as byte string constants.")
     (license license:asl2.0)))
 
+(define-public rust-kv-log-macro-1
+  (package
+    (name "rust-kv-log-macro")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "kv-log-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zwp4bxkkp87rl7xy2dain77z977rvcry1gmr5bssdbn541v7s0d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4))
+       #:cargo-development-inputs
+       (("rust-femme" ,rust-femme-1))))
+    (home-page "https://github.com/yoshuawuyts/kv-log-macro")
+    (synopsis "Log macro for log's kv-unstable backend")
+    (description
+     "This package provides a Log macro for log's kv-unstable backend.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-language-tags-0.2
   (package
     (name "rust-language-tags")
