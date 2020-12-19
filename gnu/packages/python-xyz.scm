@@ -12484,9 +12484,6 @@ pseudo-concurrently (typically in a single or a few OS-level threads) and
 are synchronized with data exchanges on \"channels\".")
     (license (list license:psfl license:expat))))
 
-(define-public python2-greenlet
-  (package-with-python2 python-greenlet))
-
 (define-public python-objgraph
   (package
     (name "python-objgraph")
