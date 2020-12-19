@@ -10057,6 +10057,31 @@ for the futures-rs library.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-join-macro-preview-0.3
+  (package
+    (name "rust-futures-join-macro-preview")
+    (version "0.3.0-alpha.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-join-macro-preview" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1smwaja466yjh5adlhgggfk9k942sy4702n46scxkrwcnkk61qjr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "Definition of the `join!` macro and the `try_join!` macro")
+    (description
+     "This package provides the definition of the @code{join!} macro and the
+@code{try_join!} macro.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-macro-0.3
   (package
     (name "rust-futures-macro")
