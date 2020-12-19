@@ -31918,30 +31918,6 @@ the current thread.")
 futures efficiently")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-tokio-macros-0.2
-  (package
-    (name "rust-tokio-macros")
-    (version "0.2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "tokio-macros" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1283aq0l7rnh79zzqk4r34dgimvwcymrzmg1yah9ai2nmb3arhzh"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-proc-macro2" ,rust-proc-macro2-1)
-        ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-1))
-       #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.2))))
-    (home-page "https://tokio.rs")
-    (synopsis "Tokio's proc macros")
-    (description "This package provides Tokio's proc macros.")
-    (license license:expat)))
-
 (define-public rust-tokio-macros-0.3
   (package
     (name "rust-tokio-macros")
