@@ -3990,9 +3990,6 @@ uploads, a powerful URL routing system and a bunch of community-contributed
 addon modules.")
     (license license:x11)))
 
-(define-public python2-werkzeug
-  (package-with-python2 python-werkzeug))
-
 (define-public python-bottle
   (package
     (name "python-bottle")
