@@ -10189,7 +10189,7 @@ the futures-rs library.")
 (define-public rust-futures-sink-preview-0.3
   (package
     (name "rust-futures-sink-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
       (origin
         (method url-fetch)
@@ -10197,7 +10197,7 @@ the futures-rs library.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1r4d0gy73hdxkh5g1lrhl1kjnwp6mywjgcj70v0z78b921da42a3"))))
+          "1v7y5qvgvl0d6hd9s4k7bd5qrj2gdlrs5yfl22v5pxv9dgpliwc6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
