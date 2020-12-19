@@ -10282,7 +10282,7 @@ components built off futures-rs.")
 (define-public rust-futures-util-0.3
   (package
     (name "rust-futures-util")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -10291,10 +10291,11 @@ components built off futures-rs.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0xlyqdn6lnpkw27lwxczihx91h64gbdd31n8c8y5v63nzds65mn0"))))
+         "1lnbhpyrypn9giw6122af0pffxfijfz3zm7phrwzp75rlzscy16k"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #false
+       #:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-futures-channel" ,rust-futures-channel-0.3)
         ("rust-futures-core" ,rust-futures-core-0.3)
@@ -10303,6 +10304,7 @@ components built off futures-rs.")
         ("rust-futures-sink" ,rust-futures-sink-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
         ("rust-memchr" ,rust-memchr-2)
+        ("rust-pin-project" ,rust-pin-project-1)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
