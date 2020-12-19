@@ -33259,7 +33259,8 @@ application authors using tracing to instrument their applications.")
          "0s6yiqy98wddc2vid0dypj4cdnvycd4vrrj6l9s7yymq0iqpky5g"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #false
+       #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bytes" ,rust-bytes-0.5)
         ("rust-data-encoding" ,rust-data-encoding-2)
