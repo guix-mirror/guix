@@ -20378,7 +20378,7 @@ function data structures.")
 (define-public rust-pin-utils-0.1
   (package
     (name "rust-pin-utils")
-    (version "0.1.0-alpha.4")
+    (version "0.1.0")
     (source
       (origin
         (method url-fetch)
@@ -20386,7 +20386,7 @@ function data structures.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "11xmyx00n4m37d546by2rxb8ryxs12v55cc172i3yak1rqccd52q"))))
+          "117ir7vslsl2z1a7qzhws4pd01cg2d3338c47swjyvqv2n60v1wb"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/rust-lang-nursery/pin-utils")
     (synopsis "Utilities for pinning")
