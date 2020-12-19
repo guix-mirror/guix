@@ -10213,7 +10213,7 @@ futures-rs library.")
 (define-public rust-futures-task-0.3
   (package
     (name "rust-futures-task")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -10222,9 +10222,11 @@ futures-rs library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1yg5d7b3z58mhqbrax5a0qdsfvzfclwyqvw5k3i41x4wnbb55bhb"))))
+         "03ad39v8scy353src2f9dkkvcs24n736iavi8xn45cj8pyslwmbw"))))
     (build-system cargo-build-system)
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs (("rust-once-cell" ,rust-once-cell-1))))
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
     (synopsis "Tools for working with tasks")
     (description "Tools for working with tasks.")
