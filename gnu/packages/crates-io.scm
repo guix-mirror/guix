@@ -1269,6 +1269,30 @@ asynchronous logging.")
 crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-macros-1
+  (package
+    (name "rust-async-macros")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fib4wxiym9f045xqb8a2gyfa8yym3hb62g4jqjfmzn14jdxa8g4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-pin-utils" ,rust-pin-utils-0.1))
+       #:cargo-development-inputs
+       (("rust-futures-preview" ,rust-futures-preview-0.3))))
+    (home-page "https://github.com/async-rs/async-macros")
+    (synopsis "Macros for async-std")
+    (description "Macros for async-std.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-stream-0.3
   (package
     (name "rust-async-stream")
