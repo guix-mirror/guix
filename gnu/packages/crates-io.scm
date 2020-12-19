@@ -9868,7 +9868,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
 (define-public rust-futures-channel-preview-0.3
   (package
     (name "rust-futures-channel-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
      (origin
        (method url-fetch)
@@ -9877,7 +9877,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1blgpikhw391lzrfqcgg4xsn5xc0dlybni77ka7f0vb08zaixir1"))))
+         "0fi6bi4lpyxjigy11y5sjg6wlc8nc71vbpmxz31c3aagjvgz9rfm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
