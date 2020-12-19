@@ -533,14 +533,14 @@ fast arithmetic.")
                        (string-append "--with-flint=" flint)
                        (string-append "--with-gmp=" gmp)
                        (string-append "--with-mpfr=" mpfr))))))))
+    (home-page "https://arblib.org")
     (synopsis "Arbitrary precision floating-point ball arithmetic")
     (description
      "Arb is a C library for arbitrary-precision floating-point ball
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-    (license license:lgpl2.1+)
-    (home-page "http://arblib.org")))
+    (license license:lgpl2.1+)))
 
 (define-public python-flint
   (package
