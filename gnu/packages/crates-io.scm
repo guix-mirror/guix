@@ -33532,7 +33532,8 @@ foundational DNS protocol library for all Trust-DNS projects.")
          "0xqv31gndybcrr5gi6jjp47qcvdxsc147s69a0y0nc6qqgyws8qg"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #false                  ;network unreachable
+       #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-futures" ,rust-futures-0.3)
