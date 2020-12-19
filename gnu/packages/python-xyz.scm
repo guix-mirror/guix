@@ -18573,9 +18573,6 @@ process-based child processes can safely be created anywhere within a
 gevent-powered application.")
     (license license:expat)))
 
-(define-public python2-gipc
-  (package-with-python2 python-gipc))
-
 (define-public python-beautifultable
   (package
     (name "python-beautifultable")
