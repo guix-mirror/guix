@@ -12506,13 +12506,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "20.6.2")
+    (version "20.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "1ldmppgghfphdaazjw6wq2i17xcmsjb2jsizfa4cjlg812zjlg52"))
+                "13aw9x6imsy3b369kfjblqiwfni69pp32m4r13n62r9k3l2lhvaz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -12571,24 +12571,10 @@ graphviz.")
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (let ((disabled-tests
-                             '(;; These tests rely on networking which is not
-                               ;; available in the build container.
-                               "test_urllib2net.py"
-                               "test__server.py"
-                               "test__server_pywsgi.py"
-                               "test_socket.py"
-                               "test__socket.py"
-                               "test__socket_ssl.py"
-                               "test__socket_dns.py"
-                               "test__socket_dns6.py"
-                               "test___example_servers.py"
+                             '(;; These tests relies on networking which is
+                               ;; not available in the build container.
                                "test__getaddrinfo_import.py"
-                               "test__examples.py"
-                               "test_httplib.py"
-                               "test_https.py"
-                               "test_urllib2_localnet.py"
-                               "test_ssl.py"
-                               "test__ssl.py"
+                               "test__server_pywsgi.py"
                                ;; XXX: These tests borrow functionality from the
                                ;; Python builtin 'test' module, but it is not
                                ;; installed with the Guix Python distribution.
@@ -12627,7 +12613,7 @@ graphviz.")
                       ;; Use the build daemons configured number of workers.
                       (setenv "NWORKERS" (number->string (parallel-job-count)))
 
-                      (invoke "python" "-m" "gevent.tests" "--config"
+                      (invoke "python" "-m" "gevent.tests" "-unone" "--config"
                               "known_failures.py" "--ignore" "skipped_tests.txt"))))))
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
@@ -12643,11 +12629,12 @@ graphviz.")
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
-    (home-page "http://www.gevent.org/")
+    (home-page "https://www.gevent.org/")
     (synopsis "Coroutine-based network library")
     (description
-     "gevent is a coroutine-based Python networking library that uses greenlet
-to provide a high-level synchronous API on top of the libev event loop.")
+     "@code{gevent} is a coroutine-based Python networking library that uses
+@code{greenlet} to provide a high-level synchronous API on top of the
+@code{libev} event loop.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-gevent))))))
 
