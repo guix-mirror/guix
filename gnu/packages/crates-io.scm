@@ -10018,7 +10018,7 @@ library.")
 (define-public rust-futures-io-0.3
   (package
     (name "rust-futures-io")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -10027,7 +10027,7 @@ library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1zxm41fmkrb0r39ajk3rr9invcd5bdwlafazn8m9aw4y49ymfxp6"))))
+         "1frh7d0n96lczy22al3bkgwpq0p1agbgax5kqh9vv8da33738631"))))
     (build-system cargo-build-system)
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
     (synopsis
