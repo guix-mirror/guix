@@ -3082,9 +3082,6 @@ for the basic TCP/IP protocols.")
 concurrent HTTP client library for python using @code{gevent}.")
     (license license:expat)))
 
-(define-public python2-geventhttpclient
-  (package-with-python2 python-geventhttpclient))
-
 (define-public python-requests-oauthlib
   (package
     (name "python-requests-oauthlib")
