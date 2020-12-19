@@ -33286,6 +33286,42 @@ application authors using tracing to instrument their applications.")
 extension for the Trust-DNS client to use DNS over HTTPS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-https-0.3
+  (package
+    (inherit rust-trust-dns-https-0.19)
+    (name "rust-trust-dns-https")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-https" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14ps1fxngm8d3ynp9jf86zrqbyzjzh62v5grwrqb1q0xhbz98vv1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;network unreachable
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-h2" ,rust-h2-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.9)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.7)
+        ("rust-trust-dns-rustls" ,rust-trust-dns-rustls-0.6)
+        ("rust-typed-headers" ,rust-typed-headers-0.1)
+        ("rust-webpki" ,rust-webpki-0.19)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1))))))
+
 (define-public rust-trust-dns-native-tls-0.19
   (package
     (name "rust-trust-dns-native-tls")
