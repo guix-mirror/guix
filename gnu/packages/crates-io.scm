@@ -33806,6 +33806,32 @@ implementation of TLS for nonblocking I/O streams.")
 Tokio.")
     (license license:expat)))
 
+(define-public rust-tokio-util-0.2
+  (package
+    (inherit rust-tokio-util-0.3)
+    (name "rust-tokio-util")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-util" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c39s4y0kvzkyarn1f9s8khqyajiqn7m4cjsa208f87ch88sa7ap"))))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-tokio" ,rust-tokio-0.2))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-test" ,rust-tokio-test-0.2))))))
+
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
