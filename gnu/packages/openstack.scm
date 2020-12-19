@@ -496,9 +496,6 @@ internationalization (i18n) features, especially translation for text strings
 in an application or library.")
     (license asl2.0)))
 
-(define-public python2-oslo.i18n
-  (package-with-python2 python-oslo.i18n))
-
 (define-public python-oslo.log
   (package
   (name "python-oslo.log")
