@@ -3855,9 +3855,6 @@ Flask.  It supports managing both authentication and authorization data in a
 thread-local variable.")
     (license license:expat)))
 
-(define-public python2-flask-principal
-  (package-with-python2 python-flask-principal))
-
 (define-public python-flask-httpauth
   (package
     (name "python-flask-httpauth")
