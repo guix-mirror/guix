@@ -20461,8 +20461,34 @@ function data structures.")
      "This package is an internal test tool of the @code{pin-project} crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pin-project-internal-1
+  (package
+    (name "rust-pin-project-internal")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pin-project-internal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0pwy3m32scf3ypjb9ai151lmaa27vyj06lc64i28l0r31fzx5s7q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/taiki-e/pin-project")
+    (synopsis "Implementation detail of the @code{pin-project} crate")
+    (description
+     "This package is an implementation detail of the @code{pin-project}
+crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pin-project-internal-0.4
   (package
+    (inherit rust-pin-project-internal-1)
     (name "rust-pin-project-internal")
     (version "0.4.22")
     (source
@@ -20472,17 +20498,12 @@ function data structures.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1xxac6f3ip45zqbfcmmk748ywjw9sbavz1fcswvqgn3rrx2zs3va"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ; XXX: Fix-me.
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-1))))
-    (home-page "https://crates.io/crates/pin-project-internal")
-    (synopsis "An internal crate to support pin_project")
-    (description "An internal crate to support pin_project")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-syn" ,rust-syn-1))))))
 
 (define-public rust-pin-project-lite-0.2
   (package
