@@ -18701,47 +18701,6 @@ interface to FUSE on various operating systems.  It's just one file and is
 implemented using @code{ctypes}.")
     (license license:isc)))
 
-(define-public python2-gdrivefs
-  (package
-    (name "python2-gdrivefs")
-    (version "0.14.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "gdrivefs" version))
-       (sha256
-        (base32
-         "0v9sp2cfg4ki3wagkwf3rnfpjhvgf845anz3757il9z95yvvcvb7"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-setup-py
-           (lambda _
-             ;; Update requirements from dependency==version
-             ;; to dependency>=version
-             (substitute* "gdrivefs/resources/requirements.txt"
-               (("==") ">="))
-             #t)))))
-    (native-inputs
-     `(("python2-gipc" ,python2-gipc)
-       ("python2-gevent" ,python2-gevent)
-       ("python2-greenlet" ,python2-greenlet)
-       ("python2-httplib2" ,python2-httplib2)
-       ("python2-uritemplate" ,python2-uritemplate)
-       ("python2-oauth2client" ,python2-oauth2client)
-       ("python2-six" ,python2-six)))
-    (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil)
-       ("python2-fusepy" ,python2-fusepy)
-       ("python2-google-api-client" ,python2-google-api-client)))
-    (home-page "https://github.com/dsoprea/GDriveFS")
-    (synopsis "Mount Google Drive as a local file system")
-    (description "@code{gdrivefs} provides a FUSE wrapper for Google Drive
-under Python 2.7.")
-    (license license:gpl2)))
-
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
