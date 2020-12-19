@@ -6140,9 +6140,6 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 @code{httpbin} and provides your test with the URL in the fixture.")
     (license license:expat)))
 
-(define-public python2-pytest-httpbin
-  (package-with-python2 python-pytest-httpbin))
-
 (define-public http-parser
   (package
     (name "http-parser")
