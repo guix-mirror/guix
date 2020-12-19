@@ -6181,7 +6181,7 @@ can contain any kind of values.")
 (define-public sbcl-cl-octet-streams
   (package
     (name "sbcl-cl-octet-streams")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -6190,7 +6190,7 @@ can contain any kind of values.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w14czi619xmncl29lf0h8ngmf7zrna41c3j0ds8lvqd552gfa7z"))))
+        (base32 "1hffh98bv4w5yrchagzwqrc43d2p473pvw7ka4kyyvhrr52dk2f8"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
