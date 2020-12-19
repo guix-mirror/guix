@@ -32714,6 +32714,10 @@ extension for the Trust-DNS client to use native-tls for TLS.")
        #:cargo-development-inputs
        (("rust-openssl" ,rust-openssl-0.10)
         ("rust-tokio" ,rust-tokio-0.2))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "http://www.trust-dns.org/index.html")
     (synopsis "tokio-openssl extension for the Trust-DNS client")
     (description "Trust-DNS is a safe and secure DNS library.  This is an
