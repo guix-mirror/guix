@@ -10169,7 +10169,7 @@ different @code{Future}s at once and handling the first one to complete.")
 (define-public rust-futures-sink-0.3
   (package
     (name "rust-futures-sink")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -10178,7 +10178,7 @@ different @code{Future}s at once and handling the first one to complete.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "05iwskzxq3yqvxv9l1kqnd7kkmp0dwc39fnvwrcjsg76z8zf66qp"))))
+         "0gfb1z97q861ki6lqsvpgfn3hnm9w3vkrf82dc00xrff95d1jy7q"))))
     (build-system cargo-build-system)
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
     (synopsis "Asynchronous `Sink` trait for the futures-rs library")
