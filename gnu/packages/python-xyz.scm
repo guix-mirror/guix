@@ -18270,37 +18270,6 @@ interpreter. bpython's main features are
 @end enumerate")
     (license license:expat)))
 
-(define-public bpython2
-  (let ((base (package-with-python2
-               (strip-python2-variant bpython))))
-    (package (inherit base)
-      (name "bpython2")
-      (arguments
-       `(#:python ,python-2
-         #:phases
-         (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-test
-           (lambda _
-             ;; Remove failing test. FIXME: make it pass
-             (delete-file "bpython/test/test_args.py")
-             ;; Disable failing test-cases (renaming inhibits they are
-             ;; discovered)
-             (substitute* "bpython/test/test_curtsies_repl.py"
-               (("^(\\s*def )(test_get_last_word_with_prev_line\\W)" _ a b)
-                (string-append a "xxx_off_" b))
-               (("^(\\s*def )(test_complex\\W)" _ a b)
-                (string-append a "xxx_off_" b)))
-             #t))
-           (add-before 'build 'rename-scripts
-             ;; rename the scripts to bypthon2, bpdb2, etc.
-             (lambda _
-               (substitute* "setup.py"
-                 (("^(\\s+'bpdb)(\\s+=.*',?)\\s*?$" _ name rest)
-                  (string-append name "2" rest "\n"))
-                 (("^(\\s+'bpython)(-\\S+)?(\\s+=.*',?)\\s*?$" _ name sub rest)
-                  (string-append name "2" (or sub "") rest "\n")))
-               #t))))))))
-
 (define-public python-pyinotify
   (package
     (name "python-pyinotify")
