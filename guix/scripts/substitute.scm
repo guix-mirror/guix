@@ -514,12 +514,18 @@ return its MAX-LENGTH first elements and its tail."
 
 (define* (http-multiple-get base-uri proc seed requests
                             #:key port (verify-certificate? #t)
+                            (open-connection guix:open-connection-for-uri)
+                            (keep-alive? #t)
                             (batch-size 1000))
   "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
 response, passing it the request object, the response, a port from which to
 read the response body, and the previous result, starting with SEED, à la
-'fold'.  Return the final result.  When PORT is specified, use it as the
-initial connection on which HTTP requests are sent."
+'fold'.  Return the final result.
+
+When PORT is specified, use it as the initial connection on which HTTP
+requests are sent; otherwise call OPEN-CONNECTION to open a new connection for
+a URI.  When KEEP-ALIVE? is false, close the connection port before
+returning."
   (let connect ((port     port)
                 (requests requests)
                 (result   seed))
@@ -528,10 +534,9 @@ initial connection on which HTTP requests are sent."
 
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
-    (let ((p (or port (guix:open-connection-for-uri
-                       base-uri
-                       #:verify-certificate?
-                       verify-certificate?))))
+    (let ((p (or port (open-connection base-uri
+                                       #:verify-certificate?
+                                       verify-certificate?))))
       ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
       (when (file-port? p)
         (setvbuf p 'block (expt 2 16)))
@@ -556,7 +561,8 @@ initial connection on which HTTP requests are sent."
           (()
            (match (drop requests processed)
              (()
-              (close-port p)
+              (unless keep-alive?
+                (close-port p))
               (reverse result))
              (remainder
               (connect p remainder result))))
@@ -598,18 +604,18 @@ if file doesn't exist, and the narinfo otherwise."
 
 (define* (open-connection-for-uri/maybe uri
                                         #:key
-                                        (verify-certificate? #f)
+                                        fresh?
                                         (time %fetch-timeout))
-  "Open a connection to URI and return a port to it, or, if connection failed,
-print a warning and return #f."
+  "Open a connection to URI via 'open-connection-for-uri/cached' and return a
+port to it, or, if connection failed, print a warning and return #f.  Pass
+#:fresh? to 'open-connection-for-uri/cached'."
   (define host
     (uri-host uri))
 
   (catch #t
     (lambda ()
-      (guix:open-connection-for-uri uri
-                                    #:verify-certificate? verify-certificate?
-                                    #:timeout time))
+      (open-connection-for-uri/cached uri #:timeout time
+                                      #:fresh? fresh?))
     (match-lambda*
       (('getaddrinfo-error error)
        (unless (hash-ref %unreachable-hosts host)
@@ -683,23 +689,26 @@ print a warning and return #f."
   (define (do-fetch uri)
     (case (and=> uri uri-scheme)
       ((http https)
-       (let ((requests (map (cut narinfo-request url <>) paths)))
-         (match (open-connection-for-uri/maybe uri)
-           (#f
-            '())
-           (port
-            (update-progress!)
-            ;; Note: Do not check HTTPS server certificates to avoid depending
-            ;; on the X.509 PKI.  We can do it because we authenticate
-            ;; narinfos, which provides a much stronger guarantee.
-            (let ((result (http-multiple-get uri
-                                             handle-narinfo-response '()
-                                             requests
-                                             #:verify-certificate? #f
-                                             #:port port)))
-              (close-port port)
-              (newline (current-error-port))
-              result)))))
+       ;; Note: Do not check HTTPS server certificates to avoid depending
+       ;; on the X.509 PKI.  We can do it because we authenticate
+       ;; narinfos, which provides a much stronger guarantee.
+       (let* ((requests (map (cut narinfo-request url <>) paths))
+              (result   (call-with-cached-connection uri
+                          (lambda (port)
+                            (if port
+                                (begin
+                                  (update-progress!)
+                                  (http-multiple-get uri
+                                                     handle-narinfo-response '()
+                                                     requests
+                                                     #:open-connection
+                                                     open-connection-for-uri/cached
+                                                     #:verify-certificate? #f
+                                                     #:port port))
+                                '()))
+                          open-connection-for-uri/maybe)))
+         (newline (current-error-port))
+         result))
       ((file #f)
        (let* ((base  (string-append (uri-path uri) "/"))
               (files (map (compose (cut string-append base <> ".narinfo")
@@ -990,10 +999,14 @@ the URI, its compression method (a string), and the compressed file size."
 
 (define open-connection-for-uri/cached
   (let ((cache '()))
-    (lambda* (uri #:key fresh?)
+    (lambda* (uri #:key fresh? timeout verify-certificate?)
       "Return a connection for URI, possibly reusing a cached connection.
-When FRESH? is true, delete any cached connections for URI and open a new
-one.  Return #f if URI's scheme is 'file' or #f."
+When FRESH? is true, delete any cached connections for URI and open a new one.
+Return #f if URI's scheme is 'file' or #f.
+
+When true, TIMEOUT is the maximum number of milliseconds to wait for
+connection establishment.  When VERIFY-CERTIFICATE? is true, verify HTTPS
+server certificates."
       (define host (uri-host uri))
       (define scheme (uri-scheme uri))
       (define key (list host scheme (uri-port uri)))
@@ -1005,7 +1018,9 @@ one.  Return #f if URI's scheme is 'file' or #f."
               ;; CACHE, if any.
               (let-values (((socket)
                             (guix:open-connection-for-uri
-                             uri #:verify-certificate? #f))
+                             uri
+                             #:verify-certificate? verify-certificate?
+                             #:timeout timeout))
                            ((new-cache evicted)
                             (at-most (- %max-cached-connections 1) cache)))
                 (for-each (match-lambda
@@ -1019,14 +1034,19 @@ one.  Return #f if URI's scheme is 'file' or #f."
                   (begin
                     (false-if-exception (close-port socket))
                     (set! cache (alist-delete key cache))
-                    (open-connection-for-uri/cached uri))
+                    (open-connection-for-uri/cached uri #:timeout timeout
+                                                    #:verify-certificate?
+                                                    verify-certificate?))
                   (begin
                     ;; Drain input left from the previous use.
                     (drain-input socket)
                     socket))))))))
 
-(define (call-with-cached-connection uri proc)
-  (let ((port (open-connection-for-uri/cached uri)))
+(define* (call-with-cached-connection uri proc
+                                      #:optional
+                                      (open-connection
+                                       open-connection-for-uri/cached))
+  (let ((port (open-connection uri)))
     (catch #t
       (lambda ()
         (proc port))
@@ -1038,7 +1058,7 @@ one.  Return #f if URI's scheme is 'file' or #f."
         (if (or (and (eq? key 'system-error)
                      (= EPIPE (system-error-errno `(,key ,@args))))
                 (memq key '(bad-response bad-header bad-header-component)))
-            (proc (open-connection-for-uri/cached uri #:fresh? #t))
+            (proc (open-connection uri #:fresh? #t))
             (apply throw key args))))))
 
 (define-syntax-rule (with-cached-connection uri port exp ...)
@@ -1341,6 +1361,7 @@ default value."
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; eval: (put 'with-cached-connection 'scheme-indent-function 2)
+;;; eval: (put 'call-with-cached-connection 'scheme-indent-function 1)
 ;;; End:
 
 ;;; substitute.scm ends here
