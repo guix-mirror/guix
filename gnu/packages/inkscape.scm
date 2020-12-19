@@ -79,7 +79,7 @@
        ("freetype" ,freetype)
        ("popt" ,popt)
        ("potrace" ,potrace)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("lcms" ,lcms)
        ("boost" ,boost)))
     (native-inputs
