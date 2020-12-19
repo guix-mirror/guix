@@ -20443,6 +20443,24 @@ function data structures.")
     (description "A crate for safe and ergonomic pin-projection.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pin-project-auxiliary-macro-0.0
+  (package
+    (name "rust-pin-project-auxiliary-macro")
+    (version "0.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pin-project-auxiliary-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fk48gab989xxmw466yp4mvqwfkkx9ckqzmjlfyk2hnzavqwvkxj"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/taiki-e/pin-project")
+    (synopsis "Internal test tool of the pin-project crate")
+    (description
+     "This package is an internal test tool of the @code{pin-project} crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pin-project-internal-0.4
   (package
     (name "rust-pin-project-internal")
