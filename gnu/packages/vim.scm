@@ -816,9 +816,6 @@ also works as a library for connecting to and scripting neovim processes
 through its msgpack-rpc API.")
     (license license:asl2.0)))
 
-(define-public python2-pynvim
-  (package-with-python2 python-pynvim))
-
 (define-public vim-guix-vim
   (package
     (name "vim-guix-vim")
