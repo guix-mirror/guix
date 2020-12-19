@@ -424,7 +424,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -432,7 +432,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "07q3mdsvl4smbiakriq3hnsyyd0q344lsm306q0kgz4hjq1p82v6"))))
+                "0bf8801z6fpd1gz9mxd5pqqj8nq101x393cyw8rpkc712w13nl0h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
