@@ -5873,7 +5873,7 @@ This package contains the complete tree of texmf-dist data.")
    (version "20190410")
    (source #f)
    (build-system trivial-build-system)
-   (inputs `(("bash" ,bash) ; for wrap-program
+   (inputs `(("bash" ,bash-minimal)     ;for wrap-program
              ("texlive-bin" ,texlive-bin)
              ("texlive-texmf" ,texlive-texmf)))
    (native-search-paths
