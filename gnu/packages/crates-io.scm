@@ -3699,7 +3699,7 @@ used in argon2rs' bench suite.")
 (define-public rust-cc-1
   (package
     (name "rust-cc")
-    (version "1.0.58")
+    (version "1.0.66")
     (source
       (origin
         (method url-fetch)
@@ -3707,7 +3707,7 @@ used in argon2rs' bench suite.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "065m2fphrv5csy8hvv37msi3a739mfkgw7pcg71dfw9jwnr6z87r"))))
+          "0j7d7h4n81z5f22l3v8ggjvvw8m64636nlaqax4x1y44da1rc12c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
