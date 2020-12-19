@@ -10798,7 +10798,7 @@ for the futures-rs library.")
 (define-public rust-futures-preview-0.3
   (package
     (name "rust-futures-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
       (origin
         (method url-fetch)
@@ -10807,7 +10807,7 @@ for the futures-rs library.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0rsq8d1ciyg37i5ysd9dynwmklwy4sx466z9a72687wsi8fgj9dz"))))
+          "0vnp63aicm9vgapn4hm45ag9lrsf9f3bma3mzz3abbb708mcw79v"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
@@ -10817,12 +10817,15 @@ for the futures-rs library.")
         ("rust-futures-executor-preview" ,rust-futures-executor-preview-0.3)
         ("rust-futures-io-preview" ,rust-futures-io-preview-0.3)
         ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
-        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3))))
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3))
+       #:cargo-development-inputs
+       (("rust-futures-join-macro-preview"
+         ,rust-futures-join-macro-preview-0.3))))
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "An implementation of futures and streams")
+    (synopsis "Implementation of futures and streams")
     (description
-     "An implementation of futures and streams featuring zero allocations,
-composability, and iterator-like interfaces.")
+     "This package provides an implementation of futures and streams featuring
+zero allocations, composability, and iterator-like interfaces.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-futures-select-macro-preview-0.3
