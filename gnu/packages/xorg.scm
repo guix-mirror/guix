@@ -5765,7 +5765,7 @@ The XCB util module provides the following libraries:
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
         ("libtool" ,libtool)
-        ("python-2" ,python-2)
+        ("python" ,python-wrapper)
         ("pkg-config" ,pkg-config)))
      (arguments
       `(#:phases
