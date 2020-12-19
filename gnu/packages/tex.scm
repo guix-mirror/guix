@@ -4763,6 +4763,23 @@ environment is provided which can be used instead of the @code{\\appendix}
 command.")
     (license license:lppl)))
 
+(define-public texlive-latex-bookmark
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latex-bookmark"
+              (list "/doc/latex/bookmark/"
+                    "/tex/latex/bookmark/")
+              (base32
+               "1vl1rrydh5jh78llp4i5r1hvznghm9gddwcnfnzwlgp9z67gybh1")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/bookmark")
+    (synopsis "Bookmark (outline) organization for hyperref")
+    (description
+     "This package implements a new bookmark (outline) organization for the
+@code{hyperref} package.  Bookmark properties such as style and color.  Other
+action types are available (URI, GoToR, Named).")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-changebar
   (package
     (name "texlive-latex-changebar")
