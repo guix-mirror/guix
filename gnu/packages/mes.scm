@@ -204,7 +204,7 @@ Guile.")
                 "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc-0.99)))
+       ("nyacc" ,nyacc-1.00.2)))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
