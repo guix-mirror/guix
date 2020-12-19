@@ -3492,9 +3492,6 @@ documentation builder.")
 specs from your Flask-Restful projects.")
     (license license:expat)))
 
-(define-public python2-flask-restful-swagger
-  (package-with-python2 python-flask-restful-swagger))
-
 (define-public python-htmlmin
   (package
     (name "python-htmlmin")
