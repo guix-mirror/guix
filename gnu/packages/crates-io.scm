@@ -6464,7 +6464,7 @@ for Rust.")
 (define-public rust-data-encoding-2
   (package
     (name "rust-data-encoding")
-    (version "2.1.2")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
@@ -6472,9 +6472,8 @@ for Rust.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "15xd6afhsjl08285piwczrafmckpp8i29padj8v12xhahshprx7l"))))
+          "027rcrwdschrkdr2n9d24gnh03vl41qmvhjqn9vn6z1njy2n0flr"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/ia0/data-encoding")
     (synopsis "Efficient and customizable data-encoding functions")
     (description
