@@ -20422,8 +20422,36 @@ function data structures.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pin-project-1
+  (package
+    (name "rust-pin-project")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pin-project" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19qw2nm2kk38v9j16nsm8j3fkh0g8pjq0k4cplx7i2f4q8vj5k4w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pin-project-internal" ,rust-pin-project-internal-1))
+       #:cargo-development-inputs
+       (("rust-pin-project-auxiliary-macro"
+         ,rust-pin-project-auxiliary-macro-0.0)
+        ("rust-rustversion" ,rust-rustversion-1)
+        ("rust-static-assertions" ,rust-static-assertions-1)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/taiki-e/pin-project")
+    (synopsis "Crate for safe and ergonomic pin-projection")
+    (description
+     "This package provides a crate for safe and ergonomic pin-projection.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pin-project-0.4
   (package
+    (inherit rust-pin-project-1)
     (name "rust-pin-project")
     (version "0.4.22")
     (source
@@ -20433,15 +20461,10 @@ function data structures.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "05wwxy46j9z27ibbiisjqk0rivf0z00h4al1f92mwjp9pz6sdqqj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ; XXX: Fix-me.
        #:cargo-inputs
-       (("rust-pin-project-internal" ,rust-pin-project-internal-0.4))))
-    (home-page "https://crates.io/crates/pin-project")
-    (synopsis "A crate for safe and ergonomic pin-projection")
-    (description "A crate for safe and ergonomic pin-projection.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-pin-project-internal" ,rust-pin-project-internal-0.4))))))
 
 (define-public rust-pin-project-auxiliary-macro-0.0
   (package
