@@ -24221,6 +24221,58 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (description "This package provides a high level HTTP client library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-reqwest-0.9
+  (package
+    (inherit rust-reqwest-0.10)
+    (name "rust-reqwest")
+    (version "0.9.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "reqwest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1aql4wpmf1cfl09xddlxnmd7y1nj7fcbzmsh9603qd61lfp471pq"))))
+    (arguments
+     `(#:cargo-test-flags '("--release" "--" "--skip=badssl")
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-cookie" ,rust-cookie-0.12)
+        ("rust-cookie-store" ,rust-cookie-store-0.7)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-hyper" ,rust-hyper-0.12)
+        ("rust-hyper-old-types" ,rust-hyper-old-types-0.11)
+        ("rust-hyper-rustls" ,rust-hyper-rustls-0.17)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.5)
+        ("rust-socks" ,rust-socks-0.3)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.10)
+        ("rust-tokio-threadpool" ,rust-tokio-threadpool-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.11)
+        ("rust-url" ,rust-url-1)
+        ("rust-uuid" ,rust-uuid-0.7)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.17)
+        ("rust-winreg" ,rust-winreg-0.6))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-libflate" ,rust-libflate-0.1))))))
+
 (define-public rust-resolv-conf-0.6
   (package
     (name "rust-resolv-conf")
