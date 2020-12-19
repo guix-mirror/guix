@@ -10315,7 +10315,7 @@ for the futures-rs library.")
 (define-public rust-futures-util-preview-0.3
   (package
     (name "rust-futures-util-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
      (origin
        (method url-fetch)
@@ -10324,7 +10324,7 @@ for the futures-rs library.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0kizm86wgr5qldyavskfi0r1msg6m4x2pkj0d4r04br2ig29i0dg"))))
+         "138f8wy0vqy2gsgk28kldbqnrdcgwfv9f9xx6rwzkr8p7iinisaw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
@@ -10340,15 +10340,16 @@ for the futures-rs library.")
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
-        ("rust-rand" ,rust-rand-0.7)
         ("rust-slab" ,rust-slab-0.4)
-        ("rust-tokio-io" ,rust-tokio-io-0.1))))
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-futures-join-macro-preview"
+         ,rust-futures-join-macro-preview-0.3))))
     (home-page "https://github.com/rust-lang/futures-rs")
-    (synopsis
-     "Utilities and extension traits for futures-rs library")
+    (synopsis "Utilities and extension traits for futures-rs library")
     (description
-     "Common utilities and extension traits for the futures-rs
-library.")
+     "This package provides common utilities and extension traits for the
+futures-rs library.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-fxhash-0.2
