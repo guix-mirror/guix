@@ -11876,6 +11876,9 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                                "-Dplugin_clang=false"
                                "-Dplugin_flatpak=false"
                                "-Dplugin_glade=false"
+                               ;; XXX: This one has been shown not to work in
+                               ;;      <https://issues.guix.gnu.org/45272>
+                               "-Dplugin_jedi=false"
                                ;; ... except this one.
                                "-Dplugin_update_manager=false")
        #:phases
