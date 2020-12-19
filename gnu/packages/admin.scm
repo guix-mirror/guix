@@ -606,7 +606,20 @@ re-executing them as necessary.")
              (patches (search-patches "inetutils-hurd.patch"))
              (sha256
               (base32
-               "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
+               "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Fix issues with GCC 10.  Can be removed for versions > 1.9.4.
+                 (substitute* "telnetd/utility.c"
+                   (("int not42;")
+                    "extern int not42;"))
+                 (substitute* "ftpd/extern.h"
+                   (("^jmp_buf errcatch;")
+                    "extern jmp_buf errcatch;"))
+                 (substitute* "ftpd/ftpd.c"
+                   (("struct credentials cred;" all)
+                    (string-append all "\njmp_buf errcatch;")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var"
