@@ -10040,7 +10040,7 @@ for the futures-rs library.")
 (define-public rust-futures-io-preview-0.3
   (package
     (name "rust-futures-io-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
       (origin
         (method url-fetch)
@@ -10048,7 +10048,7 @@ for the futures-rs library.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0fhvwhdb8ywjjbfng0ra1r8yyc9yzpyxg9sv3spb3f7w0lk40bh8"))))
+          "1npb04xbn2gw5rjllz88cb88fql44xxfkgcidjjj26fva3j4m4gl"))))
     (build-system cargo-build-system)
     (home-page "https://rust-lang-nursery.github.io/futures-rs/")
     (synopsis "Async read and write traits for the futures library")
