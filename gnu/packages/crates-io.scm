@@ -33568,6 +33568,41 @@ and AsyncResolver for supported resolution types.  The Client can be used for
 other queries.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-resolver-0.11
+  (package
+    (inherit rust-trust-dns-resolver-0.19)
+    (name "rust-trust-dns-resolver")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-resolver" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fd0w2zsdwlsag27fsg0fzyd7j7niw0r22rwh2c5fdmsipjr56bc"))))
+    (arguments
+     `(#:tests? #false                  ;networking failures
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-ipconfig" ,rust-ipconfig-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-lru-cache" ,rust-lru-cache-0.1)
+        ("rust-resolv-conf" ,rust-resolv-conf-0.6)
+        ("rust-rustls" ,rust-rustls-0.15)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-trust-dns-https" ,rust-trust-dns-https-0.3)
+        ("rust-trust-dns-native-tls" ,rust-trust-dns-native-tls-0.6)
+        ("rust-trust-dns-openssl" ,rust-trust-dns-openssl-0.6)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.7)
+        ("rust-trust-dns-rustls" ,rust-trust-dns-rustls-0.6)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.16))))))
+
 (define-public rust-trust-dns-rustls-0.19
   (package
     (name "rust-trust-dns-rustls")
