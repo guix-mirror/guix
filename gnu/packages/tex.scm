@@ -3493,7 +3493,7 @@ standard LaTeX packages."
                  (delete-file (string-append out "/share/texmf-dist/ls-R")))
                #t))))
         (inputs
-         `(("bash" ,bash)
+         `(("bash" ,bash-minimal)
            ,@(map (lambda (package)
                     (list (package-name package) package))
                   (append default-packages packages))))
