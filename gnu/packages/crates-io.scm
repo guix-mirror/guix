@@ -1220,6 +1220,31 @@ standard library.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-log-attributes-1
+  (package
+    (name "rust-async-log-attributes")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-log-attributes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0b9nysb5yxf772cinl5rsyhl2zazj2qfhbckv1kjz9qr3gkgi5ys"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/rustasync/runtime")
+    (synopsis
+     "Proc Macro attributes for the async-log crate.")
+    (description
+     "This package provides proc macro attributes for the @code{async-log}
+crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-stream-0.3
   (package
     (name "rust-async-stream")
