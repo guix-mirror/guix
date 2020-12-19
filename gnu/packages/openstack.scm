@@ -603,9 +603,6 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 and building documentation from them.")
     (license asl2.0)))
 
-(define-public python2-reno
-  (package-with-python2 python-reno))
-
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
