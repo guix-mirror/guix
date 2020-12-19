@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,14 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0vbgnhkawdllgnkdn6zn1f56fczwk0518krakz2qbwhxmv2vvdga"))))
+               "0vbgnhkawdllgnkdn6zn1f56fczwk0518krakz2qbwhxmv2vvdga"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove superfluous declaration that trips GCC 10.
+                 (substitute* "src/global.c"
+                   (("char \\*program_name;")
+                    ""))))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
