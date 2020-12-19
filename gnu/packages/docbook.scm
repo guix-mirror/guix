@@ -390,21 +390,22 @@ the in DocBook SGML DTDs.")
 (define-public dblatex
   (package
     (name "dblatex")
-    (version "0.3.11")
+    (version "0.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/dblatex/dblatex/"
-                                  "dblatex-" version "/dblatex-"
+                                  "dblatex-" version "/dblatex3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0rp1bc2lgisigscq1i7zxfd2qdaxxxld6khbcxss4pq7fpi9fzkv"))))
+                "0yd09nypswy3q4scri1dg7dr99d7gd6r2dwx0xm81l9f4y32gs0n"))))
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-latex-anysize
                                         texlive-latex-appendix
+                                        texlive-latex-bookmark
                                         texlive-latex-changebar
                                         texlive-latex-colortbl
                                         texlive-latex-eepic
@@ -421,6 +422,7 @@ the in DocBook SGML DTDs.")
                                         texlive-latex-oberdiek
                                         texlive-latex-overpic
                                         texlive-latex-pdfpages
+                                        texlive-latex-refcount
                                         texlive-latex-subfigure
                                         texlive-latex-titlesec
                                         texlive-latex-url
@@ -436,8 +438,7 @@ the in DocBook SGML DTDs.")
        ("docbook" ,docbook-xml)
        ("libxslt" ,libxslt)))           ;for xsltproc
     (arguments
-     `(#:python ,python-2               ;'print' syntax
-       ;; Using setuptools causes an invalid "package_base" path in
+     `(;; Using setuptools causes an invalid "package_base" path in
        ;; out/bin/.dblatex-real due to a missing leading '/'.  This is caused
        ;; by dblatex's setup.py stripping the root path when creating the
        ;; script.  (dblatex's setup.py still uses distutils and thus has to
