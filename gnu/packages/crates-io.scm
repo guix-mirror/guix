@@ -33345,6 +33345,29 @@ extension for the Trust-DNS client to use native-tls for TLS.")
 extension for the Trust-DNS client to use tokio-openssl for TLS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-openssl-0.6
+  (package
+    (inherit rust-trust-dns-openssl-0.19)
+    (name "rust-trust-dns-openssl")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-openssl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zwx2bsf1rbyjr6l2c3vi24z7414n4b5qiymva9dmbvwxnqqyk1j"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.3)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.7))
+       #:cargo-development-inputs
+       (("rust-openssl" ,rust-openssl-0.10)
+        ("rust-tokio" ,rust-tokio-0.1))))))
+
 (define-public rust-trust-dns-proto-0.19
   (package
     (name "rust-trust-dns-proto")
