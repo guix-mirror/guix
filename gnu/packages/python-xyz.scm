@@ -12807,9 +12807,6 @@ It includes Python implementations of Kafka producers and consumers, which
 are optionally backed by a C extension built on librdkafka.")
     (license license:asl2.0)))
 
-(define-public python2-pykafka
-  (package-with-python2 python-pykafka))
-
 (define-public python-wcwidth
   (package
     (name "python-wcwidth")
