@@ -3779,9 +3779,6 @@ and other command-line tasks that belong outside the web application
 itself.")
   (license license:bsd-3)))
 
-(define-public python2-flask-script
-  (package-with-python2 python-flask-script))
-
 (define-public python-flask-migrate
   (package
   (name "python-flask-migrate")
