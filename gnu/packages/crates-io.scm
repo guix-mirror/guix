@@ -10893,8 +10893,32 @@ futures-rs library.")
 components built off futures-rs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-timer-1
+  (package
+    (name "rust-futures-timer")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-timer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0idyz2k72jbl9z0wj48n15wjv6qgxgsgvs6k8lrhkzr9jj728ikr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-pin-utils" ,rust-pin-utils-0.1))))
+    (home-page "https://github.com/async-rs/futures-timer")
+    (synopsis "Timeouts for futures")
+    (description "This package is a general purpose crate for working with
+timeouts and delays with futures.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-timer-0.1
   (package
+    (inherit rust-futures-timer-1)
     (name "rust-futures-timer")
     (version "0.1.1")
     (source
@@ -10904,13 +10928,8 @@ components built off futures-rs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0hw0nlyrq5an6l6y8md1rg6r380zrddvmh9cg0h64xfwnvlxzkm5"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-futures" ,rust-futures-0.1))))
-    (home-page "https://github.com/async-rs/futures-timer")
-    (synopsis "Timeouts for futures")
-    (description "Timeouts for futures.")
-    (license (list license:expat license:asl2.0))))
+     `(#:cargo-inputs (("rust-futures" ,rust-futures-0.1))))))
 
 (define-public rust-futures-util-0.3
   (package
