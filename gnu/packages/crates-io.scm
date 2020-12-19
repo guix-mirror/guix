@@ -9960,7 +9960,7 @@ the computation on the threads themselves.")
 (define-public rust-futures-executor-0.3
   (package
     (name "rust-futures-executor")
-    (version "0.3.1")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -9969,7 +9969,7 @@ the computation on the threads themselves.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0cf24wbgxqh4kdjbb557vk1axzmbpmwb8s05ga1nls1zaqv4f9qy"))))
+         "0r8ayj6g08d1i0hj2v6g5zr3hzlkxpqlkpf1awq0105qd0mjpajc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f
