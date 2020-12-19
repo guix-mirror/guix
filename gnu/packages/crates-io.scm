@@ -9988,7 +9988,7 @@ the computation on the threads themselves.")
 (define-public rust-futures-executor-preview-0.3
   (package
     (name "rust-futures-executor-preview")
-    (version "0.3.0-alpha.17")
+    (version "0.3.0-alpha.19")
     (source
      (origin
        (method url-fetch)
@@ -9997,7 +9997,7 @@ the computation on the threads themselves.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "053g5kf2qa1xhdkwp3d1grrizzy4683mpbb3y0vvm00hwl7jdfl7"))))
+         "161yv7wwha60mdzj1id47kh8ylnhcnv7blgwidg8xs4zpn46w8vm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
