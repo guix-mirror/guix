@@ -9373,6 +9373,30 @@ variables.")
        (("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-event-listener-2
+  (package
+    (name "rust-event-listener")
+    (version "2.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "event-listener" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ndyp41pb2cx7gxijqh4ymnc47nyrvhvir7rvjlw6x09ayb10lzp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-waker-fn" ,rust-waker-fn-1))))
+    (home-page "https://github.com/stjepang/event-listener")
+    (synopsis "Notify async tasks or threads")
+    (description
+     "This is a synchronization primitive similar to @code{eventcounts}.
+You can use this crate to turn non-blocking data structures into async or
+blocking data structures.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-exitfailure-0.5
   (package
     (name "rust-exitfailure")
