@@ -29144,8 +29144,31 @@ cryptographic implementations.")
      "This package provides a no-std, object-safe serialization framework.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-sval-derive-0.5
+  (package
+    (name "rust-sval-derive")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sval_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1spip2cjhmjazq2dns69909p9hyx4cmbx6ma4g2skwvcwv4h3gnq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/sval-rs/sval")
+    (synopsis "Custom derive for @code{sval}")
+    (description "This package provides custom derive for @code{sval}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-sval-derive-0.4
   (package
+    (inherit rust-sval-derive-0.5)
     (name "rust-sval-derive")
     (version "0.4.7")
     (source
@@ -29157,17 +29180,12 @@ cryptographic implementations.")
         (sha256
          (base32
           "07s7jqsdczsg0wnydfnxyrsj8zyrjmiwl4is1dfgn8dfvyi8n2bj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
-    (home-page "https://github.com/sval-rs/sval")
-    (synopsis "Custom derive for sval")
-    (description "Custom derive for sval.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-quote" ,rust-quote-1))))))
 
 (define-public rust-swc-1
   (package
