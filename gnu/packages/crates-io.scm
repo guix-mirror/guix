@@ -1315,6 +1315,35 @@ Rust.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-executor-1
+  (package
+    (name "rust-async-executor")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-executor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ilivvzc082ynr096xxghc8hdmlmacxilcpn738ylh5lqxq7k1zb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-task" ,rust-async-task-4)
+        ("rust-concurrent-queue" ,rust-concurrent-queue-1)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-vec-arena" ,rust-vec-arena-1))
+       #:cargo-development-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-io" ,rust-async-io-1)
+        ("rust-easy-parallel" ,rust-easy-parallel-3))))
+    (home-page "https://github.com/stjepang/async-executor")
+    (synopsis "Async executor")
+    (description "This library provides async executors.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-io-1
   (package
     (name "rust-async-io")
