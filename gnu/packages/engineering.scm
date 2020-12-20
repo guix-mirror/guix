@@ -1121,7 +1121,7 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1131,7 +1131,7 @@ the 'showing the effect of'-style of operation.")
              (recursive? #t)))          ; for cpu_features git submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14y0988r5qi1h3yvkivx5ihccn8r15910lq30r8iy71ih190r5m9"))))
+        (base32 "1mkqiw0i2fbbsk46zvk8yv5swl7ifhq6y1dlfphq8dsmkvxckqby"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
