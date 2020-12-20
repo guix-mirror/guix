@@ -132,7 +132,7 @@ in intelligent transportation networks.")
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                           "download/" version "/p11-kit-" version ".tar.xz"))
       (sha256
-       (base32 "09q6163qmqcdw6v0fwmhdmsqrcndnp5m9jvby1kxi82wy29s9fpi"))))
+       (base32 "1dn6br4v033d3gp2max9lsr3y4q0nj6iyr1yq3kzi8ym7lal13wa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
