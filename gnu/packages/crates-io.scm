@@ -34598,7 +34598,7 @@ attribute that is not in the shared backend crate.")
 (define-public rust-wasm-bindgen-test-0.3
   (package
     (name "rust-wasm-bindgen-test")
-    (version "0.3.8")
+    (version "0.3.19")
     (source
      (origin
        (method url-fetch)
@@ -34607,11 +34607,10 @@ attribute that is not in the shared backend crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bn833hghwbcg9cqz1bx9biq271bc4jcbgn2nqk1fkf4ab1hxzcq"))))
+         "09aas82c1i249bmzjwj9szk727nm4jzaidnwnq4jlycv3w6glm83"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-console-error-panic-hook" ,rust-console-error-panic-hook-0.1)
         ("rust-js-sys" ,rust-js-sys-0.3)
         ("rust-scoped-tls" ,rust-scoped-tls-1.0)
