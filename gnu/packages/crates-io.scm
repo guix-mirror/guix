@@ -24821,6 +24821,29 @@ generator.")
 random generic types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-randomize-4
+  (package
+    (name "rust-randomize")
+    (version "4.0.0-alpha.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "randomize" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m4vkgm161q51ww9bvf0kram9cxg8j3p80rl9w1fzpgkwcwbqhpm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1))))
+    (home-page "https://github.com/Lokathor/randomize")
+    (synopsis "Minimalist randomization library")
+    (description
+     "This package provides a minimalist randomization library.")
+    (license
+     (list license:zlib license:asl2.0 license:expat))))
+
 (define-public rust-raw-cpuid-8
   (package
     (name "rust-raw-cpuid")
