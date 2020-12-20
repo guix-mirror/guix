@@ -1177,6 +1177,31 @@ standard library.")
     (description "This package provides a libsyntax ast builder.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-attributes-1
+  (package
+    (name "rust-async-attributes")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-attributes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08w41342hybxhln7j7hjsf7v04p3r9d6qdczfwp8d53xj5bd3lzg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-async-std" ,rust-async-std-0.99))))
+    (home-page "https://github.com/async-rs/async-attributes")
+    (synopsis "Experimental language-level polyfills for Async Rust")
+    (description
+     "This package provides experimental language-level polyfills for Async
+Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-compression-0.3
   (package
     (name "rust-async-compression")
@@ -1292,6 +1317,54 @@ crate.")
     (synopsis "Macros for async-std")
     (description "Macros for async-std.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-async-std-0.99
+  (package
+    (name "rust-async-std")
+    (version "0.99.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-std" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k34181r1xzalyf7alka0ibnbqll6s5l435ycydm7fv1g6gill24"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags '("--release" "--" "--skip=io_timeout")
+       #:cargo-inputs
+       (("rust-async-attributes" ,rust-async-attributes-1)
+        ("rust-async-macros" ,rust-async-macros-1)
+        ("rust-async-task" ,rust-async-task-1)
+        ("rust-broadcaster" ,rust-broadcaster-0.2)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-timer" ,rust-futures-timer-1)
+        ("rust-kv-log-macro" ,rust-kv-log-macro-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-pin-utils" ,rust-pin-utils-0.1)
+        ("rust-slab" ,rust-slab-0.4))
+       #:cargo-development-inputs
+       (("rust-femme" ,rust-femme-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://async.rs")
+    (synopsis "Async version of the Rust standard library")
+    (description
+     "This crate provides an async version of @code{std}.  It provides all the
+interfaces you are used to, but in an async version and ready for Rust's
+@code{async/await} syntax.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-async-stream-0.3
   (package
