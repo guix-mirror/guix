@@ -34462,7 +34462,7 @@ wasm-bindgen.")
 (define-public rust-wasm-bindgen-futures-0.4
   (package
     (name "rust-wasm-bindgen-futures")
-    (version "0.4.8")
+    (version "0.4.19")
     (source
      (origin
        (method url-fetch)
@@ -34471,12 +34471,11 @@ wasm-bindgen.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1n9ma4kinr4w6r2sh4wm04my6p14k1vx3a4vdbn0vd187sgd9gcb"))))
+         "0d8fg2k4a4xyv28japgld7qzy2zyrnvh582pjkp88id8hmh7bs8z"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-js-sys" ,rust-js-sys-0.3)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-web-sys" ,rust-web-sys-0.3))
