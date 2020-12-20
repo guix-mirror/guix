@@ -1344,6 +1344,37 @@ and Rust's modern asynchronous IO types.")
     (description "This library provides async executors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-global-executor-1
+  (package
+    (name "rust-async-global-executor")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-global-executor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "017s1lik153s587l6q9x5bf9i1n7gxqcg3zn2mdgvf16rm4rn1vk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-executor" ,rust-async-executor-1)
+        ("rust-async-io" ,rust-async-io-1)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio" ,rust-tokio-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://github.com/async-rs/async-global-executor")
+    (synopsis "Global executor built on top of @code{async-executor} and
+@code{async-io}")
+    (description
+     "This package provides a global executor built on top of
+@code{async-executor} and @code{async-io}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-io-1
   (package
     (name "rust-async-io")
