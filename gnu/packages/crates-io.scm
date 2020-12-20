@@ -18378,6 +18378,33 @@ IO of Windows's named pipes.")
      "This package provides a crate to perform natural ordering for Rust.")
     (license license:expat)))
 
+(define-public rust-nb-connect-1
+  (package
+    (name "rust-nb-connect")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nb-connect" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1649m71wc0cg1rqgl8vbh0489znkhpwgl0isjd5x8mz470ash8w1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-polling" ,rust-polling-2))))
+    (home-page "https://github.com/stjepang/nb-connect")
+    (synopsis "Non-blocking TCP or Unix connect")
+    (description
+     "This crate allows you to create a TcpStream or a UnixStream in
+a non-blocking way, without waiting for the connection to become fully
+established.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ndarray-0.12
   (package
     (name "rust-ndarray")
