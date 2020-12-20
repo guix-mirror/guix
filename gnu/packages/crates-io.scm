@@ -24776,6 +24776,29 @@ random number generators.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-random-fast-rng-0.1
+  (package
+    (name "rust-random-fast-rng")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "random-fast-rng" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18q577c8j2j9j044b5fnj1xw1lwkyjrkl3agzp3lvx3iln24wy4m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-random-trait" ,rust-random-trait-0.1))))
+    (home-page "https://github.com/elichai/random-rs")
+    (synopsis "Library for fast non cryptographic random number generator")
+    (description
+     "This package is a Rust library for fast non cryptographic random number
+generator.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-random-trait-0.1
   (package
     (name "rust-random-trait")
