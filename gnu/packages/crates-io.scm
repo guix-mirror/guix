@@ -1495,8 +1495,32 @@ notation.")
 crate.")
     (license license:expat)))
 
+(define-public rust-async-task-4
+  (package
+    (name "rust-async-task")
+    (version "4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-task" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1w0a1c8jim6s5bvcyiiwg9m4bdv3xnd4hbjm97ndgmphmgg32679"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-atomic-waker" ,rust-atomic-waker-1)
+        ("rust-easy-parallel" ,rust-easy-parallel-3)
+        ("rust-flume" ,rust-flume-0.10))))
+    (home-page "https://github.com/stjepang/async-task")
+    (synopsis "Task abstraction for building executors")
+    (description
+     "This package provides a task abstraction for building executors.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-task-1
   (package
+    (inherit rust-async-task-4)
     (name "rust-async-task")
     (version "1.3.1")
     (source
@@ -1506,19 +1530,13 @@ crate.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0p88087z43zvv924my16a17qd65kdlv1r59h80h73rvrn0bc1hha"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.7)
-        ("rust-futures" ,rust-futures-0.3))))
-    (home-page "https://github.com/stjepang/async-task")
-    (synopsis "Task abstraction for building executors")
-    (description
-     "This package provides a task abstraction for building executors.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-futures" ,rust-futures-0.3))))))
 
 (define-public rust-async-trait-0.1
   (package
