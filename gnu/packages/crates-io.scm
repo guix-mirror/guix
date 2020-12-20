@@ -36614,6 +36614,24 @@ first byte.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-vec-arena-1
+  (package
+    (name "rust-vec-arena")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vec-arena" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07866gmvn4cf2656bjf75nrmbnw4cj0cyqkv2wlmavzw5ndipz7a"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/smol-rs/vec-arena")
+    (synopsis "Simple object arena")
+    (description
+     "This package provides a simple object arena.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-vec-map-0.8
   (package
     (name "rust-vec-map")
