@@ -1032,13 +1032,13 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-term-readline-gnu" ,perl-term-readline-gnu)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
-       ("xdg-utils" ,xdg-utils)
-
-       ;; Some videos play without youtube-dl, but others silently fail to.
-       ("youtube-dl" ,youtube-dl)))
-
-       ;; Required only when building the graphical interface (--gtk).
-       ;;("perl-file-sharedir" ,perl-file-sharedir)
+       ("xdg-utils" ,xdg-utils)))
+    ;; Required only when building the graphical interface (--gtk).
+    ;;("perl-file-sharedir" ,perl-file-sharedir)
+    
+    ;; Some videos play without youtube-dl, but others silently fail to.
+    (propagated-inputs
+     `(("youtube-dl" ,youtube-dl)))
     (arguments
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
