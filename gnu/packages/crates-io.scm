@@ -1202,6 +1202,33 @@ standard library.")
 Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-channel-1
+  (package
+    (name "rust-async-channel")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-channel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ffn42ig82az8ndgjb545imifarcavwxs9dff6psbdkdjj1hsx2r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-concurrent-queue" ,rust-concurrent-queue-1)
+        ("rust-event-listener" ,rust-event-listener-2)
+        ("rust-futures-core" ,rust-futures-core-0.3))
+       #:cargo-development-inputs
+       (("rust-blocking" ,rust-blocking-0.6)
+        ("rust-easy-parallel" ,rust-easy-parallel-3)
+        ("rust-futures-lite" ,rust-futures-lite-1))))
+    (home-page "https://github.com/stjepang/async-channel")
+    (synopsis "Async multi-producer multi-consumer channel")
+    (description
+     "Async multi-producer multi-consumer channel")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-compression-0.3
   (package
     (name "rust-async-compression")
