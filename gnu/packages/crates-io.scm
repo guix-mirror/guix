@@ -35990,6 +35990,29 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-uds-windows-0.1
+  (package
+    (name "rust-uds-windows")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uds-windows" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mdv9xyrf8z8zr2py5drbilkncgrkg61axq6h7hcvgggklv9f14z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-winapi" ,rust-winapi-0.2)
+        ("rust-ws2-32-sys" ,rust-ws2-32-sys-0.2))))
+    (home-page "https://github.com/haraldh/rust_uds_windows")
+    (synopsis "Unix Domain Sockets for Windows")
+    (description "This library integrates Unix Domain Sockets on Windows.")
+    (license license:expat)))
+
 (define-public rust-ufmt-0.1
   (package
     (name "rust-ufmt")
