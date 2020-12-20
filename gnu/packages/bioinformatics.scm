@@ -11464,7 +11464,7 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        ("perl" ,perl)
        ("libpng" ,libpng)
        ("mariadb-dev" ,mariadb "dev")
-       ("openssl" ,openssl-1.0)))
+       ("openssl" ,openssl)))
     (home-page "https://genome.cse.ucsc.edu/index.html")
     (synopsis "Assorted bioinformatics utilities")
     (description "This package provides the kentUtils, a selection of
