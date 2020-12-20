@@ -30396,6 +30396,28 @@ future to wake it up, it continuously polls the future until the future is
 ready.  This will probably use a lot of CPU, so be careful when you use it.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-spinning-top-0.2
+  (package
+    (name "rust-spinning-top")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spinning_top" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dmbb627i05qla1lnxy7r6hpiia76c8kb40zcgrbar0dx1rrslky"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lock-api" ,rust-lock-api-0.4))))
+    (home-page "https://github.com/rust-osdev/spinning_top")
+    (synopsis "Simple spinlock based on @code{lock_api}")
+    (description
+     "This package provides a simple spinlock crate based on the abstractions
+provided by @code{lock_api}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
