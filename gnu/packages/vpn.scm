@@ -351,7 +351,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 (define-public protonvpn-cli
   (package
     (name "protonvpn-cli")
-    (version "2.2.4")
+    (version "2.2.6")
     (source
      (origin
        ;; PyPI has a ".whl" file but not a proper source release.
@@ -362,8 +362,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08yca0a0prrnrc7ir7ajd56yxvxpcs4m1k8f5kf273f5whgr7wzw"))))
+        (base32 "0y7v9ikrmy5dbjlpbpacp08gy838i8z54m8m4ps7ldk1j6kyia3n"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests in repo
     (native-inputs
