@@ -1315,6 +1315,49 @@ Rust.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-io-1
+  (package
+    (name "rust-async-io")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-io" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zg0bvb58615qar6ih3ddr1cyjh0fsrfdhpy90z1qxjnfpqgh5ck"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-concurrent-queue" ,rust-concurrent-queue-1)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nb-connect" ,rust-nb-connect-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking" ,rust-parking-2)
+        ("rust-polling" ,rust-polling-2)
+        ("rust-vec-arena" ,rust-vec-arena-1)
+        ("rust-waker-fn" ,rust-waker-fn-1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-net" ,rust-async-net-1)
+        ("rust-inotify" ,rust-inotify-0.8)
+        ("rust-nix" ,rust-nix-0.18)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-timerfd" ,rust-timerfd-1)
+        ("rust-uds-windows" ,rust-uds-windows-0.1))))
+    (home-page "https://github.com/stjepang/async-io")
+    (synopsis "Async I/O and timers")
+    (description
+     "This crate provides two tools: Async, an adapter for standard networking
+types (and many other types) to use in async programs, and Timer, a future
+that expires at a point in time.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-log-1
   (package
     (name "rust-async-log")
@@ -1387,6 +1430,30 @@ crate.")
     (synopsis "Macros for async-std")
     (description "Macros for async-std.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-async-net-1
+  (package
+    (name "rust-async-net")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-net" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rgvvqb1l86hawl1j0jfyzq35yracbbh29109131izmghmf4gph6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-io" ,rust-async-io-1)
+        ("rust-blocking" ,rust-blocking-1)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-lite" ,rust-futures-lite-1))))
+    (home-page "https://github.com/stjepang/async-net")
+    (synopsis "Async networking primitives for TCP/UDP/Unix communication")
+    (description
+     "Async networking primitives for TCP/UDP/Unix communication")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-async-std-0.99
   (package
