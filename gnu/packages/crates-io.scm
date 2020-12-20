@@ -19995,7 +19995,10 @@ other crates to create safe wrappers around Oniguruma.")
     (home-page "https://github.com/matklad/once_cell")
     (synopsis "Single assignment cells and lazy values")
     (description
-     "Single assignment cells and lazy values.")
+     "This package provides two new cell-like types, @code{unsync::OnceCell}
+and @code{sync::OnceCell}.  OnceCell might store arbitrary non-copy types, can
+be assigned to at most once and provide direct access to the stored
+contents.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-once-cell-0.1
