@@ -10244,6 +10244,39 @@ streams.")
 crate.")
     (license license:asl2.0)))
 
+(define-public rust-flume-0.10
+  (package
+    (name "rust-flume")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flume" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14dvj6d2r6vgsy3adv4lncbddjwc59rgl0rcwc1kdnsmqkh7lwhy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true    ;XXX: remove when rust-async-std-1 is packaged
+       #:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-nanorand" ,rust-nanorand-0.5)
+        ("rust-spinning-top" ,rust-spinning-top-0.2))
+       #:cargo-development-inputs
+       (;("rust-async-std" ,rust-async-std-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-waker-fn" ,rust-waker-fn-1))))
+    (home-page "https://github.com/zesterer/flume")
+    (synopsis "Fast multi-producer channel")
+    (description
+     "This package provides a fast multi-producer channel.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-fnv-1
   (package
     (name "rust-fnv")
