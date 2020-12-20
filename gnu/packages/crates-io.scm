@@ -37645,6 +37645,28 @@ with webpki.")
      "This package provides a WebIDL Parser.")
     (license license:expat)))
 
+(define-public rust-wepoll-sys-3
+  (package
+    (name "rust-wepoll-sys")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wepoll-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zvpkr4dz3ny0k20mg1wdlp8vawz5p4gnya7h8j24119m7g19jqg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true              ;missing "winsock.h"
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))
+    (home-page "https://gitlab.com/yorickpeterse/wepoll-sys")
+    (synopsis "Raw bindings to the @code{wepoll} library")
+    (description
+     "This crate provides unsafe Rust bindings to the @code{wepoll} library.")
+    (license license:mpl2.0)))
+
 (define-public rust-which-3
   (package
     (name "rust-which")
