@@ -4928,6 +4928,31 @@ harness.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-concurrent-queue-1
+  (package
+    (name "rust-concurrent-queue")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concurrent-queue" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18w6hblcjjk9d0my3657ra1zdj79gwfjmzvc0b3985g01dahgv9h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cache-padded" ,rust-cache-padded-1))
+       #:cargo-development-inputs
+       (("rust-easy-parallel" ,rust-easy-parallel-3)
+        ("rust-fastrand" ,rust-fastrand-1))))
+    (home-page "https://github.com/stjepang/concurrent-queue")
+    (synopsis "Concurrent multi-producer multi-consumer queue")
+    (description
+     "This package provides a concurrent multi-producer multi-consumer
+queue.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-console-0.13
   (package
     (name "rust-console")
