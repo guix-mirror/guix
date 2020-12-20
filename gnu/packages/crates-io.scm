@@ -9560,6 +9560,29 @@ implement features such as look-around and backtracking, which are not
 supported in purely NFA-based implementations.")
     (license license:expat)))
 
+(define-public rust-fastrand-1
+  (package
+    (name "rust-fastrand")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fastrand" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qvz1i7g5mb2hcsaawrvxx88b8vwrsr85qr98ffmrkj5fh2sypya"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-instant" ,rust-instant-0.1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/stjepang/fastrand")
+    (synopsis "Simple and fast random number generator")
+    (description
+     "This package provides a simple and fast random number generator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-femme-2
   (package
     (name "rust-femme")
