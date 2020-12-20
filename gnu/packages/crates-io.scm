@@ -24776,6 +24776,28 @@ random number generators.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-random-trait-0.1
+  (package
+    (name "rust-random-trait")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "random-trait" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0iw4laa9i97x1m1mc72rx0km0j6pjdrb75b0c93fdaq45spqcc8d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://crates.io/crates/random-trait")
+    (synopsis "Rust library for a random trait")
+    (description
+     "This package is a Rust library for a random trait meant to produce
+random generic types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-raw-cpuid-8
   (package
     (name "rust-raw-cpuid")
