@@ -13679,7 +13679,7 @@ primitives to an @code{io::Write}.")
 (define-public rust-js-sys-0.3
   (package
     (name "rust-js-sys")
-    (version "0.3.37")
+    (version "0.3.46")
     (source
      (origin
        (method url-fetch)
@@ -13688,7 +13688,7 @@ primitives to an @code{io::Write}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mbhpbw3zjjl51m24qx3ilq4y8xipm5sfa5hsavaabqs6wsx89va"))))
+         "0xc1llkp23q8ac2wdwh46y6gjbc34prrd98g5my9qz4zja1p6gfg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
