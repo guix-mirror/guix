@@ -29986,6 +29986,30 @@ initializers are available.")
          "07ywqn1vrpi3c43fmvsx7pawk9h3rb77yyqbnhap2micl454kb6f"))))
     (arguments '(#:skip-build? #t))))
 
+(define-public rust-spin-on-0.1
+  (package
+    (name "rust-spin-on")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spin-on" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18idc7jfa4m2cap721nh5lva19z3ykjyz1w2hfm6960vshz10vh7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pin-utils" ,rust-pin-utils-0.1))))
+    (home-page "https://crates.io/crates/spin_on")
+    (synopsis "Simple, inefficient Future executor")
+    (description
+     "This crate contains what aims to be the simplest possible implementation
+of a valid executor.  Instead of nicely parking the thread and waiting for the
+future to wake it up, it continuously polls the future until the future is
+ready.  This will probably use a lot of CPU, so be careful when you use it.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
