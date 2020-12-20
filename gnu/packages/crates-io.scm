@@ -22460,6 +22460,34 @@ applications.")
      "Additional trait for Read and Write to read and write Plain Old Data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-polling-2
+  (package
+    (name "rust-polling")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polling" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r5xm3f6qs84ibg09nw1cz78r883521l3jaiakj35ri959mvr9x2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-wepoll-sys" ,rust-wepoll-sys-3)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-easy-parallel" ,rust-easy-parallel-3))))
+    (home-page "https://github.com/stjepang/polling")
+    (synopsis "Portable interface to epoll, kqueue, event ports, and wepoll")
+    (description
+     "This package provides a portable interface to @code{epoll},
+@code{kqueue}, @code{event ports}, and @code{wepoll}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-polyval-0.4
   (package
     (name "rust-polyval")
