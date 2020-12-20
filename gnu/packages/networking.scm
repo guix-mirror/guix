@@ -294,51 +294,64 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
       license:mpl1.1))))
 
 (define-public rtmpdump
-  (package
-    (name "rtmpdump")
-    (version "2.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.ffmpeg.org/rtmpdump")
-             (commit "c28f1bab7822de97353849e7787b59e50bbb1428")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1n3kdip83nvvs4sin30zpcdr5q711mqhq2lxrv5vgbc6lskpwzlj"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
-       (list
-        ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
-        (string-append "LDFLAGS=-Wl,-rpath="
-                       (assoc-ref %outputs "out") "/lib")
-        (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'omit-static-library
-           (lambda _
-             (substitute* "librtmp/Makefile"
-               (("cp librtmp\\.a .*")   ; don't install it
-                "")
-               (("librtmp\\.a ")        ; don't build it
-                ""))
-             #t))
-         (delete 'configure))))
-    (inputs
-     `(("openssl" ,openssl-1.0)
-       ("zlib" ,zlib)))
-    (synopsis "Tools and library for handling RTMP streams")
-    (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
+  ;; There are no tags in the repository, and the project is unlikely to
+  ;; make new releases.  Take a recent commit for multiple security fixes
+  ;; as well as GnuTLS compatibility.
+  (let ((commit "c5f04a58fc2aeea6296ca7c44ee4734c18401aa3")
+        (revision "0")
+        (version "2.4"))                ;as mentioned in README and man pages
+    (package
+      (name "rtmpdump")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.ffmpeg.org/rtmpdump")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "07ias612jgmxpam9h418kvlag32da914jsnjsfyafklpnh8gdzjb"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags
+         (list
+          ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
+          (string-append "LDFLAGS=-Wl,-rpath="
+                         (assoc-ref %outputs "out") "/lib")
+          (string-append "prefix=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'omit-static-library
+             (lambda _
+               (substitute* "librtmp/Makefile"
+                 (("cp librtmp\\.a .*") ; don't install it
+                  "")
+                 (("librtmp\\.a ")      ; don't build it
+                  ""))
+               #t))
+           (add-after 'unpack 'prefer-gnutls
+             (lambda _
+               (substitute* '("Makefile" "librtmp/Makefile")
+                 (("CRYPTO=OPENSSL")
+                  "#CRYPTO=OPENSSL")
+                 (("#CRYPTO=GNUTLS")
+                  "CRYPTO=GNUTLS"))))
+           (delete 'configure))))
+      (inputs
+       `(("gnutls" ,gnutls)
+         ("zlib" ,zlib)))
+      (synopsis "Tools and library for handling RTMP streams")
+      (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
 supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
-    (home-page "https://rtmpdump.mplayerhq.hu/")
-    (license
-     (list
-      ;; Library.
-      license:lgpl2.1+
-      ;; Others.
-      license:gpl2+))))
+      (home-page "https://rtmpdump.mplayerhq.hu/")
+      (license
+       (list
+        ;; Library.
+        license:lgpl2.1+
+        ;; Others.
+        license:gpl2+)))))
 
 (define-public srt
   (package
