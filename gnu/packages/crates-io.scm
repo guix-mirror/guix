@@ -1498,6 +1498,27 @@ methods.")
     (description "This package provides a safe abstraction around AtomicPtr.")
     (license license:asl2.0)))
 
+(define-public rust-atomic-waker-1
+  (package
+    (name "rust-atomic-waker")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atomic-waker" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ansiq5vlw684fhks2x4a4is2rqlbv50q5mi8x0fxxvx5q2p8lq6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3))))
+    (home-page "https://github.com/stjepang/atomic-waker")
+    (synopsis "Synchronization primitive for task wakeup")
+    (description
+     "This package provides a synchronization primitive for task wakeup.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-atty-0.2
   (package
     (name "rust-atty")
