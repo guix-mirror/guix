@@ -33010,25 +33010,25 @@ writing asynchronous I/O backed applications.")
   (package
     (inherit rust-tokio-1)
     (name "rust-tokio")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0lj26zy5k1dbln0599bn918z5j16wz5iyzs8cjz33hp2ksrkwam1"))))
+        (base32 "0z78l7kn4y2qvghsp9dyqgvr1kjvv63pjq3d8nzi31q74lfa42vj"))))
     (arguments
      `(#:tests? #f                      ;FIXME: fail due to unresolved imports
        #:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
         ("rust-bytes" ,rust-bytes-0.6)
         ("rust-futures-core" ,rust-futures-core-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-mio" ,rust-mio-0.7)
         ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-parking-lot" ,rust-parking-lot-0.11)
         ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
         ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
