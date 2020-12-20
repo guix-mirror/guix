@@ -682,7 +682,7 @@ programming language.")))
 (define-public lighttpd
   (package
     (name "lighttpd")
-    (version "1.4.56")
+    (version "1.4.57")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.lighttpd.net/lighttpd/"
@@ -690,7 +690,7 @@ programming language.")))
                                   "lighttpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0xyzahrkmldwskwgjgj4dc3rmfmgqiwwr9y7jfhqpbp8g76q9kp4"))))
+                "0zr1ssagirv5l4r2ii1k9v366a4vwylwbq74nb5pwby1i4drdjjj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
