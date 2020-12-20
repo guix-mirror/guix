@@ -1187,7 +1187,12 @@ developed in C/C++ to MariaDB and MySQL databases.")
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl")
+     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl"
+                           ;; PostgreSQL installs its own Makefile (should it?).
+                           ;; Prevent it from retaining needless references to
+                           ;; the build tools in order to save size.
+                           "MKDIR_P=mkdir -p" "INSTALL_BIN=install -c"
+                           "LD=ld" "TAR=tar")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
