@@ -2791,13 +2791,14 @@ tables.")
     ;; The sources in the TeX Live SVN repository do not contain hluatex.dtx,
     ;; so we fetch the release from GitHub.
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ho-tex/hyperref/"
-                                  "archive/release-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ho-tex/hyperref")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1d3rmjgzh0025a1dza55zb6nzzlgd1y9snwx45wq1c1vf42m79h2"))))
+                "186x6qmzyr51sfi9zkpgf5js8mn0qfryqdvwbfg58pyilw1l3vkm"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/hyperref"))
     (propagated-inputs
