@@ -3716,6 +3716,29 @@ exposed as Reader/Writer streams.")
      "The ChaCha family of stream ciphers.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-cache-padded-1
+  (package
+    (name "rust-cache-padded")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cache-padded" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fkdwv9vjazm6fs3s5v56mm4carwswdmw8fcwm9ygrcvihcya6k3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/stjepang/cache-padded")
+    (synopsis "Prevent once piece of data invalidating other cached data")
+    (description
+     "In concurrent programming, sometimes it is desirable to make sure
+commonly accessed shared data is not all placed into the same cache line.
+Updating an atomic value invalides the whole cache line it belongs to, which
+makes the next access to the same cache line slower for other CPU cores.  Use
+CachePadded to ensure updating one piece of data doesn't invalidate other
+cached data.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cachedir-0.1
   (package
     (name "rust-cachedir")
