@@ -2998,6 +2998,33 @@ algorithms.  This package is deprecated.  Please use block-cipher instead")
      `(#:cargo-inputs
        (("rust-byte-tools" ,rust-byte-tools-0.3))))))
 
+(define-public rust-blocking-0.6
+  (package
+    (name "rust-blocking")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blocking" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13g1xlsd1ardf9wxkj1d03baxfy8f8kvgjz55l6zi1q4jn5f0c1z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-atomic-waker" ,rust-atomic-waker-1)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-waker-fn" ,rust-waker-fn-1))))
+    (home-page "https://github.com/stjepang/blocking")
+    (synopsis "Thread pool for isolating blocking I/O in async programs")
+    (description
+     "This package provides a thread pool for isolating blocking I/O in async
+programs.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bresenham-0.1
   (package
     (name "rust-bresenham")
