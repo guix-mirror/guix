@@ -29118,8 +29118,34 @@ cryptographic implementations.")
         (base32
          "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
+(define-public rust-sval-0.5
+  (package
+    (name "rust-sval")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sval" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "052j9ipwpb1zh02gw2ys8c4wpjqdf35991k0zkwljnalx37i79qj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-sval-derive" ,rust-sval-derive-0.5))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/sval-rs/sval")
+    (synopsis "No-std, object-safe serialization framework")
+    (description
+     "This package provides a no-std, object-safe serialization framework.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-sval-0.4
   (package
+    (inherit rust-sval-0.5)
     (name "rust-sval")
     (version "0.4.7")
     (source
@@ -29131,18 +29157,12 @@ cryptographic implementations.")
         (sha256
          (base32
           "1aljggx64481q4wp3wx9hxsfh2bs7d64nqsrwbb2zxcpmdnbn6yk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-sval-derive" ,rust-sval-derive-0.4)
         ("rust-smallvec" ,rust-smallvec-0.6)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://github.com/sval-rs/sval")
-    (synopsis "No-std, object-safe serialization framework")
-    (description
-     "This package provides a no-std, object-safe serialization framework.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-sval-derive-0.5
   (package
