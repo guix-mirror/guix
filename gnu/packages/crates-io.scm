@@ -8450,6 +8450,26 @@ floating-point primitives to an @code{io::Write}.")
      "This package provides lightweight binding to DirectWrite.")
     (license license:mpl2.0)))
 
+(define-public rust-easy-parallel-3
+  (package
+    (name "rust-easy-parallel")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "easy-parallel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1x28z540fc4g8fqm1sbpqbpdfbi40mkas4xr57s3yn0jjbbszm0x"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/stjepang/easy-parallel")
+    (synopsis "Run closures in parallel")
+    (description
+     "This crate provides a simple primitive for spawning threads in bulk and
+waiting for them to complete.  Threads are allowed to borrow local variables
+from the main thread.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-ed25519-1
   (package
     (name "rust-ed25519")
