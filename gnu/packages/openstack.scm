@@ -242,9 +242,6 @@ with mox as possible, but small enhancements have been made.")
 to docs.openstack.org and developer.openstack.org.")
     (license asl2.0)))
 
-(define-public python2-openstackdocstheme
-  (package-with-python2 python-openstackdocstheme))
-
 (define-public python-os-client-config
   (package
     (name "python-os-client-config")
