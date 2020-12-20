@@ -33307,6 +33307,27 @@ crate.")
 closures after a delay or at a given timestamp.")
     (license license:mpl2.0)))
 
+(define-public rust-timerfd-1
+  (package
+    (name "rust-timerfd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "timerfd" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14gwkm2c38bm76ccpp4g20qqs77h86d1l81594i76pb751k3xd8b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/main--/rust-timerfd")
+    (synopsis "Rust interface to the Linux kernel's @code{timerfd} API")
+    (description
+     "This package provides a Rust interface to the Linux kernel's
+@code{timerfd} API.")
+    (license license:expat)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
