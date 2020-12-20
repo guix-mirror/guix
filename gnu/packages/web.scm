@@ -4297,14 +4297,14 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.76")
+    (version "5.05")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "0gj1aj18k43kmzc3y1zhj5giinf8rksacf757r475xfna0fqxjdj"))))
+               "1v3r3ck67w272kzfgm1nd3wb41av1hlnza56vkxxj1i7s3917hd5"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
