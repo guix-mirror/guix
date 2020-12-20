@@ -1,0 +1,40 @@
+From d7d0cdd48017679e8529f8475d1b9902944cf243 Mon Sep 17 00:00:00 2001
+From: Brett Gilio <brettg@gnu.org>
+Date: Sun, 20 Dec 2020 14:43:30 -0600
+Subject: [PATCH] Disallow Pre-install Checks
+
+---
+ CMakeLists.txt | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 45c6d27..73b4ace 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -58,10 +58,6 @@ ExternalProject_Add(BearSource
+             -DROOT_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+             -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+             -DENABLE_UNIT_TESTS:BOOL=${ENABLE_UNIT_TESTS}
+-        TEST_BEFORE_INSTALL
+-            1
+-        TEST_COMMAND
+-            ctest # or `ctest -T memcheck`
+         )
+ 
+ # Run the functional tests
+@@ -73,12 +69,8 @@ if (ENABLE_FUNC_TESTS)
+                 BearSource
+             CMAKE_CACHE_ARGS
+                 -DSTAGED_INSTALL_PREFIX:PATH=${STAGED_INSTALL_PREFIX}
+-            TEST_BEFORE_INSTALL
+-                1
+             INSTALL_COMMAND
+                 ""
+-            TEST_COMMAND
+-                ctest --verbose
+             )
+ endif ()
+ 
+-- 
+2.29.2
+
