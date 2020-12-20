@@ -29810,7 +29810,7 @@ words, like Python's shlex.")
 (define-public rust-signal-hook-0.1
   (package
     (name "rust-signal-hook")
-    (version "0.1.13")
+    (version "0.1.16")
     (source
      (origin
        (method url-fetch)
@@ -29819,13 +29819,13 @@ words, like Python's shlex.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b0yh6hlb5hs5kq6adyk0bn168y1ncymxvlizlygaabad2hz7f8h"))))
+         "1v85mgs4dbgw0765b9nx0jd8lamv55425aawjbhxz6cb870hhib0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio" ,rust-mio-0.7)
         ("rust-mio-uds" ,rust-mio-uds-0.6)
         ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
