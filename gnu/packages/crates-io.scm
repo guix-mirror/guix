@@ -36449,6 +36449,25 @@ updated when the crate version changes.")
 specified across Unix and Windows platforms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-waker-fn-1
+  (package
+    (name "rust-waker-fn")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "waker-fn" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jpfiis0frk2b36krqvk8264kgxk2dyhfzjsr8g3wah1nii2qnwx"))))
+    (build-system cargo-build-system)
+    ;; (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/stjepang/waker-fn")
+    (synopsis "Convert closures into wakers")
+    (description
+     "This package converts closures into wakers.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-walkdir-2
   (package
     (name "rust-walkdir")
