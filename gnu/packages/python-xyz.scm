@@ -10455,9 +10455,6 @@ be set via config files and/or environment variables.")
     (home-page "https://github.com/bw2/ConfigArgParse")
     (license license:expat)))
 
-(define-public python2-configargparse
-  (package-with-python2 python-configargparse))
-
 (define-public python-argparse-manpage
   (package
     (name "python-argparse-manpage")
