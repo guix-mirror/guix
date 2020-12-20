@@ -10955,6 +10955,37 @@ for the futures-rs library.")
 @code{try_join!} macro.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-lite-1
+  (package
+    (name "rust-futures-lite")
+    (version "1.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-lite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ywmyvpy4f348jri8rxhpj59a7bvy12pspm59x5207fys061sj5l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-parking" ,rust-parking-2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-waker-fn" ,rust-waker-fn-1))
+       #:cargo-development-inputs
+       (("rust-spin-on" ,rust-spin-on-0.1))))
+    (home-page "https://github.com/stjepang/futures-lite")
+    (synopsis "Futures, streams, and async I/O combinators")
+    (description
+     "This crate is a subset of @code{futures} that compiles an order of
+magnitude faster, fixes minor warts in its API, fills in some obvious gaps,
+and removes almost all unsafe code from it.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-futures-macro-0.3
   (package
     (name "rust-futures-macro")
