@@ -34407,7 +34407,7 @@ in Rust.")
 (define-public rust-wasm-bindgen-backend-0.2
   (package
     (name "rust-wasm-bindgen-backend")
-    (version "0.2.60")
+    (version "0.2.69")
     (source
      (origin
        (method url-fetch)
@@ -34416,7 +34416,7 @@ in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k9p8a7ng6nqan0m9555wj936lm2s1qz0fnafclwlv61yrxx6ryr"))))
+         "0qidxjmcn50v2i5hjz7al69sa3mbq0lbi276amdnw47ln6dgh50i"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
