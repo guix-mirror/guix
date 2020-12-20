@@ -20487,6 +20487,27 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-parking-2
+  (package
+    (name "rust-parking")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wnxxnizfxlax3n709s5r83f4n8awy3m4a18q4fdk0z7z693hz22"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-easy-parallel" ,rust-easy-parallel-3))))
+    (home-page "https://github.com/stjepang/parking")
+    (synopsis "Thread parking and unparking")
+    (description "This packages provides methods for thread parking and
+unparking.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parking-lot-0.11
   (package
     (name "rust-parking-lot")
