@@ -957,8 +957,7 @@ Language.")
          "-DMYSQL_DATADIR=/var/lib/mysql"
          "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
 
-         ;; Do not install the tests or benchmark suite.
-         "-DINSTALL_MYSQLTESTDIR=false"
+         ;; Do not install the benchmark suite.
          "-DINSTALL_SQLBENCHDIR=false"
 
          (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
@@ -990,14 +989,26 @@ Language.")
              ;; to other variables such as $INSTALL_INCLUDEDIR, which does
              ;; not work when the latter uses an absolute file name.
              (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
-               (("@CMAKE_INSTALL_PREFIX@/@INSTALL_INCLUDEDIR@")
-                "@INSTALL_INCLUDEDIR@"))
+               (("%s/@INSTALL_INCLUDEDIR@")
+                (string-append "@INSTALL_INCLUDEDIR@"))
+               ;; As of 10.5.8, the mariadb_config program tries to be
+               ;; clever and computes the installation directory relative
+               ;; to /proc/self/exe when running on Linux.  Make it fall
+               ;; back to the old behaviour.
+               (("defined\\(__linux__\\)")
+                "0"))
              (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
                (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
                 "@INSTALL_INCLUDEDIR@"))
+             (substitute* "support-files/mariadb.pc.in"
+               (("^(include|bin|script|doc|man)dir=\\$\\{prefix\\}/" _ dir)
+                (string-append dir "dir=")))
              (substitute* "include/CMakeLists.txt"
                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
                 "${INSTALL_INCLUDEDIR}"))
+             (substitute* "cmake/mariadb_connector_c.cmake"
+               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
+                "${INSTALL_BINDIR}"))
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
@@ -1090,11 +1101,8 @@ Language.")
                  (string-append lib "/share/mysql")))
 
               (with-directory-excursion lib
-                ;; FIXME: Something creates an empty gnu/store/xxx-mariadb/bin
-                ;; directory at the root of the lib output.  It's not present
-                ;; in the installation log.  This started occuring between
-                ;; 10.5.6 and 10.5.8.  How to prevent it?
-                (delete-file-recursively "gnu")
+                ;; Remove tests.
+                (delete-file-recursively "mysql-test")
                 ;; Remove static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
 
