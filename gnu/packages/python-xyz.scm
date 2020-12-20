@@ -14198,9 +14198,6 @@ should be noted that the code is a exact port of the original
 from Facebook.")
     (license license:expat)))
 
-(define-public python2-graphql-relay
-  (package-with-python2 python-graphql-relay))
-
 (define-public python-graphene
   (package
     (name "python-graphene")
