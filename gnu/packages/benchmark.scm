@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,7 +132,7 @@ is to write a job file matching the I/O load one wants to simulate.")
                          (if (string=? (package-name mpi) "openmpi")
                              ""
                              (string-append "-" (package-name mpi)))))
-    (version "2019.3")
+    (version "2019.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -140,7 +141,16 @@ is to write a job file matching the I/O load one wants to simulate.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0si5xi6ilhd3w0gbsg124589pvp094hvf366rvjjb9pi7pdk5p4i"))))
+                "02hxbk9g9nl59bk5qcfl3djj7b58vsqys340m1xdbyqwcrbnahh9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Some source configuration files in the original tarball
+                  ;; have inappropriate execute permissions, which interferes
+                  ;; with the install phase below.
+                  (for-each (lambda (file) (chmod file #o444))
+                            (find-files "WINDOWS" "."))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,mpi)))
