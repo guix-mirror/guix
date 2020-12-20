@@ -15159,7 +15159,7 @@ by inspecting the system for user preference.")
 (define-public rust-log-0.4
   (package
     (name "rust-log")
-    (version "0.4.8")
+    (version "0.4.11")
     (source
       (origin
         (method url-fetch)
@@ -15167,13 +15167,13 @@ by inspecting the system for user preference.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1xz18ixccl5c6np4linv3ypc7hpmmgpc5zzd2ymp2ssfx0mhbdhl"))))
+          "12xzqaflpiljn5cmxsbnbv9sjaj13ykhwsvll0gysbx4blbyvasg"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-serde" ,rust-serde-1))
+        ("rust-serde" ,rust-serde-1)
+        ("rust-sval" ,rust-sval-0.5))
        #:cargo-development-inputs
        (("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/rust-lang/log")
