@@ -137,5 +137,6 @@ to synchronize with the writer."
            (publish-file (publish-file cache)))
       (parameterize ((%publish-file publish-file))
         (mkdir-p (dirname publish-file))
+        (false-if-exception (delete-file publish-file))
         (avahi-browse-service-thread service-proc
                                      #:types %services)))))
