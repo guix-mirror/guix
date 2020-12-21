@@ -7123,7 +7123,7 @@ use with bindgen.")
 (define-public rust-curl-sys-0.4
   (package
     (name "rust-curl-sys")
-    (version "0.4.20")
+    (version "0.4.39+curl-7.74.0")
     (source
       (origin
         (method url-fetch)
@@ -7131,7 +7131,7 @@ use with bindgen.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))
+          "0x7qhq7c3b1vmp3740yiigzm09qvkzpdf578jjrs0s3v3s3cxa07"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "curl") #t))))
@@ -7141,11 +7141,14 @@ use with bindgen.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-libnghttp2-sys" ,rust-libnghttp2-sys-0.1)
         ("rust-libz-sys" ,rust-libz-sys-1)
+        ("rust-mesalink" ,rust-mesalink-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
