@@ -18448,6 +18448,40 @@ IOCP and Async I/O abstractions.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-mockito-0.23
+  (package
+    (name "rust-mockito")
+    (version "0.23.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mockito" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kh2wg24441miqcnrp2miaapphn8wgm18x23yjq45pajsjxfd0mf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release"
+         "--"
+         "--skip=test_assert_with_last_unmatched_request"
+         "--skip=test_assert_with_last_unmatched_request_and_headers")
+       #:cargo-inputs
+       (("rust-assert-json-diff" ,rust-assert-json-diff-1)
+        ("rust-colored" ,rust-colored-1)
+        ("rust-difference" ,rust-difference-2)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/lipanski/mockito")
+    (synopsis "HTTP mocking for Rust")
+    (description "This crate provides HTTP mocking for Rust.")
+    (license license:expat)))
+
 (define-public rust-model-0.1
   (package
     (name "rust-model")
