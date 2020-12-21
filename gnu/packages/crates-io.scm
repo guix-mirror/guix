@@ -11294,6 +11294,32 @@ the computation on the threads themselves.")
 library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-intrusive-0.3
+  (package
+    (name "rust-futures-intrusive")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-intrusive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00qpir3q6j7blwpnpffj7ypf1z8wc87ldn62qr7sapymgg82j5dw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true              ;XXX: need rust-async-std-1
+       #:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-lock-api" ,rust-lock-api-0.3)
+        ("rust-parking-lot" ,rust-parking-lot-0.10))))
+    (home-page "https://github.com/Matthias247/futures-intrusive")
+    (synopsis "Futures based on intrusive data structures")
+    (description
+     "This crate provides a variety of Futures-based and
+@code{async/await} compatible types that are based on the idea of
+intrusive collections.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-io-0.3
   (package
     (name "rust-futures-io")
