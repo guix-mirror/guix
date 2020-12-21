@@ -89,13 +89,19 @@ when STOP-LOOP? procedure returns true."
     (close-port socket)
     ip))
 
+(define never
+  ;; Never true.
+  (const #f))
+
 (define* (avahi-browse-service-thread proc
                                       #:key
                                       types
                                       (ignore-local? #t)
                                       (family AF_INET)
-                                      (stop-loop? (const #f))
-                                      (timeout 100))
+                                      (stop-loop? never)
+                                      (timeout (if (eq? stop-loop? never)
+                                                   #f
+                                                   100)))
   "Browse services which type is part of the TYPES list, using Avahi.  The
 search is restricted to services with the given FAMILY.  Each time a service
 is found or removed, PROC is called and passed as argument the corresponding
@@ -167,4 +173,6 @@ when STOP-LOOP? procedure returns true."
                               client-callback)))
     (and (client? client)
          (while (not (stop-loop?))
-           (iterate-simple-poll poll timeout)))))
+           (if timeout
+               (iterate-simple-poll poll timeout)
+               (iterate-simple-poll poll))))))

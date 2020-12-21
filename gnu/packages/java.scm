@@ -8288,7 +8288,7 @@ actual rendering.")
              (copy-recursively "runtime/Java/src/main/dot"
                                "build/classes")
              #t)))))
-    (home-page "https://antlr.org")
+    (home-page "https://www.antlr.org")
     (synopsis "ANTLR runtime library")
     (description "This package contains the runtime library used with generated
 sources by ANTLR.")

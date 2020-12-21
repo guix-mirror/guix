@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,8 +33,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -536,3 +539,75 @@ avoiding distractions when studying code that uses @code{#ifdef} heavily for
 portability.")
     (license (list license:bsd-2        ;all files except...
                    license:bsd-3))))    ;...the unidef.1 manual page
+
+(define-public aws-c-common
+  (package
+    (name "aws-c-common")
+    (version "0.4.63")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16bc6fn1gq3nqcrzgpi2kjphq7xkkr73aljakrg89ysm6hyzyim9"))))
+    (build-system cmake-build-system)
+    (synopsis "Amazon Web Services core C library")
+    (description
+     "This library provides common C99 primitives, configuration, data
+ structures, and error handling for the @acronym{AWS,Amazon Web Services} SDK.")
+    (home-page "https://github.com/awslabs/aws-c-common")
+    (license license:asl2.0)))
+
+(define-public aws-checksums
+  (package
+    (name "aws-checksums")
+    (version "0.1.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f9scl5734pgjlsixspwljrrlndzhllwlfygdcr1gx5p0za08zjb"))
+              (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (synopsis "Amazon Web Services checksum library")
+    (description
+     "This library provides cross-Platform hardware accelerated CRC32c and CRC32
+with fallback to efficient C99 software implementations.")
+    (home-page "https://github.com/awslabs/aws-checksums")
+    (license license:asl2.0)))
+
+(define-public aws-c-event-stream
+  (package
+    (name "aws-c-event-stream")
+    (version "0.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vl9ainc4klv0g9gk1iv4833bsllni6jxn6mwb0fnv2dnlz7zv9q"))
+              (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (inputs
+     `(("aws-checksums" ,aws-checksums)))
+    (synopsis "Amazon Web Services client-server message format library")
+    (description
+     "This library is a C99 implementation for @acronym{AWS,Amazon Web Services}
+event stream encoding, a binary format for bidirectional client-server
+communication.")
+    (home-page "https://github.com/awslabs/aws-c-event-stream")
+    (license license:asl2.0)))

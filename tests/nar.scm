@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,8 +136,11 @@
 (define (rm-rf dir)
   (file-system-fold (const #t)                    ; enter?
                     (lambda (file stat result)    ; leaf
+                      (unless (eq? 'symlink (stat:type stat))
+                        (chmod file #o644))
                       (delete-file file))
-                    (const #t)                    ; down
+                    (lambda (dir stat result)     ; down
+                      (chmod dir #o755))
                     (lambda (dir stat result)     ; up
                       (rmdir dir))
                     (const #t)                    ; skip
@@ -218,8 +221,10 @@
   '(("R" directory #f)
     ("R/dir" directory #f)
     ("R/dir/exe" executable "1234")
+    ("R/dir" directory-complete #f)
     ("R/foo" regular "abcdefg")
-    ("R/lnk" symlink "foo"))
+    ("R/lnk" symlink "foo")
+    ("R" directory-complete #f))
 
   (let ()
     (define-values (port get-bytevector)
@@ -361,7 +366,12 @@
                   (cut write-file input <>))
                 (call-with-input-file nar
                   (cut restore-file <> output))
-                (file-tree-equal? input output))
+
+                (and (file-tree-equal? input output)
+                     (every (lambda (file)
+                              (canonical-file?
+                               (string-append output "/" file)))
+                            '("root" "root/reg" "root/exe"))))
               (lambda ()
                 (false-if-exception (delete-file nar))
                 (false-if-exception (rm-rf output)))))))
@@ -441,6 +451,9 @@
       (lambda ()
         (false-if-exception (rm-rf %test-dir))
         (setlocale LC_ALL locale)))))
+
+;; XXX: Tell the 'deduplicate' procedure what store we're actually using.
+(setenv "NIX_STORE" (%store-prefix))
 
 (test-assert "restore-file-set (signed, valid)"
   (with-store store

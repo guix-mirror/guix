@@ -210,6 +210,7 @@ taken since we do not import the archives."
                         (cons `(,file ,type ,(port-sha256* port size))
                               result))))
                     ('directory result)
+                    ('directory-complete result)
                     ('symlink
                      (cons `(,file ,type ,contents) result))))
                 '()

@@ -33,7 +33,7 @@
   "[ { \"name\": \"one\",
        \"type\": \"regular\",
        \"length\": 123,
-       \"dir_id\": 1 }
+       \"dir_id\": 1 },
      { \"name\": \"two\",
        \"type\": \"regular\",
        \"length\": 456,

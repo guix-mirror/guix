@@ -183,9 +183,9 @@ chk_sys_arch()
         aarch64)
             local arch=aarch64
             ;;
-	armv7l)
-	    local arch=armhf
-	    ;;
+        armv7l)
+            local arch=armhf
+            ;;
         *)
             _err "${ERR}Unsupported CPU type: ${arch}"
             exit 1
@@ -233,7 +233,7 @@ guix_get_bin_list()
         | sed -n -e 's/.*guix-binary-\([0-9.]*[a-z0-9]*\)\..*.tar.xz.*/\1/p' \
         | sort -Vu)")
 
-    latest_ver="$(echo "$bin_ver_ls" \
+    latest_ver="$(echo "${bin_ver_ls[0]}" \
                        | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}[a-z0-9]*" \
                        | tail -n1)"
 
@@ -247,7 +247,7 @@ guix_get_bin_list()
     fi
 
     # Use default to download according to the list and local ARCH_OS.
-    BIN_VER="$default_ver"
+    BIN_VER="${default_ver}"
 }
 
 guix_get_bin()
@@ -271,7 +271,7 @@ guix_get_bin()
         exit 1
     fi
 
-    pushd $dl_path >/dev/null
+    pushd "${dl_path}" >/dev/null
     gpg --verify "${bin_ver}.tar.xz.sig" >/dev/null 2>&1
     if [[ "$?" -eq 0 ]]; then
         _msg "${PAS}Signature is valid."
@@ -379,15 +379,15 @@ sys_enable_guix_daemon()
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
 
-	      # Work around <https://bugs.gnu.org/36074>, present in 1.0.1.
-	      sed -i /etc/systemd/system/guix-daemon.service \
-	          -e "s/GUIX_LOCPATH='/'GUIX_LOCPATH=/";
+              # Work around <https://bugs.gnu.org/36074>, present in 1.0.1.
+              sed -i /etc/systemd/system/guix-daemon.service \
+                  -e "s/GUIX_LOCPATH='/'GUIX_LOCPATH=/";
 
-	      # Work around <https://bugs.gnu.org/35671>, present in 1.0.1.
-	      if ! grep en_US /etc/systemd/system/guix-daemon.service >/dev/null;
-	      then sed -i /etc/systemd/system/guix-daemon.service \
-		       -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
-	      fi;
+              # Work around <https://bugs.gnu.org/35671>, present in 1.0.1.
+              if ! grep en_US /etc/systemd/system/guix-daemon.service >/dev/null;
+              then sed -i /etc/systemd/system/guix-daemon.service \
+                       -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
+              fi;
 
               systemctl daemon-reload &&
                   systemctl enable guix-daemon &&
@@ -427,7 +427,7 @@ sys_enable_guix_daemon()
     ln -sf "${var_guix}/bin/guix"  "$local_bin"
 
     [ -e "$info_path" ] || mkdir -p "$info_path"
-    for i in ${var_guix}/share/info/*; do
+    for i in "${var_guix}"/share/info/*; do
         ln -sf "$i" "$info_path"
     done
 }

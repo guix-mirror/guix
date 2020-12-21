@@ -889,6 +889,8 @@ wagon providers supporting HTTP.")))
                         ;; unable to find valid certification path to requested target
                         "**/HttpsWagonPreemptiveTest.java"
                         "**/HttpsWagonTest.java"
+                        ;; Timeout
+                        "**/HugeFileDownloadTest.java"
                         ;; Injection errors
                         "**/TckTest.java")
        #:jdk ,icedtea-8

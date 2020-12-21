@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -258,7 +259,12 @@ interface to the Tk widget system.")
                     (contrib-asdf "contrib/asdf/asdf.lisp"))
                (copy-file guix-asdf contrib-asdf))
              #t))
-         (add-after 'install 'wrap
+         (add-after 'install 'remove-build-stamp
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/ecl-" ,version "/build-stamp"))
+             #t))
+         (add-after 'remove-build-stamp 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((ecl (assoc-ref outputs "out"))
                     (input-path (lambda (lib path)
@@ -280,7 +286,8 @@ interface to the Tk widget system.")
                            (input-path lib "/include"))
                          `("kernel-headers" ,@libraries)))
                  `("LIBRARY_PATH" suffix ,library-directories)
-                 `("LD_LIBRARY_PATH" suffix ,library-directories)))))
+                 `("LD_LIBRARY_PATH" suffix ,library-directories))
+               #t)))
          (add-after 'wrap 'check (assoc-ref %standard-phases 'check))
          (add-before 'check 'fix-path-to-ecl
            (lambda _

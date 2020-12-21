@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3015,16 +3016,34 @@ library.")
 @code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
     (license license:bsd-2)))
 
+(define-public python-dpkt
+  (package
+    (name "python-dpkt")
+    (version "1.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dpkt" version))
+       (sha256
+        (base32
+         "1d28r8pmhzjjd6hrn1xcddinfhwv8lcl1s59ygmqa8kfmz5pkrgl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kbandla/dpkt")
+    (synopsis "Packet generator and parser for TCP/IP protocols")
+    (description "The dpkt module is a fast, simple packet generator and parser
+for the basic TCP/IP protocols.")
+    (license license:bsd-3)))
+
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
-    (version "1.3.1")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "geventhttpclient" version))
               (sha256
                (base32
-                "07d0q3wzmml75227r6y6mrl5a0zpf4v9gj0ni5rhbyzmaj4az1xx"))
+                "1hy4qm9d3r69n5199i7qjji1v7718n7cxbj8ggi0njify99m37pm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3052,7 +3071,8 @@ library.")
                      "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-dpkt" ,python-dpkt)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
        ("python-gevent" ,python-gevent)
@@ -3062,9 +3082,6 @@ library.")
     (description "@code{python-geventhttpclient} is a high performance,
 concurrent HTTP client library for python using @code{gevent}.")
     (license license:expat)))
-
-(define-public python2-geventhttpclient
-  (package-with-python2 python-geventhttpclient))
 
 (define-public python-requests-oauthlib
   (package
@@ -3473,9 +3490,6 @@ documentation builder.")
 specs from your Flask-Restful projects.")
     (license license:expat)))
 
-(define-public python2-flask-restful-swagger
-  (package-with-python2 python-flask-restful-swagger))
-
 (define-public python-htmlmin
   (package
     (name "python-htmlmin")
@@ -3760,9 +3774,6 @@ and other command-line tasks that belong outside the web application
 itself.")
   (license license:bsd-3)))
 
-(define-public python2-flask-script
-  (package-with-python2 python-flask-script))
-
 (define-public python-flask-migrate
   (package
   (name "python-flask-migrate")
@@ -3836,9 +3847,6 @@ Flask.  It supports managing both authentication and authorization data in a
 thread-local variable.")
     (license license:expat)))
 
-(define-public python2-flask-principal
-  (package-with-python2 python-flask-principal))
-
 (define-public python-flask-httpauth
   (package
     (name "python-flask-httpauth")
@@ -3858,9 +3866,6 @@ thread-local variable.")
     (description "@code{flask_httpauth} provides Basic and Digest HTTP
 authentication for Flask routes.")
     (license license:expat)))
-
-(define-public python2-flask-httpauth
-  (package-with-python2 python-flask-httpauth))
 
 (define-public python-uritemplate
   (package
@@ -3940,14 +3945,14 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "15kh0z61klp62mrc1prka13xsshxn0rsp1j1s2964iw86yisi6qn"))))
+         "0z74sa1xw5h20yin9faj0vvdbq713cgbj84klc72jr9nmpjv303c"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -3962,7 +3967,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-timeout" ,python-pytest-timeout)))
-    (home-page "https://www.palletsprojects.org/p/werkzeug/")
+    (home-page "https://palletsprojects.com/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
 powerful debugger, full-featured request and response objects, HTTP utilities to
@@ -3970,9 +3975,6 @@ handle entity tags, cache control headers, HTTP dates, cookie handling, file
 uploads, a powerful URL routing system and a bunch of community-contributed
 addon modules.")
     (license license:x11)))
-
-(define-public python2-werkzeug
-  (package-with-python2 python-werkzeug))
 
 (define-public python-bottle
   (package
@@ -4914,7 +4916,7 @@ and serve updated contents upon changes to the directory.")
 (define-public python-httpcore
   (package
     (name "python-httpcore")
-    (version "0.11.0")
+    (version "0.12.2")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4924,33 +4926,21 @@ and serve updated contents upon changes to the directory.")
              (commit  version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01bhajcxqgkdzg7b7x0fqs2lwcfsajlgqwi1nlxx58jss7g2kxn9"))))
+        (base32 "1nrwwfdqjfc2a1k3j41cdwkprwvplf95fwmypdl2aq2qgp3209q0"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests hang at 98%
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-unavailable-tests
-           (lambda _
-             ;; These tests require 'mitmproxy' which is not packaged.
-             (for-each (lambda (f)
-                         (delete-file f))
-                       '("tests/conftest.py"
-                         "tests/sync_tests/test_interfaces.py"
-                         "tests/async_tests/test_interfaces.py"))
-             #t))
-         (add-after 'remove-unavailable-tests 'force-h11-version
-           ;; Allow build with h11 >= 0.10.
-           (lambda _
-             (substitute* "setup.py" (("h11>=0.8,<0.10") "h11"))
-             #t))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "--cov=httpcore"
-                     "--cov=tests" "tests"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "--cov=httpcore"
+                       "--cov=tests" "tests"))
+             #t)))))
     (native-inputs
-     `(;; ("mitmproxy" ,mitmproxy) ;; TODO: Package this.
-       ("python-autoflake" ,python-autoflake)
+     `(("python-autoflake" ,python-autoflake)
        ("python-flake8" ,python-flake8)
        ("python-flake8-bugbear" ,python-flake8-bugbear)
        ("python-flake8-pie" ,python-flake8-pie)
@@ -5653,3 +5643,84 @@ over IMAP:
 @item Work with mailbox folders (list, set, get, create, exists, rename, delete, status)
 @end itemize")
     (license license:asl2.0)))
+
+(define-public python-hstspreload
+  (package
+    (name "python-hstspreload")
+    (version "2020.10.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hstspreload" version))
+       (sha256
+        (base32
+         "1qah80p2xlib1rhivvdj9v5y3girxrj7dwp1mnh8mwaj5wy32y8a"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sethmlarson/hstspreload")
+    (synopsis
+     "Chromium HSTS Preload list as a Python package")
+    (description
+     "@code{python-hstspreload} contains Chromium HSTS Preload list
+as a Python package.")
+    (license license:bsd-3)))
+
+(define-public python-sanic
+  (package
+    (name "python-sanic")
+    (version "20.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sanic" version))
+       (sha256
+        (base32
+         "06p0lsxqbfbka2yaqlpp0bg5pf7ma44zi6kq7qbb6hhry48dp1w6"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-recent-pytest
+           ;; Allow using recent dependencies.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("httpcore==0.3.0") "httpcore")
+               (("pytest==5.2.1") "pytest")
+               (("multidict==5.0.0") "multidict")
+               (("httpx==0\\.15\\.4") "httpx"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "./tests" "-k"
+                     "not test_zero_downtime and not test_gunicorn_worker"))))))
+    (propagated-inputs
+     `(("python-aiofiles" ,python-aiofiles)
+       ("python-httptools" ,python-httptools)
+       ("python-httpx" ,python-httpx)
+       ("python-multidict" ,python-multidict)
+       ("python-ujson" ,python-ujson)
+       ("python-uvloop" ,python-uvloop)
+       ("python-websockets" ,python-websockets)))
+    (native-inputs
+     `(("gunicorn" ,gunicorn)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-hstspreload" ,python-hstspreload)
+       ("python-httpcore" ,python-httpcore)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-sanic" ,python-pytest-sanic)
+       ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-urllib3" ,python-urllib3)
+       ("python-uvicorn" ,python-uvicorn)))
+    (home-page
+     "https://github.com/huge-success/sanic/")
+    (synopsis
+     "Async Python 3.6+ web server/framework")
+    (description
+     "Sanic is a Python 3.6+ web server and web framework
+that's written to go fast.  It allows the usage of the
+@code{async/await} syntax added in Python 3.5, which makes
+your code non-blocking and speedy.")
+    (license license:expat)))

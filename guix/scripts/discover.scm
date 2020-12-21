@@ -21,6 +21,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix ui)
+  #:use-module (guix utils)
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix scripts publish)
@@ -78,47 +79,27 @@ CACHE-DIRECTORY."
 (define* (write-publish-file #:key (file (%publish-file)))
   "Dump the content of %PUBLISH-SERVICES hash table into FILE.  Use a write
 lock on FILE to synchronize with any potential readers."
-  (with-file-lock file
-    (call-with-output-file file
-      (lambda (port)
-        (hash-for-each
-         (lambda (name service)
-           (format port "http://~a:~a~%"
-                   (avahi-service-address service)
-                   (avahi-service-port service)))
-         %publish-services)))
-        (chmod file #o644)))
-
-(define (call-with-read-file-lock file thunk)
-  "Call THUNK with a read lock on FILE."
-  (let ((port #f))
-    (dynamic-wind
-      (lambda ()
-        (set! port
-              (let ((port (open-file file "r0")))
-                (fcntl-flock port 'read-lock)
-                port)))
-      thunk
-      (lambda ()
-        (when port
-          (unlock-file port))))))
-
-(define-syntax-rule (with-read-file-lock file exp ...)
-  "Wait to acquire a read lock on FILE and evaluate EXP in that context."
-  (call-with-read-file-lock file (lambda () exp ...)))
+  (with-atomic-file-output file
+    (lambda (port)
+      (hash-for-each
+       (lambda (name service)
+         (format port "http://~a:~a~%"
+                 (avahi-service-address service)
+                 (avahi-service-port service)))
+       %publish-services)))
+  (chmod file #o644))
 
 (define* (read-substitute-urls #:key (file (%publish-file)))
   "Read substitute urls list from FILE and return it.  Use a read lock on FILE
 to synchronize with the writer."
   (if (file-exists? file)
-      (with-read-file-lock file
-        (call-with-input-file file
-          (lambda (port)
-            (let loop ((url (read-line port))
-                       (urls '()))
-              (if (eof-object? url)
-                  urls
-                  (loop (read-line port) (cons url urls)))))))
+      (call-with-input-file file
+        (lambda (port)
+          (let loop ((url (read-line port))
+                     (urls '()))
+            (if (eof-object? url)
+                urls
+                (loop (read-line port) (cons url urls))))))
       '()))
 
 
@@ -156,9 +137,6 @@ to synchronize with the writer."
            (publish-file (publish-file cache)))
       (parameterize ((%publish-file publish-file))
         (mkdir-p (dirname publish-file))
+        (false-if-exception (delete-file publish-file))
         (avahi-browse-service-thread service-proc
                                      #:types %services)))))
-
-;;; Local Variables:
-;;; eval: (put 'with-read-file-lock 'scheme-indent-function 1)
-;;; End:

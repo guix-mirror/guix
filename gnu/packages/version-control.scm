@@ -2318,31 +2318,19 @@ based on a manifest file published by servers.")
 (define-public b4
   (package
     (name "b4")
-    (version "0.5.3")
+    (version "0.6.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.kernel.org/pub/scm/utils/b4/b4.git")
-             (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (pypi-uri "b4" version))
        (sha256
-        (base32 "0bnjs758blll2i70r4qh3khma7dly5lb8s6kzn5a3p54md91s8v5"))))
+        (base32 "01qid6mvddikcdpf2ihsyn8x3z5j2n64g0ip9pqbx42hrc50pmcz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f                      ; No tests.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-manpages
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((man (string-append (assoc-ref outputs "out")
-                                       "/man/man5/")))
-               (mkdir-p man)
-               (for-each (lambda (file) (install-file file man))
-                         (find-files "man" "\\.[1-8]$")))
-             #t)))))
+    (arguments '(#:tests? #f))          ; No tests.
     (inputs
-     `(("python-requests" ,python-requests)))
+     `(("python-dkimpy" ,python-dkimpy)
+       ("python-dnspython" ,python-dnspython)
+       ("python-requests" ,python-requests)))
     (home-page "https://git.kernel.org/pub/scm/utils/b4/b4.git")
     (synopsis "Tool for working with patches in public-inbox archives")
     (description

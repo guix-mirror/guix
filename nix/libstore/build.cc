@@ -2790,10 +2790,6 @@ private:
     /* The substituter. */
     std::shared_ptr<Agent> substituter;
 
-    /* Either the empty string, or the expected hash as returned by the
-       substituter.  */
-    string expectedHashStr;
-
     /* Either the empty string, or the status phrase returned by the
        substituter.  */
     string status;
@@ -2988,7 +2984,12 @@ void SubstitutionGoal::tryToRun()
 
     if (!worker.substituter) {
 	const Strings args = { "substitute", "--substitute" };
-	const std::map<string, string> env = { { "_NIX_OPTIONS", settings.pack() } };
+	const std::map<string, string> env = {
+	    { "_NIX_OPTIONS",
+	      settings.pack() + "deduplicate="
+	      + (settings.autoOptimiseStore ? "yes" : "no")
+	    }
+	};
 	worker.substituter = std::make_shared<Agent>(settings.guixProgram, args, env);
     }
 
@@ -3032,36 +3033,47 @@ void SubstitutionGoal::finished()
     /* Check the exit status and the build result. */
     HashResult hash;
     try {
+	auto statusList = tokenizeString<vector<string> >(status);
 
-        if (status != "success")
+	if (statusList.empty()) {
+            throw SubstError(format("fetching path `%1%' (empty status: '%2%')")
+			     % storePath % status);
+	} else if (statusList[0] == "hash-mismatch") {
+	    if (settings.printBuildTrace) {
+		auto hashType = statusList[1];
+		auto expectedHash = statusList[2];
+		auto actualHash = statusList[3];
+		printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
+			 % storePath
+			 % hashType % expectedHash % actualHash);
+	    }
+	    throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
+	} else if (statusList[0] == "success") {
+	    if (!pathExists(destPath))
+		throw SubstError(format("substitute did not produce path `%1%'") % destPath);
+
+	    std::string hashStr = statusList[1];
+	    size_t n = hashStr.find(':');
+	    if (n == string::npos)
+		throw Error(format("bad hash from substituter: %1%") % hashStr);
+
+	    HashType hashType = parseHashType(string(hashStr, 0, n));
+	    switch (hashType) {
+	    case htUnknown:
+		throw Error(format("unknown hash algorithm in `%1%'") % hashStr);
+	    case htSHA256:
+		hash.first = parseHash16or32(hashType, string(hashStr, n + 1));
+		hash.second = std::atoi(statusList[2].c_str());
+		break;
+	    default:
+		/* The database only stores SHA256 hashes, so compute it.  */
+		hash = hashPath(htSHA256, destPath);
+		break;
+	    }
+	}
+	else
             throw SubstError(format("fetching path `%1%' (status: '%2%')")
                 % storePath % status);
-
-        if (!pathExists(destPath))
-            throw SubstError(format("substitute did not produce path `%1%'") % destPath);
-
-	if (expectedHashStr == "")
-	    throw SubstError(format("substituter did not communicate hash for `%1'") % storePath);
-
-        hash = hashPath(htSHA256, destPath);
-
-        /* Verify the expected hash we got from the substituer. */
-	size_t n = expectedHashStr.find(':');
-	if (n == string::npos)
-	    throw Error(format("bad hash from substituter: %1%") % expectedHashStr);
-	HashType hashType = parseHashType(string(expectedHashStr, 0, n));
-	if (hashType == htUnknown)
-	    throw Error(format("unknown hash algorithm in `%1%'") % expectedHashStr);
-	Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
-	Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
-	if (expectedHash != actualHash) {
-	    if (settings.printBuildTrace)
-		printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
-			 % storePath % "sha256"
-			 % printHash16or32(expectedHash)
-			 % printHash16or32(actualHash));
-	    throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
-	}
 
     } catch (SubstError & e) {
 
@@ -3078,9 +3090,8 @@ void SubstitutionGoal::finished()
 
     if (repair) replaceValidPath(storePath, destPath);
 
-    canonicalisePathMetaData(storePath, -1);
-
-    worker.store.optimisePath(storePath); // FIXME: combine with hashPath()
+    /* Note: 'guix substitute' takes care of resetting timestamps and of
+       deduplicating 'destPath', so no need to do it here.  */
 
     ValidPathInfo info2;
     info2.path = storePath;
@@ -3123,9 +3134,7 @@ void SubstitutionGoal::handleChildOutput(int fd, const string & data)
 	    string trimmed = (end != string::npos) ? input.substr(0, end) : input;
 
 	    /* Update the goal's state accordingly.  */
-	    if (expectedHashStr == "") {
-		expectedHashStr = trimmed;
-	    } else if (status == "") {
+	    if (status == "") {
 		status = trimmed;
 		worker.wakeUp(shared_from_this());
 	    } else {

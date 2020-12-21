@@ -1240,30 +1240,28 @@ sockets.")
       (license license:expat))))
 
 (define-public go-github-com-emicklei-go-restful
-  (let ((commit "89ef8af493ab468a45a42bb0d89a06fccdd2fb22")
-        (revision "0"))
-    (package
-      (name "go-github-com-emicklei-go-restful")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emicklei/go-restful")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0rrlfcfq80fkxifpih6bq31vavb5mf4530xz51pp9pq1mn2fzjfh"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/emicklei/go-restful"))
-      (home-page "https://github.com/emicklei/go-restful")
-      (synopsis "Build REST-style web services using Go")
-      (description "This package provides @code{go-restful}, which helps
+  (package
+    (name "go-github-com-emicklei-go-restful")
+    (version "3.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emicklei/go-restful")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0m1y5a6xr6hmdj77afrvyh2llkbhn1166lcrgis654shl8zs9qhz"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/emicklei/go-restful"))
+    (home-page "https://github.com/emicklei/go-restful")
+    (synopsis "Build REST-style web services using Go")
+    (description "This package provides @code{go-restful}, which helps
 developers to use @code{http} methods explicitly and in a way that's consistent
 with the HTTP protocol definition.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-google-cadvisor
   (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
@@ -1708,7 +1706,7 @@ application's http.Handlers.")
 (define-public go-github-com-magiconair-properties
   (package
     (name "go-github-com-magiconair-properties")
-    (version "1.8.1")
+    (version "1.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1718,7 +1716,7 @@ application's http.Handlers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19zqw1x0w0crh8zc84yy82nkcc5yjz72gviaf2xjgfm5a8np7nyb"))))
+         "0q7d55z0v8y55dyy8nhgdnswf5zkgj3i87irbk294nvzhx01bnxd"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/magiconair/properties"))
@@ -3519,7 +3517,7 @@ format in Go.")
 (define-public go-github-com-kr-pretty
   (package
     (name "go-github-com-kr-pretty")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3528,13 +3526,13 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ywbfzz1h3a3qd8rpkiqwi1dm4w8ls9ijb4x1b7567grns9f0vnp"))))
+                "0vzfz06y9q8gs2nxx0kys0591vzp78k0fvpb8digi5n15h3b25hy"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
     (arguments
      '(#:import-path "github.com/kr/pretty"))
-    (synopsis "A pretty printer for Go values")
+    (synopsis "Pretty printer for Go values")
     (description "This package provides a pretty printer for Go values.")
     (home-page "https://github.com/kr/pretty")
     (license license:expat)))

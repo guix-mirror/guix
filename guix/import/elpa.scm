@@ -22,6 +22,7 @@
 (define-module (guix import elpa)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -31,6 +32,8 @@
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
   #:use-module (guix http-client)
+  #:use-module (guix git)
+  #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix store)
   #:use-module (guix ui)
   #:use-module (gcrypt hash)
@@ -196,9 +199,142 @@ include VERSION."
                             url)))
       (_ #f))))
 
-(define* (elpa-package->sexp pkg #:optional license)
+(define* (download-git-repository url ref)
+  "Fetch the given REF from the Git repository at URL."
+  (with-store store
+    (latest-repository-commit store url #:ref ref)))
+
+(define (package-name->melpa-recipe package-name)
+  "Fetch the MELPA recipe for PACKAGE-NAME, represented as an alist from
+keywords to values."
+  (define recipe-url
+    (string-append "https://raw.githubusercontent.com/melpa/melpa/master/recipes/"
+                   package-name))
+
+  (define (data->recipe data)
+    (match data
+      (() '())
+      ((key value . tail)
+       (cons (cons key value) (data->recipe tail)))))
+
+  (let* ((port (http-fetch/cached (string->uri recipe-url)
+                                  #:ttl (* 6 3600)))
+         (data (read port)))
+    (close-port port)
+    (data->recipe (cons ':name data))))
+
+;; XXX adapted from (guix scripts hash)
+(define (file-hash file select? recursive?)
+  ;; Compute the hash of FILE.
+  (if recursive?
+      (let-values (((port get-hash) (open-sha256-port)))
+        (write-file file port #:select? select?)
+        (force-output port)
+        (get-hash))
+      (call-with-input-file file port-sha256)))
+
+;; XXX taken from (guix scripts hash)
+(define (vcs-file? file stat)
+  (case (stat:type stat)
+    ((directory)
+     (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
+    ((regular)
+     ;; Git sub-modules have a '.git' file that is a regular text file.
+     (string=? (basename file) ".git"))
+    (else
+     #f)))
+
+(define (git-repository->origin recipe url)
+  "Fetch origin details from the Git repository at URL for the provided MELPA
+RECIPE."
+  (define ref
+    (cond
+     ((assoc-ref recipe #:branch)
+      => (lambda (branch) (cons 'branch branch)))
+     ((assoc-ref recipe #:commit)
+      => (lambda (commit) (cons 'commit commit)))
+     (else
+      '(branch . "master"))))
+
+  (let-values (((directory commit) (download-git-repository url ref)))
+    `(origin
+       (method git-fetch)
+       (uri (git-reference
+             (url ,url)
+             (commit ,commit)))
+       (sha256
+        (base32
+         ,(bytevector->nix-base32-string
+           (file-hash directory (negate vcs-file?) #t)))))))
+
+(define* (melpa-recipe->origin recipe)
+  "Fetch origin details from the MELPA recipe and associated repository for
+the package named PACKAGE-NAME."
+  (define (github-repo->url repo)
+    (string-append "https://github.com/" repo ".git"))
+  (define (gitlab-repo->url repo)
+    (string-append "https://gitlab.com/" repo ".git"))
+
+  (match (assq-ref recipe ':fetcher)
+    ('github (git-repository->origin recipe (github-repo->url (assq-ref recipe ':repo))))
+    ('gitlab (git-repository->origin recipe (gitlab-repo->url (assq-ref recipe ':repo))))
+    ('git    (git-repository->origin recipe (assq-ref recipe ':url)))
+    (#f #f)   ; if we're not using melpa then this stops us printing a warning
+    (_ (warning (G_ "Unsupported MELPA fetcher: ~a, falling back to unstable MELPA source.~%")
+                (assq-ref recipe ':fetcher))
+       #f)))
+
+(define default-files-spec
+  ;; This contains more than just the things contained in %default-include and
+  ;; %default-exclude, presumably because this includes source files (*.in,
+  ;; *.texi, etc.) which have already been processed for releases.
+  ;;
+  ;; Taken from:
+  ;; https://github.com/melpa/melpa/blob/e8dc709d0ab2b4a68c59315f42858bcb86095f11/package-build/package-build.el#L580-L585
+  '("*.el" "*.el.in" "dir"
+    "*.info" "*.texi" "*.texinfo"
+    "doc/dir" "doc/*.info" "doc/*.texi" "doc/*.texinfo"
+    (:exclude ".dir-locals.el" "test.el" "tests.el" "*-test.el" "*-tests.el")))
+
+(define* (melpa-recipe->maybe-arguments melpa-recipe)
+  "Extract arguments for the build system from MELPA-RECIPE."
+  (define (glob->regexp glob)
+    (string-append
+     "^"
+     (regexp-substitute/global #f "\\*\\*?" glob
+                               'pre
+                               (lambda (m)
+                                 (if (string= (match:substring m 0) "**")
+                                     ".*"
+                                     "[^/]+"))
+                               'post)
+     "$"))
+
+  (let ((files (assq-ref melpa-recipe ':files)))
+    (if files
+        (let* ((with-default (apply append (map (lambda (entry)
+                                                  (if (eq? ':defaults entry)
+                                                      default-files-spec
+                                                      (list entry)))
+                                                files)))
+               (inclusions (remove pair? with-default))
+               (exclusions (apply append (map (match-lambda
+                                                ((':exclude . values)
+                                                 values)
+                                                (_ '()))
+                                              with-default))))
+          `((arguments '(#:include ',(map glob->regexp inclusions)
+                         #:exclude ',(map glob->regexp exclusions)))))
+        '())))
+
+(define* (elpa-package->sexp pkg #:optional license repo)
   "Return the `package' S-expression for the Emacs package PKG, a record of
 type '<elpa-package>'."
+
+  (define melpa-recipe
+    (if (eq? repo 'melpa)
+        (package-name->melpa-recipe (elpa-package-name pkg))
+        #f))
 
   (define name (elpa-package-name pkg))
 
@@ -224,27 +360,34 @@ type '<elpa-package>'."
        (list (list input-type
                    (list 'quasiquote inputs))))))
 
-  (let ((tarball (with-store store
-                   (download-to-store store source-url))))
-    (values
-     `(package
-        (name ,(elpa-name->package-name name))
-        (version ,version)
-        (source (origin
-                  (method url-fetch)
-                  (uri (string-append ,@(factorize-uri source-url version)))
-                  (sha256
-                   (base32
-                    ,(if tarball
-                         (bytevector->nix-base32-string (file-sha256 tarball))
-                         "failed to download package")))))
-        (build-system emacs-build-system)
-        ,@(maybe-inputs 'propagated-inputs dependencies)
-        (home-page ,(elpa-package-home-page pkg))
-        (synopsis ,(elpa-package-synopsis pkg))
-        (description ,(elpa-package-description pkg))
-        (license ,license))
-     dependencies-names)))
+  (define melpa-source
+    (melpa-recipe->origin melpa-recipe))
+
+  (values
+   `(package
+      (name ,(elpa-name->package-name name))
+      (version ,version)
+      (source ,(or melpa-source
+                   (let ((tarball (with-store store
+                                    (download-to-store store source-url))))
+                     `(origin
+                        (method url-fetch)
+                        (uri (string-append ,@(factorize-uri source-url version)))
+                        (sha256
+                         (base32
+                          ,(if tarball
+                               (bytevector->nix-base32-string (file-sha256 tarball))
+                               "failed to download package")))))))
+      (build-system emacs-build-system)
+      ,@(maybe-inputs 'propagated-inputs dependencies)
+      ,@(if melpa-source
+            (melpa-recipe->maybe-arguments melpa-recipe)
+            '())
+      (home-page ,(elpa-package-home-page pkg))
+      (synopsis ,(elpa-package-synopsis pkg))
+      (description ,(elpa-package-description pkg))
+      (license ,license))
+   dependencies-names))
 
 (define* (elpa->guix-package name #:key (repo 'gnu) version)
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
@@ -254,7 +397,7 @@ type '<elpa-package>'."
       ;; ELPA is known to contain only GPLv3+ code.  Other repos may contain
       ;; code under other license but there's no license metadata.
       (let ((license (and (memq repo '(gnu gnu/http)) 'license:gpl3+)))
-        (elpa-package->sexp package license)))))
+        (elpa-package->sexp package license repo)))))
 
 
 ;;;

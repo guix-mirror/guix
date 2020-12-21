@@ -444,7 +444,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.46")
+    (version "4.0.47")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -453,7 +453,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pi93i1jfpmxxw22b5r4gyx5jzgrammlrjzhjr3q2bpn3kcas91j"))))
+                "1zz5kk3ad1jj8y939369dfvjh7zqwpkcqzzad7yb6wp01rc5sf88"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -565,7 +565,7 @@ memory, disks, network and processes.")
 (define-public pies
   (package
     (name "pies")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
@@ -573,7 +573,7 @@ memory, disks, network and processes.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "14jb4pa4zs26d5j2skxbaypnwhsx2lw8jgj1irrgs03c2dnf7gp6"))))
+         "11j168qljsinaj5dwmg7nkm2z1aghi6gc3d0wf0pikflnh2q2wqf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1398,7 +1398,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.4")
+    (version "1.9.4p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1408,8 +1408,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1w03257akspgkkl757vmpq3p30sb2n6y61hll038mw9sqwnbv4cb"))
-              (patches (search-patches "sudo-fix-build-without-sendmail.patch"))
+                "0r0g8z289ipw0zpkhmm33cpfm42j01jds2q1wilhh3flg7xg2jn3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3614,7 +3613,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.09-1")
+      (version "3.2.01-1")
       (source
        (origin
          (method git-fetch)
@@ -3623,7 +3622,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0m6s8kxjppy3jm39is5i1lbrah29cw86rq0vamvx46izbdyf84y5"))))
+          (base32 "15bakrv3jzj5h88c3bd0cfhh6hb8b4hm79924k1ygn29sqzgyw65"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3716,6 +3715,8 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-json-xs" ,perl-json-xs)
        ("perl-time-hires" ,perl-time-hires)
+       ("lvm2" ,lvm2)                   ; lvs
+       ("mdadm" ,mdadm)
        ;; TODO: Add more inputs:
        ;; ipmi-sensors
        ;; hddtemp

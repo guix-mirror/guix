@@ -51,7 +51,8 @@
             write-file
             write-file-tree
             fold-archive
-            restore-file))
+            restore-file
+            dump-file))
 
 ;;; Comment:
 ;;;
@@ -444,7 +445,8 @@ depends on TYPE."
                                            (file file)
                                            (token x))))))
                      (loop (read-string port) result)))))
-               (")" result)                       ;done with DIR
+               (")"                               ;done with DIR
+                (proc file 'directory-complete #f result))
                (x
                 (raise
                  (condition
@@ -456,23 +458,43 @@ depends on TYPE."
            (&message (message "unsupported nar entry type"))
            (&nar-read-error (port port) (file file) (token x)))))))))
 
-(define (restore-file port file)
+(define (dump-file file input size type)
+  "Dump SIZE bytes from INPUT to FILE.
+
+This procedure is suitable for use as the #:dump-file argument to
+'restore-file'."
+  (call-with-output-file file
+    (lambda (output)
+      (dump input output size))))
+
+(define* (restore-file port file
+                       #:key (dump-file dump-file))
   "Read a file (possibly a directory structure) in Nar format from PORT.
-Restore it as FILE."
+Restore it as FILE with canonical permissions and timestamps.  To write a
+regular or executable file, call:
+
+  (DUMP-FILE FILE INPUT SIZE TYPE)
+
+The default is to dump SIZE bytes from INPUT to FILE, but callers can provide
+a custom procedure, for instance to deduplicate FILE on the fly."
   (fold-archive (lambda (file type content result)
                   (match type
                     ('directory
                      (mkdir file))
+                    ('directory-complete
+                     (chmod file #o555)
+                     (utime file 1 1 0 0))
                     ('symlink
-                     (symlink content file))
+                     (symlink content file)
+                     (utime file 1 1 0 0 AT_SYMLINK_NOFOLLOW))
                     ((or 'regular 'executable)
                      (match content
                        ((input . size)
-                        (call-with-output-file file
-                          (lambda (output)
-                            (dump input output size)
-                            (when (eq? type 'executable)
-                              (chmod output #o755)))))))))
+                        (dump-file file input size type)
+                        (chmod file (if (eq? type 'executable)
+                                        #o555
+                                        #o444))
+                        (utime file 1 1 0 0))))))
                 #t
                 port
                 file))

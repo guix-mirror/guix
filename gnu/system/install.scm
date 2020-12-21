@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -176,6 +176,13 @@ manual."
   (shepherd-service-type
    'cow-store
    (lambda _
+     (define (import-module? module)
+       ;; Since we don't use deduplication support in 'populate-store', don't
+       ;; import (guix store deduplication) and its dependencies, which
+       ;; includes Guile-Gcrypt.
+       (and (guix-module-name? module)
+            (not (equal? module '(guix store deduplication)))))
+
      (shepherd-service
       (requirement '(root-file-system user-processes))
       (provision '(cow-store))
@@ -190,7 +197,8 @@ the given target.")
                  ,@%default-modules))
       (start
        (with-imported-modules (source-module-closure
-                               '((gnu build install)))
+                               '((gnu build install))
+                               #:select? import-module?)
          #~(case-lambda
              ((target)
               (mount-cow-store target #$%backing-directory)

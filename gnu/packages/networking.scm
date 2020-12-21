@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -294,51 +295,64 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
       license:mpl1.1))))
 
 (define-public rtmpdump
-  (package
-    (name "rtmpdump")
-    (version "2.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.ffmpeg.org/rtmpdump")
-             (commit "c28f1bab7822de97353849e7787b59e50bbb1428")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1n3kdip83nvvs4sin30zpcdr5q711mqhq2lxrv5vgbc6lskpwzlj"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
-       (list
-        ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
-        (string-append "LDFLAGS=-Wl,-rpath="
-                       (assoc-ref %outputs "out") "/lib")
-        (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'omit-static-library
-           (lambda _
-             (substitute* "librtmp/Makefile"
-               (("cp librtmp\\.a .*")   ; don't install it
-                "")
-               (("librtmp\\.a ")        ; don't build it
-                ""))
-             #t))
-         (delete 'configure))))
-    (inputs
-     `(("openssl" ,openssl-1.0)
-       ("zlib" ,zlib)))
-    (synopsis "Tools and library for handling RTMP streams")
-    (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
+  ;; There are no tags in the repository, and the project is unlikely to
+  ;; make new releases.  Take a recent commit for multiple security fixes
+  ;; as well as GnuTLS compatibility.
+  (let ((commit "c5f04a58fc2aeea6296ca7c44ee4734c18401aa3")
+        (revision "0")
+        (version "2.4"))                ;as mentioned in README and man pages
+    (package
+      (name "rtmpdump")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.ffmpeg.org/rtmpdump")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "07ias612jgmxpam9h418kvlag32da914jsnjsfyafklpnh8gdzjb"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags
+         (list
+          ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
+          (string-append "LDFLAGS=-Wl,-rpath="
+                         (assoc-ref %outputs "out") "/lib")
+          (string-append "prefix=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'omit-static-library
+             (lambda _
+               (substitute* "librtmp/Makefile"
+                 (("cp librtmp\\.a .*") ; don't install it
+                  "")
+                 (("librtmp\\.a ")      ; don't build it
+                  ""))
+               #t))
+           (add-after 'unpack 'prefer-gnutls
+             (lambda _
+               (substitute* '("Makefile" "librtmp/Makefile")
+                 (("CRYPTO=OPENSSL")
+                  "#CRYPTO=OPENSSL")
+                 (("#CRYPTO=GNUTLS")
+                  "CRYPTO=GNUTLS"))))
+           (delete 'configure))))
+      (inputs
+       `(("gnutls" ,gnutls)
+         ("zlib" ,zlib)))
+      (synopsis "Tools and library for handling RTMP streams")
+      (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
 supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
-    (home-page "https://rtmpdump.mplayerhq.hu/")
-    (license
-     (list
-      ;; Library.
-      license:lgpl2.1+
-      ;; Others.
-      license:gpl2+))))
+      (home-page "https://rtmpdump.mplayerhq.hu/")
+      (license
+       (list
+        ;; Library.
+        license:lgpl2.1+
+        ;; Others.
+        license:gpl2+)))))
 
 (define-public srt
   (package
@@ -1075,14 +1089,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.9")
+    (version "5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0vwam1ay184z237vnl8ivb0rdjjbljp9pj3kjzhc6yzq180k4aai"))))
+                "1kygjg6g90017k53b8342i59cpwgidalqpa3gdilqyrhm6b56zc1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1323,14 +1337,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.0")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1bm8jj2rviis9j9l6nixvhxcfx362y9iphkxssgmiz2kj6yypr37"))))
+        (base32 "1i548w6zv6ni5n22rs90a12aakyq811493dxmadlcsj2krr6i66y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1555,14 +1569,17 @@ application stack itself.")
 (define-public httpstat
   (package
     (name "httpstat")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "httpstat" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/reorx/httpstat")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1chw2nk56vaq87aba012a270k9na06hfx1pfbsrc3jfvlc2kb9hb"))))
+         "18k2glnyzxlmry19ijmndim2vqqn3c86smd7xc3haw6k7qafifx1"))))
     (build-system python-build-system)
     (inputs `(("curl" ,curl)))
     (arguments
@@ -1574,7 +1591,10 @@ application stack itself.")
                (("ENV_CURL_BIN.get\\('curl'\\)")
                 (string-append "ENV_CURL_BIN.get('"
                                (assoc-ref inputs "curl")
-                               "/bin/curl')")))
+                               "/bin/curl')"))
+               ;; "curl -w time_*" units seems to have
+               ;; changed from seconds to nanoseconds.
+               (("d\\[k\\] \\* 1000") "d[k] / 1000"))
              #t)))))
     (home-page "https://github.com/reorx/httpstat")
     (synopsis "Visualize curl statistics")

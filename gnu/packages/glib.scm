@@ -227,6 +227,17 @@ shared NFS home directories.")
                (("gio-launch-desktop")
                 (string-append out "/libexec/gio-launch-desktop")))
               #t)))
+        ;; TODO: Remove the conditional in the next core-updates cycle.
+        ;; Needed to build glib on slower ARM nodes.
+        ,@(if (string-prefix? "arm" (%current-system))
+              `((add-after 'unpack 'increase-test-timeout
+                  (lambda _
+                    (substitute* "meson.build"
+                      (("test_timeout = 60")
+                       "test_timeout = 90")
+                      (("test_timeout_slow = 120")
+                       "test_timeout_slow = 180")))))
+              '())
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
@@ -444,7 +455,9 @@ dynamic loading, and an object system.")
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("libffi" ,libffi)))
+     `(;; In practice, GIR users will need libffi when using
+       ;; gobject-introspection.
+       ("libffi" ,libffi)))
     (native-search-paths
      (list
       (search-path-specification

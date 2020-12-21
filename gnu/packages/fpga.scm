@@ -26,18 +26,24 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ghostscript)
@@ -374,3 +380,61 @@ simulator trace files (@dfn{FST}).")
     (home-page "http://gtkwave.sourceforge.net/")
     ;; Exception against free government use in tcl_np.c and tcl_np.h.
     (license (list license:gpl2+ license:expat license:tcl/tk))))
+
+(define-public python-myhdl
+  (package
+    (name "python-myhdl")
+    (version "0.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "myhdl" version))
+        (sha256
+          (base32
+            "04fi59cyn5dsci0ai7djg74ybkqfcjzhj1jfmac2xanbcrw9j3yk"))))
+    (build-system python-build-system)
+    (home-page "http://www.myhdl.org/")
+    (synopsis "Python as a Hardware Description Language")
+    (description "This package provides a library to turn Python into
+a hardware description and verification language. ")
+    (license license:lgpl2.1+)))
+
+(define-public nvc
+  (package
+    (name "nvc")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/nickg/nvc.git")
+                     (commit (string-append "r" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0dd1xany6qhh2qsfw8ba0ky7y86h19yr4hlk0r5i2bvwsg4355v9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; https://github.com/nickg/nvc/issues/409
+       #:configure-flags
+       '("--enable-vhpi")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'clean-up
+           (lambda _
+             (delete-file "autogen.sh")
+             #t)))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("flex" ,flex)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ("check" ,check))) ; for the tests
+    (inputs
+     `(("llvm" ,llvm-9)))
+    (synopsis "VHDL compiler and simulator")
+    (description "This package provides a VHDL compiler and simulator.")
+    (home-page "https://github.com/nickg/nvc")
+    (license license:gpl3+)))

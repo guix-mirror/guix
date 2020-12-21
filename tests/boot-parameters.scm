@@ -50,6 +50,9 @@
 (define %default-store-directory-prefix
   (string-append "/" %default-btrfs-subvolume))
 (define %default-store-mount-point (%store-prefix))
+(define %default-store-crypto-devices
+  (list (uuid "00000000-1111-2222-3333-444444444444")
+        (uuid "55555555-6666-7777-8888-999999999999")))
 (define %default-multiboot-modules '())
 (define %default-locale "es_ES.utf8")
 (define %root-path "/")
@@ -67,6 +70,7 @@
    (locale %default-locale)
    (store-device %default-store-device)
    (store-directory-prefix %default-store-directory-prefix)
+   (store-crypto-devices %default-store-crypto-devices)
    (store-mount-point %default-store-mount-point)))
 
 (define %default-operating-system
@@ -110,6 +114,8 @@
           (with-store #t)
           (store-device
            (quote-uuid %default-store-device))
+          (store-crypto-devices
+           (map quote-uuid %default-store-crypto-devices))
           (store-directory-prefix %default-store-directory-prefix)
           (store-mount-point %default-store-mount-point))
   (define (generate-boot-parameters)
@@ -125,12 +131,14 @@
             (sexp-or-nothing " (kernel-arguments ~S)" kernel-arguments)
             (sexp-or-nothing " (initrd ~S)" initrd)
             (if with-store
-                (format #false " (store~a~a~a)"
+                (format #false " (store~a~a~a~a)"
                         (sexp-or-nothing " (device ~S)" store-device)
                         (sexp-or-nothing " (mount-point ~S)"
                                          store-mount-point)
                         (sexp-or-nothing " (directory-prefix ~S)"
-                                         store-directory-prefix))
+                                         store-directory-prefix)
+                        (sexp-or-nothing " (crypto-devices ~S)"
+                                         store-crypto-devices))
                 "")
             (sexp-or-nothing " (locale ~S)" locale)
             (sexp-or-nothing " (bootloader-name ~a)" bootloader-name)
@@ -158,6 +166,7 @@
        (test-read-boot-parameters #:with-store #false)
        (test-read-boot-parameters #:store-device #false)
        (test-read-boot-parameters #:store-device 'false)
+       (test-read-boot-parameters #:store-crypto-devices #false)
        (test-read-boot-parameters #:store-mount-point #false)
        (test-read-boot-parameters #:store-directory-prefix #false)
        (test-read-boot-parameters #:multiboot-modules #false)
@@ -253,6 +262,23 @@
   %root-path
   (boot-parameters-store-mount-point
    (test-read-boot-parameters #:with-store #false)))
+
+(test-equal "read, store-crypto-devices, default"
+  '()
+  (boot-parameters-store-crypto-devices
+   (test-read-boot-parameters #:store-crypto-devices #false)))
+
+;; XXX: <warning: unrecognized crypto-devices #f at '#f'>
+(test-equal "read, store-crypto-devices, false"
+  '()
+  (boot-parameters-store-crypto-devices
+   (test-read-boot-parameters #:store-crypto-devices 'false)))
+
+;; XXX: <warning: unrecognized crypto-device "bad" at '#f'>
+(test-equal "read, store-crypto-devices, string"
+  '()
+  (boot-parameters-store-crypto-devices
+   (test-read-boot-parameters #:store-crypto-devices "bad")))
 
 ;; For whitebox testing
 (define operating-system-boot-parameters

@@ -525,7 +525,7 @@ do so.")
        ("python-aiohttp-socks" ,python-aiohttp-socks)
        ("python-aiorpcx" ,python-aiorpcx)
        ("python-certifi" ,python-certifi)
-       ("python-dnspython" ,python-dnspython)
+       ("python-dnspython" ,python-dnspython-1.16)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
      `(#:tests? #f                      ; no tests
@@ -625,7 +625,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.6")
+    (version "0.17.1.7")
     (source
      (origin
        (method git-fetch)
@@ -645,7 +645,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "0b6zyr3mzqvcxf48i2g45gr649x6nhppik5598jsvg0z7i2hxb9q"))))
+        (base32 "1fdw4i4rw87yz3hz4yc1gdw0gr2mmf9038xaw2l4rrk5y50phjp4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -735,7 +735,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.6")
+    (version "0.17.1.7")
     (source
      (origin
        (method git-fetch)
@@ -744,7 +744,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kn5wvx2psbdaqmy1cxlbf5l1mdpvh0b6hh9drah3s7nj3654a3r"))))
+        (base32 "1dd2ddkxh9ynxnscysl46hj4dm063h1v13fnyah69am26qzzbby4"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)

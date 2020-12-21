@@ -476,41 +476,15 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
 (define-public alsa-modular-synth
   (package
     (name "alsa-modular-synth")
-    (version "2.1.2")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/alsamodular/alsamodular"
                                   "/" version "/ams-" version ".tar.bz2"))
               (sha256
                (base32
-                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))
-              (patches
-               (search-patches "alsa-modular-synth-fix-vocoder.patch"))))
+                "056dn6b9c5nsw2jdww7z1kxrjqqfvxjzxhsd5x9gi4wkwyiv21nz"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       '("--enable-qt5"
-         "CXXFLAGS=-std=gnu++11")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'set-paths 'hide-default-gcc
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gcc (assoc-ref inputs "gcc")))
-               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
-               ;; conflicts with the GCC 5 input.
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-join
-                        (delete (string-append gcc "/include/c++")
-                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
-                        ":"))
-               #t)))
-         ;; Insert an extra space between linker flags.
-         (add-before 'configure 'add-missing-space
-           (lambda _
-             (substitute* "configure"
-               (("LIBS\\+=\\$LIBSsave") "LIBS+=\" $LIBSsave\"")
-               (("CFLAGS\\+=\\$CFLAGSsave") "CFLAGS+=\" $CFLAGSsave\""))
-             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ;; We cannot use zita-alsa-pcmi (the successor of clalsadrv) due to
@@ -523,8 +497,7 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
        ("qtbase" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)
-       ("gcc@5" ,gcc-5)))
+       ("qttools" ,qttools)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description

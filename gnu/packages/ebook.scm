@@ -151,7 +151,7 @@
        ("python2-css-parser" ,python2-css-parser)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
-       ("python2-dnspython" ,python2-dnspython)
+       ("python2-dnspython" ,python2-dnspython-1.16)
        ("python2-dukpy" ,python2-dukpy)
        ("python2-feedparser" ,python2-feedparser)
        ("python2-html2text" ,python2-html2text)

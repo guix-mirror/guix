@@ -218,7 +218,7 @@
                  #t)))))))
     ;; fpc invokes gcc, so make sure LIBRARY_PATH et.al are set.
     ;(native-search-paths (package-native-search-paths gcc))
-    (home-page "http://www.freepascal.org")
+    (home-page "https://www.freepascal.org")
     (synopsis "The Free Pascal Compiler")
     (description
      "Free Pascal is a professional Object Pascal compiler.  It supports the

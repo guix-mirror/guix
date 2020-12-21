@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2017, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -983,13 +983,13 @@ to users of that module.")
 (define-public python-license-expression
   (package
     (name "python-license-expression")
-    (version "0.999")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "license-expression" version))
        (sha256
-        (base32 "08ppb0bxbrsxazy88sgpl9yffvdsabw6dkk1nc332wcz2mphwwyf"))))
+        (base32 "1g0sgphss8hbi1rpl4avy1nmbixmy9v194xdbvkjgl90vzgy2q3r"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-boolean.py" ,python-boolean.py)))
@@ -1735,14 +1735,6 @@ that is similar to threading, but provide the benefits of non-blocking I/O.
 The event dispatch is implicit, which means you can easily use @code{Eventlet}
 from the Python interpreter, or as a small part of a larger application.")
   (license license:expat)))
-
-(define-public python2-eventlet
-  (let ((base (package-with-python2
-                (strip-python2-variant python-eventlet))))
-    (package (inherit base)
-      (propagated-inputs
-       `(("python2-enum34" ,python2-enum34)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-six
   (package
@@ -3018,9 +3010,6 @@ of state and cooperation between execution units, which makes it
 easier to build concurrent applications.")
     (license license:asl2.0)))
 
-(define-public python2-pykka
-  (package-with-python2 python-pykka))
-
 (define-public python-pymsgbox
   (package
     (name "python-pymsgbox")
@@ -4131,14 +4120,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.36.1")
+    (version "0.36.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "0ljzc50z5v08is8fis1fg2dk9sb6275jlvzxb6nij0w6ys772pf8"))))
+         "1c0pnk2aibfhfaanrs0a5gkabkvz81gj20z7r0152b7fcx5ci14r"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-autopep8" ,python-autopep8)
@@ -4750,14 +4739,17 @@ color scales, and color space conversion easy.  It has support for:
        ("texinfo" ,texinfo)
        ("perl" ,perl)
        ("scipy-sphinx-theme"
-        ,(origin ; The build script expects scipy-sphinx-theme as a git submodule
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://github.com/scipy/scipy-sphinx-theme")
-                 (commit "c466764e2231ba132c09826b5b138fffa1cfcec3")))
-           (sha256
-            (base32
-             "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl"))))
+        ,(let ((commit "c466764e2231ba132c09826b5b138fffa1cfcec3"))
+           (origin ;the build script expects scipy-sphinx-theme as a git submodule
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/scipy/scipy-sphinx-theme")
+                   (commit commit)))
+             (file-name (git-file-name "python-scipy-sphinx-theme"
+                                       (string-take commit 7)))
+             (sha256
+              (base32
+               "0q2y87clwlsgc7wvlsn9pzyssybcq10plwhq2w1ydykfsyyqbmkl")))))
        ,@(package-native-inputs python-numpy)))
     (arguments
      `(#:tests? #f ; we're only generating the documentation
@@ -10418,13 +10410,13 @@ config files.")
 (define-public python-configargparse
   (package
     (name "python-configargparse")
-    (version "0.14.0")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
-                "149fy4zya0rsnlkvxbbq43cyr8lscb5k4pj1m6n7f1grwcmzwbif"))))
+                "1p1pzpf5qpf80bfxsx1mbw9blyhhypjvhl3i60pbmhfmhvlpplgd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)))
@@ -10445,9 +10437,6 @@ config files.")
 be set via config files and/or environment variables.")
     (home-page "https://github.com/bw2/ConfigArgParse")
     (license license:expat)))
-
-(define-public python2-configargparse
-  (package-with-python2 python-configargparse))
 
 (define-public python-argparse-manpage
   (package
@@ -12461,13 +12450,13 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 (define-public python-greenlet
   (package
     (name "python-greenlet")
-    (version "0.4.16")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "greenlet" version))
               (sha256
                (base32
-                "0v2571d0av1hz3yx63gvmnrinyn57nnvibg4zkl9frv74b3yl1kf"))))
+                "0swdhrcq13bdszv3yz5645gi4ijbzmmhxpb6whcfg3d7d5f87n21"))))
     (build-system python-build-system)
     (home-page "https://greenlet.readthedocs.io/")
     (synopsis "Lightweight in-process concurrent programming")
@@ -12477,9 +12466,6 @@ that supports micro-threads called \"tasklets\".  Tasklets run
 pseudo-concurrently (typically in a single or a few OS-level threads) and
 are synchronized with data exchanges on \"channels\".")
     (license (list license:psfl license:expat))))
-
-(define-public python2-greenlet
-  (package-with-python2 python-greenlet))
 
 (define-public python-objgraph
   (package
@@ -12511,13 +12497,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "20.6.2")
+    (version "20.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "1ldmppgghfphdaazjw6wq2i17xcmsjb2jsizfa4cjlg812zjlg52"))
+                "13aw9x6imsy3b369kfjblqiwfni69pp32m4r13n62r9k3l2lhvaz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -12576,24 +12562,10 @@ graphviz.")
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (let ((disabled-tests
-                             '(;; These tests rely on networking which is not
-                               ;; available in the build container.
-                               "test_urllib2net.py"
-                               "test__server.py"
-                               "test__server_pywsgi.py"
-                               "test_socket.py"
-                               "test__socket.py"
-                               "test__socket_ssl.py"
-                               "test__socket_dns.py"
-                               "test__socket_dns6.py"
-                               "test___example_servers.py"
+                             '(;; These tests relies on networking which is
+                               ;; not available in the build container.
                                "test__getaddrinfo_import.py"
-                               "test__examples.py"
-                               "test_httplib.py"
-                               "test_https.py"
-                               "test_urllib2_localnet.py"
-                               "test_ssl.py"
-                               "test__ssl.py"
+                               "test__server_pywsgi.py"
                                ;; XXX: These tests borrow functionality from the
                                ;; Python builtin 'test' module, but it is not
                                ;; installed with the Guix Python distribution.
@@ -12632,7 +12604,7 @@ graphviz.")
                       ;; Use the build daemons configured number of workers.
                       (setenv "NWORKERS" (number->string (parallel-job-count)))
 
-                      (invoke "python" "-m" "gevent.tests" "--config"
+                      (invoke "python" "-m" "gevent.tests" "-unone" "--config"
                               "known_failures.py" "--ignore" "skipped_tests.txt"))))))
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
@@ -12648,22 +12620,13 @@ graphviz.")
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
-    (home-page "http://www.gevent.org/")
+    (home-page "https://www.gevent.org/")
     (synopsis "Coroutine-based network library")
     (description
-     "gevent is a coroutine-based Python networking library that uses greenlet
-to provide a high-level synchronous API on top of the libev event loop.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-gevent))))))
-
-(define-public python2-gevent
-  (let ((base (package-with-python2
-               (strip-python2-variant python-gevent))))
-    (package
-      (inherit base)
-      (native-inputs `(,@(package-native-inputs base)
-                       ("python-mock" ,python2-mock)
-                       ("python2-selectors2" ,python2-selectors2))))))
+     "@code{gevent} is a coroutine-based Python networking library that uses
+@code{greenlet} to provide a high-level synchronous API on top of the
+@code{libev} event loop.")
+    (license license:expat)))
 
 (define-public python-fastimport
   (package
@@ -12837,9 +12800,6 @@ programming errors.")
 It includes Python implementations of Kafka producers and consumers, which
 are optionally backed by a C extension built on librdkafka.")
     (license license:asl2.0)))
-
-(define-public python2-pykafka
-  (package-with-python2 python-pykafka))
 
 (define-public python-wcwidth
   (package
@@ -13346,27 +13306,40 @@ until the object is actually required, and caches the result of said call.")
 
 (define-public python-dnspython
   (package
-  (name "python-dnspython")
-  (version "1.16.0")
-  (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.dnspython.org/kits/"
-                                version "/dnspython-" version ".tar.gz"))
-            (sha256
-             (base32
-              "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
-  (build-system python-build-system)
-  (arguments '(#:tests? #f)) ; XXX: requires internet access
-  (home-page "http://www.dnspython.org")
-  (synopsis "DNS toolkit for Python")
-  (description
-   "dnspython is a DNS toolkit for Python.  It supports almost all record
+    (name "python-dnspython")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dnspython" version ".zip"))
+              (sha256
+               (base32
+                "1dyip5ygqqhrgcaiy7qzjpndl9xciip186paxqwkm726fj9z0jh4"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (arguments '(#:tests? #f))          ; XXX: requires internet access
+    (home-page "https://www.dnspython.org")
+    (synopsis "DNS toolkit for Python")
+    (description
+     "dnspython is a DNS toolkit for Python.  It supports almost all record
 types.  It can be used for queries, zone transfers, and dynamic updates.
 It supports TSIG authenticated messages and EDNS0.")
-  (license license:expat)))
+    (license license:expat)))
 
-(define-public python2-dnspython
-  (package-with-python2 python-dnspython))
+(define-public python-dnspython-1.16
+  (package
+    (inherit python-dnspython)
+    (version "1.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.dnspython.org/kits/"
+                                  version "/dnspython-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
+    (native-inputs '())))
+
+(define-public python2-dnspython-1.16
+  (package-with-python2 python-dnspython-1.16))
 
 (define-public python-py3dns
   (package
@@ -14190,9 +14163,6 @@ should be noted that the code is a exact port of the original
 from Facebook.")
     (license license:expat)))
 
-(define-public python2-graphql-relay
-  (package-with-python2 python-graphql-relay))
-
 (define-public python-graphene
   (package
     (name "python-graphene")
@@ -14219,16 +14189,7 @@ from Facebook.")
      "Graphene is a Python library for building GraphQL schemas/types.
 A GraphQL schema describes your data model, and provides a GraphQL server
 with an associated set of resolve methods that know how to fetch data.")
-    (properties `((python2-variant . ,(delay python2-graphene))))
     (license license:expat)))
-
-(define-public python2-graphene
-  (let ((base (package-with-python2
-                (strip-python2-variant python-graphene))))
-    (package (inherit base)
-      (native-inputs
-       `(("python2-sqlalchemy" ,python2-sqlalchemy)
-         ,@(package-native-inputs base))))))
 
 (define-public python-nautilus
   (package
@@ -18262,37 +18223,6 @@ interpreter. bpython's main features are
 @end enumerate")
     (license license:expat)))
 
-(define-public bpython2
-  (let ((base (package-with-python2
-               (strip-python2-variant bpython))))
-    (package (inherit base)
-      (name "bpython2")
-      (arguments
-       `(#:python ,python-2
-         #:phases
-         (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-test
-           (lambda _
-             ;; Remove failing test. FIXME: make it pass
-             (delete-file "bpython/test/test_args.py")
-             ;; Disable failing test-cases (renaming inhibits they are
-             ;; discovered)
-             (substitute* "bpython/test/test_curtsies_repl.py"
-               (("^(\\s*def )(test_get_last_word_with_prev_line\\W)" _ a b)
-                (string-append a "xxx_off_" b))
-               (("^(\\s*def )(test_complex\\W)" _ a b)
-                (string-append a "xxx_off_" b)))
-             #t))
-           (add-before 'build 'rename-scripts
-             ;; rename the scripts to bypthon2, bpdb2, etc.
-             (lambda _
-               (substitute* "setup.py"
-                 (("^(\\s+'bpdb)(\\s+=.*',?)\\s*?$" _ name rest)
-                  (string-append name "2" rest "\n"))
-                 (("^(\\s+'bpython)(-\\S+)?(\\s+=.*',?)\\s*?$" _ name sub rest)
-                  (string-append name "2" (or sub "") rest "\n")))
-               #t))))))))
-
 (define-public python-pyinotify
   (package
     (name "python-pyinotify")
@@ -18596,9 +18526,6 @@ process-based child processes can safely be created anywhere within a
 gevent-powered application.")
     (license license:expat)))
 
-(define-public python2-gipc
-  (package-with-python2 python-gipc))
-
 (define-public python-beautifultable
   (package
     (name "python-beautifultable")
@@ -18767,47 +18694,6 @@ MacFUSE.  The binding is created using the standard @code{ctypes} library.")
 interface to FUSE on various operating systems.  It's just one file and is
 implemented using @code{ctypes}.")
     (license license:isc)))
-
-(define-public python2-gdrivefs
-  (package
-    (name "python2-gdrivefs")
-    (version "0.14.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "gdrivefs" version))
-       (sha256
-        (base32
-         "0v9sp2cfg4ki3wagkwf3rnfpjhvgf845anz3757il9z95yvvcvb7"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-setup-py
-           (lambda _
-             ;; Update requirements from dependency==version
-             ;; to dependency>=version
-             (substitute* "gdrivefs/resources/requirements.txt"
-               (("==") ">="))
-             #t)))))
-    (native-inputs
-     `(("python2-gipc" ,python2-gipc)
-       ("python2-gevent" ,python2-gevent)
-       ("python2-greenlet" ,python2-greenlet)
-       ("python2-httplib2" ,python2-httplib2)
-       ("python2-uritemplate" ,python2-uritemplate)
-       ("python2-oauth2client" ,python2-oauth2client)
-       ("python2-six" ,python2-six)))
-    (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil)
-       ("python2-fusepy" ,python2-fusepy)
-       ("python2-google-api-client" ,python2-google-api-client)))
-    (home-page "https://github.com/dsoprea/GDriveFS")
-    (synopsis "Mount Google Drive as a local file system")
-    (description "@code{gdrivefs} provides a FUSE wrapper for Google Drive
-under Python 2.7.")
-    (license license:gpl2)))
 
 (define-public python-userspacefs
   (package
@@ -23204,3 +23090,108 @@ process.")
      "Gamera is a toolkit for building document image recognition systems.")
     (home-page "https://gamera.informatik.hsnr.de/")
     (license license:gpl2+)))
+
+(define-public python-contextvars
+  (package
+    (name "python-contextvars")
+    (version "2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "contextvars" version))
+        (sha256
+          (base32
+            "17n3w8c20kgkgc6khaafdhhlcdj4bzman4paxqsl7harma59137k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-immutables" ,python-immutables)))
+    (home-page
+      "https://github.com/MagicStack/contextvars")
+    (synopsis "PEP 567 Backport")
+    (description "This package implements a backport of Python 3.7
+@code{contextvars} module (see PEP 567) for Python 3.6.")
+    (license license:asl2.0)))
+
+(define-public python-aiofiles
+  (package
+    (name "python-aiofiles")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aiofiles" version))
+        (sha256
+          (base32
+            "1bqmv019x16qa3zah0z915cw6z4va3fjs60fk2s7vyah3gyvrrlq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Tinche/aiofiles")
+    (synopsis "File support for @code{asyncio}")
+    (description "@code{python-aiofiles} is a library for handling local
+disk files in asyncio applications.")
+    (license license:asl2.0)))
+
+(define-public python-pyre-extensions
+  (package
+    (name "python-pyre-extensions")
+    (version "0.0.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyre-extensions" version))
+        (sha256
+          (base32
+            "0c5cbbqrfyjwakdh3kbwxis6mbrbwky1z1fqslgszgpcj4g43q30"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-typing-extensions"
+         ,python-typing-extensions)
+        ("python-typing-inspect" ,python-typing-inspect)))
+    (home-page "https://pyre-check.org")
+    (synopsis
+     "Type system extensions for use with @code{python-pyre}")
+    (description
+      "@code{python-pyre-extensions} defines extensions to the standard
+@code{typing} module that are supported by the Pyre typechecker.")
+    (license license:expat)))
+
+(define-public python-dataclasses
+  (package
+    (name "python-dataclasses")
+    (version "0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dataclasses" version))
+        (sha256
+          (base32
+            "1rh8111fbws2vxyf2qy2zw3x6p6cq1jfz8pf904gig5qwg56sjj9"))))
+    (build-system python-build-system)
+    (home-page
+      "https://github.com/ericvsmith/dataclasses")
+    (synopsis
+      "Backport of the @code{dataclasses} module for Python 3.6")
+    (description
+      "This is an implementation of PEP 557, Data Classes.  It is a
+backport of the @code{dataclasses} module for Python 3.6.")
+    (license license:asl2.0)))
+
+(define-public python-pywatchman
+  (package
+    (name "python-pywatchman")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pywatchman" version))
+        (sha256
+          (base32
+            "1yf2gm20wc3djpb5larxii3l55xxby0il2ns3q0v1byyfnr7w16h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;there are none
+    (home-page
+      "https://facebook.github.io/watchman/")
+    (synopsis "Watchman client for python")
+    (description "@code{python-pywatchman} is a library to connect and
+query Watchman to discover file changes.")
+    (license license:bsd-3)))

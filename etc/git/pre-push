@@ -20,13 +20,26 @@
 #
 #   <local ref> <local sha1> <remote ref> <remote sha1>
 
-# Only use the hook when pushing to Savannah.
-case "$2" in
-    *.gnu.org*)
-	exec make authenticate check-channel-news
-	exit 127
-	;;
-    *)
-	exit 0
-	;;
-esac
+# This is the "empty hash" used by Git when pushing a branch deletion.
+z40=0000000000000000000000000000000000000000
+
+while read local_ref local_hash remote_ref remote_hash
+do
+	# When deleting a remote branch, no commits are pushed to the remote, and
+	# thus there are no signatures to be verified.
+	if [ "$local_hash" != $z40 ]
+	then
+		# Only use the hook when pushing to Savannah.
+		case "$2" in
+		    *.gnu.org*)
+			exec make authenticate check-channel-news
+			exit 127
+			;;
+		    *)
+			exit 0
+			;;
+		esac
+	fi
+done
+
+exit 0

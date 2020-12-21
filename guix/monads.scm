@@ -274,23 +274,12 @@ more optimizations."
                    (_
                     #'generic-name))))))))))
 
-(define-syntax-rule (define-syntax-parameter-once name proc)
-  ;; Like 'define-syntax-parameter' but ensure the top-level binding for NAME
-  ;; does not get redefined.  This works around a race condition in a
-  ;; multi-threaded context with Guile <= 2.2.4: <https://bugs.gnu.org/27476>.
-  (eval-when (load eval expand compile)
-    (define name
-      (if (module-locally-bound? (current-module) 'name)
-          (module-ref (current-module) 'name)
-          (make-syntax-transformer 'name 'syntax-parameter
-                                   (list proc))))))
-
-(define-syntax-parameter-once >>=
+(define-syntax-parameter >>=
   ;; The name 'bind' is already taken, so we choose this (obscure) symbol.
   (lambda (s)
     (syntax-violation '>>= ">>= (bind) used outside of 'with-monad'" s)))
 
-(define-syntax-parameter-once return
+(define-syntax-parameter return
   (lambda (s)
     (syntax-violation 'return "return used outside of 'with-monad'" s)))
 

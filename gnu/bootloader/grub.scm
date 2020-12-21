@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2019 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
+;;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Stefan <stefan-guix@vodafonemail.de>
 ;;;
@@ -359,11 +359,14 @@ code."
                                   (locale #f)
                                   (system (%current-system))
                                   (old-entries '())
+                                  (store-crypto-devices '())
                                   store-directory-prefix)
   "Return the GRUB configuration file corresponding to CONFIG, a
 <bootloader-configuration> object, and where the store is available at
 STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
 entries corresponding to old generations of the system.
+STORE-CRYPTO-DEVICES contain the UUIDs of the encrypted units that must
+be unlocked to access the store contents.
 STORE-DIRECTORY-PREFIX may be used to specify a store prefix, as is required
 when booting a root file system on a Btrfs subvolume."
   (define all-entries
@@ -410,6 +413,21 @@ menuentry ~s {
                   #$root-index (string-join (list #$@arguments) " " 'prefix)
                   (string-join (map string-join '#$modules)
                                "\n  module " 'prefix))))))
+
+  (define (crypto-devices)
+    (define (crypto-device->cryptomount dev)
+      (if (uuid? dev)
+          #~(format port "cryptomount -u ~a~%"
+                    ;; cryptomount only accepts UUID without the hypen.
+                    #$(string-delete #\- (uuid->string dev)))
+          ;; Other type of devices aren't implemented.
+          #~()))
+    (let ((devices (map crypto-device->cryptomount store-crypto-devices))
+          ;; XXX: Add luks2 when grub 2.06 is packaged.
+          (modules #~(format port "insmod luks~%")))
+      (if (null? devices)
+          devices
+          (cons modules devices))))
 
   (define (sugar)
     (let* ((entry (first all-entries))
@@ -474,6 +492,7 @@ keymap ~a~%" #$keymap))))
                   "# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reconfiguration.
 ")
+          #$@(crypto-devices)
           #$(sugar)
           #$locale-config
           #$keyboard-layout-config

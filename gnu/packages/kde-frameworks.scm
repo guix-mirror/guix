@@ -327,63 +327,6 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     ;; text.
     (license license:lgpl3+)))
 
-(define-public breeze-assets
-  (package
-    (inherit breeze-icons)
-    (name "breeze-assets")
-    (version "5.19.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kde/stable/plasma/" version
-                    "/breeze-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0dpk1w7zcafrzf46j060i1qb0fwqpsflkfzr6gcar81llmjnc4b1"))))
-    (inputs
-     `(,@(package-inputs breeze-icons)
-       ("ki18n" ,ki18n)
-       ("kpackage" ,kpackage)
-       ("kguiaddons" ,kguiaddons)
-       ("kdecoration" ,kdecoration)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("qtx11extras" ,qtx11extras)))
-    (home-page "https://github.com/KDE/breeze")
-    (synopsis "Artwork, styles and assets for the Breeze visual style")
-    (description "This package contains artwork, styles and assets associated
-with the Breeze visual style.")
-    (license license:gpl2+)))
-
-(define-public breeze
-  (package
-    (name "breeze")
-    (version (package-version breeze-assets))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build union))
-       #:builder
-       (begin
-         (use-modules (ice-9 match)
-                      (guix build union))
-         (match %build-inputs
-           (((names . directories) ...)
-            (union-build (assoc-ref %outputs "out")
-                         directories)
-            #t)))))
-    (inputs
-     `(("breeze-icons" ,breeze-icons)
-       ("breeze-assets" ,breeze-assets)))
-    (home-page "https://github.com/KDE/breeze-icons")
-    (synopsis "Full KDE Breeze theme")
-    (description
-     "This package contains the full Breeze visual style for KDE:
-assets and icons.")
-    (license (list license:gpl2 license:gpl3+))))
-
 (define-public kapidox
   (package
     (name "kapidox")
@@ -1529,7 +1472,7 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
               (sha256
                (base32
                 "1whsp0f87lrcn61s9rfhy0aj68hm6zgfa38mq6frlkcjksi0z1vn"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
