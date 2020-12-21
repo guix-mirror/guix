@@ -3261,6 +3261,27 @@ programs.")
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-waker-fn" ,rust-waker-fn-1))))))
 
+(define-public rust-blocking-0.4
+  (package
+    (inherit rust-blocking-0.6)
+    (name "rust-blocking")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blocking" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0av1h5p6lb5bpzghmzsksx31icvdwrpxxzkq6r56n1l5pzvqyinj"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-atomic-waker" ,rust-atomic-waker-1)
+        ("rust-futures-lite" ,rust-futures-lite-0.1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking" ,rust-parking-1)
+        ("rust-waker-fn" ,rust-waker-fn-1))))))
+
 (define-public rust-bresenham-0.1
   (package
     (name "rust-bresenham")
