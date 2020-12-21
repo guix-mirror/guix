@@ -1030,6 +1030,12 @@ Language.")
                       ;; substitutable because several encodings are tested.
                       "main.sp2"
 
+                      ;; XXX: This test occasionally fails on i686-linux:
+                      ;; <https://jira.mariadb.org/browse/MDEV-24458>
+                      ,@(if (string-prefix? "i686" (%current-system))
+                            '("main.myisampack")
+                            '())
+
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
                       "main.mysqldump"))
