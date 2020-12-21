@@ -21167,6 +21167,19 @@ deserialization, and interpreter in Rust.")
 unparking.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-parking-1
+  (package
+    (inherit rust-parking-2)
+    (name "rust-parking")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z6q9rxm98vrp3fimw8b5syzwgf8l0pnn6y0cqm4lbblf7r01cvc"))))))
+
 (define-public rust-parking-lot-0.11
   (package
     (name "rust-parking-lot")
