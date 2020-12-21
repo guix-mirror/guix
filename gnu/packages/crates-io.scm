@@ -30800,6 +30800,36 @@ data type.")
             license:expat
             license:asl2.0))))
 
+(define-public rust-sluice-0.5
+  (package
+    (name "rust-sluice")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sluice" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1w9brs9dqyvr2w7cs5nxkp2wggw2xh76bc4qq0p4yxwfvhgfs94f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-quickcheck-macros" ,rust-quickcheck-macros-0.9))))
+    (home-page "https://github.com/sagebind/sluice")
+    (synopsis "Ring buffer for byte buffers, FIFO queues, and SPSC channels")
+    (description
+     "This package provides asynchronous byte buffers and pipes for concurrent
+I/O programming.")
+    (license license:expat)))
+
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
