@@ -9873,6 +9873,34 @@ blocking data structures.")
 testing.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-extend-0.1
+  (package
+    (name "rust-extend")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "extend" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01azyniinxrwng13hkj450gplp1ajslbqzksjg4dk6655sks6zgl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags '("--release" "--" "--skip=test::test_ui" )
+       #:cargo-inputs
+       (("rust-proc-macro-error" ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/davidpdrsn/extend")
+    (synopsis "Create extensions for types you don't own")
+    (description
+     "This crates creates extensions for types you don't own with extension
+traits but without the boilerplate.")
+    (license license:expat)))
+
 (define-public rust-fake-simd-0.1
   (package
     (name "rust-fake-simd")
