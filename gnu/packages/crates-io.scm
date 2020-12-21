@@ -1491,6 +1491,43 @@ crate.")
     (description "Macros for async-std.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-mutex-1
+  (package
+    (name "rust-async-mutex")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-mutex" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vhmsscqx48dmxw0yir6az0pbwcq6qjvcv2f43vdpn95vd9bi7a7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true      ;XXX: enable when rust-async-std-1 is packaged
+       #:cargo-inputs
+       (("rust-event-listener" ,rust-event-listener-2))
+       #:cargo-development-inputs
+       (;("rust-async-std" ,rust-async-std-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-intrusive" ,rust-futures-intrusive-0.3)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-smol" ,rust-smol-0.1)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://github.com/stjepang/async-lock")
+    (synopsis "Async synchronisation primitives")
+    (description "This crate provides the following async synchronisation
+primitives:
+
+@itemize
+@item Barrier: enables tasks to synchronize all together at the same time.
+@item Mutex: a mutual exclusion lock.
+@item RwLock: a reader-writer lock, allowing any number of readers or a single writer.
+@item Semaphore: limits the number of concurrent operations.
+@end itemize")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-net-1
   (package
     (name "rust-async-net")
