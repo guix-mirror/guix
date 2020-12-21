@@ -1175,6 +1175,36 @@ standard library.")
      "File system fixtures and assertions for testing.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-json-diff-1
+  (package
+    (name "rust-assert-json-diff")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert-json-diff" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h2w4n8f8a1n9sc8snka0arzw5x95ky5k8i7603z3lhkcplwnna2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-extend" ,rust-extend-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))
+       #:cargo-development-inputs
+       (("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/davidpdrsn/assert-json-diff")
+    (synopsis "Easily compare two JSON values and get great output")
+    (description
+     "This crate includes macros for comparing two serializable values
+by diffing their JSON representations.  It is designed to give much
+more helpful error messages than the standard @code{assert_eq!.  It
+basically does a diff of the two objects and tells you the exact
+differences.  This is useful when asserting that two large JSON
+objects are the same.")
+    (license license:expat)))
+
 (define-public rust-assert-matches-1.3
   (package
     (name "rust-assert-matches")
