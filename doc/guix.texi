@@ -10357,6 +10357,24 @@ This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
 Git commit SHA1 identifier or a tag.
 
+@item --with-patch=@var{package}=@var{file}
+Add @var{file} to the list of patches applied to @var{package}, where
+@var{package} is a spec such as @code{python@@3.8} or @code{glibc}.
+@var{file} must contain a patch; it is applied with the flags specified
+in the @code{origin} of @var{package} (@pxref{origin Reference}), which
+by default includes @code{-p1} (@pxref{patch Directories,,, diffutils,
+Comparing and Merging Files}).
+
+As an example, the command below rebuilds Coreutils with the GNU C
+Library (glibc) patched with the given patch:
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+In this example, glibc itself as well as everything that leads to
+Coreutils in the dependency graph is rebuilt.
+
 @cindex test suite, skipping
 @item --without-tests=@var{package}
 Build @var{package} without running its tests.  This can be useful in
