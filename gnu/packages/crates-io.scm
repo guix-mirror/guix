@@ -1552,6 +1552,44 @@ primitives:
      "Async networking primitives for TCP/UDP/Unix communication")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-process-1
+  (package
+    (name "rust-async-process")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-process" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nmvqwqxzy0gv7n8agknaijns9dsxqj81bxms4bs647vq44ym32c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags '("--release" "--"
+                            "--skip=set_current_dir_works"
+                            "--skip=signal_reported_right"
+                            "--skip=stdin_works")
+       #:cargo-inputs
+       (("rust-async-io" ,rust-async-io-1)
+        ("rust-blocking" ,rust-blocking-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-event-listener" ,rust-event-listener-2)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/stjepang/async-process")
+    (synopsis "Async interface for working with processes")
+    (description
+     "This crate is an async version of @code{std::process}.  A background
+thread named @code{async-process} is lazily created on first use, which waits
+for spawned child processes to exit and then calls the @code{wait()} syscall
+to clean up the ``zombie'' processes.
+
+This is unlike the process API in the standard library, where dropping
+a running Child leaks its resources.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-std-0.99
   (package
     (name "rust-async-std")
