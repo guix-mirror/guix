@@ -14666,6 +14666,37 @@ removals, and it allows lookup of its elements by either hash table key
 or numerical index.  A corresponding hash set type is also provided.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-indicatif-0.15
+  (package
+    (name "rust-indicatif")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indicatif" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r4n50mclyi4c7b9c9mlma1rhchjamw71r3z8vgqcmp24mhvbakv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-console" ,rust-console-0.13)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-number-prefix" ,rust-number-prefix-0.3)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1.6)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.7)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://github.com/mitsuhiko/indicatif")
+    (synopsis "Progress bar and CLI reporting library for Rust")
+    (description
+     "This package provides a progress bar and CLI reporting library for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-inflate-0.4
   (package
     (name "rust-inflate")
