@@ -2918,6 +2918,33 @@ Lisp, featuring:
 (define-public ecl-cl-markup
   (sbcl-package->ecl-package sbcl-cl-markup))
 
+(define-public sbcl-cl-mustache
+  (package
+    (name "sbcl-cl-mustache")
+    (version "0.12.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/kanru/cl-mustache")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name "cl-mustache" version))
+      (sha256
+       (base32 "149xbb6wxq1napliwm9cv729hwcgfnjli6y8hingfixz7f10lhks"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/kanru/cl-mustache")
+    (synopsis "Common Lisp Mustache template renderer")
+    (description "This is a Common Lisp implementation for the Mustache
+template system.  More details on the standard are available at
+@url{https://mustache.github.io}.")
+    (license license:expat)))
+
+(define-public cl-mustache
+  (sbcl-package->cl-source-package sbcl-cl-mustache))
+
+(define-public ecl-cl-mustache
+  (sbcl-package->ecl-package sbcl-cl-mustache))
+
 (define-public sbcl-cl-css
   (let ((commit "8fe654c8f0cf95b300718101cce4feb517f78e2f"))
     (package
