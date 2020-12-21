@@ -10634,6 +10634,26 @@ crate.")
      "This package provides a fast multi-producer channel.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-flume-0.9
+  (package
+    (inherit rust-flume-0.10)
+    (name "rust-flume")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "flume" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ck1w9881848xjjk93nxqsvnxfp4xsaysxxn23a210bg2amsvsqv"))))
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-nanorand" ,rust-nanorand-0.4)
+        ("rust-spinning-top" ,rust-spinning-top-0.2))))))
+
 (define-public rust-fnv-1
   (package
     (name "rust-fnv")
