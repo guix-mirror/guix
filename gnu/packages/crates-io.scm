@@ -38152,6 +38152,30 @@ with webpki.")
      "This crate provides unsafe Rust bindings to the @code{wepoll} library.")
     (license license:mpl2.0)))
 
+(define-public rust-wepoll-sys-stjepang-1
+  (package
+    (name "rust-wepoll-sys-stjepang")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wepoll-sys-stjepang" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "138pxc8k6wayyywnjcpk5nhywk3vk6h4i39fj8khpjlhy81vppqz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true              ;missing "winsock.h"
+       #:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.53)
+        ("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/stjepang/wepoll-sys-stjepang")
+    (synopsis "Fork of @code{wepoll-sys} with stjepang's patches")
+    (description
+     "This crate provides Rust bindings to @code{wepoll}, generated
+using @code{bindgen}.")
+    (license license:mpl2.0)))
+
 (define-public rust-which-3
   (package
     (name "rust-which")
