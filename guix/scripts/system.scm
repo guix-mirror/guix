@@ -391,6 +391,7 @@ STORE is an open connection to the store."
          (params (first (profile-boot-parameters %system-profile
                                                  (list number))))
          (locale (boot-parameters-locale params))
+         (store-crypto-devices (boot-parameters-store-crypto-devices params))
          (store-directory-prefix
           (boot-parameters-store-directory-prefix params))
          (old-generations
@@ -406,6 +407,7 @@ STORE is an open connection to the store."
                      ((bootloader-configuration-file-generator bootloader)
                       bootloader-config entries
                       #:locale locale
+                      #:store-crypto-devices store-crypto-devices
                       #:store-directory-prefix store-directory-prefix
                       #:old-entries old-entries)))
            (drvs -> (list bootcfg)))
