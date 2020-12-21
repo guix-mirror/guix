@@ -13084,7 +13084,7 @@ standard printing of search results, similar to grep itself.")
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
-        ("rust-thread-local" ,rust-thread-local-1.0))))
+        ("rust-thread-local" ,rust-thread-local-1))))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Use Rust's regex library with the grep crate")
     (description
@@ -14614,7 +14614,7 @@ let} expressions.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-1)
         ("rust-same-file" ,rust-same-file-1.0)
-        ("rust-thread-local" ,rust-thread-local-1.0)
+        ("rust-thread-local" ,rust-thread-local-1)
         ("rust-walkdir" ,rust-walkdir-2)
         ("rust-winapi-util" ,rust-winapi-util-0.1))
        #:cargo-development-inputs
@@ -22244,7 +22244,7 @@ in pure Rust.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
-        ("rust-thread-local" ,rust-thread-local-1.0))))
+        ("rust-thread-local" ,rust-thread-local-1))))
     (native-inputs
      `(("pcre2" ,pcre2)
        ("pkg-config" ,pkg-config)))
@@ -26101,7 +26101,7 @@ functionality.")
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
-        ("rust-thread-local" ,rust-thread-local-1.0))
+        ("rust-thread-local" ,rust-thread-local-1))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
@@ -33917,7 +33917,7 @@ different for every thread.")
        (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
         ("rust-libc" ,rust-libc-0.2))))))
 
-(define-public rust-thread-local-1.0
+(define-public rust-thread-local-1
   (package
     (name "rust-thread-local")
     (version "1.0.1")
@@ -33941,7 +33941,7 @@ different for every thread.")
 
 (define-public rust-thread-local-0.3
   (package
-    (inherit rust-thread-local-1.0)
+    (inherit rust-thread-local-1)
     (name "rust-thread-local")
     (version "0.3.6")
     (source
