@@ -9489,8 +9489,35 @@ accessor functions on enums.")
 convert enum to u8 slice ref.")
     (license license:bsd-3)))
 
+(define-public rust-env-logger-0.8
+  (package
+    (name "rust-env-logger")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "env-logger" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07k6m6igz02g2b1v7nims7vd8azwxrav43xl14a6rjmxnikcnvpj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-humantime" ,rust-humantime-2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-termcolor" ,rust-termcolor-1))))
+    (home-page "https://github.com/sebasmagri/env_logger/")
+    (synopsis "Logging implementation for @code{log}")
+    (description
+     "This package provides a logging implementation for @code{log} which
+is configured via an environment variable.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-env-logger-0.7
   (package
+    (inherit rust-env-logger-0.8)
     (name "rust-env-logger")
     (version "0.7.1")
     (source
@@ -9502,7 +9529,6 @@ convert enum to u8 slice ref.")
        (sha256
         (base32
          "0djx8h8xfib43g5w94r1m1mkky5spcw4wblzgnhiyg5vnfxknls4"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -9510,13 +9536,7 @@ convert enum to u8 slice ref.")
         ("rust-humantime" ,rust-humantime-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
-        ("rust-termcolor" ,rust-termcolor-1))))
-    (home-page "https://github.com/sebasmagri/env_logger/")
-    (synopsis "Logging implementation for @code{log}")
-    (description
-     "This package provides a logging implementation for @code{log} which
-is configured via an environment variable.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-termcolor" ,rust-termcolor-1))))))
 
 (define-public rust-env-logger-0.6
   (package
