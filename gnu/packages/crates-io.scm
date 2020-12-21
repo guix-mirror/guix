@@ -1645,6 +1645,23 @@ crate.")
      "This package provides a task abstraction for building executors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-task-3
+  (package
+    (inherit rust-async-task-4)
+    (name "rust-async-task")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-task" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lrm7cm9dpashmkbqa8mvglbf85gadviqil7qnnrm0pjdqap4xy1"))))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-crossbeam" ,rust-crossbeam-0.7)
+        ("rust-futures" ,rust-futures-0.3))))))
+
 (define-public rust-async-task-1
   (package
     (inherit rust-async-task-4)
