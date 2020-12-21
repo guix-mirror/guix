@@ -36034,6 +36034,32 @@ with tracing (optional, enabled by the env-logger feature).
 @end itemize")
     (license license:expat)))
 
+(define-public rust-tracing-serde-0.1
+  (package
+    (name "rust-tracing-serde")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-serde" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12xjirg0b3cparjdhkd9pksrmv33gz7rdm4gfkvgk15v3x2flrgv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-tracing-core" ,rust-tracing-core-0.1))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Compatibility layer for serializing trace data with
+@code{serde}")
+    (description
+     "This package provides a compatibility layer for serializing trace data
+with @code{serde}.")
+    (license license:expat)))
+
 (define-public rust-tracing-subscriber-0.1
   (package
     (name "rust-tracing-subscriber")
