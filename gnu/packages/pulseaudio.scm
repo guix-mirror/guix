@@ -522,7 +522,7 @@ module-gsettings is loaded in the sound server.")
 (define-public rnnoise
   (package
     (name "rnnoise")
-    (version "0.9")
+    (version "0.91")
     (source
      (origin
        (method git-fetch)
@@ -531,7 +531,7 @@ module-gsettings is loaded in the sound server.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18bq5b50xw3d4r1ildinafpg3isb9y216430h4mm9wr3ir7h76a7"))))
+        (base32 "11pwisbcks7g0mdgcrrv49v3ci1l6m26bbb7f67xz4pr1hai5dwc"))))
     (build-system cmake-build-system)
     (arguments
      ;; No tests.
@@ -555,7 +555,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
 (define-public noisetorch
   (package
     (name "noisetorch")
-    (version "0.7.2-beta")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -564,7 +564,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06xlqjma8h7lcnqgc9226blps6m9dp487hk71lslfxj0jkay548k"))))
+        (base32 "115sq4waq048bv82lnq5sblf62m50yvyakx7x06qq359v7qf5ji1"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lawl/NoiseTorch"

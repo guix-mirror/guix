@@ -26,7 +26,10 @@
   #:use-module (guix combinators)
   #:use-module (guix config)
   #:use-module (guix records)
-  #:use-module ((guix serialization) #:select (restore-file))
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
+  #:use-module ((guix serialization) #:select (restore-file dump-file))
+  #:autoload   (guix store deduplication) (dump-file/deduplicate)
   #:autoload   (guix scripts discover) (read-substitute-urls)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -255,6 +258,18 @@ connection (typically PORT) is kept open once data has been fetched from URI."
   ;; See <https://lists.gnu.org/archive/html/guix-devel/2014-02/msg00340.html>
   ;; for more information.
   (contents     narinfo-contents))
+
+(define (narinfo-hash-algorithm+value narinfo)
+  "Return two values: the hash algorithm used by NARINFO and its value as a
+bytevector."
+  (match (string-tokenize (narinfo-hash narinfo)
+                          (char-set-complement (char-set #\:)))
+    ((algorithm base32)
+     (values (lookup-hash-algorithm (string->symbol algorithm))
+             (nix-base32-string->bytevector base32)))
+    (_
+     (raise (formatted-message
+             (G_ "invalid narinfo hash: ~s") (narinfo-hash narinfo))))))
 
 (define (narinfo-hash->sha256 hash)
   "If the string HASH denotes a sha256 hash, return it as a bytevector.
@@ -1031,12 +1046,26 @@ one.  Return #f if URI's scheme is 'file' or #f."
   (call-with-cached-connection uri (lambda (port) exp ...)))
 
 (define* (process-substitution store-item destination
-                               #:key cache-urls acl print-build-trace?)
+                               #:key cache-urls acl
+                               deduplicate? print-build-trace?)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
-DESTINATION as a nar file.  Verify the substitute against ACL."
+DESTINATION as a nar file.  Verify the substitute against ACL, and verify its
+hash against what appears in the narinfo.  When DEDUPLICATE? is true, and if
+DESTINATION is in the store, deduplicate its files.  Print a status line on
+the current output port."
   (define narinfo
     (lookup-narinfo cache-urls store-item
                     (cut valid-narinfo? <> acl)))
+
+  (define destination-in-store?
+    (string-prefix? (string-append (%store-prefix) "/")
+                    destination))
+
+  (define (dump-file/deduplicate* . args)
+    ;; Make sure deduplication looks at the right store (necessary in test
+    ;; environments).
+    (apply dump-file/deduplicate
+           (append args (list #:store (%store-prefix)))))
 
   (unless narinfo
     (leave (G_ "no valid substitute for '~a'~%")
@@ -1044,9 +1073,6 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
 
   (let-values (((uri compression file-size)
                 (narinfo-best-uri narinfo)))
-    ;; Tell the daemon what the expected hash of the Nar itself is.
-    (format #t "~a~%" (narinfo-hash narinfo))
-
     (unless print-build-trace?
       (format (current-error-port)
               (G_ "Downloading ~a...~%") (uri->string uri)))
@@ -1079,9 +1105,20 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                    ;; closed here, while the child process doing the
                    ;; reporting will close it upon exit.
                    (decompressed-port (string->symbol compression)
-                                      progress)))
+                                      progress))
+
+                  ;; Compute the actual nar hash as we read it.
+                  ((algorithm expected)
+                   (narinfo-hash-algorithm+value narinfo))
+                  ((hashed get-hash)
+                   (open-hash-input-port algorithm input)))
       ;; Unpack the Nar at INPUT into DESTINATION.
-      (restore-file input destination)
+      (restore-file hashed destination
+                    #:dump-file (if (and destination-in-store?
+                                         deduplicate?)
+                                    dump-file/deduplicate*
+                                    dump-file))
+      (close-port hashed)
       (close-port input)
 
       ;; Wait for the reporter to finish.
@@ -1091,8 +1128,17 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
       ;; one to visually separate substitutions.
       (display "\n\n" (current-error-port))
 
-      ;; Tell the daemon that we're done.
-      (display "success\n" (current-output-port)))))
+      ;; Check whether we got the data announced in NARINFO.
+      (let ((actual (get-hash)))
+        (if (bytevector=? actual expected)
+            ;; Tell the daemon that we're done.
+            (format (current-output-port) "success ~a ~a~%"
+                    (narinfo-hash narinfo) (narinfo-size narinfo))
+            ;; The actual data has a different hash than that in NARINFO.
+            (format (current-output-port) "hash-mismatch ~a ~a ~a~%"
+                    (hash-algorithm-name algorithm)
+                    (bytevector->nix-base32-string expected)
+                    (bytevector->nix-base32-string actual)))))))
 
 
 ;;;
@@ -1219,6 +1265,9 @@ default value."
       ((= string->number number) (> number 0))
       (_ #f)))
 
+  (define deduplicate?
+    (find-daemon-option "deduplicate"))
+
   ;; The daemon's agent code opens file descriptor 4 for us and this is where
   ;; stderr should go.
   (parameterize ((current-error-port (if (%error-to-file-descriptor-4?)
@@ -1278,6 +1327,7 @@ default value."
                  (process-substitution store-path destination
                                        #:cache-urls (substitute-urls)
                                        #:acl (current-acl)
+                                       #:deduplicate? deduplicate?
                                        #:print-build-trace?
                                        print-build-trace?)
                  (loop))))))

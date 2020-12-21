@@ -6,7 +6,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
@@ -36,18 +36,27 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages regex)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages ninja)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -90,19 +99,46 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.4.4")
+    (version "3.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/rizsotto/Bear")
                     (commit version)))
               (file-name (git-file-name name version))
+              (patches (search-patches
+                        "bear-disable-preinstall-tests.patch"))
               (sha256
                (base32
-                "184dqjcpxiwcfziyi67zzran2c4fal1r3j8nhjdjadcmfxf4389d"))))
+                "15r22sbk5bibrhf54lf0shiqw1gnsik24fr5as96w3hnj6iahgwn"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-build-environment
+                    (lambda _
+                      (setenv "CC" "gcc")
+                      #t))
+                  ;; TODO: Test Configuration is Incomplete
+                  (replace 'check
+                    (lambda _
+                      (invoke "ctest"))))))
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("c-ares" ,c-ares)
+       ("fmt" ,fmt)
+       ("grpc" ,grpc)
+       ("json-modern-cxx" ,json-modern-cxx)
+       ("protobuf" ,protobuf)
+       ("python" ,python-wrapper)
+       ("re2" ,re2)
+       ("spdlog" ,spdlog)))
+    (native-inputs
+     `(("abseil-cpp" ,abseil-cpp)
+       ("gcc-9" ,gcc-9) ; for <filesystem>, #44896
+       ("googletest" ,googletest)
+       ("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)
+       ("python-lit" ,python-lit)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/rizsotto/Bear")
     (synopsis "Tool for generating a compilation database")
     (description "A JSON compilation database is used in the Clang project to

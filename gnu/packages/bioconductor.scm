@@ -50,6 +50,33 @@
 
 ;;; Annotations
 
+(define-public r-org-eck12-eg-db
+  (package
+    (name "r-org-eck12-eg-db")
+    (version "3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "org.EcK12.eg.db" version 'annotation))
+       (sha256
+        (base32 "0c4p6jr83k0gm6pvn760yr8xf33wggrfcr6fg7a42a96bcf817gs"))))
+    (properties
+     `((upstream-name . "org.EcK12.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/org.EcK12.eg.db")
+    (synopsis "Genome wide annotation for E coli strain K12")
+    (description
+     "This package provides genome wide annotation for E coli strain K12,
+primarily based on mapping using Entrez Gene identifiers.  Entrez Gene is
+National Center for Biotechnology Information (NCBI)’s database for
+gene-specific information.  Entrez Gene maintains records from genomes which
+have been completely sequenced, which have an active research community to
+submit gene-specific information, or which are scheduled for intense sequence
+analysis.")
+    (license license:artistic2.0)))
+
 (define-public r-reactome-db
   (package
     (name "r-reactome-db")
@@ -71,35 +98,6 @@
      "This package provides a set of annotation maps for the REACTOME
 database, assembled using data from REACTOME.")
     (license license:cc-by4.0)))
-
-(define-public r-bluster
-  (package
-   (name "r-bluster")
-   (version "1.0.0")
-   (source (origin
-            (method url-fetch)
-            (uri (bioconductor-uri "bluster" version))
-            (sha256
-             (base32
-              "0izrf82m5znyrgai5y5jss4k2brabh4ajxdvnlwwc92l5bw7jp61"))))
-   (properties `((upstream-name . "bluster")))
-   (build-system r-build-system)
-   (propagated-inputs
-    `(("r-biocneighbors" ,r-biocneighbors)
-      ("r-biocparallel" ,r-biocparallel)
-      ("r-igraph" ,r-igraph)
-      ("r-matrix" ,r-matrix)
-      ("r-rcpp" ,r-rcpp)
-      ("r-s4vectors" ,r-s4vectors)))
-   (native-inputs
-    `(("r-knitr" ,r-knitr)))
-   (home-page "https://bioconductor.org/packages/bluster")
-   (synopsis "Clustering algorithms for Bioconductor")
-   (description"This package wraps common clustering algorithms in an easily
-extended S4 framework.  Backends are implemented for hierarchical, k-means
-and graph-based clustering.  Several utilities are also provided to compare
-and evaluate clustering results.")
-   (license license:gpl3)))
 
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
@@ -571,30 +569,6 @@ as provided by UCSC (hg38, Dec. 2013) and stored in Biostrings objects.")
      "This package exposes an annotation database generated from Ensembl.")
     (license license:artistic2.0)))
 
-(define-public r-genelendatabase
-  (package
-    (name "r-genelendatabase")
-    (version "1.18.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
-       (sha256
-        (base32
-         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
-    (properties
-     `((upstream-name . "geneLenDataBase")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-rtracklayer" ,r-rtracklayer)
-       ("r-genomicfeatures" ,r-genomicfeatures)))
-    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
-    (synopsis "Lengths of mRNA transcripts for a number of genomes")
-    (description
-     "This package provides the lengths of mRNA transcripts for a number of
-genomes and gene ID formats, largely based on the UCSC table browser.")
-    (license license:lgpl2.0+)))
-
 (define-public r-txdb-hsapiens-ucsc-hg19-knowngene
   (package
     (name "r-txdb-hsapiens-ucsc-hg19-knowngene")
@@ -774,103 +748,6 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
-(define-public r-ideoviz
-  (package
-    (name "r-ideoviz")
-    (version "1.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "IdeoViz" version))
-              (sha256
-               (base32
-                "1k5c0skr6pvpcvkak9f0a088w5wsx4fl3jb9a76gyyni4nkj7djq"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-iranges" ,r-iranges)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-genomeinfodb" ,r-genomeinfodb)))
-    (home-page "https://bioconductor.org/packages/IdeoViz/")
-    (synopsis "Plots data along a chromosomal ideogram")
-    (description "This package provides functions to plot data associated with
-arbitrary genomic intervals along chromosomal ideogram.")
-    (license license:gpl2)))
-
-;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
-;; from Bioconductor.
-(define-public r-deconstructsigs
-  (package
-    (name "r-deconstructsigs")
-    (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "deconstructSigs" version))
-              (sha256
-               (base32
-                "014x0nb23jb98666kaav2phkvmkr38pi38jv0dqd4jv7zp0gdf1a"))))
-    (properties
-     `((upstream-name . "deconstructSigs")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-bsgenome" ,r-bsgenome)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-reshape2" ,r-reshape2)))
-    (home-page "https://github.com/raerose01/deconstructSigs")
-    (synopsis "Identifies signatures present in a tumor sample")
-    (description "This package takes sample information in the form of the
-fraction of mutations in each of 96 trinucleotide contexts and identifies
-the weighted combination of published signatures that, when summed, most
-closely reconstructs the mutational profile.")
-    (license license:gpl2+)))
-
-;; This is a CRAN package, but it depends on Bioconductor packages.
-(define-public r-nmf
-  (package
-    (name "r-nmf")
-    (version "0.23.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "NMF" version))
-       (sha256
-        (base32
-         "0ls7q9yc9l1z10jphq5a11wkfgcxc3gm3sfjj376zx3vnc0wl30g"))))
-    (properties `((upstream-name . "NMF")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-cluster" ,r-cluster)
-       ("r-biobase" ,r-biobase)
-       ("r-biocmanager" ,r-biocmanager)
-       ("r-bigmemory" ,r-bigmemory) ; suggested
-       ("r-synchronicity" ,r-synchronicity) ; suggested
-       ("r-colorspace" ,r-colorspace)
-       ("r-digest" ,r-digest)
-       ("r-doparallel" ,r-doparallel)
-       ("r-foreach" ,r-foreach)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-gridbase" ,r-gridbase)
-       ("r-pkgmaker" ,r-pkgmaker)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-registry" ,r-registry)
-       ("r-reshape2" ,r-reshape2)
-       ("r-rngtools" ,r-rngtools)
-       ("r-stringr" ,r-stringr)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "http://renozao.github.io/NMF")
-    (synopsis "Algorithms and framework for nonnegative matrix factorization")
-    (description
-     "This package provides a framework to perform Non-negative Matrix
-Factorization (NMF).  The package implements a set of already published
-algorithms and seeding methods, and provides a framework to test, develop and
-plug new or custom algorithms.  Most of the built-in algorithms have been
-optimized in C++, and the main interface function provides an easy way of
-performing parallel computations on multicore machines.")
-    (license license:gpl2+)))
-
 (define-public r-do-db
   (package
     (name "r-do-db")
@@ -892,32 +769,6 @@ performing parallel computations on multicore machines.")
      "This package provides a set of annotation maps describing the entire
 Disease Ontology.")
     (license license:artistic2.0)))
-
-(define-public r-pasilla
-  (package
-    (name "r-pasilla")
-    (version "1.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://bioconductor.org/packages/release/data/experiment"
-                    "/src/contrib/pasilla_" version ".tar.gz"))
-              (sha256
-               (base32
-                "0h124i2fb2lbj2k48zzf1n7ldqa471bs26fbd9vw50299aqx28x0"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocstyle" ,r-biocstyle)
-       ("r-dexseq" ,r-dexseq)
-       ("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)))
-    (home-page "https://www.bioconductor.org/packages/pasilla/")
-    (synopsis "Data package with per-exon and per-gene read counts")
-    (description "This package provides per-exon and per-gene read counts
-computed for selected genes from RNA-seq data that were presented in the
-article 'Conservation of an RNA regulatory map between Drosophila and mammals'
-by Brooks et al., Genome Research 2011.")
-    (license license:lgpl2.1+)))
 
 (define-public r-pfam-db
   (package
@@ -1027,6 +878,56 @@ All datasets are restricted to protein coding genes.")
 from Illumina 450k methylation arrays.")
     (license license:artistic2.0)))
 
+(define-public r-genelendatabase
+  (package
+    (name "r-genelendatabase")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geneLenDataBase" version 'experiment))
+       (sha256
+        (base32
+         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
+    (properties
+     `((upstream-name . "geneLenDataBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
+    (synopsis "Lengths of mRNA transcripts for a number of genomes")
+    (description
+     "This package provides the lengths of mRNA transcripts for a number of
+genomes and gene ID formats, largely based on the UCSC table browser.")
+    (license license:lgpl2.0+)))
+
+(define-public r-pasilla
+  (package
+    (name "r-pasilla")
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://bioconductor.org/packages/release/data/experiment"
+                    "/src/contrib/pasilla_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h124i2fb2lbj2k48zzf1n7ldqa471bs26fbd9vw50299aqx28x0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocstyle" ,r-biocstyle)
+       ("r-dexseq" ,r-dexseq)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://www.bioconductor.org/packages/pasilla/")
+    (synopsis "Data package with per-exon and per-gene read counts")
+    (description "This package provides per-exon and per-gene read counts
+computed for selected genes from RNA-seq data that were presented in the
+article 'Conservation of an RNA regulatory map between Drosophila and mammals'
+by Brooks et al., Genome Research 2011.")
+    (license license:lgpl2.1+)))
+
 (define-public r-hsmmsinglecell
   (package
     (name "r-hsmmsinglecell")
@@ -1103,62 +1004,31 @@ examples' of Affymetrix data, unlike the artificial examples included in the
 package @code{affy}.")
     (license license:gpl2+)))
 
-(define-public r-coverageview
+(define-public r-gagedata
   (package
-    (name "r-coverageview")
-    (version "1.28.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "CoverageView" version))
-              (sha256
-               (base32
-                "1k89gzqhd8ca8s9gk5bfzringnc5nayqbwzwwy35fls1cg96qmsj"))))
+    (name "r-gagedata")
+    (version "2.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gageData" version 'experiment))
+       (sha256
+        (base32 "16lmnvmbykvbdgwyx7r2jc217gb9nidn81860v5kri99g97j4jdn"))))
+    (properties `((upstream-name . "gageData")))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-s4vectors" ,r-s4vectors)
-       ("r-iranges" ,r-iranges)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-genomicalignments" ,r-genomicalignments)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-rsamtools" ,r-rsamtools)))
-    (home-page "https://bioconductor.org/packages/CoverageView/")
-    (synopsis "Coverage visualization package for R")
-    (description "This package provides a framework for the visualization of
-genome coverage profiles.  It can be used for ChIP-seq experiments, but it can
-be also used for genome-wide nucleosome positioning experiments or other
-experiment types where it is important to have a framework in order to inspect
-how the coverage distributed across the genome.")
-    (license license:artistic2.0)))
-
-(define-public r-cummerbund
-  (package
-   (name "r-cummerbund")
-   (version "2.32.0")
-   (source (origin
-             (method url-fetch)
-             (uri (bioconductor-uri "cummeRbund" version))
-             (sha256
-              (base32
-               "1x7rby50api1c66al6a0i92q82ydjmh3h8l2k7hj0ffpn8c5pdgj"))))
-   (build-system r-build-system)
-   (propagated-inputs
-    `(("r-biobase" ,r-biobase)
-      ("r-biocgenerics" ,r-biocgenerics)
-      ("r-fastcluster" ,r-fastcluster)
-      ("r-ggplot2" ,r-ggplot2)
-      ("r-gviz" ,r-gviz)
-      ("r-plyr" ,r-plyr)
-      ("r-reshape2" ,r-reshape2)
-      ("r-rsqlite" ,r-rsqlite)
-      ("r-rtracklayer" ,r-rtracklayer)
-      ("r-s4vectors" ,r-s4vectors)))
-   (home-page "https://bioconductor.org/packages/cummeRbund/")
-   (synopsis "Analyze Cufflinks high-throughput sequencing data")
-   (description "This package allows for persistent storage, access,
-exploration, and manipulation of Cufflinks high-throughput sequencing
-data.  In addition, provides numerous plotting functions for commonly
-used visualizations.")
-   (license license:artistic2.0)))
+    (home-page "https://bioconductor.org/packages/gageData")
+    (synopsis "Auxillary data for gage package")
+    (description
+     "This is a supportive data package for the software package @code{gage}.
+However, the data supplied here are also useful for gene set or pathway
+analysis or microarray data analysis in general.  In this package, we provide
+two demo microarray dataset: GSE16873 (a breast cancer dataset from GEO) and
+BMP6 (originally published as an demo dataset for GAGE, also registered as
+GSE13604 in GEO).  This package also includes commonly used gene set data based
+on KEGG pathways and GO terms for major research species, including human,
+mouse, rat and budding yeast.  Mapping data between common gene IDs for budding
+yeast are also included.")
+    (license license:gpl2+)))
 
 (define-public r-curatedtcgadata
   (package
@@ -1235,6 +1105,189 @@ of Bioconductor.")
      "This package provides S4 generic functions needed by many Bioconductor
 packages.")
     (license license:artistic2.0)))
+
+(define-public r-coverageview
+  (package
+    (name "r-coverageview")
+    (version "1.28.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "CoverageView" version))
+              (sha256
+               (base32
+                "1k89gzqhd8ca8s9gk5bfzringnc5nayqbwzwwy35fls1cg96qmsj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rsamtools" ,r-rsamtools)))
+    (home-page "https://bioconductor.org/packages/CoverageView/")
+    (synopsis "Coverage visualization package for R")
+    (description "This package provides a framework for the visualization of
+genome coverage profiles.  It can be used for ChIP-seq experiments, but it can
+be also used for genome-wide nucleosome positioning experiments or other
+experiment types where it is important to have a framework in order to inspect
+how the coverage distributed across the genome.")
+    (license license:artistic2.0)))
+
+(define-public r-cummerbund
+  (package
+   (name "r-cummerbund")
+   (version "2.32.0")
+   (source (origin
+             (method url-fetch)
+             (uri (bioconductor-uri "cummeRbund" version))
+             (sha256
+              (base32
+               "1x7rby50api1c66al6a0i92q82ydjmh3h8l2k7hj0ffpn8c5pdgj"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biobase" ,r-biobase)
+      ("r-biocgenerics" ,r-biocgenerics)
+      ("r-fastcluster" ,r-fastcluster)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-gviz" ,r-gviz)
+      ("r-plyr" ,r-plyr)
+      ("r-reshape2" ,r-reshape2)
+      ("r-rsqlite" ,r-rsqlite)
+      ("r-rtracklayer" ,r-rtracklayer)
+      ("r-s4vectors" ,r-s4vectors)))
+   (home-page "https://bioconductor.org/packages/cummeRbund/")
+   (synopsis "Analyze Cufflinks high-throughput sequencing data")
+   (description "This package allows for persistent storage, access,
+exploration, and manipulation of Cufflinks high-throughput sequencing
+data.  In addition, provides numerous plotting functions for commonly
+used visualizations.")
+   (license license:artistic2.0)))
+
+(define-public r-bluster
+  (package
+   (name "r-bluster")
+   (version "1.0.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "bluster" version))
+            (sha256
+             (base32
+              "0izrf82m5znyrgai5y5jss4k2brabh4ajxdvnlwwc92l5bw7jp61"))))
+   (properties `((upstream-name . "bluster")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biocneighbors" ,r-biocneighbors)
+      ("r-biocparallel" ,r-biocparallel)
+      ("r-igraph" ,r-igraph)
+      ("r-matrix" ,r-matrix)
+      ("r-rcpp" ,r-rcpp)
+      ("r-s4vectors" ,r-s4vectors)))
+   (native-inputs
+    `(("r-knitr" ,r-knitr)))
+   (home-page "https://bioconductor.org/packages/bluster")
+   (synopsis "Clustering algorithms for Bioconductor")
+   (description"This package wraps common clustering algorithms in an easily
+extended S4 framework.  Backends are implemented for hierarchical, k-means
+and graph-based clustering.  Several utilities are also provided to compare
+and evaluate clustering results.")
+   (license license:gpl3)))
+
+(define-public r-ideoviz
+  (package
+    (name "r-ideoviz")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "IdeoViz" version))
+              (sha256
+               (base32
+                "1k5c0skr6pvpcvkak9f0a088w5wsx4fl3jb9a76gyyni4nkj7djq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomeinfodb" ,r-genomeinfodb)))
+    (home-page "https://bioconductor.org/packages/IdeoViz/")
+    (synopsis "Plots data along a chromosomal ideogram")
+    (description "This package provides functions to plot data associated with
+arbitrary genomic intervals along chromosomal ideogram.")
+    (license license:gpl2)))
+
+;; This is a CRAN package, but it depends on r-bsgenome-hsapiens-ucsc-hg19
+;; from Bioconductor.
+(define-public r-deconstructsigs
+  (package
+    (name "r-deconstructsigs")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "deconstructSigs" version))
+              (sha256
+               (base32
+                "014x0nb23jb98666kaav2phkvmkr38pi38jv0dqd4jv7zp0gdf1a"))))
+    (properties
+     `((upstream-name . "deconstructSigs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/raerose01/deconstructSigs")
+    (synopsis "Identifies signatures present in a tumor sample")
+    (description "This package takes sample information in the form of the
+fraction of mutations in each of 96 trinucleotide contexts and identifies
+the weighted combination of published signatures that, when summed, most
+closely reconstructs the mutational profile.")
+    (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on Bioconductor packages.
+(define-public r-nmf
+  (package
+    (name "r-nmf")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NMF" version))
+       (sha256
+        (base32
+         "0ls7q9yc9l1z10jphq5a11wkfgcxc3gm3sfjj376zx3vnc0wl30g"))))
+    (properties `((upstream-name . "NMF")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-bigmemory" ,r-bigmemory) ; suggested
+       ("r-synchronicity" ,r-synchronicity) ; suggested
+       ("r-colorspace" ,r-colorspace)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-pkgmaker" ,r-pkgmaker)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-registry" ,r-registry)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rngtools" ,r-rngtools)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://renozao.github.io/NMF")
+    (synopsis "Algorithms and framework for nonnegative matrix factorization")
+    (description
+     "This package provides a framework to perform Non-negative Matrix
+Factorization (NMF).  The package implements a set of already published
+algorithms and seeding methods, and provides a framework to test, develop and
+plug new or custom algorithms.  Most of the built-in algorithms have been
+optimized in C++, and the main interface function provides an easy way of
+performing parallel computations on multicore machines.")
+    (license license:gpl2+)))
 
 (define-public r-affycomp
   (package
@@ -9187,3 +9240,63 @@ CATALYST (Cytometry dATa anALYSis Tools) to provide a pipeline for
 preprocessing of cytometry data, including i) normalization using bead
 standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
     (license license:gpl2+)))
+
+(define-public r-kegggraph
+  (package
+    (name "r-kegggraph")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "KEGGgraph" version))
+       (sha256
+        (base32 "1h293hn02ysm923bh9gxk87xv663xiqchqcvpaxpla9c3yrgkx2v"))))
+    (properties `((upstream-name . "KEGGgraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-graph" ,r-graph)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/KEGGgraph")
+    (synopsis "Graph approach to Kegg Pathway database in R and Bioconductor")
+    (description
+     "@code{r-kegggraph} is an interface between Kegg Pathway database and graph
+object as well as a collection of tools to analyze, dissect and visualize these
+graphs.  It parses the regularly updated kgml (Kegg XML) files into graph models
+maintaining all essential pathway attributes.  The package offers
+functionalities including parsing, graph operation, visualization and etc.")
+    (license license:gpl2+)))
+
+(define-public r-pathview
+  (package
+    (name "r-pathview")
+    (version "1.30.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "pathview" version))
+       (sha256
+        (base32 "11fisiksw1y64ii9q8p2znyp9w8mlqzgiaacmycw59rngkjlmbs4"))))
+    (properties `((upstream-name . "pathview")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-graph" ,r-graph)
+       ("r-kegggraph" ,r-kegggraph)
+       ("r-keggrest" ,r-keggrest)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-png" ,r-png)
+       ("r-rgraphviz" ,r-rgraphviz)
+       ("r-xml" ,r-xml)))
+    (home-page "https://pathview.uncc.edu/")
+    (synopsis "Tool set for pathway based data integration and visualization")
+    (description
+     "@code{r-pathview} is a tool set for pathway based data integration and
+visualization.  It maps and renders a wide variety of biological data on
+relevant pathway graphs.  All users need is to supply their data and specify
+the target pathway.  This package automatically downloads the pathway graph
+data, parses the data file, maps user data to the pathway, and render pathway
+graph with the mapped data.  In addition, @code{r-pathview} also seamlessly
+integrates with pathway and gene set (enrichment) analysis tools for
+large-scale and fully automated analysis.")
+    (license license:gpl3+)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
 (test-begin "store-deduplication")
@@ -94,7 +95,7 @@
          (lambda ()
            (set! link (lambda (old new)
                         (set! links (+ links 1))
-                        (if (<= links 3)
+                        (if (<= links 4)
                             (true-link old new)
                             (throw 'system-error "link" "~A" '("Whaaat?!")
                                    (list ENOSPC))))))
@@ -105,5 +106,20 @@
 
        (cons (apply = (map (compose stat:ino stat) identical))
              (map (compose stat:nlink stat) identical))))))
+
+(test-assert "copy-file/deduplicate"
+  (call-with-temporary-directory
+   (lambda (store)
+     (let ((source (search-path %load-path "gnu/packages/emacs-xyz.scm")))
+       (for-each (lambda (target)
+                   (copy-file/deduplicate source
+                                          (string-append store target)
+                                          #:store store))
+                 '("/a" "/b" "/c"))
+       (and (directory-exists? (string-append store "/.links"))
+            (file=? source (string-append store "/a"))
+            (apply = (map (compose stat:ino stat
+                                   (cut string-append store <>))
+                          '("/a" "/b" "/c"))))))))
 
 (test-end "store-deduplication")

@@ -32,6 +32,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages embedded)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
@@ -39,8 +40,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages sdcc))
+  #:use-module (gnu packages qt))
 
 (define-public libserialport
   (package

@@ -29,7 +29,10 @@
   #:use-module (guix ui)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
-  #:autoload   (guix store database) (register-path)
+  #:autoload   (guix base16) (bytevector->base16-string)
+  #:autoload   (guix store database)
+               (sqlite-register store-database-file call-with-database)
+  #:autoload   (guix build store-copy) (copy-store-item)
   #:use-module (guix describe)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
@@ -129,12 +132,11 @@ BODY..., and restore them."
   (store-lift topologically-sorted))
 
 
-(define* (copy-item item references target
+(define* (copy-item item info target db
                     #:key (log-port (current-error-port)))
-  "Copy ITEM to the store under root directory TARGET and register it with
-REFERENCES as its set of references."
-  (let ((dest  (string-append target item))
-        (state (string-append target "/var/guix")))
+  "Copy ITEM to the store under root directory TARGET and populate DB with the
+given INFO, a <path-info> record."
+  (let ((dest (string-append target item)))
     (format log-port "copying '~a'...~%" item)
 
     ;; Remove DEST if it exists to make sure that (1) we do not fail badly
@@ -147,44 +149,48 @@ REFERENCES as its set of references."
                             #:directories? #t))
       (delete-file-recursively dest))
 
-    (copy-recursively item dest
-                      #:log (%make-void-port "w"))
+    (copy-store-item item target
+                     #:deduplicate? #t)
 
-    ;; Register ITEM; as a side-effect, it resets timestamps, etc.
-    ;; Explicitly use "TARGET/var/guix" as the state directory, to avoid
-    ;; reproducing the user's current settings; see
-    ;; <http://bugs.gnu.org/18049>.
-    (unless (register-path item
-                           #:prefix target
-                           #:state-directory state
-                           #:references references)
-      (leave (G_ "failed to register '~a' under '~a'~%")
-             item target))))
+    (sqlite-register db
+                     #:path item
+                     #:references (path-info-references info)
+                     #:deriver (path-info-deriver info)
+                     #:hash (string-append
+                             "sha256:"
+                             (bytevector->base16-string (path-info-hash info)))
+                     #:nar-size (path-info-nar-size info))))
 
 (define* (copy-closure item target
                        #:key (log-port (current-error-port)))
   "Copy ITEM and all its dependencies to the store under root directory
 TARGET, and register them."
   (mlet* %store-monad ((to-copy (topologically-sorted* (list item)))
-                       (refs    (mapm %store-monad references* to-copy))
-                       (info    (mapm %store-monad query-path-info*
-                                      (delete-duplicates
-                                       (append to-copy (concatenate refs)))))
+                       (info    (mapm %store-monad query-path-info* to-copy))
                        (size -> (reduce + 0 (map path-info-nar-size info))))
     (define progress-bar
       (progress-reporter/bar (length to-copy)
                              (format #f (G_ "copying to '~a'...")
                                      target)))
 
+    (define state
+      (string-append target "/var/guix"))
+
     (check-available-space size target)
 
-    (call-with-progress-reporter progress-bar
-      (lambda (report)
-        (let ((void (%make-void-port "w")))
-          (for-each (lambda (item refs)
-                      (copy-item item refs target #:log-port void)
-                      (report))
-                    to-copy refs))))
+    ;; Explicitly use "TARGET/var/guix" as the state directory to avoid
+    ;; reproducing the user's current settings; see
+    ;; <http://bugs.gnu.org/18049>.
+    (call-with-database (store-database-file #:prefix target
+                                             #:state-directory state)
+      (lambda (db)
+        (call-with-progress-reporter progress-bar
+          (lambda (report)
+            (let ((void (%make-void-port "w")))
+              (for-each (lambda (item info)
+                          (copy-item item info target db #:log-port void)
+                          (report))
+                        to-copy info))))))
 
     (return *unspecified*)))
 
@@ -385,6 +391,7 @@ STORE is an open connection to the store."
          (params (first (profile-boot-parameters %system-profile
                                                  (list number))))
          (locale (boot-parameters-locale params))
+         (store-crypto-devices (boot-parameters-store-crypto-devices params))
          (store-directory-prefix
           (boot-parameters-store-directory-prefix params))
          (old-generations
@@ -400,6 +407,7 @@ STORE is an open connection to the store."
                      ((bootloader-configuration-file-generator bootloader)
                       bootloader-config entries
                       #:locale locale
+                      #:store-crypto-devices store-crypto-devices
                       #:store-directory-prefix store-directory-prefix
                       #:old-entries old-entries)))
            (drvs -> (list bootcfg)))

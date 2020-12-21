@@ -190,7 +190,7 @@ of a larger interface.")
     (propagated-inputs
      ;; Propagated to satisfy ‘babl.pc’.
      `(("lcms" ,lcms)))
-    (home-page "http://gegl.org/babl/")
+    (home-page "https://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
      "Babl is a dynamic, any-to-any pixel format translation library.

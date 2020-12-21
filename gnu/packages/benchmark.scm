@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -40,6 +42,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages storage)
   #:use-module (ice-9 match))
@@ -267,3 +270,66 @@ benchmark how your file systems perform with respect to data read and write
 speed, the number of seeks that can be performed per second, and the number of
 file metadata operations that can be performed per second.")
     (license license:gpl2)))   ;GPL 2 only, see copyright.txt
+
+(define-public python-locust
+  (package
+    (name "python-locust")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "locust" version))
+       (sha256
+        (base32
+         "1q2nza37fwsqf8qdmisfz6bmjpss90shi1bajrclf6gkbslhryxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'extend-PATH
+           ;; Add the 'locust' script to PATH, which is used in the test
+           ;; suite.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PATH" (string-append out "/bin:"
+                                             (getenv "PATH"))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"
+                     "-k" (string-join
+                           (list
+                            ;; These tests return "non-zero exit status 1".
+                            "not test_default_headless_spawn_options"
+                            "not test_default_headless_spawn_options_with_shape"
+                            "not test_headless_spawn_options_wo_run_time"
+                            ;; This test depends on networking.
+                            "not test_web_options"
+                            ;; This test fails because of the warning "System open
+                            ;; file limit '1024' is below minimum setting '10000'".
+                            "not test_skip_logging") " and "))
+             #t)))))
+    (propagated-inputs
+     `(("python-configargparse" ,python-configargparse)
+       ("python-flask" ,python-flask)
+       ("python-flask-basicauth" ,python-flask-basicauth)
+       ("python-gevent" ,python-gevent)
+       ("python-geventhttpclient" ,python-geventhttpclient)
+       ("python-msgpack" ,python-msgpack)
+       ("python-psutil" ,python-psutil)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests" ,python-requests)
+       ("python-werkzeug" ,python-werkzeug)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyquery" ,python-pyquery)
+       ("python-pytest" ,python-pytest))) ;for more easily skipping tests
+    (home-page "https://locust.io/")
+    (synopsis "Distributed load testing framework")
+    (description "Locust is a performance testing tool that aims to be easy to
+use, scriptable and scalable.  The test scenarios are described in plain
+Python.  It provides a web-based user interface to visualize the results in
+real-time, but can also be run non-interactively.  Locust is primarily geared
+toward testing HTTP-based applications or services, but it can be customized to
+test any system or protocol.")
+    (license license:expat)))

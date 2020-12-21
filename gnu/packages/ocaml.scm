@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5859,3 +5860,48 @@ LablGL), gnomecanvas, gnomeui, gtksourceview, gtkspell, libglade (and it can
 generate OCaml code from .glade files), libpanel, librsvg and quartz.")
     ;; Version 2 only, with linking exception.
     (license license:lgpl2.0)))
+
+(define-public ocaml-reactivedata
+  ;; Future releases will use dune.
+  (package
+    (name "ocaml-reactivedata")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ocsigen/reactiveData")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0l5z0fsckqkywjbn2nwy3s55h85yx8scc4hq9qzr9ig3hrq1mfb0"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-deprecated
+           (lambda _
+             (substitute*
+                 "src/reactiveData.ml"
+               (("Pervasives.compare") "compare"))
+             #t))
+         (add-before 'install 'forget-makefile
+           ;; Ensure we use opam to install files
+           (lambda _
+             (delete-file "Makefile")
+             #t)))))
+    (build-system ocaml-build-system)
+    (properties `((upstream-name . "reactiveData")))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("ocaml-react" ,ocaml-react)))
+    (home-page "https://github.com/ocsigen/reactiveData")
+    (synopsis "Declarative events and signals for OCaml")
+    (description
+     "React is an OCaml module for functional reactive programming (FRP).  It
+provides support to program with time varying values: declarative events and
+ signals.  React doesn't define any primitive event or signal, it lets the
+client chooses the concrete timeline.")
+    (license license:lgpl2.1+)))

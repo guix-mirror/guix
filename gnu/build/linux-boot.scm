@@ -560,7 +560,10 @@ upon error."
         (load-linux-modules-from-directory linux-modules
                                            linux-module-directory)
 
-        (unless (member "noresume" args)
+        (unless (or (member "hibernate=noresume" args)
+                    ;; Also handle the equivalent old-style argument.
+                    ;; See Documentation/admin-guide/kernel-parameters.txt.
+                    (member "noresume" args))
           ;; Try to resume immediately after loading (storage) modules
           ;; but before any on-disk file systems have been mounted.
           (false-if-exception           ; failure is not fatal

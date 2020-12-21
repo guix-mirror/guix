@@ -125,14 +125,14 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.21")
+    (version "0.23.22")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                           "download/" version "/p11-kit-" version ".tar.xz"))
       (sha256
-       (base32 "09q6n63qmqcdw6v0fwmhdmsqrcndnp5m9jvby1kxi82wy29s9fpi"))))
+       (base32 "1dn6br4v033d3gp2max9lsr3y4q0nj6iyr1yq3kzi8ym7lal13wa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -920,7 +920,7 @@ coding footprint.")
 (define-public dehydrated
   (package
     (name "dehydrated")
-    (version "0.6.5")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -928,7 +928,7 @@ coding footprint.")
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
-                "0dgskgbdd95p13jx6s13p77y15wngb5cm6p4305cf2s54w0bvahh"))))
+                "1yf4kldyd5y13r6qxrkcbbk74ykngq7jzy0351vb2r3ywp114pqw"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils)

@@ -76,12 +76,20 @@ the derivations referenced by EXP are automatically copied to the initrd."
   (define init
     (program-file "init" exp #:guile guile))
 
+  (define (import-module? module)
+    ;; Since we don't use deduplication support in 'populate-store', don't
+    ;; import (guix store deduplication) and its dependencies, which includes
+    ;; Guile-Gcrypt.  That way we can run tests with '--bootstrap'.
+    (and (guix-module-name? module)
+         (not (equal? module '(guix store deduplication)))))
+
   (define builder
     ;; Do not use "guile-zlib" extension here, otherwise it would drag the
     ;; non-static "zlib" package to the initrd closure.  It is not needed
     ;; anyway because the modules are stored uncompressed within the initrd.
     (with-imported-modules (source-module-closure
-                            '((gnu build linux-initrd)))
+                            '((gnu build linux-initrd))
+                            #:select? import-module?)
       #~(begin
           (use-modules (gnu build linux-initrd))
 

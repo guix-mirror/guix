@@ -2290,7 +2290,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-2")
+    (version "0.51-3")
     (source (origin
               (method url-fetch)
               (uri
@@ -2298,7 +2298,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "1jgklcnaxypc8hr5j6mng8dd4na4ygfdixsfch8b86glssddi6mh"))))
+                "10cqg387xdpiirak5v9y1lpvcds9bpqz61znx6d1m1hb45n513aw"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor

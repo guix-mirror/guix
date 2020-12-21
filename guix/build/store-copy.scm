@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,9 +17,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build store-copy)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:hide (copy-recursively))
   #:use-module (guix sets)
   #:use-module (guix progress)
+  #:autoload   (guix store deduplication) (copy-file/deduplicate)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -37,6 +38,7 @@
 
             file-size
             closure-size
+            copy-store-item
             populate-store))
 
 ;;; Commentary:
@@ -169,32 +171,104 @@ REFERENCE-GRAPHS, a list of reference-graph files."
 
   (reduce + 0 (map file-size items)))
 
-(define (reset-permissions file)
-  "Reset the permissions on FILE and its sub-directories so that they are all
-read-only."
-  ;; XXX: This procedure exists just to work around the inability of
-  ;; 'copy-recursively' to preserve permissions.
-  (file-system-fold (const #t)                    ;enter?
-                    (lambda (file stat _)         ;leaf
-                      (unless (eq? 'symlink (stat:type stat))
-                        (chmod file
-                               (if (zero? (logand (stat:mode stat)
-                                                  #o100))
-                                   #o444
-                                   #o555))))
-                    (const #t)                    ;down
-                    (lambda (directory stat _)    ;up
-                      (chmod directory #o555))
-                    (const #f)                    ;skip
-                    (const #f)                    ;error
+;; TODO: Remove when the one in (guix build utils) has #:keep-permissions?,
+;; the fix for <https://bugs.gnu.org/44741>, and when #:keep-mtime? works for
+;; symlinks.
+(define* (copy-recursively source destination
+                           #:key
+                           (log (current-output-port))
+                           (follow-symlinks? #f)
+                           (copy-file copy-file)
+                           keep-mtime? keep-permissions?)
+  "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
+is true; otherwise, just preserve them.  Call COPY-FILE to copy regular files.
+When KEEP-MTIME? is true, keep the modification time of the files in SOURCE on
+those of DESTINATION.  When KEEP-PERMISSIONS? is true, preserve file
+permissions.  Write verbose output to the LOG port."
+  (define AT_SYMLINK_NOFOLLOW
+    ;; Guile 2.0 did not define this constant, hence this hack.
+    (let ((variable (module-variable the-root-module 'AT_SYMLINK_NOFOLLOW)))
+      (if variable
+          (variable-ref variable)
+          256)))                                    ;for GNU/Linux
+
+  (define (set-file-time file stat)
+    (utime file
+           (stat:atime stat)
+           (stat:mtime stat)
+           (stat:atimensec stat)
+           (stat:mtimensec stat)
+           AT_SYMLINK_NOFOLLOW))
+
+  (define strip-source
+    (let ((len (string-length source)))
+      (lambda (file)
+        (substring file len))))
+
+  (file-system-fold (const #t)                    ; enter?
+                    (lambda (file stat result)    ; leaf
+                      (let ((dest (string-append destination
+                                                 (strip-source file))))
+                        (format log "`~a' -> `~a'~%" file dest)
+                        (case (stat:type stat)
+                          ((symlink)
+                           (let ((target (readlink file)))
+                             (symlink target dest)))
+                          (else
+                           (copy-file file dest)
+                           (when keep-permissions?
+                             (chmod dest (stat:perms stat)))))
+                        (when keep-mtime?
+                          (set-file-time dest stat))))
+                    (lambda (dir stat result)     ; down
+                      (let ((target (string-append destination
+                                                   (strip-source dir))))
+                        (mkdir-p target)))
+                    (lambda (dir stat result)     ; up
+                      (let ((target (string-append destination
+                                                   (strip-source dir))))
+                        (when keep-mtime?
+                          (set-file-time target stat))
+                        (when keep-permissions?
+                          (chmod target (stat:perms stat)))))
+                    (const #t)                    ; skip
+                    (lambda (file stat errno result)
+                      (format (current-error-port) "i/o error: ~a: ~a~%"
+                              file (strerror errno))
+                      #f)
                     #t
-                    file
-                    lstat))
+                    source
+
+                    (if follow-symlinks?
+                        stat
+                        lstat)))
+
+(define* (copy-store-item item target
+                          #:key
+                          (deduplicate? #t)
+                          (log-port (%make-void-port "w")))
+  "Copy ITEM, a store item, to the store under TARGET, the target root
+directory.  When DEDUPLICATE? is true, deduplicate it within TARGET."
+  (define store
+    (string-append target (%store-directory)))
+
+  (copy-recursively item (string-append target item)
+                    #:keep-mtime? #t
+                    #:keep-permissions? #t
+                    #:copy-file
+                    (if deduplicate?
+                        (cut copy-file/deduplicate <> <> #:store store)
+                        copy-file)
+                    #:log log-port))
 
 (define* (populate-store reference-graphs target
-                         #:key (log-port (current-error-port)))
+                         #:key
+                         (deduplicate? #t)
+                         (log-port (current-error-port)))
   "Populate the store under directory TARGET with the items specified in
-REFERENCE-GRAPHS, a list of reference-graph files."
+REFERENCE-GRAPHS, a list of reference-graph files.  Items copied to TARGET
+maintain timestamps and permissions.  When DEDUPLICATE? is true, deduplicate
+regular files as they are copied to TARGET."
   (define store
     (string-append target (%store-directory)))
 
@@ -218,15 +292,8 @@ REFERENCE-GRAPHS, a list of reference-graph files."
     (call-with-progress-reporter progress
       (lambda (report)
         (for-each (lambda (thing)
-                    (copy-recursively thing
-                                      (string-append target thing)
-                                      #:keep-mtime? #t
-                                      #:log (%make-void-port "w"))
-
-                    ;; XXX: Since 'copy-recursively' doesn't allow us to
-                    ;; preserve permissions, we have to traverse TARGET to
-                    ;; make sure everything is read-only.
-                    (reset-permissions (string-append target thing))
+                    (copy-store-item thing target
+                                     #:deduplicate? deduplicate?)
                     (report))
                   things)))))
 

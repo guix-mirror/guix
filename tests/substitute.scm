@@ -28,7 +28,9 @@
   #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix ui) #:select (guix-warning-port))
-  #:use-module ((guix utils) #:select (call-with-compressed-output-port))
+  #:use-module ((guix utils)
+                #:select (call-with-temporary-directory
+                          call-with-compressed-output-port))
   #:use-module ((guix build utils)
                 #:select (mkdir-p delete-file-recursively dump-port))
   #:use-module (guix tests http)
@@ -36,6 +38,7 @@
   #:use-module (rnrs io ports)
   #:use-module (web uri)
   #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -304,7 +307,7 @@ System: mips64el-linux\n")
       (lambda ()
         (guix-substitute "--substitute")))))
 
-(test-quit "substitute, invalid hash"
+(test-quit "substitute, invalid narinfo hash"
     "no valid substitute"
   ;; The hash in the signature differs from the hash of %NARINFO.
   (with-narinfo (string-append %narinfo "Signature: "
@@ -316,6 +319,49 @@ System: mips64el-linux\n")
                                            " foo\n")
       (lambda ()
         (guix-substitute "--substitute")))))
+
+(test-equal "substitute, invalid hash"
+  (string-append "hash-mismatch sha256 "
+                 (bytevector->nix-base32-string (sha256 #vu8())) " "
+                 (let-values (((port get-hash)
+                               (open-hash-port (hash-algorithm sha256)))
+                              ((content)
+                               "Substitutable data."))
+                   (write-file-tree "foo" port
+                                    #:file-type+size
+                                    (lambda _
+                                      (values 'regular
+                                              (string-length content)))
+                                    #:file-port
+                                    (lambda _
+                                      (open-input-string content)))
+                   (close-port port)
+                   (bytevector->nix-base32-string (get-hash)))
+                 "\n")
+
+  ;; Arrange so the actual data hash does not match the 'NarHash' field in the
+  ;; narinfo.
+  (with-output-to-string
+    (lambda ()
+      (let ((narinfo (string-append "StorePath: " (%store-prefix)
+                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-wrong-hash
+URL: example.nar
+Compression: none
+NarHash: sha256:" (bytevector->nix-base32-string (sha256 #vu8())) "
+NarSize: 42
+References: 
+Deriver: " (%store-prefix) "/foo.drv
+System: mips64el-linux\n")))
+        (with-narinfo (string-append narinfo "Signature: "
+                                     (signature-field narinfo) "\n")
+          (call-with-temporary-directory
+           (lambda (directory)
+             (with-input-from-string (string-append
+                                      "substitute " (%store-prefix)
+                                      "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-wrong-hash "
+                                      directory "/wrong-hash\n")
+               (lambda ()
+                 (guix-substitute "--substitute"))))))))))
 
 (test-quit "substitute, unauthorized key"
     "no valid substitute"
@@ -332,7 +378,7 @@ System: mips64el-linux\n")
         (guix-substitute "--substitute")))))
 
 (test-equal "substitute, authorized key"
-  "Substitutable data."
+  '("Substitutable data." 1 #o444)
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field %narinfo))
     (dynamic-wind
@@ -341,7 +387,9 @@ System: mips64el-linux\n")
         (request-substitution (string-append (%store-prefix)
                                              "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                               "substitute-retrieved")
-        (call-with-input-file "substitute-retrieved" get-string-all))
+        (list (call-with-input-file "substitute-retrieved" get-string-all)
+              (stat:mtime (lstat "substitute-retrieved"))
+              (stat:perms (lstat "substitute-retrieved"))))
       (lambda ()
         (false-if-exception (delete-file "substitute-retrieved"))))))
 

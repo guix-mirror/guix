@@ -391,6 +391,7 @@ needed is to review and apply the patch.
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
 * Snippets versus Phases::      Whether to use a snippet, or a build phase.
+* Emacs Packages::              Your Elisp fix.
 * Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
@@ -636,6 +637,46 @@ embed store items in the sources; such patching should rather be done
 using build phases.  Refer to the @code{origin} record documentation for
 more information (@pxref{origin Reference}).
 
+@node Emacs Packages
+@subsection Emacs Packages
+
+@cindex emacs, packaging
+@cindex elisp, packaging
+Emacs packages should preferably use the Emacs build system
+(@pxref{emacs-build-system}), for uniformity and the benefits provided
+by its build phases, such as the auto-generation of the autoloads file
+and the byte compilation of the sources.  Because there is no
+standardized way to run a test suite for Emacs packages, tests are
+disabled by default.  When a test suite is available, it should be
+enabled by setting the @code{#:tests?} argument to @code{#true}.  By
+default, the command to run the test is @command{make check}, but any
+command can be specified via the @code{#:test-command} argument.  The
+@code{#:test-command} argument expects a list containing a command and
+its arguments, to be invoked during the @code{check} phase.
+
+The Elisp dependencies of Emacs packages are typically provided as
+@code{propagated-inputs} when required at run time.  As for other
+packages, build or test dependencies should be specified as
+@code{native-inputs}.
+
+Emacs packages sometimes depend on resources directories that should be
+installed along the Elisp files.  The @code{#:include} argument can be
+used for that purpose, by specifying a list of regexps to match.  The
+best practice when using the @code{#:include} argument is to extend
+rather than override its default value (accessible via the
+@code{%default-include} variable).  As an example, a yasnippet extension
+package typically include a @file{snippets} directory, which could be
+copied to the installation directory using:
+
+@lisp
+#:include (cons "^snippets/" %default-include))
+@end lisp
+
+When encountering problems, it is wise to check for the presence of the
+@code{Package-Requires} extension header in the package main source
+file, and whether any dependencies and their versions listed therein are
+satisfied.
+
 @node Python Modules
 @subsection Python Modules
 
@@ -864,7 +905,8 @@ to proper type error reports.
 Guix code should define appropriate data types (for instance, using
 @code{define-record-type*}) rather than abuse lists.  In addition, it
 should use pattern matching, via Guile’s @code{(ice-9 match)} module,
-especially when matching lists.
+especially when matching lists (@pxref{Pattern Matching,,, guile, GNU
+Guile Reference Manual}).
 
 @node Formatting Code
 @subsection Formatting Code
@@ -1008,7 +1050,7 @@ to other packages unwillingly retained.  It may also help determine
 whether to split the package (@pxref{Packages with Multiple Outputs}),
 and which optional dependencies should be used.  In particular, avoid adding
 @code{texlive} as a dependency: because of its extreme size, use
-@code{texlive-tiny} or @code{texlive-union} instead.
+the @code{texlive-tiny} package or @code{texlive-union} procedure instead.
 
 @item
 For important changes, check that dependent package (if applicable) are

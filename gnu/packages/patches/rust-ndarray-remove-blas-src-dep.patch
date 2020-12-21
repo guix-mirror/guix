@@ -1,0 +1,36 @@
+From ed09f3c91e915c3b436854a7936566edceb3e8de Mon Sep 17 00:00:00 2001
+From: Efraim Flashner <efraim@flashner.co.il>
+Date: Tue, 15 Dec 2020 10:09:45 +0200
+Subject: [PATCH] remove blas-src dependency
+
+---
+ Cargo.toml | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 1f3e1b6..36bc816 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -37,10 +37,6 @@ debug = true
+ name = "ndarray"
+ test = true
+ bench = false
+-[dependencies.blas-src]
+-version = "0.2.0"
+-optional = true
+-default-features = false
+ 
+ [dependencies.cblas-sys]
+ version = "0.1.4"
+@@ -78,7 +74,7 @@ default-features = false
+ version = "0.1"
+ 
+ [features]
+-blas = ["cblas-sys", "blas-src"]
++blas = ["cblas-sys"]
+ docs = ["rustc-serialize", "serde-1"]
+ serde-1 = ["serde"]
+ test = ["test-blas-openblas-sys"]
+-- 
+2.29.2
+

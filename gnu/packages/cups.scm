@@ -28,6 +28,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fonts)     ; font-dejavu
   #:use-module (gnu packages fontutils)
@@ -716,6 +717,41 @@ printer/driver specific, but spooler-independent PPD file.")
                         (("^MODTIME[[:blank:]]*=.*$")
                          "MODTIME = echo Thu Jan 01 01:00:00 1970\n"))
                       #t))
+                  (add-before 'install 'make-install-dirs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Make missing install dirs
+                      (let ((out (assoc-ref outputs "out"))
+                            (dirs '("/share/cups/model"
+                                    "/share/foomatic/db/source/opt"
+                                    "/share/foomatic/db/source/printer"
+                                    "/share/foomatic/db/source/driver"
+                                    "/lib/cups/filter")))
+                        (for-each (lambda (dir)
+                                    (mkdir-p (string-append out dir)))
+                                  dirs))))
+                  (add-after 'install 'wrap-wrappers
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (ghostscript (assoc-ref inputs "ghostscript"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (sed (assoc-ref inputs "sed")))
+                        (for-each (lambda (file)
+                                    (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append ghostscript "/bin:"
+                                                         coreutils "/bin:"
+                                                         sed "/bin")))))
+                                  (find-files (string-append
+                                               out "/bin") "wrapper$")))))
+                  (add-after 'install 'install-cups-filters-symlinks
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each
+                         (lambda (file)
+                           (symlink file
+                                    (string-append out "/lib/cups/filter/"
+                                                   (basename file))))
+                         (find-files (string-append out "/bin"))))))
                   (add-after 'install 'remove-pdf
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Remove 'manual.pdf' which is (1) useless (it's a
@@ -729,7 +765,9 @@ printer/driver specific, but spooler-independent PPD file.")
        #:tests? #f                                ;no tests
        #:make-flags '("CC=gcc")))
     (inputs
-     `(("ghostscript" ,ghostscript)
+     `(("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("ghostscript" ,ghostscript)
        ("foomatic-filters" ,foomatic-filters)))   ;for 'foomatic-rip'
     (native-inputs
      `(("bc" ,bc)

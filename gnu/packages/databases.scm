@@ -2352,7 +2352,25 @@ database.")
              (chdir "libraries/liblmdb")
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out")))
-            #t)))))
+            #t))
+         (add-after 'install 'create-pkg-config-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/pkgconfig"))
+               (with-output-to-file (string-append out "/lib/pkgconfig/liblmdb.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=~a~@
+                           libdir=~a/lib~@
+                           includedir=~a/include~@
+                           ~@
+                           Name: liblmdb~@
+                           Version: ~a~@
+                           Description: Lightning Memory-Mapped Database library~@
+                           Libs: -L${libdir} -llmdb~@
+                           Cflags: -I${includedir}~%"
+                           out out out out ,version)))
+                 #t))))))
     (home-page "https://symas.com/lmdb/")
     (synopsis "Lightning Memory-Mapped Database library")
     (description

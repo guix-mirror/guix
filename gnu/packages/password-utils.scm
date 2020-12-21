@@ -904,7 +904,7 @@ between hosts and entries in the password store.")
        `(("gmp" ,gmp)
          ("libpcap" ,libpcap)
          ("nss" ,nss)
-         ("openssl" ,openssl-1.0)
+         ("openssl" ,openssl)
          ("python" ,python-2)           ; For "python" and "python2" shebangs
          ("ruby" ,ruby)                 ; For genincstats.rb
          ("zlib" ,zlib)))

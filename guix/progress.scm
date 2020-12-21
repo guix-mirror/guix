@@ -184,44 +184,54 @@ move the cursor to the beginning of the line."
 
 (define* (display-download-progress file size
                                     #:key
+                                    (tty? #t)
                                     start-time (transferred 0)
                                     (log-port (current-error-port)))
   "Write the progress report to LOG-PORT.  Use START-TIME (a SRFI-19 time
 object) and TRANSFERRED (a total number of bytes) to determine the
-throughput."
+throughput.  When TTY? is false, assume LOG-PORT is not a tty and do not emit
+ANSI escape codes."
   (define elapsed
     (duration->seconds
      (time-difference (current-time (time-type start-time))
                       start-time)))
 
-  (if (and (number? size) (not (zero? size)))
-      (let* ((%  (* 100.0 (/ transferred size)))
-             (throughput (/ transferred elapsed))
-             (left       (format #f " ~a  ~a" file
-                                 (byte-count->string size)))
-             (right      (format #f "~a/s ~a ~a~6,1f%"
-                                 (byte-count->string throughput)
-                                 (seconds->string elapsed)
-                                 (progress-bar %) %)))
-        (erase-current-line log-port)
-        (display (string-pad-middle left right
-                                    (current-terminal-columns))
-                 log-port)
-        (force-output log-port))
-      ;; If we don't know the total size, the last transfer will have a 0B
-      ;; size.  Don't display it.
-      (unless (zero? transferred)
-        (let* ((throughput (/ transferred elapsed))
-               (left       (format #f " ~a" file))
-               (right      (format #f "~a/s ~a | ~a transferred"
-                                   (byte-count->string throughput)
-                                   (seconds->string elapsed)
-                                   (byte-count->string transferred))))
-          (erase-current-line log-port)
-          (display (string-pad-middle left right
-                                      (current-terminal-columns))
-                   log-port)
-          (force-output log-port)))))
+  (cond ((and (not tty?)
+              size (not (zero? size))
+              transferred)
+         ;; Display a dot for at most every 10%.
+         (when (zero? (modulo (round (* 100. (/ transferred size))) 10))
+           (display "." log-port)
+           (force-output log-port)))
+        ((and (number? size) (not (zero? size)))
+         (let* ((%  (* 100.0 (/ transferred size)))
+                (throughput (/ transferred elapsed))
+                (left       (format #f " ~a  ~a" file
+                                    (byte-count->string size)))
+                (right      (format #f "~a/s ~a ~a~6,1f%"
+                                    (byte-count->string throughput)
+                                    (seconds->string elapsed)
+                                    (progress-bar %) %)))
+           (erase-current-line log-port)
+           (display (string-pad-middle left right
+                                       (current-terminal-columns))
+                    log-port)
+           (force-output log-port)))
+        (else
+         ;; If we don't know the total size, the last transfer will have a 0B
+         ;; size.  Don't display it.
+         (unless (zero? transferred)
+           (let* ((throughput (/ transferred elapsed))
+                  (left       (format #f " ~a" file))
+                  (right      (format #f "~a/s ~a | ~a transferred"
+                                      (byte-count->string throughput)
+                                      (seconds->string elapsed)
+                                      (byte-count->string transferred))))
+             (erase-current-line log-port)
+             (display (string-pad-middle left right
+                                         (current-terminal-columns))
+                      log-port)
+             (force-output log-port))))))
 
 (define %progress-interval
   ;; Default interval between subsequent outputs for rate-limited displays.

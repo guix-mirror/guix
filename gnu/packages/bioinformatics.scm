@@ -11448,21 +11448,23 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
              #t)))))
     (native-inputs
      `(("samtabix"
-        ,(origin
-           (method git-fetch)
-           (uri (git-reference
-                 (url "http://genome-source.cse.ucsc.edu/samtabix.git")
-                 (commit "10fd107909c1ac4d679299908be4262a012965ba")))
-           (sha256
-            (base32
-             "0c1nj64l42v395sa84n7az43xiap4i6f9n9dfz4058aqiwkhkmma"))))))
+        ,(let ((commit "10fd107909c1ac4d679299908be4262a012965ba"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "http://genome-source.cse.ucsc.edu/samtabix.git")
+                   (commit commit)))
+             (file-name (git-file-name "samtabix" (string-take commit 7)))
+             (sha256
+              (base32
+               "0c1nj64l42v395sa84n7az43xiap4i6f9n9dfz4058aqiwkhkmma")))))))
     (inputs
      `(("zlib" ,zlib)
        ("tcsh" ,tcsh)
        ("perl" ,perl)
        ("libpng" ,libpng)
        ("mariadb-dev" ,mariadb "dev")
-       ("openssl" ,openssl-1.0)))
+       ("openssl" ,openssl)))
     (home-page "https://genome.cse.ucsc.edu/index.html")
     (synopsis "Assorted bioinformatics utilities")
     (description "This package provides the kentUtils, a selection of

@@ -793,7 +793,7 @@ high a score as possible.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E-2")
+    (version "0.E-3")
     (source
      (origin
        (method git-fetch)
@@ -801,7 +801,7 @@ high a score as possible.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
-        (base32 "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68"))
+        (base32 "108cs6vp99qmqqfnmczad0xjgcl82bypm5xszwnlfcswdsrfs4da"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -1218,7 +1218,7 @@ effects and music to make a completely free game.")
        ("sdl-image" ,sdl-image)
        ("sdl-mixer" ,sdl-mixer)
        ("zlib" ,zlib)))
-    (home-page "http://www.freedroid.org/")
+    (home-page "https://www.freedroid.org/")
     (synopsis "Isometric role-playing game against killer robots")
     (description
      "Freedroid RPG is an @dfn{RPG} (Role-Playing Game) with isometric graphics.

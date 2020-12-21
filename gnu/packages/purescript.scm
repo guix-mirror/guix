@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
 (define-public purescript
   (package
     (name "purescript")
-    (version "0.13.6")
+    (version "0.13.8")
     (source
      (origin
        (method url-fetch)
@@ -57,7 +58,7 @@
              ".tar.gz"))
        (sha256
         (base32
-         "1xss3wpv6wb38gsh9r635s09cxzmiz81hhssdxzdba2pw6ifzx8j"))
+         "0sh9z3ir3jiwmi5h95v9p7j746xxidg1hrxha89c0zl6vr4sq7vh"))
        (patches (search-patches "purescript-relax-dependencies.patch"))))
     (build-system haskell-build-system)
     (inputs
@@ -70,6 +71,7 @@
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-bower-json" ,ghc-bower-json)
        ("ghc-boxes" ,ghc-boxes)
+       ("ghc-cborg" ,ghc-cborg)
        ("ghc-cheapskate" ,ghc-cheapskate)
        ("ghc-clock" ,ghc-clock)
        ("ghc-cryptonite" ,ghc-cryptonite)
@@ -95,6 +97,7 @@
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-semialign" ,ghc-semialign)
        ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-serialise" ,ghc-serialise)
        ("ghc-sourcemap" ,ghc-sourcemap)
        ("ghc-split" ,ghc-split)
        ("ghc-stringsearch" ,ghc-stringsearch)

@@ -15,10 +15,10 @@ remove instructions that encourage the use of SDCC with non-free
 software.
 
 diff --git a/Makefile.common.in b/Makefile.common.in
-index 4c75cfa..9fa306d 100644
+index 412fd5a..81bbd61 100644
 --- a/Makefile.common.in
 +++ b/Makefile.common.in
-@@ -65,7 +65,6 @@ OPT_DISABLE_PACKIHX     = @OPT_DISABLE_PACKIHX@
+@@ -69,7 +69,6 @@ OPT_DISABLE_PACKIHX     = @OPT_DISABLE_PACKIHX@
  OPT_DISABLE_SDBINUTILS  = @OPT_DISABLE_SDBINUTILS@
  OPT_DISABLE_SDCPP       = @OPT_DISABLE_SDCPP@
  OPT_DISABLE_UCSIM       = @OPT_DISABLE_UCSIM@
@@ -27,10 +27,10 @@ index 4c75cfa..9fa306d 100644
  SLIB                    = $(top_builddir)/support/util
  
 diff --git a/Makefile.in b/Makefile.in
-index aac442e..dd73e40 100644
+index f3b028d..cfdf06d 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -82,9 +82,6 @@ endif
+@@ -100,9 +100,6 @@ endif
  ifeq ($(OPT_DISABLE_DEVICE_LIB), 0)
  TARGETS        += sdcc-device-lib
  PKGS           += device/lib
@@ -40,17 +40,17 @@ index aac442e..dd73e40 100644
  endif
  
  ifeq ($(OPT_DISABLE_PACKIHX), 0)
-@@ -105,9 +102,6 @@ endif
+@@ -123,9 +120,6 @@ endif
  TARGETS        += sdcc-libs sdcc-cc sdcc-device-inc sdcc-as sdcc-ld sdcc-scripts
  
  PKGS           += $(SDCC_LIBS) src device/include
 -ifeq ($(OPT_DISABLE_NON_FREE), 0)
 -PKGS           += device/non-free/include
 -endif
- PKGS           += $(SDCC_AS) sdas/linksrc $(SDCC_LIBRARIAN) $(SDCC_SCRIPTS)
+ PKGS           += $(SDCC_AS) sdas/linksrc $(SDCC_SCRIPTS)
  
  PORTS           = $(shell cat ports.build)
-@@ -156,21 +150,12 @@ sdcc-sdbinutils:
+@@ -171,21 +165,12 @@ sdcc-sdbinutils:
  
  sdcc-device-inc:
  	$(MAKE) -C device/include
@@ -73,7 +73,7 @@ index aac442e..dd73e40 100644
  
  # doc depends on latex and latex2html
 diff --git a/configure b/configure
-index 42b1c7d..00ecb51 100755
+index 43ccb6f..d345f54 100755
 --- a/configure
 +++ b/configure
 @@ -632,7 +632,6 @@ LATEX
@@ -84,7 +84,7 @@ index 42b1c7d..00ecb51 100755
  OPT_DISABLE_SDBINUTILS
  OPT_DISABLE_SDCDB
  OPT_DISABLE_SDCPP
-@@ -654,10 +653,7 @@ OPT_DISABLE_R2K
+@@ -659,10 +658,7 @@ OPT_DISABLE_R2K
  OPT_DISABLE_Z180
  OPT_DISABLE_Z80
  OPT_DISABLE_MCS51
@@ -95,7 +95,7 @@ index 42b1c7d..00ecb51 100755
  include_dir_suffix
  inclib_dir_suffix
  LIB_TYPE
-@@ -771,7 +767,6 @@ enable_packihx
+@@ -780,7 +776,6 @@ enable_packihx
  enable_sdcpp
  enable_sdcdb
  enable_sdbinutils
@@ -103,7 +103,7 @@ index 42b1c7d..00ecb51 100755
  enable_doc
  enable_libgc
  '
-@@ -792,10 +787,7 @@ sdccconf_h_dir_separator
+@@ -801,10 +796,7 @@ sdccconf_h_dir_separator
  LIB_TYPE
  inclib_dir_suffix
  include_dir_suffix
@@ -114,7 +114,7 @@ index 42b1c7d..00ecb51 100755
  docdir'
  ac_subdirs_all='support/cpp
  support/packihx
-@@ -803,9 +795,7 @@ sim/ucsim
+@@ -812,9 +804,7 @@ sim/ucsim
  debugger/mcs51
  support/sdbinutils
  device/lib/pic14
@@ -125,7 +125,7 @@ index 42b1c7d..00ecb51 100755
  
  # Initialize some variables set by options.
  ac_init_help=
-@@ -1452,7 +1442,6 @@ Optional Features:
+@@ -1455,7 +1445,6 @@ Optional Features:
    --disable-sdcpp         Disables building sdcpp
    --disable-sdcdb         Disables building sdcdb
    --disable-sdbinutils    Disables configuring and building of sdbinutils
@@ -133,7 +133,7 @@ index 42b1c7d..00ecb51 100755
    --enable-doc            Enables building the documentation
    --enable-libgc          Use the Bohem memory allocator. Lower runtime
                            footprint.
-@@ -1481,16 +1470,8 @@ Some influential environment variables:
+@@ -1484,16 +1473,8 @@ Some influential environment variables:
                appended to datadir to define SDCC's include/lib directory
    include_dir_suffix
                appended to datadir to define SDCC's include directory
@@ -150,7 +150,7 @@ index 42b1c7d..00ecb51 100755
    docdir      documentation installation directory
  
  Use these variables to override the choices made by `configure' or to help
-@@ -7236,19 +7217,6 @@ if test "${include_dir_suffix}" = ""; then
+@@ -7134,19 +7115,6 @@ if test "${include_dir_suffix}" = ""; then
      include_dir_suffix="${inclib_dir_suffix}/include"
  fi
  
@@ -170,7 +170,7 @@ index 42b1c7d..00ecb51 100755
  # lib_dir_suffix:
  # *nix default: "sdcc/lib"
  
-@@ -7256,13 +7224,6 @@ if test "${lib_dir_suffix}" = ""; then
+@@ -7154,13 +7122,6 @@ if test "${lib_dir_suffix}" = ""; then
      lib_dir_suffix="${inclib_dir_suffix}/lib"
  fi
  
@@ -184,7 +184,7 @@ index 42b1c7d..00ecb51 100755
  # docdir:
  # *nix default: "${datadir}/sdcc/doc"
  
-@@ -7429,24 +7390,6 @@ cat >>confdefs.h <<_ACEOF
+@@ -7327,24 +7288,6 @@ cat >>confdefs.h <<_ACEOF
  #define INCLUDE_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_inc_dir_suffix}"
  _ACEOF
  
@@ -209,7 +209,7 @@ index 42b1c7d..00ecb51 100755
  
  norm_lib_dir_suffix=${lib_dir_suffix}
  case ":$norm_lib_dir_suffix:" in
-@@ -7466,24 +7409,6 @@ cat >>confdefs.h <<_ACEOF
+@@ -7364,24 +7307,6 @@ cat >>confdefs.h <<_ACEOF
  #define LIB_DIR_SUFFIX DIR_SEPARATOR_STRING "${norm_lib_dir_suffix}"
  _ACEOF
  
@@ -234,7 +234,7 @@ index 42b1c7d..00ecb51 100755
  
  # relative paths
  for _lcl_i in expanded_bindir:expanded_datadir:bin2data_dir; do
-@@ -8411,28 +8336,6 @@ _ACEOF
+@@ -8439,28 +8364,6 @@ _ACEOF
  
  
  
@@ -263,7 +263,7 @@ index 42b1c7d..00ecb51 100755
  
    # Check whether --enable-doc was given.
  if test "${enable_doc+set}" = set; then :
-@@ -8827,20 +8730,12 @@ if test $OPT_DISABLE_PIC14 = 0; then
+@@ -8855,20 +8758,12 @@ if test $OPT_DISABLE_PIC14 = 0; then
  
    test $OPT_DISABLE_DEVICE_LIB = 0 && subdirs="$subdirs device/lib/pic14"
  
@@ -283,15 +283,15 @@ index 42b1c7d..00ecb51 100755
 -
  fi
  
- if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0; then
-@@ -8885,15 +8780,9 @@ fi
+ if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0 || test $OPT_DISABLE_EZ80_Z80 = 0; then
+@@ -8945,15 +8840,9 @@ fi
  
  test $OPT_DISABLE_DEVICE_LIB = 0 && ac_config_files="$ac_config_files device/lib/Makefile"
  
 -test $OPT_DISABLE_DEVICE_LIB = 0 && test $OPT_DISABLE_NON_FREE = 0 && ac_config_files="$ac_config_files device/non-free/lib/Makefile"
 -
  
- ac_config_files="$ac_config_files main.mk:main_in.mk src/Makefile device/include/Makefile sdas/linksrc/Makefile support/librarian/Makefile support/makebin/Makefile support/regression/Makefile support/valdiag/Makefile support/scripts/Makefile support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in Makefile Makefile.common:Makefile.common.in"
+ ac_config_files="$ac_config_files main.mk:main_in.mk src/Makefile device/include/Makefile sdas/linksrc/Makefile support/makebin/Makefile support/regression/Makefile support/valdiag/Makefile support/scripts/Makefile support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in Makefile Makefile.common:Makefile.common.in"
  
 -if test $OPT_DISABLE_NON_FREE = 0; then
 -  ac_config_files="$ac_config_files device/non-free/include/Makefile"
@@ -300,15 +300,15 @@ index 42b1c7d..00ecb51 100755
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
  # tests run on this system so they can be shared between configure
-@@ -9621,7 +9510,6 @@ do
-     "sdas/asstm8/Makefile") CONFIG_FILES="$CONFIG_FILES sdas/asstm8/Makefile" ;;
-     "device/lib/stm8/Makefile") CONFIG_FILES="$CONFIG_FILES device/lib/stm8/Makefile" ;;
+@@ -9692,7 +9581,6 @@ do
+     "device/lib/pdk15-stack-auto/Makefile") CONFIG_FILES="$CONFIG_FILES device/lib/pdk15-stack-auto/Makefile" ;;
+     "sdas/aspdk16/Makefile") CONFIG_FILES="$CONFIG_FILES sdas/aspdk16/Makefile" ;;
      "device/lib/Makefile") CONFIG_FILES="$CONFIG_FILES device/lib/Makefile" ;;
 -    "device/non-free/lib/Makefile") CONFIG_FILES="$CONFIG_FILES device/non-free/lib/Makefile" ;;
      "main.mk") CONFIG_FILES="$CONFIG_FILES main.mk:main_in.mk" ;;
      "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
      "device/include/Makefile") CONFIG_FILES="$CONFIG_FILES device/include/Makefile" ;;
-@@ -9634,7 +9522,6 @@ do
+@@ -9704,7 +9592,6 @@ do
      "support/regression/ports/host/spec.mk") CONFIG_FILES="$CONFIG_FILES support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in" ;;
      "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
      "Makefile.common") CONFIG_FILES="$CONFIG_FILES Makefile.common:Makefile.common.in" ;;
@@ -316,7 +316,7 @@ index 42b1c7d..00ecb51 100755
  
    *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
    esac
-@@ -10443,54 +10330,6 @@ esac
+@@ -10513,54 +10400,6 @@ esac
  incPath3=`echo "$incPath3" | sed 's,\\\\\\\\,\\\\,g'`
  
  
@@ -371,7 +371,7 @@ index 42b1c7d..00ecb51 100755
  
  libPath1=`echo "/${prefix2data_dir}/${norm_lib_dir_suffix}" | sed 's,/\./,/,g'`
  case ":$libPath1:" in
-@@ -10540,54 +10379,6 @@ esac
+@@ -10610,54 +10449,6 @@ esac
  libPath3=`echo "$libPath3" | sed 's,\\\\\\\\,\\\\,g'`
  
  
@@ -426,15 +426,15 @@ index 42b1c7d..00ecb51 100755
  { $as_echo "$as_me:${as_lineno-$LINENO}: result:
  sdcc ${VERSION} is now configured for
  
-@@ -10618,7 +10409,6 @@ sdcc ${VERSION} is now configured for
-     tlcs90              ${enable_tlcs90_port}
-     stm8                ${enable_stm8_port}
+@@ -10694,7 +10485,6 @@ sdcc ${VERSION} is now configured for
+     pdk15               ${enable_pdk15_port}
+     pdk16               ${enable_pdk16_port}
  
 -  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
    Disable packihx:      ${OPT_DISABLE_PACKIHX}
    Disable ucsim:        ${OPT_DISABLE_UCSIM}
    Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
-@@ -10633,9 +10423,6 @@ sdcc ${VERSION} is now configured for
+@@ -10709,9 +10499,6 @@ sdcc ${VERSION} is now configured for
      include/library files:  ${datadir}/${inclib_dir_suffix}
      include files:          ${datadir}/${include_dir_suffix}
      library files:          ${datadir}/${lib_dir_suffix}
@@ -444,7 +444,7 @@ index 42b1c7d..00ecb51 100755
      documentation:          ${docdir}
  
      prefix:             ${prefix}
-@@ -10647,15 +10434,9 @@ sdcc ${VERSION} is now configured for
+@@ -10723,15 +10510,9 @@ sdcc ${VERSION} is now configured for
      include files:      ${incPath1}
                          path(argv[0])${incPath2}
                          ${incPath3}
@@ -460,15 +460,15 @@ index 42b1c7d..00ecb51 100755
  " >&5
  $as_echo "
  sdcc ${VERSION} is now configured for
-@@ -10687,7 +10468,6 @@ sdcc ${VERSION} is now configured for
-     tlcs90              ${enable_tlcs90_port}
-     stm8                ${enable_stm8_port}
+@@ -10769,7 +10550,6 @@ sdcc ${VERSION} is now configured for
+     pdk15               ${enable_pdk15_port}
+     pdk16               ${enable_pdk16_port}
  
 -  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
    Disable packihx:      ${OPT_DISABLE_PACKIHX}
    Disable ucsim:        ${OPT_DISABLE_UCSIM}
    Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
-@@ -10702,9 +10482,6 @@ sdcc ${VERSION} is now configured for
+@@ -10784,9 +10564,6 @@ sdcc ${VERSION} is now configured for
      include/library files:  ${datadir}/${inclib_dir_suffix}
      include files:          ${datadir}/${include_dir_suffix}
      library files:          ${datadir}/${lib_dir_suffix}
@@ -478,7 +478,7 @@ index 42b1c7d..00ecb51 100755
      documentation:          ${docdir}
  
      prefix:             ${prefix}
-@@ -10716,14 +10493,8 @@ sdcc ${VERSION} is now configured for
+@@ -10798,14 +10575,8 @@ sdcc ${VERSION} is now configured for
      include files:      ${incPath1}
                          path(argv[0])${incPath2}
                          ${incPath3}
@@ -494,10 +494,10 @@ index 42b1c7d..00ecb51 100755
  " >&6; }
  # End of configure/configure.in
 diff --git a/configure.ac b/configure.ac
-index 3a16e42..bfba129 100644
+index 2185793..76ab155 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -588,19 +588,6 @@ if test "${include_dir_suffix}" = ""; then
+@@ -544,19 +544,6 @@ if test "${include_dir_suffix}" = ""; then
      include_dir_suffix="${inclib_dir_suffix}/include"
  fi
  
@@ -517,7 +517,7 @@ index 3a16e42..bfba129 100644
  # lib_dir_suffix:
  # *nix default: "sdcc/lib"
  AC_ARG_VAR([lib_dir_suffix], [appended to datadir to define SDCC's library root directory])
-@@ -608,13 +595,6 @@ if test "${lib_dir_suffix}" = ""; then
+@@ -564,13 +551,6 @@ if test "${lib_dir_suffix}" = ""; then
      lib_dir_suffix="${inclib_dir_suffix}/lib"
  fi
  
@@ -531,7 +531,7 @@ index 3a16e42..bfba129 100644
  # docdir:
  # *nix default: "${datadir}/sdcc/doc"
  AC_ARG_VAR([docdir], [documentation installation directory])
-@@ -655,19 +635,11 @@ norm_inc_dir_suffix=${include_dir_suffix}
+@@ -611,19 +591,11 @@ norm_inc_dir_suffix=${include_dir_suffix}
  adl_NORMALIZE_PATH([norm_inc_dir_suffix], [$sdccconf_h_dir_separator])
  AC_DEFINE_UNQUOTED(INCLUDE_DIR_SUFFIX,
                     DIR_SEPARATOR_STRING "${norm_inc_dir_suffix}", [XXX])
@@ -551,7 +551,7 @@ index 3a16e42..bfba129 100644
  
  # relative paths
  adl_COMPUTE_RELATIVE_PATHS([expanded_bindir:expanded_datadir:bin2data_dir])
-@@ -836,7 +808,6 @@ AC_DO_DISABLER(packihx,    PACKIHX,    [Disables building packihx])
+@@ -797,7 +769,6 @@ AC_DO_DISABLER(packihx,    PACKIHX,    [Disables building packihx])
  AC_DO_DISABLER(sdcpp,      SDCPP,      [Disables building sdcpp])
  AC_DO_DISABLER(sdcdb,      SDCDB,      [Disables building sdcdb])
  AC_DO_DISABLER(sdbinutils, SDBINUTILS, [Disables configuring and building of sdbinutils])
@@ -559,7 +559,7 @@ index 3a16e42..bfba129 100644
  
  AC_DO_ENABLER(doc,   DOC,   [Enables building the documentation])
  AC_CHECK_PROG([LYX],        [lyx],        [lyx],        [:])
-@@ -907,16 +878,10 @@ if test $OPT_DISABLE_PIC14 = 0; then
+@@ -868,16 +839,10 @@ if test $OPT_DISABLE_PIC14 = 0; then
    AC_CONFIG_FILES(src/pic14/Makefile)
    test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/lib/pic14)
  fi
@@ -574,17 +574,17 @@ index 3a16e42..bfba129 100644
 -  test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_SUBDIRS(device/non-free/lib/pic16)
 -fi
  
- if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0; then
+ if test $OPT_DISABLE_Z80 = 0 || test $OPT_DISABLE_Z180 = 0 || test $OPT_DISABLE_R2K = 0 || test $OPT_DISABLE_R3KA = 0 || test $OPT_DISABLE_GBZ80 = 0 || test $OPT_DISABLE_TLCS90 = 0 || test $OPT_DISABLE_EZ80_Z80 = 0; then
    AC_CONFIG_FILES([src/z80/Makefile])
-@@ -951,7 +916,6 @@ if test $OPT_DISABLE_STM8 = 0; then
- fi
+@@ -939,7 +904,6 @@ fi
+ 
  
  test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_FILES([device/lib/Makefile])
 -test $OPT_DISABLE_DEVICE_LIB = 0 && test $OPT_DISABLE_NON_FREE = 0 && AC_CONFIG_FILES([device/non-free/lib/Makefile])
  
  AC_CONFIG_FILES([main.mk:main_in.mk
  src/Makefile
-@@ -966,9 +930,6 @@ support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in
+@@ -953,9 +917,6 @@ support/regression/ports/host/spec.mk:support/regression/ports/host/spec.mk.in
  Makefile
  Makefile.common:Makefile.common.in
  ])
@@ -594,7 +594,7 @@ index 3a16e42..bfba129 100644
  AC_OUTPUT
  
  # I found no better place
-@@ -986,16 +947,10 @@ adl_NORMALIZE_PATH_MSG(/${prefix2bin_dir},                         [binPath],  [
+@@ -973,16 +934,10 @@ adl_NORMALIZE_PATH_MSG(/${prefix2bin_dir},                         [binPath],  [
  adl_NORMALIZE_PATH_MSG(/${prefix2data_dir}/${norm_inc_dir_suffix}, [incPath1], [$dirch])
  adl_NORMALIZE_PATH_MSG(/${bin2data_dir}/${norm_inc_dir_suffix},    [incPath2], [$dirch])
  adl_NORMALIZE_PATH_MSG(${expanded_datadir}/${norm_inc_dir_suffix}, [incPath3], [$dirch])
@@ -611,15 +611,15 @@ index 3a16e42..bfba129 100644
  
  AC_MSG_RESULT([
  sdcc ${VERSION} is now configured for
-@@ -1027,7 +982,6 @@ sdcc ${VERSION} is now configured for
-     tlcs90              ${enable_tlcs90_port}
-     stm8                ${enable_stm8_port}
+@@ -1020,7 +975,6 @@ sdcc ${VERSION} is now configured for
+     pdk15               ${enable_pdk15_port}
+     pdk16               ${enable_pdk16_port}
  
 -  Disable non-free lib: ${OPT_DISABLE_NON_FREE}
    Disable packihx:      ${OPT_DISABLE_PACKIHX}
    Disable ucsim:        ${OPT_DISABLE_UCSIM}
    Disable device lib:   ${OPT_DISABLE_DEVICE_LIB}
-@@ -1042,9 +996,6 @@ sdcc ${VERSION} is now configured for
+@@ -1035,9 +989,6 @@ sdcc ${VERSION} is now configured for
      include/library files:  ${datadir}/${inclib_dir_suffix}
      include files:          ${datadir}/${include_dir_suffix}
      library files:          ${datadir}/${lib_dir_suffix}
@@ -629,7 +629,7 @@ index 3a16e42..bfba129 100644
      documentation:          ${docdir}
  
      prefix:             ${prefix}
-@@ -1056,14 +1007,8 @@ sdcc ${VERSION} is now configured for
+@@ -1049,14 +1000,8 @@ sdcc ${VERSION} is now configured for
      include files:      ${incPath1}
                          path(argv[[0]])${incPath2}
                          ${incPath3}
@@ -645,193 +645,211 @@ index 3a16e42..bfba129 100644
  ])
  # End of configure/configure.in
 diff --git a/device/lib/pic14/Makefile.common b/device/lib/pic14/Makefile.common
-index e456838..8179255 100644
+index 019fe0f..da3389d 100644
 --- a/device/lib/pic14/Makefile.common
 +++ b/device/lib/pic14/Makefile.common
-@@ -3,11 +3,10 @@ EARCH ?= @EARCH@
- 
+@@ -68,14 +68,14 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
  AM_CPPFLAGS =
  AM_CPPFLAGS += -I.
--AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic14 -I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic14
+ AM_CPPFLAGS += -I$(top_srcdir)
+-AM_CPPFLAGS += -I$(DEVICE_TOP_DIR)/include/pic14 -I$(DEVICE_TOP_DIR)/non-free/include/pic14 -I$(DEVICE_TOP_DIR)/include
++AM_CPPFLAGS += -I$(DEVICE_TOP_DIR)/include/pic14 -I$(DEVICE_TOP_DIR)/include
  
- AM_CFLAGS =
- AM_CFLAGS += -mpic14 -p$(ARCH)
--AM_CFLAGS += --no-warn-non-free
- AM_CFLAGS += --std-c99
- #AM_CFLAGS += --asm="$(CCAS)"
- ##AM_CFLAGS += -Wa,-q
-@@ -29,7 +28,7 @@ AM_CFLAGS += --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
  
+ SDCC_FLAGS =
+-SDCC_FLAGS += -mpic14 --less-pedantic --no-warn-non-free --i-code-in-asm --fverbose-asm
++SDCC_FLAGS += -mpic14 --less-pedantic --i-code-in-asm --fverbose-asm
+ SDCC_FLAGS += --std-c11
+ 
+ # extra flags for enhanced cores
+@@ -113,7 +113,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
  AM_CCASFLAGS =
  AM_CCASFLAGS += -p$(ARCH)
--AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic14 -I$(top_srcdir)/../../non-free/include/pic14
-+AM_CCASFLAGS += -I$(top_srcdir)/../../include/pic14
  AM_CCASFLAGS += -I$(srcdir)
+-AM_CCASFLAGS += -I$(DEVICE_TOP_DIR)/include/pic14 -I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS += -I$(DEVICE_TOP_DIR)/include/pic14
  
- clean-local:
+ ############################################################
+ # Common actions
 diff --git a/device/lib/pic14/Makefile.in b/device/lib/pic14/Makefile.in
-index f1c9940..de47dbe 100644
+index 39b6cb0..ae3e37b 100644
 --- a/device/lib/pic14/Makefile.in
 +++ b/device/lib/pic14/Makefile.in
-@@ -297,15 +297,13 @@ top_build_prefix = @top_build_prefix@
- top_builddir = @top_builddir@
- top_srcdir = @top_srcdir@
- SUBDIRS = libm libsdcc/regular $(am__append_1) $(am__append_2)
--AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
- #AM_CFLAGS += --asm="$(CCAS)"
+@@ -335,13 +335,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
  
- #AM_CFLAGS += --debug-ralloc
- #AM_CFLAGS += --debug-xtra
- #AM_CFLAGS += --pcode-verbose
--AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
--	--i-code-in-asm
-+AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_4)
  
- #AM_CFLAGS += --no-pcode-opt
+ # extra flags for enhanced cores
+@@ -366,8 +365,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
  
-@@ -316,8 +314,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
- #AM_CFLAGS += --noinduction
- #AM_CFLAGS += --nojtbound
- #AM_CFLAGS += --noloopreverse
--AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
-+AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
- DISTCLEANFILES = a.cod a.hex ./.checkdevices/*
- all: config.h
- 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
+diff --git a/device/lib/pic14/libc/Makefile.in b/device/lib/pic14/libc/Makefile.in
+index 0efeeb0..d4dd8e6 100644
+--- a/device/lib/pic14/libc/Makefile.in
++++ b/device/lib/pic14/libc/Makefile.in
+@@ -878,13 +878,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
+ 
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_9)
+ 
+ # extra flags for enhanced cores
+@@ -909,8 +908,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
+ 
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
 diff --git a/device/lib/pic14/libm/Makefile.in b/device/lib/pic14/libm/Makefile.in
-index fd9fd2e..4a7d250 100644
+index f0dc9ca..98ed2cf 100644
 --- a/device/lib/pic14/libm/Makefile.in
 +++ b/device/lib/pic14/libm/Makefile.in
-@@ -299,15 +299,13 @@ libm_a_SOURCES = acosf.c asincosf.c asinf.c atan2f.c atanf.c ceilf.c \
- libm_a_CFLAGS = -p$(ARCH) $(AM_CFLAGS)
- libme_a_SOURCES = $(libm_a_SOURCES)
- libme_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS) $(am__append_2)
--AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
- #AM_CFLAGS += --asm="$(CCAS)"
+@@ -511,13 +511,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
  
- #AM_CFLAGS += --debug-ralloc
- #AM_CFLAGS += --debug-xtra
- #AM_CFLAGS += --pcode-verbose
--AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
--	--i-code-in-asm
-+AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_9)
  
- #AM_CFLAGS += --no-pcode-opt
+ # extra flags for enhanced cores
+@@ -542,8 +541,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
  
-@@ -318,8 +316,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
- #AM_CFLAGS += --noinduction
- #AM_CFLAGS += --nojtbound
- #AM_CFLAGS += --noloopreverse
--AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
-+AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
- all: all-am
- 
- .SUFFIXES:
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
 diff --git a/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in b/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
-index e946da7..bced941 100644
+index 098ec94..d1240ba 100644
 --- a/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
 +++ b/device/lib/pic14/libsdcc/enhanced-no-xinst/Makefile.in
-@@ -311,15 +311,13 @@ libsdcce_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
- 	_gptrput3.S _gptrput4.S macros.inc
- libsdcce_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS)
- CLEANFILES = ../*.asm ../*.lst
--AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
- #AM_CFLAGS += --asm="$(CCAS)"
+@@ -518,13 +518,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
  
- #AM_CFLAGS += --debug-ralloc
- #AM_CFLAGS += --debug-xtra
- #AM_CFLAGS += --pcode-verbose
--AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
--	--i-code-in-asm
-+AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_5)
  
- #AM_CFLAGS += --no-pcode-opt
+ # extra flags for enhanced cores
+@@ -549,8 +548,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
  
-@@ -330,8 +328,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
- #AM_CFLAGS += --noinduction
- #AM_CFLAGS += --nojtbound
- #AM_CFLAGS += --noloopreverse
--AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
-+AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
- all: all-am
- 
- .SUFFIXES:
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
 diff --git a/device/lib/pic14/libsdcc/enhanced/Makefile.in b/device/lib/pic14/libsdcc/enhanced/Makefile.in
-index 7fe1e25..854f87f 100644
+index d2dba9c..0857601 100644
 --- a/device/lib/pic14/libsdcc/enhanced/Makefile.in
 +++ b/device/lib/pic14/libsdcc/enhanced/Makefile.in
-@@ -311,15 +311,13 @@ libsdcce_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
- 	_gptrput3.S _gptrput4.S macros.inc
- libsdcce_a_CFLAGS = -p$(EARCH) $(AM_CFLAGS)
- CLEANFILES = ../*.asm ../*.lst
--AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
- #AM_CFLAGS += --asm="$(CCAS)"
+@@ -518,13 +518,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
  
- #AM_CFLAGS += --debug-ralloc
- #AM_CFLAGS += --debug-xtra
- #AM_CFLAGS += --pcode-verbose
--AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
--	--i-code-in-asm
-+AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_5)
  
- #AM_CFLAGS += --no-pcode-opt
+ # extra flags for enhanced cores
+@@ -549,8 +548,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
  
-@@ -330,8 +328,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
- #AM_CFLAGS += --noinduction
- #AM_CFLAGS += --nojtbound
- #AM_CFLAGS += --noloopreverse
--AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
-+AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
- all: all-am
- 
- .SUFFIXES:
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
 diff --git a/device/lib/pic14/libsdcc/regular/Makefile.in b/device/lib/pic14/libsdcc/regular/Makefile.in
-index 29a5924..8c60a49 100644
+index 3c9bccd..9430fb5 100644
 --- a/device/lib/pic14/libsdcc/regular/Makefile.in
 +++ b/device/lib/pic14/libsdcc/regular/Makefile.in
-@@ -304,15 +304,13 @@ libsdcc_a_SOURCES = ../_divschar.c ../_divsint.c ../_divslong.c \
- 	_gptrput3.S _gptrput4.S macros.inc shadowregs.c
- libsdcc_a_CFLAGS = -p$(ARCH) $(AM_CFLAGS)
- CLEANFILES = ../*.asm ../*.lst
--AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14
-+AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic14
- #AM_CFLAGS += --asm="$(CCAS)"
+@@ -511,13 +511,12 @@ GENERIC_SRC_DIR_ABS = $(abspath $(GENERIC_SRC_DIR))
+ # C preprocessor flags
+ ############################################################
+ AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14 \
+ 	-I$(DEVICE_TOP_DIR)/include
  
- #AM_CFLAGS += --debug-ralloc
- #AM_CFLAGS += --debug-xtra
- #AM_CFLAGS += --pcode-verbose
--AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
--	--i-code-in-asm
-+AM_CFLAGS = -mpic14 -p$(ARCH) --std-c99 --i-code-in-asm
+ ############################################################
+ # C compiler flags
+ ############################################################
+-SDCC_FLAGS = -mpic14 --less-pedantic --no-warn-non-free \
++SDCC_FLAGS = -mpic14 --less-pedantic \
+ 	--i-code-in-asm --fverbose-asm --std-c11 $(am__append_5)
  
- #AM_CFLAGS += --no-pcode-opt
+ # extra flags for enhanced cores
+@@ -542,8 +541,7 @@ AM_CFLAGS_EOX = -p$(EARCH) $(SDCC_FLAGS) $(SDCC_FLAGS_ENHANCED) $(SDCC_FLAGS_NOO
+ ############################################################
+ # Assembler flags
+ ############################################################
+-AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14 \
+-	-I$(DEVICE_TOP_DIR)/non-free/include/pic14
++AM_CCASFLAGS = -p$(ARCH) -I$(srcdir) -I$(DEVICE_TOP_DIR)/include/pic14
  
-@@ -323,8 +321,7 @@ AM_CFLAGS = -mpic14 -p$(ARCH) --no-warn-non-free --std-c99 \
- #AM_CFLAGS += --noinduction
- #AM_CFLAGS += --nojtbound
- #AM_CFLAGS += --noloopreverse
--AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 \
--	-I$(top_srcdir)/../../non-free/include/pic14 -I$(srcdir)
-+AM_CCASFLAGS = -p$(ARCH) -I$(top_srcdir)/../../include/pic14 -I$(srcdir)
- all: all-am
- 
- .SUFFIXES:
+ # extensions generated by the build process
+ CLEAN_EXTENSIONS = .asm .lst .sym .d .p .g .v .adb
 diff --git a/device/lib/pic16/Makefile.common b/device/lib/pic16/Makefile.common
-index 73200d7..e298bf5 100644
+index 01ad950..62839b9 100644
 --- a/device/lib/pic16/Makefile.common
 +++ b/device/lib/pic16/Makefile.common
 @@ -1,11 +1,10 @@
@@ -841,7 +859,7 @@ index 73200d7..e298bf5 100644
 +AM_CPPFLAGS += -I$(top_srcdir)/../../include/pic16
  
  AM_CFLAGS =
- AM_CFLAGS += --std-c99
+ AM_CFLAGS += --std-c11
  AM_CFLAGS += --asm="$(CCAS)"
 -AM_CFLAGS += --no-warn-non-free
  ##AM_CFLAGS += -Wa,-q
@@ -857,7 +875,7 @@ index 73200d7..e298bf5 100644
  
  clean-local:
 diff --git a/device/lib/pic16/Makefile.in b/device/lib/pic16/Makefile.in
-index b17f151..31ecfa4 100644
+index 15d2e1d..9664ad4 100644
 --- a/device/lib/pic16/Makefile.in
 +++ b/device/lib/pic16/Makefile.in
 @@ -87,10 +87,7 @@ PRE_UNINSTALL = :
@@ -886,8 +904,8 @@ index b17f151..31ecfa4 100644
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -897,7 +915,7 @@ index b17f151..31ecfa4 100644
  all: config.h
  	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 diff --git a/device/lib/pic16/configure b/device/lib/pic16/configure
-index d8760a0..eaea231 100755
+index c8f5b98..76f93a8 100755
 --- a/device/lib/pic16/configure
 +++ b/device/lib/pic16/configure
 @@ -3657,7 +3657,6 @@ fi
@@ -924,7 +942,7 @@ index 3966c11..cdbffc7 100644
  
  # Checks for header files.
 diff --git a/device/lib/pic16/debug/Makefile.in b/device/lib/pic16/debug/Makefile.in
-index bc77b98..724a443 100644
+index df593e3..8cb5137 100644
 --- a/device/lib/pic16/debug/Makefile.in
 +++ b/device/lib/pic16/debug/Makefile.in
 @@ -88,10 +88,7 @@ PRE_UNINSTALL = :
@@ -939,7 +957,7 @@ index bc77b98..724a443 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -290,8 +287,7 @@ top_builddir = @top_builddir@
+@@ -291,8 +288,7 @@ top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  lib_LIBRARIES = libdebug.a
  libdebug_a_SOURCES = gstack/gstack.c
@@ -949,12 +967,12 @@ index bc77b98..724a443 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -305,11 +301,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -306,11 +302,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -964,7 +982,7 @@ index bc77b98..724a443 100644
  
  .SUFFIXES:
 diff --git a/device/lib/pic16/libc/Makefile.in b/device/lib/pic16/libc/Makefile.in
-index 6d2699f..5546319 100644
+index 85bec90..c0ea488 100644
 --- a/device/lib/pic16/libc/Makefile.in
 +++ b/device/lib/pic16/libc/Makefile.in
 @@ -88,10 +88,7 @@ PRE_UNINSTALL = :
@@ -979,7 +997,7 @@ index 6d2699f..5546319 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -344,8 +341,7 @@ libc18f_a_SOURCES = ctype/iscntrl.c ctype/isdigit.c ctype/isgraph.c \
+@@ -381,8 +378,7 @@ libc18f_a_SOURCES = ctype/iscntrl.c ctype/isdigit.c ctype/isgraph.c \
  	string/strpbrk.c string/strrchr.c string/strspn.c \
  	string/strstr.c string/strtok.c string/strupr.c \
  	utils/cnvfrac.S utils/cnvint.S utils/cvtdec.S
@@ -989,12 +1007,12 @@ index 6d2699f..5546319 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -359,11 +355,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -396,11 +392,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -1004,7 +1022,7 @@ index 6d2699f..5546319 100644
  
  .SUFFIXES:
 diff --git a/device/lib/pic16/libio/Makefile.in b/device/lib/pic16/libio/Makefile.in
-index 0d7c731..64b56c8 100644
+index 06fff29..78fe388 100644
 --- a/device/lib/pic16/libio/Makefile.in
 +++ b/device/lib/pic16/libio/Makefile.in
 @@ -481,10 +481,7 @@ POST_UNINSTALL = :
@@ -1019,7 +1037,7 @@ index 0d7c731..64b56c8 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -9826,8 +9823,7 @@ libio18lf8722_a_SOURCES = dummy.c i2c/i2cack.c i2c/i2cclose.c \
+@@ -15600,8 +15597,7 @@ libio18lf8722_a_SOURCES = dummy.c i2c/i2cack.c i2c/i2cclose.c \
  libio18lf8722_a_CFLAGS = -p18lf8722 $(AM_CFLAGS)
  libio18lf8723_a_SOURCES = dummy.c
  libio18lf8723_a_CFLAGS = -p18lf8723 $(AM_CFLAGS)
@@ -1029,12 +1047,12 @@ index 0d7c731..64b56c8 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -9841,11 +9837,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -15615,11 +15611,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -1089,7 +1107,7 @@ index 211604e..e8896bf 100755
  include \$(top_srcdir)/Makefile.common
  
 diff --git a/device/lib/pic16/libm/Makefile.in b/device/lib/pic16/libm/Makefile.in
-index 7f90e89..94cd985 100644
+index 6728a39..495459e 100644
 --- a/device/lib/pic16/libm/Makefile.in
 +++ b/device/lib/pic16/libm/Makefile.in
 @@ -88,10 +88,7 @@ PRE_UNINSTALL = :
@@ -1104,7 +1122,7 @@ index 7f90e89..94cd985 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -299,8 +296,7 @@ libm18f_a_SOURCES = acosf.c asincosf.c asinf.c atan2f.c atanf.c \
+@@ -312,8 +309,7 @@ libm18f_a_SOURCES = acosf.c asincosf.c asinf.c atan2f.c atanf.c \
  	frexpf.c isinf.c isnan.c ldexpf.c log10f.c logf.c modff.c \
  	powf.c sincosf.c sincoshf.c sinf.c sinhf.c sqrtf.c tancotf.c \
  	tanf.c tanhf.c
@@ -1114,12 +1132,12 @@ index 7f90e89..94cd985 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -314,11 +310,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -327,11 +323,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -1129,7 +1147,7 @@ index 7f90e89..94cd985 100644
  
  .SUFFIXES:
 diff --git a/device/lib/pic16/libsdcc/Makefile.in b/device/lib/pic16/libsdcc/Makefile.in
-index e58bad0..b318b70 100644
+index 331aea0..63565be 100644
 --- a/device/lib/pic16/libsdcc/Makefile.in
 +++ b/device/lib/pic16/libsdcc/Makefile.in
 @@ -88,10 +88,7 @@ PRE_UNINSTALL = :
@@ -1144,7 +1162,7 @@ index e58bad0..b318b70 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -364,8 +361,7 @@ libsdcc_a_SOURCES = char/divschar.c char/divuchar.c char/modschar.c \
+@@ -413,8 +410,7 @@ libsdcc_a_SOURCES = char/divschar.c char/divuchar.c char/modschar.c \
  	int/modsint.c int/moduint.c int/mulint.c long/divslong.c \
  	long/divulong.c long/modslong.c long/modulong.c long/mullong.c \
  	lregs/lrrest.c lregs/lrst.c stack/stack.S
@@ -1154,12 +1172,12 @@ index e58bad0..b318b70 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -379,11 +375,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -428,11 +424,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -1169,7 +1187,7 @@ index e58bad0..b318b70 100644
  
  .SUFFIXES:
 diff --git a/device/lib/pic16/startup/Makefile.in b/device/lib/pic16/startup/Makefile.in
-index 3c44c6f..274acde 100644
+index 2e59220..b213866 100644
 --- a/device/lib/pic16/startup/Makefile.in
 +++ b/device/lib/pic16/startup/Makefile.in
 @@ -89,10 +89,7 @@ PRE_UNINSTALL = :
@@ -1184,7 +1202,7 @@ index 3c44c6f..274acde 100644
  am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
  	$(ACLOCAL_M4)
  DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-@@ -306,8 +303,7 @@ libcrt0iz_a_SOURCES = crt0iz.c
+@@ -308,8 +305,7 @@ libcrt0iz_a_SOURCES = crt0iz.c
  # Force installation of .o files into $libdir
  crtdir = $(libdir)
  crt_DATA = crt0.o crt0i.o crt0iz.o
@@ -1194,12 +1212,12 @@ index 3c44c6f..274acde 100644
  #AM_CFLAGS += --no-optimize-goto
  
  #AM_CFLAGS += --debug-ralloc
-@@ -321,11 +317,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
+@@ -323,11 +319,10 @@ AM_CPPFLAGS = -I. -I$(top_srcdir)/../../include/pic16 \
  #AM_CFLAGS += --noinduction
  #AM_CFLAGS += --nojtbound
  #AM_CFLAGS += --noloopreverse
--AM_CFLAGS = --std-c99 --asm="$(CCAS)" --no-warn-non-free \
-+AM_CFLAGS = --std-c99 --asm="$(CCAS)" \
+-AM_CFLAGS = --std-c11 --asm="$(CCAS)" --no-warn-non-free \
++AM_CFLAGS = --std-c11 --asm="$(CCAS)" \
  	--fomit-frame-pointer --obanksel=9 --denable-peeps \
  	--optimize-cmp --optimize-df --i-code-in-asm @USE_FLOATS@
 -AM_CCASFLAGS = -I$(top_srcdir)/../../include/pic16 \
@@ -1209,7 +1227,7 @@ index 3c44c6f..274acde 100644
  
  .SUFFIXES:
 diff --git a/doc/INSTALL.txt b/doc/INSTALL.txt
-index 7d83ef7..5bd71d3 100644
+index 76a6f42..0f92463 100644
 --- a/doc/INSTALL.txt
 +++ b/doc/INSTALL.txt
 @@ -18,9 +18,7 @@ To install:
@@ -1243,7 +1261,7 @@ index 7d83ef7..5bd71d3 100644
  
  You can test the install by entering:
 diff --git a/doc/README.txt b/doc/README.txt
-index 86ed809..69e16e2 100644
+index 88f8c98..a36db81 100644
 --- a/doc/README.txt
 +++ b/doc/README.txt
 @@ -35,10 +35,9 @@ Exception are pic device libraries and header files which are derived
@@ -1261,13 +1279,13 @@ index 86ed809..69e16e2 100644
  See:
  
 diff --git a/doc/sdccman.lyx b/doc/sdccman.lyx
-index 41e8db0..9a971fa 100644
+index d18a509..b95bf61 100644
 --- a/doc/sdccman.lyx
 +++ b/doc/sdccman.lyx
-@@ -1083,54 +1083,9 @@ Exception are pic device libraries and header files which are derived from
-  Microchip requires that "The header files should state that they are only
+@@ -1092,54 +1092,9 @@ A possible exception are pic device libraries and header files which are
   to be used with authentic Microchip devices" which makes them incompatible
-  with the GPL.
+  with the GPL, if Microchip has any copyright in them (which might depend
+  on local copyright laws).
 - Pic device libraries and header files are located at non-free/lib and non-free/
 -include directories respectively.
 - SDCC should be run with the 
@@ -1322,7 +1340,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \begin_layout Itemize
-@@ -2890,18 +2845,6 @@ include_dir_suffix environment variable, see table below
+@@ -2870,18 +2825,6 @@ include_dir_suffix environment variable, see table below
  \end_inset
  
  
@@ -1341,7 +1359,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset space ~
  \end_inset
  
-@@ -2914,22 +2857,6 @@ lib_dir_suffix environment variable, see table below
+@@ -2894,22 +2837,6 @@ lib_dir_suffix environment variable, see table below
  \end_inset
  
  
@@ -1364,7 +1382,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset space ~
  \end_inset
  
-@@ -3410,7 +3337,7 @@ These defaults are:
+@@ -3408,7 +3335,7 @@ These defaults are:
  \begin_layout Standard
  \align center
  \begin_inset Tabular
@@ -1373,7 +1391,7 @@ index 41e8db0..9a971fa 100644
  <features tabularvalignment="middle">
  <column alignment="block" valignment="top" width="0in">
  <column alignment="block" valignment="top" width="0in">
-@@ -3694,68 +3621,6 @@ sdcc/include
+@@ -3692,68 +3619,6 @@ sdcc/include
  include
  \end_layout
  
@@ -1442,7 +1460,7 @@ index 41e8db0..9a971fa 100644
  \end_inset
  </cell>
  </row>
-@@ -3766,7 +3631,7 @@ lib
+@@ -3764,7 +3629,7 @@ lib
  \begin_layout Plain Layout
  
  \emph on
@@ -1451,7 +1469,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \end_inset
-@@ -3775,7 +3640,7 @@ NON_FREE_LIB_DIR_SUFFIX
+@@ -3773,7 +3638,7 @@ NON_FREE_LIB_DIR_SUFFIX
  \begin_inset Text
  
  \begin_layout Plain Layout
@@ -1460,7 +1478,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \end_inset
-@@ -3784,7 +3649,7 @@ sdcc/non-free/lib
+@@ -3782,7 +3647,7 @@ sdcc/non-free/lib
  \begin_inset Text
  
  \begin_layout Plain Layout
@@ -1469,7 +1487,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \end_inset
-@@ -4183,20 +4048,6 @@ include
+@@ -4181,20 +4046,6 @@ include
  \end_inset
  
   
@@ -1490,7 +1508,7 @@ index 41e8db0..9a971fa 100644
  \backslash
  
  \begin_inset Newline newline
-@@ -4211,20 +4062,6 @@ lib
+@@ -4209,20 +4060,6 @@ lib
  \end_inset
  
   
@@ -1511,7 +1529,7 @@ index 41e8db0..9a971fa 100644
  \backslash
  
  \begin_inset Newline newline
-@@ -4405,20 +4242,6 @@ include
+@@ -4403,20 +4240,6 @@ include
  \end_inset
  
   
@@ -1532,7 +1550,7 @@ index 41e8db0..9a971fa 100644
  \backslash
  
  \begin_inset Newline newline
-@@ -4433,20 +4256,6 @@ lib
+@@ -4431,20 +4254,6 @@ lib
  \end_inset
  
   
@@ -1553,7 +1571,7 @@ index 41e8db0..9a971fa 100644
  \backslash
  
  \begin_inset Newline newline
-@@ -4543,7 +4352,7 @@ Install paths
+@@ -4541,7 +4350,7 @@ Install paths
  \begin_layout Standard
  \align center
  \begin_inset Tabular
@@ -1562,7 +1580,7 @@ index 41e8db0..9a971fa 100644
  <features tabularvalignment="middle">
  <column alignment="left" valignment="top">
  <column alignment="left" valignment="top" width="4.5cm">
-@@ -4699,64 +4508,6 @@ include
+@@ -4697,64 +4506,6 @@ include
  <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
  \begin_inset Text
  
@@ -1627,7 +1645,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Plain Layout
  Library file**
  \end_layout
-@@ -4806,64 +4557,6 @@ sdcc
+@@ -4804,64 +4555,6 @@ sdcc
  lib
  \end_layout
  
@@ -1692,7 +1710,7 @@ index 41e8db0..9a971fa 100644
  \end_inset
  </cell>
  </row>
-@@ -5186,7 +4879,7 @@ $PATH
+@@ -5184,7 +4877,7 @@ $PATH
  \begin_layout Standard
  \align center
  \begin_inset Tabular
@@ -1701,7 +1719,7 @@ index 41e8db0..9a971fa 100644
  <features tabularvalignment="middle">
  <column alignment="block" valignment="top" width="0.5cm">
  <column alignment="block" valignment="top" width="4.8cm">
-@@ -5464,203 +5157,13 @@ include
+@@ -5462,203 +5155,13 @@ include
  </cell>
  </row>
  <row>
@@ -1906,7 +1924,7 @@ index 41e8db0..9a971fa 100644
  \end_inset
  </cell>
  <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-@@ -5676,21 +5179,13 @@ $DATADIR/
+@@ -5674,21 +5177,13 @@ $DATADIR/
  \end_inset
  
  
@@ -1929,7 +1947,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Text
  
  \begin_layout Plain Layout
-@@ -5698,7 +5193,7 @@ $INCLUDE_DIR_SUFFIX
+@@ -5696,7 +5191,7 @@ $INCLUDE_DIR_SUFFIX
  \begin_inset Newline newline
  \end_inset
  
@@ -1938,7 +1956,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \end_inset
-@@ -5796,7 +5291,7 @@ model
+@@ -5794,7 +5289,7 @@ model
  \begin_layout Standard
  \align center
  \begin_inset Tabular
@@ -1947,7 +1965,7 @@ index 41e8db0..9a971fa 100644
  <features tabularvalignment="middle">
  <column alignment="block" valignment="top" width="0.5cm">
  <column alignment="block" valignment="top" width="4.5cm">
-@@ -6076,7 +5571,7 @@ lib
+@@ -6074,7 +5569,7 @@ lib
  </cell>
  </row>
  <row>
@@ -1956,7 +1974,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Text
  
  \begin_layout Plain Layout
-@@ -6085,7 +5580,7 @@ lib
+@@ -6083,7 +5578,7 @@ lib
  
  \end_inset
  </cell>
@@ -1965,7 +1983,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Text
  
  \begin_layout Plain Layout
-@@ -6116,7 +5611,7 @@ $LIB_DIR_SUFFIX/
+@@ -6114,7 +5609,7 @@ $LIB_DIR_SUFFIX/
  
  \end_inset
  </cell>
@@ -1974,7 +1992,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Text
  
  \begin_layout Plain Layout
-@@ -6131,7 +5626,7 @@ lib/
+@@ -6129,7 +5624,7 @@ lib/
  
  \end_inset
  </cell>
@@ -1983,7 +2001,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Text
  
  \begin_layout Plain Layout
-@@ -6154,308 +5649,6 @@ lib
+@@ -6152,308 +5647,6 @@ lib
  <model>
  \end_layout
  
@@ -2292,7 +2310,7 @@ index 41e8db0..9a971fa 100644
  \end_inset
  </cell>
  </row>
-@@ -8723,14 +7916,6 @@ In <installdir>/share/sdcc/include
+@@ -8717,14 +7910,6 @@ In <installdir>/share/sdcc/include
  the include files
  \end_layout
  
@@ -2307,7 +2325,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Standard
  In <installdir>/share/sdcc/lib
  \end_layout
-@@ -8739,14 +7924,6 @@ In <installdir>/share/sdcc/lib
+@@ -8733,14 +7918,6 @@ In <installdir>/share/sdcc/lib
  the src and target subdirectories with the precompiled relocatables.
  \end_layout
  
@@ -2322,7 +2340,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Standard
  In <installdir>/share/sdcc/doc
  \end_layout
-@@ -15589,66 +14766,6 @@ splint
+@@ -15254,66 +14431,6 @@ splint
  myprogram.c
  \end_layout
  
@@ -2389,7 +2407,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Subsection
  Linker Options
  \begin_inset Index idx
-@@ -44653,66 +43770,9 @@ http://sourceforge.net/projects/gputils
+@@ -44656,66 +43773,9 @@ http://sourceforge.net/projects/gputils
  Pic device specific header and c source files are automatically generated
   from MPLAB include files, which are published by Microchip with a special
   requirement that they are only to be used with authentic Microchip devices.
@@ -2459,7 +2477,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Newline newline
  \end_inset
  
-@@ -44766,7 +43826,7 @@ Makefile
+@@ -44769,7 +43829,7 @@ Makefile
  \begin_inset space ~
  \end_inset
  
@@ -2468,7 +2486,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Newline newline
  \end_inset
  
-@@ -44860,7 +43920,7 @@ Makefile
+@@ -44863,7 +43923,7 @@ Makefile
  \begin_inset space ~
  \end_inset
  
@@ -2477,7 +2495,7 @@ index 41e8db0..9a971fa 100644
  \begin_inset Newline newline
  \end_inset
  
-@@ -45142,47 +44202,6 @@ status collapsed
+@@ -45145,47 +44205,6 @@ status collapsed
  \begin_layout Plain Layout
  
  
@@ -2525,7 +2543,7 @@ index 41e8db0..9a971fa 100644
  \backslash
  /
  \end_layout
-@@ -46055,47 +45074,6 @@ status collapsed
+@@ -46058,47 +45077,6 @@ status collapsed
  -all-callee-saves
  \end_layout
  
@@ -2573,7 +2591,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Subsection
  Port Specific Options
  \begin_inset Index idx
-@@ -47372,188 +46350,6 @@ Linker
+@@ -47375,188 +46353,6 @@ Linker
  \end_inset
  
  
@@ -2762,7 +2780,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \begin_layout Subsection
-@@ -48249,66 +47045,9 @@ name "subsec:PIC16_Header-Files-and-Libraries"
+@@ -48252,66 +47048,9 @@ name "subsec:PIC16_Header-Files-and-Libraries"
  Pic device specific header and c source files are automatically generated
   from MPLAB include files, which are published by Microchip with a special
   requirement that they are only to be used with authentic Microchip devices.
@@ -2832,7 +2850,7 @@ index 41e8db0..9a971fa 100644
  \end_layout
  
  \begin_layout Subsection
-@@ -48554,195 +47293,6 @@ vfprintf.c
+@@ -48557,195 +47296,6 @@ vfprintf.c
   should also work, but is untested.
  \end_layout
  
@@ -3028,7 +3046,7 @@ index 41e8db0..9a971fa 100644
  \begin_layout Subsection
  Memory Models
  \end_layout
-@@ -73525,6 +72075,12 @@ This document was initially written by Sandeep Dutta and updated by SDCC
+@@ -73531,6 +72081,12 @@ This document was initially written by Sandeep Dutta and updated by SDCC
   developers.
  \end_layout
  
@@ -3042,7 +3060,7 @@ index 41e8db0..9a971fa 100644
  All product names mentioned herein may be trademarks
  \begin_inset Index idx
 diff --git a/sdcc.spec b/sdcc.spec
-index 9f1eeff..3686228 100644
+index b8baa92..be90a84 100644
 --- a/sdcc.spec
 +++ b/sdcc.spec
 @@ -83,15 +83,15 @@ rm -rf $RPM_BUILD_ROOT
@@ -3058,11 +3076,11 @@ index 9f1eeff..3686228 100644
  %doc %{_defaultdocdir}
  
  %changelog
-+* Sat Oct 31 2020 - simon AT simonsouth.net
++* Tue Dec 08 2020 - simon AT simonsouth.net
 +- removed non-free include and lib directories
- * Wed Feb 07 2018 - pkk AT spth.de
- - version updated to 3.7.0
- * Sun May 29 2016 - sourceforge.brock AT dse.nl
+ * Sat Jan 18 2029 - pkk AT spth.de
+ - version updated to 4.0.0
+ * Fri Apr 05 2019 - krauseph AT informatik.uni-freiburg.de
 diff --git a/sdcc_vc.h.in b/sdcc_vc.h.in
 index 06d8cca..736c325 100644
 --- a/sdcc_vc.h.in
@@ -3077,10 +3095,10 @@ index 06d8cca..736c325 100644
  #define BIN2DATA_DIR                "\\.."
  #define PREFIX2BIN_DIR              "\\bin"
 diff --git a/sdccconf_in.h b/sdccconf_in.h
-index 29619bd..dadf310 100644
+index aeb2724..9c1df9d 100644
 --- a/sdccconf_in.h
 +++ b/sdccconf_in.h
-@@ -106,12 +106,6 @@
+@@ -97,12 +97,6 @@
  /* XXX */
  #undef LIB_DIR_SUFFIX
  
@@ -3093,7 +3111,7 @@ index 29619bd..dadf310 100644
  /* Define to 1 to disable the AVR port */
  #undef OPT_DISABLE_AVR
  
-@@ -133,9 +127,6 @@
+@@ -127,9 +121,6 @@
  /* XXX */
  #undef OPT_DISABLE_MCS51
  
@@ -3104,10 +3122,10 @@ index 29619bd..dadf310 100644
  #undef OPT_DISABLE_PACKIHX
  
 diff --git a/src/SDCCglobl.h b/src/SDCCglobl.h
-index 2ce040b..d72d3b8 100644
+index b8d156b..db81fd7 100644
 --- a/src/SDCCglobl.h
 +++ b/src/SDCCglobl.h
-@@ -315,7 +315,6 @@ struct options
+@@ -288,7 +288,6 @@ struct options
      int no_pack_iram;           /* MCS51/DS390 - Deprecated: Tells the linker not to pack variables in internal ram */
      int acall_ajmp;             /* MCS51 - Use acall/ajmp instead of lcall/ljmp */
      int no_ret_without_call;    /* MCS51 - Do not use ret independent of acall/lcall */
@@ -3116,10 +3134,10 @@ index 2ce040b..d72d3b8 100644
      int xstack_loc;             /* initial location of external stack */
      int stack_loc;              /* initial value of internal stack pointer */
 diff --git a/src/SDCCmain.c b/src/SDCCmain.c
-index a523164..a279d3d 100644
+index d4598a5..cd36f3d 100644
 --- a/src/SDCCmain.c
 +++ b/src/SDCCmain.c
-@@ -144,7 +144,6 @@ char buffer[PATH_MAX * 2];
+@@ -142,7 +142,6 @@ char buffer[PATH_MAX * 2];
  #define OPTION_DATA_SEG             "--dataseg"
  #define OPTION_DOLLARS_IN_IDENT     "--fdollars-in-identifiers"
  #define OPTION_SIGNED_CHAR          "--fsigned-char"
@@ -3127,15 +3145,15 @@ index a523164..a279d3d 100644
  #define OPTION_PEEP_RETURN          "--peep-return"
  #define OPTION_NO_PEEP_RETURN       "--no-peep-return"
  #define OPTION_NO_OPTSDCC_IN_ASM    "--no-optsdcc-in-asm"
-@@ -192,7 +191,6 @@ static const OPTION optionsTable[] = {
-   {0,   OPTION_STD_SDCC11, NULL, "Use ISO C11 standard with SDCC extensions (default)"},
+@@ -197,7 +196,6 @@ static const OPTION optionsTable[] = {
+   {0,   OPTION_STD_SDCC2X, NULL, "Use ISO C2X standard with SDCC extensions"},
    {0,   OPTION_DOLLARS_IN_IDENT, &options.dollars_in_ident, "Permit '$' as an identifier character"},
    {0,   OPTION_SIGNED_CHAR, &options.signed_char, "Make \"char\" signed by default"},
 -  {0,   OPTION_USE_NON_FREE, &options.use_non_free, "Search / include non-free licensed libraries and header files"},
  
    {0,   NULL, NULL, "Code generation options"},
    {'m', NULL, NULL, "Set the port to use e.g. -mz80."},
-@@ -2045,10 +2043,6 @@ preProcess (char **envp)
+@@ -2084,10 +2082,6 @@ preProcess (char **envp)
        else
          addSet (&preArgvSet, Safe_strdup ("-D__SDCC_CHAR_UNSIGNED"));
  
@@ -3146,7 +3164,7 @@ index a523164..a279d3d 100644
        /* set the macro for large model  */
        switch (options.model)
          {
-@@ -2262,12 +2256,6 @@ setIncludePath (void)
+@@ -2301,12 +2295,6 @@ setIncludePath (void)
     *  6. - $SDCC_HOME/PREFIX2DATA_DIR/INCLUDE_DIR_SUFFIX
     *  7. - path(argv[0])/BIN2DATA_DIR/INCLUDE_DIR_SUFFIX
     *  8. - DATADIR/INCLUDE_DIR_SUFFIX (only on *nix)
@@ -3159,7 +3177,7 @@ index a523164..a279d3d 100644
     */
  
    if (!options.nostdinc)
-@@ -2280,17 +2268,6 @@ setIncludePath (void)
+@@ -2319,17 +2307,6 @@ setIncludePath (void)
        includeDirsSet = processStrSet (includeDirsSet, NULL, port->target, NULL);
        mergeSets (&includeDirsSet, tempSet);
  
@@ -3177,7 +3195,7 @@ index a523164..a279d3d 100644
        if ((p = getenv (SDCC_INCLUDE_NAME)) != NULL)
          {
            struct dbuf_s dbuf;
-@@ -2315,9 +2292,6 @@ setLibPath (void)
+@@ -2354,9 +2331,6 @@ setLibPath (void)
     * 3. - $SDCC_HOME/PREFIX2DATA_DIR/LIB_DIR_SUFFIX/<model>
     * 4. - path(argv[0])/BIN2DATA_DIR/LIB_DIR_SUFFIX/<model>
     * 5. - DATADIR/LIB_DIR_SUFFIX/<model> (only on *nix)
@@ -3187,7 +3205,7 @@ index a523164..a279d3d 100644
     */
  
    if (!options.nostdlib)
-@@ -2334,13 +2308,6 @@ setLibPath (void)
+@@ -2373,13 +2347,6 @@ setLibPath (void)
        dbuf_makePath (&dbuf, LIB_DIR_SUFFIX, port->general.get_model ? port->general.get_model () : targetname);
        libDirsSet = processStrSet (dataDirsSet, NULL, dbuf_c_str (&dbuf), NULL);
  
@@ -3202,7 +3220,7 @@ index a523164..a279d3d 100644
          {
            addSetHead (&libDirsSet, Safe_strdup (p));
 diff --git a/src/pic14/main.c b/src/pic14/main.c
-index 3d868cc..e8ecaaf 100644
+index ee90470..519ccfc 100644
 --- a/src/pic14/main.c
 +++ b/src/pic14/main.c
 @@ -42,7 +42,6 @@ static OPTION _pic14_poptions[] =
@@ -3213,9 +3231,9 @@ index 3d868cc..e8ecaaf 100644
      { 0, NULL, NULL, NULL }
    };
  
-@@ -153,16 +152,6 @@ _pic14_finaliseOptions (void)
-       addSet (&preArgvSet, dbuf_detach_c_str (&dbuf));
-     }
+@@ -176,16 +175,6 @@ _pic14_finaliseOptions (void)
+     addSet (&preArgvSet, Safe_strdup (dbuf_detach_c_str (&dbuf)));
+   }
  
 -  if (!pic14_options.no_warn_non_free && !options.use_non_free)
 -    {
@@ -3255,7 +3273,7 @@ index cdfbba0..5877f09 100644
  
  extern pic16_options_t pic16_options;
 diff --git a/src/pic16/main.c b/src/pic16/main.c
-index 6f194c1..7f7b2f0 100644
+index 61d9cfb..75d1182 100644
 --- a/src/pic16/main.c
 +++ b/src/pic16/main.c
 @@ -655,7 +655,6 @@ OPTION pic16_optionsTable[]= {
@@ -3292,23 +3310,25 @@ index 6f194c1..7f7b2f0 100644
  
  static const char *
 diff --git a/src/regression/Makefile b/src/regression/Makefile
-index 26a7ff3..4547295 100644
+index d8dae7c..1a32355 100644
 --- a/src/regression/Makefile
 +++ b/src/regression/Makefile
-@@ -65,10 +65,10 @@ TARGETPIC = 18f452
- CFLAGS	= -mpic16 -p$(TARGETPIC)
- DIR = pic16
- endif
--CFLAGS += -Wl,-q --no-warn-non-free
-+CFLAGS += -Wl,-q
- CFLAGS += -Wl,--map
--CFLAGS += -I $(SDCC_SRC)/device/include/$(DIR) -I $(SDCC_SRC)/device/non-free/include/$(DIR)
--CFLAGS += -L $(SDCC_BIN)/device/lib/build/$(DIR) -L $(SDCC_BIN)/device/non-free/lib/build/$(DIR)
-+CFLAGS += -I $(SDCC_SRC)/device/include/$(DIR)
-+CFLAGS += -L $(SDCC_BIN)/device/lib/build/$(DIR)
- #CFLAGS += --no-pcode-opt
- #CFLAGS += -V
+@@ -107,12 +107,12 @@ endif
+ CC = $(top_builddir)/bin/sdcc
  
+ # compiler options
+-CFLAGS =  --no-warn-non-free -m$(ARCH) -p$(DEV) --fsigned-char --i-code-in-asm --fverbose-asm --std-c99
+-CFLAGS += --nostdinc -I$(top_srcdir)/device/include/$(ARCH) -I$(top_srcdir)/device/non-free/include/$(ARCH) -I$(top_srcdir)/device/include
++CFLAGS =  -m$(ARCH) -p$(DEV) --fsigned-char --i-code-in-asm --fverbose-asm --std-c99
++CFLAGS += --nostdinc -I$(top_srcdir)/device/include/$(ARCH) -I$(top_srcdir)/device/include
+ 
+ # linker options (for sdcc)
+ CFLAGS += -Wl,-l,-O2
+-CFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/$(ARCH) -L$(top_builddir)/device/non-free/lib/build/$(ARCH)
++CFLAGS += --nostdlib -L$(top_builddir)/device/lib/build/$(ARCH)
+ 
+ # linker libraries
+ LIB_SUFFIX = $(LIB_E)$(LIB_O)$(LIB_X)
 diff --git a/support/regression/ports/pic14/spec.mk b/support/regression/ports/pic14/spec.mk
 index a3dcc05..bef1c45 100644
 --- a/support/regression/ports/pic14/spec.mk
@@ -3475,10 +3495,10 @@ index 6db417a..4b35225 100755
    );
  
 diff --git a/support/scripts/sdcc.nsi b/support/scripts/sdcc.nsi
-index 5086181..9527244 100644
+index 68e9035..92e5784 100644
 --- a/support/scripts/sdcc.nsi
 +++ b/support/scripts/sdcc.nsi
-@@ -477,11 +477,6 @@ ${Section} "SDCC include files" SEC05
+@@ -483,11 +483,6 @@ ${Section} "SDCC include files" SEC05
  
    SetOutPath "$INSTDIR\include"
    File "${DEV_ROOT}\include\*.h"
@@ -3490,7 +3510,7 @@ index 5086181..9527244 100644
  ${SectionEnd}
  
  ${Section} "SDCC DS390 library" SEC06
-@@ -579,18 +574,12 @@ ${Section} "SDCC PIC16 library" SEC21
+@@ -585,18 +580,12 @@ ${Section} "SDCC PIC16 library" SEC21
    SetOutPath "$INSTDIR\lib\pic16"
    File "${DEV_ROOT}\lib\pic16\*.o"
    File "${DEV_ROOT}\lib\pic16\*.lib"
@@ -3508,8 +3528,8 @@ index 5086181..9527244 100644
 -  File "${DEV_ROOT}\non-free\lib\pic14\*.lib"
  ${SectionEnd}
  
- ${Section} "SDCC STM8 library" SEC23
-@@ -691,10 +680,6 @@ ${Section} "SDCC library sources" SEC25
+ ${Section} "SDCC STM8 small model library" SEC23
+@@ -697,10 +686,6 @@ ${Section} "SDCC library sources" SEC25
    File "${DEV_ROOT}\lib\src\pic14\libsdcc\enhanced\*.inc"
  #  File "${DEV_ROOT}\lib\src\pic14\libsdcc\Makefile"
  
@@ -3518,9 +3538,9 @@ index 5086181..9527244 100644
 -#  File "${DEV_ROOT}\non-free\lib\src\pic14\libdev\Makefile"
 -
    SetOutPath "$INSTDIR\lib\src\pic14\libm"
-   File "${DEV_ROOT}\lib\src\pic14\libm\*.c"
+ #  File "${DEV_ROOT}\lib\src\pic14\libm\*.c"
  
-@@ -746,10 +731,6 @@ ${Section} "SDCC library sources" SEC25
+@@ -752,10 +737,6 @@ ${Section} "SDCC library sources" SEC25
    File "${DEV_ROOT}\lib\src\pic16\libc\utils\*.S"
  #  File "${DEV_ROOT}\lib\src\pic16\libc\utils\Makefile"
  
@@ -3531,7 +3551,7 @@ index 5086181..9527244 100644
    SetOutPath "$INSTDIR\lib\src\pic16\libio"
    File "${DEV_ROOT}\lib\src\pic16\libio\*.ignore"
  #  File "${DEV_ROOT}\lib\src\pic16\libio\Makefile"
-@@ -1003,13 +984,9 @@ ${Section} Uninstall SECUNINSTALL
+@@ -1074,13 +1055,9 @@ ${Section} Uninstall SECUNINSTALL
  
    Delete "$INSTDIR\lib\pic14\*.lib"
  
@@ -3545,7 +3565,7 @@ index 5086181..9527244 100644
    Delete "$INSTDIR\lib\hc08\*.lib"
  
    Delete "$INSTDIR\lib\s08\*.lib"
-@@ -1059,9 +1036,7 @@ ${Section} Uninstall SECUNINSTALL
+@@ -1144,9 +1121,7 @@ ${Section} Uninstall SECUNINSTALL
    Delete "$INSTDIR\include\pic14\*.h"
    Delete "$INSTDIR\include\pic14\*.txt"
    Delete "$INSTDIR\include\pic14\*.inc"
@@ -3555,7 +3575,7 @@ index 5086181..9527244 100644
    Delete "$INSTDIR\include\pic16\*.txt"
    Delete "$INSTDIR\include\mcs51\*.h"
    Delete "$INSTDIR\include\hc08\*.h"
-@@ -1119,9 +1094,7 @@ ${Section} Uninstall SECUNINSTALL
+@@ -1208,9 +1183,7 @@ ${Section} Uninstall SECUNINSTALL
    Delete "$INSTDIR\uninstall.exe"
  
    RMDir /r "$INSTDIR\lib\src\pic14"
@@ -3565,9 +3585,9 @@ index 5086181..9527244 100644
    RMDir "$INSTDIR\lib\src\small"
    RMDir "$INSTDIR\lib\src\medium"
    RMDir "$INSTDIR\lib\src\large"
-@@ -1138,12 +1111,9 @@ ${Section} Uninstall SECUNINSTALL
-   RMDir "$INSTDIR\lib\src\s08"
-   RMDir "$INSTDIR\lib\src\stm8"
+@@ -1233,12 +1206,9 @@ ${Section} Uninstall SECUNINSTALL
+   RMDir "$INSTDIR\lib\src\pdk15"
+   RMDir "$INSTDIR\lib\src\pdk15-stack-auto"
    RMDir "$INSTDIR\lib\src"
 -  RMDir "$INSTDIR\non-free\lib\src"
  
@@ -3578,16 +3598,17 @@ index 5086181..9527244 100644
    RMDir "$INSTDIR\lib\z80"
    RMDir "$INSTDIR\lib\z180"
    RMDir "$INSTDIR\lib\r2k"
-@@ -1160,16 +1130,13 @@ ${Section} Uninstall SECUNINSTALL
-   RMDir "$INSTDIR\lib\s08"
-   RMDir "$INSTDIR\lib\stm8"
+@@ -1261,7 +1231,6 @@ ${Section} Uninstall SECUNINSTALL
+   RMDir "$INSTDIR\lib\pdk15"
+   RMDir "$INSTDIR\lib\pdk15-stack-auto"
    RMDir "$INSTDIR\lib"
 -  RMDir "$INSTDIR\non-free\lib"
  
    RMDir "$INSTDIR\include\asm\z80"
    RMDir "$INSTDIR\include\asm\z180"
-   RMDir "$INSTDIR\include\asm\r2k"
+@@ -1269,9 +1238,7 @@ ${Section} Uninstall SECUNINSTALL
    RMDir "$INSTDIR\include\asm\r3ka"
+   RMDir "$INSTDIR\include\asm\ez80_z80"
    RMDir "$INSTDIR\include\asm\pic16"
 -  RMDir "$INSTDIR\non-free\include\asm\pic16"
    RMDir "$INSTDIR\include\asm\pic14"
@@ -3595,7 +3616,7 @@ index 5086181..9527244 100644
    RMDir "$INSTDIR\include\asm\mcs51"
    RMDir "$INSTDIR\include\asm\gbz80"
    RMDir "$INSTDIR\include\asm\ds390"
-@@ -1178,17 +1145,12 @@ ${Section} Uninstall SECUNINSTALL
+@@ -1280,17 +1247,12 @@ ${Section} Uninstall SECUNINSTALL
    RMDir "$INSTDIR\include\asm"
    RMDir "$INSTDIR\include\z180"
    RMDir "$INSTDIR\include\pic14"

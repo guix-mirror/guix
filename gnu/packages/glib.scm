@@ -455,7 +455,9 @@ dynamic loading, and an object system.")
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("libffi" ,libffi)))
+     `(;; In practice, GIR users will need libffi when using
+       ;; gobject-introspection.
+       ("libffi" ,libffi)))
     (native-search-paths
      (list
       (search-path-specification

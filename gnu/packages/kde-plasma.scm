@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,6 +34,53 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
+
+(define-public breeze
+  (package
+    (name "breeze")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0dpk1w7zcafrzf46j060i1qb0fwqpsflkfzr6gcar81llmjnc4b1"))))
+    (build-system qt-build-system)
+    ;; TODO: Warning at /gnu/store/…-kpackage-5.34.0/…/KF5PackageMacros.cmake:
+    ;;   warnings during generation of metainfo for org.kde.breezedark.desktop:
+    ;;   Package type "Plasma/LookAndFeel" not found
+    ;; TODO: Check whether is makes sence splitting into several outputs, like
+    ;; Debian does:
+    ;; - breeze-cursor-theme
+    ;; - "out", "devel"
+    ;; - kde-style-breeze - Widget style
+    ;; - kde-style-breeze-qt4 - propably not useful
+    ;; - kwin-style-breeze
+    ;; - qml-module-qtquick-controls-styles-breeze - QtQuick style
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kcmutils" ,kcmutils) ; optional
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kde-frameworkintegration" ,kde-frameworkintegration) ; optional
+       ("kdecoration" ,kdecoration)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes) ; for optional kde-frameworkintegration
+       ("kpackage" ,kpackage)
+       ("kwayland" ,kwayland) ; optional
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative) ; optional
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://invent.kde.org/plasma/breeze")
+    (synopsis "Default KDE Plasma theme")
+    (description "Artwork, styles and assets for the Breeze visual style for
+the Plasma Desktop.  Breeze is the default theme for the KDE Plasma desktop.")
+    (license license:gpl2+)))
 
 (define-public kdecoration
   (package

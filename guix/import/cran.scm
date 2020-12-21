@@ -141,6 +141,7 @@ package definition."
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
 (define %cran-url "https://cran.r-project.org/web/packages/")
+(define %cran-canonical-url "https://cran.r-project.org/package=")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
 ;; The latest Bioconductor release is 3.12.  Bioconductor packages should be
@@ -441,6 +442,10 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((bioconductor) %bioconductor-url)
                        ((git)          #f)
                        ((hg)           #f)))
+         (canonical-url-base (case repository
+                               ((cran)         %cran-canonical-url)
+                               ((bioconductor) %bioconductor-url)
+                               ((git)          #f)))
          (uri-helper (case repository
                        ((cran)         cran-uri)
                        ((bioconductor) bioconductor-uri)
@@ -456,7 +461,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((hg)  (assoc-ref meta 'hg))
                        (else (match (listify meta "URL")
                                ((url rest ...) url)
-                               (_ (string-append base-url name))))))
+                               (_ (string-append canonical-url-base name))))))
          (source-url (case repository
                        ((git) (assoc-ref meta 'git))
                        ((hg)  (assoc-ref meta 'hg))

@@ -1317,18 +1317,7 @@ and in the current monad setting (system type, etc.)"
                    reference->sexp (gexp-references exp))))
     (return (apply (gexp-proc exp) args))))
 
-(define-syntax-rule (define-syntax-parameter-once name proc)
-  ;; Like 'define-syntax-parameter' but ensure the top-level binding for NAME
-  ;; does not get redefined.  This works around a race condition in a
-  ;; multi-threaded context with Guile <= 2.2.4: <https://bugs.gnu.org/27476>.
-  (eval-when (load eval expand compile)
-    (define name
-      (if (module-locally-bound? (current-module) 'name)
-          (module-ref (current-module) 'name)
-          (make-syntax-transformer 'name 'syntax-parameter
-                                   (list proc))))))
-
-(define-syntax-parameter-once current-imported-modules
+(define-syntax-parameter current-imported-modules
   ;; Current list of imported modules.
   (identifier-syntax '()))
 
@@ -1339,7 +1328,7 @@ environment."
                          (identifier-syntax modules)))
     body ...))
 
-(define-syntax-parameter-once current-imported-extensions
+(define-syntax-parameter current-imported-extensions
   ;; Current list of extensions.
   (identifier-syntax '()))
 

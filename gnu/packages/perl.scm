@@ -1712,7 +1712,7 @@ and objects.")
 (define-public perl-common-sense
   (package
     (name "perl-common-sense")
-    (version "3.74")
+    (version "3.75")
     (source
      (origin
        (method url-fetch)
@@ -1720,7 +1720,7 @@ and objects.")
                            "common-sense-" version ".tar.gz"))
        (sha256
         (base32
-         "1wxv2s0hbjkrnssvxvsds0k213awg5pgdlrpkr6xkpnimc17s7vp"))))
+         "0zhfp8f0czg69ycwn7r6ayg6idm5kyh2ai06g5s6s07kli61qsm8"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/common-sense")
     (synopsis "Sane defaults for Perl programs")
@@ -2033,14 +2033,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.18")
+    (version "4.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1dnnf6bjz0fi9hk8gzmsklmh5y0z137vk62k3d7s88q30maf3rk3"))))
+        (base32 "061940vyj9y3rzwq47z2a3f5i5rfpa90ccz7fgz228zr7njkvfpr"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -5553,18 +5553,18 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.004000")
+    (version "1.004003")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
+         "1grg8saa318bs4x2wqnww7y0nra7azrzg35bk5pgvkwxzwbkpvjv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-without-module" ,perl-test-without-module)))
+     `(("perl-test-needs" ,perl-test-needs)))
     (inputs
      `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
     (home-page "https://metacpan.org/release/JSON-MaybeXS")
@@ -8368,14 +8368,14 @@ for a given module is comprehensive.")
 (define-public perl-pod-simple
   (package
     (name "perl-pod-simple")
-    (version "3.35")
+    (version "3.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
                                   "Pod-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0gg11ibbc02l2aw0bsv4jx0jax8z0apgfy3p5csqnvhlsb6218cr"))))
+                "1icagrjqw1azmff82h17cbrhqgql7rg21gz64mjpiqqq0cpfpz59"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Pod-Simple")
     (synopsis "Parsing library for text in Pod format")

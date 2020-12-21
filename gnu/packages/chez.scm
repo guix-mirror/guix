@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,29 +43,29 @@
   #:use-module (srfi srfi-1))
 
 (define nanopass
-  (let ((version "1.9"))
+  (let ((version "1.9.1"))
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/nanopass/nanopass-framework-scheme")
             (commit (string-append "v" version))))
-      (sha256 (base32 "0lrngdna6w7v9vlp1a873hgwrwsz2p0pgkccswa4smzvdyhgfsri"))
+      (sha256 (base32 "1synadgaycca39jfx525975ss9y0lkl516sdrc62wrrllamm8n21"))
       (file-name (git-file-name "nanopass" version)))))
 
 (define stex
-  (let ((version "1.2.1"))
+  (let ((version "1.2.2"))
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/dybvig/stex")
             (commit (string-append "v" version))))
-      (sha256 (base32 "1jiawhhqnsj42hzmlbq5xby3iarhf8vhiqs0kg1a0zg5jsn6cf8n"))
+      (sha256 (base32 "1q5i8pf4cdfjsj6r2k1rih7ljbfggyxdng2p2fvsgarzihpsin2i"))
       (file-name (git-file-name "stex" version)))))
 
 (define-public chez-scheme
   (package
     (name "chez-scheme")
-    (version "9.5.2")
+    (version "9.5.4")
     (source
      (origin
        (method git-fetch)
@@ -72,13 +73,15 @@
              (url "https://github.com/cisco/ChezScheme")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1hagrqdp649n2g0wq2a9gfnz7mjcjakkw7ziplbj3db412bb7kx5"))
+        (base32 "0prgn2z9l888j93ydxaf04ph424g0fi3a8w7f8m0b2r7fr1v7388"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
        ("libuuid" ,util-linux "lib")
        ("libx11" ,libx11)
+       ("lz4" ,lz4)
+       ("lz4:static" ,lz4 "static")
        ("xorg-rgb" ,xorg-rgb)
        ("nanopass" ,nanopass)
        ("zlib" ,zlib)
@@ -118,7 +121,7 @@
              (let ((out (assoc-ref outputs "out"))
                    (nanopass (assoc-ref inputs "nanopass"))
                    (stex (assoc-ref inputs "stex"))
-                   (zlib (assoc-ref inputs "zlib"))
+                   (lz4-static (assoc-ref inputs "lz4:static"))
                    (zlib-static (assoc-ref inputs "zlib:static"))
                    (unpack (assoc-ref %standard-phases 'unpack))
                    (patch-source-shebangs
@@ -137,13 +140,6 @@
                ;; and manually patch the needed modules for compilation.
                (substitute* "configure"
                  (("! -f '") "-d '")) ; working around CURL.
-               (substitute* (find-files "./c" "Mf-[a-zA-Z0-9.]+")
-                 (("\\$\\{Kernel\\}: \\$\\{kernelobj\\} \\.\\./zlib/libz\\.a")
-                  "${Kernel}: ${kernelobj}")
-                 (("ld ([-a-zA-Z0-9_${} ]+) \\.\\./zlib/libz\\.a" all args)
-                  (string-append "ld " args " " zlib-static "/lib/libz.a"))
-                 (("\\(cd \\.\\./zlib; ([-a-zA-Z0-9=./ ]+))")
-                  (which "true")))
                (substitute* (find-files "mats" "Mf-.*")
                  (("^[[:space:]]+(cc ) *") "\tgcc "))
                (substitute*
@@ -155,16 +151,21 @@
                                     "|stex\\.stex"
                                     "|newrelease"
                                     "|workarea"
+                                    "|unix\\.ms"
+                                    "|^6\\.ms"
                                     ;;"|[a-zA-Z0-9.]+\\.ms" ; guile can't read
                                     ")"))
                  (("/bin/rm") (which "rm"))
                  (("/bin/ln") (which "ln"))
-                 (("/bin/cp") (which "cp")))
+                 (("/bin/cp") (which "cp"))
+                 (("/bin/echo") (which "echo")))
                (substitute* "makefiles/installsh"
                  (("/bin/true") (which "true")))
                (substitute* "stex/Makefile"
                  (("PREFIX=/usr") (string-append "PREFIX=" out)))
                (invoke "./configure" "--threads"
+                       (string-append "ZLIB=" zlib-static "/lib/libz.a")
+                       (string-append "LZ4=" lz4-static "/lib/liblz4.a")
                        (string-append "--installprefix=" out)))))
          ;; Installation of the documentation requires a running "chez".
          (add-after 'install 'install-doc

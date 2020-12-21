@@ -1153,3 +1153,30 @@ execute @code{unittest} test suites using multiple processes to split up
 execution of a test suite.  It will also store a history of all test runs to
 help in debugging failures and optimizing the scheduler to improve speed.")
     (license license:asl2.0)))
+
+;; This is only used by python-sanic
+(define-public python-pytest-sanic
+  (package
+    (name "python-pytest-sanic")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-sanic" version))
+              (sha256
+                (base32
+                  "02ajd8z77ahi69kzkz200qgxrb4s2j4qb6k8j9ds1kz6qa6fsa34"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests depend on python-sanic.
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("python-aiohttp" ,python-aiohttp)
+        ("python-async-generator"
+         ,python-async-generator)
+        ("python-pytest" ,python-pytest)))
+    (home-page
+      "https://github.com/yunstanford/pytest-sanic")
+    (synopsis "Pytest plugin for Sanic")
+    (description "A pytest plugin for Sanic.  It helps you to test your
+code asynchronously.")
+    (license license:expat)))

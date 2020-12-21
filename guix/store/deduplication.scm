@@ -26,45 +26,25 @@
   #:use-module (guix build syscalls)
   #:use-module (guix base32)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (guix serialization)
   #:export (nar-sha256
-            deduplicate))
-
-;; XXX: This port is used as a workaround on Guile <= 2.2.4 where
-;; 'port-position' throws to 'out-of-range' when the offset is great than or
-;; equal to 2^32: <https://bugs.gnu.org/32161>.
-(define (counting-wrapper-port output-port)
-  "Return two values: an output port that wraps OUTPUT-PORT, and a thunk to
-retrieve the number of bytes written to OUTPUT-PORT."
-  (let ((byte-count 0))
-    (values (make-custom-binary-output-port "counting-wrapper"
-                                            (lambda (bytes offset count)
-                                              (put-bytevector output-port bytes
-                                                              offset count)
-                                              (set! byte-count
-                                                (+ byte-count count))
-                                              count)
-                                            (lambda ()
-                                              byte-count)
-                                            #f
-                                            (lambda ()
-                                              (close-port output-port)))
-            (lambda ()
-              byte-count))))
+            deduplicate
+            dump-file/deduplicate
+            copy-file/deduplicate))
 
 (define (nar-sha256 file)
   "Gives the sha256 hash of a file and the size of the file in nar form."
-  (let*-values (((port get-hash) (open-sha256-port))
-                ((wrapper get-size) (counting-wrapper-port port)))
-    (write-file file wrapper)
-    (force-output wrapper)
+  (let-values (((port get-hash) (open-sha256-port)))
+    (write-file file port)
     (force-output port)
     (let ((hash (get-hash))
-          (size (get-size)))
-      (close-port wrapper)
+          (size (port-position port)))
+      (close-port port)
       (values hash size))))
 
 (define (tempname-in directory)
@@ -155,49 +135,118 @@ under STORE."
   (define links-directory
     (string-append store "/.links"))
 
-    (mkdir-p links-directory)
-    (let loop ((path path)
-               (type (stat:type (lstat path)))
-               (hash hash))
-      (if (eq? 'directory type)
-          ;; Can't hardlink directories, so hardlink their atoms.
-          (for-each (match-lambda
-                      ((file . properties)
-                       (unless (member file '("." ".."))
-                         (let* ((file (string-append path "/" file))
-                                (type (match (assoc-ref properties 'type)
-                                        ((or 'unknown #f)
-                                         (stat:type (lstat file)))
-                                        (type type))))
-                           (loop file type
-                                 (and (not (eq? 'directory type))
-                                      (nar-sha256 file)))))))
-                    (scandir* path))
-          (let ((link-file (string-append links-directory "/"
-                                          (bytevector->nix-base32-string hash))))
-            (if (file-exists? link-file)
-                (replace-with-link link-file path
-                                   #:swap-directory links-directory
-                                   #:store store)
-                (catch 'system-error
-                  (lambda ()
-                    (link path link-file))
-                  (lambda args
-                    (let ((errno (system-error-errno args)))
-                      (cond ((= errno EEXIST)
-                             ;; Someone else put an entry for PATH in
-                             ;; LINKS-DIRECTORY before we could.  Let's use it.
-                             (replace-with-link path link-file
-                                                #:swap-directory
-                                                links-directory
-                                                #:store store))
-                            ((= errno ENOSPC)
-                             ;; There's not enough room in the directory index for
-                             ;; more entries in .links, but that's fine: we can
-                             ;; just stop.
-                             #f)
-                            ((= errno EMLINK)
-                             ;; PATH has reached the maximum number of links, but
-                             ;; that's OK: we just can't deduplicate it more.
-                             #f)
-                            (else (apply throw args)))))))))))
+  (let loop ((path path)
+             (type (stat:type (lstat path)))
+             (hash hash))
+    (if (eq? 'directory type)
+        ;; Can't hardlink directories, so hardlink their atoms.
+        (for-each (match-lambda
+                    ((file . properties)
+                     (unless (member file '("." ".."))
+                       (let* ((file (string-append path "/" file))
+                              (type (match (assoc-ref properties 'type)
+                                      ((or 'unknown #f)
+                                       (stat:type (lstat file)))
+                                      (type type))))
+                         (loop file type
+                               (and (not (eq? 'directory type))
+                                    (nar-sha256 file)))))))
+                  (scandir* path))
+        (let ((link-file (string-append links-directory "/"
+                                        (bytevector->nix-base32-string hash))))
+          (if (file-exists? link-file)
+              (replace-with-link link-file path
+                                 #:swap-directory links-directory
+                                 #:store store)
+              (catch 'system-error
+                (lambda ()
+                  (link path link-file))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (cond ((= errno EEXIST)
+                           ;; Someone else put an entry for PATH in
+                           ;; LINKS-DIRECTORY before we could.  Let's use it.
+                           (replace-with-link path link-file
+                                              #:swap-directory
+                                              links-directory
+                                              #:store store))
+                          ((= errno ENOENT)
+                           ;; This most likely means that LINKS-DIRECTORY does
+                           ;; not exist.  Attempt to create it and try again.
+                           (mkdir-p links-directory)
+                           (loop path type hash))
+                          ((= errno ENOSPC)
+                           ;; There's not enough room in the directory index for
+                           ;; more entries in .links, but that's fine: we can
+                           ;; just stop.
+                           #f)
+                          ((= errno EMLINK)
+                           ;; PATH has reached the maximum number of links, but
+                           ;; that's OK: we just can't deduplicate it more.
+                           #f)
+                          (else (apply throw args)))))))))))
+
+(define (tee input len output)
+  "Return a port that reads up to LEN bytes from INPUT and writes them to
+OUTPUT as it goes."
+  (define bytes-read 0)
+
+  (define (fail)
+    ;; Reached EOF before we had read LEN bytes from INPUT.
+    (raise (condition
+            (&nar-error (port input)
+                        (file (port-filename output))))))
+
+  (define (read! bv start count)
+    ;; Read at most LEN bytes in total.
+    (let ((count (min count (- len bytes-read))))
+      (let loop ((ret (get-bytevector-n! input bv start count)))
+        (cond ((eof-object? ret)
+               (if (= bytes-read len)
+                   0                              ; EOF
+                   (fail)))
+              ((and (zero? ret) (> count 0))
+               ;; Do not return zero since zero means EOF, so try again.
+               (loop (get-bytevector-n! input bv start count)))
+              (else
+               (put-bytevector output bv start ret)
+               (set! bytes-read (+ bytes-read ret))
+               ret)))))
+
+  (make-custom-binary-input-port "tee input port" read! #f #f #f))
+
+(define* (dump-file/deduplicate file input size type
+                                #:key (store (%store-directory)))
+  "Write SIZE bytes read from INPUT to FILE.  TYPE is a symbol, either
+'regular or 'executable.
+
+This procedure is suitable as a #:dump-file argument to 'restore-file'.  When
+used that way, it deduplicates files on the fly as they are restored, thereby
+removing the need to a deduplication pass that would re-read all the files
+down the road."
+  (define hash
+    (call-with-output-file file
+      (lambda (output)
+        (let-values (((hash-port get-hash)
+                      (open-hash-port (hash-algorithm sha256))))
+          (write-file-tree file hash-port
+                           #:file-type+size (lambda (_) (values type size))
+                           #:file-port
+                           (const (tee input size output)))
+          (close-port hash-port)
+          (get-hash)))))
+
+  (deduplicate file hash #:store store))
+
+(define* (copy-file/deduplicate source target
+                                #:key (store (%store-directory)))
+  "Like 'copy-file', but additionally deduplicate TARGET in STORE."
+  (call-with-input-file source
+    (lambda (input)
+      (let ((stat (stat input)))
+        (dump-file/deduplicate target input (stat:size stat)
+                               (if (zero? (logand (stat:mode stat)
+                                                  #o100))
+                                   'regular
+                                   'executable)
+                               #:store store)))))

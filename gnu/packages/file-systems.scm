@@ -38,6 +38,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -48,6 +49,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
@@ -328,8 +330,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "742dbbdbb90efb786f05a8576917fcd0e9cbd57e")
-        (revision "1"))
+  (let ((commit "db931a4571817d7d61be6bce306f1d42f7cd3398")
+        (revision "2"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -341,7 +343,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0kn8y3kqylz6scv47mzfmwrlh21kbb14z5vs65vks8w50i26sxnc"))))
+          (base32 "1zl8lda6ni6rhsmsng6smrcjihy2irjf03h1m7nvkqmkhq44j80s"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -352,7 +354,24 @@ from a mounted file system.")
                "PYTEST=pytest")
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure))         ; no configure script
+           (delete 'configure)          ; no configure script
+           (add-after 'install 'promote-mount.bcachefs.sh
+             ;; XXX The (optional) mount.bcachefs helper requires rust:cargo.
+             ;; This alternative shell script does the job well enough for now.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion (string-append out "/sbin")
+                 (rename-file "mount.bcachefs.sh" "mount.bcachefs")
+                 ;; WRAP-SCRIPT causes bogus ‘Insufficient arguments’ errors.
+                 (wrap-program "mount.bcachefs"
+                   `("PATH" ":" prefix
+                     ,(cons (string-append out "/sbin")
+                            (map (lambda (input)
+                                     (string-append (assoc-ref inputs input)
+                                                    "/bin"))
+                                   (list "coreutils"
+                                         "gawk"
+                                         "util-linux"))))))))))
          #:tests? #f))                  ; XXX 6 valgrind tests fail
       (native-inputs
        `(("pkg-config" ,pkg-config)
@@ -367,10 +386,15 @@ from a mounted file system.")
          ("libscrypt" ,libscrypt)
          ("libsodium" ,libsodium)
          ("liburcu" ,liburcu)
-         ("util-linux" ,util-linux "lib") ; lib{blkid,uuid}
+         ("util-linux:lib" ,util-linux "lib") ; lib{blkid,uuid}
          ("lz4" ,lz4)
          ("zlib" ,zlib)
-         ("zstd:lib" ,zstd "lib")))
+         ("zstd:lib" ,zstd "lib")
+
+         ;; Only for mount.bcachefs.sh.
+         ("coreutils" ,coreutils-minimal)
+         ("gawk" ,gawk)
+         ("util-linux" ,util-linux)))
       (home-page "https://bcachefs.org/")
       (synopsis "Tools to create and manage bcachefs file systems")
       (description

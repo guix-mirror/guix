@@ -349,18 +349,30 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
+;; The current "stable" kernels. That is, the most recently released major
+;; versions that are still supported upstream.
+(define-public linux-libre-5.10-version "5.10.1")
+(define deblob-scripts-5.10
+  (linux-libre-deblob-scripts
+   linux-libre-5.10-version
+   (base32 "0i99adbfjnir8p8ihhac58dv8p7mnqg4z2jpgvhj35lksdskngf7")
+   (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
+(define-public linux-libre-5.10-pristine-source
+  (let ((version linux-libre-5.10-version)
+        (hash (base32 "0p2fl7kl4ckphq17xir7n7vgrzlhbdqmyd2yyp4yilwvih9625pd")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.10)))
 
-;; The current "stable" kernel. That is, the most recently released major
-;; version.
-(define-public linux-libre-5.9-version "5.9.14")
+(define-public linux-libre-5.9-version "5.9.15")
 (define deblob-scripts-5.9
   (linux-libre-deblob-scripts
    linux-libre-5.9-version
    (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
+   (base32 "1vrv78xwcy32b82plkkbpyfxhpy3br7b18sjah4iqv25fxfcxpak")))
 (define-public linux-libre-5.9-pristine-source
   (let ((version linux-libre-5.9-version)
-        (hash (base32 "0jbb3rzbkh0l75zq9bnc60w55ryvrvcg7vw85fsbcwfzvi0zpz1r")))
+        (hash (base32 "1vhaayqjv1ha3nsxy9zbsz497ba4d4a1g0gfhgxcvci8dp8djh2p")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.9)))
@@ -368,15 +380,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.83")
+(define-public linux-libre-5.4-version "5.4.84")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
-   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
+   (base32 "0q3gwf3b404brjld7aj9krzv0wdpzvs8fgy088ag7q106cwgqg8i")
+   (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1ik14pfgynkn1sjhgyhgmxjvviq0mgvk0ygj76w8mplkpc5rgv5y")))
+        (hash (base32 "058mhczv6whjwxn7jjh1c6n5zrqjdnvbl2mp7jkfrg6frpvgr189")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -460,6 +472,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.10-source
+  (source-with-patches linux-libre-5.10-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.9-source
   (source-with-patches linux-libre-5.9-pristine-source
@@ -564,6 +581,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.10
+  (make-linux-libre-headers* linux-libre-5.10-version
+                             linux-libre-5.10-source))
 
 (define-public linux-libre-headers-5.9
   (make-linux-libre-headers* linux-libre-5.9-version
@@ -856,16 +877,22 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.10
+  (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-5.10-version)
+(define-public linux-libre-pristine-source linux-libre-5.10-pristine-source)
+(define-public linux-libre-source          linux-libre-5.10-source)
+(define-public linux-libre                 linux-libre-5.10)
+
 (define-public linux-libre-5.9
   (make-linux-libre* linux-libre-5.9-version
                      linux-libre-5.9-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.9-version)
-(define-public linux-libre-pristine-source linux-libre-5.9-pristine-source)
-(define-public linux-libre-source          linux-libre-5.9-source)
-(define-public linux-libre                 linux-libre-5.9)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -1023,8 +1050,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.9-version
-          linux-libre-5.9-source
+          linux-libre-5.10-version
+          linux-libre-5.10-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
@@ -2040,7 +2067,7 @@ trace of all the system calls made by a another process/program.")
               (base32
                "00wmbdghqbz6x95m1mcdd3wd46l6hgcr4wggdp049dbifh3qqvqf"))))
     (build-system gnu-build-system)
-    (inputs `(("libelf" ,libelf)))
+    (inputs `(("libelf" ,elfutils)))
     (arguments
      ;; Compilation uses -Werror by default, but it fails.
      '(#:configure-flags '("--disable-werror")))
@@ -2299,6 +2326,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
        #:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
+                            (string-append "CC=" ,(cc-for-target))
+                            "HOSTCC=gcc"
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
@@ -2314,7 +2343,16 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
                         (("^.*ARPDDIR.*$") ""))
-                      #t)))))
+                      #t))
+                  (add-after 'unpack 'patch-configure
+                    (lambda _
+                      (let ((target ,(%current-target-system)))
+                        (substitute* "configure"
+                          (("pkg-config")
+                            (if target
+                              (string-append target "-pkg-config")
+                              "pkg-config")))
+                        #t))))))
     (inputs
      `(("db4" ,bdb)
        ("iptables" ,iptables)
@@ -5866,7 +5904,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -5875,7 +5913,7 @@ developers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
+        (base32 "0ay6vl9zsz9b2scy0fnsy482pzizj52i27syxwny4z4i9wrk2wmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -7347,14 +7385,14 @@ to ring buffers shared with a consumer daemon.")
 (define-public kexec-tools
   (package
     (name "kexec-tools")
-    (version "2.0.20")
+    (version "2.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kernel"
                                   "/kexec/kexec-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "1j7qlhxk1rbv9jbj8wd6hb7zl8p2mp29ymrmccgmsi0m0dzhgn6s"))))
+                "00l7iqp337cr846b6w4lc5vl893v4zwjrxz0jsnkh5l9xqni84z1"))))
     (build-system gnu-build-system)
     (arguments
      ;; There are no automated tests.

@@ -214,7 +214,8 @@ This is used to create the self-contained tarballs with 'guix pack'."
     (symlink old (scope new)))
 
   ;; Populate the store.
-  (populate-store (list closure) directory)
+  (populate-store (list closure) directory
+                  #:deduplicate? #f)
 
   (when database
     (install-database-and-gc-roots directory database profile

@@ -110,6 +110,45 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
+(define-public sbcl-asdf-finalizers
+  (let ((commit "7f537f6c598b662ae987c6acc268dd27c25977e0")
+        (revision "1"))
+    (package
+      (name "sbcl-asdf-finalizers")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/asdf/asdf-finalizers")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1w56c9yjjydjshsgqxz57qlp2v3r4ilbisnsgiqphvxnhvd41y0v"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fare-utils" ,sbcl-fare-utils)
+         ("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (arguments
+       `(#:asd-files '("asdf-finalizers.asd"
+                       "list-of.asd"
+                       "asdf-finalizers-test.asd")
+         #:asd-systems '("asdf-finalizers"
+                         "list-of")))
+      (home-page "https://gitlab.common-lisp.net/asdf/asdf-finalizers")
+      (synopsis "Enforced calling of finalizers for Lisp code")
+      (description "This library allows you to implement and enforce proper
+finalization of compile-time constructs while building Lisp source files.
+
+It produces two systems: asdf-finalizers and list-of.")
+      (license license:expat))))
+
+(define-public ecl-asdf-finalizers
+  (sbcl-package->ecl-package sbcl-asdf-finalizers))
+
+(define-public cl-asdf-finalizers
+  (sbcl-package->cl-source-package sbcl-asdf-finalizers))
+
 (define-public sbcl-net.didierverna.asdf-flv
   (package
     (name "sbcl-net.didierverna.asdf-flv")
@@ -143,6 +182,35 @@ In order to make one or several variables file-local, use the macros
 
 (define-public ecl-net.didierverna.asdf-flv
   (sbcl-package->ecl-package sbcl-net.didierverna.asdf-flv))
+
+(define-public sbcl-command-line-arguments
+  (let ((commit "fbac862fb01c0e368141204f3f639920462c23fe")
+        (revision "1"))
+    (package
+      (name "sbcl-command-line-arguments")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fare/command-line-arguments")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "054m1ikndzqf72mb9ajaa64136cwr3bgag4yfbi1574a9vq75mjq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/fare/command-line-arguments")
+      (synopsis "Trivial command-line argument parsing library for Common Lisp")
+      (description "This is a library to abstract away the parsing of
+Unix-style command-line arguments.  Use it in conjunction with asdf:program-op
+or cl-launch for portable processing of command-line arguments.")
+      (license license:expat))))
+
+(define-public ecl-command-line-arguments
+  (sbcl-package->ecl-package sbcl-command-line-arguments))
+
+(define-public cl-command-line-arguments
+  (sbcl-package->cl-source-package sbcl-command-line-arguments))
 
 (define-public sbcl-fiveam
   (package
@@ -1576,26 +1644,29 @@ Common Lisp.")
   (sbcl-package->ecl-package sbcl-rt))
 
 (define-public sbcl-nibbles
-  (package
-    (name "sbcl-nibbles")
-    (version "0.14")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/sharplispers/nibbles/")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32
-         "1v7qfgpvdr6nz7v63dj69d26dis0kff3rd8xamr1llfdvza2pm8f"))
-       (file-name (git-file-name "nibbles" version))))
-    (build-system asdf-build-system/sbcl)
-    (native-inputs
-     ;; Tests only.
-     `(("rt" ,sbcl-rt)))
-    (synopsis "Common Lisp library for accessing octet-addressed blocks of data")
-    (description
-     "When dealing with network protocols and file formats, it's common to
+  ;; No tagged release since 2018.
+  (let ((commit "8e6b9b42d9f69000f55e5c45ad974d9e376ffdbd")
+        (revision "1"))
+    (package
+      (name "sbcl-nibbles")
+      (version (git-version "0.14" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/nibbles/")
+               (commit commit)))
+         (sha256
+          (base32 "15qlsm82h36pjgvfnbzdg60l21qxbaii4d049jc5y0dn56y93amb"))
+         (file-name (git-file-name "nibbles" version))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       ;; Tests only.
+       `(("rt" ,sbcl-rt)))
+      (synopsis
+       "Common Lisp library for accessing octet-addressed blocks of data")
+      (description
+       "When dealing with network protocols and file formats, it's common to
 have to read or write 16-, 32-, or 64-bit datatypes in signed or unsigned
 flavors.  Common Lisp sort of supports this by specifying :element-type for
 streams, but that facility is underspecified and there's nothing similar for
@@ -1609,8 +1680,8 @@ SETFable.  Since it's sometimes desirable to read/write directly from streams,
 functions for doing so are also provided.  On some implementations,
 reading/writing IEEE singles/doubles (i.e. single-float and double-float) will
 also be supported.")
-    (home-page "https://github.com/sharplispers/nibbles")
-    (license license:bsd-3)))
+      (home-page "https://github.com/sharplispers/nibbles")
+      (license license:bsd-3))))
 
 (define-public cl-nibbles
   (sbcl-package->cl-source-package sbcl-nibbles))
@@ -1621,7 +1692,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.52")
+    (version "0.53")
     (source
      (origin
        (method git-fetch)
@@ -1629,7 +1700,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0cyghppxwg7jr56af6098drbl6byknqlqcnj9sqlab5pxlywzkxx"))
+        (base32 "01qdfa0jggqbwlsb3aw1iigvs5xhnddk6kn3abhan59956dsbp02"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -2245,6 +2316,47 @@ Lisp programs.  It parses URI according to the RFC 2396 specification.")
 
 (define-public ecl-puri
   (sbcl-package->ecl-package sbcl-puri))
+
+(define-public sbcl-qmynd
+  (let ((commit "7e56daf73f0ed5f49a931c01af75fb874bcf3445")
+        (revision "1"))
+    (package
+      (name "sbcl-qmynd")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/qitab/qmynd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06gw5wxcpdclb6a5i5k9lbmdlyqsp182czrm9bm1cpklzbj0ihrl"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("asdf-finalizers" ,sbcl-asdf-finalizers)
+         ("babel" ,sbcl-babel)
+         ("chipz" ,sbcl-chipz)
+         ("cl+ssl" ,sbcl-cl+ssl)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("ironclad" ,sbcl-ironclad)
+         ("salza2" ,sbcl-salza2)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("usocket" ,sbcl-usocket)))
+      (home-page "https://github.com/qitab/qmynd")
+      (synopsis "QITAB MySQL Native Driver for Common Lisp")
+      (description "QMyND, the QITAB MySQL Native Driver, is a MySQL client
+library that directly talks to a MySQL server in its native network protocol.
+
+It's a part of QITAB umbrella project.")
+      (license license:expat))))
+
+(define-public ecl-qmynd
+  (sbcl-package->ecl-package sbcl-qmynd))
+
+(define-public cl-qmynd
+  (sbcl-package->cl-source-package sbcl-qmynd))
 
 (define-public sbcl-queues
   (let ((commit "47d4da65e9ea20953b74aeeab7e89a831b66bc94"))
@@ -6113,7 +6225,7 @@ can contain any kind of values.")
 (define-public sbcl-cl-octet-streams
   (package
     (name "sbcl-cl-octet-streams")
-    (version "1.0")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -6122,8 +6234,7 @@ can contain any kind of values.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1d7mn6ydv0j2x4r7clpc9ijjwrnfpxmvhifv8n5j7jh7s744sf8d"))))
+        (base32 "1hffh98bv4w5yrchagzwqrc43d2p473pvw7ka4kyyvhrr52dk2f8"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
@@ -6144,11 +6255,11 @@ cl-plumbing libraries.")
   (sbcl-package->ecl-package sbcl-cl-octet-streams))
 
 (define-public sbcl-lzlib
-  (let ((commit "0de1db7129fef9a58a059d35a2fa2ecfc5b47b47")
-        (revision "1"))
+  (let ((commit "cad10f5becbcfebb44b9d311a257563778803452")
+        (revision "2"))
     (package
       (name "sbcl-lzlib")
-      (version (git-version "1.0" revision commit))
+      (version (git-version "1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -6157,14 +6268,14 @@ cl-plumbing libraries.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "12ny7vj52fgnd8hb8fc8mry92vq4c1x72x2350191m4476j95clz"))))
+          (base32 "09lp7li35h4jkls0448fj1sh6pjslr1w7ranbc4szjr8g0c2bdry"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (inputs
        `(("cffi" ,sbcl-cffi)
          ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("lparallel" ,sbcl-lparallel)
          ("lzlib" ,lzlib)))
       (arguments
        '(#:phases
