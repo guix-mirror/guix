@@ -30459,6 +30459,32 @@ functions core functionality.")
 picking compatible shaders.")
     (license license:expat)))
 
+(define-public rust-sharded-slab-0.1
+  (package
+    (name "rust-sharded-slab")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sharded-slab" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09r1i2adjkm4flsj4l0j7x79gdyxz0hvivxdh2d8j5jfj6z22jbv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-loom" ,rust-loom-0.3))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-proptest" ,rust-proptest-0.9))))
+    (home-page "https://github.com/hawkw/sharded-slab")
+    (synopsis "Lock-free concurrent slab.")
+    (description "This package provides a lock-free concurrent slab.")
+    (license license:expat)))
+
 (define-public rust-shared-child-0.3
   (package
     (name "rust-shared-child")
