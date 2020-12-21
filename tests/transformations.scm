@@ -368,10 +368,9 @@
     (let ((new (t p)))
       (match (bag-direct-inputs (package->bag new))
         ((("dep" dep) ("tar" tar) _ ...)
-         ;; TODO: Check whether TAR has #:tests? #f when transformations
-         ;; apply to implicit inputs.
-         (equal? (package-arguments dep)
-                 '(#:tests? #f)))))))
+         (and (equal? (package-arguments dep) '(#:tests? #f))
+              (match (memq #:tests? (package-arguments tar))
+                ((#:tests? #f _ ...) #t))))))))
 
 (test-end)
 
