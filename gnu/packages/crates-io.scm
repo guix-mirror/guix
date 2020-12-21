@@ -30604,6 +30604,46 @@ stack.")
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1))))))
 
+(define-public rust-smol-0.1
+  (package
+    (name "rust-smol")
+    (version "0.1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smol" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mdflwzgw1jxwrjffqn09lb4hn6d076s1ka8lb9mgnildqybn332"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release" "--" "--skip=task::Task<Result<T, E>>")
+       #:cargo-inputs
+       (("rust-async-task" ,rust-async-task-3)
+        ("rust-blocking" ,rust-blocking-0.4)
+        ("rust-concurrent-queue" ,rust-concurrent-queue-1)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-scoped-tls" ,rust-scoped-tls-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-wepoll-sys-stjepang" ,rust-wepoll-sys-stjepang-1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-piper" ,rust-piper-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/stjepang/smol")
+    (synopsis "Small and fast async runtime")
+    (description "This package provides a small and fast async runtime.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-socket2-0.3
   (package
     (name "rust-socket2")
