@@ -11377,7 +11377,7 @@ actually changing the buffer's text.")
 (define-public emacs-diff-hl
   (package
     (name "emacs-diff-hl")
-    (version "1.8.7")
+    (version "1.8.8")
     (source
      (origin
        (method git-fetch)
@@ -11386,7 +11386,7 @@ actually changing the buffer's text.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i7x6qgr3nydcwhw72sbc8z9x9dfhgkf0dqj9nakvx36vn1bblbq"))))
+        (base32 "075klzf66z1rvhpxv4j694pdkmi7f4fpw6c8q4ncz0h4y5wdbl8w"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dgutov/diff-hl")
     (synopsis
