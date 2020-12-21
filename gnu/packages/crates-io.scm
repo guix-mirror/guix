@@ -14879,6 +14879,35 @@ written in Rust.")
     (description "This package provides a snapshot testing library for Rust.")
     (license license:asl2.0)))
 
+(define-public rust-insta-0.12
+  (package
+    (inherit rust-insta-0.16)
+    (name "rust-insta")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "insta" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0j8k8rfcbdvh2s3jfj9hj7mspl32rqxqa393cw55jhg8cb09sj8d"))))
+    (arguments
+     `(#:cargo-test-flags
+       '("--release"
+         "--"
+         "--skip=runtime::test_format_rust_expression")
+       #:cargo-inputs
+       (("rust-console" ,rust-console-0.9)
+        ("rust-difference" ,rust-difference-2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pest" ,rust-pest-2)
+        ("rust-pest-derive" ,rust-pest-derive-2)
+        ("rust-ron" ,rust-ron-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-uuid" ,rust-uuid-0.8))))))
+
 (define-public rust-insta-0.8
   (package
     (inherit rust-insta-0.16)
