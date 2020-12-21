@@ -1294,7 +1294,7 @@ methods.")
      "This package provides a simple interface for querying atty.")
     (license license:expat)))
 
-(define-public rust-autocfg-1.0
+(define-public rust-autocfg-1
   (package
     (name "rust-autocfg")
     (version "1.0.1")
@@ -1317,7 +1317,7 @@ methods.")
 
 (define-public rust-autocfg-0.1
   (package
-    (inherit rust-autocfg-1.0)
+    (inherit rust-autocfg-1)
     (name "rust-autocfg")
     (version "0.1.7")
     (source
@@ -5704,7 +5704,7 @@ criterion.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -5809,7 +5809,7 @@ criterion.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
@@ -13406,7 +13406,7 @@ ignore files such as .gitignore against file paths.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-hashbrown" ,rust-hashbrown-0.9)
         ("rust-serde" ,rust-serde-1)
         ("rust-rayon" ,rust-rayon-1))
@@ -18504,7 +18504,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
+        ("rust-autocfg" ,rust-autocfg-1))))
     (home-page "https://github.com/rust-num/num-bigint")
     (synopsis "Big integer implementation for Rust")
     (description
@@ -18533,7 +18533,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-quickcheck-macros" ,rust-quickcheck-macros-0.8)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1.0))
+        ("rust-autocfg" ,rust-autocfg-1))
        #:cargo-development-inputs
        (("rust-serde-test" ,rust-serde-test-1))))))
 
@@ -18640,7 +18640,7 @@ for Rust")
        (("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1.0))))))
+        ("rust-autocfg" ,rust-autocfg-1))))))
 
 (define-public rust-num-complex-0.1
   (package
@@ -18810,7 +18810,7 @@ primitives and enums easier.")
     (arguments
      `(#:cargo-inputs
        (("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
+        ("rust-autocfg" ,rust-autocfg-1))))
     (home-page "https://github.com/rust-num/num-integer")
     (synopsis "Integer traits and functions")
     (description "Integer traits and functions.")
@@ -18835,7 +18835,7 @@ primitives and enums easier.")
      `(#:cargo-inputs
        (("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
+        ("rust-autocfg" ,rust-autocfg-1))))
     (home-page "https://github.com/rust-num/num-iter")
     (synopsis "External iterators for generic mathematics")
     (description
@@ -18863,7 +18863,7 @@ primitives and enums easier.")
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
+        ("rust-autocfg" ,rust-autocfg-1))))
     (home-page "https://github.com/rust-num/num-rational")
     (synopsis "Rational numbers implementation for Rust")
     (description
@@ -18890,7 +18890,7 @@ primitives and enums easier.")
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1)
-        ("rust-autocfg" ,rust-autocfg-1.0))))))
+        ("rust-autocfg" ,rust-autocfg-1))))))
 
 (define-public rust-num-rational-0.1
   (package
@@ -18930,7 +18930,7 @@ primitives and enums easier.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-libm" ,rust-libm-0.2))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
@@ -19585,7 +19585,7 @@ system for OpenSSL.")
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ;; Build dependencies:
-        ("rust-autocfg" ,rust-autocfg-1.0)
+        ("rust-autocfg" ,rust-autocfg-1)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
@@ -23994,7 +23994,7 @@ accessors.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
         ("rust-either" ,rust-either-1)
         ("rust-rayon-core" ,rust-rayon-core-1))
@@ -32268,7 +32268,7 @@ closures after a delay or at a given timestamp.")
     (arguments
      `(#:tests? #f                      ;FIXME: fail due to unresolved imports
        #:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-1.0)
+       (("rust-autocfg" ,rust-autocfg-1)
         ("rust-bytes" ,rust-bytes-0.6)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
