@@ -51,8 +51,7 @@
               (sha256
                (base32
                 "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))
-              (patches (search-patches "libffi-3.3-powerpc-fixes.patch"
-                                       "libffi-float128-powerpc64le.patch"))))
+              (patches (search-patches "libffi-3.3-powerpc-fixes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
