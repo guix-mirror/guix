@@ -14006,7 +14006,7 @@ the format.")
 (define-public emacs-nov-el
   (package
     (name "emacs-nov-el")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
      (origin
        (method git-fetch)
@@ -14015,7 +14015,8 @@ the format.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13r7lvyyyv62m57m4s4xjs4qz2ckhqk6ib514px7qzc7mdzcz9i9"))))
+        (base32
+         "116klnjyggwfwvs9nqhpv97m00k63q6lg41ph41kywsqkfy42dlk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
