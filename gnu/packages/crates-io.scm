@@ -18611,6 +18611,30 @@ libmysqlclient.")
 quick compile time, and minimal dependencies.")
     (license license:zlib)))
 
+(define-public rust-nanorand-0.4
+  (package
+    (inherit rust-nanorand-0.5)
+    (name "rust-nanorand")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nanorand" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ifpjgir1a6lw64jkb6la5hb8j5jvqq70nmxgzjj0cjf13jd3kys"))))
+    (arguments
+     `(#:skip-build? #true              ;error with pre-release randomize
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-fastrand" ,rust-fastrand-1)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-random-fast-rng" ,rust-random-fast-rng-0.1)
+        ("rust-randomize" ,rust-randomize-4))))))
+
 (define-public rust-nasm-rs-0.2
   (package
     (name "rust-nasm-rs")
