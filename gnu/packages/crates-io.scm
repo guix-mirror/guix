@@ -12642,6 +12642,36 @@ open file descriptors.")
        (("rust-docmatic" ,rust-docmatic-0.1)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-gloo-timers-0.2
+  (package
+    (name "rust-gloo-timers")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gloo-timers" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07w999jm1r1i8r574qbmsa3l4w3gxhyx04cbllg0m4pzm934l827"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-web-sys" ,rust-web-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/rustwasm/gloo")
+    (synopsis "Convenience crate for working with JavaScript timers")
+    (description
+     "This package is a convenience crate for working with JavaScript
+timers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-goblin-0.2
   (package
     (name "rust-goblin")
