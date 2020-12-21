@@ -39250,6 +39250,33 @@ formatters with per-field documentation generated for each structure.
     ;; User can choose either license.
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-piper-0.1
+  (package
+    (name "rust-piper")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "piper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "062zdv9w7l5037g113bh7r72wmygz92ajzr0z41v3bqdd3x8nq01"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3))))
+    (home-page "https://crates.io/crates/piper")
+    (synopsis "Async pipes, channels, mutexes, and more")
+    (description
+     "This crate provides async pipes, channels, mutexes, and more.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xmltree-0.8
   (package
     (name "rust-xmltree")
