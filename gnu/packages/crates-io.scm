@@ -11354,6 +11354,28 @@ magnitude faster, fixes minor warts in its API, fills in some obvious gaps,
 and removes almost all unsafe code from it.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-futures-lite-0.1
+  (package
+    (inherit rust-futures-lite-1)
+    (name "rust-futures-lite")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-lite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lnflz8ysp0vlq1sxzz1sw9cq7s33lh12cm9rc68z04v29q9k6cp"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fastrand" ,rust-fastrand-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-parking" ,rust-parking-2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-waker-fn" ,rust-waker-fn-1))))))
+
 (define-public rust-futures-macro-0.3
   (package
     (name "rust-futures-macro")
