@@ -4654,6 +4654,7 @@ event traces from the kernel (via the relaying through the debug file system).")
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
+              (patches (search-patches "sbc-fix-build-non-x86.patch"))
               (sha256
                (base32
                 "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
