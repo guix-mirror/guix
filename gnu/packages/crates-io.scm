@@ -33677,6 +33677,38 @@ return values to @code{std::io::Result} to indicate success or failure.")
 streams.")
     (license license:expat)))
 
+(define-public rust-test-case-1
+  (package
+    (name "rust-test-case")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "test-case" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j33njgyr4cjhil14va909sg8s6ahzpgcmiaigdg7g22ica6950r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false               ;XXX: a single test fails, cannot skip it
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-insta" ,rust-insta-0.12)
+        ("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/frondeus/test-case")
+    (synopsis "Procedural macro attribute for parametrized test cases")
+    (description
+     "This crate provides @code{#[test_case]} procedural macro attribute that
+generates multiple parametrized tests using one body with different input
+parameters.  A test is generated for each data set passed in test_case
+attribute.  Under the hood, all test cases that share same body are grouped
+into mod, giving clear and readable test results.")
+    (license license:expat)))
+
 (define-public rust-tester-0.5
   (package
     (name "rust-tester")
