@@ -231,6 +231,31 @@ ecosystem.")
 asynchronous request/response operations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-testing-1
+  (package
+    (name "rust-actix-testing")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-testing" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "073r3rlnz9km7w7zfhpj6snb453hhp7d354adbp79awrhyirq8s7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-macros" ,rust-actix-macros-0.1)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-server" ,rust-actix-server-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-socket2" ,rust-socket2-0.3))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix testing utils")
+    (description "This package provides Actix testing utils.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-threadpool-0.3
   (package
     (name "rust-actix-threadpool")
