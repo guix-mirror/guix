@@ -5778,6 +5778,25 @@ the path and domain matching rules specified in RFC6265.
 Split from the user_agent crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-copyless-0.1
+  (package
+    (name "rust-copyless")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "copyless" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dmmxsq3m0i6g9s2kj96n777qhmm7vjgv4r7agc2v6w6bl7rdpx2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/kvark/copyless")
+    (synopsis "Ways to eliminate @code{memcpy} calls")
+    (description
+     "This package provides ways to eliminate @code{memcpy} calls when using
+the standard library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cordic-0.1
   (package
     (name "rust-cordic")
