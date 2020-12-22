@@ -15117,6 +15117,66 @@ network configuration for Windows.")
 enum like Option/Result.")
     (license license:expat)))
 
+(define-public rust-isahc-0.9
+  (package
+    (name "rust-isahc")
+    (version "0.9.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "isahc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12iqz5fj0509pr813pds2fgdk649a0b6ipvy3pqjwb1ywh68m572"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; Build fails with "failed to run custom build command for `curl-sys
+     ;; v0.4.39+curl-7.74.0`".  Skip for now.
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-curl" ,rust-curl-0.4)
+        ("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-flume" ,rust-flume-0.9)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-publicsuffix" ,rust-publicsuffix-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-sluice" ,rust-sluice-0.5)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-futures" ,rust-tracing-futures-0.2)
+        ("rust-url" ,rust-url-2)
+        ("rust-waker-fn" ,rust-waker-fn-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-indicatif" ,rust-indicatif-0.15)
+        ("rust-structopt" ,rust-structopt-0.3)
+        ("rust-test-case" ,rust-test-case-1)
+        ("rust-tracing-subscriber" ,rust-tracing-subscriber-0.2))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/sagebind/isahc")
+    (synopsis "Practical HTTP client")
+    (description
+     "Isahc is an acronym that stands for Incredible Streaming Asynchronous
+HTTP Client.  It is an asynchronous HTTP client for the Rust language.  It
+uses libcurl as an HTTP engine inside, and provides an easy-to-use API on top
+that integrates with Rust idioms.")
+    (license license:expat)))
+
 (define-public rust-ipnet-2
   (package
     (name "rust-ipnet")
