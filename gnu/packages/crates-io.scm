@@ -89,6 +89,57 @@
 library in Rust.")
     (license license:expat)))
 
+(define-public rust-actix-macros-0.1
+  (package
+    (name "rust-actix-macros")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mfnprr8gy1gb5xcr18iwsv781hysvh7sr5xxg6ghyi61gh8rjml"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix runtime macros")
+    (description "This package provides Actix runtime macros.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-actix-rt-1
+  (package
+    (name "rust-actix-rt")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-rt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09xj7pxy0ng13rd6hya1md98dhk0586p4bsfrwmxxlg028lwqgql"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-macros" ,rust-actix-macros-0.1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.3)
+        ("rust-copyless" ,rust-copyless-0.1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix runtime")
+    (description "This package provides Actix runtime.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-threadpool-0.3
   (package
     (name "rust-actix-threadpool")
