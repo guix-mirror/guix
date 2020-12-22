@@ -222,6 +222,39 @@ asynchronous request/response operations.")
     (description "This package provides Actix thread pool for sync code.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-utils-2
+  (package
+    (name "rust-actix-utils")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-utils" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nkby6wpwcmjr3zcghd962l2hyjry0aayncyjzbx2ck6qpg2541f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-slab" ,rust-slab-0.4))))
+    (home-page "https://actix.rs")
+    (synopsis "Network related services and utilities for the Actix ecosystem")
+    (description
+     "This package provides various network related services and utilities for
+the Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-addr2line-0.11
   (package
     (name "rust-addr2line")
