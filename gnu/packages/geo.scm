@@ -1816,7 +1816,7 @@ track your position right from your laptop.")
                    license:zlib))))
 
 (define-public grass
-  (let* ((version "7.8.4")
+  (let* ((version "7.8.5")
          (majorminor (string-join (list-head (string-split version #\.) 2) ""))
          (grassxx (string-append "grass" majorminor)))
     (package
@@ -1828,7 +1828,7 @@ track your position right from your laptop.")
          (uri (string-append "https://grass.osgeo.org/" grassxx
                              "/source/grass-" version ".tar.gz"))
          (sha256
-          (base32 "1yfghvp522ijww3n3l5xarjbc21rm0gmlgr3lvwxrv23bvxmllyr"))))
+          (base32 "0dzzhgcsrszzinvjir50nvzq873b8gsp0p9k8fvcrv14amkbnnd3"))))
       (build-system gnu-build-system)
       (inputs
        `(("bzip2" ,bzip2)
