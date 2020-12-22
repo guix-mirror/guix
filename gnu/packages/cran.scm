@@ -24913,6 +24913,45 @@ meta-analyses accounting for known correlation structures (e.g. due to
 phylogenetic relatedness) can also be conducted.")
     (license license:gpl2+)))
 
+(define-public r-altmeta
+  (package
+    (name "r-altmeta")
+    (version "3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "altmeta" version))
+       (sha256
+        (base32
+         "0z252lbsknqp33i0b0xf5r7spr535iq47bv40vgip6nsqhgrl7b0"))))
+    (properties `((upstream-name . "altmeta")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-coda" ,r-coda)
+       ("r-lme4" ,r-lme4)
+       ("r-matrix" ,r-matrix)
+       ("r-metafor" ,r-metafor)
+       ("r-rjags" ,r-rjags)))
+    (home-page "https://cran.r-project.org/web/packages/altmeta/")
+    (synopsis "Alternative meta-analysis methods")
+    (description
+     "This package provides alternative statistical methods for meta-analysis,
+including:
+
+@enumerate
+@item bivariate generalized linear mixed models for synthesizing odds ratios,
+  relative risks, and risk differences
+@item heterogeneity tests and measures that are robust to outliers;
+@item measures, tests, and visualization tools for publication bias or
+  small-study effects;
+@item meta-analysis of diagnostic tests for synthesizing sensitivities,
+  specificities, etc.;
+@item meta-analysis methods for synthesizing proportions;
+@item models for multivariate meta-analysis.
+@end enumerate
+")
+    (license license:gpl2+)))
+
 (define-public r-perm
   (package
     (name "r-perm")
