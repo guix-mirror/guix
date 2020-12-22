@@ -51,6 +51,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1119,8 +1120,8 @@ and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "e9fbf5c051453941bbc029810b893a6c010714e6")
-        (revision "2"))
+  (let ((commit "62cb003043e4daeeba0b8805137fa604af450ed2")
+        (revision "3"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1132,7 +1133,7 @@ and should be used with caution, especially on untested models.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0y71q7ajwz1w38gdmxd4p05hhkqndq504nndy6vfa16fxz6pqxhn"))
+          (base32 "1kragxkjprjy7nl9h2rd0mwcry1ygw07zb1p2qkj7cmz0r2035yz"))
          (modules '((guix build utils)))
          (snippet
           '(begin
