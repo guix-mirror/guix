@@ -12663,3 +12663,48 @@ library are feedforward neural networks trained using backpropagation.")
 
 (define-public ecl-simple-neural-network
   (sbcl-package->ecl-package sbcl-simple-neural-network))
+
+(define-public sbcl-zstd
+  (let ((commit "d144582c581aaa52bac24d6686af27fa3e781e06")
+        (revision "1"))
+    (package
+      (name "sbcl-zstd")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-zstd")
+               (commit commit)))
+         (file-name (git-file-name "cl-zstd" version))
+         (sha256
+          (base32 "1774jy8hzbi6nih3sq6vchk66f7g8w86dwgpbvljyfzcnkcaz6ql"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("zstd-lib" ,zstd "lib")))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/libzstd.lisp"
+                 (("libzstd\\.so")
+                  (string-append (assoc-ref inputs "zstd-lib")
+                                 "/lib/libzstd.so")))
+               #t)))))
+      (synopsis "Common Lisp library for Zstandard (de)compression")
+      (description
+       "This Common Lisp library provides functions for Zstandard
+compression/decompression using bindings to the libzstd C library.")
+      (home-page "https://github.com/glv2/cl-zstd")
+      (license license:gpl3+))))
+
+(define-public cl-zstd
+  (sbcl-package->cl-source-package sbcl-zstd))
+
+(define-public ecl-zstd
+  (sbcl-package->ecl-package sbcl-zstd))
