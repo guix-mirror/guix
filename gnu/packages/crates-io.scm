@@ -29435,7 +29435,7 @@ rules are rather complex.  This crate implements the whole grammar." )
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.117")
+    (version "1.0.118")
     (source
       (origin
         (method url-fetch)
@@ -29443,10 +29443,13 @@ rules are rather complex.  This crate implements the whole grammar." )
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06nwyyma9hch1abjqj0y9cb09m1y6lbzbsc7jff6483pvs1sk3xq"))))
+          "0028kv3dh3ix5g7jfws22zb9hcqq4cnpwn2lnlpam1wxhmil5ih6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     ;; Tests fail with "error: cannot find derive macro `Deserialize` in this
+     ;; scope".
+     `(#:tests? #false
+       #:cargo-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))
        #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))
