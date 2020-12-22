@@ -5909,7 +5909,7 @@ reallocations.")
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-csv-core" ,rust-csv-core-0.1)
         ("rust-itoa" ,rust-itoa-0.4)
-        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-ryu" ,rust-ryu-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde" ,rust-serde-1))))
@@ -14120,7 +14120,7 @@ requires non-const function calls to be computed.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dtoa" ,rust-dtoa-0.4)
-        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-ryu" ,rust-ryu-1)
         ("rust-static-assertions" ,rust-static-assertions-1))
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
@@ -14153,7 +14153,7 @@ requires non-const function calls to be computed.")
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dtoa" ,rust-dtoa-0.4)
-        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-ryu" ,rust-ryu-1)
         ("rust-stackvector" ,rust-stackvector-1.0)
         ("rust-static-assertions" ,rust-static-assertions-0.3))
        #:cargo-development-inputs
@@ -25295,7 +25295,7 @@ rustc compiler version.")
 using a fork-like interface.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-ryu-1.0
+(define-public rust-ryu-1
   (package
     (name "rust-ryu")
     (version "1.0.3")
@@ -26692,7 +26692,7 @@ for the serde framework.")
      `(#:cargo-inputs
        (("rust-indexmap" ,rust-indexmap-1)
         ("rust-itoa" ,rust-itoa-0.4)
-        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-ryu" ,rust-ryu-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-automod" ,rust-automod-1)
