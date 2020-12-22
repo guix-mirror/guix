@@ -26869,8 +26869,34 @@ by dynamically growing the stack.")
                ((", path = \"../serde\"") ""))
              #t)))))))
 
+(define-public rust-serde-urlencoded-0.7
+  (package
+    (name "rust-serde-urlencoded")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_urlencoded" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s9wnjrak5a0igfhcghhz51kvi7n010j5rs9lmhd5hfrz2kmgypd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-form-urlencoded" ,rust-form-urlencoded-1)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-ryu" ,rust-ryu-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/nox/serde_urlencoded")
+    (synopsis "`x-www-form-urlencoded` meets Serde")
+    (description
+     "This crate is a Rust library for serialising to and deserialising from
+the application/x-www-form-urlencoded format.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-urlencoded-0.6
   (package
+    (inherit rust-serde-urlencoded-0.7)
     (name "rust-serde-urlencoded")
     (version "0.6.1")
     (source
@@ -26889,11 +26915,7 @@ by dynamically growing the stack.")
         ("rust-serde" ,rust-serde-1)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-serde-derive" ,rust-serde-derive-1))))
-    (home-page "https://github.com/nox/serde_urlencoded")
-    (synopsis "x-www-form-urlencoded meets serde")
-    (description "x-www-form-urlencoded meets serde.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-serde-derive" ,rust-serde-derive-1))))))
 
 (define-public rust-serde-urlencoded-0.5
   (package
