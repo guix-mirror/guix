@@ -169,6 +169,33 @@ protocols.")
     (description "This package provides Actix runtime.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-service-1
+  (package
+    (name "rust-actix-service")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-service" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fw2b1cpxrpqk778mpvxv0cazj0pwjyb6khzs4syhnqvb1fl6lh0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-pin-project" ,rust-pin-project-0.4))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://actix.rs")
+    (synopsis
+     "Service trait and combinators for asynchronous request/response")
+    (description
+     "This package provides a service trait and combinators for representing
+asynchronous request/response operations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-threadpool-0.3
   (package
     (name "rust-actix-threadpool")
