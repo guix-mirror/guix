@@ -364,6 +364,32 @@ asynchronous request/response operations.")
 the Actix ecosystem.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-utils-1
+  (package
+    (inherit rust-actix-utils-2)
+    (name "rust-actix-utils")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-utils" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kkz2hfz8r2k1gxcjk2qq1h1qxlb487g023q4v1dw6ph3dizby7w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-slab" ,rust-slab-0.4))))))
+
 (define-public rust-addr2line-0.11
   (package
     (name "rust-addr2line")
