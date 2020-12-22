@@ -23939,6 +23939,29 @@ icon support, git integration, and several other utilities.")
 replicate some of the features of the Doom modeline package.")
     (license license:gpl2+)))
 
+(define-public emacs-simple-modeline
+  (let ((commit "38973dec2912e2136d8fde5f2667063863fee15a")
+        (revision "1"))
+    (package
+      (name "emacs-simple-modeline")
+      (version (git-version"1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gexplorer/simple-modeline")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0y70hc3x8rxr8b5x8d0a23gpcadzrn43wmrsvqqxmmkqqp45n7gj"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/gexplorer/simple-modeline")
+      (synopsis "Simple mode-line configuration for Emacs")
+      (description
+       "This package provides a simple mode-line configuration for Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-frames-only-mode
   (package
     (name "emacs-frames-only-mode")
