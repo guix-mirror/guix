@@ -169,6 +169,41 @@ protocols.")
     (description "This package provides Actix runtime.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-server-1
+  (package
+    (name "rust-actix-server")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-server" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13khzd6pz9pqksxmw2syipfwq2gi5v9warx6pa24g8iccxp7wh25"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; Tests fail with "error[E0432]: unresolved import `bytes`" error.
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-utils" ,rust-actix-utils-2)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-socket2" ,rust-socket2-0.3))))
+    (home-page "https://actix.rs")
+    (synopsis "General purpose TCP server built for the Actix ecosystem")
+    (description
+     "This package provides a general purpose TCP server built for the Actix
+ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-service-1
   (package
     (name "rust-actix-service")
