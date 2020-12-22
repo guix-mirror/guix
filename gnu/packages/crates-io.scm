@@ -36837,6 +36837,28 @@ extension for the Trust-DNS client to use DNS over HTTPS.")
 extension for the Trust-DNS client to use native-tls for TLS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-native-tls-0.18
+  (package
+    (inherit rust-trust-dns-native-tls-0.19)
+    (name "rust-trust-dns-native-tls")
+    (version "0.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-native-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rcg018vdd5chd4hcmjp753qjlf4k311nmrxa5ay2hxjllzmqd1y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;missing files
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-tls" ,rust-tokio-tls-0.3)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.18))))))
+
 (define-public rust-trust-dns-native-tls-0.6
   (package
     (inherit rust-trust-dns-native-tls-0.19)
