@@ -118,6 +118,29 @@ library in Rust.")
 protocols.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-codec-0.2
+  (package
+    (inherit rust-actix-codec-0.3)
+    (name "rust-actix-codec")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-codec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "100k0n155fnnjqjz2s1gnwim2fp7s1mw942x0famg89cbh55zr89"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-util" ,rust-tokio-util-0.2))))))
+
 (define-public rust-actix-macros-0.1
   (package
     (name "rust-actix-macros")
