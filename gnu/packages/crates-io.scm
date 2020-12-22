@@ -143,6 +143,32 @@ protocols.")
     (description "This package provides Actix runtime macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-router-0.2
+  (package
+    (name "rust-actix-router")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-router" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0df2626hk4n4yki6j88v3k0gcm8pi5hdnm1mldyvyi8nvbdzgldv"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; Tests fail with "error[E0432]: unresolved import `serde_derive`".
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-bytestring" ,rust-bytestring-0.1)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://actix.rs")
+    (synopsis "Resource path matching library")
+    (description "This package provides resource path matching library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-rt-1
   (package
     (name "rust-actix-rt")
