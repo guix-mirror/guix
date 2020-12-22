@@ -37253,7 +37253,8 @@ other queries.")
          "1hj4fx2x4ncj7v8pf6bbn7634zq76hjigm1s2h6b6yjzzmz4yprn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #false                  ;missing file
+       #:cargo-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-rustls" ,rust-rustls-0.17)
@@ -37263,6 +37264,10 @@ other queries.")
         ("rust-webpki" ,rust-webpki-0.21))
        #:cargo-development-inputs
        (("rust-openssl" ,rust-openssl-0.10))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "http://www.trust-dns.org/index.html")
     (synopsis "rustls extension for the Trust-DNS client")
     (description "Trust-DNS is a safe and secure DNS library.  This is an
@@ -37293,11 +37298,7 @@ extension for the Trust-DNS client to use rustls for TLS.")
         ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.18)
         ("rust-webpki" ,rust-webpki-0.21))
        #:cargo-development-inputs
-       (("rust-openssl" ,rust-openssl-0.10))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("openssl" ,openssl)))))
+       (("rust-openssl" ,rust-openssl-0.10))))))
 
 (define-public rust-trust-dns-rustls-0.6
   (package
