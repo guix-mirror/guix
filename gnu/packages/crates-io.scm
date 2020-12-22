@@ -3786,6 +3786,27 @@ dependency on the rust stdlib.  This makes it suitable for embedded devices
 and kernels.")
     (license (list license:bsd-3 license:expat))))
 
+(define-public rust-brotli-sys-0.3
+  (package
+    (name "rust-brotli-sys")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "brotli-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kdfdbcba6zwa13xpjwgiplblkdf6vigxjbwwp6l2ascbylxwia4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/alexcrichton/brotli2-rs")
+    (synopsis "Raw bindings to libbrotli")
+    (description "This package provides raw bindings to libbrotli.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bs58-0.2
   (package
     (name "rust-bs58")
