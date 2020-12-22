@@ -3807,6 +3807,31 @@ and kernels.")
     (description "This package provides raw bindings to libbrotli.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-brotli2-0.3
+  (package
+    (name "rust-brotli2")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "brotli2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13jnhpmfkqy2xar4lxrsk3rx3i12bgnarnsxq4arhc6yxb1kdc0c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-brotli-sys" ,rust-brotli-sys-0.3)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.4))))
+    (home-page "https://github.com/alexcrichton/brotli2-rs")
+    (synopsis "Rust bindings to compression library libbrotli")
+    (description
+     "This package provides bindings to libbrotli to provide brotli
+decompression and compression to Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bs58-0.2
   (package
     (name "rust-bs58")
