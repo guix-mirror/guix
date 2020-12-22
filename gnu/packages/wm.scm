@@ -1546,7 +1546,7 @@ modules for building a Wayland compositor.")
               ("libmpdclent" ,libmpdclient)
               ("libnl" ,libnl)
               ("pulseaudio" ,pulseaudio)
-              ("spdlog" ,spdlog)
+              ("spdlog" ,spdlog-1.7)
               ("wayland" ,wayland)))
     (native-inputs
      `(("gcc" ,gcc-8)                   ; for #include <filesystem>
