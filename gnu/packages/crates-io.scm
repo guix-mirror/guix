@@ -89,6 +89,35 @@
 library in Rust.")
     (license license:expat)))
 
+(define-public rust-actix-codec-0.3
+  (package
+    (name "rust-actix-codec")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-codec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w7506qd2f8q83z6l5lqx1363ks0ysx8f7qgvy8fknrq70xq7lbq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-util" ,rust-tokio-util-0.3))))
+    (home-page "https://actix.rs")
+    (synopsis "Codec utilities for working with framed protocols")
+    (description
+     "This package provides codec utilities for working with framed
+protocols.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-macros-0.1
   (package
     (name "rust-actix-macros")
