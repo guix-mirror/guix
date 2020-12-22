@@ -1178,14 +1178,14 @@ SPI, I2C, JTAG.")
 (define-public fc-host-tools
   (package
     (name "fc-host-tools")
-    (version "13")
+    (version "14")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
                                   "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
               (sha256
                (base32
-                "0bpxz4y0z3hmlirzvfwq0k45yzn9fzgqs9r1fpkrhn48gr2zrpa8"))))
+                "09ccd76khfvlx4dwi9dhrzl5mm68402mlych0g7f9ncfr5jzyf26"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
