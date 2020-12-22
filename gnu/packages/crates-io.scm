@@ -29705,7 +29705,7 @@ for the serde framework.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.117")
+    (version "1.0.118")
     (source
       (origin
         (method url-fetch)
@@ -29713,7 +29713,7 @@ for the serde framework.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0kn7ais3zv9ajbyc216qm14r61zwlm229815yd4anjmlmmraxlfb"))))
+          "1pvj4v8k107ichsnm7jgm9kxyi2lf971x52bmxhm5mcwd4k3akf8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
