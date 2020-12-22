@@ -36960,6 +36960,41 @@ extension for the Trust-DNS client to use tokio-openssl for TLS.")
 foundational DNS protocol library for all Trust-DNS projects.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-trust-dns-proto-0.18
+  (package
+    (inherit rust-trust-dns-proto-0.19)
+    (name "rust-trust-dns-proto")
+    (version "0.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trust-dns-proto" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vmhw7vdaa6b7wfv438f272ijjl2qlpcp6b1myvif4iay8pp4fi5"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-enum-as-inner" ,rust-enum-as-inner-0.3)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-idna" ,rust-idna-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-tokio" ,rust-tokio-0.2))))))
+
 (define-public rust-trust-dns-proto-0.7
   (package
     (inherit rust-trust-dns-proto-0.19)
