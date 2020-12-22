@@ -89,6 +89,32 @@
 library in Rust.")
     (license license:expat)))
 
+(define-public rust-actix-threadpool-0.3
+  (package
+    (name "rust-actix-threadpool")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-threadpool" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c0frk19ml94d01mvgv5g60mhq86gfi34c3lsfpvjm18016z02fj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-threadpool" ,rust-threadpool-1))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix thread pool for sync code")
+    (description "This package provides Actix thread pool for sync code.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-addr2line-0.11
   (package
     (name "rust-addr2line")
