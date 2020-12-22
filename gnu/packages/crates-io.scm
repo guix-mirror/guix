@@ -1579,7 +1579,7 @@ primitives:
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-threadpool" ,rust-threadpool-1.7))))
+       (("rust-threadpool" ,rust-threadpool-1))))
     (home-page "https://docs.rs/crate/async-native-tls/")
     (synopsis "Native TLS using futures")
     (description "Native TLS using futures")
@@ -34063,7 +34063,7 @@ different for every thread.")
      `(#:cargo-inputs
        (("rust-thread-id" ,rust-thread-id-2.0))))))
 
-(define-public rust-threadpool-1.7
+(define-public rust-threadpool-1
   (package
     (name "rust-threadpool")
     (version "1.7.1")
@@ -35537,7 +35537,7 @@ futures-based code.")
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
-        ("rust-threadpool" ,rust-threadpool-1.7))))
+        ("rust-threadpool" ,rust-threadpool-1))))
     (home-page "https://github.com/tokio-rs/tokio")
     (synopsis
      "Task scheduler backed by a work-stealing thread pool")
