@@ -14188,7 +14188,7 @@ or response body.")
 (define-public rust-httparse-1
   (package
     (name "rust-httparse")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -14197,11 +14197,10 @@ or response body.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10vsfx1b8drhif08fbi0ha9d3v1f3h80w42rxh0y3hrvzl64nwz8"))))
+         "1yf23ldnjwfkkhkca7f4w15mky9961gjz28dlwyybhphc7l9l5yd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-pico-sys" ,rust-pico-sys-0.0))))
     (home-page "https://github.com/seanmonstar/httparse")
     (synopsis "Zero-copy HTTP/1.x parser")
