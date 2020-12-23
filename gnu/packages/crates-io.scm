@@ -141,6 +141,56 @@ protocols.")
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-tokio-util" ,rust-tokio-util-0.2))))))
 
+(define-public rust-actix-connect-1
+  (package
+    (name "rust-actix-connect")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-connect" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v77m394gzbrrzg12xkqgli11vwhig0zcxy3yhmq1s91j9bcjp69"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; XXX: The crate fails to't build with: "error[E0432]: unresolved import
+     ;; `trust_dns_resolver::Background`".  I assume it really expects
+     ;; trust-dns-resolver at version 0.18-alpha.2, which we do not provide.
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-utils" ,rust-actix-utils-1)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-tokio-openssl" ,rust-tokio-openssl-0.4)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.12)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.18)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.18)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-actix-testing" ,rust-actix-testing-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("0.18.0-alpha.2")
+                ,(package-version rust-trust-dns-proto-0.18)))
+             #t)))))
+    (home-page "https://actix.rs")
+    (synopsis "TCP connector service for Actix ecosystem")
+    (description
+     "This package provides a TCP connector service for Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-macros-0.1
   (package
     (name "rust-actix-macros")
