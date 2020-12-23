@@ -1474,6 +1474,11 @@ entity management.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
+             ;; Fix data specific test failure
+             ;; https://reviews.bitcoinabc.org/rABC67bbd3d0aaee2952ff1cb5da51d1fd0b50c2b63a
+             (substitute* "src/test/rpc_tests.cpp"
+               (("1607731200") "9907731200"))
+
              ;; Disable utilprocess_tests because it never ends.
              ;; It looks like it tries to start /bin/sleep and waits until it
              ;; is in the list of running processes, but /bin/sleep doesn't
