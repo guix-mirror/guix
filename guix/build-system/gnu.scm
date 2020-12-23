@@ -332,7 +332,7 @@ standard packages used as implicit inputs of the GNU build system."
                     #:key (guile #f)
                     (outputs '("out"))
                     (search-paths '())
-                    (bootstrap-scripts %bootstrap-scripts)
+                    (bootstrap-scripts (list 'quote %bootstrap-scripts))
                     (configure-flags ''())
                     (make-flags ''())
                     (out-of-source? #f)
@@ -492,7 +492,7 @@ is one of `host' or `target'."
                           (search-paths '())
                           (native-search-paths '())
 
-                          (bootstrap-scripts %bootstrap-scripts)
+                          (bootstrap-scripts (list 'quote %bootstrap-scripts))
                           (configure-flags ''())
                           (make-flags ''())
                           (out-of-source? #f)
