@@ -1010,7 +1010,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
 (define-public gauche
   (package
     (name "gauche")
-    (version "0.9.9")
+    (version "0.9.10")
     (home-page "https://practical-scheme.net/gauche/index.html")
     (source
      (origin
@@ -1019,7 +1019,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
              "mirror://sourceforge/gauche/Gauche/Gauche-"
              version ".tgz"))
        (sha256
-        (base32 "1yzpszhw52vkpr65r5d4khf3489mnnvnw58dd2wsvvx7499k5aac"))
+        (base32 "0ci57ak5cp3lkmfy3nh50hifh8nbg58hh6r18asq0rn5mqfxyf8g"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Remove libatomic-ops.
@@ -1039,13 +1039,10 @@ The core is 12 builtin special forms and 33 builtin functions.")
          (add-after 'unpack 'patch-/bin/sh
            ;; Needed only for tests.
            (lambda _
-             (substitute* '("configure"
-                            "test/www.scm"
+             (substitute* '("test/www.scm"
                             "ext/tls/test.scm"
-                            "gc/configure"
-                            "lib/gauche/configure.scm"
                             "lib/gauche/package/util.scm"
-                            "lib/gauche/process.scm")
+                            "libsrc/gauche/process.scm")
                (("/bin/sh") (which "sh")))
              #t))
          (add-after 'build 'build-doc
@@ -1053,18 +1050,11 @@ The core is 12 builtin special forms and 33 builtin functions.")
              (with-directory-excursion "doc"
                (invoke "make" "info"))
              #t))
-         (add-before 'check 'patch-normalize-test
-           ;; Neutralize sys-normalize-pathname test as it relies on
-           ;; the home directory; (setenv "HOME" xx) isn't enough).
-           (lambda _
-             (substitute* "test/system.scm"
-               (("~/abc") "//abc"))
-             #t))
          (add-before 'check 'patch-network-tests
            ;; Remove net checks.
            (lambda _
-             (substitute* "ext/Makefile"
-               (("binary net termios") "binary termios"))
+             (delete-file "ext/net/test.scm")
+             (invoke "touch" "ext/net/test.scm")
              #t))
          (add-after 'install 'install-docs
            (lambda _
