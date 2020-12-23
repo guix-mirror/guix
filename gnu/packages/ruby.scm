@@ -6344,14 +6344,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "1.1.4")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "0fmnyxcyrvgdbgq7m09whgn9i8rwfybk0w8aii1nc4g5kqw0k2jy"))))
+         "13mfrysrdrh8cka1d96zm0lnfs59i5x2g6ps49r2kz5p3q81xrzj"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
