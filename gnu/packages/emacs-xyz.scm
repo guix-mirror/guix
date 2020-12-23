@@ -15951,6 +15951,28 @@ your Emacs.")
 within Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-svg-tag-mode
+  (let ((commit "87489d28450559078aa15b4a435143a297508e48")
+        (revision "1"))
+    (package
+      (name "emacs-svg-tag-mode")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rougier/svg-tag-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0gyhmv60dx0zxx4bmhzsd7q5vfnkpfwlj6539bn272fwcr7zncp8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/rougier/svg-tag-mode")
+      (synopsis "Replace keywords with SVG tags")
+      (description "This package provides a minor mode that replaces keywords
+or expressions with SVG rounded box labels that are fully customizable.")
+      (license license:gpl3+))))
+
 (define-public emacs-sourcemap
   (package
     (name "emacs-sourcemap")
