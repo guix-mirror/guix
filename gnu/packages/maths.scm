@@ -3628,7 +3628,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.10")
+    (version "0.3.13")
     (source
      (origin
        (method git-fetch)
@@ -3638,7 +3638,7 @@ parts of it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "174id98ga82bhz2v7sy9yj6pqy0h0088p3mkdikip69p9rh3d17b"))))
+         "14jxh0v3jfbw4mfjx4mcz4dd51lyq7pqvh9k8dg94539ypzjr2lj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
