@@ -9241,6 +9241,55 @@ preprocessing of cytometry data, including i) normalization using bead
 standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
     (license license:gpl2+)))
 
+(define-public r-gviz
+  (package
+    (name "r-gviz")
+    (version "1.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Gviz" version))
+       (sha256
+        (base32
+         "0v7bz46b91dnrr55ah42ljj1i2xs3090s4w0lw8098pag00p4vh2"))))
+    (properties `((upstream-name . "Gviz")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomart" ,r-biomart)
+       ("r-biostrings" ,r-biostrings)
+       ("r-biovizbase" ,r-biovizbase)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-digest" ,r-digest)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/Gviz")
+    (synopsis "Plotting data and annotation information along genomic coordinates")
+    (description
+     "Genomic data analyses requires integrated visualization of known genomic
+information and new experimental data.  Gviz uses the biomaRt and the
+rtracklayer packages to perform live annotation queries to Ensembl and UCSC
+and translates this to e.g. gene/transcript structures in viewports of the
+grid graphics package.  This results in genomic information plotted together
+with your data.")
+    (license license:artistic2.0)))
+
 (define-public r-gwascat
   (package
     (name "r-gwascat")
