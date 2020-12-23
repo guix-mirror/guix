@@ -1026,8 +1026,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "9128f96ced76bd01c87fb766c3b30dc3b2100d42")
-        (revision "11"))
+  (let ((commit "c33d3f570bd32afc2def410067db6b92ad6aff0a")
+        (revision "12"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1038,7 +1038,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1fgc6kjnqjc9n9mz9ki7ap772n3c1fahd0m6nxqk7a45yi5y5car"))
+                  "01mr211s1nb9hhm6784ibp87g59wifajcclbss3ry7i3qsbvg22j"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1068,6 +1068,7 @@ environments.")
                     (wrap-program file
                       `("PATH" ":" prefix
                         (,bin
+                         ,(dirname (which "nproc")) ; used by the agent
                          ;; Support building without sqitch as an input, as it
                          ;; can't be cross-compiled yet
                          ,@(or (and=> (assoc-ref inputs "sqitch")
