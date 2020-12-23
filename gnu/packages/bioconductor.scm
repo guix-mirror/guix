@@ -9540,6 +9540,33 @@ integrates with pathway and gene set (enrichment) analysis tools for
 large-scale and fully automated analysis.")
     (license license:gpl3+)))
 
+(define-public r-snpstats
+  (package
+    (name "r-snpstats")
+    (version "1.40.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "snpStats" version))
+       (sha256
+        (base32
+         "1298a71swwav53yf9kfqkdpach3818plqcbw0lgb6sibs8y8ff24"))))
+    (properties `((upstream-name . "snpStats")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-matrix" ,r-matrix)
+       ("r-survival" ,r-survival)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/snpStats")
+    (synopsis "Methods for SNP association studies")
+    (description
+     "This package provides classes and statistical methods for large
+@dfn{single-nucleotide polymorphism} (SNP) association studies.  This extends
+the earlier snpMatrix package, allowing for uncertainty in genotypes.")
+    (license license:gpl3)))
+
 (define-public r-sushi
   (package
     (name "r-sushi")
