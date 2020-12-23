@@ -1477,7 +1477,7 @@ and a calendar appears when you left-click on it.")
 (define-public xfce4-calculator-plugin
   (package
    (name "xfce4-calculator-plugin")
-   (version "0.7.0")
+   (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1486,7 +1486,7 @@ and a calendar appears when you left-click on it.")
                                   "/xfce4-calculator-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1scx7z5ijg2fpcqrzv1nxhpj9vrqic7pyghig70f2n5hgaaanl3v"))))
+                "10fsb9pyr2cr9dj1k3n96dq6g02g61g5y4z4jzfvskpgqc1nl0g4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
