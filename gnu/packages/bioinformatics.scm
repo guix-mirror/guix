@@ -10695,40 +10695,6 @@ metadata and outputs of the ChromImpute procedure applied to ENCODE cell lines
 by Ernst and Kellis.")
     (license license:artistic2.0)))
 
-(define-public r-ldblock
-  (package
-    (name "r-ldblock")
-    (version "1.20.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "ldblock" version))
-       (sha256
-        (base32
-         "09i3ikv0axks9g842z1pjsc8x0fba51zyyc218h0bylbi1n9cdkm"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-ensdb-hsapiens-v75" ,r-ensdb-hsapiens-v75)
-       ("r-ensembldb" ,r-ensembldb)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicfiles" ,r-genomicfiles)
-       ("r-httr" ,r-httr)
-       ("r-matrix" ,r-matrix)
-       ("r-rsamtools" ,r-rsamtools)
-       ("r-snpstats" ,r-snpstats)
-       ("r-variantannotation" ,r-variantannotation)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/ldblock")
-    (synopsis "Data structures for linkage disequilibrium measures in populations")
-    (description
-     "This package defines data structures for @dfn{linkage
-disequilibrium} (LD) measures in populations.  Its purpose is to simplify
-handling of existing population-level data for the purpose of flexibly
-defining LD blocks.")
-    (license license:artistic2.0)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
