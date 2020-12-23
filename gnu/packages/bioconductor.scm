@@ -9241,6 +9241,62 @@ preprocessing of cytometry data, including i) normalization using bead
 standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
     (license license:gpl2+)))
 
+(define-public r-gqtlstats
+  (package
+    (name "r-gqtlstats")
+    (version "1.21.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gQTLstats" version))
+       (sha256
+        (base32
+         "1h78l23idf867djmdk97b02jxgmz4vfr2dai01fp648d0lsx5mkl"))))
+    (properties `((upstream-name . "gQTLstats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-batchjobs" ,r-batchjobs)
+       ("r-bbmisc" ,r-bbmisc)
+       ("r-beeswarm" ,r-beeswarm)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dplyr" ,r-dplyr)
+       ("r-erma" ,r-erma)
+       ("r-ffbase" ,r-ffbase)
+       ("r-foreach" ,r-foreach)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbeeswarm" ,r-ggbeeswarm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gqtlbase" ,r-gqtlbase)
+       ("r-hardyweinberg" ,r-hardyweinberg)
+       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-mgcv" ,r-mgcv)
+       ("r-plotly" ,r-plotly)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-snpstats" ,r-snpstats)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/gQTLstats")
+    (synopsis "Computationally efficient analysis for eQTL and allied studies")
+    (description
+     "This package provides tools for the computationally efficient analysis
+of @dfn{quantitative trait loci} (QTL) data, including eQTL, mQTL, dsQTL, etc.
+The software in this package aims to support refinements and functional
+interpretation of members of a collection of association statistics on a
+family of feature/genome hypotheses.")
+    (license license:artistic2.0)))
+
 (define-public r-gviz
   (package
     (name "r-gviz")
