@@ -194,19 +194,6 @@ AC_SUBST([GZIP])
 AC_SUBST([BZIP2])
 AC_SUBST([XZ])
 
-AC_ARG_WITH([nix-prefix],
-  [AS_HELP_STRING([--with-nix-prefix=DIR],
-    [search for Nix in DIR (for testing purposes and '--disable-daemon' builds)])],
-  [case "$withval" in
-    yes|no) ;;
-    *)
-      NIX_PREFIX="$withval"
-      PATH="$NIX_PREFIX/bin:$PATH"; export PATH
-      AC_SUBST([NIX_PREFIX])
-      ;;
-   esac],
-  [])
-
 AC_ARG_WITH([nixpkgs],
   [AS_HELP_STRING([--with-nixpkgs=DIR],
     [search for Nixpkgs in DIR (for testing purposes only)])],
