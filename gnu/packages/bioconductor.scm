@@ -9241,6 +9241,39 @@ preprocessing of cytometry data, including i) normalization using bead
 standards, ii) single-cell deconvolution, and iii) bead-based compensation.")
     (license license:gpl2+)))
 
+(define-public r-gwascat
+  (package
+    (name "r-gwascat")
+    (version "2.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gwascat" version))
+       (sha256
+        (base32
+         "1aqi1ny93virnzsxkh9ccx3mws70bgv0r8nwgla09vffb7f16nna"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocfilecache" ,r-biocfilecache)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-readr" ,r-readr)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-snpstats" ,r-snpstats)
+       ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/gwascat")
+    (synopsis "Tools for data in the EMBL-EBI GWAS catalog")
+    (description
+     "This package provides tools for representing and modeling data in the
+EMBL-EBI GWAS catalog.")
+    (license license:artistic2.0)))
+
 (define-public r-kegggraph
   (package
     (name "r-kegggraph")

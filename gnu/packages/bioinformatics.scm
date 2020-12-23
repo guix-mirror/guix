@@ -10834,39 +10834,6 @@ grid graphics package.  This results in genomic information plotted together
 with your data.")
     (license license:artistic2.0)))
 
-(define-public r-gwascat
-  (package
-    (name "r-gwascat")
-    (version "2.22.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "gwascat" version))
-       (sha256
-        (base32
-         "1aqi1ny93virnzsxkh9ccx3mws70bgv0r8nwgla09vffb7f16nna"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biocfilecache" ,r-biocfilecache)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicfeatures" ,r-genomicfeatures)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-readr" ,r-readr)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-snpstats" ,r-snpstats)
-       ("r-variantannotation" ,r-variantannotation)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/gwascat")
-    (synopsis "Tools for data in the EMBL-EBI GWAS catalog")
-    (description
-     "This package provides tools for representing and modeling data in the
-EMBL-EBI GWAS catalog.")
-    (license license:artistic2.0)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
