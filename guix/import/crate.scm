@@ -358,7 +358,7 @@ look up the development dependencs for the given crate."
 
 (define %crate-updater
   (upstream-updater
-   (name 'crates)
+   (name 'crate)
    (description "Updater for crates.io packages")
    (pred crate-package?)
    (latest latest-release)))
