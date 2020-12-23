@@ -7000,6 +7000,31 @@ communicate with the kernel.  It can be used to add and remove interfaces, set
 IP addresses and routes, and configure IPsec.")
     (license license:asl2.0)))
 
+(define-public libinih
+  (package
+    (name "libinih")
+    (version "52")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/benhoyt/inih")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lsvm34zabvi1xlximybzvgc58zb90mm3b9babwxlqs05jy871m4"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
+    (home-page "https://github.com/benhoyt/inih")
+    (synopsis "Simple .INI parser library for C")
+    (description "The inih (INI Not Invented Here) library is a simple .INI file
+parser written in C.  It's only a couple of pages of code, and it was designed to
+be small and simple, so it's good for embedded systems.  It's also more or less
+compatible with Python's ConfigParser style of .INI files, including RFC
+822-style multi-line syntax and name: value entries.")
+    (license license:bsd-3)))
+
 (define-public xfsprogs
   (package
     (name "xfsprogs")
