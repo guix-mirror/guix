@@ -10549,53 +10549,6 @@ views.  High-level plots include sequence fragment length, edge-linked
 interval to data view, mismatch pileup, and several splicing summaries.")
     (license license:artistic2.0)))
 
-(define-public r-gqtlbase
-  (package
-    (name "r-gqtlbase")
-    (version "1.21.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "gQTLBase" version))
-       (sha256
-        (base32
-         "0nipibm1bk9k70ajbw1f6vjmz0dh7gk21l17q3m54bnawxsggrfh"))))
-    (properties `((upstream-name . "gQTLBase")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This is an upstream bug.
-         (add-after 'unpack 'fix-imports
-           (lambda _
-             (substitute* "NAMESPACE"
-               ((".*maxffmode.*") "")
-               (("importFrom\\(ff,.*") "import(ff)\n"))
-             #t)))))
-    (propagated-inputs
-     `(("r-batchjobs" ,r-batchjobs)
-       ("r-bbmisc" ,r-bbmisc)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-bit" ,r-bit)
-       ("r-doparallel" ,r-doparallel)
-       ("r-ff" ,r-ff)
-       ("r-ffbase" ,r-ffbase)
-       ("r-foreach" ,r-foreach)
-       ("r-genomicfiles" ,r-genomicfiles)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/gQTLBase")
-    (synopsis "Infrastructure for eQTL, mQTL and similar studies")
-    (description
-     "The purpose of this package is to simplify the storage and interrogation
-of @dfn{quantitative trait loci} (QTL) archives, such as eQTL, mQTL, dsQTL,
-and more.")
-    (license license:artistic2.0)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
