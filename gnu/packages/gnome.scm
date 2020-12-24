@@ -8764,7 +8764,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.32.0")
+    (version "3.38.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8773,7 +8773,7 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b33s9bhpiffv5wl76cq2bbnqhvx3qs2vxyxmil5gcs583llqh9r"))))
+                "0ac3fbl15l836yvgw724q4whbkws9v4b6l2xy6bnp0b0g0a6i104"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))
