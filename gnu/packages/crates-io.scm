@@ -191,6 +191,33 @@ protocols.")
      "This package provides a TCP connector service for Actix ecosystem.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-derive-0.5
+  (package
+    (name "rust-actix-derive")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k1kg4gkp2jhi5fgdfd0cq2qfbyy3gfgwqjrvzq1hzrjmynwwnmr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true              ;bootsrapping issues with rust-actix
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       ;; #:cargo-development-inputs
+       ;; (("rust-actix" ,rust-actix-0.8))
+       ))
+    (home-page "https://github.com/actix/actix-derive/")
+    (synopsis "Proc macros for Actix Rust actor framework")
+    (description
+     "This package provides proc macros for the Rust actor framework Actix.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-macros-0.1
   (package
     (name "rust-actix-macros")
