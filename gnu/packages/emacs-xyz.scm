@@ -23284,7 +23284,7 @@ keybindings for skipping from host section to host section.")
 (define-public emacs-ssh-agency
   (package
     (name "emacs-ssh-agency")
-    (version "0.4")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -23293,7 +23293,7 @@ keybindings for skipping from host section to host section.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0895n7bss4wdydic1gflr03f2cwdyqywl16gvb599lpn288jhwvz"))))
+                "1i3zmsn0w2k7p2hlzssibckm32kf05l56mkhg96x4sf06g3pwq1d"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)))
