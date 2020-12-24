@@ -31750,6 +31750,32 @@ CPUs, as well as raw interfaces to platform-specific instructions.
      "This package provides helpers to write more compact simd code.")
     (license license:expat)))
 
+(define-public rust-simple-mutex-1
+  (package
+    (name "rust-simple-mutex")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "simple-mutex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mnwlgjajqmxjfgsdcr9imf23yg1zblny95zrvcflvbgzbmbpaiq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-event-listener" ,rust-event-listener-2))
+       #:cargo-development-inputs
+       (("rust-parking-lot" ,rust-parking-lot-0.10))))
+    (home-page "https://github.com/stjepang/simple-mutex")
+    (synopsis
+     "Mutex more efficient than @code{std} and simpler than
+@code{parking_lot}")
+    (description
+     "This package provides a mutex more efficient than @code{std} and
+simpler than @code{parking_lot}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-siphasher-0.3
   (package
     (name "rust-siphasher")
