@@ -41,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -479,8 +480,8 @@ photographic equipment.")
         (base32 "1nmx5lmhp7igav5pswqxmacsbnhgydgvxh1q53wlmyd9bqgxxlvd"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
+     `(#:configure-flags '("-DBINARY_PACKAGE_BUILD=On"
+                           "-DBUILD_TESTING=On")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
@@ -521,6 +522,7 @@ photographic equipment.")
              #t)))))
     (native-inputs
      `(("clang" ,clang-11)
+       ("cmocka" ,cmocka)
        ("desktop-file-utils" ,desktop-file-utils)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
