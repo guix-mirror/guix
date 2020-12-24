@@ -2717,14 +2717,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.18.183")
+    (version "1.18.203")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0n1pmdl33r1v8qnrcg08ihvri9zm4fvsp14605vwmlkxvs8nb7s5"))))
+         "128zg24961j8nmnq2dxqg6a7zwh3qgv87cmvclsdqwwih9nigxv9"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
