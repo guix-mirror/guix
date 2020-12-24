@@ -89,6 +89,43 @@
 library in Rust.")
     (license license:expat)))
 
+(define-public rust-actix-0.10
+  (package
+    (name "rust-actix")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0q6cd08d0xikilj9l3gfsyhva5b91y55lfxy7yd7w7ivizw43qhv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;doc test fails
+       #:cargo-inputs
+       (("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-derive" ,rust-actix-derive-0.5)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-util" ,rust-tokio-util-0.3)
+        ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.19)
+        ("rust-trust-dns-resolver" ,rust-trust-dns-resolver-0.19))))
+    (home-page "https://actix.rs")
+    (synopsis "Actor framework for Rust")
+    (description "This package provides Actix actor framework for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-codec-0.3
   (package
     (name "rust-actix-codec")
