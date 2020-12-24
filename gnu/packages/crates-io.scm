@@ -255,6 +255,120 @@ protocols.")
      "This package provides proc macros for the Rust actor framework Actix.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-http-1
+  (package
+    (name "rust-actix-http")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06chrs9asbxmxzgiw5sw7ky97yrin9g88nmd6w407a6y9z668rn1"))))
+    (build-system cargo-build-system)
+    ;; XXX: The crate fails to't build with with the same error as
+    ;; rust-actix-connect.  Skip build for now.
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-connect" ,rust-actix-connect-1)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.3)
+        ("rust-actix-tls" ,rust-actix-tls-1)
+        ("rust-actix-utils" ,rust-actix-utils-1)
+        ("rust-base64" ,rust-base64-0.11)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-brotli2" ,rust-brotli2-0.3)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-copyless" ,rust-copyless-0.1)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-either" ,rust-either-1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-h2" ,rust-h2-0.2)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-actix-http-test" ,rust-actix-http-test-1))))
+    (home-page "https://actix.rs")
+    (synopsis "HTTP primitives for the Actix ecosystem")
+    (description
+     "This package provides HTTP primitives for the Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-actix-http-test-1
+  (package
+    (name "rust-actix-http-test")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-http-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06z6iy9ffsjcw3g8zwwghky5zpyg7c1z823x35lgc4y1yjzxfizq"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; XXX: The crate fails to't build with with the same error as
+     ;; rust-actix-connect.  Skip build for now.
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-connect" ,rust-actix-connect-1)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-server" ,rust-actix-server-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-testing" ,rust-actix-testing-1)
+        ("rust-actix-utils" ,rust-actix-utils-1)
+        ("rust-awc" ,rust-awc-1)
+        ("rust-base64" ,rust-base64-0.11)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-sha1" ,rust-sha1-0.6)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-actix-http" ,rust-actix-http-1))))
+    (home-page "https://actix.rs")
+    (synopsis "Helpers for Actix applications to use during testing")
+    (description
+     "This package provides various helpers for Actix applications to use
+during testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-macros-0.1
   (package
     (name "rust-actix-macros")
@@ -541,6 +655,85 @@ the Actix ecosystem.")
         ("rust-log" ,rust-log-0.4)
         ("rust-pin-project" ,rust-pin-project-0.4)
         ("rust-slab" ,rust-slab-0.4))))))
+
+(define-public rust-actix-web-2
+  (package
+    (name "rust-actix-web")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dgnn7xiw2yhvrx7l7b57gwra7yfqawka5xz1lpq4h0h8qifhn1i"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; XXX: The crate fails to't build with with the same error as
+     ;; rust-actix-connect.  Skip build for now.
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-http" ,rust-actix-http-1)
+        ("rust-actix-macros" ,rust-actix-macros-0.1)
+        ("rust-actix-router" ,rust-actix-router-0.2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-server" ,rust-actix-server-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-testing" ,rust-actix-testing-1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.3)
+        ("rust-actix-tls" ,rust-actix-tls-1)
+        ("rust-actix-utils" ,rust-actix-utils-1)
+        ("rust-actix-web-codegen" ,rust-actix-web-codegen-0.2)
+        ("rust-awc" ,rust-awc-1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://actix.rs")
+    (synopsis "Powerful, pragmatic, and fast web framework for Rust")
+    (description
+     "Actix Web is a powerful, pragmatic, and fast web framework for
+Rust.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-actix-web-codegen-0.2
+  (package
+    (name "rust-actix-web-codegen")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web-codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rjpzwsm51nfjqsz269jwbkiic9d454bnsk9ng882wp0rdsz86x7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-web" ,rust-actix-web-2))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix web proc macros")
+    (description "This package provides Actix web proc macros.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-addr2line-0.11
   (package
@@ -2488,6 +2681,51 @@ in Rust.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
+
+(define-public rust-awc-1
+  (package
+    (name "rust-awc")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "awc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1idacmq7n3irmdjkbxc5kdwspxk9w1gip94pcmfk7wky3m6isq6p"))))
+    (build-system cargo-build-system)
+    ;; XXX: The crate fails to't build with with the same error as
+    ;; rust-actix-connect.  Skip build for now.
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.2)
+        ("rust-actix-http" ,rust-actix-http-1)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-base64" ,rust-base64-0.11)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6))
+       #:cargo-development-inputs
+       (("rust-actix-http-test" ,rust-actix-http-test-1)
+        ("rust-actix-web" ,rust-actix-web-2)
+        ("rust-brotli" ,rust-brotli-3))))
+    (home-page "https://actix.rs")
+    (synopsis "Async HTTP and WebSocket client library")
+    (description
+     "This package provides async HTTP and WebSocket client library
+built on the Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-az-1
   (package
