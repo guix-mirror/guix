@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -375,38 +376,37 @@ No authentication and authorization checks are performed here!"
 (define* (valid-narinfo? narinfo #:optional (acl (current-acl))
                          #:key verbose?)
   "Return #t if NARINFO's signature is not valid."
-  (or (%allow-unauthenticated-substitutes?)
-      (let ((hash      (narinfo-sha256 narinfo))
-            (signature (narinfo-signature narinfo))
-            (uri       (uri->string (first (narinfo-uris narinfo)))))
-        (and hash signature
-             (signature-case (signature hash acl)
-               (valid-signature #t)
-               (invalid-signature
-                (when verbose?
-                  (format (current-error-port)
-                          "invalid signature for substitute at '~a'~%"
-                          uri))
-                #f)
-               (hash-mismatch
-                (when verbose?
-                  (format (current-error-port)
-                          "hash mismatch for substitute at '~a'~%"
-                          uri))
-                #f)
-               (unauthorized-key
-                (when verbose?
-                  (format (current-error-port)
-                          "substitute at '~a' is signed by an \
+  (let ((hash      (narinfo-sha256 narinfo))
+        (signature (narinfo-signature narinfo))
+        (uri       (uri->string (first (narinfo-uris narinfo)))))
+    (and hash signature
+         (signature-case (signature hash acl)
+           (valid-signature #t)
+           (invalid-signature
+            (when verbose?
+              (format (current-error-port)
+                      "invalid signature for substitute at '~a'~%"
+                      uri))
+            #f)
+           (hash-mismatch
+            (when verbose?
+              (format (current-error-port)
+                      "hash mismatch for substitute at '~a'~%"
+                      uri))
+            #f)
+           (unauthorized-key
+            (when verbose?
+              (format (current-error-port)
+                      "substitute at '~a' is signed by an \
 unauthorized party~%"
-                          uri))
-                #f)
-               (corrupt-signature
-                (when verbose?
-                  (format (current-error-port)
-                          "corrupt signature for substitute at '~a'~%"
-                          uri))
-                #f))))))
+                      uri))
+            #f)
+           (corrupt-signature
+            (when verbose?
+              (format (current-error-port)
+                      "corrupt signature for substitute at '~a'~%"
+                      uri))
+            #f)))))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."
@@ -917,11 +917,14 @@ expected by the daemon."
   "Reply to COMMAND, a query as written by the daemon to this process's
 standard input.  Use ACL as the access-control list against which to check
 authorized substitutes."
-  (define (valid? obj)
-    (valid-narinfo? obj acl))
+  (define valid?
+    (if (%allow-unauthenticated-substitutes?)
+        (begin
+          (warn-about-missing-authentication)
 
-  (when (%allow-unauthenticated-substitutes?)
-    (warn-about-missing-authentication))
+          (const #t))
+        (lambda (obj)
+          (valid-narinfo? obj acl))))
 
   (match (string-tokenize command)
     (("have" paths ..1)
@@ -1081,7 +1084,9 @@ DESTINATION is in the store, deduplicate its files.  Print a status line on
 the current output port."
   (define narinfo
     (lookup-narinfo cache-urls store-item
-                    (cut valid-narinfo? <> acl)))
+                    (if (%allow-unauthenticated-substitutes?)
+                        (const #t)
+                        (cut valid-narinfo? <> acl))))
 
   (define destination-in-store?
     (string-prefix? (string-append (%store-prefix) "/")
