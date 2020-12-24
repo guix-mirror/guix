@@ -4471,6 +4471,29 @@ constants from build.rs or a script.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.8))))))
 
+(define-public rust-byte-pool-0.2
+  (package
+    (name "rust-byte-pool")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "byte-pool" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0yh96ral0pni02bzm3fhvicp1ixz1hz3c5m03hsyq66mk61fjf0y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
+    (home-page "https://crates.io/crates/byte-pool")
+    (synopsis "Pool of byte slices, for efficient memory usage")
+    (description
+     "This package provides a pool of byte slices, for efficient
+memory usage.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-byte-tools-0.3
   (package
     (name "rust-byte-tools")
