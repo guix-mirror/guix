@@ -15503,6 +15503,26 @@ or numerical index.  A corresponding hash set type is also provided.")
 Rust.")
     (license license:expat)))
 
+(define-public rust-infer-0.2
+  (package
+    (name "rust-infer")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "infer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b4ziqcv0d1wga5yfqf620dkgzijsdw3ylnzq61bfaxla2d85sb4"))))
+    (build-system cargo-build-system)
+    (arguments `(#:tests? #false))      ;missing files
+    (home-page "https://github.com/bojand/infer")
+    (synopsis "Infer file types based on its magic number signature")
+    (description
+     "This crate infers a file types based on its magic number
+signature.")
+    (license license:expat)))
+
 (define-public rust-inflate-0.4
   (package
     (name "rust-inflate")
