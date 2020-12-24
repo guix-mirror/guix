@@ -30651,6 +30651,41 @@ for the serde framework.")
      "Macros to auto-generate implementations for the serde framework.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-qs-0.7
+  (package
+    (name "rust-serde-qs")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_qs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jz6gpr02d393f8cwdxbgfl3jhx5svr1z5ilxhdh16slqvijvy2s"))))
+    (build-system cargo-build-system)
+    (arguments
+     ;; XXX: The crate fails to't build with with the same error as
+     ;; rust-actix-connect.  Skip build for now.
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-actix-web" ,rust-actix-web-2)
+        ("rust-data-encoding" ,rust-data-encoding-2)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-thiserror" ,rust-thiserror-1))
+       #:cargo-development-inputs
+       (("rust-csv" ,rust-csv-1.1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7))))
+    (home-page "https://github.com/samscott89/serde_qs")
+    (synopsis "Querystrings for Serde")
+    (description
+     "This crate is a Rust library for serialising to and deserialising from
+querystrings.  This crate is designed to extend @code{serde_urlencoded} when
+using nested parameters, similar to those used by @code{qs} for Node, and
+commonly used by Ruby on Rails via Rack.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-stacker-0.1
   (package
     (name "rust-serde-stacker")
