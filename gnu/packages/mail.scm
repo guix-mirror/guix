@@ -2877,14 +2877,14 @@ from the Cyrus IMAP project.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.8.0p1")
+    (version "6.8.0p2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "10095dskwmrnsjkqvm2d08pws9jig7b88prbfr0qc5am49ggl8gm"))))
+        (base32 "05sd7bmq29ibnqbl2z53hiyprfxzf0qydfdaixs68rz55wqhbgsi"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2923,14 +2923,6 @@ from the Cyrus IMAP project.")
                (("/bin/cat") (which "cat")))
              (substitute* "usr.sbin/smtpd/mda_unpriv.c"
                (("/bin/sh") (which "sh")))
-             #t))
-         (add-after 'unpack 'fix-man-page-detection
-           ;; XXX Remove when https://github.com/OpenSMTPD/OpenSMTPD/pull/1113
-           ;; or similar fix is released.
-           (lambda _
-             (substitute* "configure"
-               (("smtpd/smtpd.8" match)
-                (string-append "usr.sbin/" match)))
              #t))
          ;; OpenSMTPD provides a single smtpctl utility to control both the
          ;; daemon and the local submission subsystem.  To accomodate systems
