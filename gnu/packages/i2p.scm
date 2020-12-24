@@ -30,7 +30,7 @@
 (define-public i2pd
   (package
     (name "i2pd")
-    (version "2.31.0")
+    (version "2.36.0")
     (source
      (origin
        (method git-fetch)
@@ -39,7 +39,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1q2gxz041ha9n5lfn91iy11sdf3z7d806vcq4z43m7lf92m7i4nn"))))
+        (base32 "0gx7y0vrg9lsl7m1r6c8xyyqmaqn900kms4g0941g0gd5zdb0mvz"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("miniupnpc" ,miniupnpc)
@@ -66,39 +66,13 @@
                                            "./tests")
                          (with-directory-excursion "tests"
                            (substitute* "Makefile"
-                             (("../libi2pd/") (string-append source "/libi2pd/"))
-                             ;; Disable the x25519 test, which only compiles if
-                             ;; openssl doesn't have X25519 support, but the
-                             ;; version we use has it.
-                             (("test-base-64 test-x25519 test-aeadchacha20poly1305")
-                              "test-base-64 test-aeadchacha20poly1305"))
+                             (("../libi2pd/") (string-append source "/libi2pd/")))
                            (apply invoke "make" "all"
                                   `(,@(if parallel-tests?
                                           `("-j" ,(number->string
                                                     (parallel-job-count)))
                                           '())
-                                    ,@make-flags))))))
-                   (add-after 'install 'install-headers
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let* ((install-dir (assoc-ref outputs "out"))
-                              (src-dir (string-append install-dir "/src"))
-                              (include-dir
-                               (string-append install-dir "/include")))
-                         (mkdir-p include-dir)
-                         ;; This is the only header file that's relevant to the
-                         ;; public interface.
-                         ;; <https://github.com/PurpleI2P/i2pd/issues/1378>
-                         (install-file (string-append src-dir "/api.h")
-                                       include-dir)
-                         #t)))
-                   (add-after 'install-headers 'remove-source
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let* ((install-dir (assoc-ref outputs "out"))
-                              (src-dir (string-append install-dir "/src")))
-                         (delete-file-recursively src-dir)
-                         (delete-file (string-append install-dir
-                                                     "/LICENSE"))
-                         #t))))))
+                                    ,@make-flags)))))))))
     (home-page "https://i2pd.website/")
     (synopsis "Router for an end-to-end encrypted and anonymous internet")
     (description "i2pd is a client for the anonymous I2P network, upon which
