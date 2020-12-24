@@ -1991,6 +1991,34 @@ Rust.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-dup-1
+  (package
+    (name "rust-async-dup")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-dup" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z3grxarv9wpck6jm31qayib9barf12a47gvii9934n0ilms29vl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-simple-mutex" ,rust-simple-mutex-1))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-smol" ,rust-smol-0.1))))
+    (home-page "https://github.com/stjepang/async-dup")
+    (synopsis "Duplicate an async I/O handle")
+    (description
+     "This crate provides two tools, Arc and Mutex.  Arc implements
+AsyncRead, AsyncWrite, and AsyncSeek if a reference to the inner type
+does.  A reference to Mutex implements AsyncRead, AsyncWrite, and
+AsyncSeek if the inner type does.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-executor-1
   (package
     (name "rust-async-executor")
