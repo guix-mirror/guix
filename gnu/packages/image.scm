@@ -2096,7 +2096,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
-                           "-DAVIF_CODEC_RAV1E=OFF" ; not packaged yet
+                           "-DAVIF_CODEC_RAV1E=ON"
                            "-DAVIF_BUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
@@ -2110,8 +2110,9 @@ This package can be used to create @code{favicon.ico} files for web sites.")
                (install-file "../source/README.md" doc)
                #t))))))
     (inputs
-     `(("libaom" ,libaom)
-       ("dav1d" ,dav1d)))
+     `(("dav1d" ,dav1d)
+       ("libaom" ,libaom)
+       ("rav1e" ,rav1e)))
     (synopsis "Encode and decode AVIF files")
     (description "Libavif is a C implementation of @acronym{AVIF, the AV1 Image
 File Format}.  It can encode and decode all YUV formats and bit depths supported
