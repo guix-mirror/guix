@@ -75,6 +75,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
@@ -467,7 +468,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.2.1")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
@@ -475,7 +476,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "035rvqmw386hm0jpi14lf4dnpr5rjkalzjkyprqh42nwi3m86dkf"))))
+        (base32 "1nmx5lmhp7igav5pswqxmacsbnhgydgvxh1q53wlmyd9bqgxxlvd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -519,16 +520,18 @@ photographic equipment.")
                                   "/lib"))))
              #t)))))
     (native-inputs
-     `(("clang" ,clang-9)
+     `(("clang" ,clang-11)
        ("desktop-file-utils" ,desktop-file-utils)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("llvm" ,llvm-9) ;should match the Clang version
+       ("llvm" ,llvm-11) ;should match the Clang version
        ("opencl-headers" ,opencl-headers)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("po4a" ,po4a)))
+       ("po4a" ,po4a)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
     (inputs
      `(("cairo" ,cairo)
        ("colord-gtk" ,colord-gtk) ;optional, for color profile support
