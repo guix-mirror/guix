@@ -103,6 +103,7 @@ MODULES =					\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
+  guix/narinfo.scm				\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/repl.scm					\
