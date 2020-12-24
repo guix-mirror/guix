@@ -7741,8 +7741,7 @@ reallocations.")
          "15wydz6klf1shh1ac5n6rsihc4xrz1lzi8vjmhava94v54rqdmgr"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
         ("rust-csv-core" ,rust-csv-core-0.1)
         ("rust-itoa" ,rust-itoa-0.4)
