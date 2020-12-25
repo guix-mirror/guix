@@ -2068,7 +2068,7 @@ for the Xfce panel.  It supports several features, such as:
 (define-public xfce4-wavelan-plugin
   (package
    (name "xfce4-wavelan-plugin")
-   (version "0.6.1")
+   (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -2077,7 +2077,7 @@ for the Xfce panel.  It supports several features, such as:
                                   "/xfce4-wavelan-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "05zdiq1igr1fcvnwlivg8g3szvxmlr3yc7jfj3bwgqrs0vm827zl"))))
+                "07a8nmc60in48licjj0gmwm77vb8divh1lb7jnib35n5a1ka6ypa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
