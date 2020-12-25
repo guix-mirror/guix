@@ -4676,6 +4676,40 @@ applications.  It only supports Intel-compatible CPUs (x86).")
     (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
     (license license:bsd-2)))
 
+(define-public svt-vp9
+  (package
+    (name "svt-vp9")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OpenVisualCloud/SVT-VP9")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ypdiw4cq22llvm8jyszxdq6r1aydkj80dsxjarjn5b7c1f2q3ar"))))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (copy-recursively "../source/Docs" doc)
+               #t))))))
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (home-page "https://github.com/OpenVisualCloud/SVT-VP9")
+    (synopsis "VP9 video encoder")
+    (description "SVT-VP9 is a VP9 video encoder implementation.  It is focused
+on supporting video-on-demand and live encoding on Intel Xeon processors.")
+    (license license:bsd-2)))
+
 (define-public w-scan
   (package
     (name "w-scan")
