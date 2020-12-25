@@ -51,6 +51,7 @@
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 David Wilson <david@daviwil.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4609,9 +4610,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (setenv "HOME" "/tmp")
                       #t))
                   (add-after 'install 'wrap-program
-                    (lambda* (#:key outputs #:allow-other-keys)
+                    (lambda* (#:key outputs inputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
-                        (wrap-qt-program out "openshot-qt"))
+                        (wrap-qt-program "openshot-qt"
+                                         #:output out #:inputs inputs))
                       #t)))))
     (home-page "https://www.openshot.org/")
     (synopsis "Video editor")

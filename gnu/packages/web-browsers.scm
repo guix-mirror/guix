@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
 ;;; Copyright © 2021 Alexander Krotov <krotov@iitp.ru>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -449,9 +450,9 @@ access.")
                    "/share/fonts/truetype/NotoColorEmoji")))
                #t))
            (add-after 'install 'wrap-program
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key outputs inputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
-                 (wrap-qt-program out "kristall"))
+                 (wrap-qt-program "kristall" #:output out #:inputs inputs))
                #t)))))
       (native-inputs
        `(("breeze-stylesheet"

@@ -10,7 +10,7 @@
 ;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
@@ -2241,8 +2241,9 @@ growing set of geoscientific methods.")
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'wrap-python 'wrap-qt
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "qgis")
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program "qgis" #:output out #:inputs inputs))
              #t))
          (add-after 'wrap-qt 'wrap-gis
            (lambda* (#:key inputs outputs #:allow-other-keys)

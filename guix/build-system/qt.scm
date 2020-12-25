@@ -53,6 +53,7 @@
 (define %qt-build-system-modules
   ;; Build-side modules imported and used by default.
   `((guix build qt-build-system)
+    (guix build qt-utils)
     ,@%cmake-build-system-modules))
 
 (define (default-cmake)
