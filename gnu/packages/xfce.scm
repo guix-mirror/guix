@@ -1862,7 +1862,7 @@ opens up a menu with the following:
 (define-public xfce4-smartbookmark-plugin
   (package
    (name "xfce4-smartbookmark-plugin")
-   (version "0.5.1")
+   (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1871,7 +1871,7 @@ opens up a menu with the following:
                                   "/xfce4-smartbookmark-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "001nf2bqly8vm868qvafzgihc9463c488mkim24iw9g2s9ygna1y"))))
+                "1lyd64qc9w6qnpqjb5xk0mjq4l7riv6z7l9aws28clalb8prw9ra"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
