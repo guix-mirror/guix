@@ -1146,8 +1146,8 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
 (define-public rtl8821ce-linux-module
-  (let ((commit "fe97b5003f2f3dd070f76ec38c00b83798c1cdea")
-        (revision "1"))
+  (let ((commit "14b536f0c9ad2d0abbdab8afc7ade684900ca9cf")
+        (revision "2"))
     (package
       (name "rtl8821ce-linux-module")
       (version (git-version "0.0.0" revision commit))
@@ -1160,7 +1160,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "10mrp63npbqb39c442vx8mra278hw7sczb3b6bjrpr3gan6ljshn"))))
+           "0z7r7spsgn22gwv9pcmkdjn9ingi8jj7xkxasph8118h46fw8ip2"))))
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags
