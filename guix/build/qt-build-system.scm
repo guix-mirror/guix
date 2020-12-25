@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
 (define-module (guix build qt-build-system)
   #:use-module ((guix build cmake-build-system) #:prefix cmake:)
   #:use-module (guix build utils)
+  #:use-module (guix build qt-utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -47,73 +48,10 @@
   (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
   #t)
 
-(define (variables-for-wrapping base-directories)
-
-  (define (collect-sub-dirs base-directories subdirectory)
-    (filter-map
-     (lambda (dir)
-       (let ((directory (string-append dir subdirectory)))
-         (if (directory-exists? directory) directory #f)))
-     base-directories))
-
-  (filter
-   (lambda (var-to-wrap) (not (null? (last var-to-wrap))))
-   (map
-    (lambda (var-spec)
-      `(,(first var-spec) = ,(collect-sub-dirs base-directories (last var-spec))))
-    (list
-     ;; these shall match the search-path-specification for Qt and KDE
-     ;; libraries
-     '("XDG_DATA_DIRS" "/share")
-     '("XDG_CONFIG_DIRS" "/etc/xdg")
-     '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
-     '("QML2_IMPORT_PATH" "/lib/qt5/qml")))))
-
-(define* (wrap-all-programs #:key inputs outputs
-                            (qt-wrap-excluded-outputs '())
-                            #:allow-other-keys)
-  "Implement phase \"qt-wrap\": look for GSettings schemas and
-gtk+-v.0 libraries and create wrappers with suitably set environment variables
-if found.
-
-Wrapping is not applied to outputs whose name is listed in
-QT-WRAP-EXCLUDED-OUTPUTS.  This is useful when an output is known not
-to contain any Qt binaries, and where wrapping would gratuitously
-add a dependency of that output on Qt."
-  (define (find-files-to-wrap directory)
-    (append-map
-     (lambda (dir)
-       (if (directory-exists? dir) (find-files dir ".*") (list)))
-     (list (string-append directory "/bin")
-           (string-append directory "/sbin")
-           (string-append directory "/libexec")
-           (string-append directory "/lib/libexec"))))
-
-  (define input-directories
-    ;; FIXME: Filter out unwanted inputs, e.g. cmake
-    (match inputs
-           (((_ . dir) ...)
-            dir)))
-
-  (define handle-output
-    (match-lambda
-     ((output . directory)
-      (unless (member output qt-wrap-excluded-outputs)
-        (let ((bin-list     (find-files-to-wrap directory))
-              (vars-to-wrap (variables-for-wrapping
-                             (append (list directory)
-                                     input-directories))))
-          (when (not (null? vars-to-wrap))
-            (for-each (cut apply wrap-program <> vars-to-wrap)
-                      bin-list)))))))
-
-  (for-each handle-output outputs)
-  #t)
-
 (define %standard-phases
   (modify-phases cmake:%standard-phases
     (add-before 'check 'check-setup check-setup)
-    (add-after 'install 'qt-wrap wrap-all-programs)))
+    (add-after 'install 'qt-wrap wrap-all-qt-programs)))
 
 (define* (qt-build #:key inputs (phases %standard-phases)
                    #:allow-other-keys #:rest args)

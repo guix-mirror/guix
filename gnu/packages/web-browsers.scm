@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -433,9 +434,9 @@ access.")
                    "/share/fonts/truetype/NotoColorEmoji")))
                #t))
            (add-after 'install 'wrap-program
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key outputs inputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
-                 (wrap-qt-program out "kristall"))
+                 (wrap-qt-program "kristall" #:output out #:inputs inputs))
                #t)))))
       (native-inputs
        `(("breeze-stylesheet"
