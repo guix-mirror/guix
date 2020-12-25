@@ -913,6 +913,33 @@ Python, PHP, and Perl.")
 a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
     (license license:gpl2+)))
 
+(define-public poxml
+  (package
+    (name "poxml")
+    (version "20.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://kde/stable/release-service/" version
+                              "/src/poxml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1smjvblx0jcv3afs2sr4qcmvhqd44iw24hvr9fppa3nxhrmjwmlk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("gettext" ,gettext-minimal)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/development")
+    (synopsis "Tools for translating DocBook XML files with Gettext")
+    (description "This is a collection of tools that facilitate translating
+DocBook XML files using Gettext message files (PO files).  Also included are
+several command-line utilities for manipulating DocBook XML files, PO files and
+PO template files.")
+    (license license:gpl2+)))
+
 (define-public kdegraphics-mobipocket
   (package
     (name "kdegraphics-mobipocket")
