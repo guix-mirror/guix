@@ -93,6 +93,7 @@
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,6 +159,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -4900,6 +4902,25 @@ library, libgit2 implements Git plumbing.")
 algorithm.  Patiencediff provides a good balance of performance, nice output for
 humans, and implementation simplicity.")
     (license license:gpl2)))
+
+(define-public python-pdftotext
+  (package
+    (name "python-pdftotext")
+    (version "2.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pdftotext" version))
+       (sha256
+        (base32
+         "19la1cw1hmkcr8big04gm2dd5fw0y0z97g930aiy29s1gaqbiblq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("poppler" ,poppler)))
+    (home-page "https://github.com/jalan/pdftotext")
+    (synopsis "Simple PDF text extraction")
+    (description "Pdftotext is a Python library of PDF text extraction.")
+    (license license:expat)))
 
 (define-public python-pyparsing
   (package
