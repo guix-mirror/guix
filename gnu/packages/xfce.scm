@@ -1450,7 +1450,7 @@ each time a new earthquake occurs.")
 (define-public xfce4-datetime-plugin
   (package
    (name "xfce4-datetime-plugin")
-   (version "0.8.0")
+   (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1459,7 +1459,7 @@ each time a new earthquake occurs.")
                                   "/xfce4-datetime-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1m7bmpvbmiz2xdffpg675qn80zx2n0cnlf842ppvh1q7zz18ndfd"))))
+                "0h15mxq5lawlxyr6h1vxc60rkf0rpmnv81l0f52mrswww9dz3xp9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
