@@ -318,3 +318,52 @@ who want to quickly see problems occurring on their server.
 
 This package is part of the KDE administration module.")
     (license license:gpl2+)))
+
+(define-public yakuake
+  (package
+    (name "yakuake")
+    (version "20.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/" version
+                                  "/src/yakuake-" version ".tar.xz"))
+              (sha256
+               (base32
+                "175vvkpkpbd7nm0lqjyiw27xmfdfcs9syvfngnjlndmlzwagk8d1"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("breeze-icons" ,breeze-icons)
+       ("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("konsole" ,konsole)
+       ("kparts" ,kparts)
+       ("kwayland" ,kwayland)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://www.kde.org/applications/system/yakuake/")
+    (synopsis "Quad-style terminal emulator for KDE")
+    (description "Yakuake is a drop-down terminal emulator based on KDE Konsole
+technology.  Features include:
+@itemize
+@item Smoothly rolls down from the top of your screen
+@item Tabbed interface
+@item Configurable dimensions and animation speed
+@item Skinnable
+@item Sophisticated D-Bus interface
+@end itemize")
+    (license license:gpl2+)))
