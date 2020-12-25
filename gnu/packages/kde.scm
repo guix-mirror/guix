@@ -49,6 +49,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -140,6 +141,77 @@ This package contains GUI widgets for baloo.")
     (description "This library provides Grantlee theme support.")
     (license ;; LGPL for libraries, FDL for documentation
      (list license:lgpl2.1+ license:fdl1.2+))))
+
+(define-public akregator
+  (package
+    (name "akregator")
+    (version "20.04.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/akregator-" version ".tar.xz"))
+       (sha256
+        (base32 "1711yhwsdq9iyc3wm3a4xmz81p73hvvc0h58sasc89ifpry50k2p"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-qt-process-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/akregator"))
+                    (qt-process-path (string-append
+                                       (assoc-ref inputs "qtwebengine")
+                                       "/lib/qt5/libexec/QtWebEngineProcess")))
+               (wrap-program bin
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
+               #t))))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("breeze-icons" ,breeze-icons)
+       ("gpgme" ,gpgme)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("kcmutils" ,kcmutils)
+       ("kcontacts" ,kcontacts)
+       ("kcrash" ,kcrash)
+       ("kimap" ,kimap)
+       ("kitemmodels" ,kitemmodels)
+       ("kmessagelib" ,kmessagelib)
+       ("kmime" ,kmime)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kontactinterface" ,kontactinterface)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kqtquickcharts" ,kqtquickcharts)
+       ("ktexteditor" ,ktexteditor)
+       ("kuserfeedback" ,kuserfeedback)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("syndication" ,syndication)))
+    (home-page "https://apps.kde.org/en/akregator")
+    (synopsis "KDE Feed Reader")
+    (description
+     "Akregator is a news feed reader.  It enables you to follow news
+sites, blogs and other RSS/Atom-enabled websites without the need to manually
+check for updates using a web browser.  Akregator is designed to be both easy to
+use and to be powerful enough to read hundreds of news sources conveniently.
+It comes with a fast search, advanced archiving functionality and an internal
+browser for easy news reading.")
+    (license license:gpl2+)))
 
 (define-public kdenlive
   (let ((version "20.08.3"))
