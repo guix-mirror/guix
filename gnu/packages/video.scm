@@ -4653,8 +4653,8 @@ transcode or reformat the videos in any way, producing perfect backups.")
        (sha256
         (base32 "1wzamg89azi1f93wxvdy7silsgklckc754ca066k33drvyacicyw"))))
     (build-system cmake-build-system)
-    ;; SVT-AV1 only supports Intel-compatible CPUs.
-    (supported-systems '("x86_64-linux" "i686-linux"))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
     (arguments
       ;; The test suite tries to download test data and git clone a 3rd-party
       ;; fork of libaom.  Skip it.
