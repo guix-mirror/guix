@@ -1942,8 +1942,15 @@ well suited to all musical instruments and vocals.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "INSTDIR="
                             (assoc-ref %outputs "out") "/lib/lv2"))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)        ; no configure script
+         ;; See https://github.com/tomszilagyi/ir.lv2/pull/20
+         (add-after 'unpack 'fix-type 
+           (lambda _
+             (substitute* '("ir_gui.cc" "lv2_ui.h")
+               (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
