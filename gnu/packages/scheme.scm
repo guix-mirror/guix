@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -1028,13 +1028,18 @@ The core is 12 builtin special forms and 33 builtin functions.")
     (build-system gnu-build-system)
     (inputs
      `(("libatomic-ops" ,libatomic-ops)
+       ("slib" ,slib)
        ("zlib" ,zlib)))
     (native-inputs
      `(("texinfo" ,texinfo)
        ("openssl" ,openssl)            ; needed for tests
        ("pkg-config" ,pkg-config)))    ; needed to find external libatomic-ops
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-slib="
+                            (assoc-ref %build-inputs "slib")
+                            "/lib/slib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
            ;; Needed only for tests.
