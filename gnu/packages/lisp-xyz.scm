@@ -455,6 +455,41 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
+(define-public sbcl-uax-15
+  (let ((commit "e7439a91b72f533fcf736643e3ff0677b56c2e7d")
+        (revision "1"))
+    (package
+      (name "sbcl-uax-15")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sabracrolleton/uax-15")
+               (commit commit)))
+         (file-name (git-file-name "uax-15" version))
+         (sha256
+          (base32 "1vf8a2aikgx0l5bsq0z9s0dw3sgx1887xhagdlf66fwffa5jskg6"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (arguments
+       `(#:asd-systems '("uax-15")))
+      (home-page "https://github.com/sabracrolleton/uax-15")
+      (synopsis "Common Lisp implementation of unicode normalization functions")
+      (description "This package provides supports for unicode normalization,
+RFC8264 and RFC7564.")
+      (license license:expat))))
+
+(define-public cl-uax-15
+  (sbcl-package->cl-source-package sbcl-uax-15))
+
+(define-public ecl-uax-15
+  (sbcl-package->ecl-package sbcl-uax-15))
+
 (define-public sbcl-cl-unicode
   (package
     (name "sbcl-cl-unicode")
