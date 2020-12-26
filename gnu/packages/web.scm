@@ -7862,7 +7862,7 @@ solution for any project's interface needs:
 (define-public libzim
   (package
     (name "libzim")
-    (version "6.2.2")
+    (version "6.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7870,7 +7870,7 @@ solution for any project's interface needs:
                     (commit version)))
               (sha256
                (base32
-                "0p2317cp19lx0hw9n4fsb3nw2vc4hc1yyi98k3yrs41pkr840kwa"))
+                "0iy0f1clhihq277x218ccx3mszgpr3h9l0by48b9ykr115nffw3s"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (arguments
@@ -7881,7 +7881,6 @@ solution for any project's interface needs:
        ("liblzma" ,xz)
        ("libuuid" ,util-linux "lib")
        ("xapian" ,xapian)
-       ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
