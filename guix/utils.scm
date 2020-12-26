@@ -210,7 +210,13 @@ buffered data is lost."
   "Return the lzip port produced by calling PROC (a symbol) on PORT and ARGS.
 Raise an error if lzlib support is missing."
   (let ((make-port (module-ref (resolve-interface '(lzlib)) proc)))
-    (values (make-port port) '())))
+    (make-port port)))
+
+(define (zstd-port proc port . args)
+  "Return the zstd port produced by calling PROC (a symbol) on PORT and ARGS.
+Raise an error if zstd support is missing."
+  (let ((make-port (module-ref (resolve-interface '(zstd)) proc)))
+    (make-port port)))
 
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION,
@@ -221,6 +227,8 @@ a symbol such as 'xz."
     ('xz           (filtered-port `(,%xz "-dc") input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
+                           '()))
+    ('zstd         (values (zstd-port 'make-zstd-input-port input)
                            '()))
     (_             (error "unsupported compression scheme" compression))))
 
@@ -280,6 +288,8 @@ program--e.g., '(\"--fast\")."
     ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     ('lzip         (values (lzip-port 'make-lzip-output-port output)
+                           '()))
+    ('zstd         (values (zstd-port 'make-zstd-output-port output)
                            '()))
     (_             (error "unsupported compression scheme" compression))))
 

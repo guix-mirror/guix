@@ -228,8 +228,10 @@ skip these tests."
                       get-bytevector-all)))))
 
 (for-each test-compression/decompression
-          '(gzip xz lzip)
-          (list (const #t) (const #t) (const #t)))
+          `(gzip xz lzip zstd)
+          (list (const #t) (const #t) (const #t)
+                (lambda ()
+                  (resolve-module '(zstd) #t #f #:ensure #f))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"
