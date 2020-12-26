@@ -7969,7 +7969,7 @@ It contains the code shared by all Kiwix ports.")
              (invoke "qmake"
                      (string-append "PREFIX="
                                     (assoc-ref outputs "out")))))
-         (add-before 'configrue 'enable-print-support
+         (add-before 'configure 'enable-print-support
            (lambda _
              (substitute* "kiwix-desktop.pro"
                (("webenginewidgets") "webenginewidgets printsupport"))
