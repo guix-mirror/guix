@@ -110,7 +110,6 @@
             edit-expression
 
             filtered-port
-            compressed-port
             decompressed-port
             call-with-decompressed-port
             compressed-output-port
@@ -222,18 +221,6 @@ a symbol such as 'xz."
     ('xz           (filtered-port `(,%xz "-dc") input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
-                           '()))
-    (_             (error "unsupported compression scheme" compression))))
-
-(define (compressed-port compression input)
-  "Return an input port where INPUT is compressed according to COMPRESSION,
-a symbol such as 'xz."
-  (match compression
-    ((or #f 'none) (values input '()))
-    ('bzip2        (filtered-port `(,%bzip2 "-c") input))
-    ('xz           (filtered-port `(,%xz "-c") input))
-    ('gzip         (filtered-port `(,%gzip "-c") input))
-    ('lzip         (values (lzip-port 'make-lzip-input-port/compressed input)
                            '()))
     (_             (error "unsupported compression scheme" compression))))
 
