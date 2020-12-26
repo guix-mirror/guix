@@ -1748,7 +1748,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha13")
+    (version "2.0.0-alpha14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1757,12 +1757,17 @@ your own lessons.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12il5xzgg53ick5k4ivvvqdagld5pgigiiz6s829kkdaymqr7vx5"))))
+                "1wsvni2aa9h2bpndlic7ckch4n600ahwm56n521y5vxivwjx3jmj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
+         (replace 'check (lambda _ (invoke "bin/pte_tests")))
+         (add-after 'unpack 'fix-pugixml-detection
+           (lambda _
+             (substitute* "cmake/third_party/pugixml.cmake"
+               (("add_library") "#add_library"))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
