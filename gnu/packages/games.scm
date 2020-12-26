@@ -2126,7 +2126,7 @@ can be explored and changed freely.")
 (define-public seahorse-adventures
   (package
     (name "seahorse-adventures")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -2135,7 +2135,7 @@ can be explored and changed freely.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rnvk06npaqcpjz5z6xcmssz61i32s422lydp49vrnf3j2g4yimd"))
+        (base32 "0m53jh2gchzr7rs35hml6lbvc5kb5hp229wlfqa09098b7hhl15a"))
        (modules '((guix build utils)
                   (ice-9 ftw)
                   (srfi srfi-1)))
