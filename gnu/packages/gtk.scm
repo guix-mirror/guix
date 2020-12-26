@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -2140,7 +2140,7 @@ library for drawing.")
 (define-public gtksheet
   (package
     (name "gtksheet")
-    (version "4.3.4")
+    (version "4.3.5")
     (source
      (origin
        (method git-fetch)
@@ -2150,7 +2150,7 @@ library for drawing.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10qzmdkjkkvkcadxn019cbyhwaahxcfv1apv54lc711bqvh63v8r"))))
+         "13jwr1vly4ga3f09dajwky1cdrz5bmggwga3vnnd6j6zzia7dpyr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-glade"
@@ -2164,6 +2164,11 @@ library for drawing.")
            (lambda _
              (delete-file "configure")
              #t))
+         (add-after 'unpack 'rename-type
+           (lambda _
+             (substitute* "glade/glade-gtksheet-editor.c"
+               (("GladeEditableIface") "GladeEditableInterface"))
+             #t))
          ;; Fix glade install directories.
          (add-before 'bootstrap 'configure-glade-directories
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2174,15 +2179,6 @@ library for drawing.")
                 (string-append (assoc-ref outputs "out") "/lib/glade/modules"))
                (("`\\$PKG_CONFIG --variable=pixmapdir gladeui-2.0`")
                 (string-append (assoc-ref outputs "out") "/share/pixmaps")))
-             #t))
-         ;; Fix incorrect typelib version. This is a known upstream bug. See
-         ;; https://github.com/fpaquet/gtksheet/issues/23
-         (add-after 'install 'fix-typelib-version
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-directory-excursion (string-append (assoc-ref outputs "out")
-                                                      "/lib/girepository-1.0")
-               (rename-file "GtkSheet-4.0.typelib"
-                            (string-append "GtkSheet-" ,version ".typelib")))
              #t)))))
     (inputs
      `(("glade" ,glade3)
