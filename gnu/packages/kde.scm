@@ -758,6 +758,40 @@ communicate with each other.  Here's a few things KDE Connect can do:
 charts.")
     (license license:lgpl2.1+)))
 
+(define-public kdf
+  (package
+    (name "kdf")
+    (version "20.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/"
+                                  version "/src/kdf-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ba67hs4vlb3qyvdzhnpmf8p62df12s8aqw4hzf9vnxff3qix5k1"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcmutils" ,kcmutils)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knotifications" ,knotifications)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/system/kdk")
+    (synopsis "View Disk Usage")
+    (description "KDiskFree displays the available file devices (hard drive
+partitions, floppy and CD drives, etc.) along with information on their
+capacity, free space, type and mount point.  It also allows you to mount and
+unmount drives and view them in a file manager.")
+    (license license:gpl2+)))
+
 (define-public kcachegrind
   (package
     (name "kcachegrind")
