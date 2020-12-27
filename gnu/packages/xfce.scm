@@ -1948,7 +1948,7 @@ freedesktop.org specification.")
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
-   (version "1.2.3")
+   (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1957,7 +1957,7 @@ freedesktop.org specification.")
                                   "/xfce4-systemload-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0x87a8h5l3ashz1ksfaxcpn9a392jzlsbx5n5pga8g90fp2hf905"))))
+                "0dcqg13phlcri4i4g9752m4zfkcmidiqpjv4s3l3pfiwjbgvhc85"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
