@@ -20,6 +20,7 @@
 
  (entry (commit "e38d90d497e19e00263fa28961c688a433154386")
         (title (en "New @option{--with-patch} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-patch}")
                (fr "Nouvelle option de transformation @option{--with-patch}"))
         (body
          (en "The new @option{--with-patch} package transformation option
@@ -31,6 +32,17 @@ guix build coreutils --with-patch=glibc=./glibc-frob.patch
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Die neue Paketumwandlungsoption @option{--with-patch} wendet
+Patches auf die angegebenen Pakete an, bevor sie erstellt werden. Das folgende
+Beispiel lässt die GNU Core Utilities mit einer gepatchten
+C-Bibliothek (glibc) erstellen:
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (fr "La nouvelle option de transformation de paquets
 @option{--with-patch} applique des modifications (@i{patches}) aux paquets
 spécifiés avant de les compiler.  L'exemple suivant compile les utilitaires de
