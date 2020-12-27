@@ -10843,7 +10843,7 @@ algorithms and xxHash hashing algorithm.")
 (define-public java-bouncycastle
   (package
     (name "java-bouncycastle")
-    (version "1.60")
+    (version "1.67")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10853,7 +10853,7 @@ algorithms and xxHash hashing algorithm.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m921a1ac2dl797ffzg3d4j97ch308f25spb4jgsj3npfmmys5gb"))
+                "1449q7fyh03s1q0bqljcrhgacwcyqmg2bbvb3z084avgapwsainz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
