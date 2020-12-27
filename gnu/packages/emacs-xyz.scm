@@ -4153,6 +4153,31 @@ boxes, and more.")
 been copied from an Emacs major mode.")
     (license license:gpl2+)))
 
+(define-public emacs-org-fancy-priorities
+  (let ((commit "819bb993b71e7253cefef7047306ab4e0f9d0a86")
+        (revision "1"))
+    (package
+      (name "emacs-org-fancy-priorities")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/harrybournis/org-fancy-priorities.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13cyzlx0415i953prq6ch7r5iy23c1pz116bdxi5yqags4igh4wv"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/harrybournis/org-fancy-priorities")
+      (synopsis "Display org priorities as custom strings")
+      (description
+       "This package provides a minor mode that displays Org priorities as
+custom strings.  This mode does not change your files in any way, it only
+displays the priority part of a heading as your preferred string value.")
+      (license license:expat))))
+
 (define-public emacs-ob-erlang
   (let ((revision "1")
         (commit "f1a8c665b8f7d0ab32267a9961de8eed872e6333"))
