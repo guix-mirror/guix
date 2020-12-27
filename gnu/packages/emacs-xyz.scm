@@ -18818,8 +18818,8 @@ searches with @code{ripgrep}.")
       (license license:gpl3+))))
 
 (define-public emacs-focus
-  (let ((commit "ab42b8779929beeb7878c7fb3d3ccd80d9327c7f")
-        (version "0.1.1")
+  (let ((commit "5f3f20e7f22fb9fd7c48abce8bd38061d97e4bc0")
+        (version "1.0.0")
         (revision "1"))
     (package
       (name "emacs-focus")
@@ -18833,7 +18833,7 @@ searches with @code{ripgrep}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "079v1syid7h2vr2ya6hs6hl0pgj60qdsw60mqw4cj2zllmkrkwj4"))))
+           "0a55i4bychfnnzjg67a9h4j130hchcg44446dwwx1l1h48i692dw"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/larstvei/Focus")
       (synopsis "Minor mode for focusing in on relevant text")
