@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -134,15 +134,14 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.18.1")
+    (version "1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
-              (patches (search-patches "gdbm-gcc-compat.patch"))
               (sha256
                (base32
-                "1p4ibds6z3ccy65lkmd6lm7js0kwifvl53r0fd759fjxgr917rl6"))))
+                "1g342f0xhh8xbc8p9vrr34clhxz57589k50dibhp5f9284hi5v9p"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat"
                                      "--disable-static")))
     (build-system gnu-build-system)
