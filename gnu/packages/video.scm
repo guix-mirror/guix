@@ -3015,14 +3015,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.16.6")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bkqlrizx0j2rd6ybam2x17bjrpwzl4v4szmnzm3cmixis3w3npr"))))
+                "1xr66y6w422hil6s7n8d61a2vhwh4im8l267amf41jvw7xqihqcm"))))
     (build-system gnu-build-system)
     ;; Separate graphical tools in order to save almost 1 GiB on the closure
     ;; for the common case.
