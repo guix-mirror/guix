@@ -167,17 +167,19 @@ Callback Hell.
 (define-public python-aiohttp-socks
   (package
     (name "python-aiohttp-socks")
-    (version "0.2.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp_socks" version))
        (sha256
         (base32
-         "0473702jk66xrgpm28wbdgpnak4v0dh2qmdjw7ky7hf3lwwqkggf"))))
+         "0jmhb0l1w8k1nishij3awd9zv8zbyb5l35a2pdalrqxxasbhbcif"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)))
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-attrs" ,python-attrs)
+       ("python-socks" ,python-socks)))
     (home-page "https://github.com/romis2012/aiohttp-socks")
     (synopsis "SOCKS proxy connector for aiohttp")
     (description "This package provides a SOCKS proxy connector for
