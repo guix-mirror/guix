@@ -4240,3 +4240,29 @@ uniformly sized, encrypted blocks that can be reassembled using a short
 read-capability.")
     (home-page "https://inqlab.net/git/eris.git")
     (license license:gpl3+)))
+
+(define-public guile-r6rs-protobuf
+  (package
+    (name "guile-r6rs-protobuf")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/joolean/r6rs-protobuf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xmn7jlr1xiqgd35klq910p1bnil1iwdvqxkjr3zzml3spy8p2aa"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs")))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/joolean/r6rs-protobuf/")
+    (synopsis "Scheme implementation of Protocol Buffers")
+    (description
+     "This project provides a pure Scheme implementation of Protocol Buffers,
+including parsing and code generation.")
+    (license license:gpl3+)))
