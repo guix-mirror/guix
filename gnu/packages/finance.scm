@@ -495,7 +495,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.8")
+    (version "4.0.9")
     (source
      (origin
        (method url-fetch)
@@ -503,7 +503,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1g00cj1pmckd4xis8r032wmraiv3vd3zc803hnyxa2bnhj8z3bg2"))
+        (base32 "1fvjiagi78f32nxgr2rx8jas8hxfvpp1c8fpfcalvykmlhdc2gva"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -512,21 +512,19 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyaes" ,python-pyaes)
-       ("python-pysocks" ,python-pysocks)
-       ("python-sip" ,python-sip)
-       ("python-pyqt" ,python-pyqt)
-       ("python-ecdsa" ,python-ecdsa)
-       ("python-pbkdf2" ,python-pbkdf2)
-       ("python-requests" ,python-requests)
+     `(("python-pyqt" ,python-pyqt)
        ("python-qrcode" ,python-qrcode)
        ("python-protobuf" ,python-protobuf)
        ("python-aiohttp" ,python-aiohttp)
        ("python-aiohttp-socks" ,python-aiohttp-socks)
        ("python-aiorpcx" ,python-aiorpcx)
        ("python-certifi" ,python-certifi)
-       ("python-dnspython" ,python-dnspython-1.16)
-       ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
+       ("python-bitstring" ,python-bitstring)
+       ("python-attrs" ,python-attrs)
+       ("python-cryptography" ,python-cryptography)
+       ("python-qdarkstyle" ,python-qdarkstyle)
+       ("python-dnspython" ,python-dnspython)
+       ("libsecp256k1" ,libsecp256k1)))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
@@ -540,7 +538,14 @@ do so.")
                (substitute* "setup.py"
                  (("sys\\.prefix")
                   (format #f "\"~a\"" out)))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'use-libsecp256k1-input
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "electrum/ecc_fast.py"
+               (("library_paths = .* 'libsecp256k1.so.0'.")
+                (string-append "library_paths = ('"
+                               (assoc-ref inputs "libsecp256k1")
+                               "/lib/libsecp256k1.so.0'"))))))))
     (home-page "https://electrum.org/")
     (synopsis "Bitcoin wallet")
     (description
