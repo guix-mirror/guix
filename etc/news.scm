@@ -17,6 +17,32 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "e38d90d497e19e00263fa28961c688a433154386")
+        (title (en "New @option{--with-patch} package transformation option")
+               (fr "Nouvelle option de transformation @option{--with-patch}"))
+        (body
+         (en "The new @option{--with-patch} package transformation option
+applies patches to the specified packages before building them.  The example
+below builds the GNU Core Utilities against a patched C library (glibc):
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-patch} applique des modifications (@i{patches}) aux paquets
+spécifiés avant de les compiler.  L'exemple suivant compile les utilitaires de
+base GNU avec une bibliothèque C (glibc) modifiée :
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "79f9dee3c4c0e6d21066f142116a537207ae7ba4")
         (title (en "Local substitute servers discovery is now supported")
                (de "Substitutserver können jetzt im lokalen Netz erkannt werden")
