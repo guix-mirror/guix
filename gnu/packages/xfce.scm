@@ -1532,7 +1532,7 @@ governor and frequencies supported and used by your system.")
 (define-public xfce4-diskperf-plugin
   (package
    (name "xfce4-diskperf-plugin")
-   (version "2.6.2")
+   (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1541,7 +1541,7 @@ governor and frequencies supported and used by your system.")
                                   "/xfce4-diskperf-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0i4nrsvwcn15g5gmnba9p07sad3c96x517l2lybdw8jqv91rhbpx"))))
+                "0n8wsnjvzw98z8r0f0zr8n2gicjz6hhislp86xrjh0r4xcnymcbk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
