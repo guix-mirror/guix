@@ -23300,3 +23300,23 @@ environment.")
     (description "QDarkStyle is the most complete dark stylesheet for Python and
 Qt applications.")
     (license license:expat)))
+
+(define-public python-bitstring
+  (package
+    (name "python-bitstring")
+    (version "3.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "bitstring" version))
+        (sha256
+         (base32
+          "0jl6192dwrlm5ybkbh7ywmyaymrc3cmz9y07nm7qdli9n9rfpwzx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/scott-griffiths/bitstring")
+    (synopsis
+     "Simple construction, analysis and modification of binary data")
+    (description
+     "Bitstring is a library for simple construction, analysis and modification
+ of binary data.")
+    (license license:expat)))
