@@ -852,6 +852,11 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 version 0.13.0 or later.
 
 @item
+@uref{https://notabug.org/guile-zstd/guile-zstd, Guile-zstd}, for zstd
+compression and decompression in @command{guix publish} and for
+substitutes (@pxref{Invoking guix publish}).
+
+@item
 @uref{https://ngyro.com/software/guile-semver.html, Guile-Semver} for
 the @code{crate} importer (@pxref{Invoking guix import}).
 
