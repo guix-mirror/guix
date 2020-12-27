@@ -848,4 +848,32 @@ pure Scheme by using Guile's foreign function interface.")
     (home-page "https://notabug.org/guile-lzlib/guile-lzlib")
     (license license:gpl3+)))
 
+(define-public guile-zstd
+  (package
+    (name "guile-zstd")
+    (version "0.1.1")
+    (home-page "https://notabug.org/guile-zstd/guile-zstd")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c8l7829b5yx8wdc0mrhzjfwb6h9hb7cd8dfxcr71a7vlsi86310"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-3.0)))
+    (inputs
+     `(("zstd" ,zstd "lib")
+       ("guile" ,guile-3.0)))
+    (synopsis "GNU Guile bindings to the zstd compression library")
+    (description
+     "This package provides a GNU Guile interface to the zstd (``zstandard'')
+compression library.")
+    (license license:gpl3+)))
+
 ;;; guile.scm ends here
