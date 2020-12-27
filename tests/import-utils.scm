@@ -122,6 +122,38 @@
     (or (package-license (alist->package meta))
         'license-is-false)))
 
+(test-equal "alist->package with SPDX license name 1/2"  ;<https://bugs.gnu.org/45453>
+  license:expat
+  (let* ((meta '(("name" . "hello")
+                 ("version" . "2.10")
+                 ("source" . (("method" . "url-fetch")
+                              ("uri"    . "mirror://gnu/hello/hello-2.10.tar.gz")
+                              ("sha256" .
+                               (("base32" .
+                                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
+                 ("build-system" . "gnu")
+                 ("home-page" . "https://gnu.org")
+                 ("synopsis" . "Say hi")
+                 ("description" . "This package says hi.")
+                 ("license" . "expat"))))
+    (package-license (alist->package meta))))
+
+(test-equal "alist->package with SPDX license name 2/2"  ;<https://bugs.gnu.org/45453>
+  license:expat
+  (let* ((meta '(("name" . "hello")
+                 ("version" . "2.10")
+                 ("source" . (("method" . "url-fetch")
+                              ("uri"    . "mirror://gnu/hello/hello-2.10.tar.gz")
+                              ("sha256" .
+                               (("base32" .
+                                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
+                 ("build-system" . "gnu")
+                 ("home-page" . "https://gnu.org")
+                 ("synopsis" . "Say hi")
+                 ("description" . "This package says hi.")
+                 ("license" . "MIT"))))
+    (package-license (alist->package meta))))
+
 (test-equal "alist->package with dependencies"
   `(("gettext" ,(specification->package "gettext")))
   (let* ((meta '(("name" . "hello")
