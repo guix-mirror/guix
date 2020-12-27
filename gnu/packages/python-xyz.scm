@@ -23273,3 +23273,30 @@ query Watchman to discover file changes.")
      "Helpdev is a library to easily extract information about the Python
 environment.")
     (license license:expat)))
+
+(define-public python-qdarkstyle
+  (package
+    (name "python-qdarkstyle")
+    (version "2.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "QDarkStyle" version))
+        (sha256
+         (base32
+          "0883vzg35fzpyl1aiijzpfcdfvpq5vi325w0m7xkx7nxplh02fym"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Fails unable to detect valid Qt bindings even when
+       ;; added as native-inputs.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-helpdev" ,python-helpdev)
+       ("python-qtpy" ,python-qtpy)))
+    (home-page
+     "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
+    (synopsis
+     "Complete dark stylesheet for Python and Qt applications")
+    (description "QDarkStyle is the most complete dark stylesheet for Python and
+Qt applications.")
+    (license license:expat)))
