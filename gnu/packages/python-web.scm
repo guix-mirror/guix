@@ -5724,3 +5724,38 @@ that's written to go fast.  It allows the usage of the
 @code{async/await} syntax added in Python 3.5, which makes
 your code non-blocking and speedy.")
     (license license:expat)))
+
+(define-public python-socks
+  (package
+    (name "python-socks")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-socks" version))
+        (sha256
+         (base32
+          "06mgv3icsyglv50w3sb71x6cpbskza20pqd93l5xk59x574i6xgs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; tests not included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests/" "-s"))
+             #t)))))
+    (propagated-inputs
+     `(("python-async-timeout" ,python-async-timeout)
+       ("python-curio" ,python-curio)
+       ("python-trio" ,python-trio)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/romis2012/python-socks")
+    (synopsis
+     "Core proxy (SOCKS4, SOCKS5, HTTP tunneling) functionality for Python")
+    (description
+     "Socks is a library providing core proxy (SOCKS4, SOCKS5, HTTP tunneling)
+ functionality.")
+    (license license:asl2.0)))
