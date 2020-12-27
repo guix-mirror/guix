@@ -57,7 +57,8 @@ when evaluated."
   ;; Print either license variable name or the code for a license object
   (define (license->code lic)
     (let ((var (variable-name lic '(guix licenses))))
-      (or (symbol-append 'license: var)
+      (if var
+          (symbol-append 'license: var)
           `(license
             (name ,(license-name lic))
             (uri ,(license-uri lic))
