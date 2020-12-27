@@ -1683,7 +1683,7 @@ Caps, Scroll and Num Lock in Xfce panel.")
 (define-public xfce4-mailwatch-plugin
   (package
    (name "xfce4-mailwatch-plugin")
-   (version "1.2.0")
+   (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1692,7 +1692,7 @@ Caps, Scroll and Num Lock in Xfce panel.")
                                   "/xfce4-mailwatch-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bfw3smwivr9mzdyq768biqrl4aq94zqi3xjzq6kqnd8561cqjk2"))))
+                "0bmykjhd3gs1737fl3zn5gg6f3vlncak2xqz89zv5018znz1xy90"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
