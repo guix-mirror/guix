@@ -1764,7 +1764,7 @@ right-click menu
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
-   (version "1.1.3")
+   (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1773,7 +1773,7 @@ right-click menu
                                   "/xfce4-mount-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "07lijjhimjrcyrhasr2299km6wm22xcd3fazdfpqvisbk1mvvrda"))))
+                "1hlfnlxwwx0hkm82mcz777f3i22x6bh6k3gzl0yjnm4yj9adjk2q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
