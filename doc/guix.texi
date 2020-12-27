@@ -12348,17 +12348,23 @@ server socket is open and the signing key has been read.
 @item --compression[=@var{method}[:@var{level}]]
 @itemx -C [@var{method}[:@var{level}]]
 Compress data using the given @var{method} and @var{level}.  @var{method} is
-one of @code{lzip} and @code{gzip}; when @var{method} is omitted, @code{gzip}
-is used.
+one of @code{lzip}, @code{zstd}, and @code{gzip}; when @var{method} is
+omitted, @code{gzip} is used.
 
 When @var{level} is zero, disable compression.  The range 1 to 9 corresponds
 to different compression levels: 1 is the fastest, and 9 is the best
 (CPU-intensive).  The default is 3.
 
-Usually, @code{lzip} compresses noticeably better than @code{gzip} for a small
-increase in CPU usage; see
-@uref{https://nongnu.org/lzip/lzip_benchmark.html,benchmarks on the lzip Web
-page}.
+Usually, @code{lzip} compresses noticeably better than @code{gzip} for a
+small increase in CPU usage; see
+@uref{https://nongnu.org/lzip/lzip_benchmark.html,benchmarks on the lzip
+Web page}.  However, @code{lzip} achieves low decompression throughput
+(on the order of 50@tie{}MiB/s on modern hardware), which can be a
+bottleneck for someone who downloads over a fast network connection.
+
+The compression ratio of @code{zstd} is between that of @code{lzip} and
+that of @code{gzip}; its main advantage is a
+@uref{https://facebook.github.io/zstd/,high decompression speed}.
 
 Unless @option{--cache} is used, compression occurs on the fly and
 the compressed streams are not
@@ -15400,7 +15406,9 @@ at level 7 and gzip at level 9, write:
 @end lisp
 
 Level 9 achieves the best compression ratio at the expense of increased CPU
-usage, whereas level 1 achieves fast compression.
+usage, whereas level 1 achieves fast compression.  @xref{Invoking guix
+publish}, for more information on the available compression methods and
+the tradeoffs involved.
 
 An empty list disables compression altogether.
 
