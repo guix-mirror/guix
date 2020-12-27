@@ -944,6 +944,8 @@ authorized substitutes."
   ;; supported.  See 'decompressed-port' in (guix utils).
   `(("gzip"  . ,(const #t))
     ("lzip"  . ,(const #t))
+    ("zstd"  . ,(lambda ()
+                  (resolve-module '(zstd) #t #f #:ensure #f)))
     ("xz"    . ,(const #t))
     ("bzip2" . ,(const #t))
     ("none"  . ,(const #t))))
@@ -961,6 +963,7 @@ this is a rough approximation."
   (match compression1
     ("none" #f)
     ("gzip" (string=? compression2 "none"))
+    ("lzip" #t)
     (_      (or (string=? compression2 "none")
                 (string=? compression2 "gzip")))))
 
