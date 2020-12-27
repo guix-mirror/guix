@@ -23251,3 +23251,25 @@ backport of the @code{dataclasses} module for Python 3.6.")
     (description "@code{python-pywatchman} is a library to connect and
 query Watchman to discover file changes.")
     (license license:bsd-3)))
+
+(define-public python-helpdev
+  (package
+    (name "python-helpdev")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "helpdev" version))
+        (sha256
+         (base32
+          "0gfvj28i82va7c264jl2p4cdsl3lpf9fpb9cyjnis55crfdafqmv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-importlib-metadata" ,python-importlib-metadata)))
+    (home-page "https://gitlab.com/dpizetta/helpdev")
+    (synopsis
+     "Extract information about the Python environment easily")
+    (description
+     "Helpdev is a library to easily extract information about the Python
+environment.")
+    (license license:expat)))
