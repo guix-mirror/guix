@@ -15973,6 +15973,30 @@ within Emacs.")
 or expressions with SVG rounded box labels that are fully customizable.")
       (license license:gpl3+))))
 
+(define-public emacs-svg-icon
+  (let ((commit "ebc2b8d0f6c680fd575a90e683cc7b832acd1eb7")
+        (revision "1"))
+    (package
+      (name "emacs-svg-icon")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rougier/emacs-svg-icon")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1qzqfa8xyw1nkb89kbvw9qcgdwr8g017n8gf3yzwn816qhkfkjrj"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/rougier/emacs-svg-icon")
+      (synopsis "Emacs library to create SVG icons on the fly")
+      (description "This library allows to create SVG icons by parsing remote
+collections whose license are compatibles with Emacs.  The default size of an
+icon is exactly 2x1 characters such that it can be inserted inside a text
+without disturbing alignment.")
+      (license (list license:gpl3+)))))
+
 (define-public emacs-sourcemap
   (package
     (name "emacs-sourcemap")
