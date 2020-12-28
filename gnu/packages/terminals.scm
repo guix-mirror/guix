@@ -99,7 +99,7 @@
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.5.2")
+    (version "1.5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -108,8 +108,15 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0psq0f4s0s92bba6wwcf6b0j7i59b76svqxhvpavwv53yvhmmamn"))))
+                "0q2i9ny8sh7zjzgvkx8vcvk593wcvchjc4xq4nrlqdd377r7cg5q"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-po-writable
+           (lambda _
+             (for-each make-file-writable (find-files "po" "."))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
