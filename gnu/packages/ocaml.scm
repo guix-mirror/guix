@@ -5845,6 +5845,32 @@ include the X Window System, Quartz, Win32, image buffers, PostScript, PDF,
 and SVG file output.")
     (license license:lgpl3+)))
 
+(define-public ocaml-version
+  (package
+    (name "ocaml-version")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocurrent/ocaml-version")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "13770mp6adjjbx63zsbh6506dqxz241chw8c3y403sxpw45hnaw6"))))
+    (build-system dune-build-system)
+    (arguments `(#:tests? #f))          ; no tests
+    (home-page
+     "https://github.com/ocurrent/ocaml-version")
+    (synopsis
+     "Manipulate, parse and generate OCaml compiler version strings")
+    (description
+     "This library provides facilities to parse version numbers of the OCaml
+compiler, and enumerates the various official OCaml releases and configuration
+variants.")
+    (license license:isc)))
+
 (define-public lablgtk3
   (package
     (name "lablgtk")
