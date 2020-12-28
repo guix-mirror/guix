@@ -247,8 +247,6 @@ ncursesw library provides wide character support.")
                (base32
                 "0riqmp2xl2j2yxx69nyg8jbm2fyi5fp4clcf6zi5jfm3irn3l8y9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no test suite
     (inputs
      `(("ncurses" ,ncurses)))
     (synopsis "Curses widgets")
