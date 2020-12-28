@@ -12262,3 +12262,21 @@ options.")
 exceptions with predefined messages.")
     (home-page "https://github.com/ruby/e2mmap")
     (license license:bsd-2)))
+
+(define-public ruby-benchmark
+  (package
+    (name "ruby-benchmark")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "benchmark" version))
+       (sha256
+        (base32
+         "1jvrl7400fv7v2jjri1r7ilj3sri36hzipwwgpn5psib4c9c59c6"))))
+    (build-system ruby-build-system)
+    (synopsis "Performance benchmarking library")
+    (description "This package provides methods for benchmarking Ruby code,
+giving detailed reports on the time taken for each task.")
+    (home-page "https://github.com/ruby/benchmark")
+    (license license:bsd-2)))
