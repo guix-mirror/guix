@@ -1317,7 +1317,8 @@ and up to 1 Mbit/s downstream.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
