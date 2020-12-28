@@ -520,7 +520,7 @@ vision algorithms.  It can be used to do things like:
 (define-public vips
   (package
     (name "vips")
-    (version "8.7.4")
+    (version "8.10.5")
     (source
      (origin
        (method url-fetch)
@@ -528,7 +528,7 @@ vision algorithms.  It can be used to do things like:
              "https://github.com/libvips/libvips/releases/download/v"
              version "/vips-" version ".tar.gz"))
        (sha256
-        (base32 "01gjhcrl6zj7mcj1al717v5jsniahplqhz1xkfh2j78vyfl1hxff"))))
+        (base32 "1n6gw7cw66rfn1wdb92ydpkv7gfmjiinsg6d6gqxpdja6gsz5vm4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
