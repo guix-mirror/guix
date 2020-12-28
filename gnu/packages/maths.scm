@@ -4558,7 +4558,7 @@ structured and unstructured grid problems.")))
 (define-public matio
   (package
     (name "matio")
-    (version "1.5.6")
+    (version "1.5.19")
     (source
      (origin
        (method url-fetch)
@@ -4566,7 +4566,7 @@ structured and unstructured grid problems.")))
                            "matio-" version ".tar.gz"))
        (sha256
         (base32
-         "0y2qymgxank8wdiwc68ap8bxdzrhvyw86i29yh3xgn4z1njfd9ir"))))
+         "0vr8c1mz1k6mz0sgh6n3scl5c3a71iqmy5fnydrgq504icj4vym4"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
