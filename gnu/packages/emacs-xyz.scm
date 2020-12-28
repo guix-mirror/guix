@@ -22287,6 +22287,35 @@ and searching through @code{Ctags} files.")
 copied into @code{org-mode} buffers.")
       (license license:gpl3+))))
 
+(define-public emacs-org-drill-table
+  ;; No releases or tags.
+  (let ((commit "096387d929bcf3eb479e0a9d5da9cf32c756a759")
+        (revision "0"))
+    (package
+      (name "emacs-org-drill-table")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chrisbarrett/org-drill-table.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1a8ygrcag8i9hdpy2vsn0sh8lwhl9b56rv91j3rddy1jv5qx1ipb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-org" ,emacs-org)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/chrisbarrett/org-drill-table")
+      (synopsis "Generate Org drill cards using Org mode tables")
+      (description
+       "This package generates drill cards based on an Org mode table in the
+current subtree.  The cards are inserted under a new ``Cards'' heading in the
+current tree.")
+      (license license:gpl3+))))
+
 (define-public emacs-dash-docs
   (let ((commit "dafc8fc9f1ddb2e4e39e0b8d066c42d5d7ce8d06")
         (revision "2"))
