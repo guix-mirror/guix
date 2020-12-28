@@ -168,15 +168,14 @@ STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
 its mount point; these are used to determine where the background image and
 fonts must be searched for.  STORE-DIRECTORY-PREFIX is a directory prefix to
 prepend to any store file name."
-  (define (setup-gfxterm config font-file)
+  (define (setup-gfxterm config)
     (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
         #~(format #f "
-if loadfont ~a; then
+if loadfont unicode; then
   set gfxmode=~a
   insmod all_video
   insmod gfxterm
 fi~%"
-                  #+font-file
                   #$(string-join
                      (grub-theme-gfxmode (bootloader-theme config))
                      ";"))
@@ -187,13 +186,6 @@ fi~%"
            (colors (type theme)))
       (string-append (symbol->string (assoc-ref colors 'fg)) "/"
                      (symbol->string (assoc-ref colors 'bg)))))
-
-  (define font-file
-    (let* ((bootloader (bootloader-configuration-bootloader config))
-           (grub (bootloader-package bootloader)))
-      (normalize-file (file-append grub "/share/grub/unicode.pf2")
-                      store-mount-point
-                      store-directory-prefix)))
 
   (define image
     (normalize-file (grub-background-image config)
@@ -216,8 +208,8 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                 #$(grub-root-search store-device font-file)
-                 #$(setup-gfxterm config font-file)
+                 #$(grub-root-search store-device image)
+                 #$(setup-gfxterm config)
                  #$(grub-setup-io config)
 
                  #$image
@@ -545,9 +537,13 @@ fi~%"))))
               (invoke/quiet grub "--no-floppy" "--target=i386-pc"
                             "--boot-directory" install-dir
                             device))
-            ;; When creating a disk-image, only install GRUB modules.
-            (copy-recursively (string-append bootloader "/lib/")
-                              install-dir)))))
+            ;; When creating a disk-image, only install a font and GRUB modules.
+            (let* ((fonts (string-append install-dir "/grub/fonts")))
+              (mkdir-p fonts)
+              (copy-file (string-append bootloader "/share/grub/unicode.pf2")
+                         (string-append fonts "/unicode.pf2"))
+              (copy-recursively (string-append bootloader "/lib/")
+                                install-dir))))))
 
 (define install-grub-disk-image
   #~(lambda (bootloader root-index image)
