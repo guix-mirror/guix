@@ -13748,6 +13748,36 @@ through them using @key{C-c C-SPC}.")
 messaging service.")
       (license license:gpl3+))))
 
+(define-public emacs-helm-slack
+  (let ((commit "465f6220f3f5bee4d95492991fca1290c89534eb")
+        (revision "1"))
+    (package
+      (name "emacs-helm-slack")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yuya373/helm-slack")
+                      (commit commit)))
+                (file-name (git-file-name name commit))
+                (sha256
+                 (base32
+                  "0p1s1kl8v68qjprqkf034cz911qzbqxbscqgpn0c3mbm3yfx81f7"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; HOME needs to exist for source compilation.
+           (add-before 'build 'set-HOME
+             (lambda _ (setenv "HOME" "/tmp") #t)))))
+      (propagated-inputs `(("emacs-slack", emacs-slack)))
+      (home-page "https://github.com/yuya373/helm-slack")
+      (synopsis "Helm extension for emacs-slack")
+      (description "This package provides an helm extension for emacs-slack
+Slack client.")
+      (license license:gpl3+))))
+
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
