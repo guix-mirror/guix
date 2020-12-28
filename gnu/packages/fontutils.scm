@@ -12,6 +12,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages tex)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -319,15 +322,14 @@ Font Format (WOFF).")
   (hidden-package
    (package
      (name "fontconfig-minimal")
-     (version "2.13.1")
+     (version "2.13.93")
      (source (origin
-               (method url-fetch)
-               (uri (string-append
-                     "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
-                     version ".tar.bz2"))
-               (patches (search-patches "fontconfig-hurd-path-max.patch"))
-               (sha256 (base32
-                        "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
+            (method url-fetch)
+            (uri (string-append
+                  "https://www.freedesktop.org/software/"
+                  "fontconfig/release/fontconfig-" version ".tar.xz"))
+            (sha256 (base32
+                     "1850q4k80yxma5g3yxkvyv8i5a3xqzswwml8gjy3jmywx8qqd5pa"))))
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.
      (propagated-inputs `(("expat" ,expat)
@@ -339,7 +341,8 @@ Font Format (WOFF).")
       `(("font-dejavu" ,font-dejavu)))
      (native-inputs
       `(("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)))
+        ("pkg-config" ,pkg-config)
+        ("python" ,python-minimal)))    ;to avoid a cycle through tk
      (arguments
       `(#:configure-flags
         (list "--disable-docs"
@@ -352,12 +355,16 @@ Font Format (WOFF).")
               ;; Register fonts from user and system profiles.
               (string-append "--with-add-fonts="
                              "~/.guix-profile/share/fonts,"
-                             "/run/current-system/profile/share/fonts")
-
-              ;; python is not actually needed
-              "PYTHON=false")
+                             "/run/current-system/profile/share/fonts"))
         #:phases
         (modify-phases %standard-phases
+          (add-before 'check 'skip-problematic-tests
+            (lambda _
+              (substitute* "test/run-test.sh"
+                ;; The crbug1004254 test attempts to fetch fonts from the
+                ;; network.
+                (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
+                 "false"))))
           (replace 'install
             (lambda _
               ;; Don't try to create /var/cache/fontconfig.
