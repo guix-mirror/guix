@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2220,16 +2221,25 @@ modular implementation of XML-RPC for C and C++.")
               (sha256
                (base32
                 "1khpasr6l0a8nfz6kcf3s81vgdab8fm2dj291n5r2s53k228kx2p"))))
+    (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
-    (inputs
      `(("docbook-xml" ,docbook-xml-4.1.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("xmlto" ,xmlto)))
+       ("libxml2" ,libxml2)             ;for XML_CATALOG_DIR
+       ("xmlto" ,xmlto)
+       ;; Dependencies to regenerate the 'configure' script.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)))
     (arguments
-     `(;; TODO: Fix and enable tests.
-       #:tests? #f
+     `( ;; Note: we cannot use '--enable-full-doc-build' as this would require
+       ;; Openjade, which in turn requires this package.
+
+       ;; Skip the tests that are known to fail (see:
+       ;; https://sourceforge.net/p/openjade/mailman/message/6182316/)
+       #:make-flags '("TESTS_THAT_FAIL=")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook-paths
@@ -2243,16 +2253,46 @@ modular implementation of XML-RPC for C and C++.")
                  (("/usr/share/sgml/docbook/xml-dtd-4.1.2") xmldoc)
                  (("http://.*/docbookx\\.dtd")
                   (string-append xmldoc "/docbookx.dtd")))
-               ;; Directly pass the path to the stylesheet to xmlto.
-               (substitute* "docsrc/Makefile.in"
-                 (("\\$\\(XMLTO\\)")
-                  (string-append "$(XMLTO) -x " xsldoc
-                                 "/manpages/docbook.xsl")))
-               #t))))))
+               #t)))
+         (add-after 'patch-docbook-paths 'delete-configure
+           ;; The configure script in the release was made with an older
+           ;; Autoconf and lacks support for the `--docdir' option.
+           (lambda _
+             (delete-file "configure")
+             #t))
+         (add-after 'delete-configure 'honor-docdir
+           ;; docdir is not honored due to being hardcoded in the various
+           ;; Makefile.am (see: https://sourceforge.net/p/openjade/bugs/147/).
+           (lambda _
+             (substitute* '("Makefile.am" "doc/Makefile.am" "docsrc/Makefile.am")
+               (("^docdir = .*") "docdir = @docdir@\n"))
+             #t))
+         (add-after 'delete-configure 'fix-tests-makefile.am
+           ;; Remove the trailing $(SHELL) from the TESTS_ENVIRONMENT variable
+           ;; definition. Otherwise, when targets are built using
+           ;; "$(am__check_pre) $(LOG_DRIVER) [...]", there would be two
+           ;; $(SHELL) expansion which fails the build.
+           (lambda _
+             (substitute* "tests/Makefile.am"
+               (("^\tOSGMLNORM=`echo osgmlnorm\\|sed '\\$\\(transform\\)'`\\\\")
+                "\tOSGMLNORM=`echo osgmlnorm|sed '$(transform)'`")
+               (("^\t\\$\\(SHELL\\)\n") ""))
+             #t)))))
+    ;; $SGML_CATALOG_FILES lists 'catalog' or 'CATALOG' or '*.cat' files found
+    ;; under the 'sgml' sub-directory of any given package.
+    (native-search-paths (list (search-path-specification
+                                (variable "SGML_CATALOG_FILES")
+                                (separator ":")
+                                (files '("sgml"))
+                                (file-pattern "^catalog$|^CATALOG$|^.*\\.cat$")
+                                (file-type 'regular))))
     (home-page "http://openjade.sourceforge.net/")
     (synopsis "Suite of SGML/XML processing tools")
     (description "OpenSP is an object-oriented toolkit for SGML parsing and
-entity management.")
+entity management.  It is a fork of James Clark's SP suite.  The tools it
+contains can be used to parse, validate, and normalize SGML and XML files.
+The central program included in this package is @code{onsgmls}, which replaces
+@code{sgmls}, @code{ospam}, @code{ospent}, @code{osgmlnorm}, and @code{osx}.")
     (license
      ;; expat license with added clause regarding advertising
      (license:non-copyleft
