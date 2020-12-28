@@ -51,6 +51,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -2217,6 +2218,56 @@ It converts the procedure call into an XML document, sends it to a remote
 server using HTTP, and gets back the response as XML.  This library provides a
 modular implementation of XML-RPC for C and C++.")
     (license (list license:psfl license:expat))))
+
+(define-public opensp
+  (package
+    (name "opensp")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/openjade/opensp/"
+                                  version "/OpenSP-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1khpasr6l0a8nfz6kcf3s81vgdab8fm2dj291n5r2s53k228kx2p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xmlto" ,xmlto)))
+    (arguments
+     `(;; TODO: Fix and enable tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* (find-files "docsrc" "\\.xml$")
+                 (("/usr/share/sgml/docbook/xml-dtd-4.1.2") xmldoc)
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               ;; Directly pass the path to the stylesheet to xmlto.
+               (substitute* "docsrc/Makefile.in"
+                 (("\\$\\(XMLTO\\)")
+                  (string-append "$(XMLTO) -x " xsldoc
+                                 "/manpages/docbook.xsl")))
+               #t))))))
+    (home-page "http://openjade.sourceforge.net/")
+    (synopsis "Suite of SGML/XML processing tools")
+    (description "OpenSP is an object-oriented toolkit for SGML parsing and
+entity management.")
+    (license
+     ;; expat license with added clause regarding advertising
+     (license:non-copyleft
+      "file://COPYING"
+      "See COPYING in the distribution."))))
 
 (define-public python-elementpath
   (package
