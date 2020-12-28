@@ -3988,7 +3988,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
 (define-public rust-clap-2
   (package
     (name "rust-clap")
-    (version "2.33.1")
+    (version "2.33.3")
     (source
       (origin
         (method url-fetch)
@@ -3996,7 +3996,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0a91g4m6rcqpf6gzxh43cj6mnj9g8ahpr634baim6kcmgza81ymx"))))
+          "00i065a58987k1sbzqmlz721rw521zcg08jmsh40gi3khp3qmr9p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
