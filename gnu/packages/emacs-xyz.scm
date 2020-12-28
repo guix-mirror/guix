@@ -4178,6 +4178,30 @@ custom strings.  This mode does not change your files in any way, it only
 displays the priority part of a heading as your preferred string value.")
       (license license:expat))))
 
+(define-public emacs-org-fragtog
+  (package
+    (name "emacs-org-fragtog")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/io12/org-fragtog.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rzi67lb3mxqg3x6d8zx6rxncg7lw14agqwbh7zvgc2iins59j0f"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/io12/org-fragtog")
+    (synopsis "Toggle Org mode LaTeX fragments preview at cursor")
+    (description
+     "Org mode supports inline image previews of LaTeX fragments.  This
+package automates this, so fragment previews are disabled for editing when
+your cursor steps onto them, and re-enabled when the cursor leaves.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-erlang
   (let ((revision "1")
         (commit "f1a8c665b8f7d0ab32267a9961de8eed872e6333"))
