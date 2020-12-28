@@ -2887,7 +2887,7 @@ writing to these structures, and they are accessed via the Bigarray module.")
     (propagated-inputs
      `(("ocaml-hex" ,(package-with-ocaml4.07 ocaml-hex))
        ("ocaml-jsonm" ,(package-with-ocaml4.07 ocaml-jsonm))
-       ("ocaml-sexplib" ,ocaml4.07-sexplib)))
+       ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))))
     (home-page "https://github.com/mirage/ezjsonm/")
     (synopsis "Read and write JSON data")
     (description "Ezjsonm provides more convenient (but far less flexible) input
@@ -4118,36 +4118,37 @@ parsexp_io.")
                          "11a30zkfgbi6pb4whq22k1zc8ghdp9bwxl5s5cdlmx1z8s4yxsf0"))
      (properties '()))))
 
-(define-public ocaml4.07-sexplib
+(define-public ocaml-sexplib
   (package
-    (name "ocaml4.07-sexplib")
-    (version "0.11.0")
+    (name "ocaml-sexplib")
+    (version "0.14.0")
     (home-page "https://github.com/janestreet/sexplib")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1qfl0m04rpcjvc4yw1hzh6r16jpwmap0sa9ax6zjji67dz4szpyb"))))
+     (janestreet-origin "sexplib" version
+                        "12rlnc6fcrjfdn3gs2agi418sj54ighhs6dfll37zcv7mgywblm2"))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (propagated-inputs
-     `(("ocaml-num" ,(package-with-ocaml4.07 ocaml-num))
-       ("ocaml-parsexp" ,(package-with-ocaml4.07 ocaml-parsexp))
-       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-parsexp" ,ocaml-parsexp)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sexplib))))
     (synopsis
      "Library for serializing OCaml values to and from S-expressions")
     (description
-     "This package is part of Jane Street's Core library. Sexplib contains
+     "This package is part of Jane Street's Core library.  Sexplib contains
 functionality for parsing and pretty-printing s-expressions.")
     (license license:expat)))
+
+(define-public ocaml4.07-sexplib
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-sexplib)
+     (version "0.11.0")
+     (source
+      (janestreet-origin "sexplib" version
+                         "0ksx62zsxhz8xmdrsn41n2hbc2qbyh3bxxc6946xisvgwh42h3q3"))
+     (properties '()))))
 
 (define-public ocaml-base
   (package
@@ -5436,7 +5437,7 @@ thousands of times faster than fork.
         ("ocaml-core-kernel" ,ocaml4.07-core-kernel)
         ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
-        ("ocaml-sexplib" ,ocaml4.07-sexplib)
+        ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-spawn" ,ocaml4.07-spawn)
         ("ocaml-stdio" ,ocaml4.07-stdio)
         ("ocaml-migrate-parsetree"
@@ -5483,7 +5484,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
         ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)
         ("ocaml-ppx-sexp-message" ,ocaml4.07-ppx-sexp-message)
-        ("ocaml-sexplib" ,ocaml4.07-sexplib)
+        ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
         ("ocaml-splittable-random" ,ocaml4.07-splittable-random)
         ("ocaml-stdio" ,ocaml4.07-stdio)
         ("ocaml-typerep" ,ocaml4.07-typerep)
@@ -5650,7 +5651,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
     (inputs
      `(("ocaml-alcotest" ,(package-with-ocaml4.07 ocaml-alcotest))
        ("ocaml-markup" ,(package-with-ocaml4.07 ocaml-markup))
-       ("ocaml-sexplib" ,ocaml4.07-sexplib)
+       ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
        ("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))
        ("ocaml-uutf" ,(package-with-ocaml4.07 ocaml-uutf))))
     (native-inputs
