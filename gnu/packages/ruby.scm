@@ -26,6 +26,7 @@
 ;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 EuAndreh <eu@euandre.org>
+;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12239,3 +12240,25 @@ multiple adapters, various log level combinations and message formatting
 options.")
     (home-page "https://github.com/rudionrails/yell")
     (license license:expat)))
+
+(define-public ruby-e2mmap
+  (package
+    (name "ruby-e2mmap")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "e2mmap" version))
+       (sha256
+        (base32
+         "0n8gxjb63dck3vrmsdcqqll7xs7f3wk78mw8w0gdk9wp5nx6pvj5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ;; There is a rakefile but no tests
+    (synopsis
+     "Module for defining custom exceptions with specific messages")
+    (description
+     "Exception2MessageMapper (e2mmap) is a helper module for easily defining
+exceptions with predefined messages.")
+    (home-page "https://github.com/ruby/e2mmap")
+    (license license:bsd-2)))
