@@ -4583,14 +4583,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "20.06")
+    (version "20.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
                            version "/rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "1i9x9rkqwwdrk77xl5ra8i48cjirbc7fbisnj0nnclccwaq0wk6r"))))
+        (base32 "0nqw2caxmv6mqh485wzvywa024yvi18q87sd4dw9b2l5qnpq8rl8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
