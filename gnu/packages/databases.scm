@@ -2137,12 +2137,36 @@ similar to BerkeleyDB, LevelDB, etc.")
                                   version".tar.gz"))
               (sha256
                (base32
-                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))))
+                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled jemalloc, as the package will use the libc one
+               '(begin (delete-file-recursively "deps/jemalloc")
+                       #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("procps" ,procps) ; for tests
+       ("tcl" ,tcl)))     ; for tests
     (arguments
-     '(#:tests? #f ; tests related to master/slave and replication fail
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'use-correct-tclsh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "runtest"
+               (("^TCLSH=.*")
+                (string-append "TCLSH="
+                               (assoc-ref inputs "tcl")
+                               "/bin/tclsh")))
+             #t))
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             ;; Disable failing tests
+             (substitute* "tests/test_helper.tcl"
+               (("    integration/replication[^-]") "")
+               (("    integration/replication-4") "")
+               (("    integration/replication-psync") ""))
+             #t)))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
                       "LDFLAGS=-ldl"
