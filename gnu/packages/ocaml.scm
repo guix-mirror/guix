@@ -3909,6 +3909,33 @@ Mercurial's @code{https://www.selenic.com/blog/?p=663, unified test
 format}.  @code{craml} is released as a single binary (called @code{craml}).")
     (license license:isc)))
 
+(define-public ocaml-dot-merlin-reader
+  (package
+    (name "ocaml-dot-merlin-reader")
+    (version "3.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/merlin")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0i2nwkdh6cfzmnsdsr8aw86vs8j1k5jkjzrs61b9384wnffdbbmj"))))
+    (build-system dune-build-system)
+    (arguments '(#:package "dot-merlin-reader"
+                 #:tests? #f))          ; no tests
+    (inputs
+     `(("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-csexp" ,ocaml-csexp)
+       ("ocaml-result" ,ocaml-result)))
+    (home-page "https://ocaml.github.io/merlin/")
+    (synopsis "Reads config files for @code{ocaml-merlin}")
+    (description "@code{ocaml-dot-merlin-reader} is an external reader for
+@code{ocaml-merlin} configurations.")
+    (license license:expat)))
+
 (define-public ocaml4.07-merlin
   (package
     (name "ocaml4.07-merlin")
