@@ -46,15 +46,16 @@
 (define-public smalltalk
   (package
     (name "smalltalk")
-    (version "3.2.5")
+    (version "3.2.91")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/smalltalk/smalltalk-"
+      ;; XXX: Revert to mirror://gnu with the next release of Smalltalk.
+      (uri (string-append "https://alpha.gnu.org/gnu/smalltalk/smalltalk-"
                           version ".tar.xz"))
       (sha256
        (base32
-        "1k2ssrapfzhngc7bg1zrnd9n2vyxp9c9m70byvsma6wapbvib6l1"))
+        "1zb2h5cbz1cwybqjl24lflw359lwj7sjvvhwb4x6miypzhwq4qh0"))
       ;; XXX: To be removed with the next release of Smalltalk.
       (patches (search-patches "smalltalk-multiplication-overflow.patch"))))
     (build-system gnu-build-system)
