@@ -338,6 +338,18 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (description "This package provides SGML style sheets for DocBook.")
     (license (x11-style "" "See file headers."))))
 
+(define-public docbook-sgml-3.1
+  (package
+    (inherit docbook-sgml)
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.oasis-open.org/docbook/sgml/"
+                                  version "/docbk31.zip"))
+              (sha256
+               (base32
+                "0f25ch7bywwhdxb1qa0hl28mgq1blqdap3rxzamm585rf4kis9i0"))))))
+
 ;;; Private package referenced by docbook-sgml.
 (define iso-8879-entities
   (package
