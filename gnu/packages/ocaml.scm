@@ -982,6 +982,32 @@ compilers that can directly deal with packages.")
      `(("m4" ,m4)
        ("ocaml" ,ocaml-4.09)))))
 
+(define-public ocaml-ounit2
+  (package
+    (name "ocaml-ounit2")
+    (version "2.2.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gildor478/ounit.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gxjw1bhmjcjzri6x6psqrkbbyq678b69bqfl9i1zswp7cj2lryg"))))
+    (build-system dune-build-system)
+    (inputs
+     ;; XXX Should libev be a propagated-input of ocaml-lwt?
+     `(("libev" ,libev)))
+    (propagated-inputs
+     `(("lwt" ,ocaml-lwt)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
+    (home-page "https://github.com/gildor478/ounit")
+    (synopsis "Unit testing framework for OCaml")
+    (description "OUnit2 is a unit testing framework for OCaml.  It is similar
+to JUnit and other XUnit testing frameworks.")
+    (license license:expat)))
+
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
