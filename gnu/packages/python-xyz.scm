@@ -7661,6 +7661,40 @@ features useful for text console applications.")
           (base32
            "11ndnhxd41m13darf5s0c6bafdpkzq1l6mfb04wbzdmyc1hg75h8")))))))
 
+(define-public python-urwid-readline
+  (package
+    (name "python-urwid-readline")
+    (version "0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rr-/urwid_readline")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0sq5qgxj7gcfww3ww7idr87isnmp0hi36n241b3q395x1zafdv22"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest"))
+             #t)))))
+    (propagated-inputs
+     `(("python-urwid" ,python-urwid)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/rr-/urwid_readline")
+    (synopsis "Text input widget for urwid that supports readline shortcuts")
+    (description
+     "This package provides a textbox edit widget for @code{python-urwid} that
+supports @code{readline} shortcuts.")
+    (license license:expat)))
+
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
