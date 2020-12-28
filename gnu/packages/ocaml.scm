@@ -4066,28 +4066,19 @@ that was developed by Jane Street, the largest industrial user of OCaml.")
      (arguments `(#:tests? #f))         ; no tests
      (properties '()))))
 
-(define-public ocaml4.07-parsexp
+(define-public ocaml-parsexp
   (package
-    (name "ocaml4.07-parsexp")
-    (version "0.11.0")
+    (name "ocaml-parsexp")
+    (version "0.14.0")
     (home-page "https://github.com/janestreet/parsexp")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1nyq23s5igd8cf3n4qxprjvhbmb6ighb3fy5mw7hxl0mdgsw5fvz"))))
+     (janestreet-origin "parsexp" version
+                        "158znj19dvfdcwsgzs3rdhxpj1g4aw0d4nkfr8c05bahf0lnshlb"))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (inputs
-     `(("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-base" ,ocaml-base)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-parsexp))))
     (synopsis "S-expression parsing library")
     (description
      "This library provides generic parsers for parsing S-expressions from
@@ -4116,6 +4107,17 @@ s-expressions from files or other external sources, you should use
 parsexp_io.")
     (license license:expat)))
 
+(define-public ocaml4.07-parsexp
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-parsexp)
+     (name "ocaml-parsexp")
+     (version "0.11.0")
+     (source
+      (janestreet-origin "parsexp" version
+                         "11a30zkfgbi6pb4whq22k1zc8ghdp9bwxl5s5cdlmx1z8s4yxsf0"))
+     (properties '()))))
+
 (define-public ocaml4.07-sexplib
   (package
     (name "ocaml4.07-sexplib")
@@ -4138,7 +4140,7 @@ parsexp_io.")
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
      `(("ocaml-num" ,(package-with-ocaml4.07 ocaml-num))
-       ("ocaml-parsexp" ,ocaml4.07-parsexp)
+       ("ocaml-parsexp" ,(package-with-ocaml4.07 ocaml-parsexp))
        ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (synopsis
      "Library for serializing OCaml values to and from S-expressions")
