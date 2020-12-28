@@ -12029,20 +12029,23 @@ application.")
 (define-public ruby-solargraph
   (package
     (name "ruby-solargraph")
-    (version "0.36.0")
+    (version "0.40.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "solargraph" version))
        (sha256
         (base32
-         "0b93xzkgd1h06da9gdnwivj1mzbil8lc072y2838dy6i7bxgpy9i"))))
+         "1gf049rm0yvw4r8r5yyi890idbfg8qh0dikqx5prvkh11srl73bz"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-backport" ,ruby-backport)
        ("bundler" ,bundler)
-       ("ruby-htmlentities" ,ruby-htmlentities)
+       ("ruby-benchmark" ,ruby-benchmark)
+       ("ruby-e2mmap" ,ruby-e2mmap)
        ("ruby-jaro-winkler" ,ruby-jaro-winkler)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-kramdown-parser-gfm" ,ruby-kramdown-parser-gfm)
        ("ruby-maruku" ,ruby-maruku)
        ("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-parser" ,ruby-parser)
