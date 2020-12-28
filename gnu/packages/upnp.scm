@@ -94,7 +94,7 @@ over IRC, instant messaging, network games, and most server software.")
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.12.1")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
@@ -102,7 +102,7 @@ over IRC, instant messaging, network games, and most server software.")
                           "/release-" version "/libupnp-" version".tar.bz2"))
       (sha256
        (base32
-        "02a0dnbk1cla8xlb5l2zp09grv2hsf8n4jbd560mmzj830mn8dpw"))))
+        "1sswsdqzarrd6h9mld2lncbcrfhd4p16zcafvmxqm34nj513vcpc"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
