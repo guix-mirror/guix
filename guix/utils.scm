@@ -79,6 +79,7 @@
             target-64bit?
             cc-for-target
             cxx-for-target
+            pkg-config-for-target
 
             version-compare
             version>?
@@ -547,6 +548,11 @@ a character other than '@'."
   (if target
       (string-append target "-g++")
       "g++"))
+
+(define* (pkg-config-for-target #:optional (target (%current-target-system)))
+  (if target
+      (string-append target "-pkg-config")
+      "pkg-config"))
 
 (define version-compare
   (let ((strverscmp
