@@ -5871,6 +5871,55 @@ compiler, and enumerates the various official OCaml releases and configuration
 variants.")
     (license license:isc)))
 
+(define-public ocaml-mdx
+  (package
+    (name "ocaml-mdx")
+    (version "1.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/realworldocaml/mdx")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10avyv99xkfqdq3gmq8gps770jpibbfslg97sbhgmp0dpwikz49d"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-astring" ,ocaml-astring)
+       ("ocaml-logs" ,ocaml-logs)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-odoc" ,ocaml-odoc)
+       ("ocaml-version" ,ocaml-version)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-alcotest" ,ocaml-alcotest)))
+    (home-page
+     "https://github.com/realworldocaml/mdx")
+    (synopsis
+     "Executable code blocks inside markdown files")
+    (description
+     "@code{ocaml-mdx} allows to execute code blocks inside markdown files.
+There are (currently) two sub-commands, corresponding
+to two modes of operations: pre-processing (@code{ocaml-mdx pp})
+and tests (@code{ocaml-mdx test}]).
+
+The pre-processor mode allows to mix documentation and code,
+and to practice @dfn{literate programming} using markdown and OCaml.
+
+The test mode allows to ensure that shell scripts and OCaml fragments
+in the documentation always stays up-to-date.
+
+@code{ocaml-mdx} is released as two binaries called @code{ocaml-mdx} and
+@code{mdx} which are the same, mdx being the deprecated name, kept for now for
+compatibility.")
+    (license license:isc)))
+
 (define-public lablgtk3
   (package
     (name "lablgtk")
