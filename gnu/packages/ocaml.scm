@@ -3936,11 +3936,10 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
 @code{ocaml-merlin} configurations.")
     (license license:expat)))
 
-(define-public ocaml4.07-merlin
+(define-public ocaml-merlin
   (package
-    (name "ocaml4.07-merlin")
-    (version "3.2.2")
-    (home-page "https://ocaml.github.io/merlin/")
+    (name "ocaml-merlin")
+    (version "3.4.2")
     (source
      (origin
        (method git-fetch)
@@ -3950,24 +3949,53 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
+         "0i2nwkdh6cfzmnsdsr8aw86vs8j1k5jkjzrs61b9384wnffdbbmj"))))
     (build-system dune-build-system)
+    (arguments '(#:package "merlin"
+                 #:test-target "tests"))
     (inputs
-     `(("ocaml-yojson" ,(package-with-ocaml4.07 ocaml-yojson))))
+     `(("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-csexp" ,ocaml-csexp)
+       ("ocaml-result" ,ocaml-result)))
     (native-inputs
-     `(("ocaml-findlib" ,ocaml-findlib)))
-    (arguments
-     `(#:package "merlin"
-       #:tests? #f ;; Errors in tests in version 3.2.2
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(("ocaml-dot-merlin-reader" ,ocaml-dot-merlin-reader) ; required for tests
+       ("ocaml-mdx" ,ocaml-mdx)
+       ("jq" ,jq)))
+    (home-page "https://ocaml.github.io/merlin/")
     (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
     (description "Merlin is an editor service that provides modern IDE
 features for OCaml.  Emacs and Vim support is provided out-of-the-box.
 External contributors added support for Visual Studio Code, Sublime Text and
 Atom.")
     (license license:expat)))
+
+;; ocaml-merlin 3.4.2 can not be built with old version of dune used in
+;; package-with-ocaml4.07
+(define-public ocaml4.07-merlin
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-merlin)
+     (name "ocaml-merlin")
+     (version "3.2.2")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml/merlin")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
+     (build-system dune-build-system)
+     (inputs
+      `(("ocaml-yojson" ,ocaml-yojson)))
+     (native-inputs
+      `(("ocaml-findlib" ,ocaml-findlib)))
+     (arguments
+      `(#:package "merlin"
+        ;; Errors in tests in version 3.2.2
+        #:tests? #f)))))
 
 (define-public ocaml4.07-gsl
   (package
