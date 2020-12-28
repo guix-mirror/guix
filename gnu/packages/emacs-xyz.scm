@@ -10296,6 +10296,15 @@ passive voice.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; FIXME: The elpa tarball upstream does not include the version
+         ;; number, remove this phase when this is fixed.
+         ;; https://lists.gnu.org/archive/html/emacs-orgmode/2020-12/msg00729.html
+         (add-after 'unpack 'fix-org-version
+           (lambda _
+             (substitute* "org-version.el"
+               (("org-release \"\"")
+                (string-append "org-release \"" ,version "\"")))
+             #t))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share"))
