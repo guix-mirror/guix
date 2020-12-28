@@ -1780,7 +1780,7 @@ DOS or Microsoft Windows.")
 (define-public xen
   (package
     (name "xen")
-    (version "4.14.0")
+    (version "4.14.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1789,7 +1789,7 @@ DOS or Microsoft Windows.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s06zhzmkm7wylrxhas5v0sg2ackmmyw01gvv67r9idml55i0dh5"))))
+                "1r90rvypw76ya9clqw5p02gm1k8hxz73f7gr95ca778nnzvb7xjw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
