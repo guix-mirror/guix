@@ -189,7 +189,7 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.35")
+    (version "1.3.36")
     (source
      (origin
        (method url-fetch)
@@ -202,7 +202,7 @@ script.")
                         "/GraphicsMagick-" version ".tar.xz")))
        (sha256
         (base32
-         "0l024l4hawm9s3jqrgi2j0lxgm61dqh8sgkj1017ma7y11hqv2hq"))))
+         "0ilg6fkppb4avzais1dvi3qf6ln7v3mzj7gjm83w7pwwfpg3ynsx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
