@@ -94,6 +94,14 @@
                  (number->string file-number) "/" name "-" version
                  ".tar.gz"))
 
+(define (janestreet-origin name version hash)
+  (origin (method url-fetch)
+          (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                              (version-major+minor version) "/files/"
+                              name "-v" (version-major+minor+point version)
+                              ".tar.gz"))
+          (sha256 (base32 hash))))
+
 (define-public ocaml-4.11
   (package
     (name "ocaml")
@@ -2918,7 +2926,7 @@ JSON.")
        ("ocaml-ppx-sexp-conv" ,ocaml4.07-ppx-sexp-conv)))
     (propagated-inputs
      `(("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))
-       ("ocaml-sexplib0" ,ocaml4.07-sexplib0)
+       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
        ("ocaml-stringext" ,(package-with-ocaml4.07 ocaml-stringext))))
     (home-page "https://github.com/mirage/ocaml-uri")
     (synopsis "RFC3986 URI/URL parsing library")
@@ -3649,7 +3657,7 @@ syntax checking on dedukti files.")
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
-       ("ocaml-sexplib0" ,ocaml4.07-sexplib0)
+       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))
        ("ocaml-stdio" ,ocaml4.07-stdio)
        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
     (properties `((upstream-name . "ppx_inline_test")))
@@ -4028,33 +4036,35 @@ an arbitrary number of processes.  Cache coherence protocols and mutual
 exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))
 
-(define-public ocaml4.07-sexplib0
+(define-public ocaml-sexplib0
   (package
-    (name "ocaml4.07-sexplib0")
-    (version "0.11.0")
+    (name "ocaml-sexplib0")
+    (version "0.14.0")
     (home-page "https://github.com/janestreet/sexplib0")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "07v3ggyss7xhfv14bjk1n87sr42iqwj4cgjiv2lcdfkqk49i2bmi"))))
+     (janestreet-origin "sexplib0" version
+                        "0adrc0r1vvvr41dcpj8jwkzh1dfgqf0mks9xlnnskqfm3a51iavg"))
     (build-system dune-build-system)
-    (arguments
-     `(#:tests? #f ;no tests
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+    (arguments `(#:tests? #f)) ;no tests
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-sexplib0))))
     (synopsis "Library containing the definition of S-expressions and some
 base converters")
     (description "Part of Jane Street's Core library The Core suite of
 libraries is an industrial strength alternative to OCaml's standard library
 that was developed by Jane Street, the largest industrial user of OCaml.")
-(license license:expat)))
+    (license license:expat)))
+
+(define-public ocaml4.07-sexplib0
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-sexplib0)
+     (name "ocaml-sexplib0")
+     (version "0.11.0")
+     (source
+      (janestreet-origin "sexplib0" version
+                         "1p06p2s7p9xsjn0z9qicniv1ai54d8sj11k8j633di2mm7jzxpin"))
+     (arguments `(#:tests? #f))         ; no tests
+     (properties '()))))
 
 (define-public ocaml4.07-parsexp
   (package
@@ -4077,7 +4087,7 @@ that was developed by Jane Street, the largest industrial user of OCaml.")
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (inputs
-     `(("ocaml-sexplib0" ,ocaml4.07-sexplib0)))
+     `(("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (synopsis "S-expression parsing library")
     (description
      "This library provides generic parsers for parsing S-expressions from
@@ -4129,7 +4139,7 @@ parsexp_io.")
     (propagated-inputs
      `(("ocaml-num" ,(package-with-ocaml4.07 ocaml-num))
        ("ocaml-parsexp" ,ocaml4.07-parsexp)
-       ("ocaml-sexplib0" ,ocaml4.07-sexplib0)))
+       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (synopsis
      "Library for serializing OCaml values to and from S-expressions")
     (description
@@ -4154,7 +4164,7 @@ functionality for parsing and pretty-printing s-expressions.")
          "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("ocaml-sexplib0" ,ocaml4.07-sexplib0)))
+     `(("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -4225,7 +4235,7 @@ is now @code{Ocaml_common.Ast_helper}.")
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml4.07-base)
-       ("ocaml-sexplib0" ,ocaml4.07-sexplib0)))
+       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (arguments
      `(#:tests? #f ;no tests
        #:ocaml ,ocaml-4.07
@@ -4289,7 +4299,7 @@ as part of the same ocaml-migrate-parsetree driver.")
        ("ocaml-ppx-derivers" ,(package-with-ocaml4.07 ocaml-ppx-derivers))
        ("ocaml-stdio" ,ocaml4.07-stdio)
        ("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
-       ("ocaml-sexplib0" ,ocaml4.07-sexplib0)))
+       ("ocaml-sexplib0" ,(package-with-ocaml4.07 ocaml-sexplib0))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
