@@ -2034,7 +2034,7 @@ period.")
 (define-public xfce4-verve-plugin
   (package
    (name "xfce4-verve-plugin")
-   (version "2.0.0")
+   (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -2043,7 +2043,7 @@ period.")
                                   "/xfce4-verve-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ljcmgc8ixrbz134ggxbbh4zzdnp7mhi9ay6s5hgrz28djx10rcy"))))
+                "09gqp0jb5ccjh7ny798n5cy9skdx3hpis4kgvjpl4vidnrg5xnpb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
