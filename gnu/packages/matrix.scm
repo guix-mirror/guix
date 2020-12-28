@@ -2,6 +2,7 @@
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,30 @@
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix packages))
+
+(define-public python-matrix-client
+  (package
+    (name "python-matrix-client")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matrix-client" version))
+       (sha256
+        (base32
+         "1mgjd0ymf9mvqjkvgx3xjhxap7rzdmpa21wfy0cxbw2xcswcrqyw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-responses" ,python-responses)))
+    (home-page
+     "https://github.com/matrix-org/matrix-python-sdk")
+    (synopsis "Client-Server SDK for Matrix")
+    (description "This package provides client-server SDK for Matrix.")
+    (license license:asl2.0)))
 
 (define-public python-matrix-synapse-ldap3
   (package
