@@ -5533,7 +5533,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "0.8.2")
+    (version "1.0.0")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -5544,7 +5544,7 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "13zcrwzjmifniv3bvjbkd2ah8wwa3ld75bxh1d8hrzdvfxzh9szn"))))
+         "09hkrf9pw6hpb9j06p5bddklpnjwdjpqza3bx2179l970yl67an9"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "markup"))
@@ -5556,8 +5556,10 @@ the full Core is not available, such as in Javascript.")
        ("ocaml-uutf" ,ocaml-uutf)
        ("ocaml-lwt" ,ocaml-lwt)))
     (native-inputs
-     `(("ocaml-ounit" ,ocaml-ounit)
+     `(("ocaml-ounit2" ,ocaml-ounit2)
        ("pkg-config" ,pkg-config)))
+    (properties
+     `((ocaml4.07-variant . ,(delay (package-with-ocaml4.07 ocaml-markup0.8.0)))))
     (synopsis "Error-recovering functional HTML5 and XML parsers and writers")
     (description "Markup.ml provides an HTML parser and an XML parser.  The
 parsers are wrapped in a simple interface: they are functions that transform
@@ -5578,6 +5580,26 @@ consume input unless the signal stream is being read), and process the input in
 a single pass.  They automatically detect the character encoding of the input
 stream, and convert everything to UTF-8.")
     (license license:bsd-3)))
+
+;; ocaml-markup 1.0.0 can not be built with old version of dune used in
+;; package-with-ocaml4.07
+(define-public ocaml-markup0.8.0
+  (package
+    (inherit ocaml-markup)
+    (name "ocaml-markup")
+    (version "0.8.0")
+    (home-page "https://github.com/aantron/markup.ml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+    (properties '())))
 
 (define-public ocaml-tyxml
   (package
