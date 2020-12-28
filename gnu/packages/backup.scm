@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -672,6 +673,19 @@ detection, and lossless compression.")
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
                (copy-recursively "docs/man" man)
+               #t)))
+         (add-after 'install-docs 'install-shell-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion "scripts/shell_completions"
+                 (install-file "bash/borg"
+                               (string-append etc "/bash_completion.d"))
+                 (install-file "zsh/_borg"
+                               (string-append share "/zsh/site-functions"))
+                 (install-file "fish/borg.fish"
+                               (string-append share "/fish/vendor_completions.d")))
                #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
