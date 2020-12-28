@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,47 +93,6 @@
   (string-append "https://forge.ocamlcore.org/frs/download.php/"
                  (number->string file-number) "/" name "-" version
                  ".tar.gz"))
-
-;; Janestreet packages are found in a similar way and all need the same patch.
-(define (janestreet-origin name version hash)
-  (origin (method url-fetch)
-          (uri (string-append "https://ocaml.janestreet.com/ocaml-core/"
-                              (version-major+minor version) "/files/"
-                              name "-" version ".tar.gz"))
-          (sha256 (base32 hash))
-          (modules '((guix build utils)))
-          (snippet
-           (let ((pattern (string-append "lib/" name)))
-             `(begin
-                ;; install.ml contains an invalid reference to the ppx file and
-                ;; propagates this error to the generated META file.  It
-                ;; looks for it in the "lib" directory, but it is installed in
-                ;; "lib/ocaml/site-lib/package".  This substitute does not change
-                ;; this file for non ppx packages.
-                (substitute* "install.ml"
-                  ((,pattern) (string-append "lib/ocaml/site-lib/" ,name)))
-                ;; The standard Makefile would try to install janestreet modules
-                ;; in OCaml's directory in the store, which is read-only.
-                (substitute* "Makefile"
-                  (("--prefix")
-                   "--libdir $(LIBDIR) --prefix"))
-                #t)))))
-
-;; They also require almost the same set of arguments
-(define janestreet-arguments
-  `(#:use-make? #t
-    #:make-flags
-    (list (string-append "CONFIGUREFLAGS=--prefix "
-                         (assoc-ref %outputs "out")
-                         " --enable-tests")
-          (string-append "LIBDIR="
-                         (assoc-ref %outputs "out")
-                         "/lib/ocaml/site-lib")
-          ;; for ocaml-bin-prot, otherwise ignored
-          (string-append "OCAML_TOPLEVEL_PATH="
-                         (assoc-ref %build-inputs "findlib")
-                         "/lib/ocaml/site-lib"))
-    #:phases (modify-phases %standard-phases (delete 'configure))))
 
 (define-public ocaml-4.11
   (package
@@ -2715,29 +2675,6 @@ file (POSIX like) and filename.")
 system in your OCaml projects.  It helps to create standard entry points in your
 build system and allows external tools to analyse your project easily.")
     (license license:lgpl2.1+))) ; with ocaml static compilation exception
-
-(define-public ocaml-js-build-tools
-  (package
-    (name "ocaml-js-build-tools")
-    (version "113.33.06")
-    (source (janestreet-origin "js-build-tools" version
-              "0r8z4fz8iy5y6hkdlkpwf6rk4qigcr3dzyv35585xgg2ahf12zy6"))
-    (native-inputs
-     `(("oasis" ,ocaml-oasis)
-       ("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)))
-    (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
-    (home-page "https://github.com/janestreet/js-build-tools")
-    (synopsis "Collection of tools to help building Jane Street Packages")
-    (description "This package contains tools to help building Jane Street
-packages, but can be used for other purposes.  It contains:
-@enumerate
-@item an @command{oasis2opam-install} tool to produce a @file{.install} file
-from the oasis build log
-@item a @code{js_build_tools} ocamlbuild plugin with various goodies.
-@end enumerate")
-    (license license:asl2.0)))
 
 (define-public ocaml-cppo
   (package
