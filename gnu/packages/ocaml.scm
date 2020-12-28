@@ -5582,7 +5582,7 @@ stream, and convert everything to UTF-8.")
 (define-public ocaml-tyxml
   (package
     (name "ocaml-tyxml")
-    (version "4.3.0")
+    (version "4.4.0")
     (source
      (origin
        (method git-fetch)
@@ -5592,7 +5592,7 @@ stream, and convert everything to UTF-8.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wv19xipkj8l2sks1h53105ywbjwk7q93fb7b8al4a2g9wr109c0"))))
+         "1hw4phyadcfgywgh5sj87i76gp56qwxzwlcpfdwjbf6ggag9clmd"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml-re" ,ocaml-re)
