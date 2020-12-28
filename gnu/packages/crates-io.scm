@@ -34385,7 +34385,7 @@ in Rust.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-      (("rust-cfg-if" ,rust-cfg-if-0.1)
+      (("rust-cfg-if" ,rust-cfg-if-1)
        ("rust-serde" ,rust-serde-1)
        ("rust-serde-json" ,rust-serde-json-1)
        ("rust-wasm-bindgen-macro" ,rust-wasm-bindgen-macro-0.2))
