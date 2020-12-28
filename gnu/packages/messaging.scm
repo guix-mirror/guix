@@ -27,6 +27,7 @@
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +90,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages matrix)
   #:use-module (gnu packages mono)
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
@@ -2858,5 +2860,52 @@ social and chat platform.")
      "Psi+ is a spin-off of Psi XMPP client.  It is a powerful XMPP client
 designed for experienced users.")
     (license license:gpl2+)))
+
+(define-public python-zulip
+  (package
+    (name "python-zulip")
+    (version "0.7.1")
+    (source
+     (origin
+       ;; There is no source on Pypi.
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/zulip/python-zulip-api")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0da1ki1v252avy27j6d7snnc0gyq0xa9fypm3qdmxhw2w79d6q36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'cd-to-zulip-dir
+           (lambda _
+             (chdir "zulip")
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (let ((test-zulip "../tools/test-zulip"))
+               (when tests?
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
+                 (patch-shebang test-zulip)
+                 (invoke test-zulip))
+               #t))))))
+    (propagated-inputs
+     `(("python-matrix-client" ,python-matrix-client)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-distro" ,python-distro)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/zulip/python-zulip-api")
+    (synopsis "Zulip's API Python bindings")
+    (description
+     "This package provides Python bindings to Zulip's API.")
+    (license license:asl2.0)))
 
 ;;; messaging.scm ends here
