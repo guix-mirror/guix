@@ -1307,11 +1307,13 @@ and up to 1 Mbit/s downstream.")
     (version "5.5.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           "whois_" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rfc1036/whois")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14vkf7vkvlfwq45fcsq5dbwnjnkfrmv33br13g1jgl9qpw6p1yiy"))))
+        (base32 "1w3d0ffl0ng1m4i10k968kk4xicviq24w5vwl6d8dhja61d7yd2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
