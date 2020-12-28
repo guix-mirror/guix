@@ -72,6 +72,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -2186,7 +2187,7 @@ representation of the data.")
        #:findlib ,ocaml4.07-findlib
        #:dune ,ocaml4.07-dune))
     (propagated-inputs
-     `(("ocaml-odoc" ,ocaml4.07-odoc)))
+     `(("ocaml-odoc" ,(package-with-ocaml4.07 ocaml4.07-odoc))))
     (native-inputs
      `(("ocaml-qtest" ,(package-with-ocaml4.07 ocaml-qtest))
        ("ocaml-qcheck" ,(package-with-ocaml4.07 ocaml-qcheck))))
@@ -5678,10 +5679,10 @@ Usage is simple - add package bisect_ppx when building tests, run your tests,
 then run the Bisect_ppx report tool on the generated visitation files.")
     (license license:mpl2.0)))
 
-(define-public ocaml4.07-odoc
+(define-public ocaml-odoc
   (package
-    (name "ocaml4.07-odoc")
-    (version "1.4.2")
+    (name "ocaml-odoc")
+    (version "1.5.2")
     (source
      (origin
        (method git-fetch)
@@ -5690,26 +5691,24 @@ then run the Bisect_ppx report tool on the generated visitation files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rvhx139jx6wmlfz355mja6mk03x4swq1xxvk5ky6jzhalq3cf5i"))))
+        (base32 "0fqfyz48q7ss5bc4c5phmp4s3ka3vc08b8gfk8fvyryvb4bq27jm"))))
     (build-system dune-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
     (inputs
-     `(("ocaml-alcotest" ,(package-with-ocaml4.07 ocaml-alcotest))
-       ("ocaml-markup" ,(package-with-ocaml4.07 ocaml-markup))
-       ("ocaml-sexplib" ,(package-with-ocaml4.07 ocaml-sexplib))
-       ("ocaml-re" ,(package-with-ocaml4.07 ocaml-re))
-       ("ocaml-uutf" ,(package-with-ocaml4.07 ocaml-uutf))))
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-markup" ,ocaml-markup)
+       ("ocaml-sexplib" ,ocaml-sexplib)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)))
     (native-inputs
-     `(("ocaml-astring" ,(package-with-ocaml4.07 ocaml-astring))
-       ("ocaml-cmdliner" ,(package-with-ocaml4.07 ocaml-cmdliner))
-       ("ocaml-cppo" ,(package-with-ocaml4.07 ocaml-cppo))
-       ("ocaml-fpath" ,(package-with-ocaml4.07 ocaml-fpath))
-       ("ocaml-result" ,(package-with-ocaml4.07 ocaml-result))
-       ("ocaml-tyxml" ,(package-with-ocaml4.07 ocaml-tyxml))
-       ("ocaml-bisect-ppx" ,(package-with-ocaml4.07 ocaml-bisect-ppx))))
+     `(("ocaml-astring" ,ocaml-astring)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-fpath" ,ocaml-fpath)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-tyxml" ,ocaml-tyxml)
+       ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+       ("tidy-html" ,tidy-html)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-odoc))))
     (home-page "https://github.com/ocaml/odoc")
     (synopsis "OCaml documentation generator")
     (description "Odoc is a documentation generator for OCaml.  It reads
@@ -5720,6 +5719,25 @@ Text inside doc comments is marked up in ocamldoc syntax.  Odoc's main
 advantage over ocamldoc is an accurate cross-referencer, which handles the
 complexity of the OCaml module system.")
     (license license:isc)))
+
+;; version 1.5.2 requires ocaml-markdown 1.0.0 which does not compile
+;; with old version of dune used in package-with-ocaml4.07
+(define-public ocaml4.07-odoc
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-odoc)
+     (name "ocaml-odoc")
+     (version "1.5.1")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml/odoc")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0z2nisg1vb5xlk41hqw8drvj90v52wli7zvnih6a844cg6xsvvj2"))))
+     (properties '()))))
 
 (define-public ocaml4.07-fftw3
   (package
