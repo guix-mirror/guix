@@ -4323,6 +4323,42 @@ files with features such as syntax highlighting, comments, finding keywords,
 completing keywords and smart indentation.")
       (license license:gpl3+))))
 
+(define-public emacs-roguel-ike
+  ;; Tagged branch is outdated.
+  (let ((revision "0")
+        (commit "706dcb0687e8016d7d776f9d9e5ace9fdbbca43c"))
+    (package
+      (name "emacs-roguel-ike")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stevenremot/roguel-ike")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0rgv4y9aa5cc2ddz3y5z8d22xmr8kf5c60h0r3g8h91jmcw3rb4z"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-popup" ,emacs-popup)))
+      (arguments
+       `(#:include (cons* "^roguel-ike/" "^roguel-ike-lib/" %default-include)
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               (setenv "HOME" "/tmp")
+               #t)))))
+      (home-page "https://github.com/stevenremot/roguel-ike.git")
+      (synopsis "Coffee-break roguelike for Emacs")
+      (description
+       "Roguel-ike is an attempt to develop a coffee-break roguelike for
+Emacs.  The complete game would allow the player to create various characters
+and to make them fulfill challenges like arena fight and short dungeon
+explorations.")
+      (license license:gpl3+))))
+
 (define-public emacs-rspec
   (let ((commit "66ea7cc9699d6edc6115daa024818adbd85efc20")
         (revision "1"))
