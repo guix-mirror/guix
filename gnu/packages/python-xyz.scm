@@ -8901,6 +8901,25 @@ first-class forward references that stub files use.")
 lints.")
     (license license:bsd-2)))
 
+(define-public python-flake8-quotes
+  (package
+    (name "python-flake8-quotes")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-quotes" version))
+       (sha256
+        (base32
+         "0ph5s6lxgpzz4an0ax6s5xjqypqmngwr5b1i0h9pqhzghplic49z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
+    (home-page "https://github.com/zheller/flake8-quotes/")
+    (synopsis "Flake8 lint for quotes")
+    (description "This package provides a Flake8 lint for quotes.")
+    (license license:expat)))
+
 (define-public python-autoflake
   (package
     (name "python-autoflake")
