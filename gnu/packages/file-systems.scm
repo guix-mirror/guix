@@ -1084,14 +1084,14 @@ Dropbox API v2.")
 (define-public dbxfs
   (package
     (name "dbxfs")
-    (version "1.0.43")
+    (version "1.0.48")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dbxfs" version))
         (sha256
          (base32
-          "1f9sy2ax215dxiwszrrcadffjdsmrlxm4kwrbiap9dhxvzm226ks"))
+          "07q7dgqaqqyapjl9r4lqydflrgx4dh84c1qsb0jvfmqj3i8887ak"))
         (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
     (build-system python-build-system)
     (arguments
