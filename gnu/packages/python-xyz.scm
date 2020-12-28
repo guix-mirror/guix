@@ -23264,8 +23264,19 @@ query Watchman to discover file changes.")
          (base32
           "0gfvj28i82va7c264jl2p4cdsl3lpf9fpb9cyjnis55crfdafqmv"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests"))
+             #t)))))
     (propagated-inputs
      `(("python-importlib-metadata" ,python-importlib-metadata)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://gitlab.com/dpizetta/helpdev")
     (synopsis
      "Extract information about the Python environment easily")
