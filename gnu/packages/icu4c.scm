@@ -117,7 +117,7 @@ C/C++ part.")
 (define-public icu4c-68
   (package
     (inherit icu4c)
-    (version "68.1")
+    (version "68.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -128,7 +128,7 @@ C/C++ part.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0bcznbxvdvxbfsiv3qj2f2f1rrbf3syhhhwbhx9qwjs3nkcf7wm9"))))))
+                "09fng7a80xj8d5r1cgbgq8r47dsw5jsr6si9p2cj2ylhwgg974f7"))))))
 
 (define-public icu4c-build-root
   (package
