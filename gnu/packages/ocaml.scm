@@ -3858,7 +3858,7 @@ than yojson), with 25-35% space savings.")
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
-    (inputs
+    (propagated-inputs
      `(("ocaml-biniou" ,ocaml-biniou)
        ("ocaml-easy-format" ,ocaml-easy-format)))
     (native-inputs
@@ -3926,9 +3926,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
          "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
     (build-system dune-build-system)
     (inputs
-     `(("ocaml-biniou" ,(package-with-ocaml4.07 ocaml-biniou))
-       ("ocaml-yojson" ,(package-with-ocaml4.07 ocaml-yojson))
-       ("ocaml-easy-format" ,(package-with-ocaml4.07 ocaml-easy-format))))
+     `(("ocaml-yojson" ,(package-with-ocaml4.07 ocaml-yojson))))
     (native-inputs
      `(("ocaml-findlib" ,ocaml-findlib)))
     (arguments
