@@ -3008,6 +3008,28 @@ depicting stroke orders for all Kanji.  The collection is a slightly modified
 and limited version of the images provided by the KanjiVG project.")
       (license license:gpl3+))))
 
+(define-public emacs-keycast
+  (package
+    (name "emacs-keycast")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tarsius/keycast.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g9arjdhdpvsw47ny9gi5k758ya37yza4mr0rhbf02yvrqyfsrgr"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/keycast")
+    (synopsis "Show current command and its key in the mode line")
+    (description
+     "This package provides Keycast mode.  Once enabled, that mode shows the
+current command and its key or mouse binding in the mode line, and updates
+them whenever another command is invoked.")
+    (license license:gpl3+)))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
