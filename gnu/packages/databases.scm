@@ -45,6 +45,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2129,14 +2130,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "5.0.7")
+    (version "6.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0ax8sf3vw0yadr41kzc04917scrg5wir1d94zmbz00b8pzm79nv1"))))
+                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
