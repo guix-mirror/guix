@@ -1,8 +1,9 @@
-;;; GNU Guix --- Functional package management for GNU
+;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,55 +42,56 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public tigervnc-client
-  (let ((commit "920d9c4d6562ecabf79497bc901d50522d4bc661"))
-    (package
-      (name "tigervnc-client")
-      (version (git-version "1.10.1" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri
-                 (git-reference
-                  (url "https://github.com/TigerVNC/tigervnc")
-                  (commit commit)))
-                (sha256
-                 (base32
-                  "1lp6mxl5dqlkrzx0q145jzgpbwvhsni3fj6x9ngf8v5s63x82q1p"))
-                (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (arguments
-       '(#:tests? #f ; Tests that do exists are not automated.
-         #:phases (modify-phases %standard-phases
-                    (replace 'install
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (with-directory-excursion "vncviewer"
-                          (invoke "make" "install")))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("gettext-minimal" ,gettext-minimal)
-         ("automake" ,automake)))
-      (inputs
-       `(("zlib" ,zlib)
-         ("gnutls" ,gnutls)
-         ("libjpeg-turbo" ,libjpeg-turbo)
-         ("fltk" ,fltk)
-         ("linux-pam" ,linux-pam)
-         ("libx11" ,libx11)
-         ("libxext" ,libxext)
-         ("libxtst" ,libxtst)
-         ("libxrandr" ,libxrandr)
-         ("libxdamage" ,libxdamage)))
-      (home-page "https://tigervnc.org/")
-      (synopsis "High-performance, platform-neutral
+  (package
+    (name "tigervnc-client")
+    (version "1.11.0")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/TigerVNC/tigervnc")
+                (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1bg79ahr4mzy48ak0caxy3ckdsxmhpchypggaz6lxjjk92hgsz91"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; Tests that do exists are not automated.
+       #:phases (modify-phases %standard-phases
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (with-directory-excursion "vncviewer"
+                        (invoke "make" "install")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("gettext-minimal" ,gettext-minimal)
+       ("automake" ,automake)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("gnutls" ,gnutls)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("fltk" ,fltk)
+       ("linux-pam" ,linux-pam)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxtst" ,libxtst)
+       ("libxrandr" ,libxrandr)
+       ("libxdamage" ,libxdamage)
+       ("pixman" ,pixman)))
+    (home-page "https://tigervnc.org/")
+    (synopsis "High-performance, platform-neutral
 implementation of VNC (client)")
-      (description "TigerVNC is a client/server implementation of VNC (Virtual
+    (description "TigerVNC is a client/server implementation of VNC (Virtual
 Network Computing).  It provides enough performance to run even 3D and video
 applications.  It also provides extensions for advanced authentication methods
 and TLS encryption.  This package installs only the VNC client, the
 application which is needed to connect to VNC servers.")
-      (license license:gpl2))))
+    (license license:gpl2)))
 
 ;; A VNC server is, in fact, an X server so it seems like a good idea
 ;; to build on the work already done for xorg-server package.  This is
