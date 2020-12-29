@@ -365,19 +365,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.9-version "5.9.16")
-(define deblob-scripts-5.9
-  (linux-libre-deblob-scripts
-   linux-libre-5.9-version
-   (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "1vrv78xwcy32b82plkkbpyfxhpy3br7b18sjah4iqv25fxfcxpak")))
-(define-public linux-libre-5.9-pristine-source
-  (let ((version linux-libre-5.9-version)
-        (hash (base32 "11mbnjvb5d5gwbrwlkqvzpg1ij4m19l5wr3wca9iiyg5i2papmxh")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.9)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
@@ -476,11 +463,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.9-source
-  (source-with-patches linux-libre-5.9-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -586,10 +568,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
                              linux-libre-5.10-source))
-
-(define-public linux-libre-headers-5.9
-  (make-linux-libre-headers* linux-libre-5.9-version
-                             linux-libre-5.9-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -888,12 +866,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-pristine-source linux-libre-5.10-pristine-source)
 (define-public linux-libre-source          linux-libre-5.10-source)
 (define-public linux-libre                 linux-libre-5.10)
-
-(define-public linux-libre-5.9
-  (make-linux-libre* linux-libre-5.9-version
-                     linux-libre-5.9-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
