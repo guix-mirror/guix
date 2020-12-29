@@ -2225,7 +2225,7 @@ itself.")
 (define-public python2-pyqt-4
   (package (inherit python-pyqt)
     (name "python2-pyqt")
-    (version "4.12")
+    (version "4.12.3")
     (source
       (origin
         (method url-fetch)
@@ -2235,7 +2235,7 @@ itself.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "1nw8r88a5g2d550yvklawlvns8gd5slw53yy688kxnsa65aln79w"))))
+          "0wnlasg62rm5d39nq1yw4namcx2ivxgzl93r5f2vb9s0yaz5l3x0"))))
     (native-inputs
      `(("python-sip" ,python2-sip)
        ("qt" ,qt-4)))
