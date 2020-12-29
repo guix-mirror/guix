@@ -2478,7 +2478,7 @@ using a system-independent interface.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2486,7 +2486,7 @@ using a system-independent interface.")
              "https://github.com/wbsoft/frescobaldi/releases/download/v"
              version "/frescobaldi-" version ".tar.gz"))
        (sha256
-        (base32 "084vxzvxnxl5rrhllincnh6krsyi03c8p0452ppzmn9c52wgyb2w"))))
+        (base32 "1hg9yc8kj445fjsby92g3qf50crcl1pb079zfma18sb7ycv50zww"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
