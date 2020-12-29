@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -62,7 +62,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.74.0")
+    (version "1.75.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.bintray.com/boostorg/release/"
@@ -70,7 +70,7 @@
                                   (version-with-underscores version) ".tar.bz2"))
               (sha256
                (base32
-                "1c8nw4jz17zy2y27h7p554a5jza1ymz8phkz71p9181ifx8c3gw3"))))
+                "1js9zpij58l60kx46s3lxdp5207igppjnhqigwhbpdvd04gb6gcm"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -188,14 +188,6 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
-
-(define-public boost-with-python2
-  (package
-    (inherit boost)
-    (name "boost-python2")
-    (native-inputs
-     `(("python" ,python-2)
-       ,@(alist-delete "python" (package-native-inputs boost))))))
 
 (define-public boost-with-python3
   (deprecated-package "boost-with-python3" boost))
