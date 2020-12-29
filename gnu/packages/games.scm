@@ -9952,14 +9952,14 @@ This package is part of the KDE games module.")
 (define-public kolf
   (package
     (name "kolf")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kolf-" version ".tar.xz"))
        (sha256
-        (base32 "06sfd0llr5cc3zf1vrpcxgw9bm009ky7y8822kynic9ipcd4z1hw"))))
+        (base32 "1lpp6pzr5dgd4si4a8c7hcvgxgqy0bgyhkx9m6jqb0zhll6dxj10"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
