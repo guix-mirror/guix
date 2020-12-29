@@ -25485,3 +25485,37 @@ constraints and dependencies for arbitrary algorithms, and to program on such
 spaces.  It also includes statistical designs and random samplers.  Objects are
 implemented as @code{R6} classes.")
     (license license:lgpl3)))
+
+(define-public r-mlr3
+  (package
+    (name "r-mlr3")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3" version))
+              (sha256
+               (base32
+                "0gg7rrzxwrnpg6sgm0aa6bmfwmqv3d3za0ghnqrnibg33p9ynpgb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r6" ,r-r6)
+       ("r-backports" ,r-backports)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
+       ("r-future-apply" ,r-future-apply)
+       ("r-lgr" ,r-lgr)
+       ("r-mlbench" ,r-mlbench)
+       ("r-mlr3measures" ,r-mlr3measures)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-uuid" ,r-uuid)))
+    (home-page "https://mlr3.mlr-org.com/")
+    (synopsis "Machine Learning in R - Next Generation")
+    (description "@code{mlr3} enables efficient, object-oriented programming
+on the building blocks of machine learning.  It provides @code{R6} objects for
+tasks, learners, resamplings, and measures.  The package is geared towards
+scalability and larger datasets by supporting parallelization and out-of-memory
+data-backends like databases.  While @code{mlr3} focuses on the core
+computational operations, add-on packages provide additional functionality.")
+    (license license:lgpl3)))
