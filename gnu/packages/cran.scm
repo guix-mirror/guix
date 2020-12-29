@@ -25390,3 +25390,25 @@ use on EC2 instances, the package 'aws.ec2metadata' is suggested.")
      "This package provides a simple client package for the Amazon Web
 Services (AWS) Simple Storage Service (S3) REST API.")
     (license license:gpl2+)))
+
+(define-public r-lgr
+  (package
+    (name "r-lgr")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lgr" version))
+              (sha256
+               (base32
+                "196553hmni1ha9y6494f4g3ds0lwcl81v7k4r8wwap4a6acdrgd9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r6" ,r-r6)))
+    (home-page "https://s-fleck.github.io/lgr/")
+    (synopsis "Fully featured logging framework")
+    (description "This package offers a flexible, feature-rich yet
+light-weight logging framework based on @code{R6} classes.  It supports
+hierarchical loggers, custom log levels, arbitrary data fields in log events,
+logging to plaintext, JSON, (rotating) files, memory buffers, and databases, as
+well as email and push notifications.")
+    (license license:expat)))
