@@ -9864,17 +9864,18 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
 (define-public ktuberling
   (package
     (name "ktuberling")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/ktuberling-" version ".tar.xz"))
       (sha256
-       (base32 "1qdf4q6wjh1lnlqw5c8z4rpj9w5vbyjfri1dah6yjm3mwppbc12j"))))
+       (base32 "0mlv9qllg70p26dbrcsr820c70d3ib88hapc1z6wgjhdpmc12ni1"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
        ("perl" ,perl)))
     (inputs
      `(("kcompletion" ,kcompletion)
@@ -9882,11 +9883,12 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
        ("kcoreaddons" ,kcoreaddons)
        ("kcrash" ,kcrash)
        ("kdbusaddons" ,kdbusaddons)
-       ("kdelibs4support" ,kdelibs4support)
        ("ki18n" ,ki18n)
+       ("kio" ,kio)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("libkdegames" ,libkdegames)
+       ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
        ("qtdeclarative" ,qtdeclarative)
