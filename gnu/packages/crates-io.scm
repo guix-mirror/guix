@@ -27438,7 +27438,7 @@ functionality and without weak references.")
 (define-public rust-sha2-0.9
   (package
     (name "rust-sha2")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
       (origin
         (method url-fetch)
@@ -27447,12 +27447,12 @@ functionality and without weak references.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1hdqrx2d9073hgf34y6ilgw6ni5vv3d5nmccyhkfm9zdvy6kfcr9"))))
+          "1a225akwq8k1ym827f8f72rfgxaf7zdnnq07qpcblj91zs3anykf"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.9)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
         ("rust-digest" ,rust-digest-0.9)
         ("rust-libc" ,rust-libc-0.2)
