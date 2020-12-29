@@ -8764,7 +8764,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.32.0")
+    (version "3.38.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8773,7 +8773,7 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b33s9bhpiffv5wl76cq2bbnqhvx3qs2vxyxmil5gcs583llqh9r"))))
+                "0ac3fbl15l836yvgw724q4whbkws9v4b6l2xy6bnp0b0g0a6i104"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))
@@ -10293,14 +10293,14 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.4.2")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1hfl68gkvqy5kxlmrsalz78mw1bs1yvqvy2rhg7pzgwiazsdvwzz"))))
+        (base32 "1hlahr50gsagx1ifcdk4yn43xps6w0vqn0gnd6xckfc7qmg1pgq7"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules
@@ -10330,7 +10330,8 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("glib-networking" ,glib-networking)
+       ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnotify" ,libnotify)

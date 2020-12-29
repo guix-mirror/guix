@@ -372,8 +372,12 @@ specifications to look up and replace them with plain symbols instead."
      (match (assoc-ref meta "license")
        (#f #f)
        (l
-        (or (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
-                        (spdx-string->license l))
+        (or (false-if-exception
+             (module-ref (resolve-interface '(guix licenses))
+                         (string->symbol l)))
+            (false-if-exception
+             (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
+                         (spdx-string->license l)))
             (license:fsdg-compatible l)))))))
 
 (define* (read-lines #:optional (port (current-input-port)))

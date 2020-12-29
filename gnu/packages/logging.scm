@@ -215,3 +215,19 @@ library.")
     ;; spdlog is under Expat license, but the bundled fmt library in
     ;; "include/spdlog/fmt/bundled" is under BSD 2 clause license.
     (license (list license:expat license:bsd-2))))
+
+(define-public spdlog-1.7
+  (package
+    (inherit spdlog)
+    (name "spdlog")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gabime/spdlog")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ryaa22ppj60461hcdb8nk7jwj84arp4iw4lyw594py92g4vnx3j"))))))

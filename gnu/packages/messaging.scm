@@ -62,6 +62,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
@@ -125,6 +126,197 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public libgnt
+  (package
+    (name "libgnt")
+    (version "2.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/pidgin/libgnt/"
+                       version "/libgnt-" version ".tar.xz"))
+       (sha256
+        (base32 "1grs9fxl404rscscxk1ff55fzjnwjqrisjxbasbssmcp1h1s4zkb"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ncurses-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("'/usr'")
+                (string-append "'"
+                               (assoc-ref inputs "ncurses")
+                               "'")))
+             #t))
+         (add-before 'configure 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "libgnt-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("libxml" ,libxml2)
+       ("python" ,python-2)))
+    (synopsis "GLib Ncurses Toolkit")
+    (description "GNT is an ncurses toolkit for creating text-mode graphical
+user interfaces in a fast and easy way.  It is based on GLib and ncurses.")
+    (home-page "https://keep.imfreedom.org/libgnt/libgnt")
+    (license license:gpl2+)))
+
+(define-public libgadu
+  (package
+    (name "libgadu")
+    (version "1.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/wojtekka/libgadu.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1s16cripy5w9k12534qb012iwc5m9qcjyrywgsziyn3kl3i0aa8h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-shebangs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "protobufgen.sh"
+               (("/bin/sh")
+                (string-append (assoc-ref inputs "bash")
+                               "/bin/sh")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)
+       ("doxygen" ,doxygen)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)
+       ("libprotobuf-c" ,protobuf-c)
+       ("libxml" ,libxml2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)))
+    (synopsis "Library for handling the protocol of Gadu-Gadu")
+    (description "LibGadu is library for handling Gadu-Gadu instant messenger
+protocol.  The library is written in C and aims to be operating system and
+environment independent.")
+    (home-page "https://libgadu.net/index.en.html")
+    (license license:lgpl2.1+)))
+
+(define-public silc-toolkit
+  (package
+    (name "silc-toolkit")
+    (version "1.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/silc/silc/toolkit/sources/silc-toolkit-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "0mnvf9n7qriadg0p7a8qmvcayhnns2g9fhmcymavlm0v8xrky33y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-ipv6"
+        "--enable-stack-trace")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'trigger-bootstrap
+           (lambda _
+             (delete-file "configure")
+             (delete-file "Makefile.in")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "SILC ToolKit")
+    (description "SILC (Secure Internet Live Conferencing) is a modern and secure
+conferencing protocol.  It provides all the common conferencing services like
+private messages, instant messages, channels and groups, and video and audio
+conferencing.")
+    (home-page "https://silc.github.io/info")
+    (license
+     ;; Dual-licensed
+     (list
+      license:gpl2+
+      license:bsd-2))))
+
+(define-public meanwhile
+  (package
+    (name "meanwhile")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/obriencj/meanwhile.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1k1gvmx1ikm0y1mdmm495rzkb00pl170jfaf2dy0n5aiiknkk7q3"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Library for Lotus Instant Messaging")
+    (description "Meanwhile is a library for connecting to a LIM (Lotus Instant
+Messaging, formerly Lotus Sametime, formerly VPBuddy) community.  It uses a
+protocol based in part off of the IMPP draft(*1), and in part off of traces of
+TCP sessions from existing clients.")
+    (home-page "https://github.com/obriencj/meanwhile")
+    (license license:lgpl3)))
 
 (define-public poezio
   (package

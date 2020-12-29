@@ -603,14 +603,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.10.1")
+    (version "1.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0dnmh9jjh2v274f0hl31bgv40pl77mmfgky8bkqr5kvi3b17fdmp"))))
+        (base32 "18dj7migq6379hps59793457l81s3z7dll3y0fj6qcmhjlx08m59"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -760,16 +760,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
-     (let ((build "9809"))
+     (let ((build "9916"))
        (origin
          (method url-fetch)
          (uri
           (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "114a1y4pzzzq0s9hyn65nd4fg19xijsqpfhsd0wkvjndsazg63ky")))))
+          (base32 "1m1j7q1f0682xig8qign5ms52igix8pd45fds7p5j285dvrfa4xd")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

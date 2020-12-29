@@ -118,6 +118,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
@@ -240,7 +241,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.3.1")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -249,7 +250,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16k5mp64a5l063rdj65hbpx414xv0bqdvhvz49k8018f2a2jj5xl"))))
+        (base32 "18c6bsv9m3spiyfhqp08v807m93r6n9hrlv4qbfiqp4kw5aryb4h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -258,11 +259,12 @@ Interface} specification.")
         ("rust-clap" ,rust-clap-2)
         ("rust-cssparser" ,rust-cssparser-0.27)
         ("rust-html5ever" ,rust-html5ever-0.24)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-reqwest" ,rust-reqwest-0.10)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-reqwest" ,rust-reqwest-0.10)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1476,7 +1478,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.24")
+    (version "0.8.26")
     (source
      (origin
        (method git-fetch)
@@ -1485,7 +1487,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14n67p9h70v26nfgnjxipj8v9dn0sbdy5gahz8v7720m80bxfdic"))
+        (base32 "0zw68mgmmicbkvx7s22knvm8nng5qn41b1chn35prhkla3kx1jn1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -7837,7 +7839,7 @@ solution for any project's interface needs:
 (define-public libzim
   (package
     (name "libzim")
-    (version "6.2.2")
+    (version "6.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7845,7 +7847,7 @@ solution for any project's interface needs:
                     (commit version)))
               (sha256
                (base32
-                "0p2317cp19lx0hw9n4fsb3nw2vc4hc1yyi98k3yrs41pkr840kwa"))
+                "0iy0f1clhihq277x218ccx3mszgpr3h9l0by48b9ykr115nffw3s"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (arguments
@@ -7856,7 +7858,6 @@ solution for any project's interface needs:
        ("liblzma" ,xz)
        ("libuuid" ,util-linux "lib")
        ("xapian" ,xapian)
-       ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -7872,7 +7873,7 @@ for ZIM files.")
 (define-public kiwix-lib
   (package
     (name "kiwix-lib")
-    (version "9.4.0")
+    (version "9.4.1")
     (home-page "https://github.com/kiwix/kiwix-lib/")
     (source (origin
               (method git-fetch)
@@ -7881,7 +7882,7 @@ for ZIM files.")
                     (commit version)))
               (sha256
                (base32
-                "0nsm4qgl0cb6wv983n0px1kf217k4kykb8q56b8j6ikp061lzamm"))
+                "034nk6l623v78clrs2d0k1vg69sbzrd8c0q79qiqmlkinck1nkxw"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (arguments
@@ -7945,7 +7946,7 @@ It contains the code shared by all Kiwix ports.")
              (invoke "qmake"
                      (string-append "PREFIX="
                                     (assoc-ref outputs "out")))))
-         (add-before 'configrue 'enable-print-support
+         (add-before 'configure 'enable-print-support
            (lambda _
              (substitute* "kiwix-desktop.pro"
                (("webenginewidgets") "webenginewidgets printsupport"))
@@ -7961,6 +7962,7 @@ It contains the code shared by all Kiwix ports.")
      `(("curl" ,curl)
        ("icu4c" ,icu4c)
        ("kiwix-lib" ,kiwix-lib)
+       ("libmicrohttpd" ,libmicrohttpd)
        ("libzim" ,libzim)
        ("pugixml" ,pugixml)
        ("qtbase" ,qtbase)
@@ -7978,3 +7980,29 @@ It contains the code shared by all Kiwix ports.")
     (description "Kiwix Desktop allows you to enjoy a lot of different content
 offline (such as Wikipedia), without any access to Internet.")
     (license license:gpl3)))
+
+(define-public uriparser
+  (let ((commit "25dddb16cf044a7df27884e7ad3911baaaca3d7c")
+        (revision "1"))
+    (package
+      (name "uriparser")
+      (version (git-version "0.9.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/uriparser/uriparser")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1ffzia679axcsccx2fxjpxhb0i5xc42zxn446x6c1170w6v69qf6"))))
+      (build-system cmake-build-system)
+      (native-inputs `(("gtest" ,googletest)
+                       ("doxygen" ,doxygen)
+                       ("graphviz" ,graphviz)))
+      (synopsis "Strictly RFC 3986 compliant URI parsing and handling library")
+      (description "uriparser is a strictly RFC 3986 compliant URI parsing and
+handling library written in C89 (\"ANSI C\").  uriparser is fast and supports
+Unicode.")
+      (home-page "https://uriparser.github.io/")
+      (license license:bsd-3))))

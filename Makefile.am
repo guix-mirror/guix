@@ -722,7 +722,6 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --localstatedir="$$dc_install_base/var"	\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
-  --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 

@@ -42,7 +42,7 @@
 
 (define (show-help)
   (display (G_ "Usage: guix import crate PACKAGE-NAME
-Import and convert the crate.io package for PACKAGE-NAME.\n"))
+Import and convert the crates.io package for PACKAGE-NAME.\n"))
   (display (G_ "
   -r, --recursive        import packages recursively"))
   (newline)

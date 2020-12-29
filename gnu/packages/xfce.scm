@@ -925,7 +925,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.9.2")
+    (version "0.8.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/" name "/"
@@ -933,7 +933,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1szfmvx4gbwcqag7fnlqh96i9cmvs6xm1yrdbnlzh3imdpw3p8lv"))))
+                "1irxyg5vp6vyd9vxdqav6jhchfkmhlqq511386h644p0k30kfcvs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1210,7 +1210,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.4.2")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/mousepad/"
@@ -1218,7 +1218,7 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1myy7954r1a30dk7inwy7kwki7zvfbnnsc3a8swk72vzrbgjmh44"))))
+                "10m52yrh89j7xbr299m9f0mqrhqz95lp3qi5zbqd0bg839xjfbix"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
@@ -1252,7 +1252,7 @@ of data to either CD/DVD/BD.")
 (define-public xfce4-screenshooter
   (package
    (name "xfce4-screenshooter")
-   (version "1.9.7")
+   (version "1.9.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1262,7 +1262,7 @@ of data to either CD/DVD/BD.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1lbhl0sh0ayv3zhgzcd9hj9q9m3lnyv7vlglfqrl39i3782n2w8g"))))
+              "0l1cyrb4ym7d95yliyl8gn701wvnr734v622yyy3zdnk99hrs0kg"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -1477,7 +1477,7 @@ and a calendar appears when you left-click on it.")
 (define-public xfce4-calculator-plugin
   (package
    (name "xfce4-calculator-plugin")
-   (version "0.7.0")
+   (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1486,7 +1486,7 @@ and a calendar appears when you left-click on it.")
                                   "/xfce4-calculator-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1scx7z5ijg2fpcqrzv1nxhpj9vrqic7pyghig70f2n5hgaaanl3v"))))
+                "10fsb9pyr2cr9dj1k3n96dq6g02g61g5y4z4jzfvskpgqc1nl0g4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1624,7 +1624,7 @@ be clicked to open the chosen mount point.")
 (define-public xfce4-genmon-plugin
   (package
    (name "xfce4-genmon-plugin")
-   (version "4.0.2")
+   (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1633,7 +1633,7 @@ be clicked to open the chosen mount point.")
                                   "/xfce4-genmon-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ai3pwgv61nv7i2dyrvncnc63r8kdjbkp40vp51vzak1dx924v15"))))
+                "0zafr1jrw87l7h4z3wp88gj7n5mcygm22aw42vdpnp2l8x5nn9fi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

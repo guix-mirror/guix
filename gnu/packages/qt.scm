@@ -2268,6 +2268,31 @@ itself.")
                        "--sipdir" sip)))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
+(define-public python-qtpy
+  (package
+    (name "python-qtpy")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "QtPy" version))
+       (sha256
+          (base32
+           "13cw8l7zrhbdi03k1wl1pg9xdl4ahdfa7yz8gd0f23sxnm22rdrd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyside2" ,python-pyside-2)))
+    (arguments
+     `(;; Not all supported bindings are packaged. Especially PyQt4.
+       #:tests? #f))
+    (home-page "https://github.com/spyder-ide/qtpy")
+    (synopsis
+     "Qt bindings (PyQt5, PyQt4 and PySide) and additional custom QWidgets")
+    (description
+     "Provides an abstraction layer on top of the various Qt bindings
+(PyQt5, PyQt4 and PySide) and additional custom QWidgets.")
+    (license license:expat)))
+
 (define-public qscintilla
   (package
     (name "qscintilla")

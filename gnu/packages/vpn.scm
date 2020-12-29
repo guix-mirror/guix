@@ -362,16 +362,42 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
        (sha256
         (base32 "0y7v9ikrmy5dbjlpbpacp08gy838i8z54m8m4ps7ldk1j6kyia3n"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests in repo
+    (arguments
+     '(#:tests? #f ; no tests in repo
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'wrap-wrapper
+           ;; Wrap entrypoint with paths to its hard dependencies.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((entrypoint (string-append (assoc-ref outputs "out")
+                                              "/bin/.protonvpn-real")))
+               (wrap-program entrypoint
+                            `("PATH" ":" prefix
+                              ,(map (lambda (name)
+                                      (let ((input (assoc-ref inputs name)))
+                                        (string-append input "/bin:"
+                                                       input "/sbin")))
+                                    (list "dialog"
+                                          "iproute2"
+                                          "iptables"
+                                          "ncurses"
+                                          "openvpn"
+                                          "procps"
+                                          "which")))))
+             #t)))))
     (native-inputs
      `(("python-docopt" ,python-docopt)))
     (inputs
-     `(("python-jinja2" ,python-jinja2)
+     `(("dialog" ,dialog)
+       ("iproute2" ,iproute)
+       ("iptables" ,iptables)
+       ("ncurses" ,ncurses)
+       ("openvpn" ,openvpn)
+       ("procps" ,procps)
+       ("python-jinja2" ,python-jinja2)
        ("python-pythondialog" ,python-pythondialog)
-       ("python-requests" ,python-requests)))
-    (propagated-inputs
-     `(("openvpn" ,openvpn)
-       ("dialog" ,dialog)))
+       ("python-requests" ,python-requests)
+       ("which" ,which)))
     (synopsis "Command-line client for ProtonVPN")
     (description
      "This is the official command-line interface for ProtonVPN, a secure

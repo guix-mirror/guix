@@ -66,7 +66,7 @@
                             (lambda* (#:key inputs #:allow-other-keys)
                               (let ((patch (assoc-ref inputs
                                                       "powerpc-patch")))
-                                (invoke "patch" "--batch" "-p1"
+                                (invoke "patch" "--force" "-p1"
                                         "-i" patch))))))
              '())
        ,@(if (string-prefix? "powerpc64le-" (or (%current-target-system)
@@ -76,7 +76,7 @@
                             (lambda* (#:key inputs #:allow-other-keys)
                               (let ((patch (assoc-ref inputs
                                                       "powerpc64le-patch")))
-                                (invoke "patch" "--batch" "-p1"
+                                (invoke "patch" "--force" "-p1"
                                         "-i" patch))))))
              '())))
     (inputs

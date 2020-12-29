@@ -304,15 +304,15 @@ translation engines from your terminal.")
 (define-public lttoolbox
   (package
     (name "lttoolbox")
-    (version "3.5.1")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/apertium/lttoolbox/releases/download/v"
-             version "/lttoolbox-" version ".tar.gz"))
+             version "/lttoolbox-" version ".tar.bz2"))
        (sha256
-        (base32 "14yyrkzyqlsrii3v3ggg4dyvwlrcqcqc0aprphz5781a44jsrcwz"))))
+        (base32 "109l91ailish1a3vya5zmfg3kb67cwyzl36ndnh8f59chsbm6n2f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

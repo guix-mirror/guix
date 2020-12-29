@@ -18704,14 +18704,14 @@ implemented using @code{ctypes}.")
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
-    (version "1.0.13")
+    (version "2.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "userspacefs" version))
         (sha256
          (base32
-          "0kyz52jyxw3m7hqvn5g6z0sx9cq6k0nq1wj44lvdrghdljjgyk2z"))))
+          "0ayfcz9pjwq7h3ws0qas71842s1wm7dxlmg8dccxl2j6yavpv83f"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-fusepyng" ,python-fusepyng)))
@@ -18721,6 +18721,56 @@ implemented using @code{ctypes}.")
      "@code{userspacefs} is a library that allows you to easily write
 user-space file systems in Python.")
     (license license:gpl3+)))
+
+(define-public python-stone
+  (package
+    (name "python-stone")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "stone" version))
+        (sha256
+         (base32
+          "0xby5mpsms7b2rv8j6mvxzmzz5i9ii01brb9ylxz6kiv2i08piwv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-version-requirements
+           (lambda _
+             ;; Match the requirement in test/requirements.txt
+             (substitute* "setup.py"
+               (("pytest < 5") "pytest < 7"))
+             ;; We don't care about a coverage report.
+             (substitute* "test/requirements.txt"
+               (("coverage.*") "coverage\n"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; These tests don't import currectly.
+               (delete-file "test/test_js_client.py")
+               (delete-file "test/test_tsd_types.py")
+               (delete-file "test/test_python_gen.py")
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest"))
+             #t)))))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/dropbox/stone")
+    (synopsis "Official Api Spec Language for Dropbox")
+    (description
+     "Stone is an interface description language (IDL) for APIs.")
+    (license license:expat)))
 
 (define-public pybind11
   (package
@@ -23201,3 +23251,95 @@ backport of the @code{dataclasses} module for Python 3.6.")
     (description "@code{python-pywatchman} is a library to connect and
 query Watchman to discover file changes.")
     (license license:bsd-3)))
+
+(define-public python-helpdev
+  (package
+    (name "python-helpdev")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "helpdev" version))
+        (sha256
+         (base32
+          "0gfvj28i82va7c264jl2p4cdsl3lpf9fpb9cyjnis55crfdafqmv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests"))
+             #t)))))
+    (propagated-inputs
+     `(("python-importlib-metadata" ,python-importlib-metadata)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://gitlab.com/dpizetta/helpdev")
+    (synopsis
+     "Extract information about the Python environment easily")
+    (description
+     "Helpdev is a library to easily extract information about the Python
+environment.")
+    (license license:expat)))
+
+(define-public python-qdarkstyle
+  (package
+    (name "python-qdarkstyle")
+    (version "2.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "QDarkStyle" version))
+        (sha256
+         (base32
+          "0883vzg35fzpyl1aiijzpfcdfvpq5vi325w0m7xkx7nxplh02fym"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Fails unable to detect valid Qt bindings even when
+       ;; added as native-inputs.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-helpdev" ,python-helpdev)
+       ("python-qtpy" ,python-qtpy)))
+    (home-page
+     "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
+    (synopsis
+     "Complete dark stylesheet for Python and Qt applications")
+    (description "QDarkStyle is the most complete dark stylesheet for Python and
+Qt applications.")
+    (license license:expat)))
+
+(define-public python-bitstring
+  (package
+    (name "python-bitstring")
+    (version "3.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "bitstring" version))
+        (sha256
+         (base32
+          "0jl6192dwrlm5ybkbh7ywmyaymrc3cmz9y07nm7qdli9n9rfpwzx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "test"
+                 (invoke "pytest")))
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/scott-griffiths/bitstring")
+    (synopsis
+     "Simple construction, analysis and modification of binary data")
+    (description
+     "Bitstring is a library for simple construction, analysis and modification
+ of binary data.")
+    (license license:expat)))

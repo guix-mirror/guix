@@ -41,6 +41,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (options->transformation
             manifest-entry-with-transformations
 
@@ -456,6 +457,60 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
         (rewrite obj)
         obj)))
 
+(define (transform-package-patches specs)
+  "Return a procedure that, when passed a package, returns a package with
+additional patches."
+  (define (package-with-extra-patches p patches)
+    (if (origin? (package-source p))
+        (package/inherit p
+          (source (origin
+                    (inherit (package-source p))
+                    (patches (append (map (lambda (file)
+                                            (local-file file))
+                                          patches)
+                                     (origin-patches (package-source p)))))))
+        p))
+
+  (define (coalesce-alist alist)
+    ;; Coalesce multiple occurrences of the same key in ALIST.
+    (let loop ((alist alist)
+               (keys '())
+               (mapping vlist-null))
+      (match alist
+        (()
+         (map (lambda (key)
+                (cons key (vhash-fold* cons '() key mapping)))
+              (delete-duplicates (reverse keys))))
+        (((key . value) . rest)
+         (loop rest
+               (cons key keys)
+               (vhash-cons key value mapping))))))
+
+  (define patches
+    ;; Spec/patch alist.
+    (coalesce-alist
+     (map (lambda (spec)
+            (match (string-tokenize spec %not-equal)
+              ((spec patch)
+               (cons spec (canonicalize-path patch)))
+              (_
+               (raise (formatted-message
+                       (G_ "~a: invalid package patch specification")
+                       spec)))))
+          specs)))
+
+  (define rewrite
+    (package-input-rewriting/spec
+     (map (match-lambda
+            ((spec . patches)
+             (cons spec (cut package-with-extra-patches <> patches))))
+          patches)))
+
+  (lambda (obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -469,7 +524,8 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
     (with-git-url . ,transform-package-source-git-url)
     (with-c-toolchain . ,transform-package-toolchain)
     (with-debug-info . ,transform-package-with-debug-info)
-    (without-tests . ,transform-package-tests)))
+    (without-tests . ,transform-package-tests)
+    (with-patch  . ,transform-package-patches)))
 
 (define (transformation-procedure key)
   "Return the transformation procedure associated with KEY, a symbol such as
@@ -509,6 +565,8 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
                   (parser 'with-debug-info))
           (option '("without-tests") #t #f
                   (parser 'without-tests))
+          (option '("with-patch") #t #f
+                  (parser 'with-patch))
 
           (option '("help-transform") #f #f
                   (lambda _
@@ -537,6 +595,9 @@ to the same package but with #:strip-binaries? #f in its 'arguments' field."
   (display (G_ "
       --with-git-url=PACKAGE=URL
                          build PACKAGE from the repository at URL"))
+  (display (G_ "
+      --with-patch=PACKAGE=FILE
+                         add FILE to the list of patches of PACKAGE"))
   (display (G_ "
       --with-c-toolchain=PACKAGE=TOOLCHAIN
                          build PACKAGE and its dependents with TOOLCHAIN"))

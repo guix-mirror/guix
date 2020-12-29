@@ -67,6 +67,10 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'repo (string->symbol arg)
                                (alist-delete 'repo result))))
+         (option '(#\s "style") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'style (string->symbol arg)
+                               (alist-delete 'style result))))
          (option '(#\r "recursive") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'recursive #t result)))
@@ -93,23 +97,24 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
                              value)
                             (_ #f))
                            (reverse opts))))
-    (match args
-      ((package-name)
-       (if (assoc-ref opts 'recursive)
-           ;; Recursive import
-           (with-error-handling
-             (map package->definition
-                  (filter identity
-                          (cran-recursive-import package-name
-                                                 #:repo (or (assoc-ref opts 'repo) 'cran)))))
-           ;; Single import
-           (let ((sexp (cran->guix-package package-name
-                                           #:repo (or (assoc-ref opts 'repo) 'cran))))
-             (unless sexp
-               (leave (G_ "failed to download description for package '~a'~%")
-                      package-name))
-             sexp)))
-      (()
-       (leave (G_ "too few arguments~%")))
-      ((many ...)
-       (leave (G_ "too many arguments~%"))))))
+    (parameterize ((%input-style (assoc-ref opts 'style)))
+      (match args
+        ((package-name)
+         (if (assoc-ref opts 'recursive)
+             ;; Recursive import
+             (with-error-handling
+               (map package->definition
+                    (filter identity
+                            (cran-recursive-import package-name
+                                                   #:repo (or (assoc-ref opts 'repo) 'cran)))))
+             ;; Single import
+             (let ((sexp (cran->guix-package package-name
+                                             #:repo (or (assoc-ref opts 'repo) 'cran))))
+               (unless sexp
+                 (leave (G_ "failed to download description for package '~a'~%")
+                        package-name))
+               sexp)))
+        (()
+         (leave (G_ "too few arguments~%")))
+        ((many ...)
+         (leave (G_ "too many arguments~%")))))))

@@ -590,7 +590,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-4")
+    (version "2-pre-release-5")
     (source
      (origin
        (method git-fetch)
@@ -601,7 +601,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "00865plmvgl1nj009a4w9bcb5mf0zgqjx7w6slacyqgidjzad6qm"))
+         "1sdafyhiicasd4wyzqnzdyrr16mz55y4b2hf5ya6i7nvm2vyhywl"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -659,7 +659,7 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cl-chanl" ,sbcl-chanl)
+       ("cl-calispel" ,sbcl-calispel)
        ("cl-containers" ,sbcl-cl-containers)
        ("cl-css" ,sbcl-cl-css)
        ("cl-json" ,sbcl-cl-json)
@@ -677,6 +677,7 @@ driven and does not detract you from your daily work.")
        ("log4cl" ,sbcl-log4cl)
        ("mk-string-metrics" ,sbcl-mk-string-metrics)
        ("moptilities" ,sbcl-moptilities)
+       ("named-readtables" ,sbcl-named-readtables)
        ("osicat" ,sbcl-osicat)
        ("parenscript" ,sbcl-parenscript)
        ("plump" ,sbcl-plump)

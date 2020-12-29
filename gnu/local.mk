@@ -277,6 +277,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/heads.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
+  %D%/packages/hunspell.scm				\
   %D%/packages/hurd.scm				\
   %D%/packages/hyperledger.scm			\
   %D%/packages/i2p.scm				\
@@ -802,6 +803,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
+  %D%/packages/patches/audacity-add-include.patch 		\
   %D%/packages/patches/audiofile-fix-datatypes-in-tests.patch	\
   %D%/packages/patches/audiofile-fix-sign-conversion.patch	\
   %D%/packages/patches/audiofile-CVE-2015-7747.patch		\
@@ -1615,6 +1617,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/seed-webkit.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-python3.patch			\
+  %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/shadow-hurd-pctrl.patch			\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\

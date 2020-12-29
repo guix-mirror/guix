@@ -676,7 +676,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method git-fetch)
@@ -686,8 +686,9 @@ engineers, musicians, soundtrack editors and composers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xk0piv72d2xd3p7igr916fhcbrm76fhjr418k1rlqdzzg1hfljn"))
-       (patches (search-patches "audacity-build-with-system-portaudio.patch"))
+         "0lklcvqkxrr2gkb9gh3422iadzl2rv9v0a8s76rwq43lj2im7546"))
+       (patches (search-patches "audacity-build-with-system-portaudio.patch"
+                                "audacity-add-include.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -697,7 +698,7 @@ engineers, musicians, soundtrack editors and composers.")
               (delete-file-recursively (string-append "lib-src/" dir)))
             '("expat" "ffmpeg" "lame" "libflac" "libid3tag" "libmad" "libogg"
               "libsndfile" "libsoxr" "libvamp" "libvorbis" "lv2"
-              "portaudio-v19" "portmidi" "soundtouch" "twolame"
+              "portmidi" "soundtouch" "twolame"
               ;; FIXME: these libraries have not been packaged yet:
               ;; "libnyquist"
               ;; "libscorealign"
@@ -711,7 +712,7 @@ engineers, musicians, soundtrack editors and composers.")
               ;; "sbsms"
               ))
            #t))))
-    (build-system glib-or-gtk-build-system)
+    (build-system cmake-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("gtk+" ,gtk+)
@@ -733,7 +734,6 @@ engineers, musicians, soundtrack editors and composers.")
        ("lv2" ,lv2)
        ("lilv" ,lilv)                   ;for lv2
        ("suil" ,suil)                   ;for lv2
-       ("portaudio" ,portaudio)
        ("portmidi" ,portmidi)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -745,52 +745,18 @@ engineers, musicians, soundtrack editors and composers.")
        ("which" ,which)))
     (arguments
      `(#:configure-flags
-       (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
-             (libmad (assoc-ref %build-inputs "libmad"))
-             (portmidi (assoc-ref %build-inputs "portmidi")))
-         (list
-          ;; Loading FFmpeg dynamically is problematic.
-          "--disable-dynamic-loading"
-          ;; SSE instructions are available on Intel systems only.
-          ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                                 (%current-system)))
-                    '("x86_64" "i686"))
-              '()
-              '("--enable-sse=no"))
-          ;; portmidi, libid3tag and libmad provide no .pc files, so
-          ;; pkg-config fails to find them.  Force their inclusion.
-          (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
-          (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")
-          (string-append "LIBMAD_CFLAGS=-I" libmad "/include")
-          (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")
-          (string-append "PORTMIDI_CFLAGS=-I" portmidi "/include")
-          (string-append "PORTMIDI_LIBS=-L" portmidi "/lib -lportmidi")
-          "EXPAT_USE_SYSTEM=yes"
-          "FFMPEG_USE_SYSTEM=yes"
-          "LAME_USE_SYSTEM=yes"
-          "LIBFLAC_USE_SYSTEM=yes"
-          "LIBID3TAG_USE_SYSTEM=yes"
-          "LIBMAD_USE_SYSTEM=yes"
-          "USE_LOCAL_LIBNYQUIST="      ;not packaged yet
-          ;;"LIBSBSMS_USE_SYSTEM=yes"  ;bundled version is patched
-          "LIBSNDFILE_USE_SYSTEM=yes"
-          "LIBSOUNDTOUCH_USE_SYSTEM=yes"
-          "LIBSOXR_USE_SYSTEM=yes"
-          "LIBTWOLAME_USE_SYSTEM=yes"
-          "LIBVAMP_USE_SYSTEM=yes"
-          "LIBVORBIS_USE_SYSTEM=yes"
-          "LV2_USE_SYSTEM=yes"
-          "PORTAUDIO_USE_SYSTEM=yes"))
+       (list
+        ;; Loading FFmpeg dynamically is problematic.
+        "-Daudacity_use_ffmpeg=linked"
+        "-Daudacity_use_lame=system"
+        "-Daudacity_use_portsmf=system")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sbsms-check
+         (add-after 'unpack 'comment-out-revision-ident
            (lambda _
-             ;; This check is wrong: there is no 2.2.0 release; not even the
-             ;; bundled sources match this release string.
-             (substitute* '("m4/audacity_checklib_libsbsms.m4"
-                            "configure")
-               (("sbsms >= 2.2.0") "sbsms >= 2.0.0"))
-             #t))
+             (substitute* "src/AboutDialog.cpp"
+               (("(.*RevisionIdent\\.h.*)" include-line)
+                (string-append "// " include-line)))))
          (add-after 'unpack 'use-upstream-headers
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/NoteTrack.cpp"
@@ -800,12 +766,11 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
-               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
-             #t)))
-       ;; The test suite is not "well exercised" according to the developers,
-       ;; and fails with various errors.  See
-       ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
-       #:tests? #f))
+               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")))))
+         ;; The test suite is not "well exercised" according to the developers,
+         ;; and fails with various errors.  See
+         ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
+         #:tests? #f))
     (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
@@ -1942,8 +1907,15 @@ well suited to all musical instruments and vocals.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "INSTDIR="
                             (assoc-ref %outputs "out") "/lib/lv2"))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)        ; no configure script
+         ;; See https://github.com/tomszilagyi/ir.lv2/pull/20
+         (add-after 'unpack 'fix-type 
+           (lambda _
+             (substitute* '("ir_gui.cc" "lv2_ui.h")
+               (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
@@ -2667,14 +2639,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.6.3")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0zbb4jlx56qvcqyhx34mbagkqf3wbxgj84hk0ppf5cmcrxv67d4x"))))
+                "1gaabf2ncd5xd846fjm3k5d0kzphlyc33k9pralc2j3r3g0cb5ji"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target

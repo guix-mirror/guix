@@ -45,6 +45,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -516,14 +517,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.20")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1r511qr95q0ywdaql3pdjiwzkfqxhhfzb13ilvl7mznfm4iv1myg"))))
+        (base32 "1lcjy1b9krnb2gk72qd1fvivlfiyfvknfi3wngyvyk9ifzijr9nm"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -2129,19 +2130,43 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "5.0.7")
+    (version "6.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0ax8sf3vw0yadr41kzc04917scrg5wir1d94zmbz00b8pzm79nv1"))))
+                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled jemalloc, as the package will use the libc one
+               '(begin (delete-file-recursively "deps/jemalloc")
+                       #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("procps" ,procps) ; for tests
+       ("tcl" ,tcl)))     ; for tests
     (arguments
-     '(#:tests? #f ; tests related to master/slave and replication fail
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'use-correct-tclsh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "runtest"
+               (("^TCLSH=.*")
+                (string-append "TCLSH="
+                               (assoc-ref inputs "tcl")
+                               "/bin/tclsh")))
+             #t))
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             ;; Disable failing tests
+             (substitute* "tests/test_helper.tcl"
+               (("    integration/replication[^-]") "")
+               (("    integration/replication-4") "")
+               (("    integration/replication-psync") ""))
+             #t)))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
                       "LDFLAGS=-ldl"

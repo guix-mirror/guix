@@ -2245,7 +2245,7 @@ section on @ref{Reproducible profiles}.
 
 @item
 Easier upgrades and maintenance: Multiple profiles make it easy to keep
-package listings at hand and make upgrades completely friction-less.
+package listings at hand and make upgrades completely frictionless.
 @end itemize
 
 Concretely, here follows some typical profiles:

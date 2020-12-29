@@ -2877,14 +2877,14 @@ from the Cyrus IMAP project.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.7.1p1")
+    (version "6.8.0p2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1jh8vxfajm1mvp1v5yh6llrhjzv0n9fgab88mlwllwqynhcfjy3l"))))
+        (base32 "05sd7bmq29ibnqbl2z53hiyprfxzf0qydfdaixs68rz55wqhbgsi"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2911,17 +2911,17 @@ from the Cyrus IMAP project.")
          ;; See: https://github.com/OpenSMTPD/OpenSMTPD/issues/1069.
          (add-after 'unpack 'fix-smtpctl-encrypt-bug
            (lambda _
-             (substitute* "smtpd/smtpctl.c"
+             (substitute* "usr.sbin/smtpd/smtpctl.c"
                (("\"encrypt\", \"--\",")
                 "\"encrypt\","))
              #t))
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
-             (substitute* "smtpd/smtpctl.c"
+             (substitute* "usr.sbin/smtpd/smtpctl.c"
                ;; ‘gzcat’ is auto-detected at compile time, but ‘cat’ isn't.
                (("/bin/cat") (which "cat")))
-             (substitute* "smtpd/mda_unpriv.c"
+             (substitute* "usr.sbin/smtpd/mda_unpriv.c"
                (("/bin/sh") (which "sh")))
              #t))
          ;; OpenSMTPD provides a single smtpctl utility to control both the

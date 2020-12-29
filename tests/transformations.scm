@@ -26,6 +26,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix transformations)
+  #:use-module ((guix gexp) #:select (local-file? local-file-file))
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix git)
@@ -371,6 +372,29 @@
          (and (equal? (package-arguments dep) '(#:tests? #f))
               (match (memq #:tests? (package-arguments tar))
                 ((#:tests? #f _ ...) #t))))))))
+
+(test-equal "options->transformation, with-patch"
+  (search-patches "glibc-locales.patch" "guile-relocatable.patch")
+  (let* ((dep    (dummy-package "dep"
+                   (source (dummy-origin))))
+         (p      (dummy-package "foo"
+                   (inputs `(("dep" ,dep)))))
+         (patch1 (search-patch "glibc-locales.patch"))
+         (patch2 (search-patch "guile-relocatable.patch"))
+         (t      (options->transformation
+                  `((with-patch . ,(string-append "dep=" patch1))
+                    (with-patch . ,(string-append "dep=" patch2))
+                    (with-patch . ,(string-append "tar=" patch1))))))
+    (let ((new (t p)))
+      (match (bag-direct-inputs (package->bag new))
+        ((("dep" dep) ("tar" tar) _ ...)
+         (and (member patch1
+                      (filter-map (lambda (patch)
+                                    (and (local-file? patch)
+                                         (local-file-file patch)))
+                                  (origin-patches (package-source tar))))
+              (map local-file-file
+                   (origin-patches (package-source dep)))))))))
 
 (test-end)
 

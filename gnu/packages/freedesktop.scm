@@ -1480,7 +1480,7 @@ wish to perform colour calibration.")
 (define-public libfprint
   (package
     (name "libfprint")
-    (version "1.90.4")
+    (version "1.90.6")
     (source
      (origin
        (method git-fetch)
@@ -1489,7 +1489,7 @@ wish to perform colour calibration.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0grhck0h29i7hm7npvby7pn7wdc446kv0r4mkpbssp46lqbjb96b"))))
+        (base32 "0hagm1i78mrd772y3cinr7bda4myx0v4bixwqnqbxknds8m9h8sg"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
@@ -1615,7 +1615,7 @@ to applications simultaneously competing for fingerprint readers.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.24")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
@@ -1623,10 +1623,12 @@ to applications simultaneously competing for fingerprint readers.")
                                   "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "1nc3bwjdrpcrkbdmzvhckq0yngbcxspwj2n1r7jr3gmx1jk5vpm1"))))
+                "02bkfi6fyk4c0gh2avd897882ww5zl7qg7bzzf28qb57kvkvsvdj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)))
     (home-page "https://www.freedesktop.org/wiki/Software/desktop-file-utils/")

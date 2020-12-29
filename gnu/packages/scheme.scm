@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -1010,7 +1010,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
 (define-public gauche
   (package
     (name "gauche")
-    (version "0.9.9")
+    (version "0.9.10")
     (home-page "https://practical-scheme.net/gauche/index.html")
     (source
      (origin
@@ -1019,7 +1019,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
              "mirror://sourceforge/gauche/Gauche/Gauche-"
              version ".tgz"))
        (sha256
-        (base32 "1yzpszhw52vkpr65r5d4khf3489mnnvnw58dd2wsvvx7499k5aac"))
+        (base32 "0ci57ak5cp3lkmfy3nh50hifh8nbg58hh6r18asq0rn5mqfxyf8g"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Remove libatomic-ops.
@@ -1028,24 +1028,26 @@ The core is 12 builtin special forms and 33 builtin functions.")
     (build-system gnu-build-system)
     (inputs
      `(("libatomic-ops" ,libatomic-ops)
+       ("slib" ,slib)
        ("zlib" ,zlib)))
     (native-inputs
      `(("texinfo" ,texinfo)
        ("openssl" ,openssl)            ; needed for tests
        ("pkg-config" ,pkg-config)))    ; needed to find external libatomic-ops
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-slib="
+                            (assoc-ref %build-inputs "slib")
+                            "/lib/slib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
            ;; Needed only for tests.
            (lambda _
-             (substitute* '("configure"
-                            "test/www.scm"
+             (substitute* '("test/www.scm"
                             "ext/tls/test.scm"
-                            "gc/configure"
-                            "lib/gauche/configure.scm"
                             "lib/gauche/package/util.scm"
-                            "lib/gauche/process.scm")
+                            "libsrc/gauche/process.scm")
                (("/bin/sh") (which "sh")))
              #t))
          (add-after 'build 'build-doc
@@ -1053,18 +1055,11 @@ The core is 12 builtin special forms and 33 builtin functions.")
              (with-directory-excursion "doc"
                (invoke "make" "info"))
              #t))
-         (add-before 'check 'patch-normalize-test
-           ;; Neutralize sys-normalize-pathname test as it relies on
-           ;; the home directory; (setenv "HOME" xx) isn't enough).
-           (lambda _
-             (substitute* "test/system.scm"
-               (("~/abc") "//abc"))
-             #t))
          (add-before 'check 'patch-network-tests
            ;; Remove net checks.
            (lambda _
-             (substitute* "ext/Makefile"
-               (("binary net termios") "binary termios"))
+             (delete-file "ext/net/test.scm")
+             (invoke "touch" "ext/net/test.scm")
              #t))
          (add-after 'install 'install-docs
            (lambda _

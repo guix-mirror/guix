@@ -192,7 +192,7 @@ Memtest86+ cannot currently be used on computers booted with UEFI.")
 (define-public memtester
   (package
     (name "memtester")
-    (version "4.3.0")
+    (version "4.5.0")
     (source
      (origin
        (method url-fetch)
@@ -200,7 +200,7 @@ Memtest86+ cannot currently be used on computers booted with UEFI.")
        (uri (string-append "http://pyropus.ca/software/memtester/old-versions/"
                            "memtester-" version ".tar.gz"))
        (sha256
-        (base32 "127xymmyzb9r6dxqrwd69v7gf8csv8kv7fjvagbglf3wfgyy5pzr"))))
+        (base32 "0dxfwayns3hjjplkxkpkm1409lmjlpi4chcrahcvdbnl0q6jpmcf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

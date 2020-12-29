@@ -51,6 +51,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,7 +352,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.10-version "5.10.1")
+(define-public linux-libre-5.10-version "5.10.3")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -359,28 +360,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0p2fl7kl4ckphq17xir7n7vgrzlhbdqmyd2yyp4yilwvih9625pd")))
+        (hash (base32 "09cml495fnf52lhlkjxjznw34q5s8arvq7shkb6wjq6fwlrk65gr")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.9-version "5.9.15")
-(define deblob-scripts-5.9
-  (linux-libre-deblob-scripts
-   linux-libre-5.9-version
-   (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "1vrv78xwcy32b82plkkbpyfxhpy3br7b18sjah4iqv25fxfcxpak")))
-(define-public linux-libre-5.9-pristine-source
-  (let ((version linux-libre-5.9-version)
-        (hash (base32 "1vhaayqjv1ha3nsxy9zbsz497ba4d4a1g0gfhgxcvci8dp8djh2p")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.9)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.84")
+(define-public linux-libre-5.4-version "5.4.85")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -388,7 +376,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "058mhczv6whjwxn7jjh1c6n5zrqjdnvbl2mp7jkfrg6frpvgr189")))
+        (hash (base32 "0220k327aa7gg48fqw171mcng8h717c4a1v14r3q36ksirnmiqqx")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -475,11 +463,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.9-source
-  (source-with-patches linux-libre-5.9-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -585,10 +568,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
                              linux-libre-5.10-source))
-
-(define-public linux-libre-headers-5.9
-  (make-linux-libre-headers* linux-libre-5.9-version
-                             linux-libre-5.9-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -888,12 +867,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-source          linux-libre-5.10-source)
 (define-public linux-libre                 linux-libre-5.10)
 
-(define-public linux-libre-5.9
-  (make-linux-libre* linux-libre-5.9-version
-                     linux-libre-5.9-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
                      linux-libre-5.4-source
@@ -929,6 +902,14 @@ It has been modified to remove all non-free binary blobs.")
                         ;; This option was removed upstream in version 4.7.
                         ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                       %default-extra-linux-options)))
+
+;; Linux-Libre-LTS means the *current* long-term support version of Linux-Libre.
+;; Reference: https://jxself.org/linux-libre/
+
+(define-public linux-libre-lts-version         linux-libre-5.10-version)
+(define-public linux-libre-lts-pristine-source linux-libre-5.10-pristine-source)
+(define-public linux-libre-lts-source          linux-libre-5.10-source)
+(define-public linux-libre-lts                 linux-libre-5.10)
 
 
 ;;;
@@ -1119,8 +1100,8 @@ and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "e9fbf5c051453941bbc029810b893a6c010714e6")
-        (revision "2"))
+  (let ((commit "62cb003043e4daeeba0b8805137fa604af450ed2")
+        (revision "3"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1132,7 +1113,7 @@ and should be used with caution, especially on untested models.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0y71q7ajwz1w38gdmxd4p05hhkqndq504nndy6vfa16fxz6pqxhn"))
+          (base32 "1kragxkjprjy7nl9h2rd0mwcry1ygw07zb1p2qkj7cmz0r2035yz"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -5096,7 +5077,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5104,7 +5085,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "0z9c0y3qq75iyqknl5k0v7v46l8c3pcifpqb0yqalrs24blkm7dk"))))
+                "1lab1446c78xsjwhpki7s85z4171m8p9279c8yhm4882wba674k1"))))
     (inputs
      `(("libuuid" ,util-linux "lib")))))
 
@@ -5118,9 +5099,10 @@ disks and SD cards.  This package provides the userland utilities.")
        (let ((libuuid-static (assoc-ref %build-inputs "libuuid:static"))
              (libuuid (assoc-ref %build-inputs "libuuid")))
          (list
-          (string-append "libuuid_CFLAGS=-I" libuuid "/include")
+          (string-append "libuuid_CFLAGS=-I" libuuid "/include/uuid")
           (string-append "libuuid_LIBS=-L" libuuid-static "/lib -luuid")
-          (string-append "libblkid_CFLAGS=-I" libuuid "/include")
+          (string-append "libblkid_CFLAGS=-I" libuuid "/include/uuid "
+                         "-I" libuuid "/include/blkid")
           (string-append "libblkid_LIBS=-L" libuuid-static "/lib -lblkid")))
        #:disallowed-references (,util-linux)
        #:phases
@@ -6021,14 +6003,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.1")
+    (version "12.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                            "sysstat-" version ".tar.xz"))
        (sha256
-        (base32 "02yf2c9n56c3ic72r4p4kb99zjxr8fldvsnmcy7s262izx78vbr4"))))
+        (base32 "13q1zb7ip389b35rcgy2ngf1z9zhdmdwx5bv9lwfnl1xi30v409p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.
@@ -6999,10 +6981,35 @@ communicate with the kernel.  It can be used to add and remove interfaces, set
 IP addresses and routes, and configure IPsec.")
     (license license:asl2.0)))
 
+(define-public libinih
+  (package
+    (name "libinih")
+    (version "52")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/benhoyt/inih")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lsvm34zabvi1xlximybzvgc58zb90mm3b9babwxlqs05jy871m4"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
+    (home-page "https://github.com/benhoyt/inih")
+    (synopsis "Simple .INI parser library for C")
+    (description "The inih (INI Not Invented Here) library is a simple .INI file
+parser written in C.  It's only a couple of pages of code, and it was designed to
+be small and simple, so it's good for embedded systems.  It's also more or less
+compatible with Python's ConfigParser style of .INI files, including RFC
+822-style multi-line syntax and name: value entries.")
+    (license license:bsd-3)))
+
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.9.0")
+    (version "5.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7010,7 +7017,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "13xkn9jpmwp4fm9r68vhgznkmxhnv83n2b39mhy2qdaph90w2a1l"))))
+                "1wcvcv9fl955g3zl68057hq7pp9bm7i733vc7j6xr6wnfd8qf6sr"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7034,7 +7041,8 @@ IP addresses and routes, and configure IPsec.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libuuid" ,util-linux "lib")
+     `(("libinih" ,libinih)
+       ("libuuid" ,util-linux "lib")
        ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
@@ -7641,13 +7649,13 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.9")
+    (version "7.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ipset.netfilter.org/ipset-" version ".tar.bz2"))
               (sha256
                (base32
-                "02mkp7vmsh609dcp02xi290sxmsgq2fsch3875dxkwfxkrl16p5p"))))
+                "1xlwgsy06jx0bckc5r2wvyys8jfpc5klfqqqshmk5zp28fx0cjdj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))
