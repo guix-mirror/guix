@@ -5722,6 +5722,90 @@ Simple Young tableaux.
 @end table")
     (license license:gpl2)))                    ;per the 00readme_txt file.
 
+(define-public texlive-jadetex
+  (let ((template (simple-texlive-package
+                   "texlive-jadetex"
+                   (list "/doc/man/man1/jadetex.1"
+                         "/doc/man/man1/jadetex.man1.pdf"
+                         "/doc/man/man1/pdfjadetex.1"
+                         "/doc/man/man1/pdfjadetex.man1.pdf"
+                         "/source/jadetex/base/"
+                         ;; The following files are not generated from
+                         ;; sources.
+                         "/tex/jadetex/base/jadetex.ini"
+                         "/tex/jadetex/base/pdfjadetex.ini"
+                         "/tex/jadetex/base/uentities.sty")
+                   (base32
+                    "03chyc3vjqgxcj985gy4k0bd0lf1n4a6sgbhc7k84jparjk3hx4i"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "jadetex/base")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'unify-source-directory
+               (lambda _
+                 (chdir "source/jadetex/base")
+                 (for-each (lambda (f)
+                             (copy-file f (basename f)))
+                           (find-files "../../../tex/jadetex/base"))
+                 #t))
+             (add-after 'build 'generate-formats
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (mkdir "web2c")
+                 (for-each (lambda (f)
+                             (symlink f (basename f)))
+                           (find-files "build"))
+                 (invoke "fmtutil-sys" "--byfmt" "jadetex"
+                         "--fmtdir=web2c")
+                 (invoke "fmtutil-sys" "--byfmt" "pdfjadetex"
+                         "--fmtdir=web2c")))
+             (add-after 'install 'install-formats-and-wrappers
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (texlive-bin (assoc-ref inputs "texlive-bin"))
+                        (pdftex (string-append texlive-bin "/bin/pdftex"))
+                        (web2c (string-append out "/share/texmf-dist/web2c")))
+                   (mkdir-p web2c)
+                   (copy-recursively "web2c" web2c)
+                   ;; Create convenience command wrappers.
+                   (mkdir-p (string-append out "/bin"))
+                   (symlink pdftex (string-append out "/bin/jadetex"))
+                   (symlink pdftex (string-append out "/bin/pdfjadetex"))
+                   #t)))))))
+      (propagated-inputs
+       ;; Propagate the texlive-union input used by xmltex, which provides the
+       ;; required fonts for its use.
+       `(("texlive-xmltex" ,texlive-xmltex)
+         ("texlive-kpathsea" ,texlive-kpathsea))) ;for fmtutil.cnf template
+      (native-inputs
+       `(("texlive-cm" ,texlive-cm)     ;for cmex10 and others
+         ("texlive-fonts-latex" ,texlive-fonts-latex) ;for lasy6
+         ;; The t1cmr.fd file of texlive-latex-base refers to the ecrm font,
+         ;; provided by the jknappen package collection.
+         ("texlive-jknappen" ,texlive-jknappen)
+         ("texlive-generic-ulem" ,texlive-generic-ulem)
+         ("texlive-hyperref" ,texlive-hyperref)
+         ("texlive-latex-colortbl" ,texlive-latex-colortbl)
+         ("texlive-latex-fancyhdr" ,texlive-latex-fancyhdr)
+         ("texlive-latex-graphics" ,texlive-latex-graphics) ;for color.sty
+         ("texlive-latex-tools" ,texlive-latex-tools)       ;for array.sty
+         ("texlive-marvosym" ,texlive-marvosym)
+         ("texlive-tex-ini-files" ,texlive-tex-ini-files))) ;for pdftexconfig
+      (home-page "https://www.ctan.org/pkg/jadetex/")
+      (synopsis "TeX macros to produce TeX output using OpenJade")
+      (description "JadeTeX is a companion package to the OpenJade DSSSL
+processor.  OpenJade applies a DSSSL stylesheet to an SGML or XML document.
+The output of this process can be in a number of forms, including a set of
+high level LaTeX macros.  It is the task of the JadeTeX package to transform
+these macros into DVI/PostScript (using the @command{jadetex} command) or
+Portable Document Format (PDF) form (using the @command{pdfjadetex}
+command).")
+      ;; The license text is found at the header of the jadetex.dtx file.
+      (license license:expat))))
+
 (define-public texlive-libertine
   (package
     (inherit (simple-texlive-package
