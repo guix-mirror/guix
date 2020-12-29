@@ -241,7 +241,7 @@ Interface} specification.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.3.1")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -250,7 +250,7 @@ Interface} specification.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16k5mp64a5l063rdj65hbpx414xv0bqdvhvz49k8018f2a2jj5xl"))))
+        (base32 "18c6bsv9m3spiyfhqp08v807m93r6n9hrlv4qbfiqp4kw5aryb4h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -259,11 +259,12 @@ Interface} specification.")
         ("rust-clap" ,rust-clap-2)
         ("rust-cssparser" ,rust-cssparser-0.27)
         ("rust-html5ever" ,rust-html5ever-0.24)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-reqwest" ,rust-reqwest-0.10)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-reqwest" ,rust-reqwest-0.10)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
