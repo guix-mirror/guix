@@ -11201,14 +11201,14 @@ This package is part of the KDE games module.")
 (define-public kollision
   (package
     (name "kollision")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kollision-" version ".tar.xz"))
       (sha256
-       (base32 "1p7qrn3d0ybpvc9k6k5wzj54dsrp1rqh39844maz0ay2fhvmch12"))))
+       (base32 "180ybafizpwjsg80npy0l9142cjsnlyxwv9dz3bq6r8v4smn2g6b"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
