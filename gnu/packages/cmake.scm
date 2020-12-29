@@ -94,14 +94,16 @@
   '(;; 'Source/cm_getdate.c' includes archive_getdate.c wholesale, so it must
     ;; be available along with the required headers.
     "Utilities/cmlibarchive/libarchive/archive_getdate.c"
-    "Utilities/cmlibarchive/libarchive/archive_getdate.h"))
+    "Utilities/cmlibarchive/libarchive/archive_getdate.h"
+    ;; CMake header wrappers.
+    "Utilities/cm3p"))
 
 ;;; The "bootstrap" CMake.  It is used to build 'cmake-minimal' below, as well
 ;;; as any dependencies that need cmake-build-system.
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.16.5")
+    (version "3.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -109,7 +111,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1z4bb8z6b4dvq5hrvajrf1hyybqay3xybyimf71w1jgcp180nxjz"))
+                "1w67w0ak6vf37501dlz9yhnzlvvpw1w10n2nm3hi7yxp4cxzvq73"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
@@ -307,39 +309,6 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.19.1")
-    ;; TODO: Move the following source field to the cmake-bootstrap package in
-    ;; the next rebuild cycle.
-    (source (origin
-              (inherit (package-source cmake-bootstrap))
-              (uri (string-append "https://cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fisi9rlijw9wd0yjzk1c6j7ljnb2yiq5iqnrz6m1xkflyinw9hx"))
-              (snippet
-               (match (origin-snippet (package-source cmake-bootstrap))
-                 ((_ _ exp ...)
-                  ;; Now we can delete the remaining software bundles.
-                  (append `(begin
-                             (define preserved-files
-                               '(,@%preserved-third-party-files
-                                 ;; TODO: Move this file to the
-                                 ;; %preserved-third-party-files variable in
-                                 ;; the next rebuild cycle.
-                                 "Utilities/cm3p" ;CMake header wrappers
-                                 ;; Use the bundled JsonCpp during bootstrap
-                                 ;; to work around a circular dependency.
-                                 ;; TODO: JsonCpp can be built with Meson
-                                 ;; instead of CMake, but meson-build-system
-                                 ;; currently does not support
-                                 ;; cross-compilation.
-                                 "Utilities/cmjsoncpp"
-                                 ;; LibUV is required to bootstrap the initial
-                                 ;; build system.
-                                 "Utilities/cmlibuv")))
-                          exp))))))
     (arguments
      (substitute-keyword-arguments (package-arguments cmake-minimal)
        ;; Use cmake-minimal this time.
