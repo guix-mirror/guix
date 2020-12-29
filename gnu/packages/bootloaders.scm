@@ -898,7 +898,14 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
-              (add-after 'unpack 'set-environment
+              (add-after 'unpack 'patch-rockpro64-config
+                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
+                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
+                (lambda _
+                  (substitute* "configs/rockpro64-rk3399_defconfig"
+                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
+                  #t))
+              (add-after 'patch-rockpro64-config 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
                                                 "/bl31.elf"))
