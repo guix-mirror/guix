@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,6 +171,14 @@
                     (target (readlink npm)))
                (with-directory-excursion bindir
                  (patch-shebang target (list bindir))
+                 #t))))
+         (add-after 'install 'patch-node-shebang
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bindir (string-append (assoc-ref outputs "out")
+                                           "/bin"))
+                    (npx    (readlink (string-append bindir "/npx"))))
+               (with-directory-excursion bindir
+                 (patch-shebang npx (list bindir))
                  #t)))))))
     (native-inputs
      `(("python" ,python-2)
