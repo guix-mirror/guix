@@ -9618,6 +9618,34 @@ handling of existing population-level data for the purpose of flexibly
 defining LD blocks.")
     (license license:artistic2.0)))
 
+;; This is a CRAN package, but it depends on r-snpstats, which is a
+;; Bioconductor package.
+(define-public r-ldheatmap
+  (package
+    (name "r-ldheatmap")
+    (version "1.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LDheatmap" version))
+       (sha256
+        (base32
+         "1jp578cf29qcgx95w10lpymlwx2pgjsf0nypwkl9b8g635gkisq7"))))
+    (properties `((upstream-name . "LDheatmap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genetics" ,r-genetics)
+       ("r-rcpp" ,r-rcpp)
+       ("r-snpstats" ,r-snpstats)))
+    (home-page "https://stat.sfu.ca/statgen/research/ldheatmap.html")
+    (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
+    (description
+     "This package provides tools to produce a graphical display, as a heat
+map, of measures of pairwise linkage disequilibria between SNPs.  Users may
+optionally include the physical locations or genetic map distances of each SNP
+on the plot.")
+    (license license:gpl3)))
+
 (define-public r-pathview
   (package
     (name "r-pathview")

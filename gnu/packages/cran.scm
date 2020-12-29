@@ -14718,34 +14718,6 @@ effects.  It is applicable to backcrosses, doubled haploids, recombinant
 inbred lines, F2 intercrosses, and association mapping populations.")
     (license license:gpl2)))
 
-(define-public r-ldheatmap
-  (package
-    (name "r-ldheatmap")
-    (version "1.0-4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "LDheatmap" version))
-       (sha256
-        (base32
-         "1jp578cf29qcgx95w10lpymlwx2pgjsf0nypwkl9b8g635gkisq7"))))
-    (properties `((upstream-name . "LDheatmap")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-genetics" ,r-genetics)
-       ("r-rcpp" ,r-rcpp)
-       ("r-snpstats" ,(module-ref
-                       (resolve-interface '(gnu packages bioconductor))
-                       'r-snpstats))))
-    (home-page "https://stat.sfu.ca/statgen/research/ldheatmap.html")
-    (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
-    (description
-     "This package provides tools to produce a graphical display, as a heat
-map, of measures of pairwise linkage disequilibria between SNPs.  Users may
-optionally include the physical locations or genetic map distances of each SNP
-on the plot.")
-    (license license:gpl3)))
-
 (define-public r-hwde
   (package
     (name "r-hwde")
