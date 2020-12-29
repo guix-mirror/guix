@@ -2237,9 +2237,10 @@ itself.")
          (base32
           "0wnlasg62rm5d39nq1yw4namcx2ivxgzl93r5f2vb9s0yaz5l3x0"))))
     (native-inputs
-     `(("python-sip" ,python2-sip)
-       ("qt" ,qt-4)))
+     `(("qt" ,qt-4)))
     (inputs `(("python" ,python-2)))
+    (propagated-inputs
+     `(("python-sip" ,python2-sip)))
     (arguments
      `(#:tests? #f ; no check target
        #:modules ((srfi srfi-1)
