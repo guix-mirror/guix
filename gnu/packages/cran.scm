@@ -25435,3 +25435,28 @@ classification.  Additionally, meta information about the performance measures
 can be queried, e.g. what the best and worst possible performances scores
 are.")
     (license license:lgpl3)))
+
+(define-public r-mlr3misc
+  (package
+    (name "r-mlr3misc")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3misc" version))
+              (sha256
+               (base32
+                "1q63i2059bf7cf61kwm0dqnk5vd60i0j4flziswwdk07fjxqh8xr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-r6" ,r-r6)))
+    (home-page "https://mlr3misc.mlr-org.com/")
+    (synopsis "Helper functions for mlr3")
+    (description "@code{mlr3misc} provides frequently used helper functions
+and assertions used in @code{mlr3} and its companion packages.  It comes with
+helper functions for functional programming, for printing, to work with
+@code{data.table}, as well as some generally useful @code{R6} classes.  This
+package also supersedes the package @code{BBmisc}.")
+    (license license:lgpl3)))
