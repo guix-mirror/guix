@@ -9913,14 +9913,14 @@ This package is part of the KDE games module.")
 (define-public picmi
   (package
     (name "picmi")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/picmi-" version ".tar.xz"))
       (sha256
-       (base32 "0z9mpmv49w914gqdx274brdzl6d1bz9j9nkvbwgmr3iq1ba49m3f"))))
+       (base32 "1dfq9m4njh0czz8zws46rkz6xq2n6xra5w223m3s2f5civiw5msz"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
