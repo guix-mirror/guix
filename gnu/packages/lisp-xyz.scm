@@ -455,6 +455,41 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
+(define-public sbcl-uax-15
+  (let ((commit "e7439a91b72f533fcf736643e3ff0677b56c2e7d")
+        (revision "1"))
+    (package
+      (name "sbcl-uax-15")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sabracrolleton/uax-15")
+               (commit commit)))
+         (file-name (git-file-name "uax-15" version))
+         (sha256
+          (base32 "1vf8a2aikgx0l5bsq0z9s0dw3sgx1887xhagdlf66fwffa5jskg6"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (arguments
+       `(#:asd-systems '("uax-15")))
+      (home-page "https://github.com/sabracrolleton/uax-15")
+      (synopsis "Common Lisp implementation of unicode normalization functions")
+      (description "This package provides supports for unicode normalization,
+RFC8264 and RFC7564.")
+      (license license:expat))))
+
+(define-public cl-uax-15
+  (sbcl-package->cl-source-package sbcl-uax-15))
+
+(define-public ecl-uax-15
+  (sbcl-package->ecl-package sbcl-uax-15))
+
 (define-public sbcl-cl-unicode
   (package
     (name "sbcl-cl-unicode")
@@ -2917,6 +2952,33 @@ Lisp, featuring:
 
 (define-public ecl-cl-markup
   (sbcl-package->ecl-package sbcl-cl-markup))
+
+(define-public sbcl-cl-mustache
+  (package
+    (name "sbcl-cl-mustache")
+    (version "0.12.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/kanru/cl-mustache")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name "cl-mustache" version))
+      (sha256
+       (base32 "149xbb6wxq1napliwm9cv729hwcgfnjli6y8hingfixz7f10lhks"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/kanru/cl-mustache")
+    (synopsis "Common Lisp Mustache template renderer")
+    (description "This is a Common Lisp implementation for the Mustache
+template system.  More details on the standard are available at
+@url{https://mustache.github.io}.")
+    (license license:expat)))
+
+(define-public cl-mustache
+  (sbcl-package->cl-source-package sbcl-cl-mustache))
+
+(define-public ecl-cl-mustache
+  (sbcl-package->ecl-package sbcl-cl-mustache))
 
 (define-public sbcl-cl-css
   (let ((commit "8fe654c8f0cf95b300718101cce4feb517f78e2f"))
@@ -12636,3 +12698,48 @@ library are feedforward neural networks trained using backpropagation.")
 
 (define-public ecl-simple-neural-network
   (sbcl-package->ecl-package sbcl-simple-neural-network))
+
+(define-public sbcl-zstd
+  (let ((commit "d144582c581aaa52bac24d6686af27fa3e781e06")
+        (revision "1"))
+    (package
+      (name "sbcl-zstd")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-zstd")
+               (commit commit)))
+         (file-name (git-file-name "cl-zstd" version))
+         (sha256
+          (base32 "1774jy8hzbi6nih3sq6vchk66f7g8w86dwgpbvljyfzcnkcaz6ql"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("zstd-lib" ,zstd "lib")))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/libzstd.lisp"
+                 (("libzstd\\.so")
+                  (string-append (assoc-ref inputs "zstd-lib")
+                                 "/lib/libzstd.so")))
+               #t)))))
+      (synopsis "Common Lisp library for Zstandard (de)compression")
+      (description
+       "This Common Lisp library provides functions for Zstandard
+compression/decompression using bindings to the libzstd C library.")
+      (home-page "https://github.com/glv2/cl-zstd")
+      (license license:gpl3+))))
+
+(define-public cl-zstd
+  (sbcl-package->cl-source-package sbcl-zstd))
+
+(define-public ecl-zstd
+  (sbcl-package->ecl-package sbcl-zstd))

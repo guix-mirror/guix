@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -27,6 +27,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -55,6 +56,42 @@
     (synopsis "JSON parser written in ANSI C")
     (description "This library provides a portable embeddable JSON parser.")
     (license license:expat)))
+
+(define-public js-context-menu
+  (package
+    (name "js-context-menu")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/zorkow/context-menu")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1q063l6477z285j6h5wvccp6iswvlp0jmb96sgk32sh0lf7nhknh"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (chdir (assoc-ref %build-inputs "source"))
+         (let ((target (string-append %output "/share/javascript/context-menu")))
+           (apply invoke (string-append (assoc-ref %build-inputs "esbuild")
+                                        "/bin/esbuild")
+                  "--bundle"
+                  "--tsconfig=tsconfig.json"
+                  (string-append "--outdir=" target)
+                  (find-files "ts" "\\.ts$"))))))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://github.com/zorkow/context-menu")
+    (synopsis "Generic context menu")
+    (description "This package provides a reimplementation of the MathJax
+context menu in TypeScript.")
+    (license license:asl2.0)))
 
 (define-public font-mathjax
   (package

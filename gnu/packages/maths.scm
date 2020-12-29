@@ -1906,7 +1906,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "5.2.0")
+    (version "6.1.0")
     (source
      (origin
       (method url-fetch)
@@ -1914,7 +1914,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "1848dq6nxzal8gwjrcp6xhi5gq96w89nss9d9rz75q408gb3mbl6"))))
+        "0355s0pi8603ccs2j08zym3nalgalslxn83s37zq8nkrrkwxrjfk"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

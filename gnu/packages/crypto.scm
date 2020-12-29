@@ -1028,10 +1028,10 @@ trivial to build for local use.  Portability is emphasized over performance.")
     (license license:unlicense)))
 
 (define-public libsecp256k1
-  (let ((commit "d644dda5c9dbdecee52d1aa259235510fdc2d4ee"))
+  (let ((commit "dbd41db16a0e91b2566820898a3ab2d7dad4fe00"))
     (package
       (name "libsecp256k1")
-      (version (git-version "20191213" "1" commit))
+      (version (git-version "20200615" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1039,9 +1039,14 @@ trivial to build for local use.  Portability is emphasized over performance.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0zmx32746khsm2cx0p3pdy3j2vkwmafvf7axiixijhgcg0xjv93i"))
+                  "1fcpnksq5cqwqzshn5f0lq94b73p3frwbp04hgmmbnrndpqg6mpy"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
+      (arguments
+       '(#:configure-flags '("--enable-module-recovery"
+                             "--enable-experimental"
+                             "--enable-module-ecdh"
+                             "--enable-shared")))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

@@ -1055,14 +1055,14 @@ compatible directories.")
 (define-public python-dropbox
   (package
     (name "python-dropbox")
-    (version "10.3.1")
+    (version "11.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dropbox" version))
         (sha256
          (base32
-          "137rn9fs1bg1p1khd5lcccfxh8jsx27dh2ix5wwd8cmddbrzdrbd"))))
+          "0r64jxm5m4a1sln2la3av0103filb0plqja1nnyibqvk9qrqs5jf"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; Tests require a network connection.
     (native-inputs
@@ -1073,6 +1073,7 @@ compatible directories.")
        ("python-chardet" ,python-chardet)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)
+       ("python-stone" ,python-stone)
        ("python-urllib3" ,python-urllib3)))
     (home-page "https://www.dropbox.com/developers")
     (synopsis "Official Dropbox API Client")
@@ -1083,14 +1084,14 @@ Dropbox API v2.")
 (define-public dbxfs
   (package
     (name "dbxfs")
-    (version "1.0.43")
+    (version "1.0.48")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dbxfs" version))
         (sha256
          (base32
-          "1f9sy2ax215dxiwszrrcadffjdsmrlxm4kwrbiap9dhxvzm226ks"))
+          "07q7dgqaqqyapjl9r4lqydflrgx4dh84c1qsb0jvfmqj3i8887ak"))
         (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
     (build-system python-build-system)
     (arguments

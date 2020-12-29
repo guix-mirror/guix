@@ -167,17 +167,19 @@ Callback Hell.
 (define-public python-aiohttp-socks
   (package
     (name "python-aiohttp-socks")
-    (version "0.2.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp_socks" version))
        (sha256
         (base32
-         "0473702jk66xrgpm28wbdgpnak4v0dh2qmdjw7ky7hf3lwwqkggf"))))
+         "0jmhb0l1w8k1nishij3awd9zv8zbyb5l35a2pdalrqxxasbhbcif"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)))
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-attrs" ,python-attrs)
+       ("python-socks" ,python-socks)))
     (home-page "https://github.com/romis2012/aiohttp-socks")
     (synopsis "SOCKS proxy connector for aiohttp")
     (description "This package provides a SOCKS proxy connector for
@@ -2717,14 +2719,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.18.183")
+    (version "1.18.203")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0n1pmdl33r1v8qnrcg08ihvri9zm4fvsp14605vwmlkxvs8nb7s5"))))
+         "128zg24961j8nmnq2dxqg6a7zwh3qgv87cmvclsdqwwih9nigxv9"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
@@ -5595,15 +5597,25 @@ Encoding for HTTP.")
                      '("captcha/2captcha.py"
                        "captcha/9kw.py"
                        "captcha/anticaptcha.py"
-                       "captcha/deathbycaptcha.py"
-                       "interpreters/js2py.py"
-                       "interpreters/v8.py"))
+                       "captcha/deathbycaptcha.py"))
            (substitute* "__init__.py"
              ;; Perhaps it's a joke, but don't promote proprietary software.
              (("([Th]is feature is not available) in the .*'" _ prefix)
               (string-append prefix ".'")))
            #t))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; XXX: Dependencies, that have not yet been packaged
+         ;;      and cause an import error when included.
+         (add-after 'unpack 'drop-unsupported-sources
+           (lambda _
+             (with-directory-excursion "cloudscraper"
+               (for-each delete-file
+                         '("interpreters/js2py.py"
+                           "interpreters/v8.py")))
+             #t)))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
@@ -5724,3 +5736,38 @@ that's written to go fast.  It allows the usage of the
 @code{async/await} syntax added in Python 3.5, which makes
 your code non-blocking and speedy.")
     (license license:expat)))
+
+(define-public python-socks
+  (package
+    (name "python-socks")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-socks" version))
+        (sha256
+         (base32
+          "06mgv3icsyglv50w3sb71x6cpbskza20pqd93l5xk59x574i6xgs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; tests not included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests/" "-s"))
+             #t)))))
+    (propagated-inputs
+     `(("python-async-timeout" ,python-async-timeout)
+       ("python-curio" ,python-curio)
+       ("python-trio" ,python-trio)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/romis2012/python-socks")
+    (synopsis
+     "Core proxy (SOCKS4, SOCKS5, HTTP tunneling) functionality for Python")
+    (description
+     "Socks is a library providing core proxy (SOCKS4, SOCKS5, HTTP tunneling)
+ functionality.")
+    (license license:asl2.0)))

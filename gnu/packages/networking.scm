@@ -702,6 +702,13 @@ or, more generally, MAC addresses of the same category of hardware.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-iproute2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((iproute (assoc-ref inputs "iproute"))
+                    (ip (string-append iproute "/sbin/ip")))
+               (substitute* "misc/client-hook.iproute"
+                 (("/sbin/ip") ip))
+               #t)))
          ;; The checkconf test in src/ requires network access.
          (add-before
           'check 'disable-checkconf-test
@@ -709,6 +716,8 @@ or, more generally, MAC addresses of the same category of hardware.")
             (substitute* "src/Makefile"
               (("^TESTS = .*") "TESTS = \n"))
             #t)))))
+    (inputs
+     `(("iproute" ,iproute)))
     (home-page "https://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
@@ -1295,18 +1304,21 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.6")
+    (version "5.5.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           "whois_" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rfc1036/whois")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0kpi981zjczvdcxfcq455c529vlaxa73x8kbm530z5b01h0fk8fb"))))
+        (base32 "1w3d0ffl0ng1m4i10k968kk4xicviq24w5vwl6d8dhja61d7yd2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -2065,30 +2077,6 @@ It is intended primarily for use in testing.")
     "Perl extension for merging IPv4 or IPv6 CIDR addresses")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
   (license license:gpl1+)))
-
-;; TODO: Use the geolite-mirror-simple.pl script from the example
-;; directory to stay current with the databases. How?
-(define-public perl-geo-ip
- (package
-  (name "perl-geo-ip")
-  (version "1.51")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/M/MA/MAXMIND/Geo-IP-"
-             version
-             ".tar.gz"))
-      (sha256
-        (base32
-          "1fka8fr7fw6sh3xa9glhs1zjg3s2gfkhi7n7da1l2m2wblqj0c0n"))))
-  (build-system perl-build-system)
-  (home-page "https://metacpan.org/release/Geo-IP")
-  (synopsis
-    "Look up location and network information by IP Address in Perl")
-  (description "The Perl module @code{Geo::IP}.  It looks up location and
-network information by IP Address.")
-  (license license:perl-license)))
 
 (define-public perl-io-socket-inet6
  (package

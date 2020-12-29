@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "4f621a2b003e85d480999e4d0630e9dc3de85bc3")
-        (revision 7))
+        (commit "7624ebbae33cf49dded5e9032ed426781c9554f6")
+        (revision 8))
     (package
       (name "guix")
 
@@ -148,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0ks6sdbxk4as4d3jz6jzgn5l476cr4cqxf3imjfgwiy3lk4502sj"))
+                  "0dd28df278fzlwxk1c0n86q98q8q8cj6g87as8v4rymyprf4gyjc"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -680,7 +681,7 @@ features of Stow with some extensions.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.14.2.1")
+    (version "4.16.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -688,7 +689,7 @@ features of Stow with some extensions.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1nmck2fq9h85fgs3zhh6w1avlw5y16cbz5khd459ry3jfd5w4f8i"))))
+                "1k6ank2aad7r503w12m6m494mxr6iccj52wqhwbc94pwxsf34mw3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -712,6 +713,7 @@ features of Stow with some extensions.")
        ("nss" ,nss)
        ("nspr" ,nspr)
        ("libarchive" ,libarchive)
+       ("libgcrypt" ,libgcrypt)
        ("file" ,file)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
@@ -1026,8 +1028,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "9128f96ced76bd01c87fb766c3b30dc3b2100d42")
-        (revision "11"))
+  (let ((commit "c33d3f570bd32afc2def410067db6b92ad6aff0a")
+        (revision "12"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1038,7 +1040,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1fgc6kjnqjc9n9mz9ki7ap772n3c1fahd0m6nxqk7a45yi5y5car"))
+                  "01mr211s1nb9hhm6784ibp87g59wifajcclbss3ry7i3qsbvg22j"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1068,6 +1070,7 @@ environments.")
                     (wrap-program file
                       `("PATH" ":" prefix
                         (,bin
+                         ,(dirname (which "nproc")) ; used by the agent
                          ;; Support building without sqitch as an input, as it
                          ;; can't be cross-compiled yet
                          ,@(or (and=> (assoc-ref inputs "sqitch")

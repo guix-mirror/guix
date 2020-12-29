@@ -39,7 +39,7 @@
 (define-public radicale
   (package
     (name "radicale")
-    (version "3.0.4")
+    (version "3.0.6")
     (source
      (origin
        ;; There are no tests in the PyPI tarball.
@@ -49,7 +49,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hj9mmhrj32mzhxlnjcfijb7768cyjsn603nalp54clgb2gkmvw8"))))
+        (base32 "1xlsvrmx6jhi71j6j8z9sli5vwxasivzjyqf8zq8r0l5p7350clf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)

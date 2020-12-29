@@ -81,7 +81,25 @@
           (lambda _
             ;; remove option that is not supported by gcc any more
             (substitute* "configure" ((" -fforce-mem") ""))
-            #t)))))
+            #t))
+        (add-after 'install 'install-pkg-config
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (pkg-config-dir (string-append out "/lib/pkgconfig")))
+              (mkdir-p pkg-config-dir)
+              (with-output-to-file (string-append pkg-config-dir "/mad.pc")
+                (lambda _
+                  (format #t
+                          "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: libmad~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lmad~@
+                           Cflags: -I${includedir}~%"
+                          out ,version)))))))))
    (synopsis "MPEG audio decoder")
    (description
     "MAD (MPEG Audio Decoder) supports MPEG-1 and the MPEG-2 extension to
@@ -106,6 +124,27 @@ This package contains the library.")
              (base32
               "0lb1w883dc46dajbdvnia5870brl5lvnlk7g7y58y9wpg5p4znk3"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'install-pkg-config
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (pkg-config-dir (string-append out "/lib/pkgconfig")))
+              (mkdir-p pkg-config-dir)
+              (with-output-to-file (string-append pkg-config-dir "/id3tag.pc")
+                (lambda _
+                  (format #t
+                          "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: libid3tag~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lid3tag -lz~@
+                           Cflags: -I${includedir}~%"
+                          out ,version)))))))))
    (inputs `(("zlib" ,zlib)))
    (synopsis "Library for reading ID3 tags")
    (description
@@ -325,7 +364,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.26.3")
+    (version "1.26.4")
     (source
      (origin
        (method url-fetch)
@@ -335,7 +374,7 @@ This package contains the binary.")
                    "https://www.mpg123.org/download/mpg123-"
                    version ".tar.bz2")))
        (sha256
-        (base32 "0vkcfdx0mqq6lmpczsmpa2jsb0s6dryx3i7gvr32i3w9b9w9ij9h"))))
+        (base32 "0m34hjssgslcsns8lj1n7f32iyiw547qgba9j2r6d9pp1ma92688"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs
@@ -389,6 +428,27 @@ use with CD-recording software).")
               (base32
                "07nsn5sy3a8xbmw1bidxnsj5fj6kg9ai04icmqw40ybkp353dznx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-config-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-config-dir)
+               (with-output-to-file (string-append pkg-config-dir "/lame.pc")
+                 (lambda _
+                   (format #t
+                           "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: lame~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lmp3lame~@
+                           Cflags: -I${includedir}~%"
+                           out ,version)))))))))
     (home-page "http://lame.sourceforge.net/")
     (synopsis "MPEG Audio Layer III (MP3) encoder")
     (description "LAME is a high quality MPEG Audio Layer III (MP3) encoder.")

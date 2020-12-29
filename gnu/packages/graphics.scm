@@ -619,7 +619,7 @@ OpenGL 3.  It is retained for use with older computers.")
 (define-public goxel
   (package
     (name "goxel")
-    (version "0.10.6")
+    (version "0.10.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -628,7 +628,7 @@ OpenGL 3.  It is retained for use with older computers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wmxy5wfk1xrqgz0y0zcr4vkddylqc70cv4vzk117x6whjnldsm3"))))
+                "1v6m6nhl1if8ik5bmblhq46bip6y2qz18a04s8a9awb4yh9ls039"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f

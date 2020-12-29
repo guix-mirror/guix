@@ -1748,7 +1748,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha13")
+    (version "2.0.0-alpha14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1757,12 +1757,17 @@ your own lessons.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12il5xzgg53ick5k4ivvvqdagld5pgigiiz6s829kkdaymqr7vx5"))))
+                "1wsvni2aa9h2bpndlic7ckch4n600ahwm56n521y5vxivwjx3jmj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
+         (replace 'check (lambda _ (invoke "bin/pte_tests")))
+         (add-after 'unpack 'fix-pugixml-detection
+           (lambda _
+             (substitute* "cmake/third_party/pugixml.cmake"
+               (("add_library") "#add_library"))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
@@ -2406,8 +2411,25 @@ main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib")))
                (with-directory-excursion lib
-                 (symlink "libportmidi.so" "libporttime.so")))
-             #t)))))
+                 (symlink "libportmidi.so" "libporttime.so")))))
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-config-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-config-dir)
+               (with-output-to-file (string-append pkg-config-dir "/portmidi.pc")
+                 (lambda _
+                   (format #t
+                           "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: portmidi~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lportmidi~@
+                           Cflags: -I${includedir}~%"
+                           out ,version)))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)))
     (native-inputs
@@ -2456,7 +2478,7 @@ using a system-independent interface.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2464,7 +2486,7 @@ using a system-independent interface.")
              "https://github.com/wbsoft/frescobaldi/releases/download/v"
              version "/frescobaldi-" version ".tar.gz"))
        (sha256
-        (base32 "084vxzvxnxl5rrhllincnh6krsyi03c8p0452ppzmn9c52wgyb2w"))))
+        (base32 "1hg9yc8kj445fjsby92g3qf50crcl1pb079zfma18sb7ycv50zww"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
@@ -4561,14 +4583,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "20.06")
+    (version "20.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
                            version "/rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "1i9x9rkqwwdrk77xl5ra8i48cjirbc7fbisnj0nnclccwaq0wk6r"))))
+        (base32 "0nqw2caxmv6mqh485wzvywa024yvi18q87sd4dw9b2l5qnpq8rl8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")

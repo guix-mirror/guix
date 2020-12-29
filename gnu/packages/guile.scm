@@ -578,14 +578,14 @@ specification.  These are the main features:
   (package
     (inherit guile-json-3)
     (name "guile-json")
-    (version "4.3.2")
+    (version "4.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0255c7f053z4p9mqzhpxwbfx3y47j9nfvlgnm8xasdclyzmjl9y2"))))))
+                "1xq4f59rdk28xy4sdn6amy07aa19ikrk48iily3kfhwpkbg6v9jj"))))))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json-4))
@@ -846,6 +846,34 @@ Guile's foreign function interface.")
 in-memory LZMA compression and decompression.  The bindings are written in
 pure Scheme by using Guile's foreign function interface.")
     (home-page "https://notabug.org/guile-lzlib/guile-lzlib")
+    (license license:gpl3+)))
+
+(define-public guile-zstd
+  (package
+    (name "guile-zstd")
+    (version "0.1.1")
+    (home-page "https://notabug.org/guile-zstd/guile-zstd")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c8l7829b5yx8wdc0mrhzjfwb6h9hb7cd8dfxcr71a7vlsi86310"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-3.0)))
+    (inputs
+     `(("zstd" ,zstd "lib")
+       ("guile" ,guile-3.0)))
+    (synopsis "GNU Guile bindings to the zstd compression library")
+    (description
+     "This package provides a GNU Guile interface to the zstd (``zstandard'')
+compression library.")
     (license license:gpl3+)))
 
 ;;; guile.scm ends here

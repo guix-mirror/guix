@@ -297,7 +297,7 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.19.1")
+    (version "3.19.2")
     ;; TODO: Move the following source field to the cmake-bootstrap package in
     ;; the next rebuild cycle.
     (source (origin
@@ -307,7 +307,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1fisi9rlijw9wd0yjzk1c6j7ljnb2yiq5iqnrz6m1xkflyinw9hx"))
+                "1w67w0ak6vf37501dlz9yhnzlvvpw1w10n2nm3hi7yxp4cxzvq73"))
               (snippet
                (match (origin-snippet (package-source cmake-bootstrap))
                  ((_ _ exp ...)

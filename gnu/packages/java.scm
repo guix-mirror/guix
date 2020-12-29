@@ -2426,14 +2426,14 @@ new Date();"))
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
-    (version "1.10.8")
+    (version "1.10.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "066k2isig5xm70cihj9p73hkp5w7h5zbfqz5kxb6cwr9cb86xl2k"))
+                "0x78434q5ab193ma7ys27m9kwpdgrfzqj00hrf1szwcgk0lzw01z"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -10843,7 +10843,7 @@ algorithms and xxHash hashing algorithm.")
 (define-public java-bouncycastle
   (package
     (name "java-bouncycastle")
-    (version "1.60")
+    (version "1.67")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10853,7 +10853,7 @@ algorithms and xxHash hashing algorithm.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m921a1ac2dl797ffzg3d4j97ch308f25spb4jgsj3npfmmys5gb"))
+                "1449q7fyh03s1q0bqljcrhgacwcyqmg2bbvb3z084avgapwsainz"))
               (modules '((guix build utils)))
               (snippet
                '(begin

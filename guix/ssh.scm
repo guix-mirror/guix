@@ -54,8 +54,7 @@
             retrieve-files*
             remote-store-host
 
-            report-guile-error
-            report-module-error))
+            report-guile-error))
 
 ;;; Commentary:
 ;;;
@@ -206,6 +205,40 @@ REPL."
         ;; <https://bugs.gnu.org/26976>.)
         (close-inferior inferior)))))
 
+(define (remote-run exp session)
+  "Run EXP in a new process in SESSION and return a remote pipe.
+
+Unlike 'inferior-remote-eval', this is used for side effects and may
+communicate over stdout/stdin as it sees fit.  EXP is typically a loop that
+processes data from stdin and/or sends data to stdout.  The assumption is that
+EXP never returns or calls 'primitive-exit' when it's done."
+  (define pipe
+    (open-remote-pipe* session OPEN_BOTH
+                       "guix" "repl" "-t" "machine"))
+
+  (match (read pipe)
+    (('repl-version _ ...)
+     #t)
+    ((? eof-object?)
+     (close-port pipe)
+     (raise (formatted-message
+             (G_ "failed to start 'guix repl' on '~a'")
+             (session-get session 'host)))))
+
+  ;; Disable buffering so 'guix repl' does not read more than what's really
+  ;; sent to itself.
+  (write '(setvbuf (current-input-port) 'none) pipe)
+  (force-output pipe)
+
+  ;; Read the reply and subsequent newline.
+  (read pipe) (get-u8 pipe)
+
+  (write exp pipe)
+  (force-output pipe)
+
+  ;; From now on, we stop following the inferior protocol.
+  pipe)
+
 (define* (remote-daemon-channel session
                                 #:optional
                                 (socket-name
@@ -261,11 +294,7 @@ REPL."
              (_
               (primitive-exit 1)))))))
 
-  (open-remote-pipe* session OPEN_BOTH
-                     ;; Sort-of shell-quote REDIRECT.
-                     "guile" "-c"
-                     (object->string
-                      (object->string redirect))))
+  (remote-run redirect session))
 
 (define* (connect-to-remote-daemon session
                                    #:optional
@@ -288,11 +317,6 @@ can be written."
   ;; consumed.
   (define import
     `(begin
-       (eval-when (load expand eval)
-         (unless (resolve-module '(guix) #:ensure #f)
-           (write `(module-error))
-           (exit 7)))
-
        (use-modules (guix) (srfi srfi-34)
                     (rnrs io ports) (rnrs bytevectors))
 
@@ -322,13 +346,10 @@ can be written."
                 (import-paths store (current-input-port))
                 '(success))))
           (lambda args
-            (cons 'error args))))))
+            (cons 'error args))))
+       (primitive-exit 0)))
 
-  (open-remote-pipe session
-                    (string-join
-                     `("guile" "-c"
-                       ,(object->string (object->string import))))
-                    OPEN_BOTH))
+  (remote-run import session))
 
 (define* (store-export-channel session files
                                #:key recursive?)
@@ -338,22 +359,20 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
   ;; remote store.
   (define export
     `(begin
-       (eval-when (load expand eval)
-         (unless (resolve-module '(guix) #:ensure #f)
-           (write `(module-error))
-           (exit 7)))
-
        (use-modules (guix) (srfi srfi-1)
                     (srfi srfi-26) (srfi srfi-34))
 
        (guard (c ((nix-connection-error? c)
                   (write `(connection-error ,(nix-connection-error-file c)
-                                            ,(nix-connection-error-code c))))
+                                            ,(nix-connection-error-code c)))
+                  (primitive-exit 1))
                  ((nix-protocol-error? c)
                   (write `(protocol-error ,(nix-protocol-error-status c)
-                                          ,(nix-protocol-error-message c))))
+                                          ,(nix-protocol-error-message c)))
+                  (primitive-exit 2))
                  (else
-                  (write `(exception))))
+                  (write `(exception))
+                  (primitive-exit 3)))
          (with-store store
            (let* ((files ',files)
                   (invalid (remove (cut valid-path? store <>)
@@ -371,13 +390,10 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
 
              (setvbuf (current-output-port) 'none)
              (export-paths store files (current-output-port)
-                           #:recursive? ,recursive?))))))
+                           #:recursive? ,recursive?)
+             (primitive-exit 0))))))
 
-  (open-remote-input-pipe session
-                          (string-join
-                           `("guile" "-c"
-                             ,(object->string
-                               (object->string export))))))
+  (remote-run export session))
 
 (define (remote-system session)
   "Return the system type as expected by Nix, usually ARCHITECTURE-KERNEL, of
@@ -563,8 +579,6 @@ REMOTE."
   (match sexp
     ((? eof-object?)
      (report-guile-error (remote-store-host remote)))
-    (('module-error . _)
-     (report-module-error (remote-store-host remote)))
     (('connection-error file code . _)
      (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
                   file (remote-store-host remote) (strerror code)))
@@ -623,15 +637,6 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
   (raise-error (G_ "failed to start Guile on remote host '~A'") host
                (=> (G_ "Make sure @command{guile} can be found in
 @code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
-check.")
-                   host)))
-
-(define (report-module-error host)
-  "Report an error about missing Guix modules on HOST."
-  ;; TRANSLATORS: Leave "Guile" untranslated.
-  (raise-error (G_ "Guile modules not found on remote host '~A'") host
-               (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
-own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
 check.")
                    host)))
 

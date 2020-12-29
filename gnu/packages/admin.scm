@@ -107,6 +107,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages mpi)
@@ -515,7 +516,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method git-fetch)
@@ -523,7 +524,7 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "0ylig6g2w4r3qfb16cf922iriqyn64frkzpk87vpga16kclvf08y"))
+        (base32 "1fckfv96vzqjs3lzy0cgwsqv5vh1sxca3fhvgskmnkvr5bq6cia9"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -1343,9 +1344,11 @@ at once based on a Perl regular expression.")
 
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-paths
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/rc"
-                        (("/usr/sbin/sendmail") "sendmail"))
+                        (("/usr/sbin/sendmail")
+                         (string-append (assoc-ref inputs "mailutils")
+                                        "/bin/mail")))
                       #t))
                   (add-after 'unpack 'fix-configure
                     (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -1384,7 +1387,8 @@ at once based on a Perl regular expression.")
     (native-inputs `(("texinfo" ,texinfo)
                      ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
-    (inputs `(("coreutils*" ,coreutils)))
+    (inputs `(("coreutils*" ,coreutils)
+              ("mailutils" ,mailutils)))
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
@@ -1858,7 +1862,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20201113")
+    (version "20201217")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1866,7 +1870,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fmck3zklc328c8nzvfzm2xyh2i8zszzrd4k8kk8q30y4avnc6z1"))))
+                "06rdpfjmij5nni1x2wi1gnalhsza5yxq1viskjm9r11wmsjnxm2a"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2189,13 +2193,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.9.11")
+    (version "2.9.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "1c9ayh61qwasgncmlw7rjx5r4g5n2cpg1d5blgn53zg7xhrx1yc8"))))
+        (base32 "0j1icfqff25zm9sq6j41ipl6gcj3i67mb5bqbjf2f2q1yx6rm8sk"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)

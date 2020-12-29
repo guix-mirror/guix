@@ -569,13 +569,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.14")
+    (version "1.1.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "1fpdj73cgp96xwasdcifxl7q2pr1my2f4vfdjpv771llri3hgfvx"))
+        (base32 "1g62sdzcw3zx4ccky125ciwnzx6z9kwyvskvp7ijmqxqk3nrxjs9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -593,7 +593,8 @@ detection, and lossless compression.")
                        "src/borg/platform/darwin.c"
                        "src/borg/platform/freebsd.c"
                        "src/borg/platform/linux.c"
-                       "src/borg/platform/posix.c"))
+                       "src/borg/platform/posix.c"
+                       "src/borg/platform/syncfilerange.c"))
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
@@ -653,6 +654,7 @@ detection, and lossless compression.")
                         "and not test_access_acl "
                         "and not test_default_acl "
                         "and not test_non_ascii_acl "
+                        "and not test_create_stdin "
                         ;; This test needs the unpackaged pytest-benchmark.
                         "and not benchmark "
                         ;; These tests assume the kernel supports FUSE.
