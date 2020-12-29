@@ -25412,3 +25412,26 @@ hierarchical loggers, custom log levels, arbitrary data fields in log events,
 logging to plaintext, JSON, (rotating) files, memory buffers, and databases, as
 well as email and push notifications.")
     (license license:expat)))
+
+(define-public r-mlr3measures
+  (package
+    (name "r-mlr3measures")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3measures" version))
+              (sha256
+               (base32
+                "106lfaxphz0kh96ddq14hic7wvxjqp871zdp9kkkfk1kwfg35abw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-prroc" ,r-prroc)))
+    (home-page "https://mlr3measures.mlr-org.com/")
+    (synopsis "Performance measures for mlr3")
+    (description "This package implements multiple performance measures for
+supervised learning.  It includes over 40 measures for regression and
+classification.  Additionally, meta information about the performance measures
+can be queried, e.g. what the best and worst possible performances scores
+are.")
+    (license license:lgpl3)))
