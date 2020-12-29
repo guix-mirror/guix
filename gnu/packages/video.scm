@@ -4647,7 +4647,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenVisualCloud/SVT-AV1")
+             (url "https://github.com/AOMediaCodec/SVT-AV1")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4673,7 +4673,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
     (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
 work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
-    (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
+    (home-page "https://github.com/AOMediaCodec/SVT-AV1")
     (license license:bsd-2)))
 
 (define-public svt-vp9
