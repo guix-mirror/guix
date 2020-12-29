@@ -596,7 +596,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
     (let ((target (readlink link)))
       (delete-file link)
       (symlink (string-append target compressed-documentation-extension)
-               link)))
+               (string-append link compressed-documentation-extension))))
 
   (define (has-links? file)
     ;; Return #t if FILE has hard links.
