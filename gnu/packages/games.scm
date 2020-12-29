@@ -10535,14 +10535,14 @@ This package is part of the KDE games module.")
 (define-public kfourinline
   (package
     (name "kfourinline")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kfourinline-" version ".tar.xz"))
       (sha256
-       (base32 "1vprs6dc1ccn3g6k594i9s94xy4b91vzlqjysyc6fqcq2fs54ny3"))))
+       (base32 "0plx3lv35fc8q9svbyl71mms3ji6zn58j306bvm1f8kkgg0x395b"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -10553,7 +10553,6 @@ This package is part of the KDE games module.")
        ("kconfigwidgets" ,kconfigwidgets)
        ("kcoreaddons" ,kcoreaddons)
        ("kcrash" ,kcrash)
-       ("kdelibs4support" ,kdelibs4support)
        ("kdnssd" ,kdnssd)
        ("ki18n" ,ki18n)
        ("kxmlgui" ,kxmlgui)
