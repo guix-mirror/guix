@@ -25460,3 +25460,28 @@ helper functions for functional programming, for printing, to work with
 @code{data.table}, as well as some generally useful @code{R6} classes.  This
 package also supersedes the package @code{BBmisc}.")
     (license license:lgpl3)))
+
+(define-public r-paradox
+  (package
+    (name "r-paradox")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "paradox" version))
+              (sha256
+               (base32
+                "1zv0q411wcwigkf4yggs3w2gz48lvv3jhnrddrv40qih8b70ywi3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-r6" ,r-r6)))
+    (home-page "https://paradox.mlr-org.com/")
+    (synopsis "Define and work with parameter spaces for complex algorithms")
+    (description "With this package it is possible to define parameter spaces,
+constraints and dependencies for arbitrary algorithms, and to program on such
+spaces.  It also includes statistical designs and random samplers.  Objects are
+implemented as @code{R6} classes.")
+    (license license:lgpl3)))
