@@ -23454,11 +23454,10 @@ random number generators.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-rustversion" ,rust-rustversion-0.1))))
     (home-page "https://github.com/gz/rust-cpuid")
-    (synopsis
-     "A library to parse the x86 CPUID instruction, written in rust with no external dependencies. The implementation closely resembles the Intel CPUID manual description. The library does only depend on libcore.")
+    (synopsis "Library to parse the x86 CPUID instruction, written in Rust")
     (description
      "This package provides a library to parse the x86 CPUID instruction,
-written in rust with no external dependencies.  The implementation closely
+written in Rust with no external dependencies.  The implementation closely
 resembles the Intel CPUID manual description.  The library does only depend on
 libcore.")
     (license license:expat)))
