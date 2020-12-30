@@ -4266,3 +4266,44 @@ read-capability.")
      "This project provides a pure Scheme implementation of Protocol Buffers,
 including parsing and code generation.")
     (license license:gpl3+)))
+
+(define-public guile-shapefile
+  (package
+    (name "guile-shapefile")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/HugoNikanor/guile-shapefile")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1zvrpc8bshw9w0vhdpmhv00j07mzsdyg2f9hfabr83v08zhfi8ml"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-pre-generated-docs
+           (lambda _
+             (delete-file-recursively "docs")
+             #t))
+         (add-after 'install 'install-info-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (doc (string-append share "/doc/" ,name "-" ,version))
+                    (info (string-append share "/info/"))
+                    (makeinfo (string-append (assoc-ref %build-inputs "texinfo")
+                                             "/bin/makeinfo")))
+               (invoke makeinfo "guile-shapefile.texi" "-o" info)
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (home-page "https://github.com/HugoNikanor/guile-shapefile")
+    (synopsis "Parse shapefiles in Guile")
+    (description
+     "Guile Shapefile is a Guile library for reading shapefiles.")
+    (license license:expat)))
