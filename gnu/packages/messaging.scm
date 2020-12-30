@@ -738,41 +738,39 @@ authentication.")
            #t))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("check" ,check-0.14)
-       ("intltool" ,intltool)
+     `(("autoconf" ,autoconf) ;; For bootstrap
+       ("automake" ,automake) ;; For bootstrap
+       ("check" ,check)
        ("gconf" ,gconf)
-       ("python" ,python-2)
-       ("doxygen" ,doxygen)
-       ;; For bootstrapping after applying pidgin-libnm.patch.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("intltool" ,intltool)
+       ("libtool" ,libtool) ;; For bootstrap
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("libgcrypt" ,libgcrypt)
-       ("gnutls" ,gnutls)
+     `(("avahi" ,avahi)
        ("cyrus-sasl" ,cyrus-sasl)
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
-       ("python2-dbus" ,python2-dbus)
+       ;; farstream
+       ("gnutls" ,gnutls)
+       ;; gstreamer
+       ("gtk+" ,gtk+-2)
+       ;; gtkspell
+       ;; libgadu
+       ("libgcrypt" ,libgcrypt)
+       ("libice" ,libice)
        ("libidn" ,libidn)
        ("libltdl" ,libltdl)
+       ("libsm" ,libsm)
+       ;; libxephyr
        ("libxml2" ,libxml2)
-       ;; TODO: gstreamer: patches needed to support gstreamer-1.0 or later
-       ;; TODO: farstream
-       ;; TODO: meanwhile
-       ;; TODO: gtkspell
-       ;; TODO: libxephyr
-       ;; TODO: libgadu
+       ("libxscrnsaver" ,libxscrnsaver)
        ("libxslt" ,libxslt)
-       ("avahi" ,avahi)
+       ;; meanwhile
        ("ncurses" ,ncurses)
        ("network-manager" ,network-manager)
+       ("python2-dbus" ,python2-dbus)
        ("sqlite" ,sqlite)
-       ("libice" ,libice)
-       ("libsm" ,libsm)
-       ("libxscrnsaver" ,libxscrnsaver)
        ("startup-notification" ,startup-notification)))
     (arguments
      `(#:configure-flags
