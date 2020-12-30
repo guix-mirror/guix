@@ -226,6 +226,49 @@ be able to view it naturally and easily.")))
 command-line interfaces.  ")
     (license license:expat)))
 
+(define-public js-xmldom-sre
+  ;; This commit corresponds to the untagged release 0.1.32
+  (let ((commit "3c79325bc2c9e5d27e3ba44b680fa8c5dd6a381d")
+        (revision "1"))
+    (package
+      (name "js-xmldom-sre")
+      (version "0.1.32")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zorkow/xmldom/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0a88v0id3mjflpvjqhv8a28br0xvaaszxbf7alg6pxfbnkb69yyq"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (chdir (assoc-ref %build-inputs "source"))
+           (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
+                                         "/bin/esbuild"))
+                 (target (string-append %output "/share/javascript/xmldom-sre")))
+             (invoke esbuild
+                     "--bundle"
+                     "--minify"
+                     "--platform=node"
+                     (string-append "--outfile=" target "/dom-parser.min.js")
+                     "dom-parser.js")))))
+      (native-inputs
+       `(("esbuild" ,esbuild)))
+      (home-page "https://github.com/zorkow/xmldom/")
+      (synopsis "DOM parser and XML serializer")
+      (description "This is a fork of the xmldom library.  It allows the use
+of wicked-good-xpath together with xmldom.")
+      ;; One of these licenses may be selected.
+      (license (list license:expat
+                     license:lgpl2.0)))))
+
 (define-public js-respond
   (package
     (name "js-respond")
