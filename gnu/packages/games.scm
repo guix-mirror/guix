@@ -11128,14 +11128,14 @@ This package is part of the KDE games module.")
 (define-public killbots
   (package
     (name "killbots")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/killbots-" version ".tar.xz"))
        (sha256
-        (base32 "1qi86q7diw7glkp9v33yim9nhz2da4balbxa1hjrdgjdv8zdbxbm"))))
+        (base32 "1296gww42nwnai7y6m2qpjqpyc30p7z9chfv5rv0n48jvdhva88y"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
