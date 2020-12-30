@@ -18926,7 +18926,7 @@ other crates to create safe wrappers around Oniguruma.")
 (define-public rust-once-cell-1
   (package
     (name "rust-once-cell")
-    (version "1.4.1")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -18935,7 +18935,7 @@ other crates to create safe wrappers around Oniguruma.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ba56vr8n85xgajnn78pg6iag4inwil3mqg90wi5jaz6xzkm23i6"))))
+         "183zs1dbmsv24mkafjypf9qwjrx46an58vb004a162l113sl3g8k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
