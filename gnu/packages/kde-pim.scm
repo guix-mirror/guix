@@ -617,14 +617,14 @@ functions for accessing calendar data using the kcalcore API.")
 (define-public kdav
   (package
     (name "kdav")
-    (version "20.04.1")
+    (version "20.04.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kdav-" version ".tar.xz"))
        (sha256
-        (base32 "10syhwdlx36yip07yylzir8ig8arm1i868f2j6xpkwhxblrprlxk"))))
+        (base32 "0445gl4xm0h39igkxgb6vmq5iaa04wkgrgbs7nfd0zwngk8xaidn"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
