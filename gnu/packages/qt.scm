@@ -2294,15 +2294,15 @@ itself.")
 (define-public qscintilla
   (package
     (name "qscintilla")
-    (version "2.10.8")
+    (version "2.11.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/pyqt/QScintilla2/"
-                                  "QScintilla-" version "/QScintilla_gpl-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://www.riverbankcomputing.com/static"
+                                  "/Downloads/QScintilla/" version
+                                  "/QScintilla-" version ".tar.gz"))
               (sha256
                (base32
-                "1swjr786w04r514pry9pn32ivza4il1cg35s60qy39cwc175pka6"))))
+                "19r0vpqb4m9bqwxmjp9w6x0hgahkrg7zryk78hwgplj7vdbn0d77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
