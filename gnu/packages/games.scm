@@ -10581,14 +10581,14 @@ This package is part of the KDE games module.")
 (define-public kblackbox
   (package
     (name "kblackbox")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kblackbox-" version ".tar.xz"))
       (sha256
-       (base32 "1x42sfpf75c6mavwkc7g7dm11y9s5dpj8igphly5kvm0pajqby0n"))))
+       (base32 "0la5w44b0gl72g3wfp0pw8gwnm287lh7nd9k5ikpszw5nn49db0h"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
