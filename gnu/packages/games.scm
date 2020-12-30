@@ -10462,14 +10462,14 @@ This package is part of the KDE games module.")
 (define-public kgoldrunner
   (package
     (name "kgoldrunner")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version "/src/kgoldrunner-"
-                           version ".tar.xz"))
+      (uri (string-append "mirror://kde/stable/release-service/" version
+                          "/src/kgoldrunner-" version ".tar.xz"))
       (sha256
-       (base32 "16rcvq796r3asz4v4ap75xvwnxd3dd2nsq5r9vxvzl6rrf1w9bj4"))))
+       (base32 "17ra5d3r9ajy2inj17gwd5xphzhvbzx5kpvdwyj6msx4dd9wxgfi"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
