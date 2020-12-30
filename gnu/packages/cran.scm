@@ -25493,3 +25493,29 @@ scalability and larger datasets by supporting parallelization and out-of-memory
 data-backends like databases.  While @code{mlr3} focuses on the core
 computational operations, add-on packages provide additional functionality.")
     (license license:lgpl3)))
+
+(define-public r-mlr3learners
+  (package
+    (name "r-mlr3learners")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3learners" version))
+              (sha256
+               (base32
+                "1wxlpzz3hpkn77n4ag1v868dmp140j1pmrhynsv5xfgk9fg0w7ri"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-mlr3" ,r-mlr3)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://mlr3learners.mlr-org.com/")
+    (synopsis "Recommended Learners for @code{mlr3}")
+    (description "@code{mlr3learners} extends @code{mlr3} and @code{mlr3proba}
+with interfaces to essential machine learning packages on CRAN.  This includes,
+but is not limited to: (penalized) linear and logistic regression, linear and
+quadratic discriminant analysis, k-nearest neighbors, naive Bayes, support
+vector machines, and gradient boosting.")
+    (license license:lgpl3)))
