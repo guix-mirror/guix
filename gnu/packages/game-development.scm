@@ -277,14 +277,14 @@ PCM data.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.12")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h8yvk7154kd8zdfa9nqy73blrjq2x19kv305jcnwlmm09vvss59"))))
+                "1vcvf04qqzs3q8kaild2x7qvkwc6bwzfsisb78147b8z747j7hj0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -298,7 +298,7 @@ PCM data.")
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
-              ("guile" ,guile-2.2)
+              ("guile" ,guile-3.0)
               ("libmicrohttpd" ,libmicrohttpd)
               ("ncurses" ,ncurses)
               ("sdl" ,sdl)
