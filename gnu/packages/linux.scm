@@ -903,7 +903,8 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                       %default-extra-linux-options)))
 
-;; Linux-Libre-LTS means the *current* long-term support version of Linux-Libre.
+;; Linux-Libre-LTS points to the *newest* released long-term support version of
+;; Linux-Libre.
 ;; Reference: https://jxself.org/linux-libre/
 
 (define-public linux-libre-lts-version         linux-libre-5.10-version)
