@@ -11288,14 +11288,14 @@ This package is part of the KDE games module.")
 (define-public kreversi
   (package
     (name "kreversi")
-    (version "19.08.3")
+    (version "20.08.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
-"/src/kreversi-" version ".tar.xz"))
+      (uri (string-append "mirror://kde/stable/release-service/" version
+                          "/src/kreversi-" version ".tar.xz"))
       (sha256
-       (base32 "0b6q8df2bawgnrswhq59z37axad0q3zpvvzxdds7sz1lw505xw9h"))))
+       (base32 "0d3y072q61xcik9lf0pz0c9njvarwlvf6hqv5fp5jyqaf2902pmi"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
