@@ -10622,14 +10622,14 @@ This package is part of the KDE games module.")
 (define-public knetwalk
   (package
     (name "knetwalk")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/knetwalk-" version ".tar.xz"))
       (sha256
-       (base32 "1i340salzgqdw8y33wrrydmpgx3pvwf5wrbljlh67cjf6s4csx7d"))))
+       (base32 "060kj06vpigdy570izsjfgnmqqrpmb8bkr9arqc109hg3avl5wjz"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
