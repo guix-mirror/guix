@@ -9482,84 +9482,82 @@ are pretty much the same (and SLIME served as the principle inspiration for
 CIDER).")
     (license license:gpl3+)))
 
-;; There hasn't been a tag or release since 2016, so we take the latest
-;; commit.
 (define-public emacs-sly
-  (let ((commit "68561f1b7b66fa0240766ece836bb04da31ea17d")
-        ;; Update together with sbcl-slynk.
-        (revision "7"))
-    (package
-      (name "emacs-sly")
-      (version (git-version "1.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/joaotavora/sly")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1xwx537dhgclngi6b0faf320i8pnac9309wvmk6z2g6dm3v652ds"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (arguments
-       `(#:include (cons* "^contrib\\/" "^lib\\/" "^slynk\\/" %default-include)
-         #:phases
-         ;; The package provides autoloads.
-         (modify-phases %standard-phases
-           (delete 'make-autoloads)
-           (add-before 'install 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (info-dir (string-append out "/share/info"))
-                      (doc-dir (string-append out "/share/doc/"
-                                              ,name "-" ,version))
-                      (doc-files '(;; "doc/sly-refcard.pdf" ; See sly-refcard.pdf below.
-                                   "README.md" "NEWS.md" "PROBLEMS.md"
-                                   "CONTRIBUTING.md")))
-                 (with-directory-excursion "doc"
-                   (substitute* "Makefile"
-                     (("infodir=/usr/local/info")
-                      (string-append "infodir=" info-dir))
-                     ;; Don't rebuild contributors.texi since we are not in
-                     ;; the git repo.
-                     (("contributors.texi: Makefile texinfo-tabulate.awk")
-                      "contributors.texi:"))
-                   (invoke "make" "html/index.html")
-                   (invoke "make" "sly.info")
-                   ;; TODO: We need minimal texlive with "preprint" package
-                   ;; (for fullpage.sty).  (invoke "make" "sly-refcard.pdf")
-                   (install-file "sly.info" info-dir)
-                   (copy-recursively "html" (string-append doc-dir "/html")))
-                 (for-each (lambda (f)
-                             (install-file f doc-dir)
-                             (delete-file f))
-                           doc-files)
-                 (delete-file-recursively "doc")
-                 #t))))))
-      (home-page "https://github.com/joaotavora/sly")
-      (synopsis "Sylvester the Cat's Common Lisp IDE")
-      (description
-       "SLY is Sylvester the Cat's Common Lisp IDE.  SLY is a fork of SLIME, and
+  ;; Update together with sbcl-slynk.
+  (package
+    (name "emacs-sly")
+    (version "1.0.42")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joaotavora/sly")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "10l867c4hgcpiajcfkz9g9vabp7y4bcgy51la6n9pqxrlg1fs455"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:include (cons* "^contrib\\/" "^lib\\/" "^slynk\\/" %default-include)
+       #:phases
+       ;; The package provides autoloads.
+       (modify-phases %standard-phases
+         (delete 'make-autoloads)
+         (add-before 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info-dir (string-append out "/share/info"))
+                    (doc-dir (string-append out "/share/doc/"
+                                            ,name "-" ,version))
+                    (doc-files '( ;; "doc/sly-refcard.pdf" ; See sly-refcard.pdf below.
+                                 "README.md" "NEWS.md" "PROBLEMS.md"
+                                 "CONTRIBUTING.md")))
+               (with-directory-excursion "doc"
+                 (substitute* "Makefile"
+                   (("infodir=/usr/local/info")
+                    (string-append "infodir=" info-dir))
+                   ;; Don't rebuild contributors.texi since we are not in
+                   ;; the git repo.
+                   (("contributors.texi: Makefile texinfo-tabulate.awk")
+                    "contributors.texi:"))
+                 (invoke "make" "html/index.html")
+                 (invoke "make" "sly.info")
+                 ;; TODO: We need minimal texlive with "preprint" package
+                 ;; (for fullpage.sty).  (invoke "make" "sly-refcard.pdf")
+                 (install-file "sly.info" info-dir)
+                 (copy-recursively "html" (string-append doc-dir "/html")))
+               (for-each (lambda (f)
+                           (install-file f doc-dir)
+                           (delete-file f))
+                         doc-files)
+               (delete-file-recursively "doc")
+               #t))))))
+    (home-page "https://github.com/joaotavora/sly")
+    (synopsis "Sylvester the Cat's Common Lisp IDE")
+    (description
+     "SLY is Sylvester the Cat's Common Lisp IDE.  SLY is a fork of SLIME, and
 contains the following improvements over it:
 
 @enumerate
-@item Completely redesigned REPL based on Emacs's own full-featured
-  @code{comint.el}.
-@item Live code annotations via a new @code{sly-stickers} contrib.
-@item Consistent interactive button interface.  Everything can be copied to
-  the REPL.
-@item Multiple inspectors with independent history.
+@item A full-featured REPL based on Emacs's @code{comint.el}.  Everything
+can be copied to the REPL;
+@item Stickers, or live code annotations that record values as code traverses them.
+@item Flex-style completion out-of-the-box, using Emacs's completion API.
+Company, Helm, and other supported natively, no plugin required;
+@item An interactive Trace Dialog;
+@item Multiple inspectors and multiple REPLs, with independent history.
 @item Regexp-capable @code{M-x sly-apropos}.
-@item Contribs are first class SLY citizens and enabled by default.
-@item Use ASDF to loads contribs on demand.
+@item Cleanly ASDF-loaded by default, including contribs, enabled out-of-the-box;
+@item \"Presentations\" replaced by interactive backreferences, which
+highlight the object and remain stable throughout the REPL session;
 @end enumerate
 
 SLY tracks SLIME's bugfixes and all its familiar features (debugger, inspector,
-xref, etc...) are still available, but with better integration.")
-      (license license:gpl3+))))
+xref, etc.) are still available, but with better integration.")
+    (license license:gpl3+)))
 
 (define-public emacs-sly-quicklisp
   (let ((commit "01ebe3976a244309f2e277c09206831135a0b66c")
