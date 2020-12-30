@@ -25519,3 +25519,31 @@ but is not limited to: (penalized) linear and logistic regression, linear and
 quadratic discriminant analysis, k-nearest neighbors, naive Bayes, support
 vector machines, and gradient boosting.")
     (license license:lgpl3)))
+
+(define-public r-bbotk
+  (package
+    (name "r-bbotk")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bbotk" version))
+       (sha256
+        (base32
+         "06iz6gyymcxkbjiw049v1dk3vjfni646z247q08i2s0x59sqfqxv"))))
+    (properties `((upstream-name . "bbotk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-lgr" ,r-lgr)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://bbotk.mlr-org.com")
+    (synopsis "Black-Box Optimization Toolkit")
+    (description "This package provides a common framework for optimization of
+black-box functions for other packages, e.g. @code{mlr3}.  It offers various
+optimization methods e.g. grid search, random search and generalized simulated
+annealing.")
+    (license license:lgpl3)))
