@@ -316,78 +316,57 @@ Font Format (WOFF).")
     (license license:expat)))
 
 (define-public fontconfig
-  (package
-   (name "fontconfig")
-   (version "2.13.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                   "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
-                   version ".tar.bz2"))
-            (patches (search-patches "fontconfig-hurd-path-max.patch"))
-            (sha256 (base32
-                     "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
-   (outputs '("out" "doc"))
-   (build-system gnu-build-system)
-   ;; In Requires or Requires.private of fontconfig.pc.
-   (propagated-inputs `(("expat" ,expat)
-                        ("freetype" ,freetype)
-                        ("libuuid" ,util-linux "lib")))
-   (inputs
-    ;; We use to use 'gs-fonts' but they are not recognized by newer versions
-    ;; of Pango, causing many applications to fail to find fonts otherwise.
-    `(("font-dejavu" ,font-dejavu)))
-   (native-inputs
-    `(("gperf" ,gperf)
-      ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:configure-flags
-      (list "--with-cache-dir=/var/cache/fontconfig"
-            ;; register the default fonts
-            (string-append "--with-default-fonts="
-                           (assoc-ref %build-inputs "font-dejavu")
-                           "/share/fonts")
+  (hidden-package
+   (package
+     (name "fontconfig-minimal")
+     (version "2.13.1")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append
+                     "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
+                     version ".tar.bz2"))
+               (patches (search-patches "fontconfig-hurd-path-max.patch"))
+               (sha256 (base32
+                        "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
+     (build-system gnu-build-system)
+     ;; In Requires or Requires.private of fontconfig.pc.
+     (propagated-inputs `(("expat" ,expat)
+                          ("freetype" ,freetype)
+                          ("libuuid" ,util-linux "lib")))
+     (inputs
+      ;; We use to use 'gs-fonts' but they are not recognized by newer versions
+      ;; of Pango, causing many applications to fail to find fonts otherwise.
+      `(("font-dejavu" ,font-dejavu)))
+     (native-inputs
+      `(("gperf" ,gperf)
+        ("pkg-config" ,pkg-config)))
+     (arguments
+      `(#:configure-flags
+        (list "--disable-docs"
+              "--with-cache-dir=/var/cache/fontconfig"
+              ;; register the default fonts
+              (string-append "--with-default-fonts="
+                             (assoc-ref %build-inputs "font-dejavu")
+                             "/share/fonts")
 
-            ;; Register fonts from user and system profiles.
-            (string-append "--with-add-fonts="
-                           "~/.guix-profile/share/fonts,"
-                           "/run/current-system/profile/share/fonts")
+              ;; Register fonts from user and system profiles.
+              (string-append "--with-add-fonts="
+                             "~/.guix-profile/share/fonts,"
+                             "/run/current-system/profile/share/fonts")
 
-            ;; python is not actually needed
-            "PYTHON=false")
-      #:phases
-      (modify-phases %standard-phases
-        (replace 'install
-          (lambda _
-            ;; Don't try to create /var/cache/fontconfig.
-            (invoke "make" "install"
-                    "fc_cachedir=$(TMPDIR)"
-                    "RUN_FC_CACHE_TEST=false")))
-        (add-after 'install 'move-man-sections
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
-            ;; "out" for convenience.
-            (let ((out (assoc-ref outputs "out"))
-                  (doc (assoc-ref outputs "doc")))
-              (for-each (lambda (section)
-                          (let ((source (string-append out "/share/man/"
-                                                       section))
-                                (target (string-append doc "/share/man/"
-                                                       section)))
-                            (copy-recursively source target)
-                            (delete-file-recursively source)))
-                        '("man3" "man5"))
-              #t)))
-        (add-after 'install 'remove-pdf-files
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; By default PDF versions of the user and development manuals are
-            ;; installs but they bring nothing useful.  Remove them.
-            (let ((doc (assoc-ref outputs "doc")))
-              (for-each delete-file (find-files doc "\\.pdf$"))
-              #t))))))
-   (synopsis "Library for configuring and customizing font access")
-   (description
-    "Fontconfig can discover new fonts when installed automatically;
+              ;; python is not actually needed
+              "PYTHON=false")
+        #:phases
+        (modify-phases %standard-phases
+          (replace 'install
+            (lambda _
+              ;; Don't try to create /var/cache/fontconfig.
+              (invoke "make" "install"
+                      "fc_cachedir=$(TMPDIR)"
+                      "RUN_FC_CACHE_TEST=false"))))))
+     (synopsis "Library for configuring and customizing font access")
+     (description
+      "Fontconfig can discover new fonts when installed automatically;
 perform font name substitution, so that appropriate alternative fonts can
 be selected if fonts are missing;
 identify the set of fonts required to completely cover a set of languages;
@@ -395,10 +374,44 @@ have GUI configuration tools built as it uses an XML-based configuration file;
 efficiently and quickly find needed fonts among the set of installed fonts;
 be used in concert with the X Render Extension and FreeType to implement
 high quality, anti-aliased and subpixel rendered text on a display.")
-   ; The exact license is more X11-style than BSD-style.
-   (license (license:non-copyleft "file://COPYING"
-                       "See COPYING in the distribution."))
-   (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
+                                        ; The exact license is more X11-style than BSD-style.
+     (license (license:non-copyleft "file://COPYING"
+                                    "See COPYING in the distribution."))
+     (home-page "https://www.freedesktop.org/wiki/Software/fontconfig"))))
+
+;;; The documentation of fontconfig is built in a separate package, as it
+;;; causes a dramatic increase in the size of the closure of fontconfig.  This
+;;; is intentionally named 'fontconfig', as it's intended as the user-facing
+;;; fontconfig package.
+(define-public fontconfig-with-documentation
+  (package
+    (inherit fontconfig)
+    (name "fontconfig")
+    (outputs (cons "doc" (package-outputs fontconfig)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments fontconfig)
+       ((#:configure-flags configure-flags)
+        `(delete "--disable-docs" ,configure-flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'install 'move-man-sections
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
+               ;; "out" for convenience.
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                 (for-each (lambda (section)
+                             (let ((source (string-append out "/share/man/"
+                                                          section))
+                                   (target (string-append doc "/share/man/"
+                                                          section)))
+                               (copy-recursively source target)
+                               (delete-file-recursively source)))
+                           '("man3" "man5")))))))))
+    (native-inputs
+     (append (package-native-inputs fontconfig)
+             `(("docbook-utils" ,docbook-utils))))
+    (properties (alist-delete 'hidden? (package-properties fontconfig)))))
 
 (define-public t1lib
   (package
