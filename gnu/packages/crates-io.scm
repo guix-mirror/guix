@@ -24328,6 +24328,27 @@ for constructing a Message Authentication Code (MAC).")
 overloading without macros in Rust.")
     (license license:expat)))
 
+(define-public rust-portpicker-0.1
+  (package
+    (name "rust-portpicker")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "portpicker" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fgb5pdayxy5nlx1lh60r7gx7wx45zza802w8hwhkq3gq42psjav"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://github.com/Dentosal/portpicker-rs")
+    (synopsis "Pick a free unused port")
+    (description
+     "This crate provides picks a free port, that is unused on both TCP and
+UDP.")
+    (license license:unlicense)))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
