@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7718,3 +7719,32 @@ helpers to setup and teardown io_uring instances, and also a simplified
 interface for applications that don't need (or want) to deal with the full
 kernel side implementation.")
     (license license:expat)))
+
+(define-public erofs-utils
+  (package
+    (name "erofs-utils")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07hvijq2hsn3gg1kb8abrfk23n83j57yx8kyv4wqgwhhvd30myjc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("libuuid" ,util-linux "lib")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
+    (synopsis "User-space tools for EROFS filesystem")
+    (description "EROFS (Enhanced Read-Only File System) is a compressed,
+read-only filesystem optimized for resource-scarce devices.  This package
+provides user-space tools for creating EROFS filesystems.")
+    (license license:gpl2+)))
