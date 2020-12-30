@@ -10119,6 +10119,15 @@ This package is part of the KDE games module.")
       (sha256
        (base32 "0ql6p5zifdpdf65r7ki9ml123azpwwk9x3x8r9ij6xhjnf7p7x6w"))))
     (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/kajongg")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ;("perl" ,perl)
@@ -10130,12 +10139,10 @@ This package is part of the KDE games module.")
        ("ki18n" ,ki18n)
        ("libkmahjongg" ,libkmahjongg)
        ("python" ,python)
+       ("python-twisted" ,python-twisted)
+       ("python-pyqt" ,python-pyqt)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
-    (propagated-inputs
-     `(("python-twisted" ,python-twisted)
-       ("python-pyqt" ,python-pyqt)))
-    ;; FIXME: Need to wrap PYTHONPATH
     (home-page "https://games.kde.org/")
     (synopsis "Classical Mah Jongg game for 4 players")
     (description "Kajongg is the ancient Chinese board game for 4 players.
