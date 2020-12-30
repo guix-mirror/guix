@@ -876,7 +876,7 @@ can forge messages after a conversation to make them look like they came from
 you.  However, during a conversation, your correspondent is assured the messages
 he sees are authentic and unmodified.  (4) Perfect forward secrecy: If you lose
 control of your private keys, no previous conversation is compromised.")
-    (license license:gpl2)))
+    (license license:gpl2+)))
 
 (define-public znc
   (package
