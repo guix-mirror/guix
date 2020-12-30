@@ -25547,3 +25547,31 @@ black-box functions for other packages, e.g. @code{mlr3}.  It offers various
 optimization methods e.g. grid search, random search and generalized simulated
 annealing.")
     (license license:lgpl3)))
+
+(define-public r-mlr3tuning
+  (package
+    (name "r-mlr3tuning")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3tuning" version))
+              (sha256
+               (base32
+                "1pn80qjxzj2pivgs6qgairci6yh1bdnl2zbgl9ykdip2rqzv6r6m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bbotk" ,r-bbotk)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-lgr" ,r-lgr)
+       ("r-mlr3" ,r-mlr3)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://mlr3tuning.mlr-org.com/")
+    (synopsis "Tuning for @code{mlr3}")
+    (description "@code{mlr3tuning} implements methods for hyperparameter
+tuning, e.g. Grid Search, Random Search, or Simulated Annealing.  Various
+termination criteria can be set and combined.  The class @code{AutoTuner} provides a
+convenient way to perform nested resampling in combination with @code{mlr3}.")
+    (license license:lgpl3)))
