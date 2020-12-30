@@ -719,14 +719,17 @@ authentication.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pidgin/Pidgin/"
-                           version "/pidgin-" version ".tar.bz2"))
+       (uri
+        (string-append "mirror://sourceforge/pidgin/Pidgin/"
+                       version "/pidgin-" version ".tar.bz2"))
        (sha256
         (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
-       (patches (search-patches "pidgin-add-search-path.patch"
-                                ;; Remove the snippet and bootstrapping
-                                ;; native-inputs together with this patch.
-                                "pidgin-libnm.patch"))
+       (patches
+        (search-patches
+         "pidgin-add-search-path.patch"
+         ;; Remove the snippet and bootstrapping
+         ;; native-inputs together with this patch.
+         "pidgin-libnm.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -741,7 +744,6 @@ authentication.")
        ("gconf" ,gconf)
        ("python" ,python-2)
        ("doxygen" ,doxygen)
-
        ;; For bootstrapping after applying pidgin-libnm.patch.
        ("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -774,30 +776,33 @@ authentication.")
        ("startup-notification" ,startup-notification)))
     (arguments
      `(#:configure-flags
-       (list "--disable-gtkspell"
-             "--disable-tcl"
-             "--disable-meanwhile"
-             "--disable-vv"  ; XXX remove when we have farstream and gstreamer
-             "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
-             "--enable-cyrus-sasl"
-             (string-append "--with-ncurses-headers="
-                            (assoc-ref %build-inputs "ncurses")
-                            "/include"))))
+       (list
+        "--disable-gtkspell"
+        "--disable-tcl"
+        "--disable-meanwhile"
+        "--disable-vv" ; XXX remove when we have farstream and gstreamer
+        "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
+        "--enable-cyrus-sasl"
+        (string-append "--with-ncurses-headers="
+                       (assoc-ref %build-inputs "ncurses")
+                       "/include"))))
     (native-search-paths
-     (list (search-path-specification
-            (variable "PURPLE_PLUGIN_PATH")
-            (files (list (string-append "lib/purple-"
-                                        (version-major version))
-                         "lib/pidgin")))))
+     (list
+      (search-path-specification
+       (variable "PURPLE_PLUGIN_PATH")
+       (files
+        (list
+         (string-append "lib/purple-"
+                        (version-major version))
+         "lib/pidgin")))))
     (home-page "https://www.pidgin.im/")
     (synopsis "Graphical multi-protocol instant messaging client")
-    (description
-     "Pidgin is a modular instant messaging client that supports many popular
-chat protocols.")
+    (description "Pidgin is a modular instant messaging client that supports
+many popular chat protocols.")
     (license
      (list
-      license:gpl2+    ; Most of the code
-      license:lgpl2.1  ; GG protocol plugin (libpurple/protocols/gg/lib)
+      license:gpl2+   ; Most of the code
+      license:lgpl2.1 ; GG protocol plugin (libpurple/protocols/gg/lib)
       license:lgpl2.0+ ; OSCAR protocol plugin (libpurple/protocols/oscar)
       ;; The following licenses cover the zephyr protocol plugin:
       (license:non-copyleft
