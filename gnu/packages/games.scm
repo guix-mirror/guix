@@ -11015,14 +11015,14 @@ This package is part of the KDE games module.")
 (define-public kapman
   (package
     (name "kapman")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kapman-" version ".tar.xz"))
       (sha256
-       (base32 "03pq38caam30q4bw14c045kayw2d87xq1yaa3s2jkrylylfq3p0f"))))
+       (base32 "14x3v6li4r3gzzwfd6ar9saq2rhc7yxs0sp9ygalzq8vq4d7i1kh"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
