@@ -9687,6 +9687,45 @@ file.")
 inside the source file.")
       (license license:gpl3+))))
 
+(define-public emacs-sly-stepper
+  (let ((commit "cd7fd00f9a701246e2a9ba8c37166dcae2fde04e"))
+    (package
+      (name "emacs-sly-stepper")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/joaotavora/sly-stepper")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "09ll9dv8fd5dgnki82hcd48nm4qdzzn8wpva0zzr69zkjwzf9v25"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         (modify-phases %standard-phases
+           ;; The package provides autoloads.
+           (delete 'make-autoloads)
+           (delete 'enable-autoloads-compilation)
+           (add-after 'add-source-to-load-path 'add-contrib-to-emacs-load-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((sly (assoc-ref inputs "emacs-sly")))
+                 (setenv "EMACSLOADPATH"
+                         (string-append sly "/share/emacs/site-lisp/contrib:"
+                                        (getenv "EMACSLOADPATH"))))
+               #t)))))
+      (synopsis "Portable Common Lisp stepper interface for Emacs")
+      (description
+       "This package features a new, portable, visual stepping facility for
+Common Lisp, realized as an extension to SLY.")
+      (license license:gpl3+))))
+
 (define-public emacs-sly-package-inferred
   (let ((commit "800e71e2be631422277e2ec77e6d6f6ea20e95ef")
         (revision "1"))
