@@ -187,6 +187,45 @@ plugins or software to be installed on the browser.  So the page author can
 write web documents that include mathematics and be confident that readers will
 be able to view it naturally and easily.")))
 
+(define-public js-commander
+  (package
+    (name "js-commander")
+    (version "6.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tj/commander.js")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "126m25s6mxpxmdj4aw5awz06b47r8r798lcf1c5bnmmh39cik5i1"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (chdir (assoc-ref %build-inputs "source"))
+         (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
+                                       "/bin/esbuild"))
+               (target (string-append %output "/share/javascript/commander")))
+           (invoke esbuild
+                   "--bundle"
+                   "--minify"
+                   "--tsconfig=tsconfig.json"
+                   "--platform=node"
+                   (string-append "--outfile=" target "/index.min.js")
+                   "index.js")))))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://github.com/tj/commander.js")
+    (synopsis "Library for node.js command-line interfaces")
+    (description "Commander.js aims to be the complete solution for node.js
+command-line interfaces.  ")
+    (license license:expat)))
+
 (define-public js-respond
   (package
     (name "js-respond")
