@@ -890,6 +890,8 @@ decoders, muxers, and demuxers provided by FFmpeg.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("flex" ,flex)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gst-plugins-good" ,gst-plugins-good)
        ("perl" ,perl)
@@ -901,6 +903,35 @@ decoders, muxers, and demuxers provided by FFmpeg.")
      "This is a high-level library for facilitating the creation of audio/video
 non-linear editors.")
     (license license:gpl2+)))
+
+(define-public gst-plugins/selection
+  (lambda* (pkg #:key plugins configure-flags)
+    "Build PKG with only PLUGINS enabled.  Optionally, if CONFIGURE-FLAGS are
+given, also pass them to the build system instead of the ones used by PKG."
+    (package/inherit pkg
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:configure-flags flags `(,@(or configure-flags '())))
+          `(append
+            (list
+             ,@(map (lambda (plugin)
+                      (string-append "-D" plugin "=enabled"))
+                    plugins))
+            (list ,@(or configure-flags flags))))
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'disable-auto-plugins
+                (lambda _
+                  (substitute* "meson_options.txt"
+                    (("'auto'") "'disabled'"))
+                  #t)))))))))
+
+(define-public gst-transcoder
+  (deprecated-package
+   "gst-transcoder"
+   (gst-plugins/selection gst-plugins-bad
+                          #:plugins '("transcoder")
+                          #:configure-flags '("-Dintrospection=enabled"))))
 
 (define-public python-gst
   (package

@@ -2999,7 +2999,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.24.1")
+    (version "1.28.0")
     (source
      (origin
       (method url-fetch)
@@ -3008,7 +3008,7 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1162dr7smmfb02czmhshr0f93hqj7w0nw29bys5lzfvwarxcyflw"))))
+        "05cb7drn6arc4gi02wgsvzibigi2riz5gnfnmlb0zmbfnj9ikna2"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -4678,7 +4678,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.70.0")
+    (version "2.72.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -4686,7 +4686,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "0hjk9lgppc5435my0lyywbpmj7ib5vvcylwfin8ki97g9bvj1c2l"))))
+                "11skbyw2pw32178q3h8pi7xqa41b2x4k6q4k9f75zxmh8s23y30p"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -6942,7 +6942,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.32.3")
+    (version "3.38.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/file-roller/"
@@ -6950,7 +6950,7 @@ share them with others via social networking and more.")
                                   "file-roller-" version ".tar.xz"))
               (sha256
                (base32
-                "0ap2hxvjljh4p6wsd9ikh2my3vsxp9r2nvjxxj3v87nwfyw1y4dy"))))
+                "06ikvjjcgb8nxabkn2rywy76a1c7s6w8dszaxvaxldbxarp1qgbj"))))
     (build-system meson-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database

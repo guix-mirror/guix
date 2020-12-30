@@ -188,6 +188,20 @@ a focus on simplicity and productivity.")
     (native-inputs
      `(("autoconf" ,autoconf)))))
 
+(define-public ruby-3.0
+  (package
+    (inherit ruby-2.7)
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1cbcixwnr0y8q0lg67wjgplp06kjd6p6hjjh680csv3v0bpsxgv8"))))))
+
 (define-public ruby-2.5
   (package
     (inherit ruby)

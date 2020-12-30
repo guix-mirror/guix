@@ -4000,33 +4000,72 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
-(define-public gst-transcoder
-  (package
-    (name "gst-transcoder")
-    (version "1.12.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pitivi/gst-transcoder")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0nw1zykqc6c8xs3ri55pm00pwyz93z4y4nd880apfiwj7yv5p3az"))))
-    (build-system meson-build-system)
-    (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
+(define-public pitivi
+  ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
+  (let ((latest-semver "0.999.0")
+        (%version "2020.09.2"))
+   (package
+     (name "pitivi")
+     (version (string-append latest-semver "-" %version))
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnome/sources/" name "/"
+                                   (version-major+minor %version) "/"
+                                   name "-" %version ".tar.xz"))
+               (sha256
+                (base32
+                 "0hzvv4wia4rk0kvq16y27imq2qd4q5lg3vx99hdcjdb1x3zqqfg0"))))
+     (build-system meson-build-system)
+     (inputs
+      `(("glib" ,glib)
+        ("gst-editing-services" ,gst-editing-services)
+        ("gstreamer" ,gstreamer)
+        ("gst-plugins-base" ,gst-plugins-base)
+        ("gst-plugins-good" ,gst-plugins-good)
+        ("gst-plugins-bad"
+         ,(gst-plugins/selection gst-plugins-bad
+                                 #:plugins '("debugutils" "transcoder")
+                                 #:configure-flags '("-Dintrospection=enabled")))
+        ("gst-libav" ,gst-libav)
+        ("gsound" ,gsound)
+        ("gtk+" ,gtk+)
+        ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
+        ("libpeas" ,libpeas)
+        ("libnotify" ,libnotify)
+        ("pango" ,pango)
+        ("python-gst" ,python-gst)
+        ("python-numpy" ,python-numpy)
+        ("python-matplotlib" ,python-matplotlib)
+        ("python-pycairo" ,python-pycairo)
+        ("python-pygobject" ,python-pygobject)))
     (native-inputs
-     `(("python" ,python)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/pitivi/gst-transcoder/")
-    (synopsis "GStreamer Transcoding API")
-    (description "GStreamer Transcoding API")
-    (license license:lgpl2.1)))
+     (arguments
+      `(#:glib-or-gtk? #t
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'glib-or-gtk-wrap 'wrap-other-dependencies
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((prog (string-append (assoc-ref outputs "out")
+                                         "/bin/pitivi")))
+                (wrap-program prog
+                  `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                  ;; We've only added inputs for what Pitivi deems either
+                  ;; necessary or optional.  Let the user's packages take
+                  ;; precedence in case they have e.g. the full gst-plugins-bad.
+                  `("GST_PLUGIN_SYSTEM_PATH" suffix
+                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))))
+                #t)))))
+     (home-page "http://www.pitivi.org")
+     (synopsis "Video editor based on GStreamer Editing Services")
+     (description "Pitivi is a video editor built upon the GStreamer Editing
+Services.  It aims to be an intuitive and flexible application that can appeal
+to newbies and professionals alike.")
+     (license license:lgpl2.1+))))
 
 (define-public gavl
   (package
@@ -4604,14 +4643,14 @@ transcode or reformat the videos in any way, producing perfect backups.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenVisualCloud/SVT-AV1")
+             (url "https://github.com/AOMediaCodec/SVT-AV1")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wzamg89azi1f93wxvdy7silsgklckc754ca066k33drvyacicyw"))))
     (build-system cmake-build-system)
-    ;; SVT-AV1 only supports Intel-compatible CPUs.
-    (supported-systems '("x86_64-linux" "i686-linux"))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
     (arguments
       ;; The test suite tries to download test data and git clone a 3rd-party
       ;; fork of libaom.  Skip it.
@@ -4630,7 +4669,41 @@ transcode or reformat the videos in any way, producing perfect backups.")
     (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
 work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
-    (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
+    (home-page "https://github.com/AOMediaCodec/SVT-AV1")
+    (license license:bsd-2)))
+
+(define-public svt-vp9
+  (package
+    (name "svt-vp9")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OpenVisualCloud/SVT-VP9")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ypdiw4cq22llvm8jyszxdq6r1aydkj80dsxjarjn5b7c1f2q3ar"))))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (copy-recursively "../source/Docs" doc)
+               #t))))))
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (home-page "https://github.com/OpenVisualCloud/SVT-VP9")
+    (synopsis "VP9 video encoder")
+    (description "SVT-VP9 is a VP9 video encoder implementation.  It is focused
+on supporting video-on-demand and live encoding on Intel Xeon processors.")
     (license license:bsd-2)))
 
 (define-public w-scan

@@ -7957,7 +7957,17 @@ It contains the code shared by all Kiwix ports.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "kiwix-desktop.pro"
                (("webenginewidgets" all) (string-append all " printsupport")))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-qt-process-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/kiwix-desktop"))
+                    (qt-process-path (string-append
+                                      (assoc-ref inputs "qtwebengine")
+                                      "/lib/qt5/libexec/QtWebEngineProcess")))
+               (wrap-program bin
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
+               #t))))))
     (inputs
      `(("curl" ,curl)
        ("icu4c" ,icu4c)

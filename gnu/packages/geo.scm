@@ -1680,7 +1680,7 @@ QLandkarte GT application.")
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "readosm-" version ".tar.gz"))
        (sha256
-        (base32 "0zv6p352pqjcv70nvcaf2x3011z35jqa24dcdm27a4ns1wha3cjc"))))
+        (base32 "0igif2bxf4dr82glxz9gyx5mmni0r2dsnx9p9k6pxv3c4lfhaz6v"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)

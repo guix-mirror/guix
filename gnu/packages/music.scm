@@ -3485,7 +3485,7 @@ websites such as Libre.fm.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "1.02.00")
+    (version "1.03.00")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3494,7 +3494,7 @@ websites such as Libre.fm.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05a6d7l98k9i82dwrgi855dnccm3f2lkb144gi244vhk1156n0ca"))
+                "025fj34gq2kmkpwcswcyx7wdxb89vm944dh685zi4bxx0hz16vvk"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet

@@ -394,7 +394,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.212")
+(define-public linux-libre-4.14-version "4.14.213")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +402,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0y8ck8pfxm8862wi4cz8qp9x9b18yl448i8m7bpbphs290nc66qf")))
+        (hash (base32 "079axkl14jp8lz30h21q4gmhmjw6zf5ycmxji65kgcgyg7dwwyzx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.248")
+(define-public linux-libre-4.9-version "4.9.249")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +415,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1kzczy0lz3lnjkhvx90dgjmzn3d3y55qxlihiclkr4y9c602d1s6")))
+        (hash (base32 "0kjcw0vgga9msgqnipgg028v3rcc5am2d094v3hqkkjvzyb8dwxi")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.248")
+(define-public linux-libre-4.4-version "4.4.249")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +428,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1z1xbkm0z0v6k3scszii5hi24pn391332g0li93p3n1rnv74jap5")))
+        (hash (base32 "04pb4vgia6zaindf6804gq9jn3mhmy01yijqmpi79sh9rlqzzh1i")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1146,8 +1146,8 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
 (define-public rtl8821ce-linux-module
-  (let ((commit "fe97b5003f2f3dd070f76ec38c00b83798c1cdea")
-        (revision "1"))
+  (let ((commit "14b536f0c9ad2d0abbdab8afc7ade684900ca9cf")
+        (revision "2"))
     (package
       (name "rtl8821ce-linux-module")
       (version (git-version "0.0.0" revision commit))
@@ -1160,7 +1160,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "10mrp63npbqb39c442vx8mra278hw7sczb3b6bjrpr3gan6ljshn"))))
+           "0z7r7spsgn22gwv9pcmkdjn9ingi8jj7xkxasph8118h46fw8ip2"))))
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags

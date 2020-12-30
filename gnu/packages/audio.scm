@@ -3047,7 +3047,7 @@ for loudness normalisation.")
 (define-public timidity++
   (package
     (name "timidity++")
-    (version "2.14.0")
+    (version "2.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/timidity/TiMidity++"
@@ -3055,7 +3055,7 @@ for loudness normalisation.")
                                   "/TiMidity++-" version ".tar.bz2"))
               (sha256
                (base32
-                "0xk41w4qbk23z1fvqdyfblbz10mmxsllw0svxzjw5sa9y11vczzr"))))
+                "1xf8n6dqzvi6nr2asags12ijbj1lwk1hgl3s27vm2szib8ww07qn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

@@ -677,15 +677,15 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/applications/"
+        (uri (string-append "mirror://kde/stable/release-service/"
                             version "/src/ktouch-" version ".tar.xz"))
         (sha256
          (base32
-          "0dqxb3xsjc2rwc9779l5fnr4crhq51bc8ln4azbgnnkzldvq6a4a"))))
+          "1s8pcwakx94aygfyjmyps5b43j4kv6dmfw7n12japcka2yfp9bi2"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
