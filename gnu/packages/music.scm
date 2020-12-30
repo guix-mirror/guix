@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5782,7 +5783,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "1.0.0-alpha.3.0.1")
+    (version "1.0.0-alpha.6.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5790,7 +5791,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "06025367x08y4g9grhcn35bk1dsrpgm04c8l8j50i3p49dl3s1n0"))))
+           "1zfky3yj0k0rmbxighlk9sp4fsgw8rj7viv44yv626kldfvc04ab"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
