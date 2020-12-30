@@ -845,38 +845,37 @@ many popular chat protocols.")
   (package
     (name "pidgin-otr")
     (version "4.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://otr.cypherpunks.ca/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1i5s9rrgbyss9rszq6c6y53hwqyw1k86s40cpsfx5ccl9bprxdgl"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://otr.cypherpunks.ca/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i5s9rrgbyss9rszq6c6y53hwqyw1k86s40cpsfx5ccl9bprxdgl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("pidgin" ,pidgin)
-       ("libotr" ,libotr)
-       ("libgpg-error" ,libgpg-error)
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)
        ("libgcrypt" ,libgcrypt)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+-2)))
+       ("libgpg-error" ,libgpg-error)
+       ("libotr" ,libotr)
+       ("pidgin" ,pidgin)))
     (home-page "https://otr.cypherpunks.ca/")
     (synopsis "Off-the-Record Messaging plugin for Pidgin")
-    (description
-     "Pidgin-OTR is a plugin that adds support for OTR to the Pidgin instant
-messaging client.  OTR (Off-the-Record) Messaging allows you to have private
-conversations over instant messaging by providing: (1) Encryption: No one else
-can read your instant messages.  (2) Authentication: You are assured the
-correspondent is who you think it is.  (3) Deniability: The messages you send
-do not have digital signatures that are checkable by a third party.  Anyone
+    (description "Pidgin-OTR is a plugin that adds support for OTR to the Pidgin
+instant messaging client.  OTR (Off-the-Record) Messaging allows you to have
+private conversations over instant messaging by providing: (1) Encryption: No
+one else can read your instant messages.  (2) Authentication: You are assured
+the correspondent is who you think it is.  (3) Deniability: The messages you
+send do not have digital signatures that are checkable by a third party.  Anyone
 can forge messages after a conversation to make them look like they came from
-you.  However, during a conversation, your correspondent is assured the
-messages he sees are authentic and unmodified.  (4) Perfect forward secrecy:
-If you lose control of your private keys, no previous conversation is
-compromised.")
+you.  However, during a conversation, your correspondent is assured the messages
+he sees are authentic and unmodified.  (4) Perfect forward secrecy: If you lose
+control of your private keys, no previous conversation is compromised.")
     (license license:gpl2)))
 
 (define-public znc
