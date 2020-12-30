@@ -1944,15 +1944,17 @@ and binaries removed, and adds modular support for using system libraries.")
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.22")
+    (version "4.19.24")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://www.riverbankcomputing.com/static/"
-                            "Downloads/sip/" version "/sip-" version ".tar.gz"))
+        (uri (list (pypi-uri "sip" version)
+                   (string-append "https://www.riverbankcomputing.com/static/"
+                                  "Downloads/sip/" version
+                                  "/sip-" version ".tar.gz")))
         (sha256
          (base32
-          "0idywc326l8v1m3maprg1aq2gph67mmnnsskvlwfx8n19s16idz1"))))
+          "1ra15vb5i9gkg2vdvh16cq9x2mmzw1yi3xphxs8q34q1pf83gkgd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
