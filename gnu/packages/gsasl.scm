@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,9 @@ the underlying security implementation.")
       ("libntlm" ,libntlm)
       ("mit-krb5" ,mit-krb5)
       ("zlib" ,zlib)))
+   (native-inputs
+    `(;; Needed for cross compiling.
+      ("libgcrypt" ,libgcrypt)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
     ;; propagated input of GnuTLS.
