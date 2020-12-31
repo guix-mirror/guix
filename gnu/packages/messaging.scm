@@ -773,7 +773,7 @@ authentication.")
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxslt" ,libxslt)
        ;; ("libzephyr" ,libzephyr)
-       ;; ("meanwhile" ,meanwhile)
+       ("meanwhile" ,meanwhile)
        ("mono" ,mono)
        ("ncurses" ,ncurses)
        ("network-manager" ,network-manager)
@@ -793,7 +793,6 @@ authentication.")
        (list
         "--disable-gtkspell"
         "--disable-tcl"
-        "--disable-meanwhile"
         "--enable-mono"
         "--disable-vv" ; XXX remove when we have farstream and gstreamer
         "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
