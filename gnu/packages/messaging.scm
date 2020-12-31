@@ -72,6 +72,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -88,6 +89,7 @@
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
@@ -741,37 +743,50 @@ authentication.")
      `(("autoconf" ,autoconf) ;; For bootstrap
        ("automake" ,automake) ;; For bootstrap
        ("check" ,check)
+       ("dot" ,graphviz)
        ("gconf" ,gconf)
        ("intltool" ,intltool)
        ("libtool" ,libtool) ;; For bootstrap
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("avahi" ,avahi)
        ("cyrus-sasl" ,cyrus-sasl)
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
-       ;; farstream
+       ;; ("evolution-data-server" ,evolution-data-server)
+       ;; ("farstream" ,farstream)
        ("gnutls" ,gnutls)
-       ;; gstreamer
+       ;; ("gstreamer" ,gstreamer)
        ("gtk+" ,gtk+-2)
-       ;; gtkspell
-       ;; libgadu
+       ;; ("gtkspell2" ,gtkspell2)
+       ;; ("libgadu" ,libgadu)
        ("libgcrypt" ,libgcrypt)
+       ("libgnt" ,libgnt)
        ("libice" ,libice)
        ("libidn" ,libidn)
        ("libltdl" ,libltdl)
        ("libsm" ,libsm)
-       ;; libxephyr
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
        ("libxml2" ,libxml2)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxslt" ,libxslt)
-       ;; meanwhile
+       ;; ("libzephyr" ,libzephyr)
+       ;; ("meanwhile" ,meanwhile)
+       ;; ("mono" ,mono)
        ("ncurses" ,ncurses)
        ("network-manager" ,network-manager)
+       ("nspr" ,nspr)
+       ("nss" ,nss)
+       ("pango" ,pango)
+       ("perl" ,perl)
+       ("python" ,python-2)
        ("python2-dbus" ,python2-dbus)
+       ;; ("silc" ,silc-toolkit)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)))
+    (propagated-inputs
+     `(("glib" ,glib)))
     (arguments
      `(#:configure-flags
        (list
