@@ -729,7 +729,8 @@ authentication.")
         (base32 "1c4dzxg9c3d9zfqqa7jwijj9rv9fm6w95igmpljwy88lxq7v5w11"))
        (patches
         (search-patches
-         "pidgin-add-search-path.patch"))
+         "pidgin-add-search-path.patch"
+         "pidgin-vv-gst.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -752,10 +753,9 @@ authentication.")
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ;; ("evolution-data-server" ,evolution-data-server)
-       ;; ("farstream" ,farstream)
+       ("farstream" ,farstream)
        ("gnutls" ,gnutls)
-       ;; ("gstreamer" ,gstreamer)
-       ("gtk+" ,gtk+-2)
+       ("gstreamer" ,gstreamer)
        ;; ("gtkspell2" ,gtkspell2)
        ("libgadu" ,libgadu)
        ("libgcrypt" ,libgcrypt)
@@ -786,16 +786,18 @@ authentication.")
        ("tcl" ,tcl)
        ("tk" ,tk)))
     (propagated-inputs
-     `(("glib" ,glib)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)))
     (arguments
      `(#:configure-flags
        (list
+        (string-append "CFLAGS=-I"
+                       (assoc-ref %build-inputs "gst-plugins-base")
+                       "/include/gstreamer-1.0")
         "--disable-gtkspell"
         ;; "--enable-gevolution"
         "--enable-cap"
         "--enable-mono"
-        "--disable-vv" ; XXX remove when we have farstream and gstreamer
-        "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
         "--enable-cyrus-sasl"
         (string-append "--with-ncurses-headers="
                        (assoc-ref %build-inputs "ncurses")
