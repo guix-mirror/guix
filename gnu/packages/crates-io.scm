@@ -32900,7 +32900,7 @@ Tokio.")
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
       (origin
         (method url-fetch)
@@ -32908,7 +32908,7 @@ Tokio.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0iannv6pb226h0q9vlqg7hdn36fs146yrahw016n107g1fxlbkvm"))))
+          "1apcmjrrjw429pjw7mqlmdwwd67g8305vwqy4kw3swr612bl44d3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
