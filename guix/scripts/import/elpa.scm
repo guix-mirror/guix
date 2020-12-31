@@ -96,13 +96,14 @@ Import the latest package named PACKAGE-NAME from an ELPA repository.\n"))
     (match args
       ((package-name)
        (if (assoc-ref opts 'recursive)
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
-                (elpa-recursive-import package-name
-                                       (or (assoc-ref opts 'repo) 'gnu)))
+           (with-error-handling
+             (map (match-lambda
+                    ((and ('package ('name name) . rest) pkg)
+                     `(define-public ,(string->symbol name)
+                        ,pkg))
+                    (_ #f))
+                  (elpa-recursive-import package-name
+                                         (or (assoc-ref opts 'repo) 'gnu))))
            (let ((sexp (elpa->guix-package package-name
                                            #:repo (assoc-ref opts 'repo))))
              (unless sexp
