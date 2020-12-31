@@ -4741,7 +4741,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
       (origin
         (method url-fetch)
@@ -4750,7 +4750,7 @@ result in several formats:
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1mx6jlx2rdhmyh68h9h34kn9ssa7lv0y97j8fd9qm7qhs2q1n0cj"))))
+          "0c40gq4qid2apmlgzx98f6826jmn2n61prk0rn7sjxaw7yimw854"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
