@@ -783,7 +783,7 @@ authentication.")
        ("perl" ,perl)
        ("python" ,python-2)
        ("python2-dbus" ,python2-dbus)
-       ;; ("silc" ,silc-toolkit)
+       ("silc" ,silc-toolkit)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
