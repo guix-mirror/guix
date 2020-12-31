@@ -10679,8 +10679,8 @@ and saving 2-dimensional pixel-based images.")
   (sbcl-package->ecl-package sbcl-opticl))
 
 (define-public sbcl-mcclim
-  (let ((commit "27b4d7a667c9b3faa74cabcb57706b888314fff7")
-        (revision "0"))
+  (let ((commit "04cc542dd4b461b9d56406e40681d1a8f080730f")
+        (revision "1"))
     (package
       (name "sbcl-mcclim")
       (version (git-version "0.9.7" revision commit))
@@ -10692,7 +10692,7 @@ and saving 2-dimensional pixel-based images.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0jijfgkwas6xnpp5wiii6slcx9pgsalngacb8zm29x6pamx2193h"))))
+          (base32 "1xjly8i62z72hfhlnz5kjd9i8xhrwckc7avyizxvhih67pkjmsx0"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)
