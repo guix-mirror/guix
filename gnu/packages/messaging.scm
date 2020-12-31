@@ -792,6 +792,8 @@ authentication.")
      `(#:configure-flags
        (list
         "--disable-gtkspell"
+        ;; "--enable-gevolution"
+        "--enable-cap"
         "--disable-tcl"
         "--enable-mono"
         "--disable-vv" ; XXX remove when we have farstream and gstreamer
