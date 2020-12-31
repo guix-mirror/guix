@@ -453,10 +453,10 @@ obtain the Guix package name corresponding to the upstream name."
     (let* ((package dependencies (repo->guix-package name
                                                      #:version version
                                                      #:repo repo))
-           (normalizied-deps (map (match-lambda
+           (normalized-deps (map (match-lambda
                                    ((name version) (list name version))
                                    (name (list name #f))) dependencies)))
-      (make-node name version package normalizied-deps)))
+      (make-node name version package normalized-deps)))
 
   (map node-package
        (topological-sort (list (lookup-node package-name version))
