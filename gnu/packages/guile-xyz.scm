@@ -887,6 +887,43 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public guile2.0-pg
+  (package
+    (name "guile2.0-pg")
+    (version "0.49")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-pg/guile-pg-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1fizcqga96p9n2jjhi9nprhry20hg9wvcl5b8gya4vhzwz6qhysp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'patch-src/Makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/Makefile"
+               (("\\/share\\/guile\\/site") "/share/guile/site/2.0"))
+             #t)))))
+    (native-inputs
+     `(("procps" ,procps)               ; fake-cluster-control uses ps
+       ("guile" ,guile-2.0)
+       ("postgresql" ,postgresql)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("postgresql" ,postgresql)))
+    (home-page "https://www.nongnu.org/guile-pg/")
+    (synopsis "Guile modules for accessing PostgreSQL")
+    (description
+     "Guile-PG is a collection of modules for Guile allowing access to the
+PostgreSQL RDBMS from Scheme programs.
+
+This has been tested against PostgreSQL 10 through 13, but currently only
+works with Guile 1.4.x to 2.0.x.")
+    (license license:gpl3+)))
+
 (define-public guile-prometheus
   (let ((commit "35dc26c0ea44c3d70f1819f240d84e2cbb4b7b4c")
         (revision "5"))
