@@ -630,7 +630,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.7")
+    (version "0.17.1.8")
     (source
      (origin
        (method git-fetch)
@@ -650,7 +650,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "1fdw4i4rw87yz3hz4yc1gdw0gr2mmf9038xaw2l4rrk5y50phjp4"))))
+        (base32 "10blazbk1602slx3wrmw4jfgkdry55iclrhm5drdficc5v3h735g"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
