@@ -7703,6 +7703,52 @@ with the arrow keys.  It prefers to move the right or bottom border when
 possible, and falls back to moving the left or top border otherwise.")
       (license license:gpl3+))))
 
+(define-public emacs-window-purpose
+  (let ((commit "f6421966761ad911fe8861aba2b110c5dd60d1ea")
+        (revision "1"))
+    (package
+      (name "emacs-window-purpose")
+      (version (git-version "1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bmag/emacs-purpose.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p0y5gnrw7q65py2wjdf1hrdpiw5c2zbgvfbfmb13257jq5mga38"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-let-alist" ,emacs-let-alist)
+         ("emacs-imenu-list" ,emacs-imenu-list)))
+      (arguments
+       '(#:include
+         '("^[^/]+.el$"
+           "^[^/]+.el.in$"
+           "^dir$"
+           "^[^/]+.info$"
+           "^[^/]+.texi$"
+           "^[^/]+.texinfo$"
+           "^doc/dir$"
+           "^doc/[^/]+.info$"
+           "^doc/[^/]+.texi$"
+           "^doc/[^/]+.texinfo$"
+           "^layouts$")
+         #:exclude
+         '("^.dir-locals.el$"
+           "^test.el$"
+           "^tests.el$"
+           "^[^/]+-test.el$"
+           "^[^/]+-tests.el$")))
+      (home-page "https://github.com/bmag/emacs-purpose")
+      (synopsis "Purpose-based window management for Emacs")
+      (description "Purpose is a package that introduces the concept of a
+\"purpose\" for windows and buffers, and then helps you maintain a robust
+window layout easily.")
+      (license license:gpl3+))))
+
 (define-public emacs-iedit
   ;; Last release version was in 2016.
   (let ((commit "e2c100cdd67b7d82835d281ac2cd1bf4f374bc8f")
