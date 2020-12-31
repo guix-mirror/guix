@@ -25677,6 +25677,33 @@ as a plug-and-play solution for anyone already using Org mode for their
 personal wiki.")
     (license license:gpl3+)))
 
+(define-public emacs-org-roam-bibtex
+  (package
+    (name "emacs-org-roam-bibtex")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/org-roam/org-roam-bibtex")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13pll793khyfncpwm2dg24w747sqp7kgf7m3fqw2xzhv9cx2g7nq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm-bibtex" ,emacs-helm-bibtex)
+       ("emacs-org-ref" ,emacs-org-ref)
+       ("emacs-org-roam" ,emacs-org-roam)))
+    (home-page "https://github.com/org-roam/org-roam-bibtex")
+    (synopsis "Connector between Org Roam, BibTeX-completion, and Org Ref")
+    (description
+     "Org Roam BibTeX is a library which offers a tighter integration between
+Org Roam, Helm-BibTeX, and Org Ref.  It allows users to access their
+bibliographical notes in Org Roam directory via Helm BibTeX, Ivy BibTeX, or by
+opening Org Ref's @code{cite:} links.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-generate
   (package
     (name "emacs-org-generate")
