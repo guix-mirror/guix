@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,6 +225,7 @@ script.")
        ("libtiff" ,libtiff)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)
+       ("libwebp" ,libwebp)
        ("freetype" ,freetype)
        ("bzip2" ,bzip2)
        ("xz" ,xz)
