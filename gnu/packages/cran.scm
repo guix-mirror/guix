@@ -28317,6 +28317,38 @@ Graphs can themselves be treated as @code{mlr3} Learners and can therefore be
 resampled, benchmarked, and tuned.")
     (license license:lgpl3)))
 
+(define-public r-mlr3ordinal
+  (let ((commit "9febac983b11b7b1f477e5cf0212e5999cd2ed44")
+        (revision "0"))
+    (package
+      (name "r-mlr3ordinal")
+      (version (git-version "0.1.0-9000" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mlr-org/mlr3ordinal")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1icfhz1pjm0mlsn2y60gsrbk31b2p7xmpx3xsg7639rcgdb5f9gl"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       (list r-checkmate
+             r-data-table
+             r-mlr3
+             r-mlr3misc
+             r-mlr3pipelines
+             r-nloptr
+             r-ordinal
+             r-paradox
+             r-r6))
+      (home-page "https://mlr3ordinal.mlr-org.com/")
+      (synopsis "Ordinal Regression for mlr3")
+      (description "This package extends @code{mlr3} with support for
+performing ordinal regression.")
+      (license license:expat))))
+
 (define-public r-paradox
   (package
     (name "r-paradox")
