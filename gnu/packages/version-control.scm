@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,14 +164,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.29.2")
+   (version "2.30.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1h87yv117ypnc0yi86941089c14n91gixk8b6shj2y35prp47z7j"))))
+              "06ad6dylgla34k9am7d5z8y3rryc8ln3ibq5z0d74rcm20hm0wsm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -187,7 +188,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "14npkg9rnp2yclsx5p622qpm6byzfy5k5wb209vkmm5r60m4mm72"))))
+            "0xngjg60rwzrb9x32d1qbdd8szkzwcyha5qni7ilkldxsl2q8avv"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
