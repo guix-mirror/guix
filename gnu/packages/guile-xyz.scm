@@ -2542,11 +2542,11 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "5c05b03e8a5c450f7358ceec7ea602f29c49d54e")
+  (let ((commit "84d4e8d42593d4a6a04be55d07f0f7efb9d801e7")
         (revision "1"))
     (package
       (name "guile-studio")
-      (version (git-version "0.0.3" revision commit))
+      (version (git-version "0.0.4" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2555,7 +2555,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "11wyf6x7mhyhimv0cd57pl39zgav9hc9ljqi3g2g35b264hylpnx"))))
+                  "1ws1b9m1n133wx4m9hgmq9kqx1acm1yyq0aniirqphd4l6bzy4qs"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
@@ -2589,11 +2589,16 @@ The picture values can directly be displayed in Geiser.")
        `(("guile" ,guile-3.0)
          ("guile-picture-language" ,guile-picture-language)
          ("emacs" ,emacs)
+         ("emacs-f" ,emacs-f)                       ; needed by doom-modeline
+         ("emacs-memoize" ,emacs-memoize)           ; needed by all-the-icons
+         ("emacs-all-the-icons" ,emacs-all-the-icons) ; needed by doom-modeline
+         ("emacs-doom-modeline" ,emacs-doom-modeline)
+         ("emacs-modus-themes" ,emacs-modus-themes)
          ("emacs-geiser" ,emacs-geiser)
          ("emacs-company" ,emacs-company)
+         ("emacs-ivy" ,emacs-ivy)
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-flycheck-guile" ,emacs-flycheck-guile)
-         ("emacs-smart-mode-line" ,emacs-smart-mode-line)
          ("emacs-paren-face" ,emacs-paren-face)
          ("adwaita-icon-theme" ,adwaita-icon-theme)))
       (native-inputs
