@@ -786,7 +786,8 @@ authentication.")
        ("silc" ,silc-toolkit)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
-       ("tcl" ,tcl)))
+       ("tcl" ,tcl)
+       ("tk" ,tk)))
     (propagated-inputs
      `(("glib" ,glib)))
     (arguments
@@ -795,7 +796,6 @@ authentication.")
         "--disable-gtkspell"
         ;; "--enable-gevolution"
         "--enable-cap"
-        "--disable-tcl"
         "--enable-mono"
         "--disable-vv" ; XXX remove when we have farstream and gstreamer
         "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
@@ -805,6 +805,9 @@ authentication.")
                        "/include")
         (string-append "--with-tclconfig="
                        (assoc-ref %build-inputs "tcl")
+                       "/lib")
+        (string-append "--with-tkconfig="
+                       (assoc-ref %build-inputs "tk")
                        "/lib"))))
     (native-search-paths
      (list
