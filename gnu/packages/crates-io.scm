@@ -19945,7 +19945,7 @@ and would-block I/O operations.")
 (define-public rust-paste-0.1
   (package
     (name "rust-paste")
-    (version "0.1.10")
+    (version "0.1.18")
     (source
      (origin
        (method url-fetch)
@@ -19954,7 +19954,7 @@ and would-block I/O operations.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yk4zbi7128dcrklsbwfa63d39x0dv8f7pdbrylvdlcj0s9v2kxb"))))
+         "10587zrlmzhq66yhd0z36fzglf32m1nlhi9bxxm6dgl0gp3j1jj5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
