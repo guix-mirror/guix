@@ -785,7 +785,8 @@ authentication.")
        ("python2-dbus" ,python2-dbus)
        ("silc" ,silc-toolkit)
        ("sqlite" ,sqlite)
-       ("startup-notification" ,startup-notification)))
+       ("startup-notification" ,startup-notification)
+       ("tcl" ,tcl)))
     (propagated-inputs
      `(("glib" ,glib)))
     (arguments
@@ -801,7 +802,10 @@ authentication.")
         "--enable-cyrus-sasl"
         (string-append "--with-ncurses-headers="
                        (assoc-ref %build-inputs "ncurses")
-                       "/include"))))
+                       "/include")
+        (string-append "--with-tclconfig="
+                       (assoc-ref %build-inputs "tcl")
+                       "/lib"))))
     (native-search-paths
      (list
       (search-path-specification
