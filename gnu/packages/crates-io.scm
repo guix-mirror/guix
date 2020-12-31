@@ -11043,14 +11043,14 @@ DWARF debugging format.")
 (define-public rust-git2-0.13
   (package
     (name "rust-git2")
-    (version "0.13.12")
+    (version "0.13.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "git2" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0912gv7mvqzdlgkzny0z7ph07g2dmkmz8hp6bvyziy6p7011lvya"))))
+        (base32 "0na3vsa44nn1sr6pzscn93w69wbmdih277mm2p3f6kcavb4ngwj4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -11062,7 +11062,8 @@ DWARF debugging format.")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-structopt" ,rust-structopt-0.3)
+       (("rust-paste" ,rust-paste-0.1)
+        ("rust-structopt" ,rust-structopt-0.3)
         ("rust-time" ,rust-time-0.1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
