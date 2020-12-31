@@ -2111,7 +2111,7 @@ sockets in Perl.")
 (define-public libproxy
   (package
     (name "libproxy")
-    (version "0.4.15")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libproxy/libproxy/"
@@ -2119,7 +2119,7 @@ sockets in Perl.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0kvdrazlzwia876w988cmlypp253gwy6idlh8mjk958c29jb8kb5"))))
+                "01cbgz6lc3v59sldqk96l1281kp2qxnsa2qwlf2ikvjlyr1gi2dw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
