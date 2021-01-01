@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -684,7 +684,7 @@ programming language.")))
 (define-public lighttpd
   (package
     (name "lighttpd")
-    (version "1.4.57")
+    (version "1.4.58")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.lighttpd.net/lighttpd/"
@@ -692,7 +692,7 @@ programming language.")))
                                   "lighttpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0zr1ssagirv5l4r2ii1k9v366a4vwylwbq74nb5pwby1i4drdjjj"))))
+                "03kd28nq6wndvvyk0zs5120ajvg1icnif5bvrsyhw69sl7yyyzr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
