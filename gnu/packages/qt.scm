@@ -67,6 +67,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -2850,3 +2851,35 @@ being fully customizable and easy to extend.")
     ;; According to LICENSE, either version 2 or version 3 of the GNU GPL may
     ;; be used.
     (license (list license:gpl2 license:gpl3))))
+
+
+(define-public soqt
+  (let ((commit-ref "fb8f655632bb9c9c60e0ff9fa69a5ba22d3ff99d")
+        (revision "1"))
+    (package
+    (name "soqt")
+    (version (git-version "1.6.0" revision commit-ref))
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/coin3d/soqt")
+               (commit commit-ref)
+               (recursive? #t)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "16vikb3fy8rmk10sg5g0gy2c343hi3x7zccsga90ssnkzpq6m032"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; There are no tests
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("cmake" ,cmake)))
+    (inputs
+      `(("qtbase" ,qtbase)
+        ("coin3D" ,coin3D-4)))
+    (home-page "https://github.com/coin3d/soqt")
+    (synopsis "Qt GUI component toolkit library for Coin")
+    (description "SoQt is a Qt GUI component toolkit library for Coin.  It is
+also compatible with SGI and TGS Open Inventor, and the API is based on the API
+of the InventorXt GUI component toolkit.")
+    (license license:bsd-3))))
