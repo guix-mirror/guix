@@ -4848,6 +4848,11 @@ edited, converted, compressed and saved.")
        (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           (lambda _
+             (substitute* "src/Makefile"
+               ((".*@.*ARTIFACT_SLIB.*") "")       ; don't install it
+               ((" \\$\\(ARTIFACT_SLIB\\)") "")))) ; don't build it
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "config"
