@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -711,7 +711,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.04")
+    (version "13.0.05")
     (source
      (origin
        (method url-fetch)
@@ -721,7 +721,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "064ilpbnz62cwmpajszs2b08x2zg7yh9whlaiqhjzi7bir3im94j"))))
+        (base32 "0kkgagnyhl92pwgnvf1vjrc1ql8lk5khb125sz18ck8vnxk4i3pr"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
