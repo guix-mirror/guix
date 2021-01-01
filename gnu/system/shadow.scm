@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system shadow)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -34,6 +35,7 @@
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -222,6 +224,46 @@ for a colorful Guile experience.\\n\\n\"))))\n"))
                          (rename-file ".nanorc" ".config/nano/nanorc"))
                        #t))))
 
+(define (find-duplicates list)
+  "Find duplicate entries in @var{list}.
+Two entries are considered duplicates, if they are @code{equal?} to each other.
+This implementation is made asymptotically faster than @code{delete-duplicates}
+through the internal use of hash tables."
+  (let loop ((list list)
+             ;; We actually modify table in-place, but still allocate it here
+             ;; so that we only need one level of indentation.
+             (table (make-hash-table)))
+    (match list
+      (()
+       (hash-fold (lambda (key value seed)
+                    (if (> value 1)
+                        (cons key seed)
+                        seed))
+                  '()
+                  table))
+      ((first . rest)
+       (hash-set! table first
+                  (1+ (hash-ref table first 0)))
+       (loop rest table)))))
+
+(define (assert-unique-account-names users)
+  (match (find-duplicates (map user-account-name users))
+    (() *unspecified*)
+    (duplicates
+     (raise
+      (formatted-message
+       (G_ "the following accounts appear more than once:~{ ~a~}")
+       duplicates)))))
+
+(define (assert-unique-group-names groups)
+  (match (find-duplicates (map user-group-name groups))
+    (() *unspecified*)
+    (duplicates
+     (raise
+      (formatted-message
+       (G_ "the following groups appear more than once:~{ ~a~}")
+       duplicates)))))
+
 (define (assert-valid-users/groups users groups)
   "Raise an error if USERS refer to groups not listed in GROUPS."
   (let ((groups (list->set (map user-group-name groups))))
@@ -292,6 +334,8 @@ group."
   (define group-specs
     (map user-group->gexp groups))
 
+  (assert-unique-account-names accounts)
+  (assert-unique-group-names groups)
   (assert-valid-users/groups accounts groups)
 
   ;; Add users and user groups.
