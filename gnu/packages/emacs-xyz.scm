@@ -12902,8 +12902,8 @@ additions:
       (license license:gpl3+))))
 
 (define-public emacs-dired-sidebar
-  (let ((commit "21ccb6723bea69f2e2ca25998268d8a039f904cc")
-        (revision "1"))
+  (let ((commit "da77919081d9a4e73c2df63542353319381e4f89")
+        (revision "2"))
     (package
       (name "emacs-dired-sidebar")
       (home-page "https://github.com/jojojames/dired-sidebar")
@@ -12914,7 +12914,7 @@ additions:
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0mck4qk6srbbf8xnn2sg11j822z4ybxvgavvy402d5sli515i8ca"))))
+                  "05h56wdl2xvc8davnx83ypg20fl7wlks97cafa4r2yf141xjc05h"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dired-subtree" ,emacs-dired-hacks)))
