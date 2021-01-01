@@ -1732,6 +1732,59 @@ standard graphics library for 3D visualization and visual simulation
 software in the scientific and engineering community.")
       (license license:bsd-3))))
 
+(define-public coin3D-4
+    (package
+    (name "coin3D")
+    (version "4.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/coin3d/coin")
+               (commit (string-append "Coin-" version))
+               (recursive? #t)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "1ayg0hl8wanhadahm5xbghghxw1qjwqbrs3dl3ngnff027hsyf8p"))
+        (modules '((guix build utils)))
+        (snippet
+          '(begin
+             ;; Delete binaries
+             (for-each delete-file
+                       '("cfg/csubst.exe"
+                         "cfg/wrapmsvc.exe"))
+             ;; Delete references to packaging tool cpack. Otherwise the build
+             ;; fails with "add_subdirectory given source "cpack.d" which is not
+             ;; an existing directory."
+             (substitute* "CMakeLists.txt"
+               ((".*cpack.d.*") ""))
+             #t))))
+    (build-system cmake-build-system)
+    (native-inputs
+      `(("doxygen" ,doxygen)
+        ("graphviz" ,graphviz)))
+    (inputs
+      `(("boost" ,boost)
+        ("freeglut" ,freeglut)
+        ("glew" ,glew)))
+    (arguments
+      `(#:configure-flags
+        (list
+          "-DCOIN_BUILD_DOCUMENTATION_MAN=ON"
+          (string-append "-DBOOST_ROOT="
+                         (assoc-ref %build-inputs "boost")))))
+    (home-page "https://github.com/coin3d/coin")
+    (synopsis
+      "High-level 3D visualization library with Open Inventor 2.1 API")
+    (description
+      "Coin is a 3D graphics library with an Application Programming Interface
+based on the Open Inventor 2.1 API.  For those who are not familiar with Open
+Inventor, it is a scene-graph based retain-mode rendering and model interaction
+library, written in C++, which has become the de facto standard graphics
+library for 3D visualization and visual simulation software in the scientific
+and engineering community.")
+      (license license:bsd-3)))
+
 (define-public superfamiconv
   (package
     (name "superfamiconv")
