@@ -2319,13 +2319,13 @@ based on a manifest file published by servers.")
 (define-public b4
   (package
     (name "b4")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "b4" version))
        (sha256
-        (base32 "01qid6mvddikcdpf2ihsyn8x3z5j2n64g0ip9pqbx42hrc50pmcz"))))
+        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; No tests.
     (inputs
