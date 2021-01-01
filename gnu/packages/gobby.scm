@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,7 +197,8 @@ together over the internet in real-time.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags (list "--with-inftextgtk"
+     `(#:configure-flags (list "--disable-static"
+                               "--with-inftextgtk"
                                "--with-infgtk")))
     (home-page "https://gobby.github.io/")
     (synopsis "Infininote protocol implementation")
