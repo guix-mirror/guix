@@ -10803,6 +10803,43 @@ Inflector module.")
 (define-public ecl-cl-inflector
   (sbcl-package->ecl-package sbcl-cl-inflector))
 
+(define-public sbcl-ixf
+  (let ((commit "ed26f87e4127e4a9e3aac4ff1e60d1f39cca5183")
+        (revision "1"))
+    (package
+      (name "sbcl-ixf")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dimitri/cl-ixf")
+               (commit commit)))
+         (file-name (git-file-name "cl-ixf" version))
+         (sha256
+          (base32 "1wjdnf4vr9z7lcfc49kl43g6l2i23q9n81siy494k17d766cdvqa"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("local-time" ,sbcl-local-time)
+         ("md5" ,sbcl-md5)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (home-page "https://github.com/dimitri/cl-ixf")
+      (synopsis "Parse IBM IXF file format")
+      (description
+       "This is a Common Lisp library to handle the IBM PC version of the IXF
+(Integration Exchange Format) file format.")
+      (license license:public-domain))))
+
+(define-public ecl-ixf
+  (sbcl-package->ecl-package sbcl-ixf))
+
+(define-public cl-ixf
+  (sbcl-package->cl-source-package sbcl-ixf))
+
 (define-public sbcl-qbase64
   (package
     (name "sbcl-qbase64")
