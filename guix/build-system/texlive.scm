@@ -59,13 +59,17 @@ name for the checkout directory."
     (file-name (string-append name "-" version "-checkout"))
     (sha256 hash)))
 
-(define (texlive-ref component id)
+(define* (texlive-ref component #:optional id)
   "Return a <svn-reference> object for the package ID, which is part of the
-given Texlive COMPONENT."
+given Texlive COMPONENT.  If ID is not provided, COMPONENT is used as the top
+level package ID."
   (svn-reference
    (url (string-append "svn://www.tug.org/texlive/tags/"
                        %texlive-tag "/Master/texmf-dist/"
-                       "source/" component "/" id))
+                       "source/" component
+                       (if id
+                           (string-append "/" id)
+                           "")))
    (revision %texlive-revision)))
 
 (define %texlive-build-system-modules
