@@ -16507,6 +16507,55 @@ Group name or group ID that will be used when accessing the module.
 @end table
 @end deftp
 
+The @code{(gnu services syncthing)} module provides the following services:
+@cindex syncthing
+
+You might want a syncthing daemon if you have files between two or more
+computers and want to sync them in real time, safely protected from
+prying eyes.
+
+@deffn {Scheme Variable} syncthing-service-type
+This is the service type for the @uref{https://syncthing.net/,
+syncthing} daemon, The value for this service type is a
+@command{syncthing-configuration} record as in this example:
+
+@lisp
+(service syncthing-service-type
+         (syncthing-configuration (user "alice")))
+@end lisp
+
+See below for details about @code{syncthing-configuration}.
+
+@deftp {Data Type} syncthing-configuration
+Data type representing the configuration for @code{syncthing-service-type}.
+
+@table @asis
+@item @code{syncthing} (default: @var{syncthing})
+@code{syncthing} package to use.
+
+@item @code{arguments} (default: @var{'()})
+List of command-line arguments passing to @code{syncthing} binary.
+
+@item @code{logflags} (default: @var{0})
+Sum of loging flags, see
+@uref{https://docs.syncthing.net/users/syncthing.html#cmdoption-logflags, Syncthing documentation logflags}.
+
+@item @code{user} (default: @var{#f})
+The user as which the Syncthing service is to be run.
+This assumes that the specified user exists.
+
+@item @code{group} (default: @var{"users"})
+The group as which the Syncthing service is to be run.
+This assumes that the specified group exists.
+
+@item @code{home} (default: @var{#f})
+Common configuration and data directory.  The default configuration
+directory is @file{$HOME} of the specified Syncthing @code{user}.
+
+@end table
+@end deftp
+@end deffn
+
 Furthermore, @code{(gnu services ssh)} provides the following services.
 @cindex SSH
 @cindex SSH server
