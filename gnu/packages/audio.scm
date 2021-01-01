@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -4832,16 +4832,15 @@ edited, converted, compressed and saved.")
 (define-public lsp-dsp-lib
   (package
     (name "lsp-dsp-lib")
-    (version "0.5.8")
+    (version "0.5.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/sadko4u/lsp-dsp-lib/"
-                            "releases/download/lsp-dsp-lib-" version
+                            "releases/download/" version
                             "/lsp-dsp-lib-" version "-src.tar.gz"))
         (sha256
-         (base32
-          "07w3d2i0z0xmvi1ngcgs7lc5a0da8jvf7rv4dnjk01md43b7fkh1"))))
+         (base32 "0lkar6r9jfrrqswi8nnndlm5a9kfwqjn92d81gp2yhc3p46xsswz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
