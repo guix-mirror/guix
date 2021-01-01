@@ -2682,14 +2682,14 @@ easily (one at a time).")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.11")
+    (version "1.4.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1gcxvhin5y0q47svqbf90r5aip0cgywm8sq6m84ygda7km8xylwv"))))
+        (base32 "02j8qfd44dfyq1sq7r9znj9y6wam39ncch1sc8chcdlw5nsmaqsz"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
