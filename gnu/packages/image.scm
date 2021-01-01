@@ -9,7 +9,7 @@
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -78,6 +78,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
@@ -1734,7 +1735,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (define-public gpick
   (package
     (name "gpick")
-    (version "0.2.5")
+    (version "0.2.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1743,12 +1744,13 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mcj806zagh122qgrdkrg0macpzby97y89xi2sjyn3bh8vmmyxjy"))))
+                "0nl89gca5nmbyycv5rl5bm6k7facapdk4pab9pl949aa3cjw9bk7"))))
     (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
        ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("ragel" ,ragel)))
     (inputs
      `(("expat" ,expat)
        ("gtk2" ,gtk+-2)
