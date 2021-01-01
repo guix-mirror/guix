@@ -22,7 +22,7 @@
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -445,7 +445,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -455,7 +455,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "1vf1ab3mnx7p4s4n4pssajj211s3zr4730bwgsjx9gxcnyppqclw"))
+               "1m4ig69qw4g3lhm4351snmy5i0ch65fqc9vqqdybr6jy21w7w225"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
