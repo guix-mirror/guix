@@ -87,11 +87,11 @@
                (("/bin/echo") (which "echo")))
              #t)))))
     (native-inputs
-     `(("pcsc-lite" ,pcsc-lite)         ; only required for headers
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)))
+     `(("libusb" ,libusb)
+       ("pcsc-lite" ,pcsc-lite)))
     (home-page "https://ccid.apdu.fr/")
     (synopsis "PC/SC driver for USB smart card devices")
     (description
