@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -163,21 +163,22 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "5.2.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://github.com/Doom-Utils/deutex"
-                                "/releases/download/v" version "/"
-                                "deutex-" version ".tar.xz"))
-            (sha256
-             (base32
-              "07w3asqxx89wl2wfv1z3cak8v83h3ys3b39mq9qq4gyf3xdhs76n"))))
+   (version "5.2.2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/Doom-Utils/deutex"
+                          "/releases/download/v" version "/"
+                          "deutex-" version ".tar.zst"))
+      (sha256
+       (base32 "0psb2za6ldrlak7s8pjvli98ij5yiwjx8j1ms2v7rj9yadx0xv8h"))))
    (build-system gnu-build-system)
    (inputs
     `(("libpng" ,libpng)))
    (native-inputs
     `(("asciidoc" ,asciidoc)
-      ("pkg-config" ,pkg-config)))
+      ("pkg-config" ,pkg-config)
+      ("zstd" ,zstd)))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description
