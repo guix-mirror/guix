@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -9485,7 +9485,7 @@ existing databases over the internet.")
 (define-public gnome-tweaks
   (package
     (name "gnome-tweaks")
-    (version "3.34.0")
+    (version "3.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
@@ -9495,7 +9495,7 @@ existing databases over the internet.")
                (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "0l2j42ba7v866iknygamnkiq7igh0fjvq92r93cslvvfnkx2ccq0"))))
+                "19y62dj4n5i6v4zpjllxl51dch6ndy8xs45v5aqmmq9xyfrqk5yq"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
