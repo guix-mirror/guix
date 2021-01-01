@@ -7,6 +7,7 @@
 # Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 # Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 # Copyright © 2020 Daniel Brooks <db48x@db48x.net>
+# Copyright © 2021 Jakub Kądziołka <kuba@kadziolka.net>
 #
 # This file is part of GNU Guix.
 #
@@ -454,14 +455,12 @@ sys_create_init_profile()
     cat <<"EOF" > /etc/profile.d/guix.sh
 # _GUIX_PROFILE: `guix pull` profile
 _GUIX_PROFILE="$HOME/.config/guix/current"
-if [ -L $_GUIX_PROFILE ]; then
-  export PATH="$_GUIX_PROFILE/bin${PATH:+:}$PATH"
-  # Export INFOPATH so that the updated info pages can be found
-  # and read by both /usr/bin/info and/or $GUIX_PROFILE/bin/info
-  # When INFOPATH is unset, add a trailing colon so that Emacs
-  # searches 'Info-default-directory-list'.
-  export INFOPATH="$_GUIX_PROFILE/share/info:$INFOPATH"
-fi
+export PATH="$_GUIX_PROFILE/bin${PATH:+:}$PATH"
+# Export INFOPATH so that the updated info pages can be found
+# and read by both /usr/bin/info and/or $GUIX_PROFILE/bin/info
+# When INFOPATH is unset, add a trailing colon so that Emacs
+# searches 'Info-default-directory-list'.
+export INFOPATH="$_GUIX_PROFILE/share/info:$INFOPATH"
 
 # GUIX_PROFILE: User's default profile
 GUIX_PROFILE="$HOME/.guix-profile"
