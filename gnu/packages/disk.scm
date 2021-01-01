@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -759,7 +759,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "71")
+    (version "71.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -768,7 +768,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14vhldncflxgsam49ssn1x3h4m9xxw9dwyl748xajf1js33ph5av"))))
+                "1vi61bm9wyawklswh9mj9zdp28ar7r97qckwnhgiyila73fb3jx2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
