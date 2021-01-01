@@ -198,6 +198,9 @@ language with thin bindings for other languages.")
                (base32
                 "17jpbp6f0rr132jn2gqy8ry8mv1w27v6dyhfq1igv8v1674aw2sr"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (inputs
      `(("expat" ,expat)))
     (home-page "https://www.unidata.ucar.edu/software/udunits/")
