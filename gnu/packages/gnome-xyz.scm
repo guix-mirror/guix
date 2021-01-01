@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Ellis Kenyo <me@elken.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -649,3 +650,31 @@ language specification for the Language Server Protocol (LSP).  This tool is
 used in text editing environments to provide a complete and integrated
 feature-set for programming Vala effectively.")
     (license license:lgpl2.1+)))
+
+(define-public nordic-theme
+  (let ((commit "07d764c5ebd5706e73d2e573f1a983e37b318915")
+	(revision "0"))
+  (package
+   (name "nordic-theme")
+   (version (git-version "1.9.0" revision commit))
+   (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/EliverLara/Nordic")
+             (commit commit)))
+     (sha256
+       (base32
+         "0y2s9d6h1b195s6afp1gb5rb1plfslkpbw2brd30a9d66wfvsqk0"))
+     (file-name (git-file-name name version))))
+   (build-system copy-build-system)
+   (arguments
+    `(#:install-plan
+      `(("." "share/themes/nord"
+         #:exclude ("README.md" "LICENSE" "Art/" "package.json"
+                    "package-lock.json" "Gulpfile.js")))))
+   (home-page "https://github.com/EliverLara/Nordic")
+   (synopsis "Dark Gtk3.20+ theme using the Nord color pallete")
+   (description "Nordic is a Gtk3.20+ theme created using the Nord color
+pallete.")
+   (license license:gpl3))))
