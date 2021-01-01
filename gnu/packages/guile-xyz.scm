@@ -2542,8 +2542,8 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "84d4e8d42593d4a6a04be55d07f0f7efb9d801e7")
-        (revision "1"))
+  (let ((commit "e9f2b469cc452b384af0243f3eba2f07871090ad")
+        (revision "2"))
     (package
       (name "guile-studio")
       (version (git-version "0.0.4" revision commit))
@@ -2555,7 +2555,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ws1b9m1n133wx4m9hgmq9kqx1acm1yyq0aniirqphd4l6bzy4qs"))))
+                  "16hwin8zdfyp25iczz3gr5w7hav6av6r8gw64nplgxgxkyaw53a6"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
@@ -2592,6 +2592,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-f" ,emacs-f)                       ; needed by doom-modeline
          ("emacs-memoize" ,emacs-memoize)           ; needed by all-the-icons
          ("emacs-all-the-icons" ,emacs-all-the-icons) ; needed by doom-modeline
+         ("emacs-dired-sidebar" ,emacs-dired-sidebar)
          ("emacs-doom-modeline" ,emacs-doom-modeline)
          ("emacs-modus-themes" ,emacs-modus-themes)
          ("emacs-geiser" ,emacs-geiser)
