@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -1559,15 +1559,14 @@ The API also works with MaxMind’s free GeoLite2 databases.")
 (define-public routino
   (package
    (name "routino")
-   (version "3.3.2")
+   (version "3.3.3")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://www.routino.org/download/routino-"
                          version ".tgz"))
      (sha256
-      (base32
-       "1ccx3s99j8syxc1gqkzsaqkmyf44l7h3adildnc5iq2md7bp8wab"))))
+      (base32 "1xa7l2bjn832nk6bc7b481nv8hd2gj41jwhg0d2qy10lqdvjpn5b"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("perl" ,perl)))
