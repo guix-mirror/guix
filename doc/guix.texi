@@ -55,7 +55,7 @@ Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
-Copyright @copyright{} 2018 Oleg Pykhalov@*
+Copyright @copyright{} 2018, 2021 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
@@ -17206,6 +17206,58 @@ address, delete everything except these options:
 @end itemize
 @end table
 @end deftp
+
+@cindex keepalived
+@deffn {Scheme Variable} keepalived-service-type
+This is the type for the @uref{https://www.keepalived.org/, Keepalived}
+routing software, @command{keepalived}.  Its value must be an
+@code{keepalived-configuration} record as in this example for master
+machine:
+
+@lisp
+(service keepalived-service-type
+         (keepalived-configuration
+           (config-file (local-file "keepalived-master.conf"))))
+@end lisp
+
+where @file{keepalived-master.conf}:
+
+@example
+vrrp_instance my-group @{
+  state MASTER
+  interface enp9s0
+  virtual_router_id 100
+  priority 100
+  unicast_peer @{ 10.0.0.2 @}
+  virtual_ipaddress @{
+    10.0.0.4/24
+  @}
+@}
+@end example
+
+and for backup machine:
+
+@lisp
+(service keepalived-service-type
+         (keepalived-configuration
+          (config-file (local-file "keepalived-backup.conf"))))
+@end lisp
+
+where @file{keepalived-backup.conf}:
+
+@example
+vrrp_instance my-group @{
+  state BACKUP
+  interface enp9s0
+  virtual_router_id 100
+  priority 99
+  unicast_peer @{ 10.0.0.3 @}
+  virtual_ipaddress @{
+    10.0.0.4/24
+  @}
+@}
+@end example
+@end deffn
 
 @node Unattended Upgrades
 @subsection Unattended Upgrades

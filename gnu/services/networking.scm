@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cluster)
   #:use-module (gnu packages connman)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
@@ -192,7 +194,11 @@
             yggdrasil-configuration-log-level
             yggdrasil-configuration-log-to
             yggdrasil-configuration-json-config
-            yggdrasil-configuration-package))
+            yggdrasil-configuration-package
+
+            keepalived-configuration
+            keepalived-configuration?
+            keepalived-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1864,5 +1870,44 @@ See yggdrasil -genconf for config options.")
                              (const %yggdrasil-accounts))
           (service-extension profile-service-type
                              (compose list yggdrasil-configuration-package))))))
+
+
+;;;
+;;; Keepalived
+;;;
+
+(define-record-type* <keepalived-configuration>
+  keepalived-configuration make-keepalived-configuration
+  keepalived-configuration?
+  (keepalived  keepalived-configuration-keepalived  ;<package>
+               (default keepalived))
+  (config-file keepalived-configuration-config-file ;file-like
+               (default #f)))
+
+(define keepalived-shepherd-service
+  (match-lambda
+    (($ <keepalived-configuration> keepalived config-file)
+     (list
+      (shepherd-service
+       (provision '(keepalived))
+       (documentation "Run keepalived.")
+       (requirement '(loopback))
+       (start #~(make-forkexec-constructor
+                 (list (string-append #$keepalived "/sbin/keepalived")
+                       "--dont-fork" "--log-console" "--log-detail"
+                       "--pid=/var/run/keepalived.pid"
+                       (string-append "--use-file=" #$config-file))
+                 #:pid-file "/var/run/keepalived.pid"
+                 #:log-file "/var/log/keepalived.log"))
+       (respawn? #f)
+       (stop #~(make-kill-destructor)))))))
+
+(define keepalived-service-type
+  (service-type (name 'keepalived)
+                (extensions (list (service-extension shepherd-root-service-type
+                                                     keepalived-shepherd-service)))
+                (description
+                 "Run @uref{https://www.keepalived.org/, Keepalived}
+routing software.")))
 
 ;;; networking.scm ends here
