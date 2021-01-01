@@ -744,8 +744,8 @@ It has a nice, simple s-expression based syntax.")
     (inputs `(("guile" ,guile-2.2)))))
 
 (define-public guile-squee
-  (let ((commit "7dcd22b54fd56c9e629489191bb27ac80ecea9db")
-        (revision "1"))
+  (let ((commit "c1497a216e881cfde39d6aa7c73d0bf6b497c89b")
+        (revision "2"))
     (package
       (name "guile-squee")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -757,7 +757,7 @@ It has a nice, simple s-expression based syntax.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1568sk6ada7x9qpfhax0qq1bq93qll1q7nyjrb7h3c1c3lc9sc15"))))
+                  "1alskrplnyl1n5wb39drn72cwplp47a8cpdd1n9cdnw3jhk5p12p"))))
       (build-system guile-build-system)
       (arguments
        '(#:phases
