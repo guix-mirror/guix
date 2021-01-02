@@ -96,6 +96,41 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
     (home-page "https://github.com/vinceliuice/matcha")
     (license license:gpl3+)))
 
+(define-public arc-icon-theme
+  (package
+    (name "arc-icon-theme")
+    (version "20161122")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/horst3180/arc-icon-theme")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ch3hp08qri93510hypzz6m2x4xgg2h15wvnhjwh1x1s1b7jvxjd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^\"\\$srcdir/configure\".*") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    ;; When Arc is missing an icon, it looks in the Moka icon theme for it.
+    (propagated-inputs
+     `(("moka-icon-theme" ,moka-icon-theme)))
+    (synopsis "Arc icon theme")
+    (description "The Arc icon theme provides a set of icons matching the
+style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
+the Moka icon theme.")
+    (home-page "https://github.com/horst3180/arc-icon-theme")
+    (license license:gpl3+)))
+
 (define-public delft-icon-theme
   (package
     (name "delft-icon-theme")
