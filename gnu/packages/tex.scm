@@ -312,7 +312,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
       ("pixman" ,pixman)
       ("poppler" ,poppler)
       ("potrace" ,potrace)
-      ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+      ("python" ,python)
       ("ruby" ,ruby)
       ("tcsh" ,tcsh)
       ("teckit" ,teckit)
