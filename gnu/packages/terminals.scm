@@ -1432,7 +1432,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
 (define-public bootterm
   (package
     (name "bootterm")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1441,7 +1441,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mh2i47ppcrw027nmkpjgbmx55ml21bmqihvwkhlvj1jr0vv8pva"))))
+                "08yb4kiid3028cqsx7wzyrzk46asphxlxlj1y141hi245wbql55n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test suite
