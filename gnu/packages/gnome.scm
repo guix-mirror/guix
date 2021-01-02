@@ -9570,62 +9570,6 @@ functionality and behavior.")
     (home-page "https://extensions.gnome.org/")
     (license license:gpl3+)))
 
-(define-public faba-icon-theme
-  (package
-    (name "faba-icon-theme")
-    (version "4.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/snwh/faba-icon-theme")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0xh6ppr73p76z60ym49b4d0liwdc96w41cc5p07d48hxjsa6qd6n"))))
-    (build-system meson-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'disable-post-install
-           (lambda _
-             (substitute* "meson.build"
-               (("meson.add_install_script.*") "")))))))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
-    (synopsis "Faba icon theme")
-    (description
-     "Faba is a minimal icon set used as a basis for other themes such as
-Moka")
-    (home-page "https://snwh.org/moka")
-    (license (list license:lgpl3+
-                   license:cc-by-sa4.0))))
-
-(define-public moka-icon-theme
-  (package
-    (inherit faba-icon-theme)
-    (name "moka-icon-theme")
-    (version "5.4.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/snwh/moka-icon-theme")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "015l02im4mha5z91dbchxf6xkp66d346bg3xskwg0rh3lglhjsrd"))))
-    (propagated-inputs
-     ;; Moka is based on Faba by using it as a fallback icon set instead of
-     ;; bundling it, so we need to add it as a propagated input.
-     `(("faba-icon-theme" ,faba-icon-theme)))
-    (synopsis "Moka icon theme")
-    (description "Moka is a stylized desktop icon set, designed to be clear,
-simple and consistent.")
-    (license (list license:gpl3+
-                   license:cc-by-sa4.0))))
-
 (define-public folks
   (package
     (name "folks")
