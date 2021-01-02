@@ -50,7 +50,7 @@
 (define-public matcha-theme
   (package
     (name "matcha-theme")
-    (version "2020-05-09")
+    (version "2021-01-01")
     (source
       (origin
         (method git-fetch)
@@ -61,7 +61,7 @@
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0fp3ijynyvncy2byjjyba573p81x2pl2hdzv17mg40r8d5mjlkww"))))
+            "1pa6ra87wlq0gwz4n03l6xv0pxiamr5dygycvppms8v6xyc2aa0r"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
