@@ -715,6 +715,32 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
     (home-page "https://github.com/vinceliuice/matcha")
     (license license:gpl3+)))
 
+(define-public materia-theme
+  (package
+    (name "materia-theme")
+    (version "20200916")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/nana-4/materia-theme")
+            (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0qaxxafsn5zd2ysgr0jyv5j73360mfdmxyd55askswlsfphssn74"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gtk+" ,gtk+)
+       ("sassc" ,sassc)))
+    (home-page "https://github.com/nana-4/materia-theme")
+    (synopsis "Material Design theme for a wide range of environments")
+    (description "Materia is a Material Design theme for GNOME/GTK based
+desktop environments.  It supports GTK 2, GTK 3, GNOME Shell, Budgie,
+Cinnamon, MATE, Unity, Xfce, LightDM, GDM, Chrome theme, etc.")
+    (license license:gpl2+)))
+
 (define-public numix-gtk-theme
   (package
     (name "numix-gtk-theme")
