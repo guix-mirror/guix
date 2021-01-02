@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4054,6 +4055,41 @@ them in $@@ instead.  This module attempts to solve these problems.  It
 provides an eval_closure function, which evals a string in a clean
 environment, other than a fixed list of specified variables.  Compilation
 errors are rethrown automatically.")
+    (license (package-license perl))))
+
+(define-public perl-eval-withlexicals
+  (package
+    (name "perl-eval-withlexicals")
+    (version "1.003006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/Eval-WithLexicals-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0x09mq0q745cxkw3xgr0h7dil7p1pdq3l5299kj3mk2ijkk2gwb6"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-tinyrepl
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (wrap-program (string-append out "/bin/tinyrepl")
+                          `("PERL5LIB" ":" prefix
+                            (,(getenv "PERL5LIB")
+                             ,(string-append out "/lib/perl5/site_perl"))))
+                        #t))))))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "https://metacpan.org/release/Eval-WithLexicals")
+    (synopsis "Lexical scope evaluation library for Perl")
+    (description "The Eval::WithLexicals Perl library provides support for
+lexical scope evaluation.  This package also includes the @command{tinyrepl}
+command, which can be used as a minimal Perl read-eval-print loop (REPL).")
     (license (package-license perl))))
 
 (define-public perl-exception-class
