@@ -57,7 +57,7 @@
 (define pine64-image-type
   (image-type
    (name 'pine64-raw)
-   (constructor (cut image-with-os arm64-disk-image <>))))
+   (constructor (cut image-with-os (arm64-disk-image) <>))))
 
 (define pine64-barebones-raw-image
   (image

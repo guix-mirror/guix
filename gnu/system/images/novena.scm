@@ -52,7 +52,7 @@
 (define novena-image-type
   (image-type
    (name 'novena-raw)
-   (constructor (cut image-with-os arm32-disk-image <>))))
+   (constructor (cut image-with-os (arm32-disk-image) <>))))
 
 (define novena-barebones-raw-image
   (image

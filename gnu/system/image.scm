@@ -128,21 +128,21 @@
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
 
-(define arm32-disk-image
+(define* (arm32-disk-image #:optional (offset root-offset))
   (image
    (format 'disk-image)
    (target "arm-linux-gnueabihf")
    (partitions
     (list (partition
            (inherit root-partition)
-           (offset root-offset))))
+           (offset offset))))
    ;; FIXME: Deleting and creating "/var/run" and "/tmp" on the overlayfs
    ;; fails.
    (volatile-root? #f)))
 
-(define arm64-disk-image
+(define* (arm64-disk-image #:optional (offset root-offset))
   (image
-   (inherit arm32-disk-image)
+   (inherit (arm32-disk-image offset))
    (target "aarch64-linux-gnu")))
 
 
@@ -189,12 +189,12 @@ set to the given OS."
 (define arm32-image-type
   (image-type
    (name 'arm32-raw)
-   (constructor (cut image-with-os arm32-disk-image <>))))
+   (constructor (cut image-with-os (arm32-disk-image) <>))))
 
 (define arm64-image-type
   (image-type
    (name 'arm64-raw)
-   (constructor (cut image-with-os arm64-disk-image <>))))
+   (constructor (cut image-with-os (arm64-disk-image) <>))))
 
 
 ;;
