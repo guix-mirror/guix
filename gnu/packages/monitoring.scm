@@ -171,6 +171,7 @@ etc. via a Web interface.  Features include:
     (arguments
      `(#:configure-flags
        (list "--enable-agent"
+             "--enable-ipv6"
              (string-append "--with-iconv="
                             (assoc-ref %build-inputs "libiconv"))
              (string-append "--with-libpcre="
