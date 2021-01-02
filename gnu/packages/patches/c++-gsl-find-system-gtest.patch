@@ -1,0 +1,96 @@
+From f5cf01083baf7e8dc8318db3648bc6098dc32d67 Mon Sep 17 00:00:00 2001
+From: Nicholas Guriev <guriev-ns@ya.ru>
+Date: Sat, 18 Apr 2020 13:30:17 +0300
+Subject: [PATCH] Search for GoogleTest via pkg-config first
+
+---
+ tests/CMakeLists.txt | 55 ++++++++++++++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 25 deletions(-)
+
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 02193197..53d475c2 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -1,36 +1,41 @@
+ cmake_minimum_required(VERSION 3.0.2)
+ 
+ project(GSLTests CXX)
++include(FindPkgConfig)
+ 
+ # will make visual studio generated project group files
+ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+ 
+-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+-execute_process(
+-    COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+-    RESULT_VARIABLE result
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
+-)
+-if(result)
+-    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+-endif()
++pkg_search_module(GTestMain gtest_main)
++if (NOT GTestMain_FOUND)
++    configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
++    execute_process(
++        COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
++        RESULT_VARIABLE result
++        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
++    )
++    if(result)
++        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
++    endif()
+ 
+-execute_process(
+-    COMMAND ${CMAKE_COMMAND} --build .
+-    RESULT_VARIABLE result
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
+-)
+-if(result)
+-    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+-endif()
++    execute_process(
++        COMMAND ${CMAKE_COMMAND} --build .
++        RESULT_VARIABLE result
++        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download
++    )
++    if(result)
++        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
++    endif()
+ 
+-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
++    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
++    set(GTestMain_LIBRARIES gtest_main)
+ 
+-add_subdirectory(
+-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+-    EXCLUDE_FROM_ALL
+-)
++    add_subdirectory(
++        ${CMAKE_CURRENT_BINARY_DIR}/googletest-src
++        ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
++        EXCLUDE_FROM_ALL
++    )
++endif()
+ 
+ if (MSVC AND (GSL_CXX_STANDARD EQUAL 17))
+     set(GSL_CPLUSPLUS_OPT -Zc:__cplusplus -permissive-)
+@@ -149,7 +154,7 @@ function(add_gsl_test name)
+     target_link_libraries(${name}
+         GSL
+         gsl_tests_config
+-        gtest_main
++        ${GTestMain_LIBRARIES}
+     )
+     add_test(
+         ${name}
+@@ -254,7 +259,7 @@ function(add_gsl_test_noexcept name)
+     target_link_libraries(${name}
+         GSL
+         gsl_tests_config_noexcept
+-        gtest_main
++        ${GTestMain_LIBRARIES}
+     )
+     add_test(
+       ${name}

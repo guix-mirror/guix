@@ -63,6 +63,35 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
+(define-public c++-gsl
+  (package
+    (name "c++-gsl")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/microsoft/GSL.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (patches
+        (search-patches
+         "c++-gsl-find-system-gtest.patch"))
+       (sha256
+        (base32 "0gbvr48f03830g3154bjhw92b8ggmg6wwh5xyb8nppk9v6w752l0"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guidelines Support Library")
+    (description "c++-gsl contains functions and types that are suggested for
+use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
+    (home-page "https://github.com/microsoft/GSL/")
+    (license license:expat)))
+
 (define-public libzen
   (package
     (name "libzen")
