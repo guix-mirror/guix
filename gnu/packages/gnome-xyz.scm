@@ -33,12 +33,15 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ssh)
@@ -517,6 +520,50 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
 scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
 notebooks and tiling window managers.")
     (license license:gpl3)))
+
+(define-public arc-theme
+  (package
+    (name "arc-theme")
+    (version "20201013")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jnsh/arc-theme")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--disable-cinnamon")
+       #:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi")))
+         (add-before 'build 'set-home   ;placate Inkscape
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("inkscape" ,inkscape)
+       ("optipng" ,optipng)
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc/libsass-3.5)))
+    (synopsis "A flat GTK+ theme with transparent elements")
+    (description "Arc is a flat theme with transparent elements for GTK 3, GTK
+2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
+like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
+    (home-page "https://github.com/horst3180/arc-theme")
+    ;; No "or later" language found.
+    (license license:gpl3+)))
 
 (define-public greybird-gtk-theme
   (package
