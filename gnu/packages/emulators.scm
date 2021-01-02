@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
@@ -1552,7 +1552,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.226")
+    (version "0.227")
     (source
      (origin
        (method git-fetch)
@@ -1561,7 +1561,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yfns42rk1l0qprj5ksj9fqsgqpa23xnzxf29r4434p4n18bb77v"))
+        (base32 "0p7xhsahmkr5hh3j6hc1mpgi5z4navy77v4k35i0sgpdv1ax4y2l"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
