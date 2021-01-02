@@ -4409,8 +4409,8 @@ mime-type of a file.")
   (sbcl-package->ecl-package sbcl-ningle))
 
 (define-public sbcl-cl-fastcgi
-  (let ((commit "d576d20eeb12f225201074b28934ba395b15781a")
-        (revision "1"))
+  (let ((commit "de8b49b26de9863996ec18db28af8ab7e8ac4e20")
+        (revision "2"))
     (package
       (name "sbcl-cl-fastcgi")
       (version (git-version "0.2" revision commit))
@@ -4422,7 +4422,7 @@ mime-type of a file.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "02mvzzyn0k960s38rbxaqqmdkwcfmyhf8dx6ynz8xyxflmp0s5zv"))))
+          (base32 "0xgmhx766q4nmrvn5z7ag3ikpr9phlh8ypi8b14azshq9lqbq0m7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("usocket" ,sbcl-usocket)
@@ -4443,8 +4443,6 @@ mime-type of a file.")
       (description
        "CL-FastCGI is a generic version of SB-FastCGI, targeting to run on
 mostly Common Lisp implementation.")
-      ;; TODO: Upstream on specifies "BSD license":
-      ;; https://github.com/KDr2/cl-fastcgi/issues/4
       (license license:bsd-2))))
 
 (define-public cl-fastcgi
