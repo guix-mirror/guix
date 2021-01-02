@@ -521,7 +521,7 @@ notebooks and tiling window managers.")
 (define-public greybird-gtk-theme
   (package
     (name "greybird-gtk-theme")
-    (version "3.22.12")
+    (version "3.22.13")
     (source (origin
               (method git-fetch)
               (uri
@@ -531,7 +531,7 @@ notebooks and tiling window managers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j66ddvl3pmwh2v8ajm8r5g5nbsr7r262ff1qn2nf3i0gy8b3lq8"))))
+                "154qawiga792iimkpk3a6q8f4gm4r158wmsagkbqqbhj33kxgxhg"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gtk+" ,gtk+)
