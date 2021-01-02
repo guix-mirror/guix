@@ -50,7 +50,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -14165,14 +14165,14 @@ monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
 (define-public python-graphql-core
   (package
     (name "python-graphql-core")
-    (version "0.5.3")
+    (version "3.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "graphql-core" version))
         (sha256
          (base32
-          "0rsaarx2sj4xnw9966rhh4haiqaapm4lm2mfqm48ywd51j5vh1a0"))))
+          "0fjv5w2wvgdr8gb27v241bavliipyir9fdz48rsgc3xapm644mn0"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Tests require the unpackaged pytest-benchmark.
