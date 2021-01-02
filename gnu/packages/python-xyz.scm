@@ -15224,13 +15224,13 @@ and bit flag values.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "20.3.0")
+    (version "19.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "007pchhxk2nh6m2rgflkkij9xjwysq3fl7xr72cy8i4pw76s6al3"))))
+                "0wky4h28n7xnr6xv69p9z6kv8bzn50d10c3drmd9ds8gawbcxdzp"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
