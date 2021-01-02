@@ -585,23 +585,20 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
   (deprecated-package "numix-theme" numix-gtk-theme))
 
 (define-public papirus-icon-theme
-  (let ((version "0.0.0") ;; The package does not use semver
-        (revision "2")
-        (tag "20200602"))
-    (package
-      (name "papirus-icon-theme")
-      (version (git-version version revision tag))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
-               (commit tag)))
-         (sha256
-          (base32
-           "0yv19kl8jr2jmh9018b1qmnq68alw84vrmb35jm462qd3qzzdgah"))
-         (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
+  (package
+    (name "papirus-icon-theme")
+    (version "20210101")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
+             (commit version)))
+       (sha256
+        (base32
+         "0w6qg3zjhfvjg1gg5inranf8ianb4mrp0jm9qgi6hg87ig1rashs"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -610,13 +607,13 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
          (delete 'bootstrap)
          (delete 'configure)
          (delete 'build))))
-      (native-inputs
-       `(("gtk+:bin" ,gtk+ "bin")))
-      (home-page "https://git.io/papirus-icon-theme")
-      (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
-      (description "Papirus is a fork of the icon theme Paper with a lot of new icons
+    (native-inputs
+     `(("gtk+:bin" ,gtk+ "bin")))
+    (home-page "https://git.io/papirus-icon-theme")
+    (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
+    (description "Papirus is a fork of the icon theme Paper with a lot of new icons
 and a few extra features.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public vala-language-server
   (package
