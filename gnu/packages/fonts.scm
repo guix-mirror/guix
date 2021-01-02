@@ -1787,7 +1787,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "2.210")
+    (version "2.221")
     (source
      (origin
        (method url-fetch)
@@ -1795,7 +1795,7 @@ This package provides the TrueType fonts.")
         (string-append "https://github.com/JetBrains/JetBrainsMono/releases/"
                        "download/v" version "/JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "19wbggnmqs3k1wdqy7l7imnx23g7hh159pl32nz3mzz8s8sqfdix"))))
+        (base32 "1acrgv2q9vxviirpi01xy67pkkswyssw4dn5pgyvrnjxr85cgjrg"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
