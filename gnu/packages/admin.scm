@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -929,14 +929,14 @@ recursive runs on the generated subnets.  (also IPv6)
 (define-public alive
   (package
     (name "alive")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/alive/alive-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1vrzg51ai68x9yld7vbgl58sxaw5qpx8rbakwcxn4cqq6vpxj38j"))))
+               "053hfp7s66lnilm1ii4jrjmy44wpa2cwwh6f0sl8cyz0mm813x4b"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("alive_cv_nice_ping=yes")))
     (inputs `(("guile" ,guile-2.0)
