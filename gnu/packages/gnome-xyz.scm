@@ -50,52 +50,6 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
-(define-public matcha-theme
-  (package
-    (name "matcha-theme")
-    (version "2021-01-01")
-    (source
-      (origin
-        (method git-fetch)
-        (uri
-          (git-reference
-            (url "https://github.com/vinceliuice/Matcha-gtk-theme")
-            (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-          (base32
-            "1pa6ra87wlq0gwz4n03l6xv0pxiamr5dygycvppms8v6xyc2aa0r"))))
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((out (assoc-ref %outputs "out"))
-                (source (assoc-ref %build-inputs "source"))
-                (bash (assoc-ref %build-inputs "bash"))
-                (coreutils (assoc-ref %build-inputs  "coreutils"))
-                (themesdir (string-append out "/share/themes")))
-           (setenv "PATH"
-                   (string-append coreutils "/bin:"
-                                  (string-append bash "/bin:")))
-           (copy-recursively source (getcwd))
-           (patch-shebang "install.sh")
-           (mkdir-p themesdir)
-           (invoke "./install.sh" "-d" themesdir)
-           #t))))
-    (inputs
-     `(("gtk-engines" ,gtk-engines)))
-    (native-inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)))
-    (synopsis "Flat design theme for GTK 3, GTK 2 and GNOME-Shell")
-    (description "Matcha is a flat Design theme for GTK 3, GTK 2 and
-Gnome-Shell which supports GTK 3 and GTK 2 based desktop environments
-like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
-    (home-page "https://github.com/vinceliuice/matcha")
-    (license license:gpl3+)))
-
 (define-public arc-icon-theme
   (package
     (name "arc-icon-theme")
@@ -219,6 +173,37 @@ Moka")
 simple and consistent.")
     (license (list license:gpl3+
                    license:cc-by-sa4.0))))
+
+(define-public papirus-icon-theme
+  (package
+    (name "papirus-icon-theme")
+    (version "20210101")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
+             (commit version)))
+       (sha256
+        (base32
+         "0w6qg3zjhfvjg1gg5inranf8ianb4mrp0jm9qgi6hg87ig1rashs"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (delete 'build))))
+    (native-inputs
+     `(("gtk+:bin" ,gtk+ "bin")))
+    (home-page "https://git.io/papirus-icon-theme")
+    (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
+    (description "Papirus is a fork of the icon theme Paper with a lot of new icons
+and a few extra features.")
+    (license license:gpl3)))
 
 (define-public gnome-shell-extension-appindicator
   (package
@@ -684,6 +669,52 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 Shimmer Project.  It supports GNOME, Unity, and Xfce.")
     (license (list license:gpl2+ license:cc-by-sa3.0))))
 
+(define-public matcha-theme
+  (package
+    (name "matcha-theme")
+    (version "2021-01-01")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/vinceliuice/Matcha-gtk-theme")
+            (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1pa6ra87wlq0gwz4n03l6xv0pxiamr5dygycvppms8v6xyc2aa0r"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (source (assoc-ref %build-inputs "source"))
+                (bash (assoc-ref %build-inputs "bash"))
+                (coreutils (assoc-ref %build-inputs  "coreutils"))
+                (themesdir (string-append out "/share/themes")))
+           (setenv "PATH"
+                   (string-append coreutils "/bin:"
+                                  (string-append bash "/bin:")))
+           (copy-recursively source (getcwd))
+           (patch-shebang "install.sh")
+           (mkdir-p themesdir)
+           (invoke "./install.sh" "-d" themesdir)
+           #t))))
+    (inputs
+     `(("gtk-engines" ,gtk-engines)))
+    (native-inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)))
+    (synopsis "Flat design theme for GTK 3, GTK 2 and GNOME-Shell")
+    (description "Matcha is a flat Design theme for GTK 3, GTK 2 and
+Gnome-Shell which supports GTK 3 and GTK 2 based desktop environments
+like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
+    (home-page "https://github.com/vinceliuice/matcha")
+    (license license:gpl3+)))
+
 (define-public numix-gtk-theme
   (package
     (name "numix-gtk-theme")
@@ -721,37 +752,6 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 
 (define-public numix-theme
   (deprecated-package "numix-theme" numix-gtk-theme))
-
-(define-public papirus-icon-theme
-  (package
-    (name "papirus-icon-theme")
-    (version "20210101")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
-             (commit version)))
-       (sha256
-        (base32
-         "0w6qg3zjhfvjg1gg5inranf8ianb4mrp0jm9qgi6hg87ig1rashs"))
-       (file-name (git-file-name name version))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'bootstrap)
-         (delete 'configure)
-         (delete 'build))))
-    (native-inputs
-     `(("gtk+:bin" ,gtk+ "bin")))
-    (home-page "https://git.io/papirus-icon-theme")
-    (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
-    (description "Papirus is a fork of the icon theme Paper with a lot of new icons
-and a few extra features.")
-    (license license:gpl3)))
 
 (define-public vala-language-server
   (package
