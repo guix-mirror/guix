@@ -8,7 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020, 2021 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
@@ -1384,6 +1384,10 @@ move around."
     #[ignore]
     fn test_process_mask"))
                    #t))))))))))
+
+(define-public rust-1.49
+  (rust-bootstrapped-package rust-1.48 "1.49.0"
+    "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)
