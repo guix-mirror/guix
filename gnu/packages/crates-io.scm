@@ -17741,8 +17741,54 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-nom-6
+  (package
+    (name "rust-nom")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1w0ppq112myzwk23c8m0wmq0nv73xvn0g9gl2kfm83aadgylq0w8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests require example directory, not included in tarball.
+       #:cargo-inputs
+       (("rust-bitvec" ,rust-bitvec-0.19)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lexical-core" ,rust-lexical-core-0.7)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-jemallocator" ,rust-jemallocator-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc_pic.a")))
+             #t)))))
+    (native-inputs
+     `(("jemalloc" ,jemalloc)))
+    (home-page "https://github.com/Geal/nom")
+    (synopsis
+     "Byte-oriented, zero-copy, parser combinators library")
+    (description
+     "This package provides a byte-oriented, zero-copy, parser
+combinators library.")
+    (license license:expat)))
+
 (define-public rust-nom-5
   (package
+    (inherit rust-nom-6)
     (name "rust-nom")
     (version "5.1.2")
     (source
@@ -17754,7 +17800,6 @@ implementation (which is unstable / requires nightly).")
        (sha256
         (base32
          "1br74rwdp3c2ddga03bphnf355spn4mzwf1slg0a30zd4qnjdd7z"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Tests require example directory, not included in tarball.
        #:cargo-inputs
@@ -17774,16 +17819,7 @@ implementation (which is unstable / requires nightly).")
              (let ((jemalloc (assoc-ref inputs "jemalloc")))
                (setenv "JEMALLOC_OVERRIDE"
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
-             #t)))))
-    (native-inputs
-     `(("jemalloc" ,jemalloc)))
-    (home-page "https://github.com/Geal/nom")
-    (synopsis
-     "Byte-oriented, zero-copy, parser combinators library")
-    (description
-     "This package provides a byte-oriented, zero-copy, parser
-combinators library.")
-    (license license:expat)))
+             #t)))))))
 
 (define-public rust-nom-4.2
   (package
