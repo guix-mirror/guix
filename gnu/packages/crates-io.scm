@@ -17687,6 +17687,34 @@ The goal is to not provide a 100% unified interface, but to unify what can be
 while still providing platform specific APIs.")
     (license license:expat)))
 
+(define-public rust-nix-0.18
+  (package
+    (inherit rust-nix-0.19)
+    (name "rust-nix")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m8h9bskjjqx9sk687z8bxqg2kpwhdh78jq6zfaxsb8llvk0yic3"))))
+    (arguments
+     `(#:tests? #f                      ; test suite hangs
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-caps" ,rust-caps-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-semver" ,rust-semver-0.9)
+        ("rust-sysctl" ,rust-sysctl-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))))
+
 (define-public rust-nix-0.17
   (package
     (inherit rust-nix-0.19)
