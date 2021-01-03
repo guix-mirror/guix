@@ -28135,8 +28135,34 @@ the application/x-www-form-urlencoded format.")
      "Allows for the creation of serialised Rust tests.")
     (license license:expat)))
 
+(define-public rust-serial-test-derive-0.5
+  (package
+    (name "rust-serial-test-derive")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serial_test_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m8sd97xr8dn6p9by0xwfqm0rz8cbn1ghs5l1fv1xd6xzvgddb5j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7))))
+    (home-page "https://github.com/palfrey/serial_test")
+    (synopsis "Helper crate for serial_test")
+    (description
+     "This package is an helper crate for @code{rust-serial-test}.")
+    (license license:expat)))
+
 (define-public rust-serial-test-derive-0.1
   (package
+    (inherit rust-serial-test-derive-0.5)
     (name "rust-serial-test-derive")
     (version "0.1.0")
     (source
@@ -28148,15 +28174,10 @@ the application/x-www-form-urlencoded format.")
         (sha256
          (base32
           "17fkqrba233sjhdak986y4w3z4yjxa4idjkh46l7zxgcgjlvrnic"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-quote" ,rust-quote-0.6)
-        ("rust-syn" ,rust-syn-0.15))))
-    (home-page "https://github.com/palfrey/serial_test/")
-    (synopsis "Helper crate for serial_test")
-    (description "This package provides a helper crate for @code{serial_test}.")
-    (license license:expat)))
+        ("rust-syn" ,rust-syn-0.15))))))
 
 (define-public rust-servo-arc-0.1
   (package
