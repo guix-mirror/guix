@@ -84,6 +84,9 @@
                (base32
                 "0rwvp0kzsb8y6mq73rzb8yk4kvsrz64i2zf4lfqs3kh0x2k7n7bx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
