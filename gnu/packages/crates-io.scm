@@ -2876,7 +2876,7 @@ alphabet.")
        #:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-ucd-parse" ,rust-ucd-parse-0.1)
-        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1.3))))
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))
     (home-page "https://github.com/BurntSushi/bstr")
     (synopsis
      "String type that is not required to be valid UTF-8")
@@ -12441,7 +12441,7 @@ total runtime size of an object on the heap")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-unicode-segmentation" ,rust-unicode-segmentation-1.3))))
+       (("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))
     (home-page "https://github.com/withoutboats/heck")
     (synopsis "Case conversion library")
     (description
@@ -34935,21 +34935,6 @@ described in Unicode Standard Annex #15.")
      "This crate provides Grapheme Cluster, Word and Sentence
 boundaries according to Unicode Standard Annex #29 rules.")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-unicode-segmentation-1.3
-  (package
-    (inherit rust-unicode-segmentation-1)
-    (name "rust-unicode-segmentation")
-    (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "unicode-segmentation" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1a9jqg7rb1yq6w2xc9jgxcs111yk5vxm9afjfvykfnrmzk6z8rqr"))))))
 
 (define-public rust-unicode-width-0.1
   (package
