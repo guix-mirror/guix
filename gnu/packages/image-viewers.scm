@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2021 Rovanion Luckey <rovanion.luckey@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
@@ -682,3 +684,65 @@ brightness/contrast/gamma correction, pan with keyboard and mouse, flip,
 rotate left/right, jump/forward/backward images, filename filter and use it
 to set X desktop background.")
     (license license:gpl2)))
+
+(define-public nomacs
+  (package
+    (name "nomacs")
+    (version "3.16.224")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nomacs/nomacs")
+             (commit version)))
+       (sha256
+        (base32
+         "05d4hqg0gl3g9s2xf1hr7mc7g4cqarcap4nzxxa51fsphw2b8x16"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:build-type "Release" ; fails to build with debug info
+       #:configure-flags (list "-DENABLE_TRANSLATIONS=true"
+                               "-DUSE_SYSTEM_QUAZIP=true"
+                               "-DENABLE_OPENCV=true")
+       #:tests? #f ; no rule for target 'test'
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-plugins
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "plugins")
+                               "ImageLounge/plugins")))
+         (add-after 'copy-plugins 'cd-to-source-dir
+           (lambda _ (chdir "ImageLounge") #t)))))
+    (inputs
+     `(("plugins"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/nomacs/nomacs-plugins")
+                 (commit "3.16")))
+           (sha256
+            (base32
+             "1cpdwhfvaxm970nwdc1hc13848a85pqqi176m9xpa3krla9qskml"))))
+       ("exiv2" ,exiv2)
+       ("libraw" ,libraw)
+       ("libtiff" ,libtiff)
+       ("opencv" ,opencv)
+       ("python" ,python-wrapper)
+       ("quazip" ,quazip)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtlinguist" ,qttools)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Image viewer supporting all common formats")
+    (description "Nomacs is a simple to use image lounge featuring
+semi-transparent widgets that display additional information such as metadata,
+thumbnails and histograms.  It is able to browse images compressed archives
+and add notes to images.
+
+Nomacs includes image manipulation methods for adjusting brightness, contrast,
+saturation, hue, gamma, and exposure.  It has a pseudo color function which
+allows creating false color images.  A unique feature of Nomacs is the
+synchronization of multiple instances.")
+    (home-page "https://nomacs.org/")
+    (license license:gpl3+)))
