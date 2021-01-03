@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
@@ -2017,14 +2017,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20201011")
+    (version "20201218")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1zzx5gsqgzg2zki6h8vl0h7kpcrk5i2s1qhz7gcb18s7g99px8aj"))))
+                "0ydbindwgw7kg861rqii5036gq0dbbbmv35dzrmmv937ddfsxwh0"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
