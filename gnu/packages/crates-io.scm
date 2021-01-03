@@ -18438,6 +18438,34 @@ general elements and for numerics.")
      "This package provides safe Rust bindings to the Android NDK.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ndk-glue-0.2
+  (package
+    (name "rust-ndk-glue")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ndk-glue" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hajn6nsg6i3khi7yr2ayafpiznm5z3k5v64afqnz753nyw9kwxx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true              ;XXX: Android only
+       #:cargo-inputs
+       (("rust-android-logger" ,rust-android-logger-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ndk" ,rust-ndk-0.2)
+        ("rust-ndk-macro" ,rust-ndk-macro-0.2)
+        ("rust-ndk-sys" ,rust-ndk-sys-0.2))))
+    (home-page "https://github.com/rust-windowing/android-ndk-rs")
+    (synopsis "Startup code for Android binaries")
+    (description
+     "This package provides startup code for Android binaries.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ndk-macro-0.2
   (package
     (name "rust-ndk-macro")
