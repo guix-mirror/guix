@@ -700,7 +700,7 @@ escape codes.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-anyhow-1.0
+(define-public rust-anyhow-1
   (package
     (name "rust-anyhow")
     (version "1.0.37")
@@ -4377,7 +4377,7 @@ CMAKE environmental variable is set.")
         ("rust-termcolor" ,rust-termcolor-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1))
        #:cargo-development-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-insta" ,rust-insta-0.16)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-peg" ,rust-peg-0.6)
@@ -30507,7 +30507,7 @@ cryptographic implementations.")
         ("rust-walkdir" ,rust-walkdir-2)
         ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4))
        #:cargo-development-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-num-bigint" ,rust-num-bigint-0.2)
         ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
@@ -30591,7 +30591,7 @@ browsers.")
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1))
        #:cargo-development-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-insta" ,rust-insta-0.16)
         ("rust-rayon" ,rust-rayon-1)
@@ -31853,7 +31853,7 @@ handle Unicode characters correctly.")
        #:cargo-inputs
        (("rust-thiserror-impl" ,rust-thiserror-impl-1.0))
        #:cargo-development-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-ref-cast" ,rust-ref-cast-1.0)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-trybuild" ,rust-trybuild-1))))
@@ -36395,7 +36395,7 @@ attribute that is not in the shared backend crate.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-heck" ,rust-heck-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
@@ -37664,7 +37664,7 @@ formatters with per-field documentation generated for each structure.
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
-        (("rust-anyhow" ,rust-anyhow-1.0)
+        (("rust-anyhow" ,rust-anyhow-1)
          ("rust-either" ,rust-either-1)
          ("rust-serde" ,rust-serde-1)
          ("rust-thiserror" ,rust-thiserror-1)

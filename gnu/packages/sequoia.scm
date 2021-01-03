@@ -70,7 +70,7 @@
      `(#:tests? #f ;; building the tests requires 9.7GB total
        #:rust ,rust-1.46
        #:cargo-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-base64" ,rust-base64-0.13)
         ;;("rust-buffered-reader" included
