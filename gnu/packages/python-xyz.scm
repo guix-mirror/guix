@@ -177,6 +177,7 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -23404,3 +23405,47 @@ Qt applications.")
      "Bitstring is a library for simple construction, analysis and modification
  of binary data.")
     (license license:expat)))
+
+(define-public python-pivy
+  (package
+    (name "python-pivy")
+    (version "0.6.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/coin3d/pivy")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "0vids7sxk8w5vr73xdnf8xdci71a7syl6cd35aiisppbqyyfmykx"))))
+    (build-system python-build-system)
+    (arguments
+      `(;; The test suite fails due to an import cycle between 'pivy' and '_coin'
+        #:tests? #f
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'patch-cmake-include-dirs
+           (lambda _
+             ;; Patch buildsystem to respect Coin3D include directory
+             (substitute* "CMakeLists.txt"
+                          (("\\$\\{SoQt_INCLUDE_DIRS}")
+                           "${Coin_INCLUDE_DIR};${SoQt_INCLUDE_DIRS}"))
+             #t)))))
+    (native-inputs
+      `(("cmake" ,cmake)
+        ("swig" ,swig)))
+    (inputs
+      `(("python-wrapper" ,python-wrapper)
+        ("qtbase" ,qtbase)
+        ("libxi" ,libxi)
+        ("libice" ,libice)
+        ("soqt" ,soqt)
+        ("glew" ,glew)
+        ("coin3D" ,coin3D-4)))
+    (home-page "https://github.com/coin3d/pivy")
+    (synopsis "Python bindings to Coin3D")
+    (description
+      "Pivy provides python bindings for Coin, a 3D graphics library with an
+Application Programming Interface based on the Open Inventor 2.1 API.")
+    (license license:isc)))
