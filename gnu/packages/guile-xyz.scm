@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016, 2019, 2020 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -2501,8 +2501,8 @@ format is also supported.")
   (deprecated-package "guile3.0-mcron" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "bf4600bd68af9ab3163253ccb6429fb681753cbc")
-        (revision "2"))
+  (let ((commit "7e5982a2788bd79a45ad6f02db46f061f97b6e14")
+        (revision "3"))
     (package
       (name "guile-picture-language")
       (version (git-version "0.0.1" revision commit))
@@ -2514,14 +2514,16 @@ format is also supported.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0q05m3b6krc1fsnnbdhvm11v33qdcc3j16m1cs2j09y42jpql5hv"))))
+                  "1y5f14cll4jx33hr43dpgrpd0yy6g0g7lim365kmgb0h0cvja80p"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-3.0)))
+      (propagated-inputs
+       `(("guile-rsvg" ,guile-rsvg)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("imagemagick" ,imagemagick)
+         ("librsvg" ,librsvg)
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)))
       (home-page "https://git.elephly.net/software/guile-picture-language.git")
@@ -2529,7 +2531,9 @@ format is also supported.")
       (description
        "This package provides a simple SVG-based picture language for Guile.
 The picture values can directly be displayed in Geiser.")
-      (license license:lgpl3+))))
+      ;; (pict base64) is under GPLv3+, the rest is under LGPLv3+
+      (license (list license:lgpl3+
+                     license:gpl3+)))))
 
 (define-public guile2.2-picture-language
   (package
