@@ -31811,6 +31811,30 @@ crate.")
     (description "This package provides a timeout mechanism for unit tests.")
     (license license:asl2.0)))
 
+(define-public rust-timer-0.2
+  (package
+    (name "rust-timer")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "timer" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0srhqyp7fr91d1i43aqs7wc6yn1i3kdkh1pm05bicdw961v23m1i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4))))
+    (home-page "https://github.com/Yoric/timer.rs")
+    (synopsis "Simple timer in Rust")
+    (description
+     "This package provides a simple timer.  Use it to schedule execution of
+closures after a delay or at a given timestamp.")
+    (license license:mpl2.0)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
