@@ -1040,10 +1040,36 @@ exceptions, macros, and a dynamic programming environment.")
                 (file-name (string-append name "-" version ".tar.gz"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (replace 'bootstrap
-                      (lambda _
-                        (invoke "autoreconf" "-vfi"))))))
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 rdelim)
+                    (ice-9 popen))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               (invoke "autoreconf" "-vfi")))
+           (add-after 'install 'install-go-files
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (effective (read-line
+                                  (open-pipe* OPEN_READ
+                                              "guile" "-c"
+                                              "(display (effective-version))")))
+                      (module-dir (string-append out "/share/guile/site/"
+                                                 effective))
+                      (object-dir (string-append out "/lib/guile/" effective
+                                                 "/site-ccache"))
+                      (prefix     (string-length module-dir)))
+                 ;; compile to the destination
+                 (for-each (lambda (file)
+                             (let* ((base (string-drop (string-drop-right file 4)
+                                                       prefix))
+                                    (go   (string-append object-dir base ".go")))
+                               (invoke "guild" "compile" "-L" module-dir
+                                       file "-o" go)))
+                           (find-files module-dir "\\.scm$"))
+                 #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf)
                        ("automake" ,automake)
