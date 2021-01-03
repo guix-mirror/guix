@@ -34921,8 +34921,28 @@ Unix users and groups.")
 first byte.")
     (license license:expat)))
 
+(define-public rust-utf8parse-0.2
+  (package
+    (name "rust-utf8parse")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "utf8parse" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wjkvy22cxg023vkmvq2wwkgqyqam0d4pjld3m13blfg594lnvlk"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/jwilm/vte")
+    (synopsis "Table-driven UTF-8 parser")
+    (description "This package provides a table-driven UTF-8 parser.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-utf8parse-0.1
   (package
+    (inherit rust-utf8parse-0.2)
     (name "rust-utf8parse")
     (version "0.1.1")
     (source
@@ -34933,12 +34953,7 @@ first byte.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zamsj2986shm4x9zncjf2m5qy9scaw7qnxw4f89b2afpg6a8wl7"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/jwilm/vte")
-    (synopsis "Table-driven UTF-8 parser")
-    (description "This package provides a table-driven UTF-8 parser.")
-    (license (list license:asl2.0 license:expat))))
+         "0zamsj2986shm4x9zncjf2m5qy9scaw7qnxw4f89b2afpg6a8wl7"))))))
 
 (define-public rust-uuid-0.8
   (package
