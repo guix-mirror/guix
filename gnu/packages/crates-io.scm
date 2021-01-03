@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
@@ -18698,6 +18698,31 @@ for Rust")
     (synopsis "Numeric syntax extensions")
     (description "Numeric syntax extensions in Rust.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-num-enum-0.4
+  (package
+    (name "rust-num-enum")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num_enum" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r1nisdzm9m7xm0389nwyi85jhx1bnh5pwllai44ngbgy1ymlmna"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;missing files
+       #:cargo-inputs
+       (("rust-derivative" ,rust-derivative-2)
+        ("rust-num-enum" ,rust-num-enum-0.4)
+        ("rust-num-enum-derive" ,rust-num-enum-derive-0.4))))
+    (home-page "https://github.com/illicitonion/num_enum")
+    (synopsis "Macros easing inter-operation between primitives and enums")
+    (description
+     "This library provides procedural macros to make inter-operation between
+primitives and enums easier.")
+    (license license:bsd-3)))
 
 (define-public rust-num-enum-derive-0.4
   (package
