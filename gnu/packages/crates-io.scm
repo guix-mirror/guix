@@ -28112,8 +28112,33 @@ the application/x-www-form-urlencoded format.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-serial-test-0.5
+  (package
+    (name "rust-serial-test")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serial-test" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0pchc7imdi9wv8xxnwkb9lzs6cg06ghs0gaajjb834y8837wpg70"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-serial-test-derive" ,rust-serial-test-derive-0.5))))
+    (home-page "https://github.com/palfrey/serial_test")
+    (synopsis "Allows for the creation of serialised Rust tests")
+    (description
+     "This package allows for the creation of serialised Rust tests.")
+    (license license:expat)))
+
 (define-public rust-serial-test-0.1
   (package
+    (inherit rust-serial-test-0.5)
     (name "rust-serial-test")
     (version "0.1.0")
     (source
@@ -28125,15 +28150,9 @@ the application/x-www-form-urlencoded format.")
         (sha256
          (base32
           "0qywhzjc4jh6dqqng90maai0mjlmafk9aa5rrl9g3d2g01wdn8ms"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1))))
-    (home-page "https://github.com/palfrey/serial_test/")
-    (synopsis "Serialised Rust tests")
-    (description
-     "Allows for the creation of serialised Rust tests.")
-    (license license:expat)))
+       (("rust-lazy-static" ,rust-lazy-static-1))))))
 
 (define-public rust-serial-test-derive-0.5
   (package
