@@ -26147,6 +26147,29 @@ sub-processes using a fork-like interface.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))))
 
+(define-public rust-rustyline-derive-0.3
+  (package
+    (name "rust-rustyline-derive")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustyline-derive" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0daj9szvfi442vj2fhm7qb92wmzv7g75qsjq9a6ycnqac4lhx9al"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/kkawakam/rustyline")
+    (synopsis "Rustyline macros implementation in Rust")
+    (description "This package provides Rustyline macros implementation in Rust.")
+    (license license:expat)))
+
 (define-public rust-ryu-1
   (package
     (name "rust-ryu")
