@@ -3283,7 +3283,6 @@ library.")
        ((guix build cargo-build-system)
         (guix build utils)
         ((guix build gnu-build-system) #:prefix gnu:))
-       #:rust ,rust-1.40
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-cairo-rs" ,rust-cairo-rs-0.8)
