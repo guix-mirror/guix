@@ -2021,14 +2021,15 @@ useful with system integration.")
        ("xvfb" ,xorg-server-for-tests)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
-       ("gtk+" ,gtk+)
-       ("libdbusmenu" ,libdbusmenu)
        ("libindicator" ,libindicator)
        ("python@2" ,python-2)
        ("python2-pygtk" ,python2-pygtk)
        ("python2-pygobject-2" ,python2-pygobject-2)
        ;; ("mono" ,mono) ; requires non-packaged gapi
        ("vala" ,vala)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("libdbusmenu" ,libdbusmenu)))
     (arguments
      ;; FIXME: do not hardcode gtk version
      `(#:configure-flags '("--with-gtk=3")
