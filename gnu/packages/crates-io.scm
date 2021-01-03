@@ -36444,6 +36444,26 @@ API.")
      "Contains function definitions for the Windows API library ws2_32.")
     (license license:expat)))
 
+(define-public rust-wyz-0.2
+  (package
+    (name "rust-wyz")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wyz" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "05028bk49b2ix1lz22sj65fnlxr0f29j2klkaqjxp6az3c6hprl5"))))
+    (build-system cargo-build-system)
+    (home-page "https://myrrlyn.net/crates/wyz")
+    (synopsis "Collection of utility functions")
+    (description
+     "This package provides a collection of utility functions.")
+    (license license:expat)))
+
 (define-public rust-x86-0.33
   (package
     (name "rust-x86")
