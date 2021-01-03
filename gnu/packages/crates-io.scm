@@ -32310,8 +32310,52 @@ closures after a delay or at a given timestamp.")
      "A 100% safe crate of vec-like types.")
     (license (list license:zlib license:asl2.0 license:expat))))
 
+(define-public rust-tokio-1
+  (package
+    (name "rust-tokio")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gd6qc9xvm568kicbkch40kjn5w0q2nsn527gcy80v3baqgj4n6j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;FIXME: unresolved import
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-mio" ,rust-mio-0.7)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
+        ("rust-tokio-macros" ,rust-tokio-macros-1)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-async-stream" ,rust-async-stream-0.3)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-loom" ,rust-loom-0.4)
+        ("rust-nix" ,rust-nix-0.19)
+        ("rust-proptest" ,rust-proptest-0.10)
+        ("rust-tokio-stream" ,rust-tokio-stream-0.1)
+        ("rust-tokio-test" ,rust-tokio-test-0.4))))
+    (home-page "https://tokio.rs")
+    (synopsis "Event-driven, non-blocking I/O platform")
+    (description
+     "This package provides an event-driven, non-blocking I/O platform for
+writing asynchronous I/O backed applications.")
+    (license license:expat)))
+
 (define-public rust-tokio-0.3
   (package
+    (inherit rust-tokio-1)
     (name "rust-tokio")
     (version "0.3.5")
     (source
@@ -32321,7 +32365,6 @@ closures after a delay or at a given timestamp.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0lj26zy5k1dbln0599bn918z5j16wz5iyzs8cjz33hp2ksrkwam1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;FIXME: fail due to unresolved imports
        #:cargo-inputs
@@ -32345,13 +32388,7 @@ closures after a delay or at a given timestamp.")
         ("rust-loom" ,rust-loom-0.3)
         ("rust-nix" ,rust-nix-0.19)
         ("rust-proptest" ,rust-proptest-0.10)
-        ("rust-tokio-test" ,rust-tokio-test-0.3))))
-    (home-page "https://tokio.rs")
-    (synopsis "Event-driven, non-blocking I/O platform")
-    (description
-     "This package provides an event-driven, non-blocking I/O platform for
-writing asynchronous I/O backed applications.")
-    (license license:expat)))
+        ("rust-tokio-test" ,rust-tokio-test-0.3))))))
 
 (define-public rust-tokio-0.2
   (package
@@ -32713,8 +32750,32 @@ the current thread.")
 futures efficiently")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tokio-macros-1
+  (package
+    (name "rust-tokio-macros")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "150l6wfcqw2rcjaf22qk3z6ca794x0s2c68n5ar18cfafllpsla2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;FIXME: undeclared type `tokio`
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Tokio's proc macros")
+    (description "This package provides Tokio's proc macros.")
+    (license license:expat)))
+
 (define-public rust-tokio-macros-0.3
   (package
+    (inherit rust-tokio-macros-1)
     (name "rust-tokio-macros")
     (version "0.3.2")
     (source
@@ -32724,18 +32785,13 @@ futures efficiently")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1dvd3gji7a0i1kgck2lwgbcbklk3qb1bsqgd2v9amj63kyjzzps6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.3))))
-    (home-page "https://tokio.rs")
-    (synopsis "Tokio's proc macros")
-    (description "This package provides Tokio's proc macros.")
-    (license license:expat)))
+       (("rust-tokio" ,rust-tokio-0.3))))))
 
 (define-public rust-tokio-macros-0.2
   (package
@@ -33236,6 +33292,36 @@ Rust.")
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-tokio" ,rust-tokio-0.2))))))
 
+(define-public rust-tokio-stream-0.1
+  (package
+    (name "rust-tokio-stream")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-stream" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0airchgn5zwzynchygdr8m7i4nizhfmifjz0iw6224sbnw9yjfrz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;FIXME: unresolved import
+       #:cargo-inputs
+       (("rust-async-stream" ,rust-async-stream-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-tokio" ,rust-tokio-1))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-proptest" ,rust-proptest-0.10)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Utilities to work with @code{Stream} and @code{tokio}")
+    (description
+     "This package provides utilities to work with @code{Stream} and
+@code{tokio}.")
+    (license license:expat)))
+
 (define-public rust-tokio-sync-0.2
   (package
     (name "rust-tokio-sync")
@@ -33285,8 +33371,38 @@ Rust.")
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))))
 
+(define-public rust-tokio-test-0.4
+  (package
+    (name "rust-tokio-test")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gwrqdwlfih6ib66wxc7yaaq7a9mlsmnxj2ahag3zc2rdxgj0zbw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-stream" ,rust-async-stream-0.3)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-stream" ,rust-tokio-stream-0.1))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Testing utilities for Tokio- and futures-based code")
+    (description
+     "This package provides testing utilities for Tokio- and
+futures-based code.")
+    (license license:expat)))
+
 (define-public rust-tokio-test-0.3
   (package
+    (inherit rust-tokio-test-0.4)
     (name "rust-tokio-test")
     (version "0.3.0")
     (source
@@ -33296,7 +33412,6 @@ Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "06nzdkjsxr16pbr5m80zm3vcr8dhcl9amjgb9l9vj4x72cmmmp3y"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
@@ -33304,13 +33419,7 @@ Rust.")
         ("rust-tokio" ,rust-tokio-0.3))
        #:cargo-development-inputs
        (("rust-futures-util" ,rust-futures-util-0.3)
-        ("rust-tokio" ,rust-tokio-0.3))))
-    (home-page "https://tokio.rs")
-    (synopsis "Testing utilities for Tokio- and futures-based code")
-    (description
-     "This package provides testing utilities for Tokio- and futures-based
-code.")
-    (license license:expat)))
+        ("rust-tokio" ,rust-tokio-0.3))))))
 
 (define-public rust-tokio-test-0.2
   (package
