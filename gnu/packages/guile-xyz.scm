@@ -2852,14 +2852,14 @@ list of components.  This module takes care of that for you.")
 (define-public guile-gi
   (package
     (name "guile-gi")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05xbwrk50h4f9fh8la8fk2wsxbnm0jcyb9phnpkkjq4sqkhkxlbj"))))
+                "1ljcfyar1nb6h4jskxnnzrcxcsblawc50qqfdn8cax3zqfskmvzj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
