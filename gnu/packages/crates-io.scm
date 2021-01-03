@@ -6390,6 +6390,26 @@ attributes.")
     (description "This package provides the test suite of the cxx crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cxxbridge-flags-0.5
+  (package
+    (name "rust-cxxbridge-flags")
+    (version "0.5.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxxbridge-flags" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jfwsm85s5kalgqbqlg1kq79zcb5zwk375h0qw7ycz5i6v3c8j0k"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/cxx")
+    (synopsis "Compiler configuration of the `cxx` crate")
+    (description "This package provides a compiler configuration of the `cxx`
+crate (implementation detail).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-darling-0.10
   (package
     (name "rust-darling")
