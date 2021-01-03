@@ -233,96 +233,96 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
 
 (define-public texlive-bin
   (package
-   (name "texlive-bin")
-   (version "20190410")
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "ftp://tug.org/historic/systems/texlive/2019/"
-                          "texlive-" version "-source.tar.xz"))
-      (sha256
-       (base32
-        "1dfps39q6bdr1zsbp9p74mvalmy3bycihv19sb9c6kg30kprz8nj"))
-      (patches
-       (let ((arch-patch
-              (lambda (name revision hash)
-                (origin
-                  (method url-fetch)
-                  (uri (string-append "https://git.archlinux.org/svntogit/packages.git"
-                                      "/plain/trunk/" name "?h=packages/texlive-bin"
-                                      "&id=" revision))
-                  (file-name (string-append "texlive-bin-" name))
-                  (sha256 (base32 hash)))))
-             (arch-revision "49d7fe25e5ea63f136ebc20270c1d8fc9b00041c"))
-         (list
-          (arch-patch "pdftex-poppler0.76.patch" arch-revision
-                      "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
-          (search-patch "texlive-bin-poppler-0.83.patch")
-          (arch-patch "texlive-poppler-0.84.patch" arch-revision
-                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa")
-          (search-patch "texlive-bin-poppler-0.86.patch"))))
-      (modules '((guix build utils)
-                 (ice-9 ftw)))
-      (snippet
-       '(begin
-          (with-directory-excursion "libs"
-            (let ((preserved-directories '("." ".." "lua53" "luajit")))
-              ;; Delete bundled software, except Lua which cannot easily be
-              ;; used as an external dependency.
-              (for-each delete-file-recursively
-                        (scandir "."
-                                 (lambda (file)
-                                   (and (not (member file preserved-directories))
-                                        (eq? 'directory (stat:type (stat file)))))))))
-          ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
-          #t))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("texlive-extra-src" ,texlive-extra-src)
-      ("texlive-scripts"
-       ,(origin
-          (method svn-fetch)
-          (uri (svn-reference
-                (url (string-append "svn://www.tug.org/texlive/tags/"
-                                    %texlive-tag "/Master/texmf-dist/"
-                                    "/scripts/texlive"))
-                (revision %texlive-revision)))
-          (file-name (string-append "texlive-scripts-"
-                                    (number->string %texlive-revision)
-                                    "-checkout"))
-          (sha256
-           (base32
-            "1cj04svl8bpfwjr4gqfcc04rmklz3aggrxvgj7q5bxrh7c7g18xh"))))
-      ("cairo" ,cairo)
-      ("fontconfig" ,fontconfig)
-      ("fontforge" ,fontforge)
-      ("freetype" ,freetype)
-      ("gd" ,gd)
-      ("gmp" ,gmp)
-      ("ghostscript" ,ghostscript)
-      ("graphite2" ,graphite2)
-      ("harfbuzz" ,harfbuzz)
-      ("icu4c" ,icu4c)
-      ("libpaper" ,libpaper)
-      ("libpng" ,libpng)
-      ("libxaw" ,libxaw)
-      ("libxt" ,libxt)
-      ("mpfr" ,mpfr)
-      ("perl" ,perl)
-      ("pixman" ,pixman)
-      ("poppler" ,poppler)
-      ("potrace" ,potrace)
-      ("python" ,python)
-      ("ruby" ,ruby)
-      ("tcsh" ,tcsh)
-      ("teckit" ,teckit)
-      ("zlib" ,zlib)
-      ("zziplib" ,zziplib)))
-   (native-inputs
-    `(("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:out-of-source? #t
-      #:configure-flags
+    (name "texlive-bin")
+    (version "20190410")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://tug.org/historic/systems/texlive/2019/"
+                           "texlive-" version "-source.tar.xz"))
+       (sha256
+        (base32
+         "1dfps39q6bdr1zsbp9p74mvalmy3bycihv19sb9c6kg30kprz8nj"))
+       (patches
+        (let ((arch-patch
+               (lambda (name revision hash)
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append "https://git.archlinux.org/svntogit/packages.git"
+                                       "/plain/trunk/" name "?h=packages/texlive-bin"
+                                       "&id=" revision))
+                   (file-name (string-append "texlive-bin-" name))
+                   (sha256 (base32 hash)))))
+              (arch-revision "49d7fe25e5ea63f136ebc20270c1d8fc9b00041c"))
+          (list
+           (arch-patch "pdftex-poppler0.76.patch" arch-revision
+                       "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
+           (search-patch "texlive-bin-poppler-0.83.patch")
+           (arch-patch "texlive-poppler-0.84.patch" arch-revision
+                       "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa")
+           (search-patch "texlive-bin-poppler-0.86.patch"))))
+       (modules '((guix build utils)
+                  (ice-9 ftw)))
+       (snippet
+        '(begin
+           (with-directory-excursion "libs"
+             (let ((preserved-directories '("." ".." "lua53" "luajit")))
+               ;; Delete bundled software, except Lua which cannot easily be
+               ;; used as an external dependency.
+               (for-each delete-file-recursively
+                         (scandir "."
+                                  (lambda (file)
+                                    (and (not (member file preserved-directories))
+                                         (eq? 'directory (stat:type (stat file)))))))))
+           ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
+           #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("texlive-extra-src" ,texlive-extra-src)
+       ("texlive-scripts"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/scripts/texlive"))
+                 (revision %texlive-revision)))
+           (file-name (string-append "texlive-scripts-"
+                                     (number->string %texlive-revision)
+                                     "-checkout"))
+           (sha256
+            (base32
+             "1cj04svl8bpfwjr4gqfcc04rmklz3aggrxvgj7q5bxrh7c7g18xh"))))
+       ("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("fontforge" ,fontforge)
+       ("freetype" ,freetype)
+       ("gd" ,gd)
+       ("gmp" ,gmp)
+       ("ghostscript" ,ghostscript)
+       ("graphite2" ,graphite2)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libpaper" ,libpaper)
+       ("libpng" ,libpng)
+       ("libxaw" ,libxaw)
+       ("libxt" ,libxt)
+       ("mpfr" ,mpfr)
+       ("perl" ,perl)
+       ("pixman" ,pixman)
+       ("poppler" ,poppler)
+       ("potrace" ,potrace)
+       ("python" ,python)
+       ("ruby" ,ruby)
+       ("tcsh" ,tcsh)
+       ("teckit" ,teckit)
+       ("zlib" ,zlib)
+       ("zziplib" ,zziplib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:out-of-source? #t
+       #:configure-flags
        '("--disable-static"
          "--disable-native-texlive-build"
          "--enable-shared"
@@ -345,108 +345,108 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
          "--with-system-zlib"
          "--with-system-zziplib")
 
-      ;; Disable tests on mips64/aarch64 to cope with a failure of luajiterr.test.
-      ;; XXX FIXME fix luajit properly on mips64 and aarch64.
-      #:tests? ,(let ((s (or (%current-target-system)
-                             (%current-system))))
-                  (not (or (string-prefix? "aarch64" s)
-                           (string-prefix? "mips64" s))))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'configure-ghostscript-executable
-          ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
-          ;; and the "gs" ghostscript executable on Unix. It detects Unix by
-          ;; checking for the existence of the /usr/bin directory. Since
-          ;; Guix System does not have /usr/bin, it is also detected as Windows.
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
-              (("gswin32c") "gs"))
-            (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
-              (("\"gs\"")
-               (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
-            #t))
-        (add-after 'unpack 'use-code-for-new-poppler
-          (lambda _
-            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.76.0.cc"
-                       "texk/web2c/pdftexdir/pdftoepdf.cc")
-            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
-                       "texk/web2c/pdftexdir/pdftosrc.cc")
-            #t))
-        (add-after 'unpack 'patch-dvisvgm-build-files
-          (lambda _
-            ;; XXX: Ghostscript is detected, but HAVE_LIBGS is never set, so
-            ;; the appropriate linker flags are not added.
-            (substitute* "texk/dvisvgm/configure"
-              (("^have_libgs=yes" all)
-               (string-append all "\nHAVE_LIBGS=1")))
-            #t))
-        (add-after 'unpack 'disable-failing-test
-          (lambda _
-            ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
-            ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
-            (substitute* "texk/web2c/omegafonts/check.test"
-              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
-               "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
-            #t))
-        (add-after 'install 'postint
-          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-            (let* ((out (assoc-ref outputs "out"))
-                   (share (string-append out "/share"))
-                   (texlive-extra (assoc-ref inputs "texlive-extra-src"))
-                   (unpack (assoc-ref %standard-phases 'unpack))
-                   (patch-source-shebangs
-                    (assoc-ref %standard-phases 'patch-source-shebangs)))
-              (substitute* (string-append share "/texmf-dist/web2c/texmf.cnf")
-                ;; Don't truncate lines.
-                (("^error_line = .*$") "error_line = 254\n")
-                (("^half_error_line = .*$") "half_error_line = 238\n")
-                (("^max_print_line = .*$") "max_print_line = 1000\n"))
-              ;; Create symbolic links for the latex variants and their
-              ;; man pages.
-              (with-directory-excursion (string-append out "/bin/")
-                (for-each symlink
-                          '("pdftex" "pdftex"   "xetex"   "luatex")
-                          '("latex"  "pdflatex" "xelatex" "lualatex")))
-              (with-directory-excursion (string-append share "/man/man1/")
-                (symlink "luatex.1" "lualatex.1"))
-              ;; Unpack texlive-extra and install tlpkg.
-              (mkdir "texlive-extra")
-              (with-directory-excursion "texlive-extra"
-                (apply unpack (list #:source texlive-extra))
-                (apply patch-source-shebangs (list #:source texlive-extra))
-                (invoke "mv" "tlpkg" share))
-              (let ((scripts (string-append share "/texmf-dist/scripts/texlive/")))
-                (mkdir-p scripts)
-                (copy-recursively (assoc-ref inputs "texlive-scripts") scripts)
-                ;; Make sure that fmtutil can find its Perl modules.
-                (substitute* (string-append scripts "fmtutil.pl")
-                  (("\\$TEXMFROOT/") (string-append share "/"))))
+       ;; Disable tests on mips64/aarch64 to cope with a failure of luajiterr.test.
+       ;; XXX FIXME fix luajit properly on mips64 and aarch64.
+       #:tests? ,(let ((s (or (%current-target-system)
+                              (%current-system))))
+                   (not (or (string-prefix? "aarch64" s)
+                            (string-prefix? "mips64" s))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-ghostscript-executable
+           ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
+           ;; and the "gs" ghostscript executable on Unix. It detects Unix by
+           ;; checking for the existence of the /usr/bin directory. Since
+           ;; Guix System does not have /usr/bin, it is also detected as Windows.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
+               (("gswin32c") "gs"))
+             (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
+               (("\"gs\"")
+                (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
+             #t))
+         (add-after 'unpack 'use-code-for-new-poppler
+           (lambda _
+             (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.76.0.cc"
+                        "texk/web2c/pdftexdir/pdftoepdf.cc")
+             (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
+                        "texk/web2c/pdftexdir/pdftosrc.cc")
+             #t))
+         (add-after 'unpack 'patch-dvisvgm-build-files
+           (lambda _
+             ;; XXX: Ghostscript is detected, but HAVE_LIBGS is never set, so
+             ;; the appropriate linker flags are not added.
+             (substitute* "texk/dvisvgm/configure"
+               (("^have_libgs=yes" all)
+                (string-append all "\nHAVE_LIBGS=1")))
+             #t))
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
+             ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
+             (substitute* "texk/web2c/omegafonts/check.test"
+               (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
+                "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
+             #t))
+         (add-after 'install 'postint
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (texlive-extra (assoc-ref inputs "texlive-extra-src"))
+                    (unpack (assoc-ref %standard-phases 'unpack))
+                    (patch-source-shebangs
+                     (assoc-ref %standard-phases 'patch-source-shebangs)))
+               (substitute* (string-append share "/texmf-dist/web2c/texmf.cnf")
+                 ;; Don't truncate lines.
+                 (("^error_line = .*$") "error_line = 254\n")
+                 (("^half_error_line = .*$") "half_error_line = 238\n")
+                 (("^max_print_line = .*$") "max_print_line = 1000\n"))
+               ;; Create symbolic links for the latex variants and their
+               ;; man pages.
+               (with-directory-excursion (string-append out "/bin/")
+                 (for-each symlink
+                           '("pdftex" "pdftex"   "xetex"   "luatex")
+                           '("latex"  "pdflatex" "xelatex" "lualatex")))
+               (with-directory-excursion (string-append share "/man/man1/")
+                 (symlink "luatex.1" "lualatex.1"))
+               ;; Unpack texlive-extra and install tlpkg.
+               (mkdir "texlive-extra")
+               (with-directory-excursion "texlive-extra"
+                 (apply unpack (list #:source texlive-extra))
+                 (apply patch-source-shebangs (list #:source texlive-extra))
+                 (invoke "mv" "tlpkg" share))
+               (let ((scripts (string-append share "/texmf-dist/scripts/texlive/")))
+                 (mkdir-p scripts)
+                 (copy-recursively (assoc-ref inputs "texlive-scripts") scripts)
+                 ;; Make sure that fmtutil can find its Perl modules.
+                 (substitute* (string-append scripts "fmtutil.pl")
+                   (("\\$TEXMFROOT/") (string-append share "/"))))
 
-              ;; texlua shebangs are not patched by the patch-source-shebangs
-              ;; phase because the texlua executable does not exist at that
-              ;; time.
-              (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
-              (with-directory-excursion out
-                (patch-source-shebangs))))))))
-   (native-search-paths
-    (list (search-path-specification
-           (variable "TEXMF")
-           (files '("share/texmf-dist"))
-           (separator #f))
-          (search-path-specification
-           (variable "TEXMFCNF")
-           (files '("share/texmf-dist/web2c"))
-           (separator #f))))
-   (synopsis "TeX Live, a package of the TeX typesetting system")
-   (description
-    "TeX Live provides a comprehensive TeX document production system.
+               ;; texlua shebangs are not patched by the patch-source-shebangs
+               ;; phase because the texlua executable does not exist at that
+               ;; time.
+               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
+               (with-directory-excursion out
+                 (patch-source-shebangs))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TEXMF")
+            (files '("share/texmf-dist"))
+            (separator #f))
+           (search-path-specification
+            (variable "TEXMFCNF")
+            (files '("share/texmf-dist/web2c"))
+            (separator #f))))
+    (synopsis "TeX Live, a package of the TeX typesetting system")
+    (description
+     "TeX Live provides a comprehensive TeX document production system.
 It includes all the major TeX-related programs, macro packages, and fonts
 that are free software, including support for many languages around the
 world.
 
 This package contains the binaries.")
-   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
-   (home-page "https://www.tug.org/texlive/")))
+    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+    (home-page "https://www.tug.org/texlive/")))
 
 
 (define texlive-docstrip
