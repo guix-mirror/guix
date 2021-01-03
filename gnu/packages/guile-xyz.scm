@@ -2583,11 +2583,11 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "e9f2b469cc452b384af0243f3eba2f07871090ad")
-        (revision "2"))
+  (let ((commit "93622e788e727d3275291f999f7e570de6a5bb35")
+        (revision "1"))
     (package
       (name "guile-studio")
-      (version (git-version "0.0.4" revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2596,7 +2596,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "16hwin8zdfyp25iczz3gr5w7hav6av6r8gw64nplgxgxkyaw53a6"))))
+                  "0n6y0bcmkx50m8rccz7a6h4yxmwq54pf2bfzpd5ndz2bsiwiq13l"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
@@ -2605,10 +2605,7 @@ The picture values can directly be displayed in Geiser.")
           ,@%gnu-build-system-modules)
          #:tests? #f                    ; there are none
          #:make-flags
-         (list (string-append "ICONS_DIR="
-                              (assoc-ref %build-inputs "adwaita-icon-theme")
-                              "/share/icons/Adwaita/")
-               (string-append "PICT_DIR="
+         (list (string-append "PICT_DIR="
                               (assoc-ref %build-inputs "guile-picture-language"))
                (string-append "EMACS_DIR="
                               (assoc-ref %build-inputs "emacs"))
@@ -2633,6 +2630,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-f" ,emacs-f)                       ; needed by doom-modeline
          ("emacs-memoize" ,emacs-memoize)           ; needed by all-the-icons
          ("emacs-all-the-icons" ,emacs-all-the-icons) ; needed by doom-modeline
+         ("emacs-all-the-icons-dired" ,emacs-all-the-icons-dired)
          ("emacs-dired-sidebar" ,emacs-dired-sidebar)
          ("emacs-doom-modeline" ,emacs-doom-modeline)
          ("emacs-modus-themes" ,emacs-modus-themes)
@@ -2641,8 +2639,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-ivy" ,emacs-ivy)
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-flycheck-guile" ,emacs-flycheck-guile)
-         ("emacs-paren-face" ,emacs-paren-face)
-         ("adwaita-icon-theme" ,adwaita-icon-theme)))
+         ("emacs-paren-face" ,emacs-paren-face)))
       (native-inputs
        `(("texinfo" ,texinfo)))
       (home-page "https://gnu.org/software/guile")
