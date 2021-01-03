@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
+;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -619,6 +620,7 @@ application can be customized via its API for Python scripting.")
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
        ("libx11" ,libx11)
+       ("opencolorio" ,opencolorio)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
