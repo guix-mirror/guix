@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,15 +24,15 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build gnu-build-system)
   #:use-module (guix build utils)
+  #:use-module (guix build-system python)
   #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
-  #:use-module ((guix packages)
-                #:select (package?
-                          package-derivation package-native-search-paths))
+  #:use-module (guix packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (ice-9 textual-ports)
@@ -110,5 +111,84 @@
              (unpack #:source file)
              (call-with-input-file name get-string-all))))))))
  compressors)
+
+
+;;;
+;;; Test the sanity-check phase of the Python build system.
+;;;
+
+(define* (make-python-dummy name #:key (setup-py-extra "")
+                            (init-py "") (use-setuptools? #t))
+  (dummy-package (string-append "python-dummy-" name)
+    (version "0.1")
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:use-setuptools? ,use-setuptools?
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda _
+             (mkdir-p "dummy")
+             (with-output-to-file "dummy/__init__.py"
+               (lambda _
+                 (display ,init-py)))
+             (with-output-to-file "setup.py"
+               (lambda _
+                 (format #t "\
+~a
+setup(
+     name='dummy-~a',
+     version='0.1',
+     packages=['dummy'],
+     ~a
+     )"
+                         (if ,use-setuptools?
+                             "from setuptools import setup"
+                             "from distutils.core import setup")
+                         ,name ,setup-py-extra))))))))))
+
+(define python-dummy-ok
+  (make-python-dummy "ok"))
+
+;; distutil won't install any metadata, so make sure our script does not fail
+;; on a otherwise fine package.
+(define python-dummy-no-setuptools
+  (make-python-dummy
+   "no-setuptools" #:use-setuptools? #f))
+
+(define python-dummy-fail-requirements
+  (make-python-dummy "fail-requirements"
+                     #:setup-py-extra "install_requires=['nonexistent'],"))
+
+(define python-dummy-fail-import
+  (make-python-dummy "fail-import" #:init-py "import nonexistent"))
+
+(define python-dummy-fail-console-script
+  (make-python-dummy "fail-console-script"
+                     #:setup-py-extra (string-append "entry_points={'console_scripts': "
+                                                     "['broken = dummy:nonexistent']},")))
+
+(define (check-build-success store p)
+  (unless store (test-skip 1))
+  (test-assert (string-append "python-build-system: " (package-name p))
+    (let* ((drv (package-derivation store p)))
+      (build-derivations store (list drv)))))
+
+(define (check-build-failure store p)
+  (unless store (test-skip 1))
+  (test-assert (string-append "python-build-system: " (package-name p))
+    (not (false-if-exception (package-derivation store python-dummy-fail-requirements)))))
+
+(with-external-store store
+  (for-each (lambda (p) (check-build-success store p))
+            (list
+             python-dummy-ok
+             python-dummy-no-setuptools))
+  (for-each (lambda (p) (check-build-failure store p))
+            (list
+             python-dummy-fail-requirements
+             python-dummy-fail-import
+             python-dummy-fail-console-script)))
 
 (test-end "builders")

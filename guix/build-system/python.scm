@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system python)
+  #:use-module ((gnu packages) #:select (search-auxiliary-file))
+  #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix memoization)
@@ -69,6 +72,10 @@ extension, such as '.tar.gz'."
   "Return the default Python 2 package."
   (let ((python (resolve-interface '(gnu packages python))))
     (module-ref python 'python-2)))
+
+(define sanity-check.py
+  ;; The script used to validate the installation of a Python package.
+  (search-auxiliary-file "python/sanity-check.py"))
 
 (define* (package-with-explicit-python python old-prefix new-prefix
                                        #:key variant-property)
@@ -156,6 +163,7 @@ pre-defined variants."
                         ;; Keep the standard inputs of 'gnu-build-system'.
                         ,@(standard-packages)))
          (build-inputs `(("python" ,python)
+                         ("sanity-check.py" ,(local-file sanity-check.py))
                          ,@native-inputs))
          (outputs outputs)
          (build python-build)

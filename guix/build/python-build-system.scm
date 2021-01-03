@@ -9,6 +9,7 @@
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,6 +133,15 @@
              (apply invoke "python" "./setup.py" command params)))
       (error "no setup.py found")))
 
+(define* (sanity-check #:key tests? inputs outputs #:allow-other-keys)
+  "Ensure packages depending on this package via setuptools work properly,
+their advertised endpoints work and their top level modules are importable
+without errors."
+  (let ((sanity-check.py (assoc-ref inputs "sanity-check.py")))
+    ;; Make sure the working directory is empty (i.e. no Python modules in it)
+    (with-directory-excursion "/tmp"
+      (invoke "python" sanity-check.py (site-packages inputs outputs)))))
+
 (define* (build #:key use-setuptools? #:allow-other-keys)
   "Build a given Python package."
   (call-setuppy "build" '() use-setuptools?)
@@ -209,8 +219,7 @@ running checks after installing the package."
     ;; '--invalidation-mode' option, do not generate any.
     (unless <3.7?
       (invoke "python" "-m" "compileall" "--invalidation-mode=unchecked-hash"
-              out))
-    #t))
+              out))))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
@@ -244,8 +253,7 @@ installed with setuptools."
          (easy-install-pth (string-append site-packages "/easy-install.pth"))
          (new-pth (string-append site-packages "/" name ".pth")))
     (when (file-exists? easy-install-pth)
-      (rename-file easy-install-pth new-pth))
-    #t))
+      (rename-file easy-install-pth new-pth))))
 
 (define* (ensure-no-mtimes-pre-1980 #:rest _)
   "Ensure that there are no mtimes before 1980-01-02 in the source tree."
@@ -257,8 +265,7 @@ installed with setuptools."
     (ftw "." (lambda (file stat flag)
                (unless (<= early-1980 (stat:mtime stat))
                  (utime file early-1980 early-1980))
-               #t))
-    #t))
+               #t))))
 
 (define* (enable-bytecode-determinism #:rest _)
   "Improve determinism of pyc files."
@@ -266,8 +273,7 @@ installed with setuptools."
   (setenv "PYTHONHASHSEED" "0")
   ;; Prevent Python from creating .pyc files when loading modules (such as
   ;; when running a test suite).
-  (setenv "PYTHONDONTWRITEBYTECODE" "1")
-  #t)
+  (setenv "PYTHONDONTWRITEBYTECODE" "1"))
 
 (define* (ensure-no-cythonized-files #:rest _)
   "Check the source code for @code{.c} files which may have been pre-generated
@@ -278,8 +284,7 @@ by Cython."
               (string-append (string-drop-right file 3) "c")))
         (when (file-exists? generated-file)
           (format #t "Possible Cythonized file found: ~a~%" generated-file))))
-    (find-files "." "\\.pyx$"))
-  #t)
+    (find-files "." "\\.pyx$")))
 
 (define %standard-phases
   ;; The build phase only builds C extensions and copies the Python sources,
@@ -301,6 +306,7 @@ by Cython."
     (add-after 'install 'wrap wrap)
     (add-before 'check 'add-install-to-pythonpath add-install-to-pythonpath)
     (add-before 'check 'add-install-to-path add-install-to-path)
+    (add-after 'check 'sanity-check sanity-check)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
 (define* (python-build #:key inputs (phases %standard-phases)
