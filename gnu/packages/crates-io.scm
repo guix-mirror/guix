@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -9946,6 +9946,31 @@ pseudorandom number generator")
     (synopsis "Low-level Rust bindings for the Zircon kernel")
     (description "Low-level Rust bindings for the Zircon kernel.")
     (license license:bsd-3)))
+
+(define-public rust-funty-1
+  (package
+    (name "rust-funty")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "funty" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19wx3p3jmv863y0mjb56sr4qf1kvqhl3fsyslkd92zli0p8lrlzy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/myrrlyn/funty")
+    (synopsis "Trait generalization over the primitive types")
+    (description
+     "Prior to 1.0, Rust had traits for the numeric primitive types to permit
+code to generalize over which specific type it accepted. This was never
+stabilized, and eventually removed.  This library reïnstates these traits.")
+    (license license:expat)))
 
 (define-public rust-futf-0.1
   (package
