@@ -26418,7 +26418,7 @@ sub-processes using a fork-like interface.")
         ("rust-nix" ,rust-nix-0.18)
         ("rust-scopeguard" ,rust-scopeguard-1)
         ("rust-skim" ,rust-skim-0.7)
-        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1.6)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-utf8parse" ,rust-utf8parse-0.2)
         ("rust-winapi" ,rust-winapi-0.3))
@@ -34912,7 +34912,7 @@ including Canonical and Compatible Decomposition and Recomposition, as
 described in Unicode Standard Annex #15.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-unicode-segmentation-1.6
+(define-public rust-unicode-segmentation-1
   (package
     (name "rust-unicode-segmentation")
     (version "1.6.0")
@@ -34938,7 +34938,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
 
 (define-public rust-unicode-segmentation-1.3
   (package
-    (inherit rust-unicode-segmentation-1.6)
+    (inherit rust-unicode-segmentation-1)
     (name "rust-unicode-segmentation")
     (version "1.3.0")
     (source
