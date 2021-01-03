@@ -4339,6 +4339,39 @@ CMAKE environmental variable is set.")
         (base32
          "0m6fgdr4d2fp8jhkqvwr23hrqqqjv72g0j9vdgijc58k05j9j1hp"))))))
 
+(define-public rust-codespan-reporting-0.9
+  (package
+    (name "rust-codespan-reporting")
+    (version "0.9.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "codespan-reporting" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "07g86hv1lp5bbr6w6hsa3mgdmavs36igc7k5pi1fvc86ad2n41vf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-termcolor" ,rust-termcolor-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))
+       #:cargo-development-inputs
+       (("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-insta" ,rust-insta-0.16)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-peg" ,rust-peg-0.6)
+        ("rust-rustyline" ,rust-rustyline-6)
+        ("rust-structopt" ,rust-structopt-0.3)
+        ("rust-unindent" ,rust-unindent-0.1))))
+    (home-page "https://github.com/brendanzab/codespan")
+    (synopsis "Diagnostic reporting for text-based programming languages")
+    (description "This package provides diagnostic reporting for text-based
+programming languages.")
+    (license license:asl2.0)))
+
 (define-public rust-color-quant-1.0
   (package
     (name "rust-color-quant")
