@@ -15226,6 +15226,28 @@ libraries have.
      "Efficiently insert line separators.")
     (license license:asl2.0)))
 
+(define-public rust-link-cplusplus-1
+  (package
+    (name "rust-link-cplusplus")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "link-cplusplus" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0m7365ig7r88x7b4gkzj5m7b6wiq42pi1ign7mvyq63jr22sfspr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/dtolnay/link-cplusplus")
+    (synopsis "Link libstdc++ or libc++ automatically or manually")
+    (description "This crate helps link to libstdc++ or libc++ automatically or
+manually from Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-linked-hash-map-0.5
   (package
     (name "rust-linked-hash-map")
