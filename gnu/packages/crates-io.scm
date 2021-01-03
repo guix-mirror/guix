@@ -3207,8 +3207,32 @@ little-endian.")
        (("rust-quickcheck" ,rust-quickcheck-0.2)
         ("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-bytes-1
+  (package
+    (name "rust-bytes")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bytes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wpsy2jwmbrsn7x6vcd00hw9vvz071lv8nrb25wrspvmkna8w7xd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-loom" ,rust-loom-0.4)
+        ("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://github.com/tokio-rs/bytes")
+    (synopsis "Types and traits for working with bytes")
+    (description "This package is a utility library for working with bytes.")
+    (license license:expat)))
+
 (define-public rust-bytes-0.6
   (package
+    (inherit rust-bytes-1)
     (name "rust-bytes")
     (version "0.6.0")
     (source
@@ -3218,17 +3242,12 @@ little-endian.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "05ivrcbgl4f7z2zzm9hbsi8cy66spi70xlm6fp16zsq4ylsvrp70"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-loom" ,rust-loom-0.3)
-        ("rust-serde-test" ,rust-serde-test-1))))
-    (home-page "https://github.com/tokio-rs/bytes")
-    (synopsis "Types and traits for working with bytes")
-    (description "This package is a utility library for working with bytes.")
-    (license license:expat)))
+        ("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-bytes-0.5
   (package
