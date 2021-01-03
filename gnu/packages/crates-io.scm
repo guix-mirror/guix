@@ -14820,6 +14820,29 @@ primitives to an @code{io::Write}.")
     (native-inputs
      `(("jemalloc" ,jemalloc)))))
 
+(define-public rust-jni-glue-0.0
+  (package
+    (name "rust-jni-glue")
+    (version "0.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jni-glue" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "054kc2hkdfjiihy7ssrn97s9hs35c2v32ph2h0jlv4vkazx39ddb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-jni-sys" ,rust-jni-sys-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/MaulingMonkey/jni-bindgen")
+    (synopsis "Glue code to accompany the jni-bindgen code generator")
+    (description
+     "This package provides manually written glue code to accompany
+the jni-bindgen code generator for binding to JVM APIs from Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-jni-sys-0.3
   (package
     (name "rust-jni-sys")
