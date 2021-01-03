@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -3263,7 +3263,7 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.50.1")
+    (version "2.50.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -3271,7 +3271,7 @@ library.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "02csvx2nzygh8kyal2qiy3y6xb7d52vszxxr37dzav704a9pkncv"))
+                "1lsnl08b5pjf01q3agixjd53islw5rqkc38r31rlmm2crrqz44b2"))
               (modules '((guix build utils)))
               (snippet
                '(begin (delete-file-recursively "vendor")
