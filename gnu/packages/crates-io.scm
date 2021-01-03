@@ -30664,6 +30664,26 @@ that exposes the same functionality at the command line.")
      "This package provides a small wrapper around option.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tap-1
+  (package
+    (name "rust-tap")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tap" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "13h7rw3zg3qyb4wrri8l6xbd1wrxd2rq29sqxnkd7zqs5mrlwirn"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/myrrlyn/tap")
+    (synopsis "Generic extensions for tapping values in Rust")
+    (description
+     "This package provides generic extensions for tapping values in Rust.")
+    (license license:expat)))
+
 (define-public rust-tar-0.4
   (package
     (name "rust-tar")
