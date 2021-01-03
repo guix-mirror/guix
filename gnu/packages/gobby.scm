@@ -49,7 +49,9 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'update-gnutls-api
            (lambda _
