@@ -19,11 +19,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages fcitx)
-  #:use-module ((guix licenses) #:select (gpl2+))
+  #:use-module ((guix licenses) #:select (gpl2+ bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
@@ -33,14 +35,69 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
+
+(define-public fcitx-qt5
+  (package
+    (name "fcitx-qt5")
+    (version "1.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/fcitx/fcitx-qt5.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1d56bp11jp85b2r4syw1clfg4vqxqfh7gygpwz8wk5sxmfmmdq83"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "quickphrase-editor/CMakeLists.txt"
+               (("\\$\\{FCITX4_ADDON_INSTALL_DIR\\}")
+                (string-append
+                 (assoc-ref outputs "out")
+                 "/lib/fcitx")))
+             (substitute* "platforminputcontext/CMakeLists.txt"
+               (("\\$\\{CMAKE_INSTALL_QTPLUGINDIR\\}")
+                (string-append
+                 (assoc-ref outputs "out")
+                 "/lib/qt5/plugins")))
+             #t)))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fcitx" ,fcitx)
+       ("libintl" ,intltool)
+       ("libxkbcommon" ,libxkbcommon)))
+    (propagated-inputs
+     `(("qtbase" ,qtbase)))
+    (synopsis "Fcitx Qt5 Input Context")
+    (description "This package provides a Qt5 frontend for fcitx.")
+    (home-page "https://github.com/fcitx/fcitx-qt5/")
+    (license
+     (list
+      ;; Plugin
+      bsd-3
+      ;; Others
+      gpl2+))))
 
 (define-public presage
   (package
