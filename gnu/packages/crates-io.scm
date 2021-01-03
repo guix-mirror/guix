@@ -26494,6 +26494,29 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scratch-1
+  (package
+    (name "rust-scratch")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scratch" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sff4rvfalp0ip98pl3xa32n7lhzcr4zqn8fgamaalbb64v4a4by"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-fs2" ,rust-fs2-0.4))))
+    (home-page "https://github.com/dtolnay/scratch")
+    (synopsis "Compile-time temporary directory")
+    (description "This crate exposes a compile-time temporary directory sharable
+by multiple crates in a build graph and erased by @code{cargo clean}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-scrypt-0.3
   (package
     (name "rust-scrypt")
