@@ -14820,6 +14820,37 @@ primitives to an @code{io::Write}.")
     (native-inputs
      `(("jemalloc" ,jemalloc)))))
 
+(define-public rust-jni-0.14
+  (package
+    (name "rust-jni")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jni" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00jl4jzzbbcf1nyziras5drp501xsk89g0132pwg194ilh6k308r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cesu8" ,rust-cesu8-1)
+        ("rust-combine" ,rust-combine-3)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-jni-sys" ,rust-jni-sys-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-walkdir" ,rust-walkdir-2))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/jni-rs/jni-rs")
+    (synopsis "Rust bindings to the JNI")
+    (description
+     "This package provides Rust bindings to the JNI.  It permits to
+implement native Java methods for JVM and Android in Rust, call Java
+code from Rust, embed JVM in Rust applications and use any Java
+libraries.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-jni-glue-0.0
   (package
     (name "rust-jni-glue")
