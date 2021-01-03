@@ -15788,24 +15788,27 @@ by inspecting the system for user preference.")
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4))))))
 
-(define-public rust-loom-0.3
+(define-public rust-loom-0.4
   (package
     (name "rust-loom")
-    (version "0.3.6")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "loom" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vabpqzdhcqy1d64kcyzgfwigiak0dr18whq0lkic8915w7lds50"))))
+        (base32 "1941ji91nvriqqkgzlx285kq38zg74sw68gb2x4pnjbfcfs76k6l"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
+     ;; FIXME: build phase fails with the error: "the
+     ;; `#[track_caller]` attribute is an experimental feature".
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-futures-util" ,rust-futures-util-0.3)
         ("rust-generator" ,rust-generator-0.6)
-        ("rust-scoped-tls" ,rust-scoped-tls-1)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))))
     (home-page "https://github.com/tokio-rs/loom")
@@ -15816,6 +15819,27 @@ times, permuting the possible concurrent executions of that test under the C11
 memory model.  It uses state reduction techniques to avoid combinatorial
 explosion.")
     (license license:expat)))
+
+(define-public rust-loom-0.3
+  (package
+    (inherit rust-loom-0.4)
+    (name "rust-loom")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "loom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vabpqzdhcqy1d64kcyzgfwigiak0dr18whq0lkic8915w7lds50"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-generator" ,rust-generator-0.6)
+        ("rust-scoped-tls" ,rust-scoped-tls-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-loom-0.2
   (package/inherit rust-loom-0.3
