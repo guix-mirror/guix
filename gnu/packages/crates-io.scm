@@ -1220,6 +1220,34 @@ standard library.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-stream-0.3
+  (package
+    (name "rust-async-stream")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-stream" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p19qn5igblb86d35lda72q8vimk2iw8hk7r07wjj5y0rdqdyw1n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-async-stream-impl" ,rust-async-stream-impl-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-test" ,rust-tokio-test-0.2)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/tokio-rs/async-stream")
+    (synopsis "Asynchronous streams using async & await notation")
+    (description
+     "This package provides asynchronous streams using async & await
+notation.")
+    (license license:expat)))
+
 (define-public rust-async-stream-impl-0.3
   (package
     (name "rust-async-stream-impl")
