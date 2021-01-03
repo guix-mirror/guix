@@ -6370,6 +6370,26 @@ ristretto255 and Curve25519")
 attributes.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-cxx-test-suite-0.0.0
+  (package
+    (name "rust-cxx-test-suite")
+    (version "0.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxx-test-suite" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1pkf4ay1210g9wqyqhkgvlcsv4i6kgdcmgnh19mrymylznv7pcal"))))
+    (build-system cargo-build-system)
+    (arguments '(#:skip-build? #t)) ; Not meant to be built independantly.
+    (home-page "https://github.com/dtolnay/cxx")
+    (synopsis "Test suite of the cxx crate")
+    (description "This package provides the test suite of the cxx crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-darling-0.10
   (package
     (name "rust-darling")
