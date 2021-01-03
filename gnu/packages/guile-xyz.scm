@@ -2875,11 +2875,7 @@ list of components.  This module takes care of that for you.")
                                (open-pipe* OPEN_READ
                                            "guile" "-c"
                                            "(display (effective-version))"))))
-               (substitute* '("module/gi.scm"
-                              "module/gi/oop.scm"
-                              "module/gi/documentation.scm"
-                              "module/gi/types.scm"
-                              "module/gi/repository.scm")
+               (substitute* (find-files "module" ".*\\.scm")
                  (("\\(load-extension \"libguile-gi\" \"(.*)\"\\)" m arg)
                   (format #f "~s"
                           `(load-extension
