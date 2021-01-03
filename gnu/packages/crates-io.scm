@@ -715,8 +715,7 @@ escape codes.")
          "11kaqp25lchr2ckyc46zm6blzndnw0w2w8qv0sp8z4xcxqgw2rzf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.3)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-thiserror" ,rust-thiserror-1)
