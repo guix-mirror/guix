@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
@@ -498,6 +500,53 @@ presenting a single consistent, portable interface that hides the usual
 complexity of working with shared libraries across platforms.")
     (license gpl3+)
     (home-page "https://www.gnu.org/software/libtool/")))
+
+(define-public config
+  (let ((revision "1")
+        (commit "c8ddc8472f8efcadafc1ef53ca1d863415fddd5f"))
+    (package
+      (name "config")
+      (version (git-version "0.0.0" revision commit)) ;no release tag
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/config.git/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0x6ycvkmmhhhag97wsf0pw8n5fvh12rjvrck90rz17my4ys16qwv"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-/bin/sh
+                      (lambda _
+                        (substitute* "testsuite/config-guess.sh"
+                          (("#!/bin/sh")
+                           (string-append "#!" (which "sh"))))
+                        #t))
+                    (replace 'build
+                      (lambda _
+                        (invoke "make" "manpages")))
+                    (delete 'configure)
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let* ((out (assoc-ref outputs "out"))
+                               (bin (string-append out "/bin"))
+                               (man1 (string-append out "/share/man/man1")))
+                          (install-file "config.guess" bin)
+                          (install-file "config.sub" bin)
+                          (install-file "doc/config.guess.1" man1)
+                          (install-file "doc/config.sub.1" man1)
+                          #t))))))
+      (native-inputs
+       `(("help2man" ,help2man)))
+      (home-page "https://savannah.gnu.org/projects/config")
+      (synopsis "Ubiquitious config.guess and config.sub scripts")
+      (description "The `config.guess' script tries to guess a canonical system triple,
+and `config.sub' validates and canonicalizes.  These are used as part of
+configuration in nearly all GNU packages (and many others).")
+      (license gpl2+))))
 
 (define-public libltdl
   ;; This is a libltdl package separate from the libtool package.  This is
