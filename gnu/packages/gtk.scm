@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Coypright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -951,8 +951,35 @@ application suites.")
     (arguments
      ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
      ;; because of them.
-     '(#:configure-flags '("--disable-Werror")
-       #:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
+     `(#:configure-flags '("--disable-Werror")
+       #:make-flags '("GUILE_AUTO_COMPILE=0") ; to prevent guild warnings
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 rdelim)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-go-files
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (module-dir (string-append out "/share/guile/site/"
+                                               effective))
+                    (object-dir (string-append out "/lib/guile/" effective
+                                               "/site-ccache"))
+                    (prefix     (string-length module-dir)))
+               ;; compile to the destination
+               (for-each (lambda (file)
+                           (let* ((base (string-drop (string-drop-right file 4)
+                                                     prefix))
+                                  (go   (string-append object-dir base ".go")))
+                             (invoke "guild" "compile" "-L" module-dir
+                                     file "-o" go)))
+                         (find-files module-dir "\\.scm$"))
+               #t))))))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
