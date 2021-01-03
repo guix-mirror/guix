@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -488,7 +489,7 @@ blanks grouped by language.")
 (define-public watchexec
   (package
     (name "watchexec")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -496,8 +497,7 @@ blanks grouped by language.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bwgqb5fvyqbf2lf0005fxzpbpbwbszc7144g3kg2cmzy5cbrf0w"))))
+        (base32 "1vqaa462sjpzi0crh12ixqc2wa5bblirc129pnj8jr8iz3xw3gvd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:phases
@@ -512,7 +512,7 @@ blanks grouped by language.")
                (install-file "README.md" doc)
                #t))))
        #:cargo-inputs
-       (("rust-clap" ,rust-clap-2)
+       (("rust-embed-resource" ,rust-embed-resource-1.3)
         ("rust-derive-builder" ,rust-derive-builder-0.9)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-glob" ,rust-glob-0.3)
@@ -521,8 +521,7 @@ blanks grouped by language.")
         ("rust-log" ,rust-log-0.4)
         ("rust-nix" ,rust-nix-0.17)
         ("rust-notify" ,rust-notify-4)
-        ("rust-walkdir" ,rust-walkdir-2)
-        ("rust-winapi" ,rust-winapi-0.3))))
+        ("rust-walkdir" ,rust-walkdir-2))))
     (home-page "https://github.com/watchexec/watchexec")
     (synopsis "Executes commands in response to file modifications")
     (description
