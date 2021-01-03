@@ -14820,6 +14820,25 @@ primitives to an @code{io::Write}.")
     (native-inputs
      `(("jemalloc" ,jemalloc)))))
 
+(define-public rust-jni-sys-0.3
+  (package
+    (name "rust-jni-sys")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jni-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c01zb9ygvwg9wdx2fii2d39myzprnpqqhy7yizxvjqp5p04pbwf"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/rust-jni-sys")
+    (synopsis "Rust definitions corresponding to @file{jni.h}")
+    (description
+     "This package provides Rust definitions corresponding to
+@file{jni.h}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-jobserver-0.1
   (package
     (name "rust-jobserver")
