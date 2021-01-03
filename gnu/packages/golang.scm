@@ -525,7 +525,7 @@ jar struct to manage the cookies added to the cookie jar.")
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/motemen/go-colorine"))
-      (inputs
+      (propagated-inputs
        `(("github.com/daviddengcn/go-colortext" ,go-github-com-daviddengcn-go-colortext)))
       (synopsis "Simple colorized console logger for golang")
       (description
