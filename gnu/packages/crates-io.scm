@@ -6403,6 +6403,34 @@ ristretto255 and Curve25519")
 attributes.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-cxx-gen-0.6
+  (package
+    (name "rust-cxx-gen")
+    (version "0.6.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cxx-gen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0avkca16wjy0paplq1ycaf04bj62agfj0awyhyzxyfpdn9rm45j2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-codespan-reporting" ,rust-codespan-reporting-0.9)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://cxx.rs")
+    (synopsis "C++ code generator")
+    (description
+     "This package provides a C++ code generator for integrating the @code{cxx}
+crate into higher level tools.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cxx-test-suite-0.0.0
   (package
     (name "rust-cxx-test-suite")
