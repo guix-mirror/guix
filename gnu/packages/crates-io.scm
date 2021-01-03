@@ -2388,6 +2388,39 @@ behave like a set of bitflags.")
       "Library for reading/writing un-aligned values from/to streams in big-endian and little-endian formats.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-bitvec-0.19
+  (package
+    (name "rust-bitvec")
+    (version "0.19.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bitvec" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10bz751jbsy8fj203ibjwil07p2fwfzvx7b326wfssaravlkbfm7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-funty" ,rust-funty-1)
+        ("rust-radium" ,rust-radium-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-tap" ,rust-tap-1)
+        ("rust-wyz" ,rust-wyz-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-test" ,rust-serde-test-1)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://myrrlyn.net/crates/bitvec")
+    (synopsis "Manipulate memory, bit by bit")
+    (description
+     "This package provides a crate for manipulating memory, bit by bit.")
+    (license license:expat)))
+
 (define-public rust-blake2-0.8
   (package
     (name "rust-blake2")
