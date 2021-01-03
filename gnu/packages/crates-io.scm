@@ -10641,6 +10641,30 @@ for the futures-rs library.")
 futures-rs library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fuzzy-matcher-0.3
+  (package
+    (name "rust-fuzzy-matcher")
+    (version "0.3.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fuzzy-matcher" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "153csv8rsk2vxagb68kpmiknvdd3bzqj03x805khckck28rllqal"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-thread-local" ,rust-thread-local-1.0))
+       #:cargo-development-inputs
+       (("rust-termion" ,rust-termion-1.5))))
+    (home-page "https://github.com/lotabout/fuzzy-matcher")
+    (synopsis "Fuzzy Matching Library")
+    (description "This package provides a fuzzy matching library in Rust.")
+    (license license:expat)))
+
 (define-public rust-fxhash-0.2
   (package
     (name "rust-fxhash")
