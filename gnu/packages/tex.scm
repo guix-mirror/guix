@@ -279,6 +279,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
     (build-system gnu-build-system)
     (inputs
      `(("texlive-extra-src" ,texlive-extra-src)
+       ("config" ,config)
        ("texlive-scripts"
         ,(origin
            (method svn-fetch)
@@ -451,6 +452,16 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                (substitute* (string-append scripts "/fmtutil.pl")
                  (("\\$TEXMFROOT/")
                   (string-append share "/")))
+
+               ;; Likewise for the tlmgr.
+               (substitute* (string-append scripts "/tlmgr.pl")
+                 ((".*\\$::installerdir = \\$Master.*" all)
+                  (format #f "  $Master = ~s;~%~a" share all)))
+
+               ;; Install the config.guess script, required by tlmgr.
+               (with-directory-excursion share
+                 (mkdir-p "tlpkg/installer/")
+                 (symlink config.guess "tlpkg/installer/config.guess"))
 
                ;; texlua shebangs are not patched by the patch-source-shebangs
                ;; phase because the texlua executable does not exist at that
