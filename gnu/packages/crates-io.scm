@@ -673,6 +673,31 @@ be used with the stdlib.")
     (description "This package provides FFI bindings to Android log Library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-android-logger-0.8
+  (package
+    (name "rust-android-logger")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "android_logger" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kj8i03fqqwxd803hrk27j2399v27ajjj9zxi2nnyml0s4nm9gcc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-android-log-sys" ,rust-android-log-sys-0.1)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4))))
+    (home-page "https://github.com/Nercury/android_logger-rs")
+    (synopsis "Logging implementation for @code{log}")
+    (description
+     "This library is a drop-in replacement for @code{env_logger}.  Instead,
+it outputs messages to Android's logcat.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ansi-parser-0.6
   (package
     (name "rust-ansi-parser")
