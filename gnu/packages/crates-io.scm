@@ -34213,7 +34213,7 @@ extension for the Trust-DNS client to use rustls for TLS.")
 (define-public rust-trybuild-1
   (package
     (name "rust-trybuild")
-    (version "1.0.23")
+    (version "1.0.38")
     (source
      (origin
        (method url-fetch)
@@ -34222,7 +34222,7 @@ extension for the Trust-DNS client to use rustls for TLS.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "080j808nv6nyr1mmw23vwdp4rkk7r38nmms850rih8lsclc1pzr6"))))
+         "0l5kicbqkk8b9grdg5l2f2w9l47h0s1kjnv6lywvwk292236zc0p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
