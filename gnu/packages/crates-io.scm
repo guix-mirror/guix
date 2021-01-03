@@ -1220,6 +1220,37 @@ standard library.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-stream-impl-0.3
+  (package
+    (name "rust-async-stream-impl")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-stream-impl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w0aif9aw103b5wrm1svkqdh7aaihjywa21819d8m3lzzj78nm53"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags '("--release" "--"
+                            "--skip=try_stream"
+                            "--skip=stream")
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://github.com/tokio-rs/async-stream")
+    (synopsis "Proc macros for async-stream crate")
+    (description
+     "This package provides proc macros for @code{rust-async-stream}
+crate.")
+    (license license:expat)))
+
 (define-public rust-async-trait-0.1
   (package
     (name "rust-async-trait")
