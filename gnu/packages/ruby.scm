@@ -2348,6 +2348,30 @@ support.")
     (home-page "http://www.kuwata-lab.com/erubis/")
     (license license:expat)))
 
+(define-public ruby-ethon
+  (package
+    (name "ruby-ethon")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ethon" version))
+       (sha256
+        (base32
+         "0gggrgkcq839mamx7a8jbnp2h7x2ykfn34ixwskwb0lzx2ak17g9"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (inputs
+     `(("curl" ,curl)))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Very lightweight @code{libcurl} wrapper")
+    (description
+     "Ethon is a very basic @code{libcurl} wrapper using ffi.")
+    (home-page "https://github.com/typhoeus/ethon")
+    (license license:expat)))
+
 (define-public ruby-execjs
   (package
     (name "ruby-execjs")
