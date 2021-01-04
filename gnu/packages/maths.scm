@@ -919,14 +919,14 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.2.7")
+    (version "5.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
                                   version "/gnuplot-"
                                   version ".tar.gz"))
        (sha256
-        (base32 "1vglp4la40f5dpj0zdj63zprrkyjgzy068p35bz5dqxjyczm1zlp"))))
+        (base32 "03jrqs5lvxmbbz2c4g17dn2hrxqwd3hfadk9q8wbkbkyas2h8sbb"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -938,7 +938,9 @@ singular value problems.")
        ("texlive" ,texlive-tiny)))
     (arguments `(#:configure-flags (list (string-append
                                           "--with-texdir=" %output
-                                          "/texmf-local/tex/latex/gnuplot"))))
+                                          "/texmf-local/tex/latex/gnuplot"))
+                 ;; Plot on a dumb terminal during tests.
+                 #:make-flags '("GNUTERM=dumb")))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
