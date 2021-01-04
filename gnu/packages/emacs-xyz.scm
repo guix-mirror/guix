@@ -12550,7 +12550,8 @@ Emacs.")
         (base32 "1zvs144hxq2mmq1h0ynx9hy7yyccb46f3pjg9mgq8v9cw5y678vk"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-jsonrpc" ,emacs-jsonrpc)))
+     `(("emacs-jsonrpc" ,emacs-jsonrpc)
+       ("emacs-project" ,emacs-project)))
     (home-page "https://github.com/joaotavora/eglot")
     (synopsis "Client for Language Server Protocol (LSP) servers")
     (description
