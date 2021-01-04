@@ -11381,6 +11381,48 @@ characteristics.")
     (home-page "https://github.com/sinatra/mustermann")
     (license license:expat)))
 
+(define-public ruby-html-proofer
+  (package
+    (name "ruby-html-proofer")
+    (version "3.18.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gjtorikian/html-proofer")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1pxb0fajb3l3lm7sqj548qwl7vx6sx3jy7n4cns9d4lqx7s9r9xb"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(;; FIXME: Tests depend on rubocop-standard.
+       #:tests? #f))
+    (native-inputs
+     `(("ruby-awesome-print" ,ruby-awesome-print)
+       ("ruby-redcarpet" ,ruby-redcarpet)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rubocop-performance" ,ruby-rubocop-performance)
+       ("ruby-pry-byebug" ,ruby-pry-byebug)))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-mercenary" ,ruby-mercenary)
+       ("ruby-nokogumbo" ,ruby-nokogumbo)
+       ("ruby-parallel" ,ruby-parallel)
+       ("ruby-rainbow" ,ruby-rainbow)
+       ("ruby-typhoeus" ,ruby-typhoeus)
+       ("ruby-yell" ,ruby-yell)))
+    (synopsis "Test your rendered HTML files to make sure they're accurate")
+    (description
+     "HTMLProofer is a set of tests to validate your HTML output.  These
+tests check if your image references are legitimate, if they have alt tags,
+if your internal links are working, and so on.  It's intended to be an
+all-in-one checker for your output.")
+    (home-page "https://github.com/gjtorikian/html-proofer")
+    (license license:expat)))
+
 (define-public ruby-htmlentities
   (package
     (name "ruby-htmlentities")
