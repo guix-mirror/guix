@@ -3693,6 +3693,29 @@ distribution.")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
 
+(define-public texlive-tipa
+  (package
+    (inherit (simple-texlive-package
+              "texlive-tipa"
+              (list "/tex4ht/ht-fonts/alias/tipa/"
+                    "/doc/fonts/tipa/"
+                    "/fonts/map/dvips/tipa/"
+                    "/fonts/source/public/tipa/"
+                    "/fonts/tfm/public/tipa/"
+                    "/fonts/type1/public/tipa/"
+                    "/tex/latex/tipa/")
+              (base32
+               "1h53dscv8z6fsa0ax5dys3x11b2f1g60l22hpdf7c88cvdhcs8sn")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/tipa")
+    (synopsis "Fonts and macros for IPA phonetics characters")
+    (description "These fonts are considered the \"ultimate answer\" to IPA
+typesetting.  The encoding of these 8-bit fonts has been registered as LaTeX
+standard encoding T3, and the set of addendum symbols as encoding
+TS3. \"Times-like\" Adobe Type 1 versions are provided for both the T3 and the
+TS3 fonts.")
+    (license license:lppl)))
+
 (define-public texlive-latex-amsrefs
   (package
     (name "texlive-latex-amsrefs")
