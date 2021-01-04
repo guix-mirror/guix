@@ -5811,9 +5811,9 @@ Association for Computing Machinery (ACM).")
 get a narrower “natural” width.")
     (license license:lppl)))
 
-(define-public texlive-latex-wasysym
+(define-public texlive-wasysym
   (package
-    (name "texlive-latex-wasysym")
+    (name "texlive-wasysym")
     (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
@@ -5832,6 +5832,9 @@ like male and female symbols and astronomical symbols, as well as the complete
 lasy font set and other odds and ends.  The wasysym package implements an easy
 to use interface for these symbols.")
     (license license:lppl)))
+
+(define-public texlive-latex-wasysym
+  (deprecated-package "texlive-latex-wasysym" texlive-wasysym))
 
 (define-public texlive-latex-wrapfig
   (package
