@@ -12283,3 +12283,28 @@ exceptions with predefined messages.")
 giving detailed reports on the time taken for each task.")
     (home-page "https://github.com/ruby/benchmark")
     (license license:bsd-2)))
+
+(define-public ruby-jekyll-feed
+  (package
+    (name "ruby-jekyll-feed")
+    (version "0.15.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "jekyll-feed" version))
+        (sha256
+          (base32
+            "1zxqkrnix0xiw98531h5ga6h69jhzlx2jh9qhvcl67p8nq3sgza9"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #false))     ;there are none
+    (propagated-inputs
+      `(("jekyll" ,jekyll)))
+    (synopsis
+      "Jekyll plugin to generate an Atom feed of your Jekyll posts")
+    (description
+      "This package provides a Jekyll plugin to generate an Atom feed
+of your Jekyll posts.")
+    (home-page
+      "https://github.com/jekyll/jekyll-feed")
+    (license license:expat)))
