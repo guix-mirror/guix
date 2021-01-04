@@ -5377,6 +5377,56 @@ alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
 
+(define-public texlive-jknappen
+  (package
+    (inherit (simple-texlive-package
+              "texlive-jknappen"
+              (list "/fonts/source/jknappen/"
+                    "/fonts/tfm/jknappen/"
+                    "/fonts/source/jknappen/"
+                    "/fonts/tfm/jknappen/"
+                    "/tex4ht/ht-fonts/alias/jknappen/"
+                    "/tex4ht/ht-fonts/unicode/jknappen/")
+              (base32
+               "1v5wk5il41bddzr81h5636h3cjz0w1qann5g9garsb7qfch9fhws")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/jknappen")
+    (synopsis "Miscellaneous packages by Jörg Knappen")
+    (description
+     "This package contains a collection of macros by Jörg Knappen:
+@table @code
+@item greekctr
+New counterstyles @code{\\greek} and @code{\\Greek}.
+@item holtpolt
+Non-commutative fractions
+@item latin1jk
+@itemx latin2jk
+@itemx latin3jk
+Inputenc definition files that allow verbatim input in the respective ISO
+Latin codes.
+@item mathbol
+Blackboard bold fonts for use in maths.
+@item mathrsfs
+Mathematical script letters, as traditionally used in physics for Lagrangian,
+Hamiltonian, path integral measures, etc.
+@item parboxx
+New alignment options for parboxen at top and bottom of the box.
+@item sans
+Interchanges the roles of sans serif and roman fonts throughout the document.
+@item semtrans
+Support for special latin letters and diacritics used in transliteration of
+semitic languages
+@item smartmn
+Intelligent hyphen/minus, which guesses whether to render as hyphen or minus.
+@item sgmlcmpt
+Commands replacing the characters <, >, and &.
+@item tccompat
+A compatibility package for users of the older versions of the textcomp package.
+@item young
+Simple Young tableaux.
+@end table")
+    (license license:gpl2)))                    ;per the 00readme_txt file.
+
 (define-public texlive-libertine
   (package
     (inherit (simple-texlive-package
