@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages rails)
@@ -1161,6 +1163,31 @@ ConTeXt, PDF, RTF, DocBook XML, OpenDocument XML, ODT, GNU Texinfo, MediaWiki
 markup, groff man pages, HTML slide shows, EPUB, Microsoft Word docx, and
 more.")
     (home-page "https://github.com/xwmx/pandoc-ruby")
+    (license license:expat)))
+
+(define-public ruby-patron
+  (package
+    (name "ruby-patron")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "patron" version))
+       (sha256
+        (base32
+         "0523gddx88zql2mq6655k60gy2ac8vybpzkcf90lmd9nx7wl3fi9"))))
+    (build-system ruby-build-system)
+    (inputs
+     `(("curl" ,curl)))
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (synopsis "Ruby HTTP client library based on @code{libcurl}")
+    (description
+     "Patron is a Ruby HTTP client library based on @code{libcurl}.  It does
+not try to expose the full power (read complexity) of @code{libcurl} but
+instead tries to provide a sane API while taking advantage of @code{libcurl}
+under the hood.")
+    (home-page "https://github.com/toland/patron")
     (license license:expat)))
 
 (define-public ruby-slim
