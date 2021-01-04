@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -48,7 +48,8 @@
   #:autoload   (guix scripts package) (delete-generations
                                        delete-matching-generations)
   #:autoload   (guix scripts pull) (channel-commit-hyperlink)
-  #:use-module (guix graph)
+  #:autoload   (guix graph) (export-graph node-type
+                             graph-backend-name %graph-backends)
   #:use-module (guix scripts graph)
   #:use-module (guix scripts system reconfigure)
   #:use-module (guix build utils)
@@ -887,18 +888,28 @@ Run 'herd status' to view the list of services on your system.\n"))))))
                    (register-root* (list output) gc-root))
                  (return output)))))))))
 
-(define (export-extension-graph os port)
-  "Export the service extension graph of OS to PORT."
+(define (lookup-backend name)                     ;TODO: factorize
+  "Return the graph backend called NAME.  Raise an error if it is not found."
+  (or (find (lambda (backend)
+              (string=? (graph-backend-name backend) name))
+            %graph-backends)
+      (leave (G_ "~a: unknown backend~%") name)))
+
+(define* (export-extension-graph os port
+                                 #:key (backend (lookup-backend "graphviz")))
+  "Export the service extension graph of OS to PORT using BACKEND."
   (let* ((services (operating-system-services os))
          (system   (find (lambda (service)
                            (eq? (service-kind service) system-service-type))
                          services)))
     (export-graph (list system) (current-output-port)
+                  #:backend backend
                   #:node-type (service-node-type services)
                   #:reverse-edges? #t)))
 
-(define (export-shepherd-graph os port)
-  "Export the graph of shepherd services of OS to PORT."
+(define* (export-shepherd-graph os port
+                                #:key (backend (lookup-backend "graphviz")))
+  "Export the graph of shepherd services of OS to PORT using BACKEND."
   (let* ((services  (operating-system-services os))
          (pid1      (fold-services services
                                    #:target-type shepherd-root-service-type))
@@ -907,6 +918,7 @@ Run 'herd status' to view the list of services on your system.\n"))))))
                               (null? (shepherd-service-requirement service)))
                             shepherds)))
     (export-graph sinks (current-output-port)
+                  #:backend backend
                   #:node-type (shepherd-service-node-type shepherds)
                   #:reverse-edges? #t)))
 
@@ -1015,6 +1027,10 @@ Some ACTIONS support additional ARGS.\n"))
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
+      --graph-backend=BACKEND
+                         use BACKEND for 'extension-graphs' and 'shepherd-graph'"))
+  (newline)
+  (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
   -V, --version          display version information and exit"))
@@ -1109,6 +1125,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
+         (option '("graph-backend") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'graph-backend arg result)))
          %standard-build-options))
 
 (define %default-options
@@ -1128,7 +1147,8 @@ Some ACTIONS support additional ARGS.\n"))
     (image-size . guess)
     (install-bootloader? . #t)
     (label . #f)
-    (volatile-root? . #f)))
+    (volatile-root? . #f)
+    (graph-backend . "graphviz")))
 
 (define (verbosity-level opts)
   "Return the verbosity level based on OPTS, the alist of parsed options."
@@ -1191,6 +1211,9 @@ resulting from command-line parsing."
                            (bootloader-configuration-target
                             (operating-system-bootloader os)))))
 
+    (define (graph-backend)
+      (lookup-backend (assoc-ref opts 'graph-backend)))
+
     (with-store store
       (set-build-options-from-command-line store opts)
 
@@ -1205,9 +1228,11 @@ resulting from command-line parsing."
             (set-guile-for-build (default-guile))
             (case action
               ((extension-graph)
-               (export-extension-graph os (current-output-port)))
+               (export-extension-graph os (current-output-port)
+                                       #:backend (graph-backend)))
               ((shepherd-graph)
-               (export-shepherd-graph os (current-output-port)))
+               (export-shepherd-graph os (current-output-port)
+                                      #:backend (graph-backend)))
               (else
                (unless (memq action '(build init))
                  (warn-about-old-distro #:suggested-command
