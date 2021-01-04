@@ -12308,3 +12308,28 @@ of your Jekyll posts.")
     (home-page
       "https://github.com/jekyll/jekyll-feed")
     (license license:expat)))
+
+(define-public ruby-jekyll-sitemap
+  (package
+    (name "ruby-jekyll-sitemap")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "jekyll-sitemap" version))
+        (sha256
+          (base32
+            "0622rwsn5i0m5xcyzdn86l68wgydqwji03lqixdfm1f1xdfqrq0d"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #false))     ;there are none
+    (propagated-inputs
+      `(("jekyll" ,jekyll)))
+    (synopsis
+      "Automatically generate a sitemap.xml for your Jekyll site")
+    (description
+      "This package provides a Jekyll plugin to silently generate
+a sitemaps.org compliant sitemap for your Jekyll site.")
+    (home-page
+      "https://github.com/jekyll/jekyll-sitemap")
+    (license license:expat)))
