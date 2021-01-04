@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -3078,18 +3078,35 @@ API.")
     (version "0.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://download.savannah.nongnu.org/releases/"
-                    name "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/emacsy/emacsy-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1cpb85dl1nibd34c2x2h7vfmjpkgh353p5b1w20v6cs6gmvgg4np"))))
+                "1cpb85dl1nibd34c2x2h7vfmjpkgh353p5b1w20v6cs6gmvgg4np"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "configure"
+                    ;; Allow builds with Guile 3.0.
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0")
+
+                    ;; Freeglut 3.2 provides 'glut.pc', not 'freeglut.pc'.
+                    (("freeglut >= ")
+                     "glut >= "))
+
+                  (substitute* '("emacsy/emacsy.c"
+                                 "example/hello-emacsy.c")
+                    (("#include <libguile\\.h>")
+                     (string-append "#include <stdlib.h>\n"
+                                    "#include <stdio.h>\n"
+                                    "#include <string.h>\n"
+                                    "#include <unistd.h>\n"
+                                    "#include <libguile.h>\n")))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bzip2" ,bzip2)
-       ("guile" ,guile-2.2)
+     `(("bzip2" ,bzip2)
+       ("guile" ,guile-3.0)
        ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("perl" ,perl)
@@ -3098,7 +3115,7 @@ API.")
        ("texlive" ,(texlive-union (list texlive-generic-epsf)))))
     (inputs
      `(("dbus-glib" ,dbus-glib)
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("guile-lib" ,guile-lib)
        ("guile-readline" ,guile-readline)
        ("freeglut" ,freeglut)
