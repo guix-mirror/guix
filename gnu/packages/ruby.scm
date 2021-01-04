@@ -11764,3 +11764,30 @@ defined in @file{.travis.yml} on your local machine, using @code{rvm},
 you the speed and portability of libgit2 with the beauty of the Ruby
 language.")
     (license license:expat)))
+
+(define-public ruby-yell
+  (package
+    (name "ruby-yell")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yell" version))
+       (sha256
+        (base32
+         "1g16kcdhdfvczn7x81jiq6afg3bdxmb73skqjyjlkp5nqcy6y5hx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "rake" "examples")))))) ; there is no test target.
+    (synopsis
+     "Extensible logging library for Ruby")
+    (description
+     "Yell is a comprehensive logging replacement for Ruby.  It defines
+multiple adapters, various log level combinations and message formatting
+options.")
+    (home-page "https://github.com/rudionrails/yell")
+    (license license:expat)))
