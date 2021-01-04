@@ -309,7 +309,7 @@ zabbix||{}
           (service dhcp-client-service-type)
           (service postgresql-service-type
                    (postgresql-configuration
-                    (postgresql postgresql-10)))
+                    (postgresql postgresql)))
           (service zabbix-front-end-service-type
                    (zabbix-front-end-configuration
                     (db-password "zabbix")))
