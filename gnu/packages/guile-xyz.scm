@@ -1811,6 +1811,37 @@ users and in some situations.")
 (define-public guile3.0-wisp
   (deprecated-package "guile3.0-wisp" guile-wisp))
 
+(define-public guile-udev
+  (package
+    (name "guile-udev")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/artyom-poptsov/guile-udev")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l6csncjqnx58c6c3wdl7rshnhk4pzhjq2q8lnkg483564s9w5py"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("eudev" ,eudev)))
+    (home-page "https://github.com/artyom-poptsov/guile-udev")
+    (synopsis "Guile bindings to libudev")
+    (description
+     "Guile-Udev provides GNU Guile bindings to libudev.")
+    (license license:gpl3+)))
+
 (define-public guile-sly
   (package
     (name "guile-sly")
