@@ -717,7 +717,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "8.3.0")
+    (version "8.4.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -725,7 +725,7 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "16jqxvsyjjpyyb89fj2h8mgb0m07vlqvggifbrk7qcqwddda2f6v"))))
+                "16kvfm11xv7j9a3yykzysjgw38a9b7lnc5n5x5h82g395k6ybxf0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
