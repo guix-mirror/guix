@@ -57,7 +57,8 @@
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               "0b12rsynrmkldlwcb62drk33kk0aqwbj10mq5y5x3hjf626gjwsi")))
+               (base32
+                "0b12rsynrmkldlwcb62drk33kk0aqwbj10mq5y5x3hjf626gjwsi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
