@@ -1484,6 +1484,30 @@ Grammar (PEG) parser generator Domain Specific Language (DSL).")
     (home-page "https://github.com/cjheath/treetop")
     (license license:expat)))
 
+(define-public ruby-typhoeus
+  (package
+    (name "ruby-typhoeus")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "typhoeus" version))
+       (sha256
+        (base32
+         "1m22yrkmbj81rzhlny81j427qdvz57yk5wbcf3km0nf3bl6qiygz"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no included tests
+    (propagated-inputs
+     `(("ruby-ethon" ,ruby-ethon)))
+    (synopsis "@code{libcurl} wrapper in Ruby")
+    (description
+     "Like a modern code version of the mythical beast with 100 serpent heads,
+Typhoeus runs HTTP requests in parallel while cleanly encapsulating handling
+logic.")
+    (home-page "https://github.com/typhoeus/typhoeus")
+    (license license:expat)))
+
 (define-public ruby-rubocop-performance
   (package
     (name "ruby-rubocop-performance")
