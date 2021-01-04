@@ -164,7 +164,7 @@
     ;; projects.
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (propagated-inputs
-     `(("guile-json" ,guile-json-1) ; This ia already using guile-2.2.
+     `(("guile-json" ,guile-json-1) ; This is already using guile-2.2.
        ("guile-readline" ,guile2.2-readline)
        ("guile-redis" ,guile2.2-redis)))
     (native-inputs
