@@ -43,6 +43,7 @@
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)
                           store-path-abbreviation byte-count->string))
+  #:autoload   (gnutls) (error/invalid-session)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
@@ -1054,9 +1055,12 @@ server certificates."
         ;; If PORT was cached and the server closed the connection in the
         ;; meantime, we get EPIPE.  In that case, open a fresh connection and
         ;; retry.  We might also get 'bad-response or a similar exception from
-        ;; (web response) later on, once we've sent the request.
+        ;; (web response) later on, once we've sent the request, or a
+        ;; ERROR/INVALID-SESSION from GnuTLS.
         (if (or (and (eq? key 'system-error)
                      (= EPIPE (system-error-errno `(,key ,@args))))
+                (and (eq? key 'gnutls-error)
+                     (eq? (first args) error/invalid-session))
                 (memq key '(bad-response bad-header bad-header-component)))
             (proc (open-connection uri #:fresh? #t))
             (apply throw key args))))))
