@@ -2896,6 +2896,74 @@ tables.")
 (define-public texlive-latex-xcolor
   (deprecated-package "texlive-latex-xcolor" texlive-xcolor))
 
+(define-public texlive-xmltex
+  (let ((template (simple-texlive-package
+                   "texlive-xmltex"
+                   (list
+                    "/doc/otherformats/xmltex/"
+                    "/tex/xmltex/")
+                   (base32
+                    "023gv9axq05vwqz50fnkig24dzahwlc4raks2s8xc4pzrv2dv1zy"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "tex/xmltex/base")
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-before 'install 'generate-formats
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (mkdir "web2c")
+                 (for-each (lambda (f)
+                             (copy-file f (basename f)))
+                           (find-files "tex" "\\.(ini|tex)$"))
+                 (invoke "fmtutil-sys" "--byfmt" "xmltex"
+                         "--fmtdir=web2c")
+                 (invoke "fmtutil-sys" "--byfmt" "pdfxmltex"
+                         "--fmtdir=web2c")))
+             (add-after 'install 'install-formats-and-wrappers
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (texlive-bin (assoc-ref inputs "texlive-bin"))
+                        (pdftex (string-append texlive-bin "/bin/pdftex"))
+                        (web2c (string-append out "/share/texmf-dist/web2c")))
+                   (mkdir-p web2c)
+                   (copy-recursively "web2c" web2c)
+                   ;; Create convenience command wrappers.
+                   (mkdir-p (string-append out "/bin"))
+                   (symlink pdftex (string-append out "/bin/xmltex"))
+                   (symlink pdftex (string-append out "/bin/pdfxmltex"))
+                   #t)))))))
+      (propagated-inputs
+       ;; The following fonts are propagated as a texlive-union as the font
+       ;; maps need to be recreated for the fonts to be usable.  They are
+       ;; required by xmltex through mlnames.sty and unicode.sty.
+       `(("texlive" ,(texlive-union
+                      (list
+                       texlive-amsfonts
+                       texlive-babel
+                       texlive-courier
+                       texlive-helvetic
+                       texlive-hyperref
+                       texlive-symbol
+                       texlive-tipa
+                       texlive-times
+                       texlive-zapfding
+                       ;; The following fonts, while not required, are used if
+                       ;; available:
+                       texlive-stmaryrd
+                       texlive-wasy)))))
+      (native-inputs
+       `(("texlive-tex-ini-files" ,texlive-tex-ini-files)))
+      (home-page "https://www.ctan.org/pkg/xmltex/")
+      (synopsis "Support for parsing XML documents")
+      (description "The package provides an implementation of a parser for
+documents matching the XML 1.0 and XML Namespace Recommendations.  Element and
+attribute names, as well as character data, may use any characters allowed in
+XML, using UTF-8 or a suitable 8-bit encoding.")
+      (license license:lppl1.0+))))        ;per xmltex/base/readme.txt
+
 (define-public texlive-hyperref
   (let ((template (simple-texlive-package
                    "texlive-hyperref"
