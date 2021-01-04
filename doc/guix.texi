@@ -13359,7 +13359,8 @@ The default label includes the kernel name and version.
 @item @code{keyboard-layout} (default: @code{#f})
 This field specifies the keyboard layout to use in the console.  It can be
 either @code{#f}, in which case the default keyboard layout is used (usually
-US English), or a @code{<keyboard-layout>} record.
+US English), or a @code{<keyboard-layout>} record. @xref{Keyboard Layout},
+for more information.
 
 This keyboard layout is in effect as soon as the kernel has booted.  For
 instance, it is the keyboard layout in effect when you type a passphrase if
