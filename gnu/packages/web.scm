@@ -43,7 +43,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
@@ -5135,6 +5135,7 @@ NetSurf project.")
        ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
        ("perl-xml-twig" ,perl-xml-twig)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("po4a" ,po4a)))
     (propagated-inputs
      `(("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
