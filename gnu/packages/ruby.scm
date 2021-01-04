@@ -12333,3 +12333,28 @@ a sitemaps.org compliant sitemap for your Jekyll site.")
     (home-page
       "https://github.com/jekyll/jekyll-sitemap")
     (license license:expat)))
+
+(define-public ruby-jekyll-seo-tag
+  (package
+   (name "ruby-jekyll-seo-tag")
+   (version "2.7.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "jekyll-seo-tag" version))
+     (sha256
+      (base32
+       "0fsi75hymk2wswy216fs224p5ycrzjw1kshw1bsl5czhv42wr2w3"))))
+   (build-system ruby-build-system)
+   (arguments
+    `(#:tests? #false))
+   (propagated-inputs
+    `(("jekyll" ,jekyll)))
+   (synopsis
+    "Jekyll plugin to add metadata tags for search engines and social networks")
+   (description
+    "This package provides a Jekyll plugin to add metadata tags for search engines
+and social networks to better index and display your site's content.")
+   (home-page
+    "https://github.com/jekyll/jekyll-seo-tag")
+   (license license:expat)))
