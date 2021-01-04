@@ -3510,11 +3510,15 @@ language that is written in a Cyrillic alphabet.")
       (description
        "The PSNFSS collection includes a set of files that provide a complete
 working setup of the LaTeX font selection scheme (NFSS2) for use with common
-PostScript fonts.  It covers the so-called \"Base\" fonts (which are built
-into any Level 2 PostScript printing device and the Ghostscript interpreter)
-and a number of free fonts.  It provides font definition files, macros and
-font metrics.  The bundle as a whole is part of the LaTeX required set of
-packages.")
+PostScript fonts.  The base set of text fonts covered by PSNFSS includes the
+AvantGarde, Bookman, Courier, Helvetica, New Century Schoolbook, Palatino,
+Symbol, Times Roman and Zapf Dingbats fonts.  In addition, the fonts Bitstream
+Charter and Adobe Utopia are covered.  Separate packages are provided to load
+each font for use as the main text font.  The package @code{helvet} allows
+Helvetica to be loaded with its size scaled to something more appropriate for
+use as a Sans-Serif font to match Times, while @code{pifont} provides the
+means to select single glyphs from symbol fonts.  The bundle as a whole is
+part of the LaTeX required set of packages.")
       (license license:lppl1.2+))))
 
 (define-public texlive-latex-psnfss
