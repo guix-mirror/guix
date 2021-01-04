@@ -31,6 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages serialization)
@@ -51,6 +53,33 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public cmake-shared
+  (package
+    (name "cmake-shared")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/lirios/cmake-shared.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1srd3jmlalf0szgyp88ymhbnwds4qiywmf8lq1pif9g8irjjhdry"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; No target
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (synopsis "Shared CMake functions and macros")
+    (description "CMake-Shared are shared functions and macros for projects
+using the CMake build system.")
+    (home-page "https://github.com/lirios/cmake-shared/")
+    (license license:bsd-3)))
 
 ;;; Build phases shared between 'cmake-bootstrap' and the later variants
 ;;; that use cmake-build-system.
