@@ -312,6 +312,14 @@ Guile to do client-side URL transfers, like requesting documents from HTTP or
 FTP servers.  It is based on the curl library.")
    (license license:gpl3+)))
 
+(define-public guile2.2-curl
+  (package
+    (inherit guile-curl)
+    (name "guile2.2-curl")
+    (inputs
+     `(("curl" ,curl)
+       ("guile" ,guile-2.2)))))
+
 (define-public curlpp
   (package
     (name "curlpp")
