@@ -4236,6 +4236,38 @@ directory of its argument if it does not exist.")
     (home-page "https://mkdir-p.divoplade.fr")
     (license license:asl2.0)))
 
+(define-public guile-jwt
+  (package
+    (name "guile-jwt")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aconchillo/guile-jwt")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1p8sapiv5im18rjnzc8xnw6y7dr661rycf9g10z5ww0dl4rfz3z1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile-json" ,guile-json-4)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://github.com/aconchillo/guile-jwt")
+    (synopsis "JSON Web Token library for Guile")
+    (description
+     "guile-jwt is a JSON Web Token module for Guile.  JSON Web Tokens are an
+open, industry standard (RFC 7519) method for representing claims securely
+between two parties.  guile-jwt allows you to decode, verify and generate
+JWT.  Supported algorithms: HS256, HS384, HS512.")
+    (license license:gpl3+)))
+
 (define-public guile-sodium
   (package
     (name "guile-sodium")

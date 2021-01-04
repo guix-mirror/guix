@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
 ;;;
