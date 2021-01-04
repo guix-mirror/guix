@@ -5333,9 +5333,9 @@ package supports pdfTeX (pdfLaTeX) and VTeX.  With VTeX it is even possible to
 use this package to insert PostScript files, in addition to PDF files.")
     (license license:lppl1.3+)))
 
-(define-public texlive-fonts-stmaryrd
+(define-public texlive-stmaryrd
   (package
-    (name "texlive-fonts-stmaryrd")
+    (name "texlive-stmaryrd")
     (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
@@ -5365,6 +5365,9 @@ use under LaTeX; the package supports the @code{only} option (provided by the
 @code{somedefs} package) to restrict what is loaded, for those who don't need
 the whole font.")
     (license license:lppl)))
+
+(define-public texlive-fonts-stmaryrd
+  (deprecated-package "texlive-fonts-stmaryrd" texlive-stmaryrd))
 
 (define-public texlive-latex-subfigure
   (package
