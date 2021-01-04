@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018, 2020 Kei Kebreau <kkebreau@posteo.net>
@@ -3928,7 +3928,8 @@ Fresnel integrals, and similar related functions as well.")
                             " -DCMAKE_C_FLAGS_RELEASE=\"$(CFLAGS) $(CPPFLAGS)\""
                             " -DCMAKE_CXX_FLAGS_RELEASE=\"$(CXXFLAGS) $(CPPFLAGS)\""
                             " -DCMAKE_SKIP_RPATH=TRUE"
-                            " -DCMAKE_BUILD_TYPE=Release")
+                            " -DCMAKE_BUILD_TYPE=Release"
+                            " -DCMAKE_INSTALL_LIBDIR=lib")
              (string-append "INSTALL_LIB="
                             (assoc-ref %outputs "out") "/lib")
              (string-append "INSTALL_INCLUDE="
