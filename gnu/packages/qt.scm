@@ -105,6 +105,61 @@
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
+(define-public qt5ct
+  (package
+    (name "qt5ct")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/qt5ct/qt5ct-" version ".tar.bz2"))
+       (sha256
+        (base32 "1lnx4wqk87lbr6lqc64w5g5ppjjv75kq2r0q0bz9gfpryzdw8xxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:imported-modules
+       (,@%gnu-build-system-modules
+        (guix build cmake-build-system)
+        (guix build qt-build-system))
+       #:modules
+       ((guix build gnu-build-system)
+        ((guix build qt-build-system)
+         #:prefix qt:)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "qt5ct.pro"
+               (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
+                (string-append (assoc-ref inputs "qttools")
+                               "/bin/lrelease")))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       (string-append "BINDIR=" out "/bin")
+                       (string-append "DATADIR=" out "/share")
+                       (string-append "PLUGINDIR=" out "/lib/qt5/plugins")))
+             #t))
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (synopsis "Qt5 Configuration Tool")
+    (description "Qt5CT is a program that allows users to configure Qt5
+settings (such as icons, themes, and fonts) in desktop environments or
+window managers, that don't provide Qt integration by themselves.")
+    (home-page "https://qt5ct.sourceforge.io/")
+    (license license:bsd-2)))
+
 (define-public materialdecoration
   (package
     (name "materialdecoration")
