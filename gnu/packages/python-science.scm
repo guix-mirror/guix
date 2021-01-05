@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,13 +51,13 @@
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.3.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
-        (base32 "192d8dsybvhv19igkrsafbdafx198nz7pibkjgrqjhlr66s3jfd0"))))
+        (base32 "0rh5b1rwdcvvagld8vpxnpaibszy1skpx39a0fwzd5gx5pwcjvfb"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -64,7 +65,8 @@
        ("python-pyparsing" ,python-pyparsing)))
     (inputs
      `(("lapack" ,lapack)
-       ("openblas" ,openblas)))
+       ("openblas" ,openblas)
+       ("pybind11" ,pybind11)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -77,6 +79,11 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'change-home-dir
+           (lambda _
+             ;; Change from /homeless-shelter to /tmp for write permission.
+             (setenv "HOME" "/tmp")
+             #t))
          (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "scipy/sparse/linalg/dsolve/tests/test_linsolve.py"
