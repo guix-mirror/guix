@@ -51,7 +51,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -11381,7 +11381,7 @@ and toolbars.")
 (define-public setzer
   (package
     (name "setzer")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method git-fetch)
@@ -11390,7 +11390,7 @@ and toolbars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1f5qmkz4hzn54sh56z3hw8zrvg93xlz62ggzlzyg7vgsr83kpns9"))))
+        (base32 "1qmy2bxl8x6pijjaaj91v6rqdipha6iyy0b6b9y1lk3r2p3azd42"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
