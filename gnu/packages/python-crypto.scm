@@ -596,7 +596,10 @@ message digests and key derivation functions.")
                       "not test_fallback_default_verify_paths "
                       ;; This test attempts to make a connection to
                       ;; an external web service.
-                      "and not test_set_default_verify_paths")))))))
+                      "and not test_set_default_verify_paths "
+                      ;; Fails on i686-linux and possibly other 32-bit platforms
+                      ;; https://github.com/pyca/pyopenssl/issues/974
+                      "and not test_verify_with_time")))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
