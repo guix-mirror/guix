@@ -20,7 +20,7 @@
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
-;;; Copyright © 2020 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1786,6 +1786,40 @@ named readtables, which is akin to package namespacing in Common Lisp.")
 
 (define-public ecl-named-readtables
   (sbcl-package->ecl-package sbcl-named-readtables))
+
+(define-public sbcl-py-configparser
+  ;; NOTE: (Sharlatan <2021-01-05 Tue> <19:52:19 UTC+0000>) Project updated last
+  ;; time 8y ago, it looks like abandoned. VCS of the project:
+  ;; https://svn.common-lisp.net/py-configparser/trunk
+  (package
+    (name "sbcl-py-configparser")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/py-configparser/releases/"
+             "py-configparser-" version ".tar.gz"))
+       (sha256
+        (base32 "0i4rqz5cv7d7c2w81x5lwy05s6fbi3zikf4k5kpi3bkx3cabwdxj"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("parse-number" ,sbcl-parse-number)))
+    (home-page "http://common-lisp.net/project/py-configparser/")
+    (synopsis "ConfigParser Python module functionality for Common Lisp")
+    (description "The py-configparser package implements the ConfigParser
+Python module functionality in Common Lisp.  In short, it implements reading
+and writing of .INI-file style configuration files with sections containing
+key/value pairs of configuration options.  In line with the functionalities in
+the python module, does this package implement basic interpolation of option
+values in other options.")
+    (license license:expat)))
+
+(define-public cl-py-configparser
+  (sbcl-package->cl-source-package sbcl-py-configparser))
+
+(define-public ecl-py-configparser
+  (sbcl-package->ecl-package sbcl-py-configparser))
 
 (define-public sbcl-pythonic-string-reader
   (let ((commit "47a70ba1e32362e03dad6ef8e6f36180b560f86a"))
