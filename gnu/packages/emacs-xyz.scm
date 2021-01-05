@@ -20754,8 +20754,8 @@ stored playlists.")
     (license license:gpl3+)))
 
 (define-public emacs-vterm
-  (let ((version "0")
-        (revision "4")
+  (let ((version "0.0.1")
+        (revision "0")
         (commit "a670b786539d3c8865d8f68fe0c67a2d4afbf1aa"))
     (package
       (name "emacs-vterm")
