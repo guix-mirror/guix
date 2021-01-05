@@ -19,7 +19,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1214,14 +1214,14 @@ use on a given system.")
 (define-public libredwg
   (package
     (name "libredwg")
-    (version "0.11.1")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/libredwg/libredwg-"
              version ".tar.xz"))
        (sha256
-        (base32 "1xx6y6ckm4mzqln8y8lqf5frcn2b32ypc0d0h9dzpz6363zh7pdn"))))
+        (base32 "0z5algzi3alq166885y0qyj2gnc7gc6vhnz7nw0kwc0d236p6md8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bindings")))
