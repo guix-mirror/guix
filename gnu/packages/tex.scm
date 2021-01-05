@@ -2866,7 +2866,7 @@ tables.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/hyperref") #t))))))
       (propagated-inputs
-       `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek) ; for ltxcmds.sty
+       `(("texlive-oberdiek" ,texlive-oberdiek) ; for ltxcmds.sty
          ("texlive-latex-url" ,texlive-latex-url)))
       (home-page "https://www.ctan.org/pkg/hyperref")
       (synopsis "Extensive support for hypertext in LaTeX")
@@ -2884,9 +2884,9 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 (define-public texlive-latex-hyperref
   (deprecated-package "texlive-latex-hyperref" texlive-hyperref))
 
-(define-public texlive-latex-oberdiek
+(define-public texlive-oberdiek
   (package
-    (name "texlive-latex-oberdiek")
+    (name "texlive-oberdiek")
     (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
@@ -2916,6 +2916,9 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
 better accessibility support for PDF files; extensible chemists reaction
 arrows; record information about document class(es) used; and many more.")
     (license license:lppl1.3+)))
+
+(define-public texlive-latex-oberdiek
+  (deprecated-package "texlive-latex-oberdiek" texlive-oberdiek))
 
 (define-public texlive-latex-tools
   (package
@@ -4058,7 +4061,7 @@ rotated.")
        ("texlive-latex-graphics" ,texlive-latex-graphics)
        ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
        ("texlive-latex-l3kernel" ,texlive-latex-l3kernel) ; for expl3
-       ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
+       ("texlive-oberdiek" ,texlive-oberdiek)
        ("texlive-latex-psfrag" ,texlive-latex-psfrag)
        ("texlive-latex-tools" ,texlive-latex-tools) ; for shellesc
        ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)
@@ -4375,7 +4378,7 @@ BibLaTeX, and is considered experimental.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
     (propagated-inputs
-     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek))) ;for ifpdf
+     `(("texlive-oberdiek" ,texlive-oberdiek))) ;for ifpdf
     (home-page "https://www.ctan.org/pkg/geometry")
     (synopsis "Flexible and complete interface to document dimensions")
     (description
@@ -7151,7 +7154,7 @@ for a wealth of support information.")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-hyperref" ,texlive-latex-hyperref)
-       ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
+       ("texlive-oberdiek" ,texlive-oberdiek)
        ("texlive-latex-etoolbox" ,texlive-latex-etoolbox)
        ("texlive-latex-pgf" ,texlive-latex-pgf)))
     (home-page "https://www.ctan.org/pkg/beamer")
