@@ -3519,6 +3519,33 @@ libraries and instead utilizing features provided by the Linux kernel to the
 maximum extent possible.")
     (license license:lgpl2.1+)))
 
+(define-public libyang
+  (package
+    (name "libyang")
+    (version "1.0.215")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/CESNET/libyang")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mrs2ppmq77z8sbqgm2w0rl9bfgybd6bcxanakfww4chih6cy0dw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_BUILD_TESTS=ON" "-DENABLE_LYD_PRIV=ON")))
+    (propagated-inputs `(("pcre" ,pcre)))
+    (native-inputs `(("cmocka" ,cmocka)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/CESNET/libyang")
+    (synopsis "YANG data modelling language library")
+    (description "libyang is a YANG data modelling language parser and toolkit
+written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
+6020) as well as YANG 1.1 (RFC 7950).")
+    (license license:bsd-3)))
+
 (define-public batctl
   (package
    (name "batctl")
