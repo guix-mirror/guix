@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -695,6 +695,7 @@ to set X desktop background.")
        (uri (git-reference
              (url "https://github.com/nomacs/nomacs")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "05d4hqg0gl3g9s2xf1hr7mc7g4cqarcap4nzxxa51fsphw2b8x16"))))
@@ -730,10 +731,10 @@ to set X desktop background.")
        ("python" ,python-wrapper)
        ("quazip" ,quazip)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
-       ("qtlinguist" ,qttools)))
+       ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
     (synopsis "Image viewer supporting all common formats")
     (description "Nomacs is a simple to use image lounge featuring
 semi-transparent widgets that display additional information such as metadata,
