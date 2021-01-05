@@ -195,6 +195,21 @@ by managing a queue of pending work.")
 ;; <https://slurm.schedmd.com/troubleshoot.html#network>.  Thus, keep older
 ;; releases here.  See also <https://issues.guix.gnu.org/44387>.
 
+(define-public slurm-20.02
+  (package
+    (inherit slurm)
+    (version "20.02.6-1")
+    (source (origin
+              (inherit (package-source slurm))
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.schedmd.com/slurm/slurm-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
+
+
 (define-public slurm-19.05
   (package
     (inherit slurm)
