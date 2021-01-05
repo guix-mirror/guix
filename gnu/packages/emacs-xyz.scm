@@ -70,7 +70,7 @@
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
@@ -3317,7 +3317,7 @@ files and directories.")
 (define-public emacs-fountain-mode
   (package
     (name "emacs-fountain-mode")
-    (version "3.3.3")
+    (version "3.4.0")
     (source
      (origin
        (method git-fetch)
@@ -3326,7 +3326,7 @@ files and directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "095nrkg2bap6rcg9hy3bh0nis4v2f8w8d9hnahkzsa3njlpqa4ka"))))
+        (base32 "161wn66gc2z7fd4f89827dpww6hjmnassbi15yis5rqbklj1h2z6"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/fountain-mode")
     (synopsis "Major mode for screenwriting in Fountain markup")
