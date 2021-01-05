@@ -14711,7 +14711,7 @@ or numerical index.  A corresponding hash set type is also provided.")
         ("rust-number-prefix" ,rust-number-prefix-0.3)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1)
-        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1.6)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.7)
