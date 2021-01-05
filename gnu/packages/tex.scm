@@ -831,6 +831,33 @@ originals.")
 (define-public texlive-fonts-cm-super
   (deprecated-package "texlive-fonts-cm-super" texlive-cm-super))
 
+(define-public texlive-courier
+  (package
+    (inherit (simple-texlive-package
+              "texlive-courier"
+              (list "/dvips/courier/"
+                    "/fonts/afm/adobe/courier/"
+                    "/fonts/afm/urw/courier/"
+                    "/fonts/map/dvips/courier/"
+                    "/fonts/tfm/adobe/courier/"
+                    "/fonts/tfm/urw35vf/courier/"
+                    "/fonts/type1/adobe/courier/"
+                    "/fonts/type1/urw/courier/"
+                    "/fonts/vf/adobe/courier/"
+                    "/fonts/vf/urw35vf/courier/"
+                    "/tex/latex/courier/"
+                    "/tex4ht/ht-fonts/alias/adobe/courier/"
+                    "/tex4ht/ht-fonts/unicode/adobe/courier/")
+              (base32
+               "1hfgisdi7mjf5156ax6d6zsbiq42zkmp1x5lg17rgzf61k6d6z1y")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description "This package provides a drop-in replacements for the Courier
+font from Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
 (define-public texlive-lm
   (package
     (inherit (simple-texlive-package
