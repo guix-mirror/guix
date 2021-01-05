@@ -39,6 +39,7 @@
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 # Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
 # Copyright © 2020 Vinicius Monego <monego@posteo.net>
+# Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 #
 # This file is part of GNU Guix.
 #
@@ -1113,8 +1114,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/go-skip-gc-test.patch			\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/gpodder-disable-updater.patch		\
-  %D%/packages/patches/gpsbabel-minizip.patch     		\
-  %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/grocsvs-dont-use-admiral.patch		\

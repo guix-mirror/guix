@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,21 +52,18 @@
 (define-public gpsbabel
   (package
     (name "gpsbabel")
-    (version "1.5.4")
+    (version "1.7.0")
     (source (origin
-              (method url-fetch)
-              ;; XXX: Downloads from gpsbabel.org are hidden behind a POST, so
-              ;; get it from elsewhere.
-              (uri (string-append
-                    "mirror://debian/pool/main/g/gpsbabel/gpsbabel_"
-                    version ".orig.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gpsbabel/gpsbabel")
+                    (commit (string-append
+                             "gpsbabel_"
+                             (string-replace-substring version "." "_")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "19hykxhyl567gf8qcrl33qhv95w0g4vxw9r3h9b8d8plx9bnaf8l"))
-              (patches (search-patches
-                        "gpsbabel-minizip.patch"
-                        ;; XXX: Remove this patch on the next release.
-                        "gpsbabel-qstring.patch"))
+                "010g0vd2f5knpq5p7qfnl31kv3r8m5sjdsafcinbj5gh02j2nzpy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -87,8 +85,9 @@
        #:tests? #f))
     (inputs
      `(("expat" ,expat)
-       ("zlib" ,zlib)
-       ("qtbase" ,qtbase)))
+       ("libusb" ,libusb)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("which" ,which)
        ("qttools" ,qttools)
