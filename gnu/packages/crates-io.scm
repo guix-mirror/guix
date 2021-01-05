@@ -12038,7 +12038,7 @@ futures-rs library.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-thread-local" ,rust-thread-local-1.0))
+       (("rust-thread-local" ,rust-thread-local-1))
        #:cargo-development-inputs
        (("rust-termion" ,rust-termion-1.5))))
     (home-page "https://github.com/lotabout/fuzzy-matcher")
