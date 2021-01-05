@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.64")
+    (version "0.65")
     (source
      (origin
        (method url-fetch)
@@ -42,7 +42,7 @@
               "http://drabczyk.org/"
               name "-" version ".tar.gz")))
        (sha256
-        (base32 "1v3hazb9i5y6b3vx4giiszvc2zk2pjjvq88xlk1maasw5ia07lpy"))))
+        (base32 "10c8b4bwnli4gxwvgmgkc5kin1ksrxsnxmigs7y4rrh4aaszdjb0"))))
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
