@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -55,14 +55,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20201122")
+    (version "20201222")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0c7zrb26xhbn48kvxs01qyj1vhwrpzkm11xxvi23njb6qi1bz82d"))))
+       (base32 "13kxg2vmy20ciiv1gp96g33bmvma1nh5d66jdix1fqj6xjaizr5n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
