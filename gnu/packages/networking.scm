@@ -3436,7 +3436,7 @@ communication.")
 (define-public frrouting
   (package
     (name "frrouting")
-    (version "6.0.2")
+    (version "7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FRRouting/frr/releases/"
@@ -3444,11 +3444,13 @@ communication.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0xfrvi62w8qlh46f504ka0skb7pm0g0p8vmdng4w90gsbirlzpdd"))))
+                "1a27wvxmc51sr0kchy0hjfpv19imlgrr3s9k48lik9k01g71yrdr"))))
     (build-system gnu-build-system)
     (inputs
      `(("c-ares" ,c-ares)
        ("json-c" ,json-c)
+       ("libcap" ,libcap)
+       ("libyang" ,libyang)
        ("readline" ,readline)))
     (native-inputs
      `(("perl" ,perl)
