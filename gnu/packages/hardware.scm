@@ -2,6 +2,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Evgeny Pisemsky <evgeny@pisemsky.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
@@ -464,4 +466,35 @@ applications.")
 authorization policies (what kind of USB devices are authorized) as well as
 method of use policies (how a USB device may interact with the system).
 Simply put, it is a USB device whitelisting tool.")
+    (license license:gpl2)))
+
+(define-public screentest
+  (package
+    (name "screentest")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TobiX/screentest")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gv3xj9sbk1wsyijfw9xjnvy8pg7j4arjnma2r2kfi18qy32wd30"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("glib" ,glib "bin")
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Simple screen testing tool")
+    (description "This is a program for testing the quality of CRT/LCD
+screens.  It displays various patterns and allows you to estimate the quality
+of your CRT/LCD monitor.")
+    (home-page "https://github.com/TobiX/screentest")
     (license license:gpl2)))
