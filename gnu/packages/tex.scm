@@ -406,6 +406,30 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
              (with-directory-excursion "texlive-scripts"
                (apply (assoc-ref %standard-phases 'unpack)
                       (list #:source (assoc-ref inputs "texlive-scripts"))))))
+         (add-after 'unpack-texlive-scripts 'patch-scripts
+           (lambda _
+             (let* ((scripts (append (find-files "texk/kpathsea" "^mktex")
+                                     (find-files "texlive-scripts" "\\.sh$")))
+                    (commands '("awk" "basename" "cat" "grep" "mkdir" "rm"
+                                "sed" "sort" "uname"))
+                    (command-regexp (format #f "\\b(~a)\\b"
+                                            (string-join commands "|")))
+                    (iso-8859-1-encoded-scripts
+                     '("texlive-scripts/source/rubibtex.sh"
+                       "texlive-scripts/source/rumakeindex.sh")))
+
+               (define (substitute-commands scripts)
+                 (substitute* scripts
+                   ((command-regexp dummy command)
+                    (which command))))
+
+               (substitute-commands (lset-difference string= scripts
+                                                     iso-8859-1-encoded-scripts))
+
+               (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                 (substitute-commands iso-8859-1-encoded-scripts))
+
+               #t)))
          (add-after 'install 'postint
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
