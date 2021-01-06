@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,11 +133,7 @@ and others.")
        (uri (git-reference
              (url "https://git.code.sf.net/p/minidlna/git")
              (commit (string-append
-                      "v"
-                      (string-map (match-lambda
-                                    (#\. #\_)
-                                    (chr chr))
-                                  version)))))
+                      "v" (string-replace-substring version "." "_")))))
        (file-name (git-file-name name version))
        (sha256
         (base32
