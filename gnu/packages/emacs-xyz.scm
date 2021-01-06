@@ -9531,61 +9531,64 @@ CIDER).")
 
 (define-public emacs-sly
   ;; Update together with sbcl-slynk.
-  (package
-    (name "emacs-sly")
-    (version "1.0.42")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/joaotavora/sly")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "10l867c4hgcpiajcfkz9g9vabp7y4bcgy51la6n9pqxrlg1fs455"))))
-    (build-system emacs-build-system)
-    (native-inputs
-     `(("texinfo" ,texinfo)))
-    (arguments
-     `(#:include (cons* "^contrib\\/" "^lib\\/" "^slynk\\/" %default-include)
-       #:phases
-       ;; The package provides autoloads.
-       (modify-phases %standard-phases
-         (delete 'make-autoloads)
-         (add-before 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (info-dir (string-append out "/share/info"))
-                    (doc-dir (string-append out "/share/doc/"
-                                            ,name "-" ,version))
-                    (doc-files '( ;; "doc/sly-refcard.pdf" ; See sly-refcard.pdf below.
-                                 "README.md" "NEWS.md" "PROBLEMS.md"
-                                 "CONTRIBUTING.md")))
-               (with-directory-excursion "doc"
-                 (substitute* "Makefile"
-                   (("infodir=/usr/local/info")
-                    (string-append "infodir=" info-dir))
-                   ;; Don't rebuild contributors.texi since we are not in
-                   ;; the git repo.
-                   (("contributors.texi: Makefile texinfo-tabulate.awk")
-                    "contributors.texi:"))
-                 (invoke "make" "html/index.html")
-                 (invoke "make" "sly.info")
-                 ;; TODO: We need minimal texlive with "preprint" package
-                 ;; (for fullpage.sty).  (invoke "make" "sly-refcard.pdf")
-                 (install-file "sly.info" info-dir)
-                 (copy-recursively "html" (string-append doc-dir "/html")))
-               (for-each (lambda (f)
-                           (install-file f doc-dir)
-                           (delete-file f))
-                         doc-files)
-               (delete-file-recursively "doc")
-               #t))))))
-    (home-page "https://github.com/joaotavora/sly")
-    (synopsis "Sylvester the Cat's Common Lisp IDE")
-    (description
-     "SLY is Sylvester the Cat's Common Lisp IDE.  SLY is a fork of SLIME, and
+  (let ((commit "dffdf3caa12e964127d6eb45ba92ac0442cc5a48"))
+    ;; Latest stable 1.0.42 is broken:
+    ;; https://github.com/joaotavora/sly/issues/394.
+    (package
+      (name "emacs-sly")
+      (version (git-version "1.0.42" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joaotavora/sly")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vv185gz3rkfng5y79dijfnc11p92qdz2kdza05avjbpqfs6l0zn"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (arguments
+       `(#:include (cons* "^contrib\\/" "^lib\\/" "^slynk\\/" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads)
+           (add-before 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (info-dir (string-append out "/share/info"))
+                      (doc-dir (string-append out "/share/doc/"
+                                              ,name "-" ,version))
+                      (doc-files '( ;; "doc/sly-refcard.pdf" ; See sly-refcard.pdf below.
+                                   "README.md" "NEWS.md" "PROBLEMS.md"
+                                   "CONTRIBUTING.md")))
+                 (with-directory-excursion "doc"
+                   (substitute* "Makefile"
+                     (("infodir=/usr/local/info")
+                      (string-append "infodir=" info-dir))
+                     ;; Don't rebuild contributors.texi since we are not in
+                     ;; the git repo.
+                     (("contributors.texi: Makefile texinfo-tabulate.awk")
+                      "contributors.texi:"))
+                   (invoke "make" "html/index.html")
+                   (invoke "make" "sly.info")
+                   ;; TODO: We need minimal texlive with "preprint" package
+                   ;; (for fullpage.sty).  (invoke "make" "sly-refcard.pdf")
+                   (install-file "sly.info" info-dir)
+                   (copy-recursively "html" (string-append doc-dir "/html")))
+                 (for-each (lambda (f)
+                             (install-file f doc-dir)
+                             (delete-file f))
+                           doc-files)
+                 (delete-file-recursively "doc")
+                 #t))))))
+      (home-page "https://github.com/joaotavora/sly")
+      (synopsis "Sylvester the Cat's Common Lisp IDE")
+      (description
+       "SLY is Sylvester the Cat's Common Lisp IDE.  SLY is a fork of SLIME, and
 contains the following improvements over it:
 
 @enumerate
@@ -9604,7 +9607,7 @@ highlight the object and remain stable throughout the REPL session;
 
 SLY tracks SLIME's bugfixes and all its familiar features (debugger, inspector,
 xref, etc.) are still available, but with better integration.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-sly-quicklisp
   (let ((commit "01ebe3976a244309f2e277c09206831135a0b66c")
