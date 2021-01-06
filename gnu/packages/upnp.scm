@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages video)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages image)
@@ -126,7 +127,7 @@ and others.")
 (define-public readymedia
   (package
     (name "readymedia")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -137,8 +138,17 @@ and others.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "160915yv38k0p5zmyncs12kkbbcd8m8fk9jq70fkfd5x6dz40xm4"))))
+         "0g04lffj37wdv5bnpl5faxpnmlj6bbk8y7ziaz2wp6h82g6kb5wj"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-os-name=Linux")      ; uname -s
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "Makefile.am"
+               ((".*LIBAVUTIL_LIBS.*") ""))
+             #t)))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -150,7 +160,8 @@ and others.")
        ("flac" ,flac)
        ("libvorbis" ,libvorbis)
        ("sqlite" ,sqlite)
-       ("ffmpeg" ,ffmpeg)))
+       ("ffmpeg" ,ffmpeg)
+       ("zlib" ,zlib)))
     (home-page "https://sourceforge.net/projects/minidlna/")
     (synopsis "DLNA/UPnP-AV media server")
     (description "ReadyMedia (formerly known as MiniDLNA) is a simple media
