@@ -134,7 +134,9 @@ readers and is needed to communicate with such devices through the
        ("libxml2" ,libxml2)
        ("cyrus-sasl" ,cyrus-sasl)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
            (lambda _
