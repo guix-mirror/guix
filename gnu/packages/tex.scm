@@ -5931,6 +5931,24 @@ Association for Computing Machinery (ACM).")
 get a narrower “natural” width.")
     (license license:lppl)))
 
+(define-public texlive-wasy
+  (package
+    (inherit (simple-texlive-package
+              "texlive-wasy"
+              (list "/fonts/source/public/wasy/"
+                    "/fonts/tfm/public/wasy/"
+                    "/tex/plain/wasy/"
+                    "/doc/fonts/wasy/")
+              (base32
+               "10dxbqgv42niybj65hj6y47x8lsl83m48rgw2v2s50k05wbghwbm")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/wasy")
+    (synopsis "Waldi symbol fonts")
+    (description "This package provides the @code{wasy} (Waldi symbol) fonts,
+in the Metafont and Adobe Type 1 formats.  Support under LaTeX is provided by
+the @code{wasysym} package.")
+    (license license:public-domain)))
+
 (define-public texlive-wasysym
   (package
     (name "texlive-wasysym")
