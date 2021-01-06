@@ -18446,31 +18446,28 @@ server using XML-RPC.")
     (license license:gpl3+)))
 
 (define-public emacs-xml-rpc
-  (let ((commit "8f624f8b964e9145acb504e4457c9510e87dd93c")
-        (revision "1"))
-    (package
-      (name "emacs-xml-rpc")
-      (version (git-version "1.6.12" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/hexmode/xml-rpc-el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0xa54z52rsfl3n0xgmbycj4zazp8ksgdwcq56swzs6wp72zlalmj"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/hexmode/xml-rpc-el")
-      (synopsis "XML-RPC client for Emacs")
-      (description "This package provides an XML-RPC client for Emacs capable
+  (package
+    (name "emacs-xml-rpc")
+    (version "1.6.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hexmode/xml-rpc-el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07vgwnk96i1vpsv2glg6kbkamjcs72xiznsa6xk7nl0nranzr3hd"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hexmode/xml-rpc-el")
+    (synopsis "XML-RPC client for Emacs")
+    (description "This package provides an XML-RPC client for Emacs capable
 of both synchronous and asynchronous method calls using the @code{url}
 package's async retrieval functionality.  @file{xml-rpc.el} represents XML-RPC
 datatypes as Lisp values, automatically converting to and from the XML
 datastructures as needed, both for method parameters and return values, making
 using XML-RPC methods fairly transparent to the Lisp code.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-xpm
   (package
