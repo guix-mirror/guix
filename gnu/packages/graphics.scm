@@ -289,7 +289,7 @@ framebuffer graphics, audio output and input event.")
     (description "DirectFB is a graphics library which was designed with embedded
 systems in mind.  It offers maximum hardware accelerated performance at a
 minimum of resource usage and overhead.")
-    (home-page "http://www.directfb.org/")
+    (home-page "https://github.com/deniskropp/DirectFB")
     (license license:lgpl2.1+)))
 
 (define-public flux
