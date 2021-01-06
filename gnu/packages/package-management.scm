@@ -418,6 +418,10 @@ $(prefix)/etc/init.d\n")))
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ("guile-lzlib" ,guile-lzlib)))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GUIX_EXTENSIONS_PATH")
+              (files '("share/guix/extensions")))))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
