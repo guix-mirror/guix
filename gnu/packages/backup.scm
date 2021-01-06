@@ -1008,7 +1008,7 @@ is format-agnostic, so you can feed virtually any files to it.")
 (define-public dump
   (package
     (name "dump")
-    (version "0.4b46")
+    (version "0.4b47")
     (source
      (origin
        (method url-fetch)
@@ -1016,7 +1016,7 @@ is format-agnostic, so you can feed virtually any files to it.")
                            version "/dump-" version ".tar.gz"))
        (sha256
         (base32
-         "15rg5y15ak0ppqlhcih78layvg7cwp6hc16p3c58xs8svlkxjqc0"))))
+         "1l2gzzxyqhinx1yqvj4yn9k8vx3iyqi1965dxf9kvvdv9zgaq8fh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1026,7 +1026,7 @@ is format-agnostic, so you can feed virtually any files to it.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl-1.0)
+     `(("openssl" ,openssl)
        ("zlib" ,zlib)
        ("util-linux" ,util-linux "lib")
        ("e2fsprogs" ,e2fsprogs)))
