@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -419,19 +419,24 @@ type '<elpa-package>'."
         (string-drop (package-name package) 6)
         (package-name package)))
 
-  (let* ((repo    'gnu)
-         (info    (elpa-package-info name repo))
-         (version (match info
-                    ((name raw-version . _)
-                     (elpa-version->string raw-version))))
-         (url     (match info
-                    ((_ raw-version reqs synopsis kind . rest)
-                     (package-source-url kind name version repo)))))
-    (upstream-source
-     (package (package-name package))
-     (version version)
-     (urls (list url))
-     (signature-urls (list (string-append url ".sig"))))))
+  (define repo 'gnu)
+
+  (match (elpa-package-info name repo)
+    (#f
+     ;; No info, perhaps because PACKAGE is not truly an ELPA package.
+     #f)
+    (info
+     (let* ((version (match info
+                       ((name raw-version . _)
+                        (elpa-version->string raw-version))))
+            (url     (match info
+                       ((_ raw-version reqs synopsis kind . rest)
+                        (package-source-url kind name version repo)))))
+       (upstream-source
+        (package (package-name package))
+        (version version)
+        (urls (list url))
+        (signature-urls (list (string-append url ".sig"))))))))
 
 (define package-from-gnu.org?
   (url-predicate (lambda (url)
