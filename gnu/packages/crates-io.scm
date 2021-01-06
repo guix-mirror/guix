@@ -1845,7 +1845,7 @@ standard library.")
     (description
      "This crate includes macros for comparing two serializable values
 by diffing their JSON representations.  It is designed to give much
-more helpful error messages than the standard @code{assert_eq!.  It
+more helpful error messages than the standard @code{assert_eq!}.  It
 basically does a diff of the two objects and tells you the exact
 differences.  This is useful when asserting that two large JSON
 objects are the same.")
