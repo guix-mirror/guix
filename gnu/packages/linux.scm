@@ -5408,8 +5408,8 @@ sensors, and trip points.
 Linux exposes this relationship through @file{/sys/class/thermal} with a matrix
 of symbolic links, trip point bindings, and device instances.  To traverse it
 by hand is no trivial task: @command{tmon} aims to make it understandable.")
-    (license (list license:gpl2+        ; the man page
-                   license:gpl2))))     ; the actual rest
+    (license (list license:gpl2         ; the man page
+                   license:gpl2+))))    ; the actual rest
 
 (define-public turbostat
   (package
