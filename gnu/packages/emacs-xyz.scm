@@ -34,7 +34,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020, 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019, 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -152,6 +152,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages music)
   #:use-module (gnu packages version-control)
@@ -9750,6 +9751,8 @@ inside the source file.")
           (base32
            "09ll9dv8fd5dgnki82hcd48nm4qdzzn8wpva0zzr69zkjwzf9v25"))))
       (build-system emacs-build-system)
+      (inputs
+       `(("cl-agnostic-lizard" ,cl-agnostic-lizard)))
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
@@ -9765,7 +9768,29 @@ inside the source file.")
                  (setenv "EMACSLOADPATH"
                          (string-append sly "/share/emacs/site-lisp/contrib:"
                                         (getenv "EMACSLOADPATH"))))
-               #t)))))
+               #t))
+           (add-after 'install 'find-agnostic-lizard
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (file (string-append out "/share/emacs/site-lisp/"
+                                           "slynk-stepper.lisp"))
+                      (asd (string-append
+                            (assoc-ref inputs "cl-agnostic-lizard")
+                            "/share/common-lisp/systems/agnostic-lizard.asd")))
+                 ;; agnostic-lizard is found at runtime.
+                 (substitute* file
+                   (("\\(funcall \\(read-from-string \"asdf:load-system\"\\)")
+                    (string-append
+                     "(funcall (read-from-string \"asdf:load-asd\") \""
+                     asd
+                     "\")\n     (funcall (read-from-string \"asdf:load-system\")"))
+                   ;; Upstream mistakenly requires Quicklisp.  See
+                   ;; https://github.com/joaotavora/sly-stepper/issues/2.
+                   (("\\(funcall \\(read-from-string \"ql:quickload\"\\)")
+                    (string-append
+                     "(ignore-errors (funcall (read-from-string \"ql:quickload\") "
+                     ":agnostic-lizard))"))
+                   (("                    :agnostic-lizard\\)") ""))))))))
       (synopsis "Portable Common Lisp stepper interface for Emacs")
       (description
        "This package features a new, portable, visual stepping facility for
