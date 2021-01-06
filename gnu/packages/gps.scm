@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,9 @@
               (modules '((guix build utils)))
               (snippet
                '(begin
+                  (delete-file-recursively "zlib")
+                  (substitute* "Makefile.in"
+                    ((" zlib/z.*\\.h") ""))
                   ;; Delete files under GPL-compatible licences but never used
                   ;; on GNU systems, rather than bloating the LICENSE field.
                   (delete-file "gui/serial_mac.cc")           ; Apple MIT
