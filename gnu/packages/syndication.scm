@@ -21,12 +21,15 @@
 (define-module (gnu packages syndication)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
@@ -181,15 +184,15 @@ file system, and many more features.")
 (define-public liferea
   (package
     (name "liferea")
-    (version "1.12.9")
+    (version "1.13.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lwindolf/liferea/"
-                           "releases/download/v" version "/liferea-"
-                           version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lwindolf/liferea/")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "06ybr1wjlfir8iqjx6x0v1knd4b2hsy30qmkk4kssy6ky2ahc66q"))))
+        (base32 "1g9463bvswsm899j6dfhslcg6np70m5wq143mjicr24zy8d17bm7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -208,11 +211,15 @@ file system, and many more features.")
                  `("PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gnome-keyring" ,gnome-keyring)
