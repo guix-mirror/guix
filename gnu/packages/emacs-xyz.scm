@@ -23090,16 +23090,16 @@ work.")
 (define-public emacs-xterm-color
   (package
     (name "emacs-xterm-color")
-    (version "1.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/atomontage/xterm-color")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0i9ivc5xhl5y5v0l18kbhfg8s2abb9zaimyx951b8bc0f5as68xm"))))
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomontage/xterm-color")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "127lq50q62x06kd1xrf8lyc4rkqbfhfy86gsx1x4x169am2xk397"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/atomontage/xterm-color")
     (synopsis "ANSI & xterm-256 color text property translator for Emacs")
