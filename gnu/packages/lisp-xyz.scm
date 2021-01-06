@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2020, 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
@@ -12804,3 +12804,36 @@ compression/decompression using bindings to the libzstd C library.")
 
 (define-public ecl-zstd
   (sbcl-package->ecl-package sbcl-zstd))
+
+(define-public sbcl-agnostic-lizard
+  (let ((commit "fe3a73719f05901c8819f8995a3ebae738257952")
+        (revision "1"))
+    (package
+      (name "sbcl-agnostic-lizard")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/mraskin/agnostic-lizard")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ax78y8w4zlp5dcwyhz2nq7j3shi49qn31dkfg8lv2jlg7mkwh2d"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Almost correct portable code walker for Common Lisp")
+      (description
+       "Agnostic Lizard is a portable implementation of a code walker and in
+particular of the macroexpand-all function (and macro) that makes a best
+effort to be correct while not expecting much beyond what the Common Lisp
+standard requires.
+
+It aims to be implementation-agnostic and to climb the syntax trees.")
+      (home-page "https://github.com/glv2/cl-zstd")
+      (license license:gpl3+))))
+
+(define-public cl-agnostic-lizard
+  (sbcl-package->cl-source-package sbcl-agnostic-lizard))
+
+(define-public ecl-agnostic-lizard
+  (sbcl-package->ecl-package sbcl-agnostic-lizard))
