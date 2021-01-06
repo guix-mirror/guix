@@ -65,6 +65,7 @@
               (sha256
                (base32
                 "010g0vd2f5knpq5p7qfnl31kv3r8m5sjdsafcinbj5gh02j2nzpy"))
+              (patches (search-patches "gpsbabel-fix-i686-test.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -80,13 +81,7 @@
     ;; TODO: "make doc" requires Docbook & co.
     (arguments
      `(#:configure-flags
-       '("--with-zlib=system")
-       ;; On i686, 'raymarine.test' fails because of a rounding error:
-       ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
-       ;; on these platforms.
-       ;; FIXME: On x86_64 with -std=gnu++11 tests also fail due to rounding
-       ;; error.
-       #:tests? #f))
+       '("--with-zlib=system")))
     (inputs
      `(("expat" ,expat)
        ("libusb" ,libusb)

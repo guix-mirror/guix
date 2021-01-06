@@ -1114,6 +1114,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/go-skip-gc-test.patch			\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/gpodder-disable-updater.patch		\
+  %D%/packages/patches/gpsbabel-fix-i686-test.patch		\
   %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/grocsvs-dont-use-admiral.patch		\
