@@ -38,7 +38,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (ice-9 match))
 
@@ -90,7 +90,7 @@ while running behind a UPnP-enabled router or firewall.  Such applications
 include peer-to-peer applications, active-mode FTP clients, DCC file transfers
 over IRC, instant messaging, network games, and most server software.")
     (license
-     (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
+     (license:x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
 
 (define-public libupnp
   (package
@@ -121,7 +121,7 @@ API and code for building control points, devices, and bridges that are
 compliant with Version 1.0 of the Universal Plug and Play Device Architecture
 Specification and support several operating systems like Linux, *BSD, Solaris
 and others.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public readymedia
   (package
@@ -156,4 +156,4 @@ and others.")
     (description "ReadyMedia (formerly known as MiniDLNA) is a simple media
 server, which serves multimedia content to compatible clients on the network.
 It aims to be fully compliant with DLNA and UPnP-AV standards.")
-    (license gpl2)))
+    (license license:gpl2)))
