@@ -5777,12 +5777,12 @@ the @code{wasysym} package.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/wasysym"))
     (home-page "https://www.ctan.org/pkg/wasysym")
-    (synopsis "LaTeX support file to use the WASY2 fonts")
+    (synopsis "LaTeX support file to use the @code{wasy} fonts")
     (description
-     "The wasy2WASY2 (Waldi Symbol) font by Roland Waldi provides many glyphs
-like male and female symbols and astronomical symbols, as well as the complete
-lasy font set and other odds and ends.  The wasysym package implements an easy
-to use interface for these symbols.")
+     "The @code{wasy} (Waldi Symbol) font by Roland Waldi provides many glyphs like
+male and female symbols and astronomical symbols, as well as the complete
+@code{lasy} font set and other odds and ends.  The @code{wasysym} package
+implements an easy to use interface for these symbols.")
     (license license:lppl)))
 
 (define-public texlive-latex-wrapfig
