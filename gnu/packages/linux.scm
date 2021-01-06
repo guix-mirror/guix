@@ -5364,6 +5364,45 @@ be installed and loaded separately.  Only the original vendor firmware is
 supported.")
     (license license:gpl3+)))
 
+(define-public turbostat
+  (package
+    (name "turbostat")
+    ;; XXX turbostat reports a version like ‘20.09.30’ but using it here would
+    ;; make it harder to benefit from ‘free’ linux-libre package updates.
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/power/x86/turbostat")
+             #t))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("libcap" ,libcap)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Report x86 processor frequency and idle statistics")
+    (description
+     "Turbostat reports x86 processor topology, frequency, idle power state
+statistics, temperature, and power consumption.  Some information is unavailable
+on older processors.
+
+It can be used to identify machines that are inefficient in terms of power usage
+or idle time, report the rate of @acronym{SMI, system management interrupt}s
+occurring on the system, or verify the effects of power management tuning.
+
+@command{turbostat} reads hardware counters but doesn't write to them, so it
+won't interfere with the OS or other running processes---including multiple
+invocations of itself.")
+    (license license:gpl2)))
+
 (define-public ntfs-3g
   (package
     (name "ntfs-3g")
