@@ -14,7 +14,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
@@ -12863,7 +12863,7 @@ effort to be correct while not expecting much beyond what the Common Lisp
 standard requires.
 
 It aims to be implementation-agnostic and to climb the syntax trees.")
-      (home-page "https://github.com/glv2/cl-zstd")
+      (home-page "https://gitlab.common-lisp.net/mraskin/agnostic-lizard")
       (license license:gpl3+))))
 
 (define-public cl-agnostic-lizard
