@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -18236,13 +18236,13 @@ Included are implementations of:
 (define-public bpython
   (package
     (name "bpython")
-    (version "0.18")
+    (version "0.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpython" version))
        (sha256
-        (base32 "1hl6frgvr2lqaxqczl8amg9xih32b3gzv429vs0qrjb8wpdj1k2n"))))
+        (base32 "00vmkkc79mlnkyvwww1cr7bpwmf4p61704dhayz6kd0kc203hxvf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -18265,11 +18265,14 @@ Included are implementations of:
     (propagated-inputs
      `(("python-pygments" ,python-pygments)
        ("python-requests" ,python-requests)
-       ("python-babel" ,python-babel)   ; optional, for internationalization
-       ("python-curtsies" ,python-curtsies) ; >= 0.1.18
+       ("python-curtsies" ,python-curtsies)
        ("python-greenlet" ,python-greenlet)
+       ("python-six" ,python-six)
+       ("python-wcwidth" ,python-wcwidth)
+       ;; optional dependencies
        ("python-urwid" ,python-urwid)   ; for bpython-urwid only
-       ("python-six" ,python-six)))
+       ("python-watchdog" ,python-watchdog)
+       ("python-jedi" ,python-jedi)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
        ("python-mock" ,python-mock)))
