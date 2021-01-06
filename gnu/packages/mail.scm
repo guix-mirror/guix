@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -1059,7 +1059,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.13")
+    (version "1.4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -1067,7 +1067,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "13kfpr77qrnp3i5qnb5zd03frd3fdviggnl50973gdk0hr7m0smj"))))
+                "1fk0zyxajwyzp1f8yn7imbqq77s2w5cab5m9jla4zrybwkdi0r6z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
