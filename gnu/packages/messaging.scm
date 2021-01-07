@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -659,14 +659,14 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "26")
+    (version "26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ijmv18fa648y7apxb9vp4j9iq6fxq850kz5v36rysaq614cdp2n"))
+                "0m32v0c7mq96rshws4h6d0pi4bm0hynfzx3x01mgrxh9c396zham"))
               (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
