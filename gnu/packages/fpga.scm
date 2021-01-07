@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
@@ -348,7 +348,7 @@ FOSS FPGA place and route tool.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.107")
+    (version "3.3.108")
     (source
      (origin
        (method url-fetch)
@@ -358,7 +358,7 @@ FOSS FPGA place and route tool.")
                   (string-append "http://gtkwave.sourceforge.net/"
                                  "gtkwave-" version ".tar.gz")))
        (sha256
-        (base32 "1ibnhn7w1awalsbndbb5nilbmih3i3dwfry95mq5sn221l5n7zj8"))))
+        (base32 "0fzbap72zm4ka6n85j0873fpaarrx199ay0kjw1avrs20hs4gr7c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
