@@ -9534,7 +9534,7 @@ CIDER).")
     ;; https://github.com/joaotavora/sly/issues/394.
     (package
       (name "emacs-sly")
-      (version (git-version "1.0.42" "1" commit))
+      (version (git-version "1.0.43" "1" commit))
       (source
        (origin
          (method git-fetch)
