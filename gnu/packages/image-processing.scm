@@ -70,6 +70,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -260,38 +261,59 @@ many popular formats.")
                     (lambda (dir)
                       (delete-file-recursively
                         (string-append "ThirdParty/" dir "/vtk" dir)))
-                    '("expat" "freetype" "hdf5" "jpeg" "jsoncpp" "libxml2"
-                      "png" "tiff" "zlib"))
+                    ;; ogg, pugixml depended upon unconditionally
+                    '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
+                      "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
+                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
                   #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
-       ;; -DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE requires netcdf_cxx
-       #:configure-flags '("-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+       #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
+                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_OGGTHEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
+                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
-       #:tests? #f))                              ;XXX: no "test" target
+       #:tests? #f))        ;XXX: test data not included
     (inputs
-     `(("expat" ,expat)
+     `(("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
+       ("expat" ,expat)
        ("freetype" ,freetype)
+       ("gl2ps" ,gl2ps)
+       ("glew" ,glew)
        ("glu" ,glu)
        ("hdf5" ,hdf5)
        ("jpeg" ,libjpeg-turbo)
        ("jsoncpp" ,jsoncpp)
-       ("libogg" ,libogg)
+       ;("libogg" ,libogg)
        ("libtheora" ,libtheora)
        ("libX11" ,libx11)
        ("libxml2" ,libxml2)
        ("libXt" ,libxt)
+       ("lz4" ,lz4)
        ("mesa" ,mesa)
+       ("netcdf" ,netcdf)
        ("png" ,libpng)
+       ("proj" ,proj.4)
+       ;("pugixml" ,pugixml)
+       ("sqlite" ,sqlite)
        ("tiff" ,libtiff)
        ("xorgproto" ,xorgproto)
        ("zlib" ,zlib)))
