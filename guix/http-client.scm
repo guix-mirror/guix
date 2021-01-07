@@ -38,6 +38,7 @@
   #:use-module (guix utils)
   #:use-module (guix base64)
   #:autoload   (gcrypt hash) (sha256)
+  #:autoload   (gnutls) (error/invalid-session)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -180,10 +181,25 @@ returning."
         ;; Inherit the HTTP proxying property from P.
         (set-http-proxy-port?! buffer (http-proxy-port? p))
 
-        (for-each (cut write-request <> buffer)
-                  batch)
-        (put-bytevector p (get))
-        (force-output p))
+        (catch #t
+          (lambda ()
+            (for-each (cut write-request <> buffer)
+                      batch)
+            (put-bytevector p (get))
+            (force-output p))
+          (lambda (key . args)
+            ;; If PORT becomes unusable, open a fresh connection and
+            ;; retry.
+            (if (or (and (eq? key 'system-error)
+                         (= EPIPE (system-error-errno `(,key ,@args))))
+                    (and (eq? key 'gnutls-error)
+                         (eq? (first args) error/invalid-session)))
+                (begin
+                  (close-port p)    ; close the broken port
+                  (connect #f
+                           requests
+                           result))
+                (apply throw key args)))))
 
       ;; Now start processing responses.
       (let loop ((sent      batch)
@@ -199,20 +215,42 @@ returning."
              (remainder
               (connect p remainder result))))
           ((head tail ...)
-           (let* ((resp   (read-response p))
-                  (body   (response-body-port resp))
-                  (result (proc head resp body result)))
-             ;; The server can choose to stop responding at any time, in which
-             ;; case we have to try again.  Check whether that is the case.
-             ;; Note that even upon "Connection: close", we can read from BODY.
-             (match (assq 'connection (response-headers resp))
-               (('connection 'close)
-                (close-port p)
-                (connect #f                       ;try again
-                         (drop requests (+ 1 processed))
-                         result))
-               (_
-                (loop tail (+ 1 processed) result)))))))))) ;keep going
+           (catch #t
+             (lambda ()
+               (let* ((resp   (read-response p))
+                      (body   (response-body-port resp))
+                      (result (proc head resp body result)))
+                 ;; The server can choose to stop responding at any time,
+                 ;; in which case we have to try again.  Check whether
+                 ;; that is the case.  Note that even upon "Connection:
+                 ;; close", we can read from BODY.
+                 (match (assq 'connection (response-headers resp))
+                   (('connection 'close)
+                    (close-port p)
+                    (connect #f                       ;try again
+                             (drop requests (+ 1 processed))
+                             result))
+                   (_
+                    (loop tail (+ 1 processed) result))))) ;keep going
+             (lambda (key . args)
+               ;; If PORT was cached and the server closed the connection
+               ;; in the meantime, we get EPIPE.  In that case, open a
+               ;; fresh connection and retry.  We might also get
+               ;; 'bad-response or a similar exception from (web response)
+               ;; later on, once we've sent the request, or a
+               ;; ERROR/INVALID-SESSION from GnuTLS.
+               (if (or (and (eq? key 'system-error)
+                            (= EPIPE (system-error-errno `(,key ,@args))))
+                       (and (eq? key 'gnutls-error)
+                            (eq? (first args) error/invalid-session))
+                       (memq key
+                             '(bad-response bad-header bad-header-component)))
+                   (begin
+                     (close-port p)
+                     (connect #f      ; try again
+                              (drop requests (+ 1 processed))
+                              result))
+                   (apply throw key args))))))))))
 
 
 ;;;
