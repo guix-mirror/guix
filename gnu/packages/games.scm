@@ -4218,7 +4218,7 @@ Transport Tycoon Deluxe.")
 (define openrct2-objects
   (package
    (name "openrct2-objects")
-   (version "1.0.9")
+   (version "1.0.20")
    (source
     (origin
      (method url-fetch)
@@ -4226,7 +4226,7 @@ Transport Tycoon Deluxe.")
                          version "/objects.zip"))
      (file-name (string-append name "-" version ".zip"))
      (sha256
-      (base32 "02apb8h553m7d6jvysgb1zahvxc1yzyygfca2iclb21b3fhpsas4"))))
+      (base32 "1q7a38kcwrfijav6app1gf253yfv8b0rljbkah8040y6i7snw9mw"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
