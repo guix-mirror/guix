@@ -17229,7 +17229,8 @@ lines are read from a single file.")
     (native-inputs
      `(("python-pbr" ,python-pbr-minimal)))
     (propagated-inputs
-      `(("python-linecache2" ,python-linecache2)))
+      `(("python-linecache2" ,python-linecache2)
+        ("python-six" ,python-six)))
     (home-page
       "https://github.com/testing-cabal/traceback2")
     (synopsis "Backports of the traceback module")
