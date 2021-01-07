@@ -169,37 +169,6 @@ again."
         (sigaction SIGALRM SIG_DFL)
         (apply values result)))))
 
-(define (fetch uri)
-  "Return a binary input port to URI and the number of bytes it's expected to
-provide."
-  (case (uri-scheme uri)
-    ((file)
-     (let ((port (open-file (uri-path uri) "r0b")))
-       (values port (stat:size (stat port)))))
-    ((http https)
-     (guard (c ((http-get-error? c)
-                (leave (G_ "download from '~a' failed: ~a, ~s~%")
-                       (uri->string (http-get-error-uri c))
-                       (http-get-error-code c)
-                       (http-get-error-reason c))))
-       ;; Test this with:
-       ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
-       ;; and then cancel with:
-       ;;   sudo tc qdisc del dev eth0 root
-       (with-timeout %fetch-timeout
-         (begin
-           (warning (G_ "while fetching ~a: server is somewhat slow~%")
-                    (uri->string uri))
-           (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-         (http-fetch uri #:text? #f
-                     #:open-connection open-connection-for-uri/maybe
-                     #:keep-alive? #t
-                     #:buffered? #f
-                     #:verify-certificate? #f))))
-    (else
-     (leave (G_ "unsupported substitute URI scheme: ~a~%")
-            (uri->string uri)))))
-
 (define (narinfo-cache-file cache-url path)
   "Return the name of the local file that contains an entry for PATH.  The
 entry is stored in a sub-directory specific to CACHE-URL."
@@ -705,6 +674,35 @@ the current output port."
     ;; environments).
     (apply dump-file/deduplicate
            (append args (list #:store (%store-prefix)))))
+
+  (define (fetch uri)
+    (case (uri-scheme uri)
+      ((file)
+       (let ((port (open-file (uri-path uri) "r0b")))
+         (values port (stat:size (stat port)))))
+      ((http https)
+       (guard (c ((http-get-error? c)
+                  (leave (G_ "download from '~a' failed: ~a, ~s~%")
+                         (uri->string (http-get-error-uri c))
+                         (http-get-error-code c)
+                         (http-get-error-reason c))))
+         ;; Test this with:
+         ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
+         ;; and then cancel with:
+         ;;   sudo tc qdisc del dev eth0 root
+         (with-timeout %fetch-timeout
+           (begin
+             (warning (G_ "while fetching ~a: server is somewhat slow~%")
+                      (uri->string uri))
+             (warning (G_ "try `--no-substitutes' if the problem persists~%")))
+           (http-fetch uri #:text? #f
+                       #:open-connection open-connection-for-uri/maybe
+                       #:keep-alive? #t
+                       #:buffered? #f
+                       #:verify-certificate? #f))))
+      (else
+       (leave (G_ "unsupported substitute URI scheme: ~a~%")
+              (uri->string uri)))))
 
   (unless narinfo
     (leave (G_ "no valid substitute for '~a'~%")
