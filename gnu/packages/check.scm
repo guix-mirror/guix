@@ -1495,7 +1495,12 @@ protocol.")))
                (base32
                 "1vxj29bzz3rd4pcy51d05wng9q9dh4jq6wx92yklsm7i6h1ddw7w"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f))
+    (arguments
+      `(#:tests? #f
+        #:phases
+         (modify-phases %standard-phases
+           ;; Package is not loadable on its own at this stage.
+           (delete 'sanity-check))))
     (propagated-inputs
      `(("python-pbr-minimal" ,python-pbr-minimal)
        ("python-six" ,python-six)))
