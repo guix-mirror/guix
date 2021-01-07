@@ -314,7 +314,8 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
       (args
        (apply throw args)))))
 
-(define (fetch-narinfos url paths)
+(define* (fetch-narinfos url paths
+                         #:key (open-connection guix:open-connection-for-uri))
   "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
     (let ((done 0)
@@ -379,8 +380,7 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
                           (http-multiple-get uri
                                              handle-narinfo-response '()
                                              requests
-                                             #:open-connection
-                                             open-connection-for-uri/maybe
+                                             #:open-connection open-connection
                                              #:verify-certificate? #f))))
          (newline (current-error-port))
          result))
@@ -396,7 +396,8 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
 
   (do-fetch (string->uri url)))
 
-(define (lookup-narinfos cache paths)
+(define* (lookup-narinfos cache paths
+                          #:key (open-connection guix:open-connection-for-uri))
   "Return the narinfos for PATHS, invoking the server at CACHE when no
 information is available locally."
   (let-values (((cached missing)
@@ -413,10 +414,13 @@ information is available locally."
                        paths)))
     (if (null? missing)
         cached
-        (let ((missing (fetch-narinfos cache missing)))
+        (let ((missing (fetch-narinfos cache missing
+                                       #:open-connection open-connection)))
           (append cached (or missing '()))))))
 
-(define (lookup-narinfos/diverse caches paths authorized?)
+(define* (lookup-narinfos/diverse caches paths authorized?
+                                  #:key (open-connection
+                                         guix:open-connection-for-uri))
   "Look up narinfos for PATHS on all of CACHES, a list of URLS, in that order.
 That is, when a cache lacks an AUTHORIZED? narinfo, look it up in the next
 cache, and so on.
@@ -448,7 +452,8 @@ AUTHORIZED? narinfo."
       (_
        (match caches
          ((cache rest ...)
-          (let* ((narinfos (lookup-narinfos cache paths))
+          (let* ((narinfos (lookup-narinfos cache paths
+                                            #:open-connection open-connection))
                  (definite (map narinfo-path (filter authorized? narinfos)))
                  (missing  (lset-difference string=? paths definite))) ;XXX: perf
             (loop rest missing
@@ -588,14 +593,18 @@ authorized substitutes."
   (match (string-tokenize command)
     (("have" paths ..1)
      ;; Return the subset of PATHS available in CACHE-URLS.
-     (let ((substitutable (lookup-narinfos/diverse cache-urls paths valid?)))
+     (let ((substitutable (lookup-narinfos/diverse
+                           cache-urls paths valid?
+                           #:open-connection open-connection-for-uri/maybe)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
                  substitutable)
        (newline)))
     (("info" paths ..1)
      ;; Reply info about PATHS if it's in CACHE-URLS.
-     (let ((substitutable (lookup-narinfos/diverse cache-urls paths valid?)))
+     (let ((substitutable (lookup-narinfos/diverse
+                           cache-urls paths valid?
+                           #:open-connection open-connection-for-uri/maybe)))
        (for-each display-narinfo-data substitutable)
        (newline)))
     (wtf
