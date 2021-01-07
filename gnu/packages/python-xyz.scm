@@ -16013,10 +16013,17 @@ information.")
    (package/inherit
     python-packaging
     (name "python-packaging-bootstrap")
+    (arguments
+      (substitute-keyword-arguments (package-arguments python-packaging)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'fix-dependencies
+              (lambda* (#:key tests? #:allow-other-keys)
+                (substitute* "setup.py" (("\"six\"") ""))))))
+         ((#:tests? _ #f) #f)))
     (native-inputs '())
     (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing)))
-    (arguments '(#:tests? #f)))))
+     `(("python-pyparsing" ,python-pyparsing))))))
 
 (define-public python2-packaging-bootstrap
   (hidden-package
