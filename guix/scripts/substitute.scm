@@ -170,7 +170,7 @@ again."
         (apply values result)))))
 
 (define* (fetch uri #:key (buffered? #t) (timeout? #t)
-                (keep-alive? #f) (port #f))
+                (keep-alive? #f))
   "Return a binary input port to URI and the number of bytes it's expected to
 provide.
 
@@ -199,7 +199,8 @@ connection (typically PORT) is kept open once data has been fetched from URI."
            (warning (G_ "while fetching ~a: server is somewhat slow~%")
                     (uri->string uri))
            (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-         (http-fetch uri #:text? #f #:port port
+         (http-fetch uri #:text? #f
+                     #:open-connection open-connection-for-uri/maybe
                      #:keep-alive? keep-alive?
                      #:buffered? buffered?
                      #:verify-certificate? #f))))
@@ -752,10 +753,8 @@ the current output port."
     (let*-values (((raw download-size)
                    ;; 'guix publish' without '--cache' doesn't specify a
                    ;; Content-Length, so DOWNLOAD-SIZE is #f in this case.
-                   (with-cached-connection uri port
-                     (fetch uri #:buffered? #f #:timeout? #f
-                            #:port port
-                            #:keep-alive? #t)))
+                   (fetch uri #:buffered? #f #:timeout? #f
+                          #:keep-alive? #t))
                   ((progress)
                    (let* ((dl-size  (or download-size
                                         (and (equal? compression "none")
