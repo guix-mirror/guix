@@ -31,8 +31,8 @@
   #:use-module (guix base32)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module ((guix derivations)
-                #:select (built-derivations derivation->output-path))
+  #:use-module ((guix derivations) #:select (built-derivations derivation->output-path))
+  #:autoload   (gcrypt hash) (port-sha256)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -248,6 +248,9 @@ correspond to the same version."
                                        '()
                                        (importer-modules))))
 
+;; Tests need to mock this variable so mark it as "non-declarative".
+(set! %updaters %updaters)
+
 (define* (lookup-updater package
                          #:optional (updaters (force %updaters)))
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
@@ -350,6 +353,27 @@ values: 'interactive' (default), 'always', and 'never'."
                (warning (G_ "missing public key ~a for '~a'~%")
                         data url)
                #f)))))))
+
+(define-gexp-compiler (upstream-source-compiler (source <upstream-source>)
+                                                system target)
+  "Download SOURCE from its first URL and lower it as a fixed-output
+derivation that would fetch it."
+  (mlet* %store-monad ((url -> (first (upstream-source-urls source)))
+                       (signature
+                        -> (and=> (upstream-source-signature-urls source)
+                                  first))
+                       (tarball ((store-lift download-tarball) url signature)))
+    (unless tarball
+      (raise (formatted-message (G_ "failed to fetch source from '~a'")
+                                url)))
+
+    ;; Instead of returning TARBALL, return a fixed-output derivation that
+    ;; would be able to re-download it.  In practice, since TARBALL is already
+    ;; in the store, no extra download will happen, but having the derivation
+    ;; in store improves provenance tracking.
+    (let ((hash (call-with-input-file tarball port-sha256)))
+      (url-fetch url 'sha256 hash (store-path-package-name tarball)
+                 #:system system))))
 
 (define (find2 pred lst1 lst2)
   "Like 'find', but operate on items from both LST1 and LST2.  Return two

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,9 @@
   #:autoload   (guix download) (download-to-store)
   #:autoload   (guix git-download) (git-reference? git-reference-url)
   #:autoload   (guix git) (git-checkout git-checkout? git-checkout-url)
+  #:autoload   (guix upstream) (package-latest-release*
+                                upstream-source-version
+                                upstream-source-signature-urls)
   #:use-module (guix utils)
   #:use-module (guix memoization)
   #:use-module (guix gexp)
@@ -511,6 +514,42 @@ additional patches."
         (rewrite obj)
         obj)))
 
+(define (transform-package-latest specs)
+  "Return a procedure that rewrites package graphs such that those in SPECS
+are replaced by their latest upstream version."
+  (define (package-with-latest-upstream p)
+    (let ((source (package-latest-release* p)))
+      (cond ((not source)
+             (warning
+              (G_ "could not determine latest upstream release of '~a'~%")
+              (package-name p))
+             p)
+            ((string=? (upstream-source-version source)
+                       (package-version p))
+             p)
+            (else
+             (unless (pair? (upstream-source-signature-urls source))
+               (warning (G_ "cannot authenticate source of '~a', version ~a~%")
+                        (package-name p)
+                        (upstream-source-version source)))
+
+             ;; TODO: Take 'upstream-source-input-changes' into account.
+             (package
+               (inherit p)
+               (version (upstream-source-version source))
+               (source source))))))
+
+  (define rewrite
+    (package-input-rewriting/spec
+     (map (lambda (spec)
+            (cons spec package-with-latest-upstream))
+          specs)))
+
+  (lambda (obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -525,7 +564,8 @@ additional patches."
     (with-c-toolchain . ,transform-package-toolchain)
     (with-debug-info . ,transform-package-with-debug-info)
     (without-tests . ,transform-package-tests)
-    (with-patch  . ,transform-package-patches)))
+    (with-patch  . ,transform-package-patches)
+    (with-latest . ,transform-package-latest)))
 
 (define (transformation-procedure key)
   "Return the transformation procedure associated with KEY, a symbol such as
@@ -567,6 +607,8 @@ additional patches."
                   (parser 'without-tests))
           (option '("with-patch") #t #f
                   (parser 'with-patch))
+          (option '("with-latest") #t #f
+                  (parser 'with-latest))
 
           (option '("help-transform") #f #f
                   (lambda _
@@ -598,6 +640,9 @@ additional patches."
   (display (G_ "
       --with-patch=PACKAGE=FILE
                          add FILE to the list of patches of PACKAGE"))
+  (display (G_ "
+      --with-latest=PACKAGE
+                         use the latest upstream release of PACKAGE"))
   (display (G_ "
       --with-c-toolchain=PACKAGE=TOOLCHAIN
                          build PACKAGE and its dependents with TOOLCHAIN"))

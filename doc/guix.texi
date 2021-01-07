@@ -10381,6 +10381,37 @@ guix build coreutils --with-patch=glibc=./glibc-frob.patch
 In this example, glibc itself as well as everything that leads to
 Coreutils in the dependency graph is rebuilt.
 
+@cindex upstream, latest version
+@item --with-latest=@var{package}
+So you like living on the bleeding edge?  This option is for you!  It
+replaces occurrences of @var{package} in the dependency graph with its
+latest upstream version, as reported by @command{guix refresh}
+(@pxref{Invoking guix refresh}).
+
+It does so by determining the latest upstream release of @var{package}
+(if possible), downloading it, and authenticating it @emph{if} it comes
+with an OpenPGP signature.
+
+As an example, the command below builds Guix against the latest version
+of Guile-JSON:
+
+@example
+guix build guix --with-latest=guile-json
+@end example
+
+There are limitations.  First, in cases where the tool cannot or does
+not know how to authenticate source code, you are at risk of running
+malicious code; a warning is emitted in this case.  Second, this option
+simply changes the source used in the existing package definitions,
+which is not always sufficient: there might be additional dependencies
+that need to be added, patches to apply, and more generally the quality
+assurance work that Guix developers normally do will be missing.
+
+You've been warned!  In all the other cases, it's a snappy way to stay
+on top.  We encourage you to submit patches updating the actual package
+definitions once you have successfully tested an upgrade
+(@pxref{Contributing}).
+
 @cindex test suite, skipping
 @item --without-tests=@var{package}
 Build @var{package} without running its tests.  This can be useful in
