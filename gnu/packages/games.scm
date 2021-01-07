@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -4942,7 +4942,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.3.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4951,7 +4951,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "0jz2lgvmp299nks6ajg2yxbx4xcaxlc4cpfr61861p7m7z2nv84y"))))
+                "0ips79j3sdy8wa64jqka0skbbqkzqiln9bbiiilh4z717q7vz9r5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
