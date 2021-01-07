@@ -717,7 +717,7 @@ potential infinite waits blocking libvirt."))
   (platforms   qemu-binfmt-configuration-platforms
                (default '()))                     ;safest default
   (guix-support? qemu-binfmt-configuration-guix-support?
-                 (default #f)))
+                 (default #t)))
 
 (define (qemu-platform->binfmt qemu platform)
   "Return a gexp that evaluates to a binfmt string for PLATFORM, using the
