@@ -1307,7 +1307,7 @@ and daylight-saving rules.")
   (hidden-package
    (package
      (inherit tzdata)
-     (version "2019c")
+     (version "2020d")
      (source (origin
                (method url-fetch)
                (uri (string-append
@@ -1315,7 +1315,7 @@ and daylight-saving rules.")
                      version ".tar.gz"))
                (sha256
                 (base32
-                 "0z7w1yv37cfk8yhix2cillam091vgp1j4g8fv84261q9mdnq1ivr"))))
+                 "1wxskk9mh1x2073n99qna2mq58mgi648mbq5dxlqfcrnvrbkk0cd"))))
      (inputs
       `(("tzcode" ,(origin
                      (method url-fetch)
@@ -1324,7 +1324,7 @@ and daylight-saving rules.")
                            version ".tar.gz"))
                      (sha256
                       (base32
-                       "1m3y2rnf1nggxxhxplab5zdd5whvar3ijyrv7lifvm82irkd7szn")))))))))
+                       "1mgsckixmmk9qxzsflfxnp3999qi3ls72bgksclk01g852x51w3c")))))))))
 
 (define-public libiconv
   (package
