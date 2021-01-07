@@ -9736,7 +9736,7 @@ inside the source file.")
       (license license:gpl3+))))
 
 (define-public emacs-sly-stepper
-  (let ((commit "cd7fd00f9a701246e2a9ba8c37166dcae2fde04e"))
+  (let ((commit "ec3c0a7f3c8b82926882e5fcfdacf67b86d989f8"))
     (package
       (name "emacs-sly-stepper")
       (version (git-version "0.0.0" "1" commit))
@@ -9750,7 +9750,7 @@ inside the source file.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "09ll9dv8fd5dgnki82hcd48nm4qdzzn8wpva0zzr69zkjwzf9v25"))))
+           "1hxniaxifdw3m4y4yssgy22xcmmf558wx7rpz66wy5hwybjslf7b"))))
       (build-system emacs-build-system)
       (inputs
        `(("cl-agnostic-lizard" ,cl-agnostic-lizard)))
@@ -9780,18 +9780,11 @@ inside the source file.")
                             "/share/common-lisp/systems/agnostic-lizard.asd")))
                  ;; agnostic-lizard is found at runtime.
                  (substitute* file
-                   (("\\(funcall \\(read-from-string \"asdf:load-system\"\\)")
+                   (("\\(require :asdf\\)")
                     (string-append
-                     "(funcall (read-from-string \"asdf:load-asd\") \""
-                     asd
-                     "\")\n     (funcall (read-from-string \"asdf:load-system\")"))
-                   ;; Upstream mistakenly requires Quicklisp.  See
-                   ;; https://github.com/joaotavora/sly-stepper/issues/2.
-                   (("\\(funcall \\(read-from-string \"ql:quickload\"\\)")
-                    (string-append
-                     "(ignore-errors (funcall (read-from-string \"ql:quickload\") "
-                     ":agnostic-lizard))"))
-                   (("                    :agnostic-lizard\\)") ""))))))))
+                     "(require :asdf)\n"
+                     "     (funcall (read-from-string \"asdf:load-asd\")\n"
+                     "              \"" asd "\")\n")))))))))
       (synopsis "Portable Common Lisp stepper interface for Emacs")
       (description
        "This package features a new, portable, visual stepping facility for
