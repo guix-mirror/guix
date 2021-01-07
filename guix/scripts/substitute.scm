@@ -200,14 +200,10 @@ connection (typically PORT) is kept open once data has been fetched from URI."
              (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-           (begin
-             (when (or (not port) (port-closed? port))
-               (set! port (guix:open-connection-for-uri
-                           uri #:verify-certificate? #f)))
-             (http-fetch uri #:text? #f #:port port
-                         #:keep-alive? keep-alive?
-                         #:buffered? buffered?
-                         #:verify-certificate? #f))))))
+           (http-fetch uri #:text? #f #:port port
+                       #:keep-alive? keep-alive?
+                       #:buffered? buffered?
+                       #:verify-certificate? #f)))))
     (else
      (leave (G_ "unsupported substitute URI scheme: ~a~%")
             (uri->string uri)))))
