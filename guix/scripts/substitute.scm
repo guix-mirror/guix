@@ -322,7 +322,8 @@ if file doesn't exist, and the narinfo otherwise."
 (define* (open-connection-for-uri/maybe uri
                                         #:key
                                         fresh?
-                                        (time %fetch-timeout))
+                                        (time %fetch-timeout)
+                                        verify-certificate?)
   "Open a connection to URI via 'open-connection-for-uri/cached' and return a
 port to it, or, if connection failed, print a warning and return #f.  Pass
 #:fresh? to 'open-connection-for-uri/cached'."
@@ -332,7 +333,8 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
   (catch #t
     (lambda ()
       (open-connection-for-uri/cached uri #:timeout time
-                                      #:fresh? fresh?))
+                                      #:fresh? fresh?
+                                      #:verify-certificate? verify-certificate?))
     (match-lambda*
       (('getaddrinfo-error error)
        (unless (hash-ref %unreachable-hosts host)
