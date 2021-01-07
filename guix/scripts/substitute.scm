@@ -192,18 +192,17 @@ connection (typically PORT) is kept open once data has been fetched from URI."
        ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
        ;; and then cancel with:
        ;;   sudo tc qdisc del dev eth0 root
-       (let ((port port))
-         (with-timeout (if timeout?
-                           %fetch-timeout
-                           0)
-           (begin
-             (warning (G_ "while fetching ~a: server is somewhat slow~%")
-                      (uri->string uri))
-             (warning (G_ "try `--no-substitutes' if the problem persists~%")))
-           (http-fetch uri #:text? #f #:port port
-                       #:keep-alive? keep-alive?
-                       #:buffered? buffered?
-                       #:verify-certificate? #f)))))
+       (with-timeout (if timeout?
+                         %fetch-timeout
+                         0)
+         (begin
+           (warning (G_ "while fetching ~a: server is somewhat slow~%")
+                    (uri->string uri))
+           (warning (G_ "try `--no-substitutes' if the problem persists~%")))
+         (http-fetch uri #:text? #f #:port port
+                     #:keep-alive? keep-alive?
+                     #:buffered? buffered?
+                     #:verify-certificate? #f))))
     (else
      (leave (G_ "unsupported substitute URI scheme: ~a~%")
             (uri->string uri)))))
