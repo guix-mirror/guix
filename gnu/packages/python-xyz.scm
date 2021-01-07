@@ -4207,7 +4207,14 @@ matching of file paths.")
              (substitute* "tests/test_black.py"
                (("( *)def test_python38" match indent)
                 (string-append indent "@unittest.skip(\"guix\")\n" match)))
-             #t)))))
+             #t))
+         ;; Remove blackd, because it depends on python-aiohttp and
+         ;; python-aiohttp-cors.
+         (add-after 'unpack 'remove-entrypoint
+           (lambda _
+             (substitute* "setup.py"
+               (("\\s*\"blackd=blackd:patched_main \\[d\\]\",\n") "")
+                (("\"blackd\", ") "")))))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-attrs" ,python-attrs)
