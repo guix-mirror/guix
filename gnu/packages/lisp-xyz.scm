@@ -782,79 +782,80 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (package
-    (name "sbcl-slynk")
-    (version "1.0.42")
-    (source
-     (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/joaotavora/sly")
-         (commit version)))
-       (sha256
-        (base32 "10l867c4hgcpiajcfkz9g9vabp7y4bcgy51la6n9pqxrlg1fs455"))
-       (file-name (git-file-name "slynk" version))
-       (modules '((guix build utils)
-                  (ice-9 ftw)))
-       (snippet
-        '(begin
-           ;; Move the contribs into the main source directory for easier
-           ;; access
-           (substitute* "slynk/slynk.asd"
-             (("\\.\\./contrib")
-              "contrib"))
-           (rename-file "contrib" "slynk/contrib")
-           ;; Move slynk's contents into the base directory for easier
-           ;; access
-           (for-each (lambda (file)
-                       (unless (string-prefix? "." file)
-                         (rename-file (string-append "slynk/" file)
-                                      (string-append "./" (basename file)))))
-                     (scandir "slynk"))
-           #t))))
-    (build-system asdf-build-system/sbcl)
-    (outputs '("out" "image"))
-    (arguments
-     `(#:tests? #f                      ; No test suite
-       #:asd-systems '("slynk"
-                       "slynk/arglists"
-                       "slynk/fancy-inspector"
-                       "slynk/package-fu"
-                       "slynk/mrepl"
-                       "slynk/trace-dialog"
-                       "slynk/profiler"
-                       "slynk/stickers"
-                       "slynk/indentation"
-                       "slynk/retro")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'create-asdf-configuration 'build-image
-           (lambda* (#:key outputs #:allow-other-keys)
-             (build-image (string-append
-                           (assoc-ref %outputs "image")
-                           "/bin/slynk")
-                          %outputs
-                          #:dependencies '("slynk"
-                                           "slynk/arglists"
-                                           "slynk/fancy-inspector"
-                                           "slynk/package-fu"
-                                           "slynk/mrepl"
-                                           "slynk/trace-dialog"
-                                           "slynk/profiler"
-                                           "slynk/stickers"
-                                           "slynk/indentation"
-                                           "slynk/retro"))
-             #t)))))
-    (synopsis "Common Lisp IDE for Emacs")
-    (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
+  (let ((commit "dffdf3caa12e964127d6eb45ba92ac0442cc5a48"))
+    (package
+      (name "sbcl-slynk")
+      (version (git-version "1.0.43" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/joaotavora/sly")
+           (commit commit)))
+         (sha256
+          (base32 "0vv185gz3rkfng5y79dijfnc11p92qdz2kdza05avjbpqfs6l0zn"))
+         (file-name (git-file-name "slynk" version))
+         (modules '((guix build utils)
+                    (ice-9 ftw)))
+         (snippet
+          '(begin
+             ;; Move the contribs into the main source directory for easier
+             ;; access
+             (substitute* "slynk/slynk.asd"
+               (("\\.\\./contrib")
+                "contrib"))
+             (rename-file "contrib" "slynk/contrib")
+             ;; Move slynk's contents into the base directory for easier
+             ;; access
+             (for-each (lambda (file)
+                         (unless (string-prefix? "." file)
+                           (rename-file (string-append "slynk/" file)
+                                        (string-append "./" (basename file)))))
+                       (scandir "slynk"))
+             #t))))
+      (build-system asdf-build-system/sbcl)
+      (outputs '("out" "image"))
+      (arguments
+       `(#:tests? #f                    ; No test suite
+         #:asd-systems '("slynk"
+                         "slynk/arglists"
+                         "slynk/fancy-inspector"
+                         "slynk/package-fu"
+                         "slynk/mrepl"
+                         "slynk/trace-dialog"
+                         "slynk/profiler"
+                         "slynk/stickers"
+                         "slynk/indentation"
+                         "slynk/retro")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'create-asdf-configuration 'build-image
+             (lambda* (#:key outputs #:allow-other-keys)
+               (build-image (string-append
+                             (assoc-ref %outputs "image")
+                             "/bin/slynk")
+                            %outputs
+                            #:dependencies '("slynk"
+                                             "slynk/arglists"
+                                             "slynk/fancy-inspector"
+                                             "slynk/package-fu"
+                                             "slynk/mrepl"
+                                             "slynk/trace-dialog"
+                                             "slynk/profiler"
+                                             "slynk/stickers"
+                                             "slynk/indentation"
+                                             "slynk/retro"))
+               #t)))))
+      (synopsis "Common Lisp IDE for Emacs")
+      (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
 It also features a completely redesigned REPL based on Emacs's own
 full-featured @code{comint-mode}, live code annotations, and a consistent interactive
 button interface.  Everything can be copied to the REPL.  One can create
 multiple inspectors with independent history.")
-    (home-page "https://github.com/joaotavora/sly")
-    (license license:public-domain)
-    (properties `((cl-source-variant . ,(delay cl-slynk))))))
+      (home-page "https://github.com/joaotavora/sly")
+      (license license:public-domain)
+      (properties `((cl-source-variant . ,(delay cl-slynk)))))))
 
 (define-public cl-slynk
   (sbcl-package->cl-source-package sbcl-slynk))
