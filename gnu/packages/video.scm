@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 201–72021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -2418,7 +2418,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.8.0")
+    (version "3.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2427,7 +2427,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16gskhzkvgzhfb89zqfmvz7kmhjsyc38f2dl86ksal4p69kn8j3g"))))
+                "0xdybiihd66b79rbsawjhxs9snm78gld5ziz3gnp8vdcw0bshwz7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
