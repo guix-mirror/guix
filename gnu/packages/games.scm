@@ -1324,7 +1324,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.5.1")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -1333,7 +1333,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10d6py1cmkq8lnb5h3w8rdpp4fmpd1wgqkgiabdghqxi7b2s0g4b"))
+        (base32 "0nfdn8n6ywhm69ckz9a1chl5xxiqyaj3l337wadsbppnpscjihrc"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
