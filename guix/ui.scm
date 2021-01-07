@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2019, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -2133,11 +2133,11 @@ found."
           (lambda ()
             (match (search-path (extension-directories)
                                 (format #f "~a.scm" command))
+              (#f
+               (throw 'misc-error))
               (file
-               (load file)
-               (resolve-interface `(guix extensions ,command)))
-              (_
-               (throw 'misc-error))))
+                (load file)
+                (resolve-interface `(guix extensions ,command)))))
           (lambda _
             (format (current-error-port)
                     (G_ "guix: ~a: command not found~%") command)
