@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-(define-module (test-build-utils)
+(define-module (test build-utils)
   #:use-module (guix tests)
   #:use-module (guix build utils)
   #:use-module ((guix utils)
@@ -240,5 +241,26 @@ print('hello world')"))
                       `("GUIX_FOO" prefix ("/some/path"
                                            "/some/other/path")))
          #f)))))
+
+(test-equal "substitute*, text contains a NUL byte, UTF-8"
+  "c\0d"
+  (with-fluids ((%default-port-encoding "UTF-8")
+                (%default-port-conversion-strategy 'error))
+    ;; The GNU libc is locale sensitive.  Depending on the value of LANG, the
+    ;; test could fail with "string contains #\\nul character: ~S" or "cannot
+    ;; convert wide string to output locale".
+    (setlocale LC_ALL "en_US.UTF-8")
+    (call-with-temporary-output-file
+     (lambda (file port)
+       (format port "a\0b")
+       (flush-output-port port)
+
+       (substitute* file
+         (("a") "c")
+         (("b") "d"))
+
+       (with-input-from-file file
+         (lambda _
+           (get-string-all (current-input-port))))))))
 
 (test-end)

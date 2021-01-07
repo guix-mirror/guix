@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -784,6 +784,31 @@ PROC's result is returned."
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
 
+(define (unused-private-use-code-point s)
+  "Find a code point within a Unicode Private Use Area that is not
+present in S, and return the corresponding character object.  If one
+cannot be found, return false."
+  (define (scan lo hi)
+    (and (<= lo hi)
+         (let ((c (integer->char lo)))
+           (if (string-index s c)
+               (scan (+ lo 1) hi)
+               c))))
+  (or (scan   #xE000   #xF8FF)
+      (scan  #xF0000  #xFFFFD)
+      (scan #x100000 #x10FFFD)))
+
+(define (replace-char c1 c2 s)
+  "Return a string which is equal to S except with all instances of C1
+replaced by C2.  If C1 and C2 are equal, return S."
+  (if (char=? c1 c2)
+      s
+      (string-map (lambda (c)
+                    (if (char=? c c1)
+                        c2
+                        c))
+                  s)))
+
 (define (substitute file pattern+procs)
   "PATTERN+PROCS is a list of regexp/two-argument-procedure pairs.  For each
 line of FILE, and for each PATTERN that it matches, call the corresponding
@@ -802,16 +827,26 @@ end of a line; by itself it won't match the terminating newline of a line."
         (let loop ((line (read-line in 'concat)))
           (if (eof-object? line)
               #t
-              (let ((line (fold (lambda (r+p line)
-                                  (match r+p
-                                    ((regexp . proc)
-                                     (match (list-matches regexp line)
-                                       ((and m+ (_ _ ...))
-                                        (proc line m+))
-                                       (_ line)))))
-                                line
-                                rx+proc)))
-                (display line out)
+              ;; Work around the fact that Guile's regexp-exec does not handle
+              ;; NUL characters (a limitation of the underlying GNU libc's
+              ;; regexec) by temporarily replacing them by an unused private
+              ;; Unicode code point.
+              ;; TODO: Use SRFI-115 instead, once available in Guile.
+              (let* ((nul* (or (and (string-index line #\nul)
+                                    (unused-private-use-code-point line))
+                               #\nul))
+                     (line* (replace-char #\nul nul* line))
+                     (line1* (fold (lambda (r+p line)
+                                     (match r+p
+                                       ((regexp . proc)
+                                        (match (list-matches regexp line)
+                                          ((and m+ (_ _ ...))
+                                           (proc line m+))
+                                          (_ line)))))
+                                   line*
+                                   rx+proc))
+                     (line1 (replace-char nul* #\nul line1*)))
+                (display line1 out)
                 (loop (read-line in 'concat)))))))))
 
 
