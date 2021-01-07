@@ -204,10 +204,9 @@ connection (typically PORT) is kept open once data has been fetched from URI."
              (when (or (not port) (port-closed? port))
                (set! port (guix:open-connection-for-uri
                            uri #:verify-certificate? #f)))
-             (unless (or buffered? (not (file-port? port)))
-               (setvbuf port 'none))
              (http-fetch uri #:text? #f #:port port
                          #:keep-alive? keep-alive?
+                         #:buffered? buffered?
                          #:verify-certificate? #f))))))
     (else
      (leave (G_ "unsupported substitute URI scheme: ~a~%")
