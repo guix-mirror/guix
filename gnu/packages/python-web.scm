@@ -4399,7 +4399,8 @@ Python.")
        (sha256
         (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
     (propagated-inputs
-     `(("python-unidecode" ,python-unidecode)))
+     `(("python-unidecode" ,python-unidecode)
+       ("python-text-unidecode" ,python-text-unidecode)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
