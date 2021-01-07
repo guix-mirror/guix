@@ -690,32 +690,6 @@ server certificates."
                     (drain-input socket)
                     socket))))))))
 
-(define* (call-with-cached-connection uri proc
-                                      #:optional
-                                      (open-connection
-                                       open-connection-for-uri/cached))
-  (let ((port (open-connection uri)))
-    (catch #t
-      (lambda ()
-        (proc port))
-      (lambda (key . args)
-        ;; If PORT was cached and the server closed the connection in the
-        ;; meantime, we get EPIPE.  In that case, open a fresh connection and
-        ;; retry.  We might also get 'bad-response or a similar exception from
-        ;; (web response) later on, once we've sent the request, or a
-        ;; ERROR/INVALID-SESSION from GnuTLS.
-        (if (or (and (eq? key 'system-error)
-                     (= EPIPE (system-error-errno `(,key ,@args))))
-                (and (eq? key 'gnutls-error)
-                     (eq? (first args) error/invalid-session))
-                (memq key '(bad-response bad-header bad-header-component)))
-            (proc (open-connection uri #:fresh? #t))
-            (apply throw key args))))))
-
-(define-syntax-rule (with-cached-connection uri port exp ...)
-  "Bind PORT with EXP... to a socket connected to URI."
-  (call-with-cached-connection uri (lambda (port) exp ...)))
-
 (define* (process-substitution store-item destination
                                #:key cache-urls acl
                                deduplicate? print-build-trace?)
@@ -1011,8 +985,6 @@ default value."
 
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
-;;; eval: (put 'with-cached-connection 'scheme-indent-function 2)
-;;; eval: (put 'call-with-cached-connection 'scheme-indent-function 1)
 ;;; End:
 
 ;;; substitute.scm ends here
