@@ -1985,7 +1985,18 @@ failures.")
                 "06032agzhw1i9d9qlhfblnl3dw5hcyxhagn7b120zhrszbjzfbh3"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ; Fails with recent pytest and pep8. See upstream issues #8 and #12.
+     `(#:tests? #f ; Fails with recent pytest and pep8. See upstream issues #8 and #12.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda _
+             (substitute* "setup.py"
+               (("'pytest-cache', ") ""))))  ; Included in recent pytest
+         (replace 'check
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+              (when tests?
+                (add-installed-pythonpath inputs outputs)
+                (invoke "pytest" "-v")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
