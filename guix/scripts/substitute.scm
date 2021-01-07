@@ -169,18 +169,12 @@ again."
         (sigaction SIGALRM SIG_DFL)
         (apply values result)))))
 
-(define* (fetch uri #:key (buffered? #t) (timeout? #t)
-                (keep-alive? #f))
+(define (fetch uri)
   "Return a binary input port to URI and the number of bytes it's expected to
-provide.
-
-When PORT is true, use it as the underlying I/O port for HTTP transfers; when
-PORT is false, open a new connection for URI.  When KEEP-ALIVE? is true, the
-connection (typically PORT) is kept open once data has been fetched from URI."
+provide."
   (case (uri-scheme uri)
     ((file)
-     (let ((port (open-file (uri-path uri)
-                            (if buffered? "rb" "r0b"))))
+     (let ((port (open-file (uri-path uri) "r0b")))
        (values port (stat:size (stat port)))))
     ((http https)
      (guard (c ((http-get-error? c)
@@ -192,17 +186,15 @@ connection (typically PORT) is kept open once data has been fetched from URI."
        ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
        ;; and then cancel with:
        ;;   sudo tc qdisc del dev eth0 root
-       (with-timeout (if timeout?
-                         %fetch-timeout
-                         0)
+       (with-timeout %fetch-timeout
          (begin
            (warning (G_ "while fetching ~a: server is somewhat slow~%")
                     (uri->string uri))
            (warning (G_ "try `--no-substitutes' if the problem persists~%")))
          (http-fetch uri #:text? #f
                      #:open-connection open-connection-for-uri/maybe
-                     #:keep-alive? keep-alive?
-                     #:buffered? buffered?
+                     #:keep-alive? #t
+                     #:buffered? #f
                      #:verify-certificate? #f))))
     (else
      (leave (G_ "unsupported substitute URI scheme: ~a~%")
@@ -727,8 +719,7 @@ the current output port."
     (let*-values (((raw download-size)
                    ;; 'guix publish' without '--cache' doesn't specify a
                    ;; Content-Length, so DOWNLOAD-SIZE is #f in this case.
-                   (fetch uri #:buffered? #f #:timeout? #f
-                          #:keep-alive? #t))
+                   (fetch uri))
                   ((progress)
                    (let* ((dl-size  (or download-size
                                         (and (equal? compression "none")
