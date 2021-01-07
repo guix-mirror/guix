@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -622,4 +623,32 @@ asynchronous generators, proxies, BigInt and BigDecimal.  It can compile
 Javascript sources to executables with no external dependency.  It includes a
 command line interpreter with contextual colorization implemented in
 Javascript and a small built-in standard library with C library wrappers.")
+    (license license:expat)))
+
+(define-public duktape
+  (package
+    (name "duktape")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://duktape.org/duktape-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "19szwxzvl2g65fw95ggvb8h0ma5bd9vvnnccn59hwnc4dida1x4n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:make-flags (list "-f" "Makefile.sharedlibrary"
+                          (string-append "INSTALL_PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://duktape.org/")
+    (synopsis "Small embeddable Javascript engine")
+    (description "Duktape is an embeddable Javascript engine, with a focus on
+portability and compact footprint.  Duktape is easy to integrate into a C/C++
+project: add @file{duktape.c}, @file{duktape.h}, and @file{duk_config.h} to
+your build, and use the Duktape API to call ECMAScript functions from C code
+and vice versa.")
     (license license:expat)))
