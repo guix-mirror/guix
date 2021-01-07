@@ -12650,7 +12650,14 @@ format.")
                 "17d3hnxv9qndagzz63mdpyk99xj63p9gq586vjn0rxk8cl197nym"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f))                    ; FIXME: some tests fail
+     '(#:tests? #f                    ; FIXME: some tests fail
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove scripts, because they depend on [conch]
+         (add-after 'unpack 'remove-entrypoint
+           (lambda _
+             (substitute* "src/twisted/python/_setup.py"
+               (("\".+ = twisted\\.conch\\.scripts\\..+\",") "")))))))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
        ("python-pyhamcrest" ,python-pyhamcrest)
