@@ -2279,3 +2279,32 @@ start-up.")
     (description "XNotify receives a notification specification in stdin and
 shows a notification for the user on the screen.")
     (license license:expat)))
+
+(define-public cagebreak
+  (package
+    (name "cagebreak")
+    (version "1.4.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/project-repo/cagebreak")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mnxs1m7jrqdl0asx39nxfzvkp7d4jqpdchi63w2yd1igpj2frb2"))))
+    (build-system meson-build-system)
+    (arguments '(#:configure-flags '("-Dxwayland=true")))
+    (native-inputs
+     `(("pandoc" ,pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pango" ,pango)
+       ("wlroots" ,wlroots)))
+    (home-page "https://github.com/project-repo/cagebreak")
+    (synopsis "Tiling wayland compositor inspired by ratpoison")
+    (description
+     "@command{cagebreak} is a slim, keyboard-controlled, tiling compositor
+for wayland conceptually based on the X11 window manager
+@command{ratpoison}.")
+    (license license:expat)))
