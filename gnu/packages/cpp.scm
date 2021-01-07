@@ -14,7 +14,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
-;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -689,7 +689,7 @@ standard GNU style syntax for options.")
 (define-public folly
   (package
     (name "folly")
-    (version "2020.10.05.00")
+    (version "2021.01.25.00")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -698,7 +698,7 @@ standard GNU style syntax for options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q4w4cvjxffc462hvs8h4zryq4965j7015zvkwagcm6cj6wmz3cn"))))
+                "14dl1g6vf7mc90mcync5h2lp14fwcx8n9h91pmiq6rfgv1fjjrwz"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests must be explicitly enabled
