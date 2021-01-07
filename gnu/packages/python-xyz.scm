@@ -15073,7 +15073,15 @@ instead of servers and network commands.")
     ;; python-twisted depends on python-automat.  Twisted is optional, but the
     ;; tests fail if it is not available.  Also see
     ;; <https://github.com/glyph/automat/issues/71>.
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove script, because it depends on python-twisted.
+         (add-after 'unpack 'remove-entrypoint
+           (lambda _
+             (substitute* "setup.py"
+               (("\"automat-visualize = automat._visualize:tool\"") "")))))))
     (native-inputs
      `(("python-m2r" ,python-m2r)
        ("python-setuptools-scm" ,python-setuptools-scm)
