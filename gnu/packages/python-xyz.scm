@@ -6922,7 +6922,8 @@ cluster down and deletes the throwaway profile.")
          (replace 'check (lambda _ (invoke "pytest" "-vv" "traitlets"))))))
     (propagated-inputs
      `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-decorator" ,python-decorator)))
+       ("python-decorator" ,python-decorator)
+       ("python-six" ,python-six)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (properties `((python2-variant . ,(delay python2-traitlets))))
