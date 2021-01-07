@@ -9450,6 +9450,7 @@ is binding LibSass.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))          ;circular dependency with python-aiohttp
+    (propagated-inputs `(("python-idna" ,python-idna)))
     (home-page "https://github.com/aio-libs/idna-ssl")
     (synopsis "Patch @code{ssl.match_hostname} for Unicode(idna) domains support")
     (description "Patch @code{ssl.match_hostname} for Unicode(idna)
