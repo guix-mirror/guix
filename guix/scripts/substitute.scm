@@ -412,20 +412,14 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
        ;; on the X.509 PKI.  We can do it because we authenticate
        ;; narinfos, which provides a much stronger guarantee.
        (let* ((requests (map (cut narinfo-request url <>) paths))
-              (result   (call-with-cached-connection uri
-                          (lambda (port)
-                            (if port
-                                (begin
-                                  (update-progress!)
-                                  (http-multiple-get uri
-                                                     handle-narinfo-response '()
-                                                     requests
-                                                     #:open-connection
-                                                     open-connection-for-uri/cached
-                                                     #:verify-certificate? #f
-                                                     #:port port))
-                                '()))
-                          open-connection-for-uri/maybe)))
+              (result   (begin
+                          (update-progress!)
+                          (http-multiple-get uri
+                                             handle-narinfo-response '()
+                                             requests
+                                             #:open-connection
+                                             open-connection-for-uri/maybe
+                                             #:verify-certificate? #f))))
          (newline (current-error-port))
          result))
       ((file #f)
