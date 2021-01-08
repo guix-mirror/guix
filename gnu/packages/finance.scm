@@ -740,16 +740,24 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.8")
+    (version "0.17.1.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/monero-project/monero-gui")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             (recursive? #t)))
        (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled monero sources, we already have them.
+           ;; See the 'extract-monero-sources' phase.
+           (delete-file-recursively "monero")
+           #t))
        (sha256
-        (base32 "13cjrfdkr7c2ff8j2rg8hvhlc00af38vcs67wlx2109i2baq4pp3"))))
+        (base32 "0vpvpvsbbj547yir15g84qy9l9lwbip795zlliz79i7d66l23b1w"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -778,6 +786,7 @@ the Monero command line client and daemon.")
            ;; Some of the monero package source code is required
            ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "monero")
              (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
                      "-f" (assoc-ref inputs "monero-source"))))
