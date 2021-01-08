@@ -12872,3 +12872,36 @@ It aims to be implementation-agnostic and to climb the syntax trees.")
 
 (define-public ecl-agnostic-lizard
   (sbcl-package->ecl-package sbcl-agnostic-lizard))
+
+(define-public sbcl-dynamic-classes
+  (package
+    (name "sbcl-dynamic-classes")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gwkkwg/dynamic-classes")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "dynamic-classes" version))
+       (sha256
+        (base32 "1z3ag6w4ff0v6715xa9zhvwjqnp4i6zrjfmxdz8m115sklbwgm6c"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("metatilities-base" ,sbcl-metatilities-base)))
+    (arguments
+     ;; NOTE: (Sharlatan-20210106222900+0000) Circular dependencies and failing
+     ;; test suites. lift-standard.config contains referances to deprecated
+     ;; functionality.
+     `(#:tests? #f))
+    (home-page "https://common-lisp.net/project/dynamic-classes/")
+    (synopsis "Dynamic class definition for Common Lisp")
+    (description "Dynamic-Classes helps to ease the prototyping process by
+bringing dynamism to class definition.")
+    (license license:expat)))
+
+(define-public ecl-dynamic-classes
+  (sbcl-package->ecl-package sbcl-dynamic-classes))
+
+(define-public cl-dynamic-classes
+  (sbcl-package->cl-source-package sbcl-dynamic-classes))
