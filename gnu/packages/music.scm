@@ -4401,6 +4401,36 @@ melodies and beats and for mixing and arranging songs.  LMMS includes instrument
 audio samples and various soft sythesizers.  It can receive input from a MIDI keyboard.")
     (license license:gpl2+)))
 
+(define-public liquidsfz
+  (package
+    (name "liquidsfz")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://space.twc.de/~stefan/liquidsfz/"
+                                  "liquidsfz-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "011m839vjb8gmiv1vzc0d7xz2q2jiwk4v0j9paqyx3lm61czvy93"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-shared")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;; Fails with default gcc (#include <filesystem> not found).
+       ("gcc" ,gcc-9)))
+    (inputs
+     `(("jack" ,jack-2)
+       ("lv2" ,lv2)
+       ("readline" ,readline)
+       ("libsndfile" ,libsndfile)))
+    (home-page "https://github.com/swesterfeld/liquidsfz")
+    (synopsis "Sampler library")
+    (description "The main goal of liquidsfz is to provide an SFZ sampler
+implementation library that is easy to integrate into other projects.  A
+standalone JACK client and an LV2 plugin is also available.")
+    (license license:lgpl2.1+)))
+
 (define-public musescore
   (package
     (name "musescore")
