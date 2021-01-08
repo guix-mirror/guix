@@ -312,14 +312,14 @@ without requiring the source code to be rewritten.")
   ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
   (package
     (inherit guile-3.0)
-    (version "3.0.4")
+    (version "3.0.5")
     (source (origin
               (inherit (package-source guile-3.0))
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0c8dkyvs6xbxp7rgnhkyakajzhakay7qn9kahj1mj49x5vf4fybb"))))))
+                "1wah6fq1h8vmbpdadjych1mq8hyqkd7p015cbxm14ri37l1gnxid"))))))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-3.0))
