@@ -7957,13 +7957,13 @@ multiprecision arithmetic.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "1.6.2")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sympy" version))
        (sha256
-        (base32 "0247skhkxanczpqqdz6n9k1axgpwl665b25hyn9vgr060p4dryhw"))))
+        (base32 "0bkb4jf24yv5i4kjpsmg1xjjccfhqyi0syv0p0xvhdbmx5hr5pm3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
