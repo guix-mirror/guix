@@ -62,7 +62,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
@@ -22571,7 +22571,7 @@ through Dash docsets.")
 (define-public emacs-calibredb
   (package
     (name "emacs-calibredb")
-    (version "2.7.0")
+    (version "2.8.0")
     (source
      (origin
        (method git-fetch)
@@ -22580,7 +22580,7 @@ through Dash docsets.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w3kz9iny72gk54jdafz8sy5sv6hnpm3rw4fn1r8aznx4p00f9dy"))))
+        (base32 "19gc05k2p1l8wlkrqij9cw6d61hzknd6a9n64kzlpi87cpbav3lv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
