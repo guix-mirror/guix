@@ -1720,7 +1720,9 @@ light user interface.")
                   (string-append "\"" alsa "/bin/amixer\"")))
                (substitute* "emms-tag-editor.el"
                  (("\"mid3v2\"")
-                  (string-append "\"" mutagen "/bin/mid3v2\"")))
+                  (string-append "\"" mutagen "/bin/mid3v2\""))
+                 (("\"vorbiscomment\"")
+                  (string-append "\"" vorbis "/bin/vorbiscomment\"")))
                (substitute* "emms-info-exiftool.el"
                  (("\"exiftool\"")
                   (string-append "\"" exiftool "/bin/exiftool\"")))
