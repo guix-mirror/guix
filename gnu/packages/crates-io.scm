@@ -23999,25 +23999,6 @@ function data structures.")
      "This package provides bindings to the PicoHTTPParser.")
     (license license:expat)))
 
-(define-public rust-pin-utils-0.1
-  (package
-    (name "rust-pin-utils")
-    (version "0.1.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "pin-utils" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "117ir7vslsl2z1a7qzhws4pd01cg2d3338c47swjyvqv2n60v1wb"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/pin-utils")
-    (synopsis "Utilities for pinning")
-    (description "This crate provides utilities for pinning values on the stack.")
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-pin-project-1
   (package
     (name "rust-pin-project")
@@ -24178,10 +24159,9 @@ written with declarative macros.")
         (sha256
           (base32 "117ir7vslsl2z1a7qzhws4pd01cg2d3338c47swjyvqv2n60v1wb"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://docs.rs/pin-utils")
     (synopsis "Utilities for pinning")
-    (description "This package provides utilities for pinning.")
+    (description "This crate provides utilities for pinning values on the stack.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-pkg-config-0.3
