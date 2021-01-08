@@ -462,7 +462,6 @@ SCM_TESTS =					\
   tests/monads.scm				\
   tests/nar.scm				\
   tests/networking.scm				\
-  tests/offload.scm				\
   tests/opam.scm				\
   tests/openpgp.scm				\
   tests/packages.scm				\
@@ -498,6 +497,12 @@ SCM_TESTS =					\
   tests/utils.scm				\
   tests/uuid.scm				\
   tests/workers.scm
+
+if BUILD_DAEMON_OFFLOAD
+SCM_TESTS  += tests/offload.scm
+else
+EXTRA_DIST += tests/offload.scm
+endif
 
 SH_TESTS =					\
   tests/guix-build.sh				\
