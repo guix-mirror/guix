@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -2653,7 +2653,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.7.3")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
@@ -2661,7 +2661,7 @@ capabilities, custom envelopes, effects, etc.")
                            (version-major+minor version)
                            "/yoshimi-" version ".tar.bz2"))
        (sha256
-        (base32 "1ixb2kqmfgm2lfjaj6z3h03c840hcfmca4h6pjnc4aln2mzm7fcw"))))
+        (base32 "0lxfqj4p4njww3n0wa6yfj38zfls16y3wszd47gvc5asmqyg5vjd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
