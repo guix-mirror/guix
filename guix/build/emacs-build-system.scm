@@ -105,23 +105,9 @@ environment variable\n" source-directory)))
   "Substitute the absolute \"/bin/\" directory with the right location in the
 store in '.el' files."
 
-  (define (file-contains-nul-char? file)
-    (call-with-input-file file
-      (lambda (in)
-        (let loop ((line (read-line in 'concat)))
-          (cond
-           ((eof-object? line) #f)
-           ((string-index line #\nul) #t)
-           (else (loop (read-line in 'concat))))))
-      #:binary #t))
-
   (let* ((out (assoc-ref outputs "out"))
          (site-lisp (string-append out %install-dir))
-         ;; (ice-9 regex) uses libc's regexp routines, which cannot deal with
-         ;; strings containing NULs.  Filter out such files.  TODO: Remove
-         ;; this workaround when <https://bugs.gnu.org/30116> is fixed.
-         (el-files (remove file-contains-nul-char?
-                           (find-files (getcwd) "\\.el$"))))
+         (el-files (find-files (getcwd) "\\.el$")))
     (define (substitute-program-names)
       (substitute* el-files
         (("\"/bin/([^.]\\S*)\"" _ cmd-name)
