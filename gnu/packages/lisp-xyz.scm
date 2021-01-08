@@ -12905,3 +12905,43 @@ bringing dynamism to class definition.")
 
 (define-public cl-dynamic-classes
   (sbcl-package->cl-source-package sbcl-dynamic-classes))
+
+(define-public sbcl-cl-markdown
+  ;; NOTE: (Sharlatan-20210106214629+0000) latest version tag
+  ;; "version-0.10.6_version-0.10.6" is failing to build due to missing system
+  ;; #:container-dynamic-classes
+  (package
+    (name "sbcl-cl-markdown")
+    (version "0.10.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gwkkwg/cl-markdown")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "cl-markdown" version))
+       (sha256
+        (base32 "1wdjbdd1zyskxf7zlilcp6fmwkivybj0wjp64vvzb265d5xi7p8p"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("anaphora" ,sbcl-anaphora)
+       ("cl-containers" ,sbcl-cl-containers)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("dynamic-classes" ,sbcl-dynamic-classes)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("metatilities-base" ,sbcl-metatilities-base)))
+    (arguments
+     ;; NOTE: (Sharlatan-20210107213629+0000) Tests depend on too many not
+     ;; available systems, which  themself are abandoned.
+     `(#:tests? #f))
+    (home-page "https://common-lisp.net/project/cl-markdown/")
+    (synopsis "Common Lisp rewrite of Markdown")
+    (description
+     "This is an implementation of a Markdown parser in Common Lisp.")
+    (license license:expat)))
+
+(define-public ecl-cl-markdown
+  (sbcl-package->ecl-package sbcl-cl-markdown))
+
+(define-public cl-markdown
+  (sbcl-package->cl-source-package sbcl-cl-markdown))
