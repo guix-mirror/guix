@@ -2,6 +2,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 raid5atemyhomework <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,7 +151,7 @@ representation."
      (shepherd-service
       (documentation "Load kernel modules.")
       (provision '(kernel-module-loader))
-      (requirement '(file-systems))
+      (requirement '())
       (one-shot? #t)
       (modules `((srfi srfi-1)
                  (srfi srfi-34)
