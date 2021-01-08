@@ -535,6 +535,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/task-management.scm		\
   %D%/packages/tbb.scm				\
   %D%/packages/tcl.scm				\
+  %D%/packages/telegram.scm                 \
   %D%/packages/telephony.scm			\
   %D%/packages/terminals.scm			\
   %D%/packages/terraform.scm			\
