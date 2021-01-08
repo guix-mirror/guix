@@ -1088,7 +1088,7 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "7.3.5"))
+        (renpy-version "7.4.0"))
     (package
       (inherit python2-pygame)
       (name "python2-pygame-sdl2")
@@ -1098,13 +1098,13 @@ to create fully featured games and multimedia programs in the python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))
+         (sha256 (base32 "04hnfy1zbncs8n0m46sh6r8l55l2bz5y08a1birkhlri13f8zc29"))
          (modules '((guix build utils)))
          (snippet
           '(begin
              ;; drop generated sources
              (delete-file-recursively "gen")
-             (delete-file-recursively "gen3")
+             (delete-file-recursively "gen-static")
              #t))))
       (build-system python-build-system)
       (arguments
