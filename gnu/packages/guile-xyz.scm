@@ -108,6 +108,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
@@ -4427,3 +4428,31 @@ including parsing and code generation.")
     (description
      "Guile Shapefile is a Guile library for reading shapefiles.")
     (license license:expat)))
+
+(define-public schmutz
+  (let ((commit "add24588c59552537b8f1316df99a0cdd62c221e")
+        (revision "1"))
+    (package
+      (name "schmutz")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/arximboldi/schmutz")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z3n61sj62lnn15mandvyrpjzli07rp9r62ypvgg3a8bvh37yc89"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://github.com/arximboldi/schmutz")
+      (synopsis "Bind C++ code to Scheme")
+      (description "Schmutz is a header-only library to declare Scheme bindings
+for C++ code using a simple embedded DSL.  Think of it as @code{Boost.Python}
+or @code{LuaBind} but for Scheme.")
+      (license license:boost1.0))))
