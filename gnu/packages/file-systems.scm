@@ -885,7 +885,8 @@ APFS.")
              (let ((out        (assoc-ref outputs "out"))
                    (src        (assoc-ref outputs "src"))
                    (util-linux (assoc-ref inputs "util-linux"))
-                   (nfs-utils  (assoc-ref inputs "nfs-utils")))
+                   (nfs-utils  (assoc-ref inputs "nfs-utils"))
+                   (kmod       (assoc-ref inputs "kmod-runtime")))
                (substitute* "contrib/Makefile.in"
                  ;; This is not configurable nor is its hard-coded /usr prefix.
                  ((" initramfs") ""))
@@ -915,7 +916,9 @@ APFS.")
                (substitute* "contrib/pyzfs/Makefile.in"
                  ((".*install-lib.*") ""))
                (substitute* '("Makefile.am" "Makefile.in")
-                 (("\\$\\(prefix)/src") (string-append src "/src"))))
+                 (("\\$\\(prefix)/src") (string-append src "/src")))
+               (substitute* (find-files "udev/rules.d/" ".rules.in$")
+                 (("/sbin/modprobe") (string-append kmod "/bin/modprobe"))))
              #t))
          (replace 'build
            (lambda _ (invoke "make")))
@@ -939,6 +942,7 @@ APFS.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("eudev" ,eudev)
+       ("kmod-runtime" ,kmod)
        ("libaio" ,libaio)
        ("libtirpc" ,libtirpc)
        ("nfs-utils" ,nfs-utils)
