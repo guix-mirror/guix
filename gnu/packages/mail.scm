@@ -4183,7 +4183,7 @@ based on asyncio.")
 (define-public rspamd
   (package
     (name "rspamd")
-    (version "2.6")
+    (version "2.7")
     (source
      (origin
        (method git-fetch)
@@ -4191,7 +4191,7 @@ based on asyncio.")
              (url "https://github.com/rspamd/rspamd")
              (commit version)))
        (sha256
-        (base32 "0vwa7k2s2bkfb8w78z5izkd6ywjbzqysb0grls898y549hm8ii70"))
+        (base32 "0fw6nbfc3xqapzq5nydakwgpw6cz6vb3qby2aqlr06lzf87d3hic"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
