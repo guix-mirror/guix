@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019, 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
@@ -76,7 +76,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.6.1")
+    (version "3.6.2")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -84,7 +84,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1a0ygdpyvpcsr0hdi9ai7ycbkgvacq8dpd8cacbppsds5k2xw7lv"))))
+                "0d66qz9h37pk8h10bc918hbv3j364vyni934rlw2j951s5wznj8n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
