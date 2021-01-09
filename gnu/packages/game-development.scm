@@ -1141,13 +1141,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.3.5")
+    (version "7.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1anr5cfbvbsbik4v4rvrkdkciwhg700k4lydfbs4n85raimz9mw4"))
+       (sha256 (base32 "0av3mbh54xh6i3rvf60x5hbsjcfpzgia2j958mhyc5826zjxzfpg"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -1204,8 +1204,8 @@ developed mainly for Ren'py.")
              ;; (both source and compiled) in the same directory.
              (let* ((out (assoc-ref outputs "out"))
                     (site (string-append "/lib/python"
-                                         ,(version-major+minor
-                                           (package-version python-2))
+                                         (python-version
+                                          (assoc-ref inputs "python"))
                                          "/site-packages")))
                (with-directory-excursion "module"
                  (apply (assoc-ref %standard-phases 'install) args))
@@ -1218,9 +1218,11 @@ developed mainly for Ren'py.")
        ("fribidi" ,fribidi)
        ("glew" ,glew)
        ("libpng" ,libpng)
-       ("python2-pygame" ,python2-pygame-sdl2)
        ("sdl-union"
         ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (propagated-inputs
+     `(("python2-future" ,python2-future)
+       ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
      `(("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
@@ -1234,7 +1236,6 @@ modules of Ren'py.")
   (package
     (inherit python2-renpy)
     (name "renpy")
-    (version "7.3.5")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; see python2-renpy
