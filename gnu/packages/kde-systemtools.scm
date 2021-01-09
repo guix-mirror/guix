@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -322,14 +323,14 @@ This package is part of the KDE administration module.")
 (define-public yakuake
   (package
     (name "yakuake")
-    (version "20.12.0")
+    (version "20.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/yakuake-" version ".tar.xz"))
               (sha256
                (base32
-                "175vvkpkpbd7nm0lqjyiw27xmfdfcs9syvfngnjlndmlzwagk8d1"))))
+                "02pal9xx1wbpw7dimvs2aw1xnyjqlvbjlybkkfhf8x7c6m1r63aa"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
