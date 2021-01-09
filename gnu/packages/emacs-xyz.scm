@@ -5722,10 +5722,12 @@ navigation to errors.")
     (license license:gpl3+)))
 
 (define-public emacs-scheme-complete
-  (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
+  ;; Upstream does not provide tags.  The commit below corresponds to the
+  ;; exact version update.  Version is extracted from main file.
+  (let ((commit "5c0a16684a3be7021d67067b2955f1c3e17a320a"))
     (package
       (name "emacs-scheme-complete")
-      (version (string-append "20151223." (string-take commit 8)))
+      (version "0.9.9")
       (source
        (origin
          (method git-fetch)
@@ -5734,10 +5736,7 @@ navigation to errors.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "141wn9l0m33w0g3dqmx8nxbfdny1r5xbr6ak61rsz21bk0qafs7x"))
-         (patches
-          (search-patches "emacs-scheme-complete-scheme-r5rs-info.patch"))))
+          (base32 "1smxr5bkzbfrjx21vhrj1wagmqx5yd92i997dbgs16iaqbzzr7cz"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/ashinn/scheme-complete")
       (synopsis "Smart tab completion for Scheme in Emacs")
