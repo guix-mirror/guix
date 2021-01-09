@@ -17,6 +17,7 @@
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Fredrik Salomonsson <plattfot@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages tor)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -891,6 +893,77 @@ passphrase when @code{gpg} is run and needs it.")))
    "Pinentry provides a console and a graphical interface for the
 @dfn{Enlightenment Foundation Libraries} (EFL) that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
+
+(define-public pinentry-rofi
+  (package
+    (name "pinentry-rofi")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plattfot/pinentry-rofi/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "044bnldz7k74s873jwsjgff176l1jsvpbaka7d1wcj8b5pwqv2av"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (ice-9 ftw)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases
+           %standard-phases
+         (add-after 'install 'hall-wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((compiled-dir
+                     (lambda (out version)
+                       (string-append out "/lib/guile/" version "/site-ccache")))
+                    (uncompiled-dir
+                     (lambda (out version)
+                       (string-append
+                        out
+                        "/share/guile/site"
+                        (if (string-null? version) "" "/")
+                        version)))
+                    (dep-path
+                     (lambda (env path)
+                       (list env ":" 'prefix (list path))))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (site (uncompiled-dir out "")))
+               (match (scandir site)
+                 (("." ".." version)
+                  (for-each
+                   (lambda (file)
+                     (wrap-program
+                         (string-append bin file)
+                       (dep-path
+                        "PATH"
+                        (string-append (assoc-ref inputs "rofi") "/bin"))
+                       (dep-path
+                        "GUILE_LOAD_PATH"
+                        (uncompiled-dir out version))
+                       (dep-path
+                        "GUILE_LOAD_COMPILED_PATH"
+                        (compiled-dir out version))))
+                   ,''("pinentry-rofi"))
+                  #t))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)
+              ("rofi" ,rofi)))
+    (synopsis "Rofi GUI for GnuPG's passphrase input")
+    (description "Pinentry-rofi is a simple graphical user interface for
+passphrase or PIN when required by @code{gpg} or other software.  It is using
+the Rofi application launcher as the user interface.  Which makes it combined
+with @code{rofi-pass} a good front end for @code{password-store}.")
+    (home-page "https://github.com/plattfot/pinentry-rofi/")
+    (license license:gpl3+)))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)
