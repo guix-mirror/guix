@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -848,14 +848,14 @@ Python, PHP, and Perl.")
 (define-public okular
   (package
     (name "okular")
-    (version "20.12.0")
+    (version "20.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1kib8zqfd9qgqn7bz88hay2j3kcvarnlfyr3a417pi6rvaam6b4p"))))
+        (base32 "0gpm7n47yijsjg4yba561j5pbvd98hgvr93w1kvzk851nb87m89c"))))
     (build-system qt-build-system)
     ;; The tests fail because they can't find the proper mimetype plugins:
     ;; "org.kde.okular.core: No plugin for mimetype '"image/jpeg"'."
