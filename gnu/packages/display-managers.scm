@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -157,6 +158,36 @@ create smooth, animated user interfaces.")
 Guix's logo.  Based on Arch linux's archlinux-simplyblack theme.")
     ;; Theme under cc-by-sa3.0, guix logo under license:cc-by-sa4.0
     (license (list license:cc-by-sa3.0 license:cc-by-sa4.0))))
+
+(define-public chili-sddm-theme
+  (package
+    (name "chili-sddm-theme")
+    (version "0.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/MarianArlt/sddm-chili")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "036fxsa7m8ymmp3p40z671z163y6fcsa9a641lrxdrw225ssq5f3"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (sddm-themes (string-append out "/share/sddm/themes")))
+           (mkdir-p sddm-themes)
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             (string-append sddm-themes "/chili"))))))
+    (home-page "https://github.com/MarianArlt/sddm-chili")
+    (synopsis "Chili theme for SDDM")
+    (description "Chili reduces all the clutter and leaves you with a clean,
+easy to use, login interface with a modern yet classy touch.")
+    (license license:gpl3+)))
 
 (define-public lightdm
   (package
