@@ -6545,6 +6545,34 @@ trees to dispatch on string equality.")
 (define-public ecl-string-case
   (sbcl-package->ecl-package sbcl-string-case))
 
+(define-public sbcl-garbage-pools
+  (let ((commit "9a7cb7f48b04197c0495df3b6d2e8395ad13f790")
+        (revision "1"))
+    (package
+      (name "sbcl-garbage-pools")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/garbage-pools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04jqwr6j138him6wc4nrwjzm4lvyj5j31xqab02nkf8h9hmsf5v1"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/archimag/garbage-pools")
+      (synopsis "Resource management pools for Common Lisp")
+      (description "GARBAGE-POOLS is Common Lisp re-implementation of the APR
+Pools for resource management.")
+      (license license:expat))))
+
+(define-public ecl-garbage-pools
+  (sbcl-package->ecl-package sbcl-garbage-pools))
+
+(define-public cl-garbage-pools
+  (sbcl-package->cl-source-package sbcl-garbage-pools))
+
 (define-public sbcl-global-vars
   (let ((commit "c749f32c9b606a1457daa47d59630708ac0c266e")
         (revision "0"))
