@@ -74,7 +74,7 @@
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
-;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020, 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
@@ -23929,3 +23929,57 @@ restores the original state after the string is printed.")
     (description "This package provides Python interface to the SANE scanner
 and frame grabber interface.")
     (license license:expat)))
+
+(define-public python-screenkey
+  (package
+    (name "python-screenkey")
+    (version "1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/screenkey/screenkey")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1rfngmkh01g5192pi04r1fm7vsz6hg9k3qd313sn9rl9xkjgp11l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dlopen-paths
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((x11 (assoc-ref inputs "libx11"))
+                   (xtst (assoc-ref inputs "libxtst")))
+              (substitute* "Screenkey/xlib.py"
+                           (("libX11.so.6")
+                            (string-append x11 "/lib/libX11.so.6")))
+              (substitute* "Screenkey/xlib.py"
+                           (("libXtst.so.6")
+                            (string-append xtst "/lib/libXtst.so.6")))
+              #t)))
+          (add-after 'install 'wrap-screenkey
+            (lambda* (#:key outputs #:allow-other-keys)
+              (wrap-program
+                  (string-append (assoc-ref outputs "out") "/bin/screenkey")
+                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH"
+                  ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
+              #t)))))
+    (inputs
+     `(("python-distutils-extra" ,python-distutils-extra)
+       ("python-tokenize-rt" ,python-tokenize-rt)
+       ("libx11" ,libx11)
+       ("libxtst" ,libxtst)
+       ("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("python-setuptools-git" ,python-setuptools-git)
+       ("python-babel" ,python-babel)))
+    (home-page "https://www.thregr.org/~wavexx/software/screenkey/")
+    (synopsis
+      "Screencast tool to display pressed keys")
+    (description
+      "A screencast tool to display your keys inspired by Screenflick.")
+    (license license:gpl3+)))
