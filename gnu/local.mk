@@ -10,7 +10,7 @@
 # Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
-# Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017, 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -1663,8 +1663,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/thefuck-test-environ.patch		\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   %D%/packages/patches/tinyxml-use-stl.patch			\
+  %D%/packages/patches/tipp10-disable-downloader.patch		\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
+  %D%/packages/patches/tipp10-qt5.patch			\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/transcode-ffmpeg.patch	\
   %D%/packages/patches/transmission-honor-localedir.patch	\

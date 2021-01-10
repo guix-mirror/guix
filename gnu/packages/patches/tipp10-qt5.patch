@@ -1,0 +1,69 @@
+https://salsa.debian.org/debian/tipp10/-/raw/debian/2.1.0-5/debian/patches/qt5.patch
+
+Author: Reiner Herrmann <reiner@reiner-h.de>
+Description: Port to Qt5
+Bug-Debian: https://bugs.debian.org/875207
+
+--- a/tipp10.pro
++++ b/tipp10.pro
+@@ -14,6 +14,7 @@
+ DEPENDPATH      += 	.
+ INCLUDEPATH     += 	.
+ CONFIG          += 	qt
++QT              += 	widgets multimedia printsupport
+ QT              += 	sql
+ RC_FILE         += 	tipp10.rc
+ RESOURCES       += 	tipp10.qrc
+--- a/main.cpp
++++ b/main.cpp
+@@ -24,7 +24,6 @@
+ ****************************************************************/
+ 
+ #include <QApplication>
+-#include <QPlastiqueStyle>
+ #include <QString>
+ #include <QSettings>
+ #include <QCoreApplication>
+@@ -212,7 +211,7 @@
+ 
+     // Set windows style
+ 	if (!useNativeStyle) {
+-	    app.setStyle("plastique");
++	    app.setStyle("fusion");
+     }
+ 
+ 	// Translation
+--- a/games/abcrainwidget.cpp
++++ b/games/abcrainwidget.cpp
+@@ -235,8 +235,7 @@
+ 		charballs.last()->wind = (qrand() % 8) + 2;
+ 		charballs.last()->rad = 0;
+ 
+-		chartext.append(new QGraphicsTextItem(QString(characterTemp),
+-			charballs.last(), scene));
++		chartext.append(new QGraphicsTextItem(QString(characterTemp), charballs.last()));
+ 		chartext.last()->setFont(QFont("Courier", 16, 100));
+ 		chartext.last()->setPos(-(chartext.last()->boundingRect().width() / 2), -(chartext.last()->boundingRect().height() / 2));
+ 
+--- a/sql/chartablesql.cpp
++++ b/sql/chartablesql.cpp
+@@ -137,7 +137,7 @@
+ 	sortColumn(4);
+ 
+ 	headerview->setStretchLastSection(true);
+-	headerview->setResizeMode(QHeaderView::Interactive);
++	headerview->setSectionResizeMode(QHeaderView::Interactive);
+ 	headerview->setSortIndicatorShown(true);
+ 
+ 	// Resize the columns
+--- a/sql/lessontablesql.cpp
++++ b/sql/lessontablesql.cpp
+@@ -202,7 +202,7 @@
+ 	sortColumn(-1);
+ 
+ 	headerview->setStretchLastSection(true);
+-	headerview->setResizeMode(QHeaderView::Interactive);
++	headerview->setSectionResizeMode(QHeaderView::Interactive);
+ 	headerview->setSortIndicatorShown(true);
+ 
+ 	// Resize the columns

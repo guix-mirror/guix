@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
@@ -230,8 +230,11 @@ Currently available boards include:
               (sha256
                (base32
                 "0d387b404j88gsv6kv0rb7wxr23v5g5vl6s5l7602x8pxf7slbbx"))
+              ;; Apply patches in the order determined by Debian
               (patches (search-patches "tipp10-fix-compiling.patch"
-                                       "tipp10-remove-license-code.patch"))))
+                                       "tipp10-remove-license-code.patch"
+                                       "tipp10-disable-downloader.patch"
+                                       "tipp10-qt5.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; packages has no tests
@@ -256,8 +259,8 @@ Currently available boards include:
                ;; Recreate Makefile
                (invoke "qmake")))))))
     (inputs
-     `(("qt4" ,qt-4)
-       ("sqlite" ,sqlite)))
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)))
     (home-page "https://www.tipp10.com/")
     (synopsis "Touch typing tutor")
     (description "Tipp10 is a touch typing tutor.  The ingenious thing about
