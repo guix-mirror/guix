@@ -89,6 +89,7 @@
 ;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
 ;;; Copyright © 2020 Noah Evans <noah@nevans.me>
+;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6982,6 +6983,33 @@ that match all of the components in any order.  Each component can match in
 any one of several ways: literally, as a regexp, as an initialism, in the flex
 style, or as multiple word prefixes.")
     (license license:gpl3+)))
+
+(define-public emacs-consult
+  ;; There are no tagged releases upstream on GitHub, instead we are using the
+  ;; most recent commit.
+  (let ((commit "ef6bb73a4a46e686826968fa25169e2d59b9a087")
+        (revision "0"))
+    (package
+      (name "emacs-consult")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minad/consult")
+               (commit commit)))
+         (sha256
+          (base32 "00cnwg2knd820wwx6zg71rr0whpdhqm64gm3qx1mgklk79g7daih"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-flycheck" ,emacs-flycheck)
+                           ("emacs-selectrum" ,emacs-selectrum)))
+      (home-page "https://github.com/minad/consult")
+      (synopsis "Consulting completing-read")
+      (description "This package provides various handy commands based on the
+Emacs completion function completing-read, which allows to quickly select from a
+list of candidates.")
+      (license license:gpl3+))))
 
 (define-public emacs-smartparens
   (package
