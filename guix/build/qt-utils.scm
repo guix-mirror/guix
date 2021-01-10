@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019, 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +24,11 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (wrap-qt-program
-            wrap-all-qt-programs))
+            wrap-all-qt-programs
+            %qt-wrap-excluded-inputs))
 
+(define %qt-wrap-excluded-inputs
+  '(list "cmake" "extra-cmake-modules" "qttools"))
 
 (define (variables-for-wrapping base-directories)
 
@@ -50,13 +54,16 @@
      '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml")))))
 
 
-(define* (wrap-qt-program* program #:key inputs output-dir)
+(define* (wrap-qt-program* program #:key inputs output-dir
+                           qt-wrap-excluded-inputs)
 
   (define input-directories
-    ;; FIXME: Filter out unwanted inputs, e.g. cmake
-    (match inputs
-           (((_ . dir) ...)
-            dir)))
+    (filter-map
+     (match-lambda
+      ((label . directory)
+       (and (not (member label qt-wrap-excluded-inputs))
+            directory)))
+     inputs))
 
   (let ((vars-to-wrap (variables-for-wrapping
                        (cons output-dir input-directories))))
@@ -64,18 +71,21 @@
       (apply wrap-program program vars-to-wrap))))
 
 
-(define* (wrap-qt-program program-name #:key inputs output)
+(define* (wrap-qt-program program-name #:key inputs output
+                          (qt-wrap-excluded-inputs %qt-wrap-excluded-inputs))
   "Wrap the specified programm (which must reside in the OUTPUT's \"/bin\"
 directory) with suitably set environment variables.
 
 This is like qt-build-systems's phase \"qt-wrap\", but only the named program
 is wrapped."
   (wrap-qt-program* (string-append output "/bin/" program-name)
-                    #:output-dir output #:inputs inputs))
+                    #:output-dir output #:inputs inputs
+                    #:qt-wrap-excluded-inputs qt-wrap-excluded-inputs))
 
 
 (define* (wrap-all-qt-programs #:key inputs outputs
                                (qt-wrap-excluded-outputs '())
+                               (qt-wrap-excluded-inputs %qt-wrap-excluded-inputs)
                                #:allow-other-keys)
   "Implement qt-build-systems's phase \"qt-wrap\": look for executables in
 \"bin\", \"sbin\" and \"libexec\" of all outputs and create wrappers with
@@ -99,7 +109,8 @@ add a dependency of that output on Qt."
      ((output . output-dir)
       (unless (member output qt-wrap-excluded-outputs)
         (for-each (cut wrap-qt-program* <>
-                       #:output-dir output-dir #:inputs inputs)
+                       #:output-dir output-dir #:inputs inputs
+                       #:qt-wrap-excluded-inputs qt-wrap-excluded-inputs)
                   (find-files-to-wrap output-dir))))))
 
   (for-each handle-output outputs)
