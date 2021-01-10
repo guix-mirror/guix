@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -88,6 +88,7 @@
             version-major+minor+point
             version-major+minor
             version-major
+            version-unique-prefix
             guile-version>?
             version-prefix?
             string-replace-substring
@@ -588,6 +589,38 @@ minor version numbers from version-string."
 (define (version-major version-string)
   "Return the major version number as string from the version-string."
   (version-prefix version-string 1))
+
+(define (version-unique-prefix version versions)
+  "Return the shortest version prefix to unambiguously identify VERSION among
+VERSIONS.  For example:
+
+  (version-unique-prefix \"2.0\" '(\"3.0\" \"2.0\"))
+  => \"2\"
+
+  (version-unique-prefix \"2.2\" '(\"3.0.5\" \"2.0.9\" \"2.2.7\"))
+  => \"2.2\"
+
+  (version-unique-prefix \"27.1\" '(\"27.1\"))
+  => \"\"
+"
+  (define not-dot
+    (char-set-complement (char-set #\.)))
+
+  (define other-versions
+    (delete version versions))
+
+  (let loop ((prefix     '())
+             (components (string-tokenize version not-dot)))
+    (define prefix-str
+      (string-join prefix "."))
+
+    (if (any (cut string-prefix? prefix-str <>) other-versions)
+        (match components
+          ((head . tail)
+           (loop `(,@prefix ,head) tail))
+          (()
+           version))
+        prefix-str)))
 
 (define (version>? a b)
   "Return #t when A denotes a version strictly newer than B."

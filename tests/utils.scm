@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -77,6 +77,12 @@
        (version-prefix? "4.1" "4.1")
        (not (version-prefix? "4.1" "4.16.2"))
        (not (version-prefix? "4.1" "4"))))
+
+(test-equal "version-unique-prefix"
+  '("2" "2.2" "")
+  (list (version-unique-prefix "2.0" '("3.0" "2.0"))
+        (version-unique-prefix "2.2" '("3.0.5" "2.0.9" "2.2.7"))
+        (version-unique-prefix "27.1" '("27.1"))))
 
 (test-equal "string-tokenize*"
   '(("foo")
