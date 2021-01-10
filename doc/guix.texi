@@ -17738,7 +17738,7 @@ Available @code{cups-configuration} fields are:
 The CUPS package.
 @end deftypevr
 
-@deftypevr {@code{cups-configuration} parameter} package-list extensions (default: @code{(list epson-inkjet-printer-escpr hplip-minimal foomatic-filters splix)})
+@deftypevr {@code{cups-configuration} parameter} package-list extensions (default: @code{(list brlaser epson-inkjet-printer-escpr foomatic-filters hplip-minimal splix)})
 Drivers and other extensions to the CUPS package.
 @end deftypevr
 

@@ -482,7 +482,7 @@ programs.")
    (package cups)
    "The CUPS package.")
   (extensions
-   (package-list (list cups-filters epson-inkjet-printer-escpr
+   (package-list (list brlaser cups-filters epson-inkjet-printer-escpr
                        foomatic-filters hplip-minimal splix))
    "Drivers and other extensions to the CUPS package.")
   (files-configuration
