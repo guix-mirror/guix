@@ -41,7 +41,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
@@ -25761,7 +25761,7 @@ comments or emails.")
 (define-public emacs-trashed
   (package
     (name "emacs-trashed")
-    (version "1.9.0")
+    (version "2.1.2")
     (source
      (origin
        (method git-fetch)
@@ -25770,7 +25770,7 @@ comments or emails.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13grdi12iwlw4fiphdfmvclfpbr6ajlgfbfyi7v41z8k3rxz4ypz"))))
+        (base32 "0lfza55nbb62nmr27cwpcz2ad1vm95piq4nfd8zvkwqbn6klwmm6"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/shingo256/trashed/")
     (synopsis "View and edit system trash can in Emacs")
