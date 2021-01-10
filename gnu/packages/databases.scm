@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3953,3 +3954,26 @@ The drivers officially supported by @code{libdbi} are:
 PostreSQL, SQLite, ODBC and MySQL.")
     (home-page "http://soci.sourceforge.net/")
     (license license:boost1.0)))
+
+(define-public freetds
+  (package
+    (name "freetds")
+    (version "1.2.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freetds.org/files/stable/"
+                           "freetds-" version ".tar.gz"))
+       (sha256
+        (base32 "1hspvwxwdd1apadsy2b40dpjik8kfwcvdamvhpg3lnm15n02fb50"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; NOTE: (Sharlatan-20210110213908+0000) some tests require DB connection,
+     ;; disabled for now.
+     `(#:tests? #f))
+    (home-page "https://www.freetds.org/")
+    (synopsis "Client libraries for MS SQL and Sybase servers")
+    (description
+     "FreeTDS is an implementation of the Tabular DataStream protocol, used for
+connecting to MS SQL and Sybase servers over TCP/IP.")
+    (license license:lgpl2.0+)))
