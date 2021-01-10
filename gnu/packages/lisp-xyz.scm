@@ -4311,8 +4311,8 @@ performance and simplicity in mind.")
   (sbcl-package->ecl-package sbcl-lack))
 
 (define-public sbcl-local-time
-  (let ((commit "62792705245168d3fc2e04164b9a143477284142")
-        (revision "1"))
+  (let ((commit "a177eb911c0e8116e2bfceb79049265a884b701b")
+        (revision "2"))
     (package
      (name "sbcl-local-time")
      (version (git-version "1.0.6" revision commit))
@@ -4324,16 +4324,10 @@ performance and simplicity in mind.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r5zq4l1lrgprdr2pw7wwry194yknnllyjf6lx7snypb3k4r3yir"))))
+        (base32 "0wld28xx20k0ysgg6akic5lg4vkjd0iyhv86m388xfrv8xh87wii"))))
      (build-system asdf-build-system/sbcl)
-     (arguments
-      ;; TODO: Component :STEFIL not found, required by #<SYSTEM
-      ;; "local-time/test">
-      '(#:tests? #f))
      (native-inputs
-      `(("stefil" ,sbcl-hu.dwim.stefil)))
-     (inputs
-      `(("sbcl-cl-fad" ,sbcl-cl-fad)))
+      `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
      (home-page "https://common-lisp.net/project/local-time/")
      (synopsis "Time manipulation library for Common Lisp")
      (description
