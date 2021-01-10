@@ -30,25 +30,42 @@
 (define %qt-wrap-excluded-inputs
   '(list "cmake" "extra-cmake-modules" "qttools"))
 
-(define (variables-for-wrapping base-directories)
+;; NOTE: Apart from standard subdirectories of /share, Qt also provides
+;; facilities for per-application data directories, such as
+;; /share/quassel. Thus, we include the output directory even if it doesn't
+;; contain any of the standard subdirectories.
+(define (variables-for-wrapping base-directories output-directory)
 
-  (define (collect-sub-dirs base-directories subdirectory)
+  (define (collect-sub-dirs base-directories subdirectory-spec)
     (filter-map
      (lambda (dir)
-       (let ((directory (string-append dir subdirectory)))
-         (if (directory-exists? directory) directory #f)))
+       (match
+        subdirectory-spec
+        ((subdir)
+         (and (directory-exists? (string-append dir subdir))
+              (string-append dir (car subdirectory-spec))))
+        ((subdir children)
+         (and
+          (or
+           (and (string=? dir output-directory)
+                (directory-exists? (string-append dir subdir)))
+           (or-map
+            (lambda (kid) (directory-exists? (string-append dir subdir kid)))
+            children))
+          (string-append dir subdir)))))
      base-directories))
 
   (filter
    (lambda (var-to-wrap) (not (null? (last var-to-wrap))))
    (map
-    (lambda (var-spec)
-      (list (first var-spec) (second var-spec)
-            (collect-sub-dirs base-directories (third var-spec))))
+    (match-lambda
+     ((var kind . subdir-spec)
+      `(,var ,kind ,(collect-sub-dirs base-directories subdir-spec))))
     (list
      ;; these shall match the search-path-specification for Qt and KDE
      ;; libraries
-     '("XDG_DATA_DIRS" suffix "/share")
+     '("XDG_DATA_DIRS" suffix "/share" ("/applications" "/fonts"
+                                        "/icons" "/mime"))
      '("XDG_CONFIG_DIRS" suffix "/etc/xdg")
      '("QT_PLUGIN_PATH" prefix "/lib/qt5/plugins")
      '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml")))))
@@ -66,7 +83,8 @@
      inputs))
 
   (let ((vars-to-wrap (variables-for-wrapping
-                       (cons output-dir input-directories))))
+                       (cons output-dir input-directories)
+                       output-dir)))
     (when (not (null? vars-to-wrap))
       (apply wrap-program program vars-to-wrap))))
 
