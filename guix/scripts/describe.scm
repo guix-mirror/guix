@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
@@ -237,23 +237,17 @@ way and displaying details about the channel's source code."
               (format #t "  ~a ~a~%"
                       (manifest-entry-name entry)
                       (manifest-entry-version entry))
-              (match (assq 'source (manifest-entry-properties entry))
-                (('source ('repository ('version 0)
-                                       ('url url)
-                                       ('branch branch)
-                                       ('commit commit)
-                                       _ ...))
-                 (let ((channel (channel (name 'nameless)
-                                         (url url)
-                                         (branch branch)
-                                         (commit commit))))
-                   (format #t (G_ "    repository URL: ~a~%") url)
-                   (when branch
-                     (format #t (G_ "    branch: ~a~%") branch))
-                   (format #t (G_ "    commit: ~a~%")
-                           (if (supports-hyperlinks?)
-                               (channel-commit-hyperlink channel commit)
-                               commit))))
+              (match (manifest-entry-channel entry)
+                ((? channel? channel)
+                 (format #t (G_ "    repository URL: ~a~%")
+                         (channel-url channel))
+                 (when (channel-branch channel)
+                   (format #t (G_ "    branch: ~a~%")
+                           (channel-branch channel)))
+                 (format #t (G_ "    commit: ~a~%")
+                         (if (supports-hyperlinks?)
+                             (channel-commit-hyperlink channel)
+                             (channel-commit channel))))
                 (_ #f)))
 
             ;; Show most recently installed packages last.

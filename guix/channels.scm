@@ -91,6 +91,7 @@
             ensure-forward-channel-update
 
             profile-channels
+            manifest-entry-channel
 
             channel-news-entry?
             channel-news-entry-commit
