@@ -2611,14 +2611,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.91")
+    (version "7.80")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
+                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
