@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Noah Evans <noah@nevans.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -459,4 +460,57 @@ supporting multiple collections, ratings, and dynamic playlists.  A local cache
 of the music library will be created to provide a hierarchy of albums and
 artists along with albumart.")
     (home-page "https://github.com/cdrummond/cantata")
+    (license license:gpl3+)))
+
+(define-public mcg
+  (package
+    (name "mcg")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.com/coderkun/mcg")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "01iqxydssxyi4s644dwl64vm7xhn0szd99hdpywbipvb7kwp5196"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("dconf" ,dconf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)))
+    (arguments
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/mcg")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t)))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (synopsis "Covergrid for the MPD")
+    (description
+     "mcg (CoverGrid) is a client for the Music Player Daemon (MPD), focusing
+on albums instead of single tracks.  It is not intended to be a replacement
+for your favorite MPD client but an addition to get a better
+album-experience.")
+    (home-page "https://gitlab.com/coderkun/mcg")
     (license license:gpl3+)))
