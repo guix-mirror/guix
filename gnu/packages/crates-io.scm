@@ -16791,6 +16791,73 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-juniper-codegen-0.14
+  (package
+    (name "rust-juniper-codegen")
+    (version "0.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "juniper_codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06ym8568k9p75kvnfc4ywqbkzaa4ib6gngx9vpbsjwg9v0sg42nl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false                  ;FIXME: fail due to unresolved import
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-juniper" ,rust-juniper-0.14))))
+    (home-page "https://github.com/graphql-rust/juniper")
+    (synopsis "Internal custom derive trait for Juniper GraphQL")
+    (description
+     "This package provides an internal custom derive trait for Juniper
+GraphQL.")
+    (license license:bsd-2)))
+
+(define-public rust-juniper-0.14
+  (package
+    (name "rust-juniper")
+    (version "0.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "juniper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s56rb31yddhvjynl5bk8jihcdln8h5yfsx63kfxdhzvw98vlqpn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-juniper-codegen" ,rust-juniper-codegen-0.14)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2)
+        ("rust-uuid" ,rust-uuid-0.7))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/graphql-rust/juniper")
+    (synopsis "GraphQL server library for Rust")
+    (description
+     "Juniper makes it possible to write GraphQL servers in Rust that are
+type-safe and fast.  It also tries to make declaring and resolving GraphQL
+schemas convenient.
+
+Juniper does not include a web server.  Instead it provides building blocks to
+make integration with existing servers straightforward.  It optionally
+provides a pre-built integration for the Actix, Hyper, Iron, Rocket, and Warp
+frameworks, including embedded Graphiql and GraphQL Playground for easy
+debugging.")
+    (license license:bsd-2)))
+
 (define-public rust-keccak-0.1
   (package
     (name "rust-keccak")
