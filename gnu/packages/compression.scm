@@ -2075,13 +2075,13 @@ reading from and writing to ZIP archives. ")
 (define-public zutils
   (package
     (name "zutils")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/zutils/zutils-" version ".tar.lz"))
        (sha256
-        (base32 "0y2wm8wqr1wi1b1fv45dn50njv4q81p6ifx0279ji1bq56qkrn2r"))))
+        (base32 "15dimqp8zlqaaa2l46r22srp1py38mlmn69ph1j5fmrd54w43m0d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
