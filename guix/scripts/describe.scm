@@ -113,22 +113,6 @@ Display information about the channels currently in use.\n"))
        (_
         (warning (G_ "'GUIX_PACKAGE_PATH' is set but it is not captured~%")))))))
 
-(define* (channel->sexp channel #:key (include-introduction? #t))
-  (let ((intro (and include-introduction?
-                    (channel-introduction channel))))
-    `(channel
-      (name ',(channel-name channel))
-      (url ,(channel-url channel))
-      (commit ,(channel-commit channel))
-      ,@(if intro
-            `((introduction (make-channel-introduction
-                             ,(channel-introduction-first-signed-commit intro)
-                             (openpgp-fingerprint
-                              ,(openpgp-format-fingerprint
-                                (channel-introduction-first-commit-signer
-                                 intro))))))
-            '()))))
-
 (define (channel->json channel)
   (scm->json-string
    (let ((intro (channel-introduction channel)))
@@ -183,7 +167,7 @@ string is ~a.~%")
        (format #t (G_ "  branch: ~a~%") (reference-shorthand head))
        (format #t (G_ "  commit: ~a~%") commit))
       ('channels
-       (pretty-print `(list ,(channel->sexp (channel (name 'guix)
+       (pretty-print `(list ,(channel->code (channel (name 'guix)
                                                      (url (dirname directory))
                                                      (commit commit))))))
       ('json
@@ -213,9 +197,9 @@ in the format specified by FMT."
     ('human
      (display-profile-content profile number))
     ('channels
-     (pretty-print `(list ,@(map channel->sexp channels))))
+     (pretty-print `(list ,@(map channel->code channels))))
     ('channels-sans-intro
-     (pretty-print `(list ,@(map (cut channel->sexp <>
+     (pretty-print `(list ,@(map (cut channel->code <>
                                       #:include-introduction? #f)
                                  channels))))
     ('json

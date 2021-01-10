@@ -92,6 +92,7 @@
 
             profile-channels
             manifest-entry-channel
+            channel->code
 
             channel-news-entry?
             channel-news-entry-commit
@@ -956,6 +957,24 @@ PROFILE is not a profile created by 'guix pull', return the empty list."
               ;; Show most recently installed packages last.
               (reverse
                (manifest-entries (profile-manifest profile)))))
+
+(define* (channel->code channel #:key (include-introduction? #t))
+  "Return code (an sexp) to build CHANNEL.  When INCLUDE-INTRODUCTION? is
+true, include its introduction, if any."
+  (let ((intro (and include-introduction?
+                    (channel-introduction channel))))
+    `(channel
+      (name ',(channel-name channel))
+      (url ,(channel-url channel))
+      (commit ,(channel-commit channel))
+      ,@(if intro
+            `((introduction (make-channel-introduction
+                             ,(channel-introduction-first-signed-commit intro)
+                             (openpgp-fingerprint
+                              ,(openpgp-format-fingerprint
+                                (channel-introduction-first-commit-signer
+                                 intro))))))
+            '()))))
 
 
 ;;;
