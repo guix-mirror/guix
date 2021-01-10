@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -153,6 +153,34 @@
   (list guile-2.0.9)
   (manifest-entries (manifest-add (manifest '())
                                   (list guile-2.0.9 guile-2.0.9))))
+
+(test-equal "manifest->code, simple"
+  '(begin
+     (specifications->manifest (list "guile" "guile:debug" "glibc")))
+  (manifest->code (manifest (list guile-2.0.9 guile-2.0.9:debug glibc))))
+
+(test-equal "manifest->code, simple, versions"
+  '(begin
+     (specifications->manifest (list "guile@2.0.9" "guile@2.0.9:debug"
+                                     "glibc@2.19")))
+  (manifest->code (manifest (list guile-2.0.9 guile-2.0.9:debug glibc))
+                  #:entry-package-version manifest-entry-version))
+
+(test-equal "manifest->code, transformations"
+  '(begin
+     (use-modules (guix transformations))
+
+     (define transform1
+       (options->transformation '((foo . "bar"))))
+
+     (packages->manifest
+      (list (transform1 (specification->package "guile"))
+            (specification->package "glibc"))))
+  (manifest->code (manifest (list (manifest-entry
+                                    (inherit guile-2.0.9)
+                                    (properties `((transformations
+                                                   . ((foo . "bar"))))))
+                                  glibc))))
 
 (test-assert "manifest-perform-transaction"
   (let* ((m0 (manifest (list guile-2.0.9 guile-2.0.9:debug)))
