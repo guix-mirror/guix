@@ -850,7 +850,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
 It has been modified to remove all non-free binary blobs.")
-    (license license:gpl2)))
+    (license license:gpl2)
+    (properties '((max-silent-time . 3600))))) ;don't timeout on blob scan.
 
 
 ;;;
