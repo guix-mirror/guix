@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -48,6 +48,7 @@
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 pretty-print) (pretty-print)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
@@ -322,6 +323,48 @@ Alternately, see @command{guix package --search-paths -p ~s}.")
 
 
 ;;;
+;;; Export a manifest.
+;;;
+
+(define* (export-manifest manifest
+                          #:optional (port (current-output-port)))
+  "Write to PORT a manifest corresponding to MANIFEST."
+  (define (version-spec entry)
+    (let ((name (manifest-entry-name entry)))
+      (match (map package-version (find-packages-by-name name))
+        ((_)
+         ;; A single version of NAME is available, so do not specify the
+         ;; version number, even if the available version doesn't match ENTRY.
+         "")
+        (versions
+         ;; If ENTRY uses the latest version, don't specify any version.
+         ;; Otherwise return the shortest unique version prefix.  Note that
+         ;; this is based on the currently available packages, which could
+         ;; differ from the packages available in the revision that was used
+         ;; to build MANIFEST.
+         (let ((current (manifest-entry-version entry)))
+           (if (every (cut version>? current <>)
+                      (delete current versions))
+               ""
+               (version-unique-prefix (manifest-entry-version entry)
+                                      versions)))))))
+
+  (match (manifest->code manifest
+                         #:entry-package-version version-spec)
+    (('begin exp ...)
+     (format port (G_ "\
+;; This \"manifest\" file can be passed to 'guix package -m' to reproduce
+;; the content of your profile.  This is \"symbolic\": it only specifies
+;; package names.  To reproduce the exact same profile, you also need to
+;; capture the channels being used, as returned by \"guix describe\".
+;; See the \"Replicating Guix\" section in the manual.\n"))
+     (for-each (lambda (exp)
+                 (newline port)
+                 (pretty-print exp port))
+               exp))))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -373,6 +416,8 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   (display (G_ "
   -S, --switch-generation=PATTERN
                          switch to a generation matching PATTERN"))
+  (display (G_ "
+      --export-manifest  print a manifest for the chosen profile"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (display (G_ "
@@ -507,6 +552,10 @@ kind of search path~%")
                      (values (cons `(query search-paths ,kind)
                                    result)
                              #f))))
+         (option '("export-manifest") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query export-manifest) result)
+                           #f)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
@@ -825,6 +874,12 @@ processed, #f otherwise."
                                                             (const #f)
                                                             #:kind kind)))
          (format #t "~{~a~%~}" settings)
+         #t))
+
+      (('export-manifest)
+       (let* ((manifest (concatenate-manifests
+                         (map profile-manifest profiles))))
+         (export-manifest manifest (current-output-port))
          #t))
 
       (_ #f))))

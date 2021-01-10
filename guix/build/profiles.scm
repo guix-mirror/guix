@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,7 +169,9 @@ SEARCH-PATHS."
     (lambda (p)
       (display "\
 ;; This file was automatically generated and is for internal use only.
-;; It cannot be passed to the '--manifest' option.\n\n"
+;; It cannot be passed to the '--manifest' option.
+;; Run 'guix package --export-manifest' if to export a file suitable
+;; for '--manifest'.\n\n"
                p)
       (pretty-print manifest p)))
 

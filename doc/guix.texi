@@ -3294,6 +3294,9 @@ objects, like this:
  '("emacs" "guile@@2.2" "guile@@2.2:debug"))
 @end lisp
 
+@xref{export-manifest, @option{--export-manifest}}, to learn how to
+obtain a manifest file from an existing profile.
+
 @item --roll-back
 @cindex rolling back
 @cindex undoing transactions
@@ -3595,6 +3598,24 @@ zeroth generation is never deleted.
 
 Note that deleting generations prevents rolling back to them.
 Consequently, this command must be used with care.
+
+@cindex manifest, exporting
+@anchor{export-manifest}
+@item --export-manifest
+Write to standard output a manifest suitable for @option{--manifest}
+corresponding to the chosen profile(s).
+
+This option is meant to help you migrate from the ``imperative''
+operating mode---running @command{guix install}, @command{guix upgrade},
+etc.---to the declarative mode that @option{--manifest} offers.
+
+Be aware that the resulting manifest @emph{approximates} what your
+profile actually contains; for instance, depending on how your profile
+was created, it can refer to packages or package versions that are not
+exactly what you specified.
+
+Keep in mind that a manifest is purely symbolic: it only contains
+package names and possibly versions, and their meaning varies over time.
 
 @end table
 
