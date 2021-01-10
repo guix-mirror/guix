@@ -18317,6 +18317,30 @@ by inspecting the system for user preference.")
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4))))))
 
+(define-public rust-logtest-2
+  (package
+    (name "rust-logtest")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "logtest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09ihwkq6z7xm6wdwxmc9mz74lsl20g5bi7fcdm8n87bwcnl46gpb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #false
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4))
+       #:cargo-development-inputs
+       (("rust-kv-log-macro" ,rust-kv-log-macro-1))))
+    (home-page "https://github.com/yoshuawuyts/logtest")
+    (synopsis "Test and assert log statements")
+    (description "This package tests and asserts log statements.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-loom-0.4
   (package
     (name "rust-loom")
