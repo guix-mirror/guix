@@ -2696,7 +2696,7 @@ advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
-    (license (list license:npsl license:bsd-3))))
+    (license (list license:nmap license:bsd-3))))
 
 (define-public dstat
   (package
