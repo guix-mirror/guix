@@ -248,7 +248,8 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1jxbpz1h3m1mgrxw74rnihj8vawgqdpf6c33cqqbyd8v7rxgfhph"))))
+                "1jxbpz1h3m1mgrxw74rnihj8vawgqdpf6c33cqqbyd8v7rxgfhph"))
+              (patches (search-patches "pulseview-qt515-compat.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DENABLE_TESTS=y")
