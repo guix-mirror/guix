@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,6 +47,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -56,6 +57,73 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
+
+(define-public brlaser
+  (let ((commit "9d7ddda8383bfc4d205b5e1b49de2b8bcd9137f1")
+        (revision "1"))
+    (package
+      (name "brlaser")
+      (version (git-version "6" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pdewacht/brlaser")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1drh0nk7amn9a8wykki4l9maqa4vy7vwminypfy1712alwj31nd4"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags
+         (list (string-append "-DCUPS_DATA_DIR="
+                              (assoc-ref %outputs "out")
+                              "/share/cups")
+               (string-append "-DCUPS_SERVER_BIN="
+                              (assoc-ref %outputs "out")
+                              "/lib/cups"))))
+      (inputs
+       `(("ghostscript" ,ghostscript)
+         ("cups" ,cups)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/pdewacht/brlaser")
+      (synopsis "Brother laser printer driver")
+      (description "Brlaser is a CUPS driver for Brother laser printers.  This
+driver is known to work with these printers:
+
+@enumerate
+@item Brother DCP-1510 series
+@item Brother DCP-1600 series
+@item Brother DCP-7030
+@item Brother DCP-7040
+@item Brother DCP-7055
+@item Brother DCP-7055W
+@item Brother DCP-7060D
+@item Brother DCP-7065DN
+@item Brother DCP-7080
+@item Brother DCP-L2500D series
+@item Brother DCP-L2520D series
+@item Brother DCP-L2540DW series
+@item Brother HL-1110 series
+@item Brother HL-1200 series
+@item Brother HL-2030 series
+@item Brother HL-2140 series
+@item Brother HL-2220 series
+@item Brother HL-2270DW series
+@item Brother HL-5030 series
+@item Brother HL-L2300D series
+@item Brother HL-L2320D series
+@item Brother HL-L2340D series
+@item Brother HL-L2360D series
+@item Brother MFC-1910W
+@item Brother MFC-7240
+@item Brother MFC-7360N
+@item Brother MFC-7365DN
+@item Brother MFC-7840W
+@item Brother MFC-L2710DW series
+@item Lenovo M7605D
+@end enumerate")
+      (license license:gpl2+))))
 
 (define-public cups-filters
   (package
