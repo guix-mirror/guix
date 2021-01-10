@@ -812,6 +812,7 @@ derivation."
       (url ,(channel-url channel))
       (branch ,(channel-branch channel))
       (commit ,commit)
+      (name ,(channel-name channel))
       ,@(if intro
             `((introduction
                (channel-introduction
@@ -907,16 +908,22 @@ to 'latest-channel-instances'."
     (channel-instances->derivation instances)))
 
 (define* (sexp->channel sexp #:optional (name 'channel))
-  "Read SEXP, a provenance sexp as created by 'channel-instance->sexp',
-and return a channel called NAME.  Return #f if the sexp does not have the
-expected structure."
+  "Read SEXP, a provenance sexp as created by 'channel-instance->sexp'; use
+NAME as the channel name if SEXP does not specify it.  Return #f if the sexp
+does not have the expected structure."
   (match sexp
     (('repository ('version 0)
                   ('url url)
                   ('branch branch)
                   ('commit commit)
                   rest ...)
-     (channel (name name)
+     ;; Historically channel sexps did not include the channel name.  It's OK
+     ;; for channels created by 'channel-instances->manifest' because the
+     ;; entry name is the channel name, but it was missing for entries created
+     ;; by 'manifest-entry-with-provenance'.
+     (channel (name (match (assq 'name rest)
+                      (#f name)
+                      (('name name) name)))
               (url url)
               (commit commit)
               (introduction
