@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -88,6 +88,73 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public bcache-tools
+  ;; The 1.1 release is a year old and missing new features & documentation.
+  (let ((commit "096d205a9f1be8540cbc5a468c0da8203023de70")
+        (revision "0"))
+    (package
+      (name "bcache-tools")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url (string-append "https://git.kernel.org/pub/scm/"
+                                   "linux/kernel/git/colyli/bcache-tools.git"))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r0vwg4vacz5zgsafk360xn7gi2scy01c79mkmjrdyxjfij5z3iy"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no test suite
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               (string-append "UDEVLIBDIR=" (assoc-ref %outputs "out")
+                              "/lib/udev")
+               (string-append "DRACUTLIBDIR=" (assoc-ref %outputs "out")
+                              "/lib/dracut")
+               (string-append "CC=" ,(cc-for-target)))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (add-before 'install 'fix-hard-coded-file-names
+             (lambda _
+               ;; Some rules still hard-code /usr.
+               (substitute* "Makefile"
+                 (("/usr") "${PREFIX}"))
+               #t))
+           (add-before 'install 'create-target-directories
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (for-each (lambda (dir)
+                             (mkdir-p (string-append out dir)))
+                           (list "/lib/udev/rules.d"
+                                 "/sbin"
+                                 "/share/man/man8"))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("util-linux:lib" ,util-linux "lib"))) ; libblkid
+      (home-page "https://bcache.evilpiepirate.org")
+      (synopsis "Tools for the Linux kernel block layer cache")
+      (description
+       "This package contains user-space utilities to create and inspect bcache
+partitions.  It's rather minimal as bcache is designed to work well without
+configuration on any system.
+
+Linux's @acronym{bcache, block layer cache} lets one or more fast block devices,
+such as flash-based @acronym{SSDs, solid state drives}, to act as a cache for
+one or more slower (and inexpensive) devices, such as hard disk drives or
+redundant storage arrays.  In fact, bcache intends to be a superior alternative
+to battery-backed RAID controllers.
+
+Bcache is designed around the performance characteristics of SSDs and tries to
+minimize write inflation.  It's file-system agnostic and does both write-through
+and write-back caching.")
+      (license license:gpl2))))
 
 (define-public udevil
   (package
@@ -692,7 +759,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "71")
+    (version "71.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -701,7 +768,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14vhldncflxgsam49ssn1x3h4m9xxw9dwyl748xajf1js33ph5av"))))
+                "1vi61bm9wyawklswh9mj9zdp28ar7r97qckwnhgiyila73fb3jx2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)

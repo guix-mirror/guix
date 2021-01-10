@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,7 +71,7 @@ files in the destination.")
 (define-public librsync
   (package
     (name "librsync")
-    (version "2.2.1")
+    (version "2.3.1")
        (source (origin
             (method git-fetch)
             (uri (git-reference
@@ -79,7 +80,7 @@ files in the destination.")
             (file-name (git-file-name name version))
             (sha256
              (base32
-              "08wdlxsa9zg2pyasz1lwg70d5psi4amv81v4yxwffx67ndzb9yp5"))))
+              "131cd4asmpm4nskidzgiy8xibbnpibvvbq857a0pcky77min5g4z"))))
    (build-system cmake-build-system)
    (inputs
     `(("popt" ,popt)))

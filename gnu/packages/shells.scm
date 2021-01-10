@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Nikita <nikita@n0.is>
@@ -65,14 +65,14 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.11.2")
+    (version "0.5.11.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
                            "dash-" version ".tar.gz"))
        (sha256
-        (base32 "0pvdpm1cgfbc25ramn4305a0158yq031q1ain4dc972rnxl7vyq0"))
+        (base32 "0amwphfal2rnfa63f7qd4i9m4ckv0gm3j6jlxkmfi9x6ddkz3fb2"))
        (modules '((guix build utils)))
        (snippet
         '(begin

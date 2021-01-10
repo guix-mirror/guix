@@ -21,7 +21,7 @@
 @set SUBSTITUTE-URL https://@value{SUBSTITUTE-SERVER}
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -13359,7 +13359,8 @@ The default label includes the kernel name and version.
 @item @code{keyboard-layout} (default: @code{#f})
 This field specifies the keyboard layout to use in the console.  It can be
 either @code{#f}, in which case the default keyboard layout is used (usually
-US English), or a @code{<keyboard-layout>} record.
+US English), or a @code{<keyboard-layout>} record. @xref{Keyboard Layout},
+for more information.
 
 This keyboard layout is in effect as soon as the kernel has booted.  For
 instance, it is the keyboard layout in effect when you type a passphrase if
@@ -31548,10 +31549,12 @@ each other:
 @table @code
 
 @item extension-graph
-Emit in Dot/Graphviz format to standard output the @dfn{service
+Emit to standard output the @dfn{service
 extension graph} of the operating system defined in @var{file}
 (@pxref{Service Composition}, for more information on service
-extensions).
+extensions).  By default the output is in Dot/Graphviz format, but you
+can choose a different format with @option{--graph-backend}, as with
+@command{guix graph} (@pxref{Invoking guix graph, @option{--backend}}):
 
 The command:
 
@@ -31563,10 +31566,13 @@ shows the extension relations among services.
 
 @anchor{system-shepherd-graph}
 @item shepherd-graph
-Emit in Dot/Graphviz format to standard output the @dfn{dependency
+Emit to standard output the @dfn{dependency
 graph} of shepherd services of the operating system defined in
 @var{file}.  @xref{Shepherd Services}, for more information and for an
 example graph.
+
+Again, the default output format is Dot/Graphviz, but you can pass
+@option{--graph-backend} to select a different one.
 
 @end table
 

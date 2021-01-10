@@ -393,14 +393,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.11")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "07cpswxh2f38b440xdn3fjk7b4r0ipj3sbwb3jd134phrr9smll7"))))
+        (base32 "0k12m2z60fnq64m8dgivprs2mvrsnmp7c5ipzx7jzkprcsymdvh5"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -840,7 +840,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "245")
+    (version "246")
     (source
      (origin
        (method git-fetch)
@@ -849,7 +849,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pnajvqhzjlw0rwwhhk4hyps5pbg9njh10iqhnmvl1xnah6ff94z"))))
+        (base32 "1ynkz0ss7nn1ssiaxagpq80iabknf085nk0pra9hn8y9hx7av0db"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

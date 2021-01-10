@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -248,7 +248,8 @@ correspond to the same version."
                                        '()
                                        (importer-modules))))
 
-(define (lookup-updater package updaters)
+(define* (lookup-updater package
+                         #:optional (updaters (force %updaters)))
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
 them matches."
   (find (match-lambda
@@ -256,7 +257,9 @@ them matches."
            (pred package)))
         updaters))
 
-(define (package-latest-release package updaters)
+(define* (package-latest-release package
+                                 #:optional
+                                 (updaters (force %updaters)))
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
 none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
 that the returned source is newer than the current one."
@@ -265,7 +268,9 @@ that the returned source is newer than the current one."
      ((upstream-updater-latest updater) package))
     (_ #f)))
 
-(define (package-latest-release* package updaters)
+(define* (package-latest-release* package
+                                  #:optional
+                                  (updaters (force %updaters)))
   "Like 'package-latest-release', but ensure that the return source is newer
 than that of PACKAGE."
   (match (package-latest-release package updaters)
@@ -402,7 +407,8 @@ SOURCE, an <upstream-source>."
   ;; Mapping of origin methods to source update procedures.
   `((,url-fetch . ,package-update/url-fetch)))
 
-(define* (package-update store package updaters
+(define* (package-update store package
+                         #:optional (updaters (force %updaters))
                          #:key (key-download 'interactive))
   "Return the new version, the file name of the new version tarball, and input
 changes for PACKAGE; return #f (three values) when PACKAGE is up-to-date.

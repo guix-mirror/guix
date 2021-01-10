@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -443,7 +443,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.7.6")
+    (version "0.7.8")
     (source
      (origin
        (method git-fetch)
@@ -452,7 +452,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pg0djhg4p32vxfwf6bfals31zf93m56fx1x4q5jhhdwmll7xl6w"))))
+        (base32 "0z2wj9g32aa5g9pw81q49iv1smb6yvlv9zs0vrzbx6mw8cj3c5d2"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

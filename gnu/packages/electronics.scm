@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -239,15 +240,16 @@ format support.")
 (define-public pulseview
   (package
     (name "pulseview")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://sigrok.org/download/source/pulseview/pulseview-"
+                    "https://sigrok.org/download/source/pulseview/pulseview-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0bvgmkgz37n2bi9niskpl05hf7rsj1lj972fbrgnlz25s4ywxrwy"))))
+                "1jxbpz1h3m1mgrxw74rnihj8vawgqdpf6c33cqqbyd8v7rxgfhph"))
+              (patches (search-patches "pulseview-qt515-compat.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DENABLE_TESTS=y")
@@ -262,7 +264,8 @@ format support.")
                  (rmdir "doc"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("glib" ,glib)

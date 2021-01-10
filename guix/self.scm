@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -880,6 +880,11 @@ itself."
                                (name name))
                              (scheme-modules* source "guix"))
                  (list *core-modules*)
+
+                 #:extra-files
+                 `(("guix/graph.js" ,(local-file "../guix/graph.js"))
+                   ("guix/d3.v3.js" ,(local-file "../guix/d3.v3.js")))
+
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 

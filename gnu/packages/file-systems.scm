@@ -6,6 +6,7 @@
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 raid5atemyhoemwork <raid5atemyhomework@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -944,7 +945,8 @@ APFS.")
        ("openssl" ,openssl)
        ("python" ,python)
        ("python-cffi" ,python-cffi)
-       ("util-linux" ,util-linux "lib")
+       ("util-linux" ,util-linux)
+       ("util-linux:lib" ,util-linux "lib")
        ("zlib" ,zlib)))
     (home-page "https://zfsonlinux.org/")
     (synopsis "Native ZFS on Linux")

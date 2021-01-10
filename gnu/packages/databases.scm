@@ -3839,9 +3839,6 @@ implementation, along with tools for interoperability with pandas, NumPy, and
 other traditional Python scientific computing packages.")
     (license license:asl2.0)))
 
-(define-public python2-pyarrow
-  (package-with-python2 python-pyarrow))
-
 (define-public python-crate
   (package
     (name "python-crate")

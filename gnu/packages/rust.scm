@@ -8,7 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020, 2021 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
@@ -1381,6 +1381,75 @@ move around."
                      '("install.log"
                        "manifest-rustfmt-preview"))
                    #t))))))))))
+
+(define-public rust-1.47
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.46 "1.47.0"
+          "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-11)
+                       (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; The source code got rearranged: libstd is now in the newly created library folder.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+                   (substitute* "library/std/src/sys/unix/process/process_common.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t)))
+             (delete 'patch-cargo-checksums)
+             (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
+               ;; Generate checksums after patching generated files (in
+               ;; particular, vendor/jemalloc/rep/Makefile).
+               (lambda* _
+                 (use-modules (guix build cargo-utils))
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor")
+                 #t)))))))))
+
+(define-public rust-1.48
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.47 "1.48.0"
+           "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf")))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          ;; New patch required due to the second part of the source code rearrangement:
+          ;; the relevant source code is now in the compiler directory.
+          (patches (search-patches "rust-1.48-linker-locale.patch"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Some tests got split out into separate files.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process/tests.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   (substitute* "library/std/src/sys/unix/process/process_common/tests.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t))))))))))
+
+(define-public rust-1.49
+  (rust-bootstrapped-package rust-1.48 "1.49.0"
+    "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)

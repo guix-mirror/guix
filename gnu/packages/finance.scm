@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
@@ -630,7 +630,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.7")
+    (version "0.17.1.9")
     (source
      (origin
        (method git-fetch)
@@ -650,7 +650,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "1fdw4i4rw87yz3hz4yc1gdw0gr2mmf9038xaw2l4rrk5y50phjp4"))))
+        (base32 "0jqss4csvkcrhrmaa3vrnyv6yiwqpbfw7037clx9xcfm4qrrfiwy"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -740,16 +740,24 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.7")
+    (version "0.17.1.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/monero-project/monero-gui")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             (recursive? #t)))
        (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled monero sources, we already have them.
+           ;; See the 'extract-monero-sources' phase.
+           (delete-file-recursively "monero")
+           #t))
        (sha256
-        (base32 "1dd2ddkxh9ynxnscysl46hj4dm063h1v13fnyah69am26qzzbby4"))))
+        (base32 "0vpvpvsbbj547yir15g84qy9l9lwbip795zlliz79i7d66l23b1w"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -778,6 +786,7 @@ the Monero command line client and daemon.")
            ;; Some of the monero package source code is required
            ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "monero")
              (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
                      "-f" (assoc-ref inputs "monero-source"))))
@@ -1474,6 +1483,11 @@ entity management.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
+             ;; Fix data specific test failure
+             ;; https://reviews.bitcoinabc.org/rABC67bbd3d0aaee2952ff1cb5da51d1fd0b50c2b63a
+             (substitute* "src/test/rpc_tests.cpp"
+               (("1607731200") "9907731200"))
+
              ;; Disable utilprocess_tests because it never ends.
              ;; It looks like it tries to start /bin/sleep and waits until it
              ;; is in the list of running processes, but /bin/sleep doesn't

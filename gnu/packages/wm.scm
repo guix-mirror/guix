@@ -1301,14 +1301,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.4.3")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
-                           "download/" version "/polybar-" version ".tar"))
+                           "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "0bw22qvbcdvyd0qv3ax48r34rnclbbb6dyb8h8zljq1r3lf15vfl"))))
+        (base32 "1016g4b981c4hl2pr0m09b4wy0ln1zf3mfp09wrxs73zgfdbngyj"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
@@ -1378,12 +1378,12 @@ functionality to display information about the most commonly used services.")
        ("mesa" ,mesa)
        ("pixman" ,pixman)
        ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("xcb-util-errors" ,xcb-util-errors)
        ("xcb-util-wm" ,xcb-util-wm)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("wayland-protocols" ,wayland-protocols)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -2278,4 +2278,33 @@ start-up.")
     (synopsis "Displays a notification on the screen")
     (description "XNotify receives a notification specification in stdin and
 shows a notification for the user on the screen.")
+    (license license:expat)))
+
+(define-public cagebreak
+  (package
+    (name "cagebreak")
+    (version "1.4.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/project-repo/cagebreak")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mnxs1m7jrqdl0asx39nxfzvkp7d4jqpdchi63w2yd1igpj2frb2"))))
+    (build-system meson-build-system)
+    (arguments '(#:configure-flags '("-Dxwayland=true")))
+    (native-inputs
+     `(("pandoc" ,pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pango" ,pango)
+       ("wlroots" ,wlroots)))
+    (home-page "https://github.com/project-repo/cagebreak")
+    (synopsis "Tiling wayland compositor inspired by ratpoison")
+    (description
+     "@command{cagebreak} is a slim, keyboard-controlled, tiling compositor
+for wayland conceptually based on the X11 window manager
+@command{ratpoison}.")
     (license license:expat)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
@@ -21,12 +21,15 @@
 (define-module (gnu packages syndication)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
@@ -53,7 +56,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.21")
+    (version "2.22")
     (source
      (origin
        (method url-fetch)
@@ -61,7 +64,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "0ccwbb3maini18453wjqn8m3bd7zzm6dn5a9vpb8smxv8vfv6ihc"))))
+         "146p3j46hna1m8zlacb9q1ljnldwv6xrjbaplm94f2x0v4azi1jj"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -87,17 +90,16 @@
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-cxx" ,rust-cxx-0.5)
+        ("rust-cxx-build" ,rust-cxx-build-0.5)
         ("rust-gettext-rs" ,rust-gettext-rs-0.5)
-        ("rust-gettext-sys" ,rust-gettext-sys-0.19)
-        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-natord" ,rust-natord-1.0)
-        ("rust-nom" ,rust-nom-5)
+        ("rust-nom" ,rust-nom-6)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-url" ,rust-url-2)
-        ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-xdg" ,rust-xdg-2.2))
+        ("rust-unicode-width" ,rust-unicode-width-0.1))
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3)
         ("rust-proptest" ,rust-proptest-0.9)
@@ -182,15 +184,15 @@ file system, and many more features.")
 (define-public liferea
   (package
     (name "liferea")
-    (version "1.12.9")
+    (version "1.13.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lwindolf/liferea/"
-                           "releases/download/v" version "/liferea-"
-                           version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lwindolf/liferea/")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "06ybr1wjlfir8iqjx6x0v1knd4b2hsy30qmkk4kssy6ky2ahc66q"))))
+        (base32 "1g9463bvswsm899j6dfhslcg6np70m5wq143mjicr24zy8d17bm7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -209,11 +211,15 @@ file system, and many more features.")
                  `("PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gnome-keyring" ,gnome-keyring)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2019, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -528,7 +528,7 @@ See the \"Application Setup\" section in the manual, for more info.\n"))
   "Display version information for COMMAND and `(exit 0)'."
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
-  (format #t "Copyright ~a 2020 ~a"
+  (format #t "Copyright ~a 2021 ~a"
           ;; TRANSLATORS: Translate "(C)" to the copyright symbol
           ;; (C-in-a-circle), if this symbol is available in the user's
           ;; locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
@@ -2021,10 +2021,11 @@ optionally contain a version number and an output name, as in these examples:
 on the 'define-command' top-level form found therein, or #f if FILE does not
 contain a 'define-command' form."
   (define command-name
-    (match (string-split file #\/)
-      ((_ ... "guix" "scripts" name)
+    (match (filter (negate string-null?)
+                   (string-split file #\/))
+      ((_ ... "guix" (or "scripts" "extensions") name)
        (list (file-sans-extension name)))
-      ((_ ... "guix" "scripts" first second)
+      ((_ ... "guix" (or "scripts" "extensions") first second)
        (list first (file-sans-extension second)))))
 
   ;; The strategy here is to parse FILE.  This is much cheaper than a
@@ -2046,24 +2047,34 @@ contain a 'define-command' form."
           (_
            (loop)))))))
 
-(define (command-files)
+(define* (command-files #:optional directory)
   "Return the list of source files that define Guix sub-commands."
-  (define directory
-    (and=> (search-path %load-path "guix.scm")
-           (compose (cut string-append <> "/guix/scripts")
-                    dirname)))
+  (define directory*
+    (or directory
+        (and=> (search-path %load-path "guix.scm")
+               (compose (cut string-append <> "/guix/scripts")
+                        dirname))))
 
   (define dot-scm?
     (cut string-suffix? ".scm" <>))
 
-  (if directory
-      (map (cut string-append directory "/" <>)
-           (scandir directory dot-scm?))
+  (if directory*
+      (map (cut string-append directory* "/" <>)
+           (scandir directory* dot-scm?))
       '()))
+
+(define (extension-directories)
+  "Return the list of directories containing Guix extensions."
+  (filter file-exists?
+          (parse-path
+           (getenv "GUIX_EXTENSIONS_PATH"))))
 
 (define (commands)
   "Return the list of commands, alphabetically sorted."
-  (filter-map source-file-command (command-files)))
+  (filter-map source-file-command
+              (append (command-files)
+                      (append-map command-files
+                                  (extension-directories)))))
 
 (define (show-guix-help)
   (define (internal? command)
@@ -2098,9 +2109,14 @@ Run COMMAND with ARGS.\n"))
                 (('internal . _)
                  #t)                              ;hide internal commands
                 ((category . synopsis)
-                 (format #t "~%  ~a~%" (G_ synopsis))
-                 (display-commands (filter (category-predicate category)
-                                           commands))))
+                 (let ((relevant-commands (filter (category-predicate category)
+                                                  commands)))
+                   ;; Only print categories that contain commands.
+                   (match relevant-commands
+                     ((one . more)
+                      (format #t "~%  ~a~%" (G_ synopsis))
+                      (display-commands relevant-commands))
+                     (_ #f)))))
               categories))
   (show-bug-report-information))
 
@@ -2111,10 +2127,21 @@ found."
     (catch 'misc-error
       (lambda ()
         (resolve-interface `(guix scripts ,command)))
-      (lambda -
-        (format (current-error-port)
-                (G_ "guix: ~a: command not found~%") command)
-        (show-guix-usage))))
+      (lambda _
+        ;; Check if there is a matching extension.
+        (catch 'misc-error
+          (lambda ()
+            (match (search-path (extension-directories)
+                                (format #f "~a.scm" command))
+              (#f
+               (throw 'misc-error))
+              (file
+                (load file)
+                (resolve-interface `(guix extensions ,command)))))
+          (lambda _
+            (format (current-error-port)
+                    (G_ "guix: ~a: command not found~%") command)
+            (show-guix-usage))))))
 
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))

@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "7624ebbae33cf49dded5e9032ed426781c9554f6")
-        (revision 8))
+        (commit "db42ee65bd657bae9b1a598cbdbe86079dc85f81")
+        (revision 9))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0dd28df278fzlwxk1c0n86q98q8q8cj6g87as8v4rymyprf4gyjc"))
+                  "1kizkw6cxh6mhc8kal2fglnhyp1i668b4ilqbxq72slbmf9jr9jl"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -418,6 +418,10 @@ $(prefix)/etc/init.d\n")))
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ("guile-lzlib" ,guile-lzlib)))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GUIX_EXTENSIONS_PATH")
+              (files '("share/guix/extensions")))))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -584,14 +588,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.9")
+    (version "2.3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1yi2c1fp33sxv9j0pvxlpxs1dhq3axrwkxdwr867ll90lbdiycvj"))))
+               "1axphwkx270c10bjyn4icq9wlx46npgnw0qkpymigl23vramxa58"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
@@ -1028,8 +1032,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "c33d3f570bd32afc2def410067db6b92ad6aff0a")
-        (revision "12"))
+  (let ((commit "b5d998c22f7d4db3e26166ada9489af363f2d47a")
+        (revision "15"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1040,7 +1044,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "01mr211s1nb9hhm6784ibp87g59wifajcclbss3ry7i3qsbvg22j"))
+                  "1jfmwfx7cvfsvryc3w70nw6mixdamjymkqh40qkv99sspkd86dkr"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1070,7 +1074,6 @@ environments.")
                     (wrap-program file
                       `("PATH" ":" prefix
                         (,bin
-                         ,(dirname (which "nproc")) ; used by the agent
                          ;; Support building without sqitch as an input, as it
                          ;; can't be cross-compiled yet
                          ,@(or (and=> (assoc-ref inputs "sqitch")

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,14 +134,14 @@ This package is part of the KDE multimedia module.")
 (define-public elisa
   (package
     (name "elisa")
-    (version "0.4.2")
+    (version "20.12.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde//stable/elisa/0.4.2"
-                           "/elisa-" version ".tar.xz"))
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/elisa-" version ".tar.xz"))
        (sha256
-        (base32 "0v9af6l89pgz1g7naf7gwcnq8znlicyh7z985kxalbdmv359c97w"))))
+        (base32 "02450lsnbd37fms1i2bb9qc9wir4vym6qqd9p5hr6a6s6qwfs6qf"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -188,6 +189,12 @@ This package is part of the KDE multimedia module.")
              (system (string-append (assoc-ref inputs "xorg-server")
                                     "/bin/Xvfb :1 -screen 0 640x480x24 &"))
              (setenv "DISPLAY" ":1")
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? test-target #:allow-other-keys)
+             (when tests?
+               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+               (invoke "dbus-launch" "make" test-target))
              #t)))))
     (home-page "https://kde.org/applications/multimedia/org.kde.elisa")
     (synopsis "Powerful music player for Plasma 5")

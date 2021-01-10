@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,14 +79,14 @@ the underlying security implementation.")
 (define-public gsasl
   (package
    (name "gsasl")
-   (version "1.8.1")
+   (version "1.10.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gsasl/gsasl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "1lnqfbaajkj1r2fx1db1qgcxy69pfgbyq7xd2kpvyxhra4m1dnjd"))))
+              "1lv8fp01aq4jjia9g4vkx90zacl8rgmjhfi6f1wdwnh9ws7bvg45"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--with-gssapi-impl=mit"
@@ -96,6 +97,9 @@ the underlying security implementation.")
       ("libntlm" ,libntlm)
       ("mit-krb5" ,mit-krb5)
       ("zlib" ,zlib)))
+   (native-inputs
+    `(;; Needed for cross compiling.
+      ("libgcrypt" ,libgcrypt)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
     ;; propagated input of GnuTLS.

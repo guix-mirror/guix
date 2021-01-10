@@ -4,11 +4,11 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -2343,14 +2343,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.8")
+    (version "0.24.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0063i5zgf3d3accwmyx651hw0wh5ik7kji2hvfkcdbl1qia3dp6a"))))
+               "1565zy0yz46cf2f25pi46msdnzkj6bbhml9gfigdpjnsdlyskfyi"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2703,7 +2703,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.11.0")
+    (version "3.11.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2714,7 +2714,7 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))
+                "1gi7nrmjmbnjndqkmhfrkk0jchrzvnhl3f6gp6n5wgdd4mxbgxgw"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
@@ -2744,7 +2744,8 @@ link REQUIRED)"))
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
                            "-DSC_QT=ON" "-DCMAKE_BUILD_TYPE=Release"
-                           "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
+                           "-DFORTIFY=ON"
+                           ;"-DLIBSCSYNTH=ON"   ; TODO: Re-enable?
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
        #:phases
@@ -4832,16 +4833,15 @@ edited, converted, compressed and saved.")
 (define-public lsp-dsp-lib
   (package
     (name "lsp-dsp-lib")
-    (version "0.5.8")
+    (version "0.5.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/sadko4u/lsp-dsp-lib/"
-                            "releases/download/lsp-dsp-lib-" version
+                            "releases/download/" version
                             "/lsp-dsp-lib-" version "-src.tar.gz"))
         (sha256
-         (base32
-          "07w3d2i0z0xmvi1ngcgs7lc5a0da8jvf7rv4dnjk01md43b7fkh1"))))
+         (base32 "0lkar6r9jfrrqswi8nnndlm5a9kfwqjn92d81gp2yhc3p46xsswz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -4849,6 +4849,11 @@ edited, converted, compressed and saved.")
        (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           (lambda _
+             (substitute* "src/Makefile"
+               ((".*@.*ARTIFACT_SLIB.*") "")       ; don't install it
+               ((" \\$\\(ARTIFACT_SLIB\\)") "")))) ; don't build it
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "config"

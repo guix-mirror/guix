@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -515,18 +515,18 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   "libressl-" version ".tar.gz"))
               (sha256
                (base32
-                "1dnbbnr43jashxivnafmh9gnn57c7ayva788ba03z633k6f18k21"))))
+                "1504a1sf43frw43j14pij0q1f48rm5q86ggrlxxhw708qp7ds4rc"))))
     (build-system gnu-build-system)
     (arguments
-     ;; Do as if 'getentropy' was missing since older Linux kernels lack it
-     ;; and libc would return ENOSYS, which is not properly handled.
+     ;; Do as if 'getentropy' were missing: Linux kernels before 3.17 lack its
+     ;; underlying 'getrandom' system call and ENOSYS isn't properly handled.
      ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
      '(#:configure-flags '("ac_cv_func_getentropy=no"
                            ;; Provide a TLS-enabled netcat.

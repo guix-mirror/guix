@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,8 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
   #:use-module (guix http-client)
@@ -392,7 +395,12 @@ type '<elpa-package>'."
 (define* (elpa->guix-package name #:key (repo 'gnu) version)
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
   (match (fetch-elpa-package name repo)
-    (#f #f)
+    (#false
+     (raise (condition
+             (&message
+              (message (format #false
+                               "couldn't find meta-data for ELPA package `~a'."
+                               name))))))
     (package
       ;; ELPA is known to contain only GPLv3+ code.  Other repos may contain
       ;; code under other license but there's no license metadata.
@@ -411,19 +419,24 @@ type '<elpa-package>'."
         (string-drop (package-name package) 6)
         (package-name package)))
 
-  (let* ((repo    'gnu)
-         (info    (elpa-package-info name repo))
-         (version (match info
-                    ((name raw-version . _)
-                     (elpa-version->string raw-version))))
-         (url     (match info
-                    ((_ raw-version reqs synopsis kind . rest)
-                     (package-source-url kind name version repo)))))
-    (upstream-source
-     (package (package-name package))
-     (version version)
-     (urls (list url))
-     (signature-urls (list (string-append url ".sig"))))))
+  (define repo 'gnu)
+
+  (match (elpa-package-info name repo)
+    (#f
+     ;; No info, perhaps because PACKAGE is not truly an ELPA package.
+     #f)
+    (info
+     (let* ((version (match info
+                       ((name raw-version . _)
+                        (elpa-version->string raw-version))))
+            (url     (match info
+                       ((_ raw-version reqs synopsis kind . rest)
+                        (package-source-url kind name version repo)))))
+       (upstream-source
+        (package (package-name package))
+        (version version)
+        (urls (list url))
+        (signature-urls (list (string-append url ".sig"))))))))
 
 (define package-from-gnu.org?
   (url-predicate (lambda (url)

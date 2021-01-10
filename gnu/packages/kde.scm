@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -49,6 +49,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -141,6 +142,77 @@ This package contains GUI widgets for baloo.")
     (description "This library provides Grantlee theme support.")
     (license ;; LGPL for libraries, FDL for documentation
      (list license:lgpl2.1+ license:fdl1.2+))))
+
+(define-public akregator
+  (package
+    (name "akregator")
+    (version "20.04.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/akregator-" version ".tar.xz"))
+       (sha256
+        (base32 "1711yhwsdq9iyc3wm3a4xmz81p73hvvc0h58sasc89ifpry50k2p"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-qt-process-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/akregator"))
+                    (qt-process-path (string-append
+                                       (assoc-ref inputs "qtwebengine")
+                                       "/lib/qt5/libexec/QtWebEngineProcess")))
+               (wrap-program bin
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
+               #t))))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("akonadi" ,akonadi)
+       ("akonadi-contacts" ,akonadi-contacts)
+       ("akonadi-mime" ,akonadi-mime)
+       ("boost" ,boost)
+       ("breeze-icons" ,breeze-icons)
+       ("gpgme" ,gpgme)
+       ("grantlee" ,grantlee)
+       ("grantleetheme" ,grantleetheme)
+       ("kcmutils" ,kcmutils)
+       ("kcontacts" ,kcontacts)
+       ("kcrash" ,kcrash)
+       ("kimap" ,kimap)
+       ("kitemmodels" ,kitemmodels)
+       ("kmessagelib" ,kmessagelib)
+       ("kmime" ,kmime)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("kontactinterface" ,kontactinterface)
+       ("kpimcommon" ,kpimcommon)
+       ("kpimtextedit" ,kpimtextedit)
+       ("kqtquickcharts" ,kqtquickcharts)
+       ("ktexteditor" ,ktexteditor)
+       ("kuserfeedback" ,kuserfeedback)
+       ("libkdepim" ,libkdepim)
+       ("libkleo" ,libkleo)
+       ("qgpgme" ,qgpgme)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebengine" ,qtwebengine)
+       ("syndication" ,syndication)))
+    (home-page "https://apps.kde.org/en/akregator")
+    (synopsis "KDE Feed Reader")
+    (description
+     "Akregator is a news feed reader.  It enables you to follow news
+sites, blogs and other RSS/Atom-enabled websites without the need to manually
+check for updates using a web browser.  Akregator is designed to be both easy to
+use and to be powerful enough to read hundreds of news sources conveniently.
+It comes with a fast search, advanced archiving functionality and an internal
+browser for easy news reading.")
+    (license license:gpl2+)))
 
 (define-public kdenlive
   (let ((version "20.08.3"))
@@ -506,7 +578,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
@@ -514,7 +586,7 @@ used in KDE development tools Kompare and KDevelop.")
                             "/qca-" version ".tar.xz"))
         (sha256
          (base32
-          "1mrj748yz1grgzmfbmffgjkpcqiaj1l3m4pbddwcj7dnl50yys0x"))))
+          "0jsfjwz84fc5jnl16aiwrcd6pgs5lzizm2896wildz5yk8852f61"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -777,14 +849,14 @@ Python, PHP, and Perl.")
 (define-public okular
   (package
     (name "okular")
-    (version "20.12.0")
+    (version "20.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1kib8zqfd9qgqn7bz88hay2j3kcvarnlfyr3a417pi6rvaam6b4p"))))
+        (base32 "0gpm7n47yijsjg4yba561j5pbvd98hgvr93w1kvzk851nb87m89c"))))
     (build-system qt-build-system)
     ;; The tests fail because they can't find the proper mimetype plugins:
     ;; "org.kde.okular.core: No plugin for mimetype '"image/jpeg"'."

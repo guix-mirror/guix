@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
@@ -346,7 +348,7 @@ FOSS FPGA place and route tool.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.107")
+    (version "3.3.108")
     (source
      (origin
        (method url-fetch)
@@ -356,7 +358,7 @@ FOSS FPGA place and route tool.")
                   (string-append "http://gtkwave.sourceforge.net/"
                                  "gtkwave-" version ".tar.gz")))
        (sha256
-        (base32 "1ibnhn7w1awalsbndbb5nilbmih3i3dwfry95mq5sn221l5n7zj8"))))
+        (base32 "0fzbap72zm4ka6n85j0873fpaarrx199ay0kjw1avrs20hs4gr7c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
@@ -380,6 +382,33 @@ simulator trace files (@dfn{FST}).")
     (home-page "http://gtkwave.sourceforge.net/")
     ;; Exception against free government use in tcl_np.c and tcl_np.h.
     (license (list license:gpl2+ license:expat license:tcl/tk))))
+
+(define-public python-migen
+  (package
+    (name "python-migen")
+    (version "0.9.2")
+    (source
+     (origin
+       ;; Tests fail in the PyPI tarball due to missing files.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m-labs/migen")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1kq11if64zj84gv4w1q7l16fp17xjxl2wv5hc9dibr1z3m1gy67l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)))
+    (home-page "https://m-labs.hk/gateware/migen/")
+    (synopsis "Python toolbox for building complex digital hardware")
+    (description
+     "Migen FHDL is a Python library that replaces the event-driven
+paradigm of Verilog and VHDL with the notions of combinatorial and
+synchronous statements, has arithmetic rules that make integers always
+behave like mathematical integers, and allows the design's logic to be
+constructed by a Python program.")
+    (license license:bsd-2)))
 
 (define-public python-myhdl
   (package

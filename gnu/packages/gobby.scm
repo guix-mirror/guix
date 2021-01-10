@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +49,9 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'update-gnutls-api
            (lambda _
@@ -80,6 +84,9 @@
                (base32
                 "0rwvp0kzsb8y6mq73rzb8yk4kvsrz64i2zf4lfqs3kh0x2k7n7bx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -177,7 +184,7 @@ together over the internet in real-time.")
 (define-public libinfinity
   (package
     (name "libinfinity")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -185,7 +192,7 @@ together over the internet in real-time.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jw2fhrcbpyz99bij07iyhy9ffyqdn87vl8cb1qz897y3f2f0vk2"))))
+         "17i3g61hxz9pzl3ryd1yr15142r25m06jfzjrpdy7ic1b8vjjw3f"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
@@ -195,7 +202,8 @@ together over the internet in real-time.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags (list "--with-inftextgtk"
+     `(#:configure-flags (list "--disable-static"
+                               "--with-inftextgtk"
                                "--with-infgtk")))
     (home-page "https://gobby.github.io/")
     (synopsis "Infininote protocol implementation")

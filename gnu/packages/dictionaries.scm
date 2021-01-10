@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -39,7 +41,10 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -392,3 +397,55 @@ second on ordinary desktop computers) and, in spite of the errors, reasonably
 intelligible and easily correctable.")
     (license (list license:gpl2 ; main license
                    license:expat)))) ; utf8/*
+
+(define-public sdcv
+  (package
+    (name "sdcv")
+    (version "0.5.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Dushistov/sdcv/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "144qpl9b8r2php0zhi9b7vg6flpvdgjy6yfaipydwwhxi4wy9600"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_TESTS=YES")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-lang
+           (lambda _
+             (invoke "make" "lang")))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t))
+         (add-after 'unpack 'remove-jq-requirement
+           (lambda _
+             ;; We don't want to bring in jq for one test.
+             (substitute* "tests/t_json"
+               (("jq") "echo"))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("ncurses" ,ncurses)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    ;; If you use Guix to package and install dictionary data,
+    ;; you need this variable to load them.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "STARDICT_DATA_DIR")
+            (files '("share/stardict/dic")))))
+    (home-page "https://dushistov.github.io/sdcv/")
+    (synopsis "Console version of StarDict")
+    (description "sdcv is simple text-based utility for work with dictionaries
+in StarDict's format.")
+    (license license:gpl2+)))

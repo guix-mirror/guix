@@ -487,6 +487,125 @@ jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
 
+(define-public go-github-com-golangplus-fmt
+  (package
+    (name "go-github-com-golangplus-fmt")
+    (version "1.0.0")
+    (home-page "https://github.com/golangplus/fmt")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "07d5kxz0f8ss3v46y0c8jg02sagi0wlaaijhjzzp0r462jyzqii7"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/golangplus/fmt"))
+    (synopsis "Additions to Go's standard @code{fmt} package")
+    (description "This package provides additions to Go's stdlib @code{fmt}.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-motemen-go-colorine
+  (let ((commit "45d19169413a019e4e2be69629dde5c7d92f8706")
+        (revision "0"))
+    (package
+      (name "go-github-com-motemen-go-colorine")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/motemen/go-colorine")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1mdy6q0926s1frj027nlzlvm2qssmkpjis7ic3l2smajkzh07118"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/motemen/go-colorine"))
+      (propagated-inputs
+       `(("github.com/daviddengcn/go-colortext" ,go-github-com-daviddengcn-go-colortext)))
+      (synopsis "Simple colorized console logger for golang")
+      (description
+       "This package provides simple colorized console logger for golang.")
+      (license license:expat))))
+
+(define-public go-github-com-daviddengcn-go-colortext
+  (package
+    (name "go-github-com-daviddengcn-go-colortext")
+    (version "1.0.0")
+    (home-page "https://github.com/daviddengcn/go-colortext")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0j5ldwg3a768d3nniiglghr9axj4p87k7f7asqxa1a688xvcms48"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/daviddengcn/go-colortext"))
+    (native-inputs
+     `(("go-github-com-golangplus-testing" ,go-github-com-golangplus-testing)))
+    (synopsis "Change the color of console text and background")
+    (description
+     "This is a package to change the color of the text and background in the
+console, working both under Windows and other systems.
+
+Under Windows, the console APIs are used.  Otherwise, ANSI texts are output.")
+    ;; dual-licensed
+    (license (list license:bsd-3 license:expat))))
+
+(define-public go-github-com-golangplus-testing
+  (package
+    (name "go-github-com-golangplus-testing")
+    (version "1.0.0")
+    (home-page "https://github.com/golangplus/testing")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1a29m4zplf9m14k74lrb55dids2l17vx28sv0g3y3qcv1xygksiv"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/golangplus/testing"))
+    (propagated-inputs
+     `(("go-github-com-golangplus-fmt" ,go-github-com-golangplus-fmt)))
+    (synopsis "Additions to Go's standard testing package")
+    (description "This package provides additions to Go's stdlib testing.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-leodido-go-urn
+  (package
+    (name "go-github-com-leodido-go-urn")
+    (version "1.2.0")
+    (home-page "https://github.com/leodido/go-urn")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d4g1vkhc1180l1n7q48vl84b27c7cziywml78cyijbcdz2f8vim"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/leodido/go-urn"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (synopsis "Parser for uniform resource names as seen on RFC 2141")
+    (description
+     "This package implements a parser for uniform resource names (URN) as
+specified by @uref{https://tools.ietf.org/html/rfc2141, IETF RFC 2141}.")
+    (license license:expat)))
+
 (define-public go-github.com-jessevdk-go-flags
   (package
     (name "go-github.com-jessevdk-go-flags")
@@ -511,6 +630,150 @@ functionality is similar to the go builtin @code{flag} package, but
 way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
+
+(define-public go-gopkg-in-go-playground-assert-v1
+  (package
+    (name "go-gopkg-in-go-playground-assert-v1")
+    (version "1.2.1")
+    (home-page "https://github.com/go-playground/assert")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h4amgykpa0djwi619llr3g55p75ia0mi184h9s5zdl8l4rhn9pm"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/go-playground/assert.v1"))
+    (synopsis "Basic assertion library used alongside native Go testing")
+    (description
+     "This package provides bassic assertions along with building blocks for
+custom assertions to be used alongside native Go testing.")
+    (license license:expat)))
+
+(define-public go-github-com-go-playground-locales
+  (package
+    (name "go-github-com-go-playground-locales")
+    (version "0.13.0")
+    (home-page "https://github.com/go-playground/locales")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qydcpkvss3mf8mk3xzg6a34n8i69aydrigcl2apifrkx72jw7pf"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/go-playground/locales"))
+    (synopsis "Set of locales generated from the CLDR Unicode Project")
+    (description
+     "This package provides a set of locales generated from the
+@uref{http://cldr.unicode.org/, Unicode CLDR Project} which can be used
+independently or within an internalization (i18n) package.  Its currently
+implemented features include
+
+@itemize
+@item Rules generated from the CLDR data, v31.0.3
+@item Contains Cardinal, Ordinal and Range Plural Rules
+@item Contains Month, Weekday and Timezone translations built in
+@item Contains Date & Time formatting functions
+@item Contains Number, Currency, Accounting and Percent formatting functions
+@item Supports the \"Gregorian\" calendar only
+@end itemize")
+    (license license:expat)))
+
+(define-public go-github-com-go-playground-universal-translator
+  (package
+    (name "go-github-com-go-playground-universal-translator")
+    (version "0.17.0")
+    (home-page "https://github.com/go-playground/universal-translator")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zdiaisb32iv4x93cpbqrgx8ll7sxh4hcd2iibpswy4bwvjbjlz6"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/go-playground/universal-translator"))
+    (propagated-inputs
+     `(("go-github-com-go-playground-locales" ,go-github-com-go-playground-locales)))
+    (synopsis "Translator using Unicode CLDR data and pluralization rules")
+    (description
+     "This package offers an Internalization Translator for Go using
+@uref{http://cldr.unicode.org/, Unicode CLDR Project} data and pluralization
+rules.  Its currently implemented features include
+
+@itemize
+@item Rules generated from the CLDR data, v30.0.3
+@item Contains Cardinal, Ordinal and Range Plural Rules
+@item Contains Month, Weekday and Timezone translations built in
+@item Contains Date & Time formatting functions
+@item Contains Number, Currency, Accounting and Percent formatting functions
+@item Supports the \"Gregorian\" calendar only
+@item Support loading translations from files
+@item Exporting translations to file(s), mainly for getting them
+professionally translated
+@end itemize")
+    (license license:expat)))
+
+(define-public go-gopkg-in-go-playground-validator-v9
+  (package
+    (name "go-gopkg-in-go-playground-validator-v9")
+    (version "9.31.0")
+    (home-page "https://gopkg.in/go-playground/validator.v9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-playground/validator")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f8c77s8kx9rip2jarv27x5s4xkcmanh4ndyhbcwvrhncs5rq061"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/go-playground/validator.v9"))
+    (native-inputs
+     `(("go-gopkg-in-go-playground-assert-v1"
+        ,go-gopkg-in-go-playground-assert-v1)))
+    (propagated-inputs
+     `(("go-github-com-go-playground-universal-translator"
+        ,go-github-com-go-playground-universal-translator)
+       ("go-github-com-leodido-go-urn" ,go-github-com-leodido-go-urn)))
+    (synopsis "Validator for structs and individual fields based on tags")
+    (description
+     "This package implements value validations for structs and individual
+fields based on tags.  It has the following unique features:
+
+@itemize
+@item Cross Field and Cross Struct validations by using validation tags or
+custom validators
+@item Slice, Array and Map diving, which allows any or all levels of a
+multidimensional field to be validated
+@item Ability to dive into both map keys and values for validation
+@item Handles type interface by determining it's underlying type prior to validation
+@item Handles custom field types such as sql driver
+@uref{https://golang.org/src/database/sql/driver/types.go?s=1210:1293#L29,
+Valuer}
+@item Alias validation tags, which allows for mapping of several validations
+to a single tag for easier defining of validations on structs
+@item Extraction of custom defined Field Name e.g. can specify to extract the
+JSON name while validating and have it available in the resulting FieldError
+@item Customizable i18n aware error messages.
+@item Default validator for the @uref{https://github.com/gin-gonic/gin, gin}
+web framework
+@end itemize")
+    (license license:expat)))
 
 (define-public go-github-com-aws-sdk
   (package
@@ -799,6 +1062,18 @@ for the Go language.")
       (description "This package provides supplemental Go networking libraries.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
+
+(define-public go-golang-org-x-net-html
+  (package
+    (inherit go-golang-org-x-net)
+    (name "go-golang.org-x-net-html")
+    (arguments
+     '(#:import-path "golang.org/x/net/html"
+       #:unpack-path "golang.org/x/net"))
+    (synopsis "HTML5-compliant tokenizer and parser")
+    (description
+     "This package provides an HTML5-compliant tokenizer and parser.")
+    (home-page "https://godoc.org/golang.org/x/net/html")))
 
 (define-public go-golang-org-x-image
   (let ((commit "58c23975cae11f062d4b3b0c143fe248faac195d")
@@ -3324,6 +3599,23 @@ as conversion to and from @command{net.Addr}.")
 building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
     (license license:expat)))
+
+(define-public go-github-com-urfave-cli-v2
+  (package
+    (inherit go-github-com-urfave-cli)
+    (name "go-github-com-urfave-cli-v2")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/urfave/cli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08pvn7gyfznni72xrxfh2x6xxa8ykr7l1ka278js8g8qkh71bj8l"))))
+    (arguments
+     '(#:import-path "github.com/urfave/cli/v2"))))
 
 (define-public go-github-com-go-md2man
   (package
@@ -6315,6 +6607,43 @@ systems can import this package to enable running programs as services without
 modifying them.")
     (license license:zlib)))
 
+(define-public go-github-com-goccy-yaml
+  (package
+    (name "go-github-com-goccy-yaml")
+    (version "1.8.0")
+    (home-page "https://github.com/goccy/go-yaml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nps58dwkd915mx35h5f0dc05b880b4fdl6dcjxpfmmbzyinvg38"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/goccy/go-yaml"))
+    (propagated-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-golang-org-x-xerrors" ,go-golang-org-x-xerrors)))
+    (native-inputs
+     `(("go-gopkg-in-go-playground-validator-v9"
+        ,go-gopkg-in-go-playground-validator-v9)))
+    (synopsis "YAML support for the Go language")
+    (description
+     "This package provides features beyond the
+@uref{https://github.com/go-yaml/yaml, defacto YAML library} including:
+
+@itemize
+@item Pretty format for error notifications
+@item Support Scanner or Lexer or Parser as public API
+@item Support Anchor and Alias to Marshaler
+@item Allow referencing elements declared in another file via anchors
+@item Extract value or AST by YAMLPath (YAMLPath is like a JSONPath)
+@end itemize")
+    (license license:expat)))
+
 (define-public go-github.com-ulikunitz-xz
   (package
     (name "go-github.com-ulikunitz-xz")
@@ -6336,3 +6665,29 @@ modifying them.")
 compressed streams in Go.")
     (home-page "https://github.com/ulikunitz/xz")
     (license license:bsd-3)))
+
+(define-public go-github-com-songmu-gitconfig
+  (package
+    (name "go-github-com-songmu-gitconfig")
+    (version "0.1.0")
+    (home-page "https://github.com/songmu/gitconfig")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y01h496a7pfj1g2bclls5b0nl3vnj7nz610jj1dzq9kxrwxk7fk"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/Songmu/gitconfig"
+       ;; Package's tests appear to be hardcoded to the author's gitconfig
+       ;; and require network access.
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-github-com-goccy-yaml" ,go-github-com-goccy-yaml)))
+    (synopsis "Go library to get configuration values from gitconfig")
+    (description "@{gitconfig} is a package to get configuration values from gitconfig.")
+    (license license:expat)))

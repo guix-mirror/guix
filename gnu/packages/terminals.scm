@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -932,14 +932,14 @@ than a terminal.")
 (define-public python-curtsies
   (package
     (name "python-curtsies")
-    (version "0.2.11")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "curtsies" version))
        (sha256
         (base32
-         "1vljmw3sy6lrqahhpyg4gk13mzcx3mwhvg8s41698ms3cpgkjipc"))))
+         "019bpf5wmng4f6ic2ykg893ypfihpfvzi6dhblcagfwbincl79ac"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -954,16 +954,13 @@ than a terminal.")
      `(("python-mock" ,python-mock)
        ("python-pyte" ,python-pyte)
        ("python-nose" ,python-nose)))
-    (home-page "https://github.com/thomasballinger/curtsies")
+    (home-page "https://github.com/bpython/curtsies")
     (synopsis "Library for curses-like terminal interaction with colored
 strings")
     (description "Curtsies is a Python library for interacting with the
 terminal.  It features string-like objects which carry formatting information,
 per-line fullscreen terminal rendering, and keyboard input event reporting.")
     (license license:expat)))
-
-(define-public python2-curtsies
-  (package-with-python2 python-curtsies))
 
 (define-public tmate
   (package
@@ -1432,7 +1429,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
 (define-public bootterm
   (package
     (name "bootterm")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1441,7 +1438,7 @@ terminal.  Note that you need support for OpenGL 3.2 or higher.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mh2i47ppcrw027nmkpjgbmx55ml21bmqihvwkhlvj1jr0vv8pva"))))
+                "08yb4kiid3028cqsx7wzyrzk46asphxlxlj1y141hi245wbql55n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no test suite

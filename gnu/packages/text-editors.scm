@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -787,6 +788,14 @@ editors.")
                (substitute* "packages/linux/icons.sh"
                  (("/usr/share")
                   (string-append out "/share")))
+               #t)))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install desktop file.
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (source "TeXmacs/misc/mime/texmacs.desktop"))
+               (install-file source apps)
                #t)))
          (add-before 'configure 'gzip-flags
            (lambda _

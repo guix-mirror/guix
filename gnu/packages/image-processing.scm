@@ -7,11 +7,12 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Oleh Malyi <astroclubzp@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -251,38 +253,69 @@ many popular formats.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each
+                    (lambda (dir)
+                      (delete-file-recursively
+                        (string-append "ThirdParty/" dir "/vtk" dir)))
+                    ;; ogg, pugixml depended upon unconditionally
+                    '("doubleconversion" "eigen" "expat" "freetype" "gl2ps"
+                      "glew" "hdf5" "jpeg" "jsoncpp" "libproj" "libxml2" "lz4"
+                      "netcdf" "png" "sqlite" "theora" "tiff" "zlib"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
-       ;; -DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE requires netcdf_cxx
-       #:configure-flags '("-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+       #:configure-flags '(;"-DBUILD_TESTING:BOOL=TRUE"
+                           ;"-DVTK_MODULE_USE_EXTERNAL_vtkogg:BOOL=TRUE"    ; not honored
+                           "-DVTK_USE_SYSTEM_DOUBLECONVERSION:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EIGEN:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GL2PS:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_GLEW:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBPROJ:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_OGGTHEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LZ4:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           ;"-DVTK_USE_SYSTEM_PUGIXML:BOOL=TRUE"    ; breaks IO/CityGML
+                           "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
-       #:tests? #f))                              ;XXX: no "test" target
+       #:tests? #f))        ;XXX: test data not included
     (inputs
-     `(("libXt" ,libxt)
-       ("xorgproto" ,xorgproto)
-       ("libX11" ,libx11)
-       ("libxml2" ,libxml2)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
+     `(("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
        ("expat" ,expat)
        ("freetype" ,freetype)
+       ("gl2ps" ,gl2ps)
+       ("glew" ,glew)
+       ("glu" ,glu)
        ("hdf5" ,hdf5)
        ("jpeg" ,libjpeg-turbo)
        ("jsoncpp" ,jsoncpp)
-       ("libogg" ,libogg)
+       ;("libogg" ,libogg)
        ("libtheora" ,libtheora)
+       ("libX11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libXt" ,libxt)
+       ("lz4" ,lz4)
+       ("mesa" ,mesa)
+       ("netcdf" ,netcdf)
        ("png" ,libpng)
+       ("proj" ,proj.4)
+       ;("pugixml" ,pugixml)
+       ("sqlite" ,sqlite)
        ("tiff" ,libtiff)
+       ("xorgproto" ,xorgproto)
        ("zlib" ,zlib)))
     (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
@@ -520,7 +553,7 @@ vision algorithms.  It can be used to do things like:
 (define-public vips
   (package
     (name "vips")
-    (version "8.7.4")
+    (version "8.10.5")
     (source
      (origin
        (method url-fetch)
@@ -528,33 +561,33 @@ vision algorithms.  It can be used to do things like:
              "https://github.com/libvips/libvips/releases/download/v"
              version "/vips-" version ".tar.gz"))
        (sha256
-        (base32 "01gjhcrl6zj7mcj1al717v5jsniahplqhz1xkfh2j78vyfl1hxff"))))
+        (base32 "1n6gw7cw66rfn1wdb92ydpkv7gfmjiinsg6d6gqxpdja6gsz5vm4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)))
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("expat" ,expat)
+       ("fftw" ,fftw)
+       ("giflib" ,giflib)
+       ("glib" ,glib)
+       ("hdf5" ,hdf5)
+       ("imagemagick" ,imagemagick)
+       ("lcms" ,lcms)
+       ("libexif" ,libexif)
+       ("libgsf" ,libgsf)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("librsvg" ,librsvg)
        ("libtiff" ,libtiff)
-       ("libexif" ,libexif)
-       ("giflib" ,giflib)
-       ("libgsf" ,libgsf)
-       ("fftw" ,fftw)
-       ("poppler" ,poppler)
-       ("pango" ,pango)
-       ("lcms" ,lcms)
-       ("matio" ,matio)
+       ("libxml2" ,libxml2)
        ("libwebp" ,libwebp)
+       ("matio" ,matio)
        ("niftilib" ,niftilib)
        ("openexr" ,openexr)
        ("orc" ,orc)
-       ("imagemagick" ,imagemagick)
-       ("libxml2" ,libxml2)
-       ("expat" ,expat)
-       ("hdf5" ,hdf5)))
+       ("pango" ,pango)
+       ("poppler" ,poppler)))
     (home-page "https://libvips.github.io/libvips/")
     (synopsis "Multithreaded image processing system with low memory needs")
     (description
@@ -1064,3 +1097,27 @@ this project.
 Scan Tailer Advanced is a fork of Scan Tailer that merges Scan Tailor Featured
 and Scan Tailor Enhanced versions as well as including many more bug fixes.")
       (license license:gpl3+))))
+
+(define-public stiff
+  (package
+    (name "stiff")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/stiff/stiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "14m92dskzw7bwsr64ha4p0mj3ndv13gwcbfic3qxrs3zq5353s7l"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libtiff" ,libtiff)
+       ("zlib" ,zlib)
+       ("libjpeg-turbo" ,libjpeg-turbo)))
+    (home-page "https://www.astromatic.net/software/stiff")
+    (synopsis "Convert scientific FITS images to TIFF format")
+    (description
+     "STIFF is a program that converts scientific @acronym{FITS, Flexible Image
+Transport System} images to the more popular TIFF format for illustration
+purposes.")
+    (license license:gpl3+)))

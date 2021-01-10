@@ -1,0 +1,46 @@
+https://github.com/gpsbabel/gpsbabel/commit/465a74194d53acea5c8d74c5cf3cb2940546ec92.patch
+Can be removed next release
+
+From 465a74194d53acea5c8d74c5cf3cb2940546ec92 Mon Sep 17 00:00:00 2001
+From: tsteven4 <13596209+tsteven4@users.noreply.github.com>
+Date: Fri, 7 Aug 2020 11:29:22 -0600
+Subject: [PATCH] fix i386 regression error with engima. (#620)
+
+this was motivated by the test failure seen at
+https://buildd.debian.org/status/fetch.php?pkg=gpsbabel&arch=i386&ver=1.7.0%2Bds-4&stamp=1596794554&raw=0
+---
+ enigma.cc | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/enigma.cc b/enigma.cc
+index 850f27b4e..32fea92d6 100644
+--- a/enigma.cc
++++ b/enigma.cc
+@@ -21,9 +21,16 @@
+ 
+  */
+ 
++#include <cmath>           // for fabs, lround
++#include <cstdint>         // for int32_t, uint8_t, uint32_t
++#include <cstdlib>         // for abs
++#include <cstring>         // for strlen, memcpy, memset
++
++#include <QtCore/QString>  // for QString
++
+ #include "defs.h"
+-#include <cmath>
+-#include <cstdlib>
++#include "gbfile.h"        // for gbfclose, gbfopen_le, gbfread, gbfwrite, gbfile
++
+ 
+ #define MYNAME "Enigma binary route and waypoint file format"
+ 
+@@ -177,7 +184,7 @@ enigma_waypt_disp(const Waypoint* wpt)
+   le_write32(&ewpt.longitude, decToEnigmaPosition(wpt->longitude));
+   ewpt.waypoint_type = WTYPE_WAYPOINT;
+   if (wpt->altitude != unknown_alt) {
+-    le_write32(&ewpt.data.wp_altitude, METERS_TO_FEET(wpt->altitude) + 1000);
++    le_write32(&ewpt.data.wp_altitude, lround(METERS_TO_FEET(wpt->altitude)) + 1000);
+   }
+   if (wpt->shortname != nullptr) {
+     ewpt.shortname_len = (uint8_t) min(6, strlen(CSTRc(wpt->shortname)));

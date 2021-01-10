@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,14 +164,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.29.2")
+   (version "2.30.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1h87yv117ypnc0yi86941089c14n91gixk8b6shj2y35prp47z7j"))))
+              "06ad6dylgla34k9am7d5z8y3rryc8ln3ibq5z0d74rcm20hm0wsm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -187,7 +188,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "14npkg9rnp2yclsx5p622qpm6byzfy5k5wb209vkmm5r60m4mm72"))))
+            "0xngjg60rwzrb9x32d1qbdd8szkzwcyha5qni7ilkldxsl2q8avv"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -2318,13 +2319,13 @@ based on a manifest file published by servers.")
 (define-public b4
   (package
     (name "b4")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "b4" version))
        (sha256
-        (base32 "01qid6mvddikcdpf2ihsyn8x3z5j2n64g0ip9pqbx42hrc50pmcz"))))
+        (base32 "1j904dy9cwxl85k2ngc498q5cdnqwsmw3jibjr1m55w8aqdck68z"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; No tests.
     (inputs
@@ -2962,3 +2963,54 @@ commit message side by side
 
 If several repos are related, it helps to see their status together.")
       (license license:expat))))
+
+(define-public ghq
+  (package
+    (name "ghq")
+    (version "1.1.5")
+    (home-page "https://github.com/x-motemen/ghq")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "098fik155viylq07az7crzbgswcvhpx0hr68xpvyx0rpri792jbq"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:install-source? #f
+       #:import-path "github.com/x-motemen/ghq"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key outputs import-path #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash-completion (string-append out "/etc/bash_completion.d"))
+                    (zsh-completion (string-append out "/share/zsh/site-functions")))
+               (with-directory-excursion (string-append "src/" import-path)
+                 (mkdir-p bash-completion)
+                 (copy-file "misc/bash/_ghq"
+                            (string-append bash-completion "/ghq"))
+                 (mkdir-p zsh-completion)
+                 (copy-file "misc/zsh/_ghq"
+                            (string-append zsh-completion "/_ghq"))))
+             #t)))))
+    (native-inputs
+     `(("git" ,git-minimal)))
+    (inputs
+     `(("github.com/songmu/gitconfig" ,go-github-com-songmu-gitconfig)
+       ("github.com/mattn/go-isatty" ,go-github-com-mattn-go-isatty)
+       ("github.com/motemen/go-colorine" ,go-github-com-motemen-go-colorine)
+       ("github.com/saracen/walker" ,go-github-com-saracen-walker)
+       ("github.com/urfave/cli/v2" ,go-github-com-urfave-cli-v2)
+       ("golang.org/x/net/html" ,go-golang-org-x-net-html)
+       ("golang.org/x/sync/errgroup" ,go-golang.org-x-sync-errgroup)))
+    (synopsis "Manage remote repository clones")
+    (description
+     "@code{ghq} provides a way to organize remote repository clones, like
+@code{go get} does.  When you clone a remote repository by @code{ghq get}, ghq
+makes a directory under a specific root directory (by default @file{~/ghq})
+using the remote repository URL's host and path.")
+    (license license:expat)))

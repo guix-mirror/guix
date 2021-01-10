@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -397,6 +397,8 @@ EXAMPLES =					\
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =					\
+  guix/d3.v3.js							\
+  guix/graph.js							\
   guix/store/schema.sql						\
   $(MODULES) $(MODULES_NOT_COMPILED) $(AUX_FILES) $(EXAMPLES)	\
   $(MISC_DISTRO_FILES)
@@ -460,7 +462,6 @@ SCM_TESTS =					\
   tests/monads.scm				\
   tests/nar.scm				\
   tests/networking.scm				\
-  tests/offload.scm				\
   tests/opam.scm				\
   tests/openpgp.scm				\
   tests/packages.scm				\
@@ -496,6 +497,12 @@ SCM_TESTS =					\
   tests/utils.scm				\
   tests/uuid.scm				\
   tests/workers.scm
+
+if BUILD_DAEMON_OFFLOAD
+SCM_TESTS  += tests/offload.scm
+else
+EXTRA_DIST += tests/offload.scm
+endif
 
 SH_TESTS =					\
   tests/guix-build.sh				\
@@ -611,8 +618,6 @@ EXTRA_DIST +=						\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
   build-aux/update-NEWS.scm				\
-  d3.v3.js						\
-  graph.js						\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\

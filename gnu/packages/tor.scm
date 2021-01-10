@@ -253,7 +253,7 @@ networks.")
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
-     `(("python-pycrypto" ,python-pycrypto)
+     `(("python-pycryptodome" ,python-pycryptodome)
        ("python-flask" ,python-flask)
        ("python-flask-httpauth" ,python-flask-httpauth)
        ("python-nautilus" ,python-nautilus)

@@ -16,7 +16,7 @@
 ;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -1215,14 +1215,14 @@ none of them have everything that I'd like, so here's one more.  It uses
 (define-public python-libnacl
   (package
     (name "python-libnacl")
-    (version "1.6.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "libnacl" version))
        (sha256
         (base32
-         "0nv7n8nfswkhl614x5mllrkvaslraa0053q11iylb337cy43vb4v"))))
+         "0srx7i264v4dq9and8y6gpzzhrg8jpxs5iy9ggw4plimfj0rjfdm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1230,11 +1230,10 @@ none of them have everything that I'd like, so here's one more.  It uses
          (add-after 'unpack 'locate-libsodium
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "libnacl/__init__.py"
-               (("(return ctypes.cdll.LoadLibrary\\(')libsodium.so('\\))"
-                 _ pre post)
-                (let ((libsodium (string-append (assoc-ref inputs "libsodium")
-                                                "/lib/libsodium.so")))
-                  (string-append pre libsodium post)))))))))
+               (("/usr/local/lib/libsodium.so")
+                (string-append (assoc-ref inputs "libsodium")
+                               "/lib/libsodium.so")))
+             #t)))))
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
     (inputs

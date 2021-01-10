@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -189,15 +189,18 @@ language with thin bindings for other languages.")
     (name "udunits")
     ;; Four-part version numbers are development snapshots, not releases.  See
     ;; <https://github.com/Unidata/UDUNITS-2/issues/99#issuecomment-732323472>.
-    (version "2.2.26")
+    (version "2.2.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/udunits/"
                                   "udunits-" version ".tar.gz"))
               (sha256
                (base32
-                "0v9mqw4drnkzkm57331ail6yvs9485jmi37s40lhvmf7r5lli3rn"))))
+                "17jpbp6f0rr132jn2gqy8ry8mv1w27v6dyhfq1igv8v1674aw2sr"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (inputs
      `(("expat" ,expat)))
     (home-page "https://www.unidata.ucar.edu/software/udunits/")

@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -352,7 +353,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.10-version "5.10.3")
+(define-public linux-libre-5.10-version "5.10.6")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -360,7 +361,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "09cml495fnf52lhlkjxjznw34q5s8arvq7shkb6wjq6fwlrk65gr")))
+        (hash (base32 "02v91afra3pcwfws74wxdsm8pfc57vws659b7j6jmsxm3hnd0rvp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
@@ -368,7 +369,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.85")
+(define-public linux-libre-5.4-version "5.4.88")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -376,12 +377,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0220k327aa7gg48fqw171mcng8h717c4a1v14r3q36ksirnmiqqx")))
+        (hash (base32 "1ci432xanm7glgg05012kh43pfi4k771kzih0816y5674v0hg02b")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.163")
+(define-public linux-libre-4.19-version "4.19.166")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +390,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1z65iwwyx2b01fncygckmhpxirzs52qfqmv3agirn4laxgjw9viy")))
+        (hash (base32 "03l86ykdjs5wa0n4wknpgy9dv2r6l92qfsyak373jkhs684z53mr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.213")
+(define-public linux-libre-4.14-version "4.14.214")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +403,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "079axkl14jp8lz30h21q4gmhmjw6zf5ycmxji65kgcgyg7dwwyzx")))
+        (hash (base32 "07ir4yw7s5c6yb3gjbgjvcqqdgpbsjxrvapgh6zs22ffd8hrchpm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.249")
+(define-public linux-libre-4.9-version "4.9.250")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +416,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0kjcw0vgga9msgqnipgg028v3rcc5am2d094v3hqkkjvzyb8dwxi")))
+        (hash (base32 "15vizxd2i2311skjank406ny3bc30c5rz2p9jvh5xz1yv12vzgcy")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.249")
+(define-public linux-libre-4.4-version "4.4.250")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +429,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "04pb4vgia6zaindf6804gq9jn3mhmy01yijqmpi79sh9rlqzzh1i")))
+        (hash (base32 "12m14j8654rawj2znkyhvcnwnf53x10zlghxd0mpl8dfzwvn2f5b")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -903,7 +904,8 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                       %default-extra-linux-options)))
 
-;; Linux-Libre-LTS means the *current* long-term support version of Linux-Libre.
+;; Linux-Libre-LTS points to the *newest* released long-term support version of
+;; Linux-Libre.
 ;; Reference: https://jxself.org/linux-libre/
 
 (define-public linux-libre-lts-version         linux-libre-5.10-version)
@@ -2248,6 +2250,53 @@ IPv6 packet filter.
 Both commands are targeted at system administrators.")
     (license license:gpl2+)))
 
+(define-public jitterentropy-rngd
+  (package
+    (name "jitterentropy-rngd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/smuellerDD/jitterentropy-rngd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fb8zfwhwkl1d8n4cdn7rdv5rwd75qgc00d36pmkl7wgnj3c9xda"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "UNITDIR=$(PREFIX)/lib/systemd/system")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no ./configure script
+    (home-page "https://www.chronox.de/jent.html")
+    (synopsis "CPU jitter random number generator daemon")
+    (description
+     "This simple daemon feeds entropy from the CPU Jitter @acronym{RNG, random
+number generator} core to the kernel Linux's entropy estimator.  This prevents
+the @file{/dev/random} device from blocking and should benefit users of the
+preferred @file{/dev/urandom} and @code{getrandom()} interfaces too.
+
+The CPU Jitter RNG itself is part of the kernel and claims to provide good
+entropy by collecting and magnifying differences in CPU execution time as
+measured by the high-resolution timer built into modern CPUs.  It requires no
+additional hardware or external entropy source.
+
+The random bit stream generated by @command{jitterentropy-rngd} is not processed
+by a cryptographically secure whitening function.  Nonetheless, its authors
+believe it to be a suitable source of cryptographically secure key material or
+other cryptographically sensitive data.
+
+If you agree with them, start this daemon as early as possible to provide
+properly seeded random numbers to services like SSH or those using TLS during
+early boot when entropy may be low, especially in virtualised environments.")
+    (license (list license:bsd-3        ; or
+                   license:gpl2+))))
+
 (define-public lsscsi
   (package
     (name "lsscsi")
@@ -3421,7 +3470,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.03.10")
+    (version "2.03.11")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://sourceware.org/ftp/lvm2/LVM2."
@@ -3430,7 +3479,7 @@ devices that can inject events directly into the input subsystem.")
                                         version ".tgz")))
               (sha256
                (base32
-                "1l0fkn9abrgk5mfn6jfh9qhdr86b59l1c5pk6lp8jh0491d69las"))
+                "1m4xpda8vbyd89ca0w8nacvnl4j34yzsa625gn990fb5sh84ab44"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -5320,6 +5369,92 @@ kernel module provided by the @code{acpi-call-linux-module} package, which must
 be installed and loaded separately.  Only the original vendor firmware is
 supported.")
     (license license:gpl3+)))
+
+(define-public tmon
+  (package
+    (name "tmon")
+    ;; Tmon's ‘VERSION = 1.0’ hasn't been touched since 2013; the code has.
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "INSTALL_ROOT=" (assoc-ref %outputs "out"))
+             "BINDIR=bin")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/thermal/tmon")
+             #t))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man8 (string-append out "/share/man/man8")))
+               (install-file "tmon.8" man8)
+               #t)))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Monitor and test the Linux thermal subsystem in real time")
+    (description
+     "Tmon is a tool to interact with the complex thermal subsystem of the
+kernel Linux.  It helps visualize thermal relationships and real-time thermal
+data, tune and test cooling devices and sensors, and collect thermal data for
+further analysis.
+
+As computers become smaller and more thermally constrained, more sensors are
+added and new cooling capabilities introduced.  Thermal relationships can change
+dynamically.  Their complexity grows exponentially among cooling devices, zones,
+sensors, and trip points.
+
+Linux exposes this relationship through @file{/sys/class/thermal} with a matrix
+of symbolic links, trip point bindings, and device instances.  To traverse it
+by hand is no trivial task: @command{tmon} aims to make it understandable.")
+    (license (list license:gpl2         ; the man page
+                   license:gpl2+))))    ; the actual rest
+
+(define-public turbostat
+  (package
+    (name "turbostat")
+    ;; XXX turbostat reports a version like ‘20.09.30’ but using it here would
+    ;; make it harder to benefit from ‘free’ linux-libre package updates.
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/power/x86/turbostat")
+             #t))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("libcap" ,libcap)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Report x86 processor frequency and idle statistics")
+    (description
+     "Turbostat reports x86 processor topology, frequency, idle power state
+statistics, temperature, and power consumption.  Some information is unavailable
+on older processors.
+
+It can be used to identify machines that are inefficient in terms of power usage
+or idle time, report the rate of @acronym{SMI, system management interrupt}s
+occurring on the system, or verify the effects of power management tuning.
+
+@command{turbostat} reads hardware counters but doesn't write to them, so it
+won't interfere with the OS or other running processes---including multiple
+invocations of itself.")
+    (license license:gpl2)))
 
 (define-public ntfs-3g
   (package
@@ -7304,7 +7439,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.13")
+    (version "0.3.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7313,7 +7448,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19j5kmb7iaivkq2agfzncfm2qms41ckqi0ddxvhpc91ihwprdc5w"))))
+                "1yghhgs18yqrnd0b2r75l5n8yng962r1wszbsi01v6i9zib3jc9g"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
@@ -7723,3 +7858,32 @@ helpers to setup and teardown io_uring instances, and also a simplified
 interface for applications that don't need (or want) to deal with the full
 kernel side implementation.")
     (license license:expat)))
+
+(define-public erofs-utils
+  (package
+    (name "erofs-utils")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07hvijq2hsn3gg1kb8abrfk23n83j57yx8kyv4wqgwhhvd30myjc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("libuuid" ,util-linux "lib")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
+    (synopsis "User-space tools for EROFS filesystem")
+    (description "EROFS (Enhanced Read-Only File System) is a compressed,
+read-only filesystem optimized for resource-scarce devices.  This package
+provides user-space tools for creating EROFS filesystems.")
+    (license license:gpl2+)))

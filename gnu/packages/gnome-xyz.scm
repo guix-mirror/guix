@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Ellis Kenyo <me@elken.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,12 +33,15 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ssh)
@@ -46,56 +50,45 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
-(define-public matcha-theme
+(define-public arc-icon-theme
   (package
-    (name "matcha-theme")
-    (version "2020-05-09")
+    (name "arc-icon-theme")
+    (version "20161122")
     (source
-      (origin
-        (method git-fetch)
-        (uri
-          (git-reference
-            (url "https://github.com/vinceliuice/Matcha-gtk-theme")
-            (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-          (base32
-            "0fp3ijynyvncy2byjjyba573p81x2pl2hdzv17mg40r8d5mjlkww"))))
-    (build-system trivial-build-system)
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/horst3180/arc-icon-theme")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ch3hp08qri93510hypzz6m2x4xgg2h15wvnhjwh1x1s1b7jvxjd"))))
+    (build-system gnu-build-system)
     (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((out (assoc-ref %outputs "out"))
-                (source (assoc-ref %build-inputs "source"))
-                (bash (assoc-ref %build-inputs "bash"))
-                (coreutils (assoc-ref %build-inputs  "coreutils"))
-                (themesdir (string-append out "/share/themes")))
-           (setenv "PATH"
-                   (string-append coreutils "/bin:"
-                                  (string-append bash "/bin:")))
-           (copy-recursively source (getcwd))
-           (patch-shebang "install.sh")
-           (mkdir-p themesdir)
-           (invoke "./install.sh" "-d" themesdir)
-           #t))))
-    (inputs
-     `(("gtk-engines" ,gtk-engines)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^\"\\$srcdir/configure\".*") ""))
+             #t)))))
     (native-inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)))
-    (synopsis "Flat design theme for GTK 3, GTK 2 and GNOME-Shell")
-    (description "Matcha is a flat Design theme for GTK 3, GTK 2 and
-Gnome-Shell which supports GTK 3 and GTK 2 based desktop environments
-like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
-    (home-page "https://github.com/vinceliuice/matcha")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    ;; When Arc is missing an icon, it looks in the Moka icon theme for it.
+    (propagated-inputs
+     `(("moka-icon-theme" ,moka-icon-theme)))
+    (synopsis "Arc icon theme")
+    (description "The Arc icon theme provides a set of icons matching the
+style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
+the Moka icon theme.")
+    (home-page "https://github.com/horst3180/arc-icon-theme")
     (license license:gpl3+)))
 
 (define-public delft-icon-theme
   (package
     (name "delft-icon-theme")
-    (version "1.12")
+    (version "1.14")
     (source
      (origin
        (method git-fetch)
@@ -104,7 +97,7 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1r6b6jf793jxz15ljniwbqy3vcvsl2712qiigfrfrm46fdxlshjd"))
+         "1iw85cxx9lv7irs28qi3815dk9f9vldv2j7jf1x5l1dqzwaxgwpb"))
        (file-name (git-file-name name version))))
     (build-system copy-build-system)
     (arguments
@@ -123,6 +116,93 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
 date app icons.  It will stay optically close to the original Faenza icons,
 which haven't been updated for some years.  The new app icons are ported from
 the Obsidian icon theme.")
+    (license license:gpl3)))
+
+(define-public faba-icon-theme
+  (package
+    (name "faba-icon-theme")
+    (version "4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/snwh/faba-icon-theme")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xh6ppr73p76z60ym49b4d0liwdc96w41cc5p07d48hxjsa6qd6n"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-post-install
+           (lambda _
+             (substitute* "meson.build"
+               (("meson.add_install_script.*") "")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Faba icon theme")
+    (description
+     "Faba is a minimal icon set used as a basis for other themes such as
+Moka")
+    (home-page "https://snwh.org/moka")
+    (license (list license:lgpl3+
+                   license:cc-by-sa4.0))))
+
+(define-public moka-icon-theme
+  (package
+    (inherit faba-icon-theme)
+    (name "moka-icon-theme")
+    (version "5.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/snwh/moka-icon-theme")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "015l02im4mha5z91dbchxf6xkp66d346bg3xskwg0rh3lglhjsrd"))))
+    (propagated-inputs
+     ;; Moka is based on Faba by using it as a fallback icon set instead of
+     ;; bundling it, so we need to add it as a propagated input.
+     `(("faba-icon-theme" ,faba-icon-theme)))
+    (synopsis "Moka icon theme")
+    (description "Moka is a stylized desktop icon set, designed to be clear,
+simple and consistent.")
+    (license (list license:gpl3+
+                   license:cc-by-sa4.0))))
+
+(define-public papirus-icon-theme
+  (package
+    (name "papirus-icon-theme")
+    (version "20210101")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
+             (commit version)))
+       (sha256
+        (base32
+         "0w6qg3zjhfvjg1gg5inranf8ianb4mrp0jm9qgi6hg87ig1rashs"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (delete 'build))))
+    (native-inputs
+     `(("gtk+:bin" ,gtk+ "bin")))
+    (home-page "https://git.io/papirus-icon-theme")
+    (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
+    (description "Papirus is a fork of the icon theme Paper with a lot of new icons
+and a few extra features.")
     (license license:gpl3)))
 
 (define-public gnome-shell-extension-appindicator
@@ -517,10 +597,54 @@ scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
 notebooks and tiling window managers.")
     (license license:gpl3)))
 
+(define-public arc-theme
+  (package
+    (name "arc-theme")
+    (version "20201013")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jnsh/arc-theme")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1x2l1mwjx68dwf3jb1i90c1q8nqsl1wf2zggcn8im6590k5yv39s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--disable-cinnamon")
+       #:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi")))
+         (add-before 'build 'set-home   ;placate Inkscape
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("inkscape" ,inkscape)
+       ("optipng" ,optipng)
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc/libsass-3.5)))
+    (synopsis "A flat GTK+ theme with transparent elements")
+    (description "Arc is a flat theme with transparent elements for GTK 3, GTK
+2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
+like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
+    (home-page "https://github.com/horst3180/arc-theme")
+    ;; No "or later" language found.
+    (license license:gpl3+)))
+
 (define-public greybird-gtk-theme
   (package
     (name "greybird-gtk-theme")
-    (version "3.22.12")
+    (version "3.22.13")
     (source (origin
               (method git-fetch)
               (uri
@@ -530,7 +654,7 @@ notebooks and tiling window managers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j66ddvl3pmwh2v8ajm8r5g5nbsr7r262ff1qn2nf3i0gy8b3lq8"))))
+                "154qawiga792iimkpk3a6q8f4gm4r158wmsagkbqqbhj33kxgxhg"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gtk+" ,gtk+)
@@ -544,6 +668,78 @@ notebooks and tiling window managers.")
     (description "Greybird is a grey derivative of the Bluebird theme by the
 Shimmer Project.  It supports GNOME, Unity, and Xfce.")
     (license (list license:gpl2+ license:cc-by-sa3.0))))
+
+(define-public matcha-theme
+  (package
+    (name "matcha-theme")
+    (version "2021-01-01")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/vinceliuice/Matcha-gtk-theme")
+            (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1pa6ra87wlq0gwz4n03l6xv0pxiamr5dygycvppms8v6xyc2aa0r"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (source (assoc-ref %build-inputs "source"))
+                (bash (assoc-ref %build-inputs "bash"))
+                (coreutils (assoc-ref %build-inputs  "coreutils"))
+                (themesdir (string-append out "/share/themes")))
+           (setenv "PATH"
+                   (string-append coreutils "/bin:"
+                                  (string-append bash "/bin:")))
+           (copy-recursively source (getcwd))
+           (patch-shebang "install.sh")
+           (mkdir-p themesdir)
+           (invoke "./install.sh" "-d" themesdir)
+           #t))))
+    (inputs
+     `(("gtk-engines" ,gtk-engines)))
+    (native-inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)))
+    (synopsis "Flat design theme for GTK 3, GTK 2 and GNOME-Shell")
+    (description "Matcha is a flat Design theme for GTK 3, GTK 2 and
+Gnome-Shell which supports GTK 3 and GTK 2 based desktop environments
+like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
+    (home-page "https://github.com/vinceliuice/matcha")
+    (license license:gpl3+)))
+
+(define-public materia-theme
+  (package
+    (name "materia-theme")
+    (version "20200916")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/nana-4/materia-theme")
+            (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0qaxxafsn5zd2ysgr0jyv5j73360mfdmxyd55askswlsfphssn74"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gtk+" ,gtk+)
+       ("sassc" ,sassc)))
+    (home-page "https://github.com/nana-4/materia-theme")
+    (synopsis "Material Design theme for a wide range of environments")
+    (description "Materia is a Material Design theme for GNOME/GTK based
+desktop environments.  It supports GTK 2, GTK 3, GNOME Shell, Budgie,
+Cinnamon, MATE, Unity, Xfce, LightDM, GDM, Chrome theme, etc.")
+    (license license:gpl2+)))
 
 (define-public numix-gtk-theme
   (package
@@ -583,40 +779,6 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 (define-public numix-theme
   (deprecated-package "numix-theme" numix-gtk-theme))
 
-(define-public papirus-icon-theme
-  (let ((version "0.0.0") ;; The package does not use semver
-        (revision "2")
-        (tag "20200602"))
-    (package
-      (name "papirus-icon-theme")
-      (version (git-version version revision tag))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
-               (commit tag)))
-         (sha256
-          (base32
-           "0yv19kl8jr2jmh9018b1qmnq68alw84vrmb35jm462qd3qzzdgah"))
-         (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'bootstrap)
-         (delete 'configure)
-         (delete 'build))))
-      (native-inputs
-       `(("gtk+:bin" ,gtk+ "bin")))
-      (home-page "https://git.io/papirus-icon-theme")
-      (synopsis "Fork of Paper icon theme with a lot of new icons and a few extras")
-      (description "Papirus is a fork of the icon theme Paper with a lot of new icons
-and a few extra features.")
-      (license license:gpl3))))
-
 (define-public vala-language-server
   (package
     (name "vala-language-server")
@@ -649,3 +811,31 @@ language specification for the Language Server Protocol (LSP).  This tool is
 used in text editing environments to provide a complete and integrated
 feature-set for programming Vala effectively.")
     (license license:lgpl2.1+)))
+
+(define-public nordic-theme
+  (let ((commit "07d764c5ebd5706e73d2e573f1a983e37b318915")
+	(revision "0"))
+  (package
+   (name "nordic-theme")
+   (version (git-version "1.9.0" revision commit))
+   (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/EliverLara/Nordic")
+             (commit commit)))
+     (sha256
+       (base32
+         "0y2s9d6h1b195s6afp1gb5rb1plfslkpbw2brd30a9d66wfvsqk0"))
+     (file-name (git-file-name name version))))
+   (build-system copy-build-system)
+   (arguments
+    `(#:install-plan
+      `(("." "share/themes/nord"
+         #:exclude ("README.md" "LICENSE" "Art/" "package.json"
+                    "package-lock.json" "Gulpfile.js")))))
+   (home-page "https://github.com/EliverLara/Nordic")
+   (synopsis "Dark Gtk3.20+ theme using the Nord color pallete")
+   (description "Nordic is a Gtk3.20+ theme created using the Nord color
+pallete.")
+   (license license:gpl3))))

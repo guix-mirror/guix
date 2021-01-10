@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
@@ -158,7 +158,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "5.2.2")
+    (version "5.2.3")
     (source
      (origin
        (method url-fetch)
@@ -166,11 +166,12 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "16sqx5hrqkciwnl6xs1b8mwf0fz7x9f4214jhj9s86w0mqiscw8g"))))
+        (base32 "0wlv3jala7xinl03fr6n0y3hmq9yi0wwn27k6snqhz4yyfdwhdnf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--enable-agent"
+             "--enable-ipv6"
              (string-append "--with-iconv="
                             (assoc-ref %build-inputs "libiconv"))
              (string-append "--with-libpcre="

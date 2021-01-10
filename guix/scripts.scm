@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,8 @@
   (development (G_ "software development commands"))
   (packaging   (G_ "packaging commands"))
   (plumbing    (G_ "plumbing commands"))
-  (internal    (G_ "internal commands")))
+  (internal    (G_ "internal commands"))
+  (extension   (G_ "extension commands")))
 
 (define-syntax define-command
   (syntax-rules (category synopsis)

@@ -334,7 +334,8 @@ as ordering relation.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "-DJSON_TestDataDirectory="
+       (list "-DJSON_MultipleHeaders=ON" ; For json_fwd.hpp.
+             (string-append "-DJSON_TestDataDirectory="
                             (assoc-ref %build-inputs "json_test_data")))
        #:phases (modify-phases %standard-phases
                   ;; XXX: When tests are enabled, the install phase will cause

@@ -40,7 +40,7 @@
 (define-public sequoia
   (package
     (name "sequoia")
-    (version "0.20.0")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -48,7 +48,7 @@
              (url "https://gitlab.com/sequoia-pgp/sequoia.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1c76sz4y0n4jhf1gq4b87v5c07i09mmd3i6sqki09bd96m3ldgkf"))
+        (base32 "0y80bl786m29ww3272qsl1ql0xc3pwd6iiqlkv3nmhnjsmygbn0d"))
        (file-name (git-file-name name version))))
     (build-system cargo-build-system)
     (outputs '("out" "python"))
@@ -70,14 +70,14 @@
      `(#:tests? #f ;; building the tests requires 9.7GB total
        #:rust ,rust-1.46
        #:cargo-inputs
-       (("rust-anyhow" ,rust-anyhow-1.0)
+       (("rust-anyhow" ,rust-anyhow-1)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-base64" ,rust-base64-0.13)
         ;;("rust-buffered-reader" included
         ("rust-bzip2" ,rust-bzip2-0.4)
-        ("rust-capnp" ,rust-capnp-0.10)
-        ("rust-capnp-rpc" ,rust-capnp-rpc-0.10)
-        ("rust-capnpc" ,rust-capnpc-0.10)
+        ("rust-capnp" ,rust-capnp-0.13)
+        ("rust-capnp-rpc" ,rust-capnp-rpc-0.13)
+        ("rust-capnpc" ,rust-capnpc-0.13)
         ("rust-chrono" ,rust-chrono-0.4)  ;; for sqv, sop
         ("rust-clap" ,rust-clap-2)        ;; for sqv
         ("rust-colored" ,rust-colored-1.9.1)
@@ -86,14 +86,16 @@
         ("rust-dirs" ,rust-dirs-2.0)
         ("rust-dyn-clone" ,rust-dyn-clone-1)
         ("rust-ed25519-dalek" ,rust-ed25519-dalek-1)
+        ("rust-eax" ,rust-eax-0.3)
         ;;("rust-failure" included
         ("rust-filetime" ,rust-filetime-0.2)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-fs2" ,rust-fs2-0.4)
-        ("rust-futures" ,rust-futures-0.1)
-        ("rust-http" ,rust-http-0.1)
-        ("rust-hyper" ,rust-hyper-0.12)
-        ("rust-hyper-tls" ,rust-hyper-tls-0.3)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-hyper" ,rust-hyper-0.13)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.4)
         ("rust-idna" ,rust-idna-0.2)
         ("rust-itertools" ,rust-itertools-0.9) ;; for sq
         ("rust-lalrpop" ,rust-lalrpop-0.19)
@@ -112,14 +114,16 @@
         ("rust-rand" ,rust-rand-0.7)
         ("rust-regex" ,rust-regex-1)
         ("rust-rusqlite" ,rust-rusqlite-0.24)
+        ("rust-sha1collisiondetection" ,rust-sha1collisiondetection-0.2)
+        ("rust-socket2", rust-socket2-0.3)
         ("rust-structopt" ,rust-structopt-0.3) ;; for sop
         ("rust-tempfile" ,rust-tempfile-3) ;; for sq
         ("rust-thiserror" ,rust-thiserror-1)
-        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio" ,rust-tokio-0.2)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
         ("rust-url" ,rust-url-2)
-        ("rust-win-crypto-ng" ,rust-win-crypto-ng-0.2)
+        ("rust-win-crypto-ng" ,rust-win-crypto-ng-0.4)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-zbase32" ,rust-zbase32-0.1))
        #:cargo-development-inputs

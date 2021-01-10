@@ -1,0 +1,121 @@
+Extracted from this commit without the ChangeLog to avoid conflicts:
+http://git.savannah.gnu.org/cgit/smalltalk.git/commit/?id=72ada189aba0283c551ead16635c1983968080b8
+
+The upstream commit message is
+From 72ada189aba0283c551ead16635c1983968080b8 Mon Sep 17 00:00:00 2001
+From: Holger Hans Peter Freyther <holger@moiji-mobile.com>
+Date: Sat, 7 Nov 2015 18:09:31 +0100
+Subject: libgst: Add alternative multiplication overflow check
+
+Apple clang on OSX and the version on FreeBSD optimize the
+multiplication check away. Clang introduced a family of
+builtins to do the multiplication and check for the overflow
+and GCC made the API usable. For clang we would need to know
+if intptr_t is of type int, long int, long long int and
+then use the smul, smull smulll.
+Luckily clang is adopting the better interface and this is
+what we are starting to use now. This means the new code
+will be used on GCC5 (and later) and some future versions of
+clang.
+
+2015-11-07  Holger Hans Peter Freyther  <holger@freyther.de>
+
+	* build-aux/overflow-builtins.m4: Add new macro.
+	* configure.ac: Use GST_C_OVERFLOW_BUILTINS macro.
+
+2015-11-07  Holger Hans Peter Freyther  <holger@freyther.de>
+
+	* interp.inl: Add alternative mul_with_check implementation.
+---
+ ChangeLog                      |  5 +++++
+ build-aux/overflow-builtins.m4 | 23 +++++++++++++++++++++++
+ configure.ac                   |  1 +
+ libgst/ChangeLog               |  4 ++++
+ libgst/interp.inl              | 22 ++++++++++++++++++++++
+ 5 files changed, 55 insertions(+)
+ create mode 100644 build-aux/overflow-builtins.m4
+
+diff --git a/build-aux/overflow-builtins.m4 b/build-aux/overflow-builtins.m4
+new file mode 100644
+index 00000000..9d050196
+--- /dev/null
++++ b/build-aux/overflow-builtins.m4
+@@ -0,0 +1,23 @@
++dnl Check whether the host supports synchronization builtins.
++
++AC_DEFUN([GST_C_OVERFLOW_BUILTINS], [
++  AC_REQUIRE([AC_CANONICAL_HOST])
++  AC_CACHE_CHECK([whether the host supports __builtin_mul_overflow],
++                 gst_cv_have_builtin_mul_overflow, [
++    save_CFLAGS="$CFLAGS"
++    case $host in
++      i?86-apple-darwin*) ;;
++      i?86-*-*) CFLAGS="$CFLAGS -march=i486" ;;
++    esac
++    AC_LINK_IFELSE([AC_LANG_PROGRAM([[int foovar = 0;]], [[
++if (__builtin_mul_overflow(44444, 55555, &foovar))
++	return 23;]])],
++		   [gst_cv_have_builtin_mul_overflow=yes],
++		   [gst_cv_have_builtin_mul_overflow=no])
++    CFLAGS="$save_CFLAGS"
++  ])
++  if test $gst_cv_have_builtin_mul_overflow = yes; then
++    AC_DEFINE(HAVE_OVERFLOW_BUILTINS, 1,
++              [Define to 1 if the host supports __builtin_*_overflow builtins])
++  fi
++])
+diff --git a/configure.ac b/configure.ac
+index e789be45..0bac23ef 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -243,6 +243,7 @@ GST_C_SYNC_BUILTINS
+ if test $gst_cv_have_sync_fetch_and_add = no; then
+   AC_MSG_ERROR([Synchronization primitives not found, please use a newer compiler.])
+ fi
++GST_C_OVERFLOW_BUILTINS
+ 
+ GST_LOCK
+ AC_SYS_LARGEFILE
+diff --git a/libgst/interp.inl b/libgst/interp.inl
+index e18e27c7..dbc631bc 100644
+--- a/libgst/interp.inl
++++ b/libgst/interp.inl
+@@ -159,6 +159,27 @@ sub_with_check (OOP op1, OOP op2, mst_Boolean *overflow)
+ OOP
+ mul_with_check (OOP op1, OOP op2, mst_Boolean *overflow)
+ {
++#ifdef HAVE_OVERFLOW_BUILTINS
++  intptr_t a = TO_INT (op1);
++  intptr_t b = TO_INT (op2);
++  intptr_t result;
++
++  if (__builtin_mul_overflow(a, b, &result))
++    {
++       *overflow = true;
++       return FROM_INT(0);
++    }
++
++
++  if (result < MIN_ST_INT || result > MAX_ST_INT)
++    {
++       *overflow = true;
++       return FROM_INT(0);
++    }
++
++  *overflow = false;
++  return FROM_INT(result);
++#else
+   intptr_t a = TO_INT (op1);
+   intptr_t b = TO_INT (op2);
+   intmax_t result = (intmax_t)a * b;
+@@ -188,6 +209,7 @@ mul_with_check (OOP op1, OOP op2, mst_Boolean *overflow)
+     }
+ 
+   return FROM_INT (0);
++#endif
+ }
+ 
+ /* State of the random generator.
+-- 
+2.29.2
+

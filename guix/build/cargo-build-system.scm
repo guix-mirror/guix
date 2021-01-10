@@ -183,12 +183,8 @@ directory = '" port)
     ;; otherwise cargo will raise an error.
     (or skip-build?
         (not (has-executable-target?))
-        (invoke "cargo" "install" "--path" "." "--root" out
+        (invoke "cargo" "install" "--no-track" "--path" "." "--root" out
                 "--features" (string-join features)))
-
-    ;; This is a file which we definitely don't need installed.
-    (when (file-exists? (string-append out "/.crates.toml"))
-      (delete-file (string-append out "/.crates.toml")))
 
     #t))
 

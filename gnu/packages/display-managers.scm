@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
 (define-public sddm
   (package
     (name "sddm")
-    (version "0.18.1")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -66,7 +67,7 @@
                     "sddm-" version ".tar.xz"))
               (sha256
                (base32
-                "0nilrhwlyvkngjgxfc08n73c16azgmw80pvx0a78xqww9y3hv4xh"))))
+                "0hcdysw8ibr66vk8i7v56l0v5ijvhlq67v4460mc2xf2910g2m72"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

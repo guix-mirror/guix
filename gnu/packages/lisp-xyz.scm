@@ -10,17 +10,17 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2020, 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
-;;; Copyright © 2020 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -782,12 +782,10 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (let ((revision "4")
-        ;; Update together with emacs-sly.
-        (commit "68561f1b7b66fa0240766ece836bb04da31ea17d"))
+  (let ((commit "dffdf3caa12e964127d6eb45ba92ac0442cc5a48"))
     (package
       (name "sbcl-slynk")
-      (version (git-version "1.0.0-beta" revision commit))
+      (version (git-version "1.0.43" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -796,7 +794,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (url "https://github.com/joaotavora/sly")
            (commit commit)))
          (sha256
-          (base32 "1xwx537dhgclngi6b0faf320i8pnac9309wvmk6z2g6dm3v652ds"))
+          (base32 "0vv185gz3rkfng5y79dijfnc11p92qdz2kdza05avjbpqfs6l0zn"))
          (file-name (git-file-name "slynk" version))
          (modules '((guix build utils)
                     (ice-9 ftw)))
@@ -819,7 +817,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
       (build-system asdf-build-system/sbcl)
       (outputs '("out" "image"))
       (arguments
-       `(#:tests? #f ; No test suite
+       `(#:tests? #f                    ; No test suite
          #:asd-systems '("slynk"
                          "slynk/arglists"
                          "slynk/fancy-inspector"
@@ -1727,7 +1725,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.53")
+    (version "0.54")
     (source
      (origin
        (method git-fetch)
@@ -1735,7 +1733,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "01qdfa0jggqbwlsb3aw1iigvs5xhnddk6kn3abhan59956dsbp02"))
+        (base32 "07g0wpvfqq2yk23prs890d4qvbnr3xd6w8ssd88g89xdg483wpvk"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -1789,6 +1787,40 @@ named readtables, which is akin to package namespacing in Common Lisp.")
 
 (define-public ecl-named-readtables
   (sbcl-package->ecl-package sbcl-named-readtables))
+
+(define-public sbcl-py-configparser
+  ;; NOTE: (Sharlatan <2021-01-05 Tue> <19:52:19 UTC+0000>) Project updated last
+  ;; time 8y ago, it looks like abandoned. VCS of the project:
+  ;; https://svn.common-lisp.net/py-configparser/trunk
+  (package
+    (name "sbcl-py-configparser")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/py-configparser/releases/"
+             "py-configparser-" version ".tar.gz"))
+       (sha256
+        (base32 "0i4rqz5cv7d7c2w81x5lwy05s6fbi3zikf4k5kpi3bkx3cabwdxj"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("parse-number" ,sbcl-parse-number)))
+    (home-page "http://common-lisp.net/project/py-configparser/")
+    (synopsis "ConfigParser Python module functionality for Common Lisp")
+    (description "The py-configparser package implements the ConfigParser
+Python module functionality in Common Lisp.  In short, it implements reading
+and writing of .INI-file style configuration files with sections containing
+key/value pairs of configuration options.  In line with the functionalities in
+the python module, does this package implement basic interpolation of option
+values in other options.")
+    (license license:expat)))
+
+(define-public cl-py-configparser
+  (sbcl-package->cl-source-package sbcl-py-configparser))
+
+(define-public ecl-py-configparser
+  (sbcl-package->ecl-package sbcl-py-configparser))
 
 (define-public sbcl-pythonic-string-reader
   (let ((commit "47a70ba1e32362e03dad6ef8e6f36180b560f86a"))
@@ -4279,8 +4311,8 @@ performance and simplicity in mind.")
   (sbcl-package->ecl-package sbcl-lack))
 
 (define-public sbcl-local-time
-  (let ((commit "62792705245168d3fc2e04164b9a143477284142")
-        (revision "1"))
+  (let ((commit "a177eb911c0e8116e2bfceb79049265a884b701b")
+        (revision "2"))
     (package
      (name "sbcl-local-time")
      (version (git-version "1.0.6" revision commit))
@@ -4292,16 +4324,10 @@ performance and simplicity in mind.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r5zq4l1lrgprdr2pw7wwry194yknnllyjf6lx7snypb3k4r3yir"))))
+        (base32 "0wld28xx20k0ysgg6akic5lg4vkjd0iyhv86m388xfrv8xh87wii"))))
      (build-system asdf-build-system/sbcl)
-     (arguments
-      ;; TODO: Component :STEFIL not found, required by #<SYSTEM
-      ;; "local-time/test">
-      '(#:tests? #f))
      (native-inputs
-      `(("stefil" ,sbcl-hu.dwim.stefil)))
-     (inputs
-      `(("sbcl-cl-fad" ,sbcl-cl-fad)))
+      `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
      (home-page "https://common-lisp.net/project/local-time/")
      (synopsis "Time manipulation library for Common Lisp")
      (description
@@ -4412,8 +4438,8 @@ mime-type of a file.")
   (sbcl-package->ecl-package sbcl-ningle))
 
 (define-public sbcl-cl-fastcgi
-  (let ((commit "d576d20eeb12f225201074b28934ba395b15781a")
-        (revision "1"))
+  (let ((commit "de8b49b26de9863996ec18db28af8ab7e8ac4e20")
+        (revision "2"))
     (package
       (name "sbcl-cl-fastcgi")
       (version (git-version "0.2" revision commit))
@@ -4425,7 +4451,7 @@ mime-type of a file.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "02mvzzyn0k960s38rbxaqqmdkwcfmyhf8dx6ynz8xyxflmp0s5zv"))))
+          (base32 "0xgmhx766q4nmrvn5z7ag3ikpr9phlh8ypi8b14azshq9lqbq0m7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("usocket" ,sbcl-usocket)
@@ -4446,8 +4472,6 @@ mime-type of a file.")
       (description
        "CL-FastCGI is a generic version of SB-FastCGI, targeting to run on
 mostly Common Lisp implementation.")
-      ;; TODO: Upstream on specifies "BSD license":
-      ;; https://github.com/KDr2/cl-fastcgi/issues/4
       (license license:bsd-2))))
 
 (define-public cl-fastcgi
@@ -6514,6 +6538,34 @@ trees to dispatch on string equality.")
 
 (define-public ecl-string-case
   (sbcl-package->ecl-package sbcl-string-case))
+
+(define-public sbcl-garbage-pools
+  (let ((commit "9a7cb7f48b04197c0495df3b6d2e8395ad13f790")
+        (revision "1"))
+    (package
+      (name "sbcl-garbage-pools")
+      (version (git-version "0.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/garbage-pools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04jqwr6j138him6wc4nrwjzm4lvyj5j31xqab02nkf8h9hmsf5v1"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/archimag/garbage-pools")
+      (synopsis "Resource management pools for Common Lisp")
+      (description "GARBAGE-POOLS is Common Lisp re-implementation of the APR
+Pools for resource management.")
+      (license license:expat))))
+
+(define-public ecl-garbage-pools
+  (sbcl-package->ecl-package sbcl-garbage-pools))
+
+(define-public cl-garbage-pools
+  (sbcl-package->cl-source-package sbcl-garbage-pools))
 
 (define-public sbcl-global-vars
   (let ((commit "c749f32c9b606a1457daa47d59630708ac0c266e")
@@ -9138,6 +9190,35 @@ foreign libraries.
                 " :ecl) \"usocket\""))
              #t)))))))
 
+(define-public sbcl-db3
+  (let ((commit "38e5ad35f025769fb7f8dcdc6e56df3e8efd8e6d")
+        (revision "1"))
+    (package
+      (name "sbcl-db3")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dimitri/cl-db3")
+               (commit commit)))
+         (file-name (git-file-name "cl-db3" version))
+         (sha256
+          (base32 "1i7j0mlri6kbklcx1lsm464s8kmyhhij5c4xh4aybrw8m4ixn1s5"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/dimitri/cl-db3")
+      (synopsis "Common Lisp library to read dBase III database files")
+      (description
+       "This is a Common Lisp library for processing data found in dBase III
+database files (dbf and db3 files).")
+      (license license:public-domain))))
+
+(define-public ecl-db3
+  (sbcl-package->ecl-package sbcl-db3))
+
+(define-public cl-db3
+  (sbcl-package->cl-source-package sbcl-db3))
+
 (define-public sbcl-dbi
   ;; Master includes a breaking change which other packages depend on since
   ;; Quicklisp decided to follow it:
@@ -10682,8 +10763,8 @@ and saving 2-dimensional pixel-based images.")
   (sbcl-package->ecl-package sbcl-opticl))
 
 (define-public sbcl-mcclim
-  (let ((commit "27b4d7a667c9b3faa74cabcb57706b888314fff7")
-        (revision "0"))
+  (let ((commit "04cc542dd4b461b9d56406e40681d1a8f080730f")
+        (revision "1"))
     (package
       (name "sbcl-mcclim")
       (version (git-version "0.9.7" revision commit))
@@ -10695,7 +10776,7 @@ and saving 2-dimensional pixel-based images.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0jijfgkwas6xnpp5wiii6slcx9pgsalngacb8zm29x6pamx2193h"))))
+          (base32 "1xjly8i62z72hfhlnz5kjd9i8xhrwckc7avyizxvhih67pkjmsx0"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)
@@ -10805,6 +10886,43 @@ Inflector module.")
 
 (define-public ecl-cl-inflector
   (sbcl-package->ecl-package sbcl-cl-inflector))
+
+(define-public sbcl-ixf
+  (let ((commit "ed26f87e4127e4a9e3aac4ff1e60d1f39cca5183")
+        (revision "1"))
+    (package
+      (name "sbcl-ixf")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dimitri/cl-ixf")
+               (commit commit)))
+         (file-name (git-file-name "cl-ixf" version))
+         (sha256
+          (base32 "1wjdnf4vr9z7lcfc49kl43g6l2i23q9n81siy494k17d766cdvqa"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("local-time" ,sbcl-local-time)
+         ("md5" ,sbcl-md5)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (home-page "https://github.com/dimitri/cl-ixf")
+      (synopsis "Parse IBM IXF file format")
+      (description
+       "This is a Common Lisp library to handle the IBM PC version of the IXF
+(Integration Exchange Format) file format.")
+      (license license:public-domain))))
+
+(define-public ecl-ixf
+  (sbcl-package->ecl-package sbcl-ixf))
+
+(define-public cl-ixf
+  (sbcl-package->cl-source-package sbcl-ixf))
 
 (define-public sbcl-qbase64
   (package
@@ -12743,3 +12861,109 @@ compression/decompression using bindings to the libzstd C library.")
 
 (define-public ecl-zstd
   (sbcl-package->ecl-package sbcl-zstd))
+
+(define-public sbcl-agnostic-lizard
+  (let ((commit "fe3a73719f05901c8819f8995a3ebae738257952")
+        (revision "1"))
+    (package
+      (name "sbcl-agnostic-lizard")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/mraskin/agnostic-lizard")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ax78y8w4zlp5dcwyhz2nq7j3shi49qn31dkfg8lv2jlg7mkwh2d"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Almost correct portable code walker for Common Lisp")
+      (description
+       "Agnostic Lizard is a portable implementation of a code walker and in
+particular of the macroexpand-all function (and macro) that makes a best
+effort to be correct while not expecting much beyond what the Common Lisp
+standard requires.
+
+It aims to be implementation-agnostic and to climb the syntax trees.")
+      (home-page "https://gitlab.common-lisp.net/mraskin/agnostic-lizard")
+      (license license:gpl3+))))
+
+(define-public cl-agnostic-lizard
+  (sbcl-package->cl-source-package sbcl-agnostic-lizard))
+
+(define-public ecl-agnostic-lizard
+  (sbcl-package->ecl-package sbcl-agnostic-lizard))
+
+(define-public sbcl-dynamic-classes
+  (package
+    (name "sbcl-dynamic-classes")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gwkkwg/dynamic-classes")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "dynamic-classes" version))
+       (sha256
+        (base32 "1z3ag6w4ff0v6715xa9zhvwjqnp4i6zrjfmxdz8m115sklbwgm6c"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("metatilities-base" ,sbcl-metatilities-base)))
+    (arguments
+     ;; NOTE: (Sharlatan-20210106222900+0000) Circular dependencies and failing
+     ;; test suites. lift-standard.config contains referances to deprecated
+     ;; functionality.
+     `(#:tests? #f))
+    (home-page "https://common-lisp.net/project/dynamic-classes/")
+    (synopsis "Dynamic class definition for Common Lisp")
+    (description "Dynamic-Classes helps to ease the prototyping process by
+bringing dynamism to class definition.")
+    (license license:expat)))
+
+(define-public ecl-dynamic-classes
+  (sbcl-package->ecl-package sbcl-dynamic-classes))
+
+(define-public cl-dynamic-classes
+  (sbcl-package->cl-source-package sbcl-dynamic-classes))
+
+(define-public sbcl-cl-markdown
+  ;; NOTE: (Sharlatan-20210106214629+0000) latest version tag
+  ;; "version-0.10.6_version-0.10.6" is failing to build due to missing system
+  ;; #:container-dynamic-classes
+  (package
+    (name "sbcl-cl-markdown")
+    (version "0.10.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gwkkwg/cl-markdown")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "cl-markdown" version))
+       (sha256
+        (base32 "1wdjbdd1zyskxf7zlilcp6fmwkivybj0wjp64vvzb265d5xi7p8p"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("anaphora" ,sbcl-anaphora)
+       ("cl-containers" ,sbcl-cl-containers)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("dynamic-classes" ,sbcl-dynamic-classes)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("metatilities-base" ,sbcl-metatilities-base)))
+    (arguments
+     ;; NOTE: (Sharlatan-20210107213629+0000) Tests depend on too many not
+     ;; available systems, which  themself are abandoned.
+     `(#:tests? #f))
+    (home-page "https://common-lisp.net/project/cl-markdown/")
+    (synopsis "Common Lisp rewrite of Markdown")
+    (description
+     "This is an implementation of a Markdown parser in Common Lisp.")
+    (license license:expat)))
+
+(define-public ecl-cl-markdown
+  (sbcl-package->ecl-package sbcl-cl-markdown))
+
+(define-public cl-markdown
+  (sbcl-package->cl-source-package sbcl-cl-markdown))

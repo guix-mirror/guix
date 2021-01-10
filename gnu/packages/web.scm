@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -43,7 +43,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
@@ -684,7 +684,7 @@ programming language.")))
 (define-public lighttpd
   (package
     (name "lighttpd")
-    (version "1.4.57")
+    (version "1.4.58")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.lighttpd.net/lighttpd/"
@@ -692,7 +692,7 @@ programming language.")))
                                   "lighttpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0zr1ssagirv5l4r2ii1k9v366a4vwylwbq74nb5pwby1i4drdjjj"))))
+                "03kd28nq6wndvvyk0zs5120ajvg1icnif5bvrsyhw69sl7yyyzr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1478,7 +1478,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.26")
+    (version "0.8.29")
     (source
      (origin
        (method git-fetch)
@@ -1487,7 +1487,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zw68mgmmicbkvx7s22knvm8nng5qn41b1chn35prhkla3kx1jn1"))
+        (base32 "142gc21aaqmx0d01vmqsg7zi85pjgi3higr4ba0m52qf3mvxd6as"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3867,8 +3867,7 @@ exists it is used instead.")
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-libwww" ,perl-libwww)
-       ;; Users should instead make sure SSL_ca_path is set properly.
-       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-http" ,perl-net-http)))
     (home-page "https://metacpan.org/release/LWP-Protocol-https")
     (synopsis "HTTPS support for LWP::UserAgent")
@@ -4634,8 +4633,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "c596a1c6a90bb2fe07da5339b8dc832b81d94194")
-        (revision "21"))
+  (let ((commit "e3878fefb4184f3ad45a6e6f434767c0bf109db8")
+        (revision "23"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4647,7 +4646,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "09gn2imhh3aqkzray0xgkz7slriy567inh5lpkxm74bgmx862g3g"))))
+                  "0002ckayjnd6mw7a0m7q307jdwc9vsjgiidp72463xyp0yrnjdjf"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -5127,6 +5126,7 @@ NetSurf project.")
        ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
        ("perl-xml-twig" ,perl-xml-twig)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("po4a" ,po4a)))
     (propagated-inputs
      `(("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
@@ -7638,15 +7638,14 @@ HTTrack is fully configurable, and has an integrated help system.")
 (define-public buku
   (package
     (name "buku")
-    (version "4.4")
+    (version "4.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "buku" version))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1g1xhdskfn72xaraqzz2v8dl2iza7bzfpn17z2wdrzkq3ih7yvgg"))))
+        (base32 "1bk3h2ya34a5livyf6p7kawh50ikbix5szsq2rkb8cp5bwrzsj5i"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;FIXME: many tests need network access

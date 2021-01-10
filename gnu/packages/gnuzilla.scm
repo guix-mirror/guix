@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -694,8 +694,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "78.6.0-guix0-preview1")
-(define %icecat-build-id "20201215000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "78.6.1-guix0-preview1")
+(define %icecat-build-id "20210107000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -717,11 +717,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0lyg65v380j8i2lrylwz8a5ya80822l8vcnlx3dfqpd3s6zzjsay"))))
+              "1kp75838a38x4h0w98qn01g9asn7jlgm64bz7n70353bnr6bf1qd"))))
 
-         (upstream-icecat-base-version "78.6.0") ; maybe older than base-version
+         (upstream-icecat-base-version "78.6.1") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "a43514623e93d4f3fe6d61f5b2f82c5ef29bf518")
+         (gnuzilla-commit "10ca84bd9d255caeed506ef36bd3dbe2ad6375ab")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -733,7 +733,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "0d2hpk4x0hwflhilc3hyj6nl4pv2m53fcv3jc415ca01bigk6drp"))))
+              "07i3pfbzprnmzrilsh13jjrrk0jixpb9nrrqxzzdvzr2gz06vw29"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.

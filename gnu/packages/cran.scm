@@ -25493,3 +25493,85 @@ scalability and larger datasets by supporting parallelization and out-of-memory
 data-backends like databases.  While @code{mlr3} focuses on the core
 computational operations, add-on packages provide additional functionality.")
     (license license:lgpl3)))
+
+(define-public r-mlr3learners
+  (package
+    (name "r-mlr3learners")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3learners" version))
+              (sha256
+               (base32
+                "1wxlpzz3hpkn77n4ag1v868dmp140j1pmrhynsv5xfgk9fg0w7ri"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-mlr3" ,r-mlr3)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://mlr3learners.mlr-org.com/")
+    (synopsis "Recommended Learners for @code{mlr3}")
+    (description "@code{mlr3learners} extends @code{mlr3} and @code{mlr3proba}
+with interfaces to essential machine learning packages on CRAN.  This includes,
+but is not limited to: (penalized) linear and logistic regression, linear and
+quadratic discriminant analysis, k-nearest neighbors, naive Bayes, support
+vector machines, and gradient boosting.")
+    (license license:lgpl3)))
+
+(define-public r-bbotk
+  (package
+    (name "r-bbotk")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bbotk" version))
+       (sha256
+        (base32
+         "06iz6gyymcxkbjiw049v1dk3vjfni646z247q08i2s0x59sqfqxv"))))
+    (properties `((upstream-name . "bbotk")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-lgr" ,r-lgr)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://bbotk.mlr-org.com")
+    (synopsis "Black-Box Optimization Toolkit")
+    (description "This package provides a common framework for optimization of
+black-box functions for other packages, e.g. @code{mlr3}.  It offers various
+optimization methods e.g. grid search, random search and generalized simulated
+annealing.")
+    (license license:lgpl3)))
+
+(define-public r-mlr3tuning
+  (package
+    (name "r-mlr3tuning")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3tuning" version))
+              (sha256
+               (base32
+                "1pn80qjxzj2pivgs6qgairci6yh1bdnl2zbgl9ykdip2rqzv6r6m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bbotk" ,r-bbotk)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-lgr" ,r-lgr)
+       ("r-mlr3" ,r-mlr3)
+       ("r-mlr3misc" ,r-mlr3misc)
+       ("r-paradox" ,r-paradox)
+       ("r-r6" ,r-r6)))
+    (home-page "https://mlr3tuning.mlr-org.com/")
+    (synopsis "Tuning for @code{mlr3}")
+    (description "@code{mlr3tuning} implements methods for hyperparameter
+tuning, e.g. Grid Search, Random Search, or Simulated Annealing.  Various
+termination criteria can be set and combined.  The class @code{AutoTuner} provides a
+convenient way to perform nested resampling in combination with @code{mlr3}.")
+    (license license:lgpl3)))
