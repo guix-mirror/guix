@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -2703,7 +2703,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.11.0")
+    (version "3.11.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2714,7 +2714,7 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))
+                "1gi7nrmjmbnjndqkmhfrkk0jchrzvnhl3f6gp6n5wgdd4mxbgxgw"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
@@ -2744,7 +2744,8 @@ link REQUIRED)"))
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
                            "-DSC_QT=ON" "-DCMAKE_BUILD_TYPE=Release"
-                           "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
+                           "-DFORTIFY=ON"
+                           ;"-DLIBSCSYNTH=ON"   ; TODO: Re-enable?
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
        #:phases
