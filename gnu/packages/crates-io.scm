@@ -7631,7 +7631,7 @@ Code} (MAC) algorithms.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rbrq6qy9dl0pj4ym2zy33miaaa8vpzdss60p9bdb58xy46l0d24"))))
+         "1axfs4zmy74rn9666p92j7nmcv11zdp2d51yrppc2dv26cqa715m"))))
     (arguments
      `(#:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
