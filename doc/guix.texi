@@ -3616,7 +3616,31 @@ exactly what you specified.
 
 Keep in mind that a manifest is purely symbolic: it only contains
 package names and possibly versions, and their meaning varies over time.
+If you wish to ``pin'' channels to the revisions that were used to build
+the profile(s), see @option{--export-channels} below.
 
+@cindex pinning, channel revisions of a profile
+@item --export-channels
+Write to standard output the list of channels used by the chosen
+profile(s), in a format suitable for @command{guix pull --channels} or
+@command{guix time-machine --channels} (@pxref{Channels}).
+
+Together with @option{--export-manifest}, this option provides
+information allowing you to replicate the current profile
+(@pxref{Replicating Guix}).
+
+However, note that the output of this command @emph{approximates} what
+was actually used to build this profile.  In particular, a single
+profile might have been built from several different revisions of the
+same channel.  In that case, @option{--export-manifest} chooses the last
+one and writes the list of other revisions in a comment.  If you really
+need to pick packages from different channel revisions, you can use
+inferiors in your manifest to do so (@pxref{Inferiors}).
+
+Together with @option{--export-manifest}, this is a good starting point
+if you are willing to migrate from the ``imperative'' model to the fully
+declarative model consisting of a manifest file along with a channels
+file pinning the exact channel revision(s) you want.
 @end table
 
 Finally, since @command{guix package} may actually start build

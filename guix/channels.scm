@@ -92,6 +92,7 @@
 
             profile-channels
             manifest-entry-channel
+            sexp->channel
             channel->code
 
             channel-news-entry?
