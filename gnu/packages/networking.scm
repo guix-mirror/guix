@@ -1664,7 +1664,7 @@ reusing frequently-requested web pages.")
 (define-public bwm-ng
   (package
     (name "bwm-ng")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -1673,7 +1673,7 @@ reusing frequently-requested web pages.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k906wb4pw3dcqpcwnni78lahzi3bva483f8c17sjykic7as4y5n"))))
+        (base32 "1gpp2l3w479h1w5skjra5xy0gxd24kvmk6i4psbkafnv2399la4k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
