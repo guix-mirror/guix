@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,14 +30,14 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.9.3.0")
+    (version "2.10.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0i1vg3bh0w3bpj7cv0kzs6q9v2dd8wa2by8h8j39fh1qkl20f6ph"))))
+       (base32 "122xipbxh6awsfdfj37mjc8f3g8ndmmmps4gw5s43mya8wgzib61"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests exist
