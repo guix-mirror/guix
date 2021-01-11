@@ -670,8 +670,8 @@ interaction.")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
-                           "-DPODOFO_BUILD_STATIC=ON")
+     `(#:configure-flags
+       (list "-DPODOFO_BUILD_SHARED=ON")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch
