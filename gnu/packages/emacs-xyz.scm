@@ -10032,9 +10032,9 @@ being deleted, changed, yanked, or pasted when using evil commands")
       (license license:gpl3+))))
 
 (define-public emacs-goto-chg
-  (let ((commit "1829a13026c597e358f716d2c7793202458120b5")
+  (let ((commit "2af612153bc9f5bed135d25abe62f46ddaa9027f")
         (version "1.7.3")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "emacs-goto-chg")
       (version (git-version version revision commit))
@@ -10047,10 +10047,8 @@ being deleted, changed, yanked, or pasted when using evil commands")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1y603maw9xwdj3qiarmf1bp13461f9f5ackzicsbynl0i9la3qki"))))
+           "1awmvihqgw6kspx192bcp9xp56xqbma90wlhxfxmidx3bvxghwpv"))))
       (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-undo-tree" ,emacs-undo-tree)))
       (home-page "https://github.com/emacs-evil/goto-chg")
       (synopsis "Go to the last change in the Emacs buffer")
       (description
