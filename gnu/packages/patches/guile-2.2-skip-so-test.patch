@@ -1,0 +1,23 @@
+Skip 'test-stack-overflow' that crashes when using QEMU transparent emulation.
+
+--- a/test-suite/standalone/Makefile.in	1970-01-01 01:00:01.000000000 +0100
++++ b/test-suite/standalone/Makefile.in	2021-01-11 10:59:31.606269449 +0100
+@@ -102,8 +102,7 @@
+ 	test-scm-to-latin1-string$(EXEEXT) test-scm-values$(EXEEXT) \
+ 	test-scm-c-bind-keyword-arguments$(EXEEXT) \
+ 	test-srfi-4$(EXEEXT) $(am__append_6) $(am__EXEEXT_1) \
+-	test-smob-mark$(EXEEXT) test-smob-mark-race$(EXEEXT) \
+-	test-stack-overflow
++	test-smob-mark$(EXEEXT) test-smob-mark-race$(EXEEXT)
+ check_PROGRAMS = test-num2integral$(EXEEXT) test-round$(EXEEXT) \
+ 	test-foreign-object-c$(EXEEXT) test-list$(EXEEXT) \
+ 	test-unwind$(EXEEXT) test-conversion$(EXEEXT) \
+@@ -1938,7 +1937,7 @@
+ 	test-command-line-encoding test-command-line-encoding2 \
+ 	test-language test-guild-compile $(am__append_3) \
+ 	test-foreign-object-scm test-fast-slot-ref test-mb-regexp \
+-	test-use-srfi $(am__append_5) test-stack-overflow
++	test-use-srfi $(am__append_5)
+ BUILT_SOURCES = $(am__append_2)
+ EXTRA_DIST = test-import-order-a.scm test-import-order-b.scm \
+ 	test-import-order-c.scm test-import-order-d.scm \

@@ -245,7 +245,8 @@ without requiring the source code to be rewritten.")
                 "013mydzhfswqci6xmyc1ajzd59pfbdak15i0b090nhr9bzm7dxyd"))
               (modules '((guix build utils)))
               (patches (search-patches
-                        "guile-2.2-skip-oom-test.patch"))
+                        "guile-2.2-skip-oom-test.patch"
+                        "guile-2.2-skip-so-test.patch"))
 
               ;; Remove the pre-built object files.  Instead, build everything
               ;; from source, at the expense of significantly longer build
