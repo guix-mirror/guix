@@ -36,7 +36,7 @@
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
-;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020, 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
@@ -3787,6 +3787,49 @@ simulation, and a number of other applications.")
     (description "Tool to send a magic packet to wake another host on the
 network.  This must be enabled on the target host, usually in the BIOS.")
     (license license:gpl2)))
+
+(define-public traceroute
+  (package
+    (name "traceroute")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/traceroute/traceroute/"
+                           "traceroute-" version "/traceroute-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1dh32vcfawkl1p9g4ral1p0camds4paqr8db1kaqxwyk6hmd4s9n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite
+       #:make-flags
+       (list (string-append "LIBRARY_PATH="
+                            (assoc-ref %build-inputs "libc") "/lib")
+             (string-append "CFLAGS=-I"
+                            (assoc-ref %build-inputs "kernel-headers")
+                            "/include")
+             "LDFLAGS=-lm -L../libsupp"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-make
+           (lambda _
+             (substitute* "default.rules"
+               ((" \\$\\(LIBDEPS\\)") "$(filter-out -l%,$(LIBDEPS))"))))
+         (delete 'bootstrap)            ;no configure.ac file
+         (delete 'configure))))         ;no configure script
+    (home-page "http://traceroute.sourceforge.net/")
+    (synopsis "Tracks the route taken by packets over an IP network")
+    (description "This package provides a modern, but Linux-specific
+implementation of the @command{traceroute} command that can be used to follow
+the route taken by packets on an IP network on their way to a given host.  It
+utilizes the IP protocol's time to live (TTL) field and attempts to elicit an
+ICMP TIME_EXCEEDED response from each gateway along the path to the host.
+Compared to other implementations, this @command{traceroute} command allows
+some traces for unprivileged users.")
+    (license (list license:gpl2+
+                   license:lgpl2.1+)))) ;for the libsupp subdirectory
 
 (define-public vde2
   (package
