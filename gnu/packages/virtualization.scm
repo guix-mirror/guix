@@ -137,13 +137,28 @@
               (method url-fetch)
               (uri (string-append "https://download.qemu.org/qemu-"
                                   version ".tar.xz"))
-              (sha256
-               (base32
-                "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
-              (patches (search-patches "qemu-build-info-manual.patch"))))
-    (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
-    (build-system gnu-build-system)
-    (arguments
+               (sha256
+                (base32
+                 "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
+              (patches (search-patches "qemu-build-info-manual.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix a bug in the do_ioctl_ifconf() function of qemu to
+                  ;; make ioctl(…, SIOCGIFCONF, …) work for emulated 64 bit
+                  ;; architectures.  The size of struct ifreq is handled
+                  ;; incorrectly.
+                  ;; https://lists.nongnu.org/archive/html/qemu-devel/2021-01/msg01545.html
+                  (substitute* '("linux-user/syscall.c")
+                    (("^([[:blank:]]*)const argtype ifreq_arg_type.*$" line indent)
+                     (string-append line indent
+                                    "const argtype ifreq_max_type[] = { MK_STRUCT(STRUCT_ifmap_ifreq) };\n"))
+                    (("^([[:blank:]]*)target_ifreq_size[[:blank:]]=.*$" _ indent)
+                     (string-append indent "target_ifreq_size = thunk_type_size(ifreq_max_type, 0);")))
+                  #t))))
+     (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
+     (build-system gnu-build-system)
+     (arguments
      `(;; FIXME: Disable tests on i686 to work around
        ;; <https://bugs.gnu.org/40527>.
        #:tests? ,(or (%current-target-system)
