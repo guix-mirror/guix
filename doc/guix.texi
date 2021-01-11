@@ -3082,7 +3082,7 @@ shells get all the right environment variable definitions:
 
 @example
 GUIX_PROFILE="$HOME/.guix-profile" ; \
-source "$HOME/.guix-profile/etc/profile"
+source "$GUIX_PROFILE/etc/profile"
 @end example
 
 In a multi-user setup, user profiles are stored in a place registered as
