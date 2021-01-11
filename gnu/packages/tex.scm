@@ -35,6 +35,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -430,6 +431,32 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                  (substitute-commands iso-8859-1-encoded-scripts))
 
                #t)))
+         (add-after 'check 'customize-texmf.cnf
+           ;; The default texmf.cnf is provided by this package, texlive-bin.
+           ;; Every variable of interest is set relatively to the GUIX_TEXMF
+           ;; environment variable defined via a search path specification
+           ;; further below.  The configuration file is patched after the test
+           ;; suite has run, as it relies on the default configuration to find
+           ;; its paths (and the GUIX_TEXMF variable isn't set yet).
+           (lambda _
+             ;; The current directory is build/ because of the out-of-tree
+             ;; build.
+             (let* ((source    (first (scandir ".." (cut string-suffix?
+                                                         "source" <>))))
+                    (texmf.cnf (string-append "../" source
+                                              "/texk/kpathsea/texmf.cnf")))
+               (substitute* texmf.cnf
+                 (("^TEXMFROOT = .*")
+                  "TEXMFROOT = {$GUIX_TEXMF}/..\n")
+                 (("^TEXMF = .*")
+                  "TEXMF = {$GUIX_TEXMF}\n")
+                 (("^%TEXMFCNF = .*")
+                  "TEXMFCNF = {$GUIX_TEXMF}/web2c\n")
+                 ;; Don't truncate lines.
+                 (("^error_line = .*$") "error_line = 254\n")
+                 (("^half_error_line = .*$") "half_error_line = 238\n")
+                 (("^max_print_line = .*$") "max_print_line = 1000\n")))
+             #t))
          (add-after 'install 'postint
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
@@ -450,11 +477,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                                               "/tlpkg"))
                     (config.guess (string-append (assoc-ref inputs "config")
                                                  "/bin/config.guess")))
-               (substitute* (string-append share "/texmf-dist/web2c/texmf.cnf")
-                 ;; Don't truncate lines.
-                 (("^error_line = .*$") "error_line = 254\n")
-                 (("^half_error_line = .*$") "half_error_line = 238\n")
-                 (("^max_print_line = .*$") "max_print_line = 1000\n"))
+
                ;; Create symbolic links for the latex variants and their
                ;; man pages.
                (with-directory-excursion (string-append out "/bin/")
@@ -477,6 +500,11 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                  (("\\$TEXMFROOT/")
                   (string-append share "/")))
 
+               ;; Likewise for updmap.pl.
+               (substitute* (string-append scripts "/updmap.pl")
+                 (("\\$TEXMFROOT/tlpkg")
+                  (string-append share "/tlpkg")))
+
                ;; Likewise for the tlmgr.
                (substitute* (string-append scripts "/tlmgr.pl")
                  ((".*\\$::installerdir = \\$Master.*" all)
@@ -495,13 +523,8 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                  (patch-source-shebangs))))))))
     (native-search-paths
      (list (search-path-specification
-            (variable "TEXMF")
-            (files '("share/texmf-dist"))
-            (separator #f))
-           (search-path-specification
-            (variable "TEXMFCNF")
-            (files '("share/texmf-dist/web2c"))
-            (separator #f))))
+            (variable "GUIX_TEXMF")
+            (files '("share/texmf-dist")))))
     (synopsis "TeX Live, a package of the TeX typesetting system")
     (description
      "TeX Live provides a comprehensive TeX document production system.
@@ -3004,7 +3027,7 @@ tables.")
        ;; The following fonts are propagated as a texlive-union as the font
        ;; maps need to be recreated for the fonts to be usable.  They are
        ;; required by xmltex through mlnames.sty and unicode.sty.
-       `(("texlive" ,(texlive-union
+       `(("texlive" ,(texlive-updmap.cfg
                       (list
                        texlive-amsfonts
                        texlive-babel
@@ -3756,127 +3779,81 @@ It includes little more than the required set of LaTeX packages.")
                      '()
                      default-packages)))))
 
-;; For use in package definitions only
-(define-public texlive-union
+;;; TODO: Add a TeX Live profile hook computing fonts maps (and others?)
+;;; configuration from the packages in the profile, similar to what's done
+;;; below.
+(define-public texlive-updmap.cfg
   (lambda* (#:optional (packages '()))
-    "Return 'texlive-union' package which is a union of PACKAGES and the
-standard LaTeX packages."
+    "Return a 'texlive-updmap.cfg' package which contains the fonts map
+configuration of a base set of packages plus PACKAGES."
     (let ((default-packages (match (package-propagated-inputs texlive-base)
                               (((labels packages) ...) packages))))
-      (package (inherit texlive-base)
-        (name "texlive-union")
-        (build-system trivial-build-system)
+      (package
+        (version (number->string %texlive-revision))
+        (source (origin
+                  (method url-fetch)
+                  (uri (string-append "https://tug.org/svn/texlive/tags/"
+                                      %texlive-tag
+                                      "/Master/texmf-dist/web2c/updmap.cfg"
+                                      "?revision=" version))
+                  (file-name "updmap.cfg")
+                  (sha256
+                   (base32
+                    "0faqknqxs80qp9ywk0by5k85s0yalg97c4lja4q56lsyblrr4j7i"))))
+        (name "texlive-updmap.cfg")
+        (build-system copy-build-system)
         (arguments
-         '(#:modules ((guix build union)
+         '(#:modules ((guix build copy-build-system)
                       (guix build utils)
-                      (guix build texlive-build-system)
-                      (guix build gnu-build-system)
-                      (guix build gremlin)
-                      (guix elf))
-           #:builder
-           (begin
-             (use-modules (ice-9 match)
-                          (ice-9 popen)
-                          (srfi srfi-26)
-                          (guix build union)
-                          (guix build utils)
-                          (guix build texlive-build-system))
-             (let* ((out       (assoc-ref %outputs "out"))
-                    (texmf.cnf (string-append out "/share/texmf-dist/web2c/texmf.cnf")))
-               ;; Build a modifiable union of all inputs (but exclude bash and
-               ;; the updmap.cfg file)
-               (match (filter (match-lambda
-                                ((name . _)
-                                 (not (member name '("bash"
-                                                     "coreutils"
-                                                     "sed"
-                                                     "updmap.cfg")))))
-                              %build-inputs)
-                 (((names . directories) ...)
-                  (union-build (assoc-ref %outputs "out")
-                               directories
-                               #:create-all-directories? #t
-                               #:log-port (%make-void-port "w"))))
+                      (ice-9 popen)
+                      (ice-9 textual-ports))
+           #:install-plan '(("updmap.cfg" "share/texmf-config/web2c/")
+                            ("map" "share/texmf-dist/fonts/map"))
+           #:phases
+           (modify-phases %standard-phases
+             (add-before 'install 'regenerate-updmap.cfg
+               (lambda _
+                 (make-file-writable "updmap.cfg")
 
-               ;; The configuration file "texmf.cnf" is provided by the
-               ;; "texlive-bin" package.  We take it and override only the
-               ;; setting for TEXMFROOT and TEXMF.  This file won't be consulted
-               ;; by default, though, so we still need to set TEXMFCNF.
-               (substitute* texmf.cnf
-                 (("^TEXMFROOT = .*")
-                  (string-append "TEXMFROOT = " out "/share\n"))
-                 (("^TEXMF = .*")
-                  "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
-               (setenv "PATH" (string-append
-                               (assoc-ref %build-inputs "bash") "/bin:"
-                               (assoc-ref %build-inputs "coreutils") "/bin:"
-                               (assoc-ref %build-inputs "sed") "/bin:"
-                               (string-append out "/bin")))
-               (for-each
-                (cut wrap-program <>
-                     `("TEXMFCNF" ":" suffix (,(dirname texmf.cnf)))
-                     `("TEXMF"    ":" suffix (,(string-append out "/share/texmf-dist"))))
-                (find-files (string-append out "/bin") ".*"))
-
-               ;; Remove invalid maps from config file.
-               (let ((web2c (string-append out "/share/texmf-config/web2c/"))
-                     (maproot (string-append out "/share/texmf-dist/fonts/map/")))
-                 (mkdir-p web2c)
-                 (copy-file
-                  (assoc-ref %build-inputs "updmap.cfg")
-                  (string-append web2c "updmap.cfg"))
-                 (make-file-writable (string-append web2c "updmap.cfg"))
-
+                 ;; Disable unavailable map files.
                  (let* ((port (open-pipe* OPEN_WRITE "updmap-sys"
                                           "--syncwithtrees"
                                           "--nohash"
-                                          (string-append "--cnffile=" web2c "updmap.cfg"))))
+                                          "--cnffile" "updmap.cfg")))
                    (display "Y\n" port)
                    (when (not (zero? (status:exit-val (close-pipe port))))
                      (error "failed to filter updmap.cfg")))
+
+                 ;; Set TEXMFSYSVAR to a sane and writable value; updmap fails
+                 ;; if it cannot create its log file there.
+                 (setenv "TEXMFSYSVAR" (getcwd))
+
                  ;; Generate maps.
                  (invoke "updmap-sys"
-                         (string-append "--cnffile=" web2c "updmap.cfg")
-                         (string-append "--dvipdfmxoutputdir="
-                                        maproot "dvipdfmx/updmap/")
-                         (string-append "--dvipsoutputdir="
-                                        maproot "dvips/updmap/")
-                         (string-append "--pdftexoutputdir="
-                                        maproot "pdftex/updmap/"))
-                 ;; Having this file breaks all file lookups later.
-                 (delete-file (string-append out "/share/texmf-dist/ls-R")))
-               #t))))
-        (inputs
-         `(("bash" ,bash-minimal)
-           ,@(map (lambda (package)
-                    (list (package-name package) package))
-                  (append default-packages packages))))
-        (native-inputs
-         `(("coreutils" ,coreutils)
-           ("sed" ,sed)
-           ("updmap.cfg"
-            ,(origin
-               (method url-fetch)
-               (uri (string-append "https://tug.org/svn/texlive/tags/"
-                                   %texlive-tag "/Master/texmf-dist/web2c/updmap.cfg"
-                                   "?revision=" (number->string %texlive-revision)))
-               (file-name (string-append "updmap.cfg-"
-                                         (number->string %texlive-revision)))
-               (sha256
-                (base32
-                 "0faqknqxs80qp9ywk0by5k85s0yalg97c4lja4q56lsyblrr4j7i"))))))
+                         "--cnffile"           "updmap.cfg"
+                         "--dvipdfmxoutputdir" "map/dvipdfmx/updmap/"
+                         "--dvipsoutputdir"    "map/dvips/updmap/"
+                         "--pdftexoutputdir"   "map/pdftex/updmap/"))))))
+        (propagated-inputs (map (lambda (package)
+                                  (list (package-name package) package))
+                                (append default-packages packages)))
         (home-page (package-home-page texlive-bin))
-        (synopsis "Union of TeX Live packages")
-        (description "This package provides a subset of the TeX Live
-distribution.")
-        (license (fold (lambda (package result)
-                         (match (package-license package)
-                           ((lst ...)
-                            (append lst result))
-                           ((? license:license? license)
-                            (cons license result))))
-                       '()
-                       (append default-packages packages)))))))
+        (synopsis "TeX Live fonts map configuration")
+        (description "This package contains the fonts map configuration file
+generated for the base TeX Live packages as well as, optionally, user-provided
+ones.")
+        (license (delete-duplicates
+                  (fold (lambda (package result)
+                          (match (package-license package)
+                            ((lst ...)
+                             (append lst result))
+                            ((? license:license? license)
+                             (cons license result))))
+                        '()
+                        (append default-packages packages))))))))
+
+;;; Deprecated.
+(define texlive-union texlive-updmap.cfg)
 
 ;; For use in package definitions only
 (define-public texlive-tiny
