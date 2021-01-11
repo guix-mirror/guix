@@ -8266,14 +8266,14 @@ PEP 8.")
 (define-public python-pep517
   (package
     (name "python-pep517")
-    (version "0.8.2")
+    (version "0.9.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pep517" version))
         (sha256
          (base32
-          "17m2bcabx3sr5wjalgzppfx5xahqrwm12zq58h68mm482b7rjqcf"))))
+          "0zqidxah03qpnp6zkg3zd1kmd5f79hhdsfmlc0cldaniy80qddxf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
