@@ -560,9 +560,7 @@ make an initial adjustment of more than 1,000 seconds."
   (constraint-from         openntpd-constraint-from
                            (default '()))
   (constraints-from        openntpd-constraints-from
-                           (default '()))
-  (allow-large-adjustment? openntpd-allow-large-adjustment?
-                           (default #f))) ; upstream default
+                           (default '())))
 
 (define (openntpd-configuration->string config)
 
@@ -594,8 +592,7 @@ make an initial adjustment of more than 1,000 seconds."
      "\n")))                              ;add a trailing newline
 
 (define (openntpd-shepherd-service config)
-  (let ((openntpd (openntpd-configuration-openntpd config))
-        (allow-large-adjustment? (openntpd-allow-large-adjustment? config)))
+  (let ((openntpd (openntpd-configuration-openntpd config)))
 
     (define ntpd.conf
       (plain-file "ntpd.conf" (openntpd-configuration->string config)))
@@ -607,10 +604,7 @@ make an initial adjustment of more than 1,000 seconds."
            (start #~(make-forkexec-constructor
                      (list (string-append #$openntpd "/sbin/ntpd")
                            "-f" #$ntpd.conf
-                           "-d" ;; don't daemonize
-                           #$@(if allow-large-adjustment?
-                                  '("-s")
-                                  '()))
+                           "-d") ;; don't daemonize
                      ;; When ntpd is daemonized it repeatedly tries to respawn
                      ;; while running, leading shepherd to disable it.  To
                      ;; prevent spamming stderr, redirect output to logfile.

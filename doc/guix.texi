@@ -16246,8 +16246,7 @@ clock synchronized with that of the given servers.
   (listen-on '("127.0.0.1" "::1"))
   (sensor '("udcf0 correction 70000"))
   (constraint-from '("www.gnu.org"))
-  (constraints-from '("https://www.google.com/"))
-  (allow-large-adjustment? #t)))
+  (constraints-from '("https://www.google.com/"))))
 
 @end lisp
 @end deffn
@@ -16285,9 +16284,6 @@ a constraint.
 As with constraint from, specify a list of URLs, IP addresses or hostnames of
 HTTPS servers to provide a constraint.  Should the hostname resolve to multiple
 IP addresses, @code{ntpd} will calculate a median constraint from all of them.
-@item @code{allow-large-adjustment?} (default: @code{#f})
-Determines if @code{ntpd} is allowed to make an initial adjustment of more
-than 180 seconds.
 @end table
 @end deftp
 
