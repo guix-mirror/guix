@@ -5912,22 +5912,22 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
   (package
     (name "mcelog")
     (version "175")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
-                                  "mcelog.git/snapshot/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1cfx7qpyai10n0qsm7z3h3hmkssarwvvq8yb0dd3lsc97ypx96z3"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               `(begin
-                  ;; The snapshots lack a .git directory,
-                  ;; breaking ‘git describe’.
-                  (substitute* "Makefile"
-                    (("\"unknown\"") (string-append "\"v" ,version "\"")))
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/utils/cpu/mce/mcelog.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vvrnjkh1jp7f6295syydg7lplqmcm8msdls3xyk8xfiz69xqdjz"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; The checkout lack a .git directory, breaking ‘git describe’.
+           (substitute* "Makefile"
+             (("\"unknown\"") (string-append "\"v" ,version "\"")))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
