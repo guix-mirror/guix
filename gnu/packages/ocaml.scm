@@ -2401,6 +2401,39 @@ This package includes:
       fault-tolerant and approximate parsing.
 @end itemize")
     (license license:lgpl2.1)))
+ 
+(define-public ocaml-ocp-index
+  (package
+    (name "ocaml-ocp-index")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/OCamlPro/ocp-index")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "08r7mxdnxmhff37fw4hmrpjgckgi5kaiiiirwp4rmdl594z0h9c8"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:package "ocp-index"))
+    (propagated-inputs
+     `(("ocaml-ocp-indent" ,ocaml-ocp-indent)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)))
+    (home-page "https://www.typerex.org/ocp-index.html")
+    (synopsis "Lightweight completion and documentation browsing for OCaml libraries")
+    (description "This package includes only the @code{ocp-index} library
+and command-line tool.")
+    ;; All files in libs/ are GNU lgpl2.1
+    ;; For static linking, clause 6 of LGPL is lifted
+    ;; All other files under GNU gpl3
+    (license (list license:gpl3+
+                   license:lgpl2.1+))))
 
 (define-public ocaml-ocurl
   (package
