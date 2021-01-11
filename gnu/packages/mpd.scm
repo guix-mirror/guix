@@ -285,20 +285,22 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
 (define-public python-mpd2
   (package
     (name "python-mpd2")
-    (version "0.5.5")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "python-mpd2" version))
               (sha256
                (base32
-                "0laypd7h1j14b4vrmiayqlzdsh2j5hc3zv4l0fqvbrbw9y6763ii"))))
+                "0fxssbmnv44m03shjyvbqslc69b0160702j2s0flgvdxjggrnbjj"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "python" "mpd_test.py"))))))
-    (native-inputs `(("python-mock" ,python-mock)))
+           (lambda _ (invoke "python" "-m" "pytest" "mpd/tests.py"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/Mic92/python-mpd2")
     (synopsis "Python MPD client library")
     (description "Python-mpd2 is a Python library which provides a client
