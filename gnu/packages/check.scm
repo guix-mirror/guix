@@ -2756,13 +2756,21 @@ grew out of the @dfn{Vc} project.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-testsuite
+           (lambda _
+             ;; Time difference is larger than expected.
+             (substitute* "pyfakefs/tests/fake_filesystem_unittest_test.py"
+               (("(\\s+)def test_copy_real_file" all indent)
+                (string-append
+                  indent
+                  "@unittest.skip('disabled by guix')\n"
+                  all)))))
          ;; The default test suite does not run these extra tests.
          (add-after 'check 'check-pytest-plugin
            (lambda _
              (invoke
               "python" "-m" "pytest"
-              "pyfakefs/pytest_tests/pytest_plugin_test.py")
-             #t)))))
+              "pyfakefs/pytest_tests/pytest_plugin_test.py"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
