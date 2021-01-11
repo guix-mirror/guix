@@ -62,14 +62,14 @@ and file system operations.  It is used by all skarnet.org software.")
 (define-public execline
   (package
     (name "execline")
-    (version "2.6.1.1")
+    (version "2.7.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/execline/execline-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0mmsnai3bkyhng0cxdz6bf7d6b7kbsxs4p39m63215lz6kq0hhrr"))))
+       (base32 "0kl74yix60msgw8k3shhp9ymm80n91yxxqckixj5qbbhmylpnpqd"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
