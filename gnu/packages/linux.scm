@@ -5933,7 +5933,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
        #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list (string-append "CC=" ,(cc-for-target))
                             (string-append "prefix=" out)
                             (string-append "DOCDIR=" out "/share/doc/"
                                            ,name "-" ,version)
