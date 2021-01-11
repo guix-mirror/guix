@@ -191,6 +191,7 @@ file system, and many more features.")
        (uri (git-reference
              (url "https://github.com/lwindolf/liferea/")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1g9463bvswsm899j6dfhslcg6np70m5wq143mjicr24zy8d17bm7"))))
     (build-system glib-or-gtk-build-system)
