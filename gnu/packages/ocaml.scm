@@ -391,6 +391,69 @@ repository-wide uninstallability checks.")
     ;; with static-linking exception
     (license license:lgpl2.1+)))
 
+(define-public ocaml-down
+  (package
+    (name "ocaml-down")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://erratique.ch/software/down/releases/down-"
+                            version ".tbz"))
+        (sha256
+         (base32
+          "1nz2f5j17frgr2vrslcz9klmi6w9sm2vqwwwpi33ngcm3rgmsrlg"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:build-flags
+       (list "build" "--lib-dir"
+             (string-append (assoc-ref %outputs "out") "/lib/ocaml/site-lib"))))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)
+       ("opam" ,opam)))
+    (home-page "https://erratique.ch/software/down")
+    (synopsis "OCaml toplevel (REPL) upgrade")
+    (description "Down is an unintrusive user experience upgrade for the
+@command{ocaml} toplevel (REPL).
+
+Simply load the zero dependency @code{down} library in the @command{ocaml}
+toplevel and you get line edition, history, session support and identifier
+completion and documentation with @command{ocp-index}.
+
+Add this to your @file{~/.ocamlinit}:
+
+@example
+#use \"down.top\"
+@end example
+
+You may also need to add this to your @file{~/.ocamlinit} and declare
+the environment variable @code{OCAML_TOPLEVEL_PATH}:
+
+@example
+let () =
+  try Topdirs.dir_directory (Sys.getenv \"OCAML_TOPLEVEL_PATH\")
+  with Not_found -> ()
+@end example
+
+OR
+
+@example
+let () = String.split_on_char ':' (Sys.getenv \"OCAMLPATH\")
+         |> List.filter (fun x -> Filename.check_suffix x \"/site-lib\")
+         |> List.map (fun x -> x ^ \"/toplevel\")
+         (* remove the line below if you don't want to see the text
+            every time you start the toplevel *)
+         |> List.map (fun x -> Printf.printf \"adding directory %s\\n\" x; x)
+         |> List.iter Topdirs.dir_directory;;
+@end example")
+    (license license:isc)))
+
 (define-public ocaml-opam-file-format
   (package
     (name "ocaml-opam-file-format")
