@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2362,6 +2363,44 @@ string values and to directly encode characters in OCaml Buffer.t values.")
 the JSON data format.  It can process JSON text without blocking on IO and
 without a complete in-memory representation of the data.")
     (license license:isc)))
+ 
+(define-public ocaml-ocp-indent
+  (package
+    (name "ocaml-ocp-indent")
+    (version "1.8.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/OCamlPro/ocp-indent")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1dvcl108ir9nqkk4mjm9xhhj4p9dx9bmg8bnms54fizs1x3x8ar3"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "tests"
+       #:build-flags (list "--profile=release")))
+    (propagated-inputs
+     `(("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (home-page "https://www.typerex.org/ocp-indent.html")
+    (synopsis "Tool to indent OCaml programs")
+    (description
+      "Ocp-indent is based on an approximate, tolerant OCaml parser
+and a simple stack machine.  Presets and configuration options are available,
+with the possibility to set them project-wide.  It supports the most common
+syntax extensions, and it is extensible for others.
+
+This package includes:
+
+@itemize
+@item An indentor program, callable from the command-line or from within editors,
+@item Bindings for popular editors,
+@item A library that can be directly used by editor writers, or just for
+      fault-tolerant and approximate parsing.
+@end itemize")
+    (license license:lgpl2.1)))
 
 (define-public ocaml-ocurl
   (package
