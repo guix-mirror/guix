@@ -2570,8 +2570,8 @@ format is also supported.")
   (deprecated-package "guile3.0-mcron" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "7e5982a2788bd79a45ad6f02db46f061f97b6e14")
-        (revision "3"))
+  (let ((commit "291a746a1d3b4784d38b05239bdd7b8e796ce761")
+        (revision "4"))
     (package
       (name "guile-picture-language")
       (version (git-version "0.0.1" revision commit))
@@ -2583,12 +2583,13 @@ format is also supported.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1y5f14cll4jx33hr43dpgrpd0yy6g0g7lim365kmgb0h0cvja80p"))))
+                  "0rnhf13ds92sbdicshy4sy4kl2kc431fy9vzm1divw974p7v57sd"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-3.0)))
       (propagated-inputs
-       `(("guile-rsvg" ,guile-rsvg)))
+       `(("guile-cairo" ,guile-cairo)
+         ("guile-rsvg" ,guile-rsvg)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
