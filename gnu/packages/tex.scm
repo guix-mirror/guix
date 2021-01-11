@@ -6293,7 +6293,7 @@ directly generate PDF documents instead of DVI.")
     `(("texlive-bin" ,texlive-bin)
       ("lua" ,lua)
       ("perl" ,perl)
-      ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+      ("python" ,python)
       ("ruby" ,ruby)
       ("tcsh" ,tcsh)))
    (arguments
