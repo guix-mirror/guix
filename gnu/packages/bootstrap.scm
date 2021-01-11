@@ -5,6 +5,8 @@
 ;;; Copyright © 2018, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;; Copyright © 2019 Léo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,16 +124,27 @@
      ("tar"
       ,(base32 "06gmqdjq3rl8lr47b9fyx4ifnm5x56ymc8lyryp1ax1j2s4y5jb4"))
      ("xz"
-      ,(base32 "09j1d69qr0hhhx4k4ih8wp00dfc9y4rp01hfg3vc15yxd0jxabh5")))))
+      ,(base32 "09j1d69qr0hhhx4k4ih8wp00dfc9y4rp01hfg3vc15yxd0jxabh5")))
+    ("powerpc64le-linux"
+     ("bash"
+      ,(base32 "1kiw7n6mkdy2x9in97646nb7aiayxr090ws1hbrlazah3fjqi6nj"))
+     ("mkdir"
+      ,(base32 "04dpvi231zcl40ig048vqqnyvmnkw1byrm1q1qqvs1f0g16yhrrk"))
+     ("tar"
+      ,(base32 "150c8948cz8r208g6qgn2dn4f4zs5kpgbpbg6bwag6yw42rapw2l"))
+     ("xz"
+      ,(base32 "0v5738idy9pqzcbrjdpxi5c6qs5m78zrpsydmrpx5cfcfzbkxzjh")))))
 
 (define %bootstrap-executable-base-urls
   ;; This is where the bootstrap executables come from.
   '("https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
+    "https://alpha.gnu.org/gnu/guix/bootstrap/"
     "http://lilypond.org/janneke/guix/"))
 
 (define (bootstrap-executable-file-name system program)
   "Return the FILE-NAME part of url where PROGRAM can be found for SYSTEM."
   (match system
+    ("powerpc64le-linux" (string-append system "/20210106/" program))
     ("i586-gnu" (string-append system "/20200326/" program))
     (_ (string-append system "/" program
                       "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))))
@@ -332,6 +345,8 @@ or false to signal an error."
                     "/20150101/guile-2.0.11.tar.xz")
                    ("i586-gnu"
                     "/20200326/guile-static-stripped-2.0.14-i586-pc-gnu.tar.xz")
+                   ("powerpc64le-linux"
+                    "/20210106/guile-static-stripped-2.0.14-powerpc64le-linux-gnu.tar.xz")
                    (_
                     "/20131110/guile-2.0.9.tar.xz"))))
 
@@ -346,6 +361,8 @@ or false to signal an error."
      (base32 "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))
     ("armhf-linux"
      (base32 "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))
+    ("powerpc64le-linux"
+     (base32 "1rnyfz5q38jyvxddj617443bnnzql4vw0mxzqpj8wz48wx4bhbq0"))
     ("aarch64-linux"
      (base32 "1giy2aprjmn5fp9c4s9r125fljw4wv6ixy5739i5bffw4jgr0f9r"))
     ("i586-gnu"
@@ -479,6 +496,8 @@ $out/bin/guile --version~%"
                                              "/20150101/static-binaries.tar.xz")
                                             ("aarch64-linux"
                                              "/20170217/static-binaries.tar.xz")
+                                            ("powerpc64le-linux"
+                                             "/20210106/static-binaries-0-powerpc64le-linux-gnu.tar.xz")
                                             ("i586-gnu"
                                              "/20200326/static-binaries-0-i586-pc-gnu.tar.xz")
                                             (_
@@ -498,6 +517,9 @@ $out/bin/guile --version~%"
                               ("aarch64-linux"
                                (base32
                                 "18dfiq6c6xhsdpbidigw6480wh0vdgsxqq3xindq4lpdgqlccpfh"))
+                              ("powerpc64le-linux"
+                               (base32
+                                "0afs2j9z2d1hjq42myz4iwjh0aqgzf59inifw87x6b6p1z9wv92v"))
                               ("i586-gnu"
                                (base32
                                 "17kllqnf3fg79gzy9ansgi801c46yh9c23h4d923plvb0nfm1cfn"))
@@ -547,6 +569,8 @@ $out/bin/guile --version~%"
                                              "/20150101/binutils-2.25.tar.xz")
                                             ("aarch64-linux"
                                              "/20170217/binutils-2.27.tar.xz")
+                                            ("powerpc64le-linux"
+                                             "/20210106/binutils-static-stripped-2.34-powerpc64le-linux-gnu.tar.xz")
                                             ("i586-gnu"
                                              "/20200326/binutils-static-stripped-2.34-i586-pc-gnu.tar.xz")
                                             (_
@@ -566,6 +590,9 @@ $out/bin/guile --version~%"
                               ("aarch64-linux"
                                (base32
                                 "111s7ilfiby033rczc71797xrmaa3qlv179wdvsaq132pd51xv3n"))
+                              ("powerpc64le-linux"
+                               (base32
+                                "1klxy945c61134mzhqzz2gbk8w0n8jq7arwkrvz78d22ff2q0cwz"))
                               ("i586-gnu"
                                (base32
                                 "11kykv1kmqc5wln57rs4klaqa13hm952smkc57qcsyss21kfjprs"))
@@ -622,6 +649,8 @@ $out/bin/guile --version~%"
                                        "/20150101/glibc-2.20.tar.xz")
                                       ("aarch64-linux"
                                        "/20170217/glibc-2.25.tar.xz")
+                                      ("powerpc64le-linux"
+                                       "/20210106/glibc-stripped-2.31-powerpc64le-linux-gnu.tar.xz")
                                       ("i586-gnu"
                                        "/20200326/glibc-stripped-2.31-i586-pc-gnu.tar.xz")
                                       (_
@@ -641,6 +670,9 @@ $out/bin/guile --version~%"
                         ("aarch64-linux"
                          (base32
                           "07nx3x8598i2924rjnlrncg6rm61c9bmcczbbcpbx0fb742nvv5c"))
+                        ("powerpc64le-linux"
+                         (base32
+                          "1a1df6z8gkaq09md3jy94lixnh20599p58p0s856p10xwjaqr1iz"))
                         ("i586-gnu"
                          (base32
                           "14ddm10lpbas8bankmn5bcrlqvz1v5dnn1qjzxb19r57vd2w5952"))
@@ -713,6 +745,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                                         "/20150101/gcc-4.8.4.tar.xz")
                                        ("aarch64-linux"
                                         "/20170217/gcc-5.4.0.tar.xz")
+                                       ("powerpc64le-linux"
+                                        "/20210106/gcc-stripped-5.5.0-powerpc64le-linux-gnu.tar.xz")
                                        ("i586-gnu"
                                         "/20200326/gcc-stripped-5.5.0-i586-pc-gnu.tar.xz")
                                        (_
@@ -732,6 +766,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                          ("aarch64-linux"
                           (base32
                            "1ar3vdzyqbfm0z36kmvazvfswxhcihlacl2dzdjgiq25cqnq9ih1"))
+                         ("powerpc64le-linux"
+                          (base32
+                           "151kjsai25vz2s667bgzpisx8f281fpl3n9pxz2yrp9jlnadz3m1"))
                          ("i586-gnu"
                           (base32
                            "1j2zc58wzil71a34h7c70sd68dmqvcscrw3rmn2whq79vd70zvv5"))
