@@ -16032,7 +16032,8 @@ information.")
     (name "python2-packaging-bootstrap")
     (native-inputs '())
     (propagated-inputs
-     `(("python-pyparsing" ,python2-pyparsing)))
+     `(("python-pyparsing" ,python2-pyparsing)
+       ("python-six" ,python2-six-bootstrap)))
     (arguments
      `(#:tests? #f
        ,@(package-arguments python2-packaging))))))
