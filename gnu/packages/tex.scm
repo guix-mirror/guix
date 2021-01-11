@@ -321,7 +321,12 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:out-of-source? #t
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:out-of-source? #t
        #:configure-flags
        '("--disable-static"
          "--disable-native-texlive-build"
@@ -388,14 +393,38 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
                 "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
              #t))
+         (add-after 'unpack 'unpack-texlive-extra
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "texlive-extra")
+             (with-directory-excursion "texlive-extra"
+               (apply (assoc-ref %standard-phases 'unpack)
+                      (list #:source (assoc-ref inputs "texlive-extra-src"))))))
+         (add-after 'unpack-texlive-extra 'unpack-texlive-scripts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "texlive-scripts")
+             (with-directory-excursion "texlive-scripts"
+               (apply (assoc-ref %standard-phases 'unpack)
+                      (list #:source (assoc-ref inputs "texlive-scripts"))))))
          (add-after 'install 'postint
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
+                    (patch-source-shebangs (assoc-ref %standard-phases
+                                                      'patch-source-shebangs))
                     (share (string-append out "/share"))
-                    (texlive-extra (assoc-ref inputs "texlive-extra-src"))
-                    (unpack (assoc-ref %standard-phases 'unpack))
-                    (patch-source-shebangs
-                     (assoc-ref %standard-phases 'patch-source-shebangs)))
+                    (scripts (string-append share
+                                            "/texmf-dist/scripts/texlive"))
+                    (source (string-append
+                             "../" (first (scandir ".." (cut string-suffix?
+                                                             "source" <>)))))
+                    (tl-extra-root (string-append source "/texlive-extra"))
+                    (tl-extra-dir (first
+                                   (scandir tl-extra-root
+                                            (negate
+                                             (cut member <> '("." ".."))))))
+                    (tlpkg-src (string-append tl-extra-root "/" tl-extra-dir
+                                              "/tlpkg"))
+                    (config.guess (string-append (assoc-ref inputs "config")
+                                                 "/bin/config.guess")))
                (substitute* (string-append share "/texmf-dist/web2c/texmf.cnf")
                  ;; Don't truncate lines.
                  (("^error_line = .*$") "error_line = 254\n")
@@ -409,18 +438,19 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                            '("latex"  "pdflatex" "xelatex" "lualatex")))
                (with-directory-excursion (string-append share "/man/man1/")
                  (symlink "luatex.1" "lualatex.1"))
-               ;; Unpack texlive-extra and install tlpkg.
-               (mkdir "texlive-extra")
-               (with-directory-excursion "texlive-extra"
-                 (apply unpack (list #:source texlive-extra))
-                 (apply patch-source-shebangs (list #:source texlive-extra))
-                 (invoke "mv" "tlpkg" share))
-               (let ((scripts (string-append share "/texmf-dist/scripts/texlive/")))
-                 (mkdir-p scripts)
-                 (copy-recursively (assoc-ref inputs "texlive-scripts") scripts)
-                 ;; Make sure that fmtutil can find its Perl modules.
-                 (substitute* (string-append scripts "fmtutil.pl")
-                   (("\\$TEXMFROOT/") (string-append share "/"))))
+
+               ;; Install tlpkg.
+               (copy-recursively tlpkg-src (string-append share "/tlpkg"))
+
+               ;; Install texlive-scripts.
+               (copy-recursively (string-append
+                                  source "/texlive-scripts/source/")
+                                 scripts)
+
+               ;; Make sure that fmtutil can find its Perl modules.
+               (substitute* (string-append scripts "/fmtutil.pl")
+                 (("\\$TEXMFROOT/")
+                  (string-append share "/")))
 
                ;; texlua shebangs are not patched by the patch-source-shebangs
                ;; phase because the texlua executable does not exist at that
