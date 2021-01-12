@@ -12917,8 +12917,9 @@ updating substitutes from '@value{SUBSTITUTE-URL}'... 100.0%
 @end example
 
 What this example shows is that @code{kcoreaddons} and presumably the 58
-packages that depend on it have no substitutes at @code{ci.guix.info};
-likewise for @code{qgpgme} and the 46 packages that depend on it.
+packages that depend on it have no substitutes at
+@code{@value{SUBSTITUTE-SERVER}}; likewise for @code{qgpgme} and the 46
+packages that depend on it.
 
 If you are a Guix developer, or if you are taking care of this build farm,
 you'll probably want to have a closer look at these packages: they may simply
