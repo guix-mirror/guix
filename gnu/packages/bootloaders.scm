@@ -1107,7 +1107,7 @@ order to add a suitable bootloader menu entry.")
   (let ((timestamp "1591706427"))
     (package
       (name "ipxe")
-      (version "1.20.1")
+      (version "1.21.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1117,7 +1117,7 @@ order to add a suitable bootloader menu entry.")
                 (patches (search-patches "ipxe-reproducible-geniso.patch"))
                 (sha256
                  (base32
-                  "0w7h7y97gj9nqvbmsg1zp6zj5mpbbpckqbbx7bpp6k3ahy5fk8zp"))))
+                  "1pkf1n1c0rdlzfls8fvjvi1sd9xjd9ijqlyz3wigr70ijcv6x8i9"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build utils)
