@@ -1704,6 +1704,7 @@ history.  It implements the changeset evolution concept for Mercurial.")
        ;; https://sourceware.org/bugzilla/show_bug.cgi?id=16475
        #:tests? #f
        #:configure-flags '("--enable-shared"
+                           "--disable-static"
                            ;; requires libgnutils-config, deprecated
                            ;; in gnutls 2.8.
                            ; "--with-ssl=gnutls")))
