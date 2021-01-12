@@ -24971,9 +24971,9 @@ If set, fixes the dynamical ports (one per client) to the given range
 
 @item @code{tftp-root} (default: @code{/var/empty,lo})
 Look for files to transfer using TFTP relative to the given directory.
-When this is set, TFTP paths which include ".." are rejected, to stop clients
-getting outside the specified root.  Absolute paths (starting with /) are
-allowed, but they must be within the tftp-root.  If the optional interface
+When this is set, TFTP paths which include @samp{..} are rejected, to stop clients
+getting outside the specified root.  Absolute paths (starting with @samp{/}) are
+allowed, but they must be within the TFTP-root.  If the optional interface
 argument is given, the directory is only used for TFTP requests via that
 interface.
 
@@ -24983,13 +24983,14 @@ on the end of the TFTP-root.  Only valid if a TFTP root is set and the
 directory exists.  Defaults to adding IP address (in standard dotted-quad
 format).
 
-For instance, if --tftp-root is "/tftp" and client 1.2.3.4 requests file
-"myfile" then the effective path will be "/tftp/1.2.3.4/myfile" if
-/tftp/1.2.3.4 exists or /tftp/myfile otherwise.  When "=mac" is specified
-it will append the MAC address instead, using lowercase zero padded digits
-separated by dashes, e.g.: 01-02-03-04-aa-bb Note that resolving MAC
-addresses is only possible if the client is in the local network or obtained
-a DHCP lease from dnsmasq.
+For instance, if @option{--tftp-root} is @samp{/tftp} and client
+@samp{1.2.3.4} requests file @file{myfile} then the effective path will
+be @file{/tftp/1.2.3.4/myfile} if @file{/tftp/1.2.3.4} exists or
+@file{/tftp/myfile} otherwise.  When @samp{=mac} is specified it will
+append the MAC address instead, using lowercase zero padded digits
+separated by dashes, e.g.: @samp{01-02-03-04-aa-bb}.  Note that
+resolving MAC addresses is only possible if the client is in the local
+network or obtained a DHCP lease from dnsmasq.
 
 @end table
 @end deftp
