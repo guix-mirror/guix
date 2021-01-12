@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
@@ -713,6 +713,7 @@ different notification systems.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtwayland" ,qtwayland)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")
