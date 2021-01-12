@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright ©  2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
