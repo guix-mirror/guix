@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 raid5atemyhoemwork <raid5atemyhomework@protonmail.com>
@@ -1086,14 +1086,14 @@ Dropbox API v2.")
 (define-public dbxfs
   (package
     (name "dbxfs")
-    (version "1.0.48")
+    (version "1.0.50")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dbxfs" version))
         (sha256
          (base32
-          "07q7dgqaqqyapjl9r4lqydflrgx4dh84c1qsb0jvfmqj3i8887ak"))
+          "01zvk862ybz12270q0r2l1i7kdj30ib2gxrlxmwvi19b2fkf39na"))
         (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
     (build-system python-build-system)
     (arguments
