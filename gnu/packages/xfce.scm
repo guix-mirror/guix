@@ -1499,7 +1499,7 @@ precedence rules, and the following functions and common constants.")
 (define-public xfce4-cpufreq-plugin
   (package
    (name "xfce4-cpufreq-plugin")
-   (version "1.2.2")
+   (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1508,7 +1508,7 @@ precedence rules, and the following functions and common constants.")
                                   "/xfce4-cpufreq-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "16748wxy8aa5cxga0dbfrq7kv40alg5yx967r2l6vjapv2w083sh"))))
+                "1g07rpbq61dbdz0zvvb0xz6ipympxadwknn5y5q3v85k0nr9qfbx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
