@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,26 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
+
+(define podofo-for-scribus
+  (package
+    (inherit podofo)
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/podofo/podofo/" version
+                           "/podofo-" version ".tar.gz"))
+       (sha256
+        (base32 "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix the build with CMake 3.12.0.
+           (substitute* "test/TokenizerTest/CMakeLists.txt"
+             (("\\$\\{CMAKE_COMMAND\\}")
+              "true"))
+           #t))))))
 
 (define-public scribus
   (package
@@ -96,7 +116,9 @@
        ("libxml2" ,libxml2)
        ("libzmf" ,libzmf)
        ("openssl" ,openssl)
-       ("podofo" ,podofo)
+       ;; Scribus 1.5.6.1 does not build with later versions, see
+       ;; <https://bugs.scribus.net/view.php?id=16427>.
+       ("podofo" ,podofo-for-scribus)
        ("poppler" ,poppler)
        ("python" ,python)               ; need Python library
        ("qtbase" ,qtbase)
