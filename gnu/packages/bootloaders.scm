@@ -7,12 +7,14 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019, 2020 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1095,3 +1097,124 @@ systems so that they can be added to the bootloader.  It also works out how to
 boot existing GNU/Linux systems and detects what distribution is installed in
 order to add a suitable bootloader menu entry.")
     (license license:gpl2+)))
+
+(define-public ipxe
+  ;; XXX: 'BUILD_TIMESTAMP' is used to automatically select the newest version
+  ;; of iPXE if multiple iPXE drivers are loaded concurrently in a UEFI system.
+  ;;
+  ;; TODO: Bump this timestamp at each modifications of the package (not only
+  ;; for updates) by running: date +%s.
+  (let ((timestamp "1591706427"))
+    (package
+      (name "ipxe")
+      (version "1.20.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ipxe/ipxe")
+                      (commit (string-append "v" version))))
+                (file-name (git-file-name name version))
+                (patches (search-patches "ipxe-reproducible-geniso.patch"))
+                (sha256
+                 (base32
+                  "0w7h7y97gj9nqvbmsg1zp6zj5mpbbpckqbbx7bpp6k3ahy5fk8zp"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (guix base32)
+                    (ice-9 string-fun)
+                    (ice-9 regex)
+                    (rnrs bytevectors))
+         #:imported-modules ((guix base32)
+                             ,@%gnu-build-system-modules)
+         #:make-flags
+         ;; XXX: 'BUILD_ID' is used to determine when another ROM in the
+         ;; system contains identical code in order to save space within the
+         ;; legacy BIOS option ROM area, which is extremely limited in size.
+         ;; It is supposed to be collision-free across all ROMs, to do so we
+         ;; use the truncated output hash of the package.
+         (let ((build-id
+                (lambda (out)
+                  (let* ((nix-store (string-append
+                                     (or (getenv "NIX_STORE") "/gnu/store")
+                                     "/"))
+                         (filename
+                          (string-replace-substring out nix-store ""))
+                         (hash (match:substring (string-match "[0-9a-z]{32}"
+                                                              filename)))
+                         (bv (nix-base32-string->bytevector hash)))
+                    (format #f "0x~x"
+                            (bytevector-u32-ref bv 0 (endianness big))))))
+               (out (assoc-ref %outputs "out"))
+               (syslinux (assoc-ref %build-inputs "syslinux")))
+           (list "ECHO_E_BIN_ECHO=echo"
+                 "ECHO_E_BIN_ECHO_E=echo -e"
+
+                 ;; cdrtools' mkisofs will silently ignore a missing isolinux.bin!
+                 ;; Luckily xorriso is more strict.
+                 (string-append "ISOLINUX_BIN=" syslinux
+                                "/share/syslinux/isolinux.bin")
+                 (string-append "SYSLINUX_MBR_DISK_PATH=" syslinux
+                                "/share/syslinux/isohdpfx.bin")
+
+                 ;; Build reproducibly.
+                 (string-append "BUILD_ID_CMD=echo -n " (build-id out))
+                 (string-append "BUILD_TIMESTAMP=" ,timestamp)
+                 "everything"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-source-directory
+             (lambda _ (chdir "src") #t))
+           (add-after 'enter-source-directory 'set-options
+             (lambda _
+               (substitute* "config/general.h"
+                 (("^//(#define PING_CMD.*)" _ uncommented) uncommented)
+                 (("^//(#define IMAGE_TRUST_CMD.*)" _ uncommented)
+                  uncommented)
+                 (("^#undef.*(DOWNLOAD_PROTO_HTTPS.*)" _ option)
+                  (string-append "#define " option))
+                 (("^#undef.*(DOWNLOAD_PROTO_NFS.*)" _ option)
+                  (string-append "#define " option)))
+               #t))
+           (delete 'configure)          ; no configure script
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (ipxe (string-append out "/lib/ipxe"))
+                      (exts-re
+                       "\\.(efi|efirom|iso|kkpxe|kpxe|lkrn|mrom|pxe|rom|usb)$")
+                      (dirs '("bin" "bin-i386-linux" "bin-x86_64-pcbios"
+                              "bin-x86_64-efi" "bin-x86_64-linux" "bin-i386-efi"))
+                      (files (apply append
+                                    (map (lambda (dir)
+                                           (find-files dir exts-re)) dirs))))
+                 (for-each (lambda (file)
+                             (let* ((subdir (dirname file))
+                                    (fn (basename file))
+                                    (tgtsubdir (cond
+                                                ((string=? "bin" subdir) "")
+                                                ((string-prefix? "bin-" subdir)
+                                                 (string-drop subdir 4)))))
+                               (install-file file
+                                             (string-append ipxe "/" tgtsubdir))))
+                           files))
+               #t))
+           (add-after 'install 'leave-source-directory
+             (lambda _ (chdir "..") #t)))
+         #:tests? #f))                  ; no test suite
+      (native-inputs
+       `(("perl" ,perl)
+         ("syslinux" ,syslinux)
+         ("xorriso" ,xorriso)))
+      (home-page "https://ipxe.org")
+      (synopsis "PXE-compliant network boot firmware")
+      (description "iPXE is a network boot firmware.  It provides a full PXE
+implementation enhanced with additional features such as booting from: a web
+server via HTTP, an iSCSI SAN, a Fibre Channel SAN via FCoE, an AoE SAN, a
+wireless network, a wide-area network, an Infiniband network.  It allows to
+control the boot process with a script.  You can use iPXE to replace the
+existing PXE ROM on your network card, or you can chainload into iPXE to obtain
+the features of iPXE without the hassle of reflashing.")
+      (license license:gpl2+))))
+
