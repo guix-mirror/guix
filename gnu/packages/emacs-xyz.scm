@@ -7039,6 +7039,33 @@ Emacs completion function completing-read, which allows to quickly select from a
 list of candidates.")
       (license license:gpl3+))))
 
+(define-public emacs-marginalia
+  ;; There are no tagged releases upstream on GitHub, instead we are using the
+  ;; most recent commit.
+  (let ((commit "401993562dbf636054dd64988e44d19b5030867f")
+        (revision "0"))
+    (package
+      (name "emacs-marginalia")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minad/marginalia")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1j0k9ija5paidj7yvbagkkayz9bjwhia9yhmd2q4490ginbbxshs"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/minad/marginalia")
+      (synopsis "Marginalia in the minibuffer")
+      (description
+       "This package provides Marginalia mode which adds marginalia to the
+minibuffer completions.  Marginalia are marks or annotations placed at the
+margin of the page of a book or in this case helpful colorful annotations
+placed at the margin of the minibuffer for your completion candidates.")
+      (license license:gpl3+))))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
