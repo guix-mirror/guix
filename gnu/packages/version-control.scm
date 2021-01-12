@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -1683,14 +1683,14 @@ history.  It implements the changeset evolution concept for Mercurial.")
 (define-public neon
   (package
     (name "neon")
-    (version "0.30.2")
+    (version "0.31.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.webdav.org/neon/neon-"
+             (uri (string-append "https://notroj.github.io/neon/neon-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1jpvczcx658vimqm7c8my2q41fnmjaf1j03g7bsli6rjxk6xh2yv"))))
+               "0y46dbhiblcvg8k41bdydr3fivghwk73z040ki5825d24ynf67ng"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1708,7 +1708,7 @@ history.  It implements the changeset evolution concept for Mercurial.")
                            ;; in gnutls 2.8.
                            ; "--with-ssl=gnutls")))
                            "--with-ssl=openssl")))
-    (home-page "http://www.webdav.org/neon/")
+    (home-page "https://notroj.github.io/neon/")
     (synopsis "HTTP and WebDAV client library")
     (description
      "Neon is an HTTP and WebDAV client library, with a C interface and the
