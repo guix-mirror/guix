@@ -39,6 +39,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -56,12 +57,14 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -72,6 +75,7 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sssd)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
@@ -853,6 +857,161 @@ to read all files, and it does not support all the compression methods in
 APFS.")
       (home-page "https://github.com/sgan81/apfs-fuse")
       (license license:gpl2+))))
+
+(define-public xfstests
+  ;; The last release (1.1.0) is from 2011.
+  (let ((revision "0")
+        (commit "1c18b9ec2fcc94bd05ecdd136aa51c97bf3fa70d"))
+    (package
+      (name "xfstests")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0rrv0rs9nhaza0jk5k0bj27w4lcd1s4a1ls8nr679qi02bgx630x"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-tool-locations
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "common/config"
+                 ;; Make absolute file names relative.
+                 (("(MKFS_PROG=\").*(\")" _ pre post)
+                  (string-append pre "mkfs" post)))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("( -s|#.|[= ])(/bin/sh|/bin/bash)" _ pre match)
+                              (string-append pre
+                                             (assoc-ref inputs "bash")
+                                             match))
+                             (("/bin/(rm|true)" match)
+                              (string-append (assoc-ref inputs "coreutils")
+                                             match))
+                             (("/usr/bin/time" match)
+                              (string-append (assoc-ref inputs "time")
+                                             match))))
+                         (append (find-files "common" ".*")
+                                 (find-files "tests" ".*")
+                                 (find-files "tools" ".*")
+                                 (find-files "src" "\\.(c|sh)$")))))
+           (replace 'bootstrap
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (substitute* "Makefile"
+                 ;; Avoid a mysterious (to me) ‘permission denied’ error.
+                 (("cp ") "cp -f "))
+               (substitute* "m4/package_utilies.m4"
+                 ;; Fix the bogus hard-coded paths for every single binary.
+                 (("(AC_PATH_PROG\\(.*, ).*(\\))" _ pre post)
+                  (string-append pre (getenv "PATH") post)))
+               (apply invoke "make" "configure" make-flags)))
+           (add-after 'install 'wrap-xfstests/check
+             ;; Keep wrapping distinct from 'create-helper-script below: users
+             ;; must be able to invoke xfstests/check directly if they prefer.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/xfstests/check")
+                   ;; Prefix the user's PATH with the minimum required tools.
+                   ;; The suite has many other optional dependencies and will
+                   ;; automatically select tests based on the original PATH.
+                   `("PATH" ":" prefix
+                     ,(map (lambda (name)
+                             (let ((input (assoc-ref inputs name)))
+                               (string-append input "/bin:"
+                                              input "/sbin")))
+                           (list "acl"
+                                 "attr"
+                                 "coreutils"
+                                 "inetutils"
+                                 "xfsprogs")))))))
+           (add-after 'install 'create-helper
+             ;; Upstream installs only a ‘check’ script that's not in $PATH and
+             ;; would try to write to the store without explaining how to change
+             ;; that.  Install a simple helper script to make it discoverable.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out      (assoc-ref outputs "out"))
+                      (check    (string-append out "/xfstests/check"))
+                      (bin      (string-append out "/bin"))
+                      (helper   (string-append bin "/xfstests-check")))
+                 (mkdir-p bin)
+                 (with-output-to-file helper
+                   (lambda _
+                     (format #t "#!~a --no-auto-compile\n!#\n"
+                             (string-append (assoc-ref inputs "guile")
+                                            "/bin/guile"))
+                     (write
+                      `(begin
+                         (define (try proc dir)
+                           "Try to PROC DIR.  Return DIR on success, else #f."
+                           (with-exception-handler (const #f)
+                             (lambda _ (proc dir) dir)
+                             #:unwind? #t))
+
+                         (define args
+                           (cdr (command-line)))
+
+                         (when (or (member "--help" args)
+                                   (member "-h" args))
+                           (format #t "Usage: ~a [OPTION]...
+This Guix helper sets up a new writable RESULT_BASE if it's unset, then executes
+xfstest's \"~a\" command (with any OPTIONs) as documented below.\n\n"
+                                   ,(basename helper)
+                                   ,(basename check)))
+
+                         (let* ((gotenv-base (getenv "RESULT_BASE"))
+                                (base (or gotenv-base
+                                          (let loop ((count 0))
+                                            (or (try mkdir
+                                                     (format #f "xfstests.~a"
+                                                             count))
+                                                (loop (+ 1 count))))))
+                                (result-base (if (string-prefix? "/" base)
+                                                 base
+                                                 (string-append (getcwd) "/"
+                                                                base))))
+                           (setenv "RESULT_BASE" result-base)
+                           ;; CHECK must run in its own directory or will fail.
+                           (chdir ,(dirname check))
+                           (let ((status
+                                  (status:exit-val (apply system* ,check args))))
+                             (unless gotenv-base
+                               (try rmdir result-base))
+                             status))))))
+                 (chmod helper #o755)))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (inputs
+       `(("acl" ,acl)
+         ("attr" ,attr)
+         ("guile" ,guile-3.0)           ; for our xfstests-check helper script
+         ("inetutils" ,inetutils)       ; for ‘hostname’
+         ("libuuid" ,util-linux "lib")
+         ("perl" ,perl)                 ; to automagically patch shebangs
+         ("time" ,time)
+         ("xfsprogs" ,xfsprogs)))
+      (home-page "https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git")
+      (synopsis "File system @acronym{QA, Quality Assurance} test suite")
+      (description
+       "The @acronym{FSQA, File System Quality Assurance} regression test suite,
+more commonly known as xfstests, comprises over 1,500 tests that exercise
+(@dfn{torture}) both the user- and kernel-space parts of many different file
+systems.
+
+As the package's name subtly implies, it was originally developed to test the
+XFS file system.  Today, xfstests is the primary test suite for all major file
+systems supported by the kernel Linux including XFS, ext4, and Btrfs, but also
+virtual and network file systems such as NFS, 9P, and the overlay file system.
+
+The packaged @command{check} script is not in @env{PATH} but can be invoked
+with the included @command{xfstests-check} helper.")
+      (license license:gpl2))))
 
 (define-public zfs
   (package
