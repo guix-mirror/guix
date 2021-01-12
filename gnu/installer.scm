@@ -187,7 +187,7 @@ selected keymap."
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
                   layouts '#$context)))))
-        (#$apply-keymap result)
+        (and result (#$apply-keymap result))
         result)))
 
 (define (installer-steps)
