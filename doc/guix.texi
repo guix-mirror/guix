@@ -107,7 +107,7 @@ Documentation License''.
 
 @dircategory Software development
 @direntry
-* guix environment: (guix)Invoking guix environment. Building development environments with Guix.
+* guix environment: (guix)Invoking guix environment.  Building development environments with Guix.
 * guix build: (guix)Invoking guix build.      Building packages.
 * guix pack: (guix)Invoking guix pack.        Creating binary bundles.
 @end direntry
@@ -518,7 +518,7 @@ way for you to give it a try is by setting up an instance of
 little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
 supported; in particular, there is no ongoing work to ensure that this
-architecture still works. Should someone decide they wish to revive this
+architecture still works.  Should someone decide they wish to revive this
 architecture then the code is still available.
 
 @end table
@@ -1589,7 +1589,7 @@ them with Bzip2 by default.
 Whether to discover substitute servers on the local network using mDNS
 and DNS-SD.
 
-This feature is still experimental. However, here are a few
+This feature is still experimental.  However, here are a few
 considerations.
 
 @enumerate
@@ -4263,7 +4263,7 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 describe the current status of Guix.
 
 This @code{~/.config/guix/current} profile works exactly like the profiles
-created by @command{guix package} (@pxref{Invoking guix package}). That
+created by @command{guix package} (@pxref{Invoking guix package}).  That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
@@ -4460,7 +4460,7 @@ Scheme code that evaluates to a list of channel objects.
 @end table
 
 As for @command{guix pull}, the absence of any options means that the
-latest commit on the master branch will be used. The command
+latest commit on the master branch will be used.  The command
 
 @example
 guix time-machine -- build hello
@@ -4924,7 +4924,7 @@ updates.
 
 @cindex extending the package collection (channels)
 @cindex variant packages (channels)
-You can specify @emph{additional channels} to pull from. To use a channel, write
+You can specify @emph{additional channels} to pull from.  To use a channel, write
 @code{~/.config/guix/channels.scm} to instruct @command{guix pull} to pull from it
 @emph{in addition} to the default Guix channel(s):
 
@@ -7244,9 +7244,9 @@ specify the source sub-directory, defaulting to ``src''.
 The @code{#:main-class} parameter can be used with the minimal ant
 buildfile to specify the main class of the resulting jar.  This makes the
 jar file executable.  The @code{#:test-include} parameter can be used to
-specify the list of junit tests to run. It defaults to
+specify the list of junit tests to run.  It defaults to
 @code{(list "**/*Test.java")}.  The @code{#:test-exclude} can be used to
-disable some tests. It defaults to @code{(list "**/Abstract*.java")},
+disable some tests.  It defaults to @code{(list "**/Abstract*.java")},
 because abstract classes cannot be run as tests.
 
 The parameter @code{#:build-target} can be used to specify the Ant task
@@ -7280,7 +7280,7 @@ the libraries and header files are assumed to be host tools.
 
 These variables, exported by @code{(guix build-system asdf)}, implement
 build procedures for Common Lisp packages using
-@url{https://common-lisp.net/project/asdf/, ``ASDF''}. ASDF is a system
+@url{https://common-lisp.net/project/asdf/, ``ASDF''}.  ASDF is a system
 definition facility for Common Lisp programs and libraries.
 
 The @code{asdf-build-system/source} system installs the packages in
@@ -7620,13 +7620,13 @@ Julia packages require the source @code{file-name} to be the real name of the
 package, correctly capitalized.
 
 For packages requiring shared library dependencies, you may need to write the
-@file{/deps/deps.jl} file manually. It's usually a line of @code{const
+@file{/deps/deps.jl} file manually.  It's usually a line of @code{const
 variable = /gnu/store/library.so} for each dependency, plus a void function
 @code{check_deps() = nothing}.
 
 Some older packages that aren't using @file{Package.toml} yet, will require
-this file to be created, too. The function @code{julia-create-package-toml}
-helps creating the file. You need to pass the outputs and the source of the
+this file to be created, too.  The function @code{julia-create-package-toml}
+helps creating the file.  You need to pass the outputs and the source of the
 package, it's name (the same as the @code{file-name} parameter), the package
 uuid, the package version, and a list of dependencies specified by their name
 and their uuid.
@@ -7823,7 +7823,7 @@ run after installation using the R function
 @defvr {Scheme Variable} rakudo-build-system
 This variable is exported by @code{(guix build-system rakudo)}.  It
 implements the build procedure used by @uref{https://rakudo.org/,
-Rakudo} for @uref{https://perl6.org/, Perl6} packages. It installs the
+Rakudo} for @uref{https://perl6.org/, Perl6} packages.  It installs the
 package to @code{/gnu/store/@dots{}/NAME-VERSION/share/perl6} and
 installs the binaries, library files and the resources, as well as wrap
 the files under the @code{bin/} directory.  Tests can be skipped by
@@ -11465,7 +11465,7 @@ inconvenient.
 
 @item --manifest=@var{file}
 @itemx -m @var{file}
-Select all the packages from the manifest in @var{file}. This is useful to
+Select all the packages from the manifest in @var{file}.  This is useful to
 check if any packages of the user manifest can be updated.
 
 @item --type=@var{updater}
@@ -12996,7 +12996,7 @@ Produce output in the specified @var{format}, one of:
 
 @table @code
 @item recutils
-The default option. It outputs a set of Session recutils records
+The default option.  It outputs a set of Session recutils records
 that include each @code{ChildProcess} as a field.
 
 @item normalized
@@ -13919,7 +13919,7 @@ the system boots up.
 @item source
 This is either a string specifying the name of the block device to be mapped,
 such as @code{"/dev/sda3"}, or a list of such strings when several devices
-need to be assembled for creating a new one. In case of LVM this is a
+need to be assembled for creating a new one.  In case of LVM this is a
 string specifying name of the volume group to be mapped.
 
 @item target
@@ -13934,7 +13934,7 @@ be specified as @code{"VGNAME-LVNAME"}.
 
 @item targets
 This list of strings specifies names of the resulting mapped devices in case
-there are several. The format is identical to @var{target}.
+there are several.  The format is identical to @var{target}.
 
 @item type
 This must be a @code{mapped-device-kind} object, which specifies how
@@ -14811,7 +14811,7 @@ Shadow tool suite.
 
 @item @code{local-line} (default: @code{#f})
 Control the CLOCAL line flag.  This accepts one of three symbols as
-arguments, @code{'auto}, @code{'always}, or @code{'never}. If @code{#f},
+arguments, @code{'auto}, @code{'always}, or @code{'never}.  If @code{#f},
 the default value chosen by agetty is @code{'auto}.
 
 @item @code{extract-baud?} (default: @code{#f})
@@ -14926,7 +14926,7 @@ implements virtual console log-in.
 The name of the console this Kmscon runs on---e.g., @code{"tty1"}.
 
 @item @code{login-program} (default: @code{#~(string-append #$shadow "/bin/login")})
-A gexp denoting the name of the log-in program. The default log-in program is
+A gexp denoting the name of the log-in program.  The default log-in program is
 @command{login} from the Shadow tool suite.
 
 @item @code{login-arguments} (default: @code{'("-p")})
@@ -15829,7 +15829,7 @@ and @command{wicd-curses} user interfaces.
 @defvr {Scheme Variable} modem-manager-service-type
 This is the service type for the
 @uref{https://wiki.gnome.org/Projects/ModemManager, ModemManager}
-service. The value for this service type is a
+service.  The value for this service type is a
 @code{modem-manager-configuration} record.
 
 This service is part of @code{%desktop-services} (@pxref{Desktop
@@ -15851,8 +15851,9 @@ The ModemManager package to use.
 
 @defvr {Scheme Variable} usb-modeswitch-service-type
 This is the service type for the
-@uref{https://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch} service. The
-value for this service type is a @code{usb-modeswitch-configuration} record.
+@uref{https://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch}
+service.  The value for this service type is
+a @code{usb-modeswitch-configuration} record.
 
 When plugged in, some USB modems (and other USB devices) initially present
 themselves as a read-only storage medium and not as a modem.  They need to be
@@ -16197,7 +16198,7 @@ The data type representing the configuration of a NTP server.
 
 @table @asis
 @item @code{type} (default: @code{'server})
-The type of the NTP server, given as a symbol. One of @code{'pool},
+The type of the NTP server, given as a symbol.  One of @code{'pool},
 @code{'server}, @code{'peer}, @code{'broadcast} or @code{'manycastclient}.
 
 @item @code{address}
@@ -16205,7 +16206,7 @@ The address of the server, as a string.
 
 @item @code{options}
 NTPD options to use with that specific server, given as a list of option names
-and/or of option names and values tuples. The following example define a server
+and/or of option names and values tuples.  The following example define a server
 to use with the options @option{iburst} and @option{prefer}, as well as
 @option{version} 3 and a @option{maxpoll} time of 16 seconds.
 
@@ -17052,7 +17053,7 @@ Connect to the named PageKite frontend server instead of the
 @uref{https://pagekite.net,,pagekite.net} service.
 
 @item @code{kites} (default: @code{'("http:@@kitename:localhost:80:@@kitesecret")})
-List of service kites to use.  Exposes HTTP on port 80 by default. The format
+List of service kites to use.  Exposes HTTP on port 80 by default.  The format
 is @code{proto:kitename:host:port:secret}.
 
 @item @code{extra-file} (default: @code{#f})
@@ -19724,7 +19725,7 @@ Defaults to @samp{"private"}.
 @end deftypevr
 
 @deftypevr {@code{namespace-configuration} parameter} string separator
-Hierarchy separator to use. You should use the same separator for
+Hierarchy separator to use.  You should use the same separator for
 all namespaces or some clients get confused.  @samp{/} is usually a good
 one.  The default however depends on the underlying mail storage
 format.
@@ -19733,7 +19734,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{namespace-configuration} parameter} string prefix
 Prefix required to access this namespace.  This needs to be
-different for all namespaces. For example @samp{Public/}.
+different for all namespaces.  For example @samp{Public/}.
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -19751,7 +19752,7 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{namespace-configuration} parameter} boolean hidden?
 If namespace is hidden, it's not advertised to clients via NAMESPACE
-extension. You'll most likely also want to set @samp{list? #f}.  This is mostly
+extension.  You'll most likely also want to set @samp{list? #f}.  This is mostly
 useful when converting from another server with different namespaces
 which you want to deprecate but still keep working.  For example you can
 create hidden namespaces with prefixes @samp{~/mail/}, @samp{~%u/mail/}
@@ -19760,7 +19761,7 @@ Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{namespace-configuration} parameter} boolean list?
-Show the mailboxes under this namespace with the LIST command. This
+Show the mailboxes under this namespace with the LIST command.  This
 makes the namespace visible for clients that do not support the NAMESPACE
 extension.  The special @code{children} value lists child mailboxes, but
 hides the namespace prefix.
@@ -20861,9 +20862,9 @@ Data type representing the configuration of exim.
 Package object of the Exim server.
 
 @item @code{config-file} (default: @code{#f})
-File-like object of the Exim configuration file to use. If its value is
+File-like object of the Exim configuration file to use.  If its value is
 @code{#f} then use the default configuration file from the package
-provided in @code{package}. The resulting configuration file is loaded
+provided in @code{package}.  The resulting configuration file is loaded
 after setting the @code{exim_user} and @code{exim_group} configuration
 variables.
 
@@ -21179,11 +21180,11 @@ specifying how to deliver mail to users on this system.
 
 The configuration for a @code{mail-aliases-service-type} service is an
 association list denoting how to deliver mail that comes to this
-system. Each entry is of the form @code{(alias addresses ...)}, with
+system.  Each entry is of the form @code{(alias addresses ...)}, with
 @code{alias} specifying the local alias and @code{addresses} specifying
 where to deliver this user's mail.
 
-The aliases aren't required to exist as users on the local system. In
+The aliases aren't required to exist as users on the local system.  In
 the above example, there doesn't need to be a @code{postmaster} entry in
 the @code{operating-system}'s @code{user-accounts} in order to deliver
 the @code{postmaster} mail to @code{bob} (which subsequently would
@@ -21848,7 +21849,7 @@ Maximum size in bytes that a user can send in one image message.
 
 @item @code{cert-required?} (default: @code{#f})
 If it is set to @code{#t} clients that use weak password authentication
-will not be accepted. Users must have completed the certificate wizard to join.
+will not be accepted.  Users must have completed the certificate wizard to join.
 
 @item @code{remember-channel?} (default: @code{#f})
 Should murmur remember the last channel each user was in when they disconnected
@@ -21859,7 +21860,7 @@ Should html be allowed in text messages, user comments, and channel descriptions
 
 @item @code{allow-ping?} (default: @code{#f})
 Setting to true exposes the current user count, the maximum user count, and
-the server's maximum bandwidth per client to unauthenticated users. In the
+the server's maximum bandwidth per client to unauthenticated users.  In the
 Mumble client, this information is shown in the Connect dialog.
 
 Disabling this setting will prevent public listing of the server.
@@ -21933,11 +21934,11 @@ Configuration for public registration of a murmur service.
 
 @table @asis
 @item @code{name}
-This is a display name for your server. Not to be confused with the hostname.
+This is a display name for your server.  Not to be confused with the hostname.
 
 @item @code{password}
 A password to identify your registration.
-Subsequent updates will need the same password. Don't lose your password.
+Subsequent updates will need the same password.  Don't lose your password.
 
 @item @code{url}
 This should be a @code{http://} or @code{https://} link to your web
@@ -21984,7 +21985,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{config-file} (default: @code{(tailon-configuration-file)})
-The configuration file to use for Tailon. This can be set to a
+The configuration file to use for Tailon.  This can be set to a
 @dfn{tailon-configuration-file} record value, or any gexp
 (@pxref{G-Expressions}).
 
@@ -22009,7 +22010,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{files} (default: @code{(list "/var/log")})
-List of files to display. The list can include strings for a single file
+List of files to display.  The list can include strings for a single file
 or directory, or a list, where the first item is the name of a
 subsection, and the remaining items are the files or directories in that
 subsection.
@@ -22030,24 +22031,24 @@ Allow tailing of not-yet existent files.
 Number of lines to read initially from each file.
 
 @item @code{allowed-commands} (default: @code{(list "tail" "grep" "awk")})
-Commands to allow running. By default, @code{sed} is disabled.
+Commands to allow running.  By default, @code{sed} is disabled.
 
 @item @code{debug?} (default: @code{#f})
 Set @code{debug?} to @code{#t} to show debug messages.
 
 @item @code{wrap-lines} (default: @code{#t})
-Initial line wrapping state in the web interface. Set to @code{#t} to
+Initial line wrapping state in the web interface.  Set to @code{#t} to
 initially wrap lines (the default), or to @code{#f} to initially not
 wrap lines.
 
 @item @code{http-auth} (default: @code{#f})
-HTTP authentication type to use. Set to @code{#f} to disable
-authentication (the default). Supported values are @code{"digest"} or
+HTTP authentication type to use.   Set to @code{#f} to disable
+authentication (the default).  Supported values are @code{"digest"} or
 @code{"basic"}.
 
 @item @code{users} (default: @code{#f})
 If HTTP authentication is enabled (see @code{http-auth}), access will be
-restricted to the credentials provided here. To configure users, use a
+restricted to the credentials provided here.  To configure users, use a
 list of pairs, where the first element of the pair is the username, and
 the 2nd element of the pair is the password.
 
@@ -23123,9 +23124,9 @@ The httpd package to use.
 The pid file used by the shepherd-service.
 
 @item @code{config} (default: @code{(httpd-config-file)})
-The configuration file to use with the httpd service. The default value
+The configuration file to use with the httpd service.  The default value
 is a @code{httpd-config-file} record, but this can also be a different
-G-expression that generates a file, for example a @code{plain-file}. A
+G-expression that generates a file, for example a @code{plain-file}.  A
 file outside of the store can also be specified through a string.
 
 @end table
@@ -23139,7 +23140,7 @@ This data type represents a module for the httpd service.
 The name of the module.
 
 @item @code{file}
-The file for the module. This can be relative to the httpd package being
+The file for the module.  This can be relative to the httpd package being
 used, the absolute location of a file, or a G-expression for a file
 within the store, for example @code{(file-append mod-wsgi
 "/modules/mod_wsgi.so")}.
@@ -23156,7 +23157,7 @@ This data type represents a configuration file for the httpd service.
 
 @table @asis
 @item @code{modules} (default: @code{%default-httpd-modules})
-The modules to load. Additional modules can be added here, or loaded by
+The modules to load.  Additional modules can be added here, or loaded by
 additional configuration.
 
 For example, in order to handle requests for PHP files, you can use Apache’s
@@ -23187,7 +23188,7 @@ For example, in order to handle requests for PHP files, you can use Apache’s
 
 @item @code{server-root} (default: @code{httpd})
 The @code{ServerRoot} in the configuration file, defaults to the httpd
-package. Directives including @code{Include} and @code{LoadModule} are
+package.  Directives including @code{Include} and @code{LoadModule} are
 taken as relative to the server root.
 
 @item @code{server-name} (default: @code{#f})
@@ -23196,7 +23197,7 @@ request scheme, hostname and port that the server uses to identify
 itself.
 
 This doesn't need to be set in the server config, and can be specified
-in virtual hosts. The default is @code{#f} to not specify a
+in virtual hosts.  The default is @code{#f} to not specify a
 @code{ServerName}.
 
 @item @code{document-root} (default: @code{"/srv/http"})
@@ -23204,12 +23205,12 @@ The @code{DocumentRoot} from which files will be served.
 
 @item @code{listen} (default: @code{'("80")})
 The list of values for the @code{Listen} directives in the config
-file. The value should be a list of strings, when each string can
+file.  The value should be a list of strings, when each string can
 specify the port number to listen on, and optionally the IP address and
 protocol to use.
 
 @item @code{pid-file} (default: @code{"/var/run/httpd"})
-The @code{PidFile} to use. This should match the @code{pid-file} set in
+The @code{PidFile} to use.  This should match the @code{pid-file} set in
 the @code{httpd-configuration} so that the Shepherd service is
 configured correctly.
 
@@ -23297,7 +23298,7 @@ configuration.  In our case, startup error messages can be found in
 with the @var{log-directory} configuration option.
 
 @deffn {Data Type} nginx-configuration
-This data type represents the configuration for NGinx. Some
+This data type represents the configuration for NGinx.  Some
 configuration can be done through this and the other provided record
 types, or alternatively, a config file can be provided.
 
@@ -23511,7 +23512,7 @@ URI which this location block matches.
 
 @anchor{nginx-location-configuration body}
 @item @code{body}
-Body of the location block, specified as a list of strings. This can contain
+Body of the location block, specified as a list of strings.  This can contain
 many
 configuration directives.  For example, to pass requests to a upstream
 server group defined using an @code{nginx-upstream-configuration} block,
@@ -23677,8 +23678,8 @@ The domain to use for Patchwork, this is used in the HTTPD service virtual
 host.
 
 @item @code{settings-module}
-The settings module to use for Patchwork. As a Django application, Patchwork
-is configured with a Python module containing the settings. This can either be
+The settings module to use for Patchwork.  As a Django application, Patchwork
+is configured with a Python module containing the settings.  This can either be
 an instance of the @code{<patchwork-settings-module>} record, any other record
 that represents the settings in the store, or a directory outside of the
 store.
@@ -23688,7 +23689,7 @@ The path under which the HTTPD service should serve the static files.
 
 @item @code{getmail-retriever-config}
 The getmail-retriever-configuration record value to use with
-Patchwork. Getmail will be configured with this value, the messages will be
+Patchwork.  Getmail will be configured with this value, the messages will be
 delivered to Patchwork.
 
 @end table
@@ -23715,7 +23716,7 @@ value by the patchwork-setup shepherd service.
 This setting relates to Django.
 
 @item @code{allowed-hosts}
-A list of valid hosts for this Patchwork service. This should at least include
+A list of valid hosts for this Patchwork service.  This should at least include
 the domain specified in the @code{<patchwork-configuration>} record.
 
 This is a Django setting.
@@ -23726,7 +23727,7 @@ The email address from which Patchwork should send email by default.
 This is a Patchwork setting.
 
 @item @code{static-url} (default: @code{#f})
-The URL to use when serving static assets. It can be part of a URL, or a full
+The URL to use when serving static assets.  It can be part of a URL, or a full
 URL, but must end in a @code{/}.
 
 If the default value is used, the @code{static-path} value from the
@@ -24426,7 +24427,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{id} (default: @code{""})
-An identifier for other configuration fields to refer to this key. IDs must
+An identifier for other configuration fields to refer to this key.  IDs must
 be unique and must not be empty.
 
 @item @code{algorithm} (default: @code{#f})
@@ -24446,7 +24447,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{id} (default: @code{""})
-An identifier for other configuration fields to refer to this key. IDs must be
+An identifier for other configuration fields to refer to this key.  IDs must be
 unique and must not be empty.
 
 @item @code{address} (default: @code{'()})
@@ -24561,7 +24562,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{id} (default: @code{""})
-An identifier for other configuration fields to refer to this remote. IDs must
+An identifier for other configuration fields to refer to this remote.  IDs must
 be unique and must not be empty.
 
 @item @code{address} (default: @code{'()})
@@ -24971,8 +24972,8 @@ If set, fixes the dynamical ports (one per client) to the given range
 @item @code{tftp-root} (default: @code{/var/empty,lo})
 Look for files to transfer using TFTP relative to the given directory.
 When this is set, TFTP paths which include ".." are rejected, to stop clients
-getting outside the specified root. Absolute paths (starting with /) are
-allowed, but they must be within the tftp-root. If the optional interface
+getting outside the specified root.  Absolute paths (starting with /) are
+allowed, but they must be within the tftp-root.  If the optional interface
 argument is given, the directory is only used for TFTP requests via that
 interface.
 
@@ -24984,7 +24985,7 @@ format).
 
 For instance, if --tftp-root is "/tftp" and client 1.2.3.4 requests file
 "myfile" then the effective path will be "/tftp/1.2.3.4/myfile" if
-/tftp/1.2.3.4 exists or /tftp/myfile otherwise. When "=mac" is specified
+/tftp/1.2.3.4 exists or /tftp/myfile otherwise.  When "=mac" is specified
 it will append the MAC address instead, using lowercase zero padded digits
 separated by dashes, e.g.: 01-02-03-04-aa-bb Note that resolving MAC
 addresses is only possible if the client is in the local network or obtained
@@ -25754,11 +25755,11 @@ Location of the log file.
 Location of the log file used by the web interface.
 
 @item @code{queries-log-file} (default: @code{#f})
-Location of the SQL queries log file. By default, SQL queries logging is
+Location of the SQL queries log file.  By default, SQL queries logging is
 disabled.
 
 @item @code{web-queries-log-file} (default: @code{#f})
-Location of the web SQL queries log file. By default, web SQL queries
+Location of the web SQL queries log file.  By default, web SQL queries
 logging is disabled.
 
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
@@ -26438,7 +26439,7 @@ is only useful for output plugins that can receive tags, for example the
 
 @item @code{always-on?} (default: @code{#f})
 If set to @code{#t}, then MPD attempts to keep this audio output always
-open. This may be useful for streaming servers, when you don’t want to
+open.  This may be useful for streaming servers, when you don’t want to
 disconnect all listeners even when playback is accidentally stopped.
 
 @item @code{mixer-type}
@@ -26482,7 +26483,7 @@ services.
 @subsubheading Libvirt daemon
 
 @code{libvirtd} is the server side daemon component of the libvirt
-virtualization management system. This daemon runs on host servers
+virtualization management system.  This daemon runs on host servers
 and performs required management tasks for virtualized guests.
 
 @deffn {Scheme Variable} libvirt-service-type
@@ -27047,9 +27048,9 @@ The virtlogd service is a server side daemon component of libvirt that is
 used to manage logs from virtual machine consoles.
 
 This daemon is not used directly by libvirt client applications, rather it
-is called on their behalf by @code{libvirtd}. By maintaining the logs in a
+is called on their behalf by @code{libvirtd}.  By maintaining the logs in a
 standalone daemon, the main @code{libvirtd} daemon can be restarted without
-risk of losing logs. The @code{virtlogd} daemon has the ability to re-exec()
+risk of losing logs.  The @code{virtlogd} daemon has the ability to re-exec()
 itself upon receiving @code{SIGUSR1}, to allow live upgrades without downtime.
 
 @deffn {Scheme Variable} virtlog-service-type
@@ -29269,12 +29270,12 @@ This controls the permissions Gitolite sets on the repositories and their
 contents.
 
 A value like @code{#o0027} will give read access to the group used by Gitolite
-(by default: @code{git}). This is necessary when using Gitolite with software
+(by default: @code{git}).  This is necessary when using Gitolite with software
 like cgit or gitweb.
 
 @item @code{git-config-keys} (default: @code{""})
-Gitolite allows you to set git config values using the @samp{config} keyword. This
-setting allows control over the config keys to accept.
+Gitolite allows you to set git config values using the @samp{config}
+keyword.  This setting allows control over the config keys to accept.
 
 @item @code{roles} (default: @code{'(("READERS" . 1) ("WRITERS" . ))})
 Set the role names allowed to be used by users running the perms command.
@@ -29418,8 +29419,8 @@ been thorougly tested.
 @end quotation
 
 The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
-more connected @dfn{agent} processes. The coordinator process handles
-clients submitting builds, and allocating builds to agents. The agent
+more connected @dfn{agent} processes.  The coordinator process handles
+clients submitting builds, and allocating builds to agents.  The agent
 processes talk to a build daemon to actually perform the builds, then
 send the results back to the coordinator.
 
@@ -29860,7 +29861,7 @@ An association list specifies kernel parameters and their values.
 
 The @code{(gnu services security-token)} module provides the following service
 to run @command{pcscd}, the PC/SC Smart Card Daemon.  @command{pcscd} is the
-daemon program for pcsc-lite and the MuscleCard framework. It is a resource
+daemon program for pcsc-lite and the MuscleCard framework.  It is a resource
 manager that coordinates communications with smart card readers, smart cards
 and cryptographic tokens that are connected to the system.
 
@@ -29881,7 +29882,7 @@ The data type representing the configuration of @command{pcscd}.
 @item @code{pcsc-lite} (default: @code{pcsc-lite})
 The pcsc-lite package that provides pcscd.
 @item @code{usb-drivers} (default: @code{(list ccid)})
-List of packages that provide USB drivers to pcscd. Drivers are expected to be
+List of packages that provide USB drivers to pcscd.  Drivers are expected to be
 under @file{pcsc/drivers} in the store directory of the package.
 @end table
 @end deftp
@@ -30579,7 +30580,7 @@ volatile root file system.
 The @code{base-initrd} procedure is built from @code{raw-initrd} procedure.
 Unlike @code{base-initrd}, @code{raw-initrd} doesn't do anything high-level,
 such as trying to guess which kernel modules and packages should be included
-to the initrd. An example use of @code{raw-initrd} is when a user has
+to the initrd.  An example use of @code{raw-initrd} is when a user has
 a custom Linux kernel configuration and default kernel modules included by
 @code{base-initrd} are not available.
 
@@ -30640,7 +30641,8 @@ the root file system specified on the kernel command line via @option{--root}.
 @var{linux-modules} is a list of kernel modules to be loaded at boot time.
 @var{mapped-devices} is a list of device mappings to realize before
 @var{file-systems} are mounted (@pxref{Mapped Devices}).
-@var{helper-packages} is a list of packages to be copied in the initrd. It may
+@var{helper-packages} is a list of packages to be copied in the initrd.
+       It may
 include @code{e2fsck/static} or other packages needed by the initrd to check
 the root file system.
 
@@ -30722,7 +30724,7 @@ The type of a bootloader configuration declaration.
 @cindex EFI, bootloader
 @cindex UEFI, bootloader
 @cindex BIOS, bootloader
-The bootloader to use, as a @code{bootloader} object. For now
+The bootloader to use, as a @code{bootloader} object.  For now
 @code{grub-bootloader}, @code{grub-efi-bootloader},
 @code{grub-efi-netboot-bootloader}, @code{extlinux-bootloader} and
 @code{u-boot-bootloader} are supported.
@@ -31769,9 +31771,9 @@ machine with an @code{environment} of @code{digital-ocean-environment-type}.
 @table @asis
 @item @code{ssh-key}
 The path to the SSH private key to use to authenticate with the remote
-host. In the future, this field may not exist.
+host.  In the future, this field may not exist.
 @item @code{tags}
-A list of string ``tags'' that uniquely identify the machine. Must be given
+A list of string ``tags'' that uniquely identify the machine.  Must be given
 such that no two machines in the deployment have the same set of tags.
 @item @code{region}
 A Digital Ocean region slug, such as @code{"nyc3"}.
