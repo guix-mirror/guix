@@ -41,7 +41,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
@@ -885,14 +885,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "51.0.0")
+    (version "52.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "0w2crz6wnfw18m9m4zrij1yplcq5drzhz8n58w9kp51wl48a0yn1"))
+        (base32 "15y7ahlifsclnkl70wn5w34dil8nwcwcjnw3k2ydqc6dz4vb0j5s"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -914,6 +914,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("file" ,file)
        ("flac" ,flac)
        ("fmt" ,fmt)
+       ("libdvdread" ,libdvdread)
        ("libmatroska" ,libmatroska)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
