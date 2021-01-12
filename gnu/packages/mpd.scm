@@ -313,7 +313,7 @@ interface for the Music Player Daemon.")
 (define-public sonata
   (package
     (name "sonata")
-    (version "1.7b1")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -322,7 +322,7 @@ interface for the Music Player Daemon.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1npbxlrg6k154qybfd250nq2p96kxdsdkj9wwnp93gljnii3g8wh"))))
+                "0rl8w7s2asff626clzfvyz987l2k4ml5dg417mqp9v8a962q0v2x"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
