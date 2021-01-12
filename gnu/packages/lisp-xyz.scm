@@ -56,6 +56,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
@@ -12967,3 +12968,49 @@ bringing dynamism to class definition.")
 
 (define-public cl-markdown
   (sbcl-package->cl-source-package sbcl-cl-markdown))
+
+(define-public sbcl-magicffi
+  (let ((commit "d88f2f280c31f639e4e05be75215d8a8dce6aef2"))
+    (package
+      (name "sbcl-magicffi")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dochang/magicffi/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0p6ysa92fk34bhxpw7bycbfgw150fv11z9x8jr9xb4lh8cm2hvp6"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("libmagic" ,file)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((magic (assoc-ref inputs "libmagic")))
+                 (substitute* "grovel.lisp"
+                   (("/usr/include/magic.h")
+                    (string-append magic "/include/magic.h")))
+                 (substitute* "api.lisp"
+                   ((":default \"libmagic\"" all)
+                    (string-append ":default \"" magic "/lib/libmagic\"")))))))))
+      (home-page "https://common-lisp.net/project/magicffi/")
+      (synopsis "Common Lisp interface to libmagic based on CFFI")
+      (description
+       "MAGICFFI is a Common Lisp CFFI interface to libmagic(3), the file type
+determination library using @emph{magic} numbers.")
+      (license license:bsd-2))))
+
+(define-public ecl-magicffi
+  (sbcl-package->ecl-package sbcl-magicffi))
+
+(define-public cl-magicffi
+  (sbcl-package->cl-source-package sbcl-magicffi))
