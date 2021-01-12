@@ -142,9 +142,9 @@ GNU Guix参考手册}), French (@pxref{Top,,, guix.fr, Manuel de référence de 
 Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}),
 Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}), and
 Russian (@pxref{Top,,, guix.ru, Руководство GNU Guix}).  If you
-would like to translate it in your native language, consider joining the
-@uref{https://translationproject.org/domain/guix-manual.html, Translation
-Project}.
+would like to translate it in your native language, consider joining
+@uref{https://translate.fedoraproject.org/projects/guix/documentation-manual,
+Weblate}.
 
 @menu
 * Introduction::                What is Guix about?

@@ -57,8 +57,9 @@ its API, and related concepts.
 @c how to join your own translation team and how to report issues with the
 @c translation.
 If you would like to translate this document in your native language, consider
-joining the @uref{https://translationproject.org/domain/guix-cookbook.html,
-Translation Project}.
+joining
+@uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook,
+Weblate}.
 
 @menu
 * Scheme tutorials::            Meet your new favorite language!

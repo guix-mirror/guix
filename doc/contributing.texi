@@ -593,8 +593,8 @@ such as @command{guix package --show} take care of rendering it
 appropriately.
 
 Synopses and descriptions are translated by volunteers
-@uref{https://translationproject.org/domain/guix-packages.html, at the
-Translation Project} so that as many users as possible can read them in
+@uref{https://translate.fedoraproject.org/projects/guix/packages, at
+Weblate} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
 
