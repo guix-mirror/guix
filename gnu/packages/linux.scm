@@ -49,7 +49,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
@@ -7587,7 +7587,7 @@ persistent over reboots.")
 (define-public libbpf
   (package
     (name "libbpf")
-    (version "0.0.9")
+    (version "0.1.1")
     (source
      (origin
        (method git-fetch)
@@ -7597,7 +7597,7 @@ persistent over reboots.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "18l0gff7nm841mwhr7bc7x863xcyvwh58zl7mc0amnsjqlbrvqg7"))))
+         "0ilnnm4q22f8fagwp8kb37licy4ks861i2iqh2djsypqhnxvx3fv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -7617,10 +7617,7 @@ persistent over reboots.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'pre-build
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "scripts/check-reallocarray.sh"
-               (("/bin/rm" rm)
-                (string-append (assoc-ref inputs "coreutils") rm)))
+           (lambda _
              (chdir "src")
              #t)))))
     (home-page "https://github.com/libbpf/libbpf")
