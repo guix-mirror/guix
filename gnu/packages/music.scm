@@ -3481,8 +3481,8 @@ websites such as Libre.fm.")
     (synopsis "Bandcamp plugin for beets")
     (description
      "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
-                                                                      https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
-    using the beets FetchArt plugin.")
+https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+using the beets FetchArt plugin.")
     (license license:gpl2)))
 
 (define-public milkytracker
