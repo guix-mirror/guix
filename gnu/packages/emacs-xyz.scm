@@ -88,7 +88,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 André A. Gomes <andremegafone@gmail.com>
 ;;; Copyright © 2020 Jonathan Rostran <rostranjj@gmail.com>
-;;; Copyright © 2020 Noah Evans <noah@nevans.me>
+;;; Copyright © 2020, 2021 Noah Evans <noah@nevans.me>
 ;;; Copyright © 2020 Brit Butler <brit@kingcons.io>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -6344,6 +6344,34 @@ Cucumber tool) user stories.  Also known by the name @code{cucumber.el}.")
 drill sessions to aid in memorization.  In these sessions you are shown flash
 cards created in Org mode.")
     (license license:gpl3+)))
+
+(define-public emacs-anki-editor
+  ;; Last release was in 2018.
+  (let ((commit "546774a453ef4617b1bcb0d1626e415c67cc88df")
+        (revision "0")
+        (version "0.3.3"))
+    (package
+      (name "emacs-anki-editor")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/louietan/anki-editor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1if610hq5j8rbjh1caw5bwbgnsn231awwxqbpwvrh966kdxzl4qf"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-request" ,emacs-request)))
+      (home-page "https://github.com/louietan/anki-editor")
+      (synopsis "Minor mode for making Anki cards with Org mode")
+      (description
+       "This package is for people who use Anki as a spaced repetition system
+(SRS) but would like to make cards in Org mode.")
+      (license license:gpl3+))))
 
 (define-public emacs-org-superstar
   (package
