@@ -428,6 +428,36 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
       (license (list license:gpl2+         ;for the utility itself
                      license:lgpl2.1+))))) ;for use as a library
 
+(define-public embree
+  (package
+    (name "embree")
+    (version "3.12.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/embree/embree")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0aznd16n7h8g3f6jcahzfp1dq4r7wayqvn03wsaskiq2dvsi4srd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no tests (apparently)
+       #:configure-flags
+         (list
+          "-DEMBREE_ISPC_SUPPORT=OFF")))
+    (inputs
+     `(("tbb" ,tbb)
+       ("glfw" ,glfw)))
+    (home-page "https://www.embree.org/")
+    (synopsis "High performance ray tracing kernels")
+    (description
+     "Embree is a collection of high-performance ray tracing kernels.
+Embree is meant to increase performance of photo-realistic rendering
+applications.")
+    (license license:asl2.0)))
+
 (define-public blender
   (package
     (name "blender")
