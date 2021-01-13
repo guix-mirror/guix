@@ -13014,3 +13014,37 @@ determination library using @emph{magic} numbers.")
 
 (define-public cl-magicffi
   (sbcl-package->cl-source-package sbcl-magicffi))
+
+(define-public sbcl-shlex
+  (let ((commit "c5616dffca0d4d8ddbc1cd6f37a96d88477b2740"))
+    (package
+      (name "sbcl-shlex")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/cl-shlex")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1nas024n4wv319bf40aal96g72bgi9nkapj2chywj2cc6r8hzkfg"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("serapeum" ,sbcl-serapeum)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("unicode" ,sbcl-cl-unicode)))
+      (home-page "https://github.com/ruricolist/cl-shlex")
+      (synopsis "Common Lisp lexical analyzer for shell-like syntaxes")
+      (description
+       "This library contains a lexer for syntaxes that use shell-like rules
+for quoting and commenting.  It is a port of the @code{shlex} module from Python’s
+standard library.")
+      (license license:expat))))
+
+(define-public ecl-shlex
+  (sbcl-package->ecl-package sbcl-shlex))
+
+(define-public cl-shlex
+  (sbcl-package->cl-source-package sbcl-shlex))
