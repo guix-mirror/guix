@@ -1940,6 +1940,51 @@ pretty, documentation is code.")
          ;; TODO: Find why the tests fail on ECL.
          ((#:tests? _ #f) #f))))))
 
+(define-public sbcl-mssql
+  (let ((commit "045602a19a32254108f2b75871049293f49731eb")
+        (revision "1"))
+    (package
+      (name "sbcl-mssql")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/cl-mssql")
+               (commit commit)))
+         (file-name (git-file-name "cl-mssql" version))
+         (sha256
+          (base32 "09i50adppgc1ybm3ka9vbindhwa2x29f9n3n0jkrryymdhb8zknm"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("freetds" ,freetds)
+         ("garbage-pools" ,sbcl-garbage-pools)
+         ("iterate" ,sbcl-iterate)
+         ("parse-number" ,sbcl-parse-number)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/mssql.lisp"
+                 (("libsybdb" all)
+                  (string-append (assoc-ref inputs "freetds") "/lib/" all)))
+               #t)))))
+      (home-page "https://github.com/archimag/cl-mssql")
+      (synopsis "Common Lisp library to interact with MS SQL Server databases")
+      (description
+       "@code{cl-mssql} provides an interface to connect to Microsoft SQL
+server.  It uses the @code{libsybdb} foreign library provided by the FreeTDS
+project.")
+      (license license:llgpl))))
+
+(define-public ecl-mssql
+  (sbcl-package->ecl-package sbcl-mssql))
+
+(define-public cl-mssql
+  (sbcl-package->cl-source-package sbcl-mssql))
+
 (define-public sbcl-lisp-unit
   (let ((commit "89653a232626b67400bf9a941f9b367da38d3815"))
     (package
