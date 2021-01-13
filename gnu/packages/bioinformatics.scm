@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -3563,56 +3563,39 @@ comment or quality sections.")
 (define-public gemma
   (package
     (name "gemma")
-    (version "0.98")
+    (version "0.98.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/xiangzhou/GEMMA")
-                    (commit (string-append "v" version))))
+                    (url "https://github.com/genetics-statistics/GEMMA")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s3ncnbn45r2hh1cvrqky1kbqq6546biypr4f5mkw1kqlrgyh0yg"))))
+                "1p8a7kkfn1mmrg017aziy544aha8i9h6wd1x2dk3w2794wl33qb7"))))
+    (build-system gnu-build-system)
     (inputs
-     `(("eigen" ,eigen)
-       ("gfortran" ,gfortran "lib")
-       ("gsl" ,gsl)
-       ("lapack" ,lapack)
+     `(("gsl" ,gsl)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
-    (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       '(,@(match (%current-system)
-         ("x86_64-linux"
-          '("FORCE_DYNAMIC=1"))
-         ("i686-linux"
-          '("FORCE_DYNAMIC=1" "FORCE_32BIT=1"))
-         (_
-          '("FORCE_DYNAMIC=1" "NO_INTEL_COMPAT=1"))))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'find-eigen
+         (add-after 'unpack 'prepare-build
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Ensure that Eigen headers can be found
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
+             (mkdir-p "bin")
+             (substitute* "Makefile"
+               (("/usr/local/opt/openblas")
+                (assoc-ref inputs "openblas")))
              #t))
-         (add-before 'build 'bin-mkdir
-          (lambda _
-            (mkdir-p "bin")
-            #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "bin/gemma"
-                             (string-append
-                              out "/bin")))
+             (install-file "bin/gemma"
+                           (string-append (assoc-ref outputs "out") "/bin"))
              #t)))
        #:tests? #f)) ; no tests included yet
-    (home-page "https://github.com/xiangzhou/GEMMA")
+    (home-page "https://github.com/genetics-statistics/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
     (description
      "Genome-wide Efficient Mixed Model Association (GEMMA) provides a
