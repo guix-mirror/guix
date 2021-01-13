@@ -674,9 +674,11 @@ geometry and singularity theory.")
    (version "7.0.4")
    (source (origin
              (method url-fetch)
-             ;; Use the ‘Latest version’ link for a stable URI across releases.
-             (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                 "latestfile/160/ecm-" version ".tar.gz"))
+             (uri
+               (let ((hash "00c4c691a1ef8605b65bdf794a71539d"))
+                    (string-append "https://gitlab.inria.fr/zimmerma/ecm/"
+                                   "uploads/" hash "/ecm-" version
+                                   ".tar.gz")))
              (sha256 (base32
                       "0hxs24c2m3mh0nq1zz63z3sb7dhy1rilg2s1igwwcb26x3pb7xqc"))))
    (build-system gnu-build-system)
