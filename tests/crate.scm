@@ -148,7 +148,7 @@
        \"crate_id\": \"intermediate-b\",
        \"kind\": \"normal\",
        \"req\": \"^1.0.0\"
-     }
+     },
      {
        \"crate_id\": \"leaf-alice\",
        \"kind\": \"normal\",
