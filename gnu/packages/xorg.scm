@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -2143,8 +2143,15 @@ emulate a TI-30 or an HP-10C.")
                "https://xcb.freedesktop.org/dist/xcb-proto-"
                version ".tar.xz"))
         (sha256
-          (base32
-           "01d62r286yfc3rpz714nqdgkl0wk9j0wqkd4ylas1d7r4vmkqshq"))))
+         (base32
+          "01d62r286yfc3rpz714nqdgkl0wk9j0wqkd4ylas1d7r4vmkqshq"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; fractions.gcd has been deprecated since python-3.5.
+            (substitute* "xcbgen/align.py"
+              (("from fractions import gcd") "from math import gcd"))
+            #t))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
