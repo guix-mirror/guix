@@ -461,14 +461,14 @@ applications.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.83.9")
+    (version "2.91.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "106w9vi6z0gi2nbr73g8pm40w3wn7dkjcibzvvzbc786yrnzvkhb"))))
+                "0x396lgmk0dq9115yrc36s8zwxzmjr490sr5n2y6w27y17yllyjm"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -540,7 +540,8 @@ applications.")
        ("python" ,python)
        ("python-numpy" ,python-numpy)
        ("tbb" ,tbb)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("embree" ,embree)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
     (description
