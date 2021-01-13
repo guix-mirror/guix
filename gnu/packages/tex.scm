@@ -1245,22 +1245,11 @@ Taco Hoekwater.")
           `(modify-phases ,phases
              (add-before 'build 'build-fonts
                (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((mf  (assoc-ref inputs "texlive-union"))
-                       (src (string-append (getcwd) "/fonts/source/public/amsfonts/")))
-                   ;; Make METAFONT reproducible
-                   (setenv "SOURCE_DATE_EPOCH" "1")
-                   ;; Tell mf where to find mf.base
-                   (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
-                   ;; Tell mf where to look for source files
-                   (setenv "MFINPUTS"
-                           (string-append src ":"
-                                          src "/cmextra:"
-                                          src "/cyrillic:"
-                                          src "/dummy:"
-                                          src "/symbols:"
-                                          mf "/share/texmf-dist/metafont/base:"
-                                          (assoc-ref inputs "texlive-cm")
-                                          "/share/texmf-dist/fonts/source/public/cm")))
+                 ;; Allow self fonts sources and other resources to be
+                 ;; discovered.
+                 (setenv "GUIX_TEXMF" (string-append (getenv "GUIX_TEXMF")
+                                                     ":" (getcwd)))
+
                  (let ((build (string-append (getcwd) "/build-fonts")))
                    (mkdir-p build)
                    (with-directory-excursion "fonts/source/public/amsfonts"
@@ -1295,10 +1284,9 @@ Taco Hoekwater.")
                    ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
                    ;; the pl file.
                    (setenv "TEXINPUTS"
-                           (string-append build "//:"
+                           (string-append ":" build "//:"
                                           (getcwd) "/fonts/afm/public/amsfonts//:"
-                                          (getcwd) "/source/latex/amsfonts//:"
-                                          (assoc-ref inputs "texlive-union") "//"))
+                                          (getcwd) "/source/latex/amsfonts//:"))
                    (with-directory-excursion build
                      (for-each (match-lambda
                                  (((target-base target-size)
@@ -1333,19 +1321,16 @@ Taco Hoekwater.")
 
                                  (("eurm6" 6) ("eurm7" 7))
                                  (("eurm8" 8) ("eurm10" 10))
-                                 (("eurm9" 9) ("eurm10" 10))))))
-                 #t))
+                                 (("eurm9" 9) ("eurm10" 10))))))))
              (add-after 'install 'install-generated-fonts
                (lambda* (#:key inputs outputs #:allow-other-keys)
                  (copy-recursively "build-fonts"
                                    (string-append
                                     (assoc-ref outputs "out")
-                                    "/share/texmf-dist/fonts/tfm/public/amsfonts"))
-                 #t))))))
+                                    "/share/texmf-dist/fonts/tfm/public/amsfonts"))))))))
       (native-inputs
-       `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
-                                                texlive-cm
-                                                texlive-metafont)))))
+       `(("texlive-updmap.cfg" ,(texlive-updmap.cfg
+                                 (list texlive-fontinst)))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
       (synopsis "TeX fonts from the American Mathematical Society")
       (description
