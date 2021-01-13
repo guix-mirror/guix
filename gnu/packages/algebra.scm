@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -327,9 +327,9 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (version "1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://gforge.inria.fr/frs/download.php/33497/cmh-"
-                  version ".tar.gz"))
+            ;; Git repo at <https://gitlab.inria.fr/cmh/cmh>.
+            (uri (string-append "http://www.multiprecision.org/downloads/cmh-"
+                                version ".tar.gz"))
             (sha256
              (base32
               "1a28xr9bs0igms0ik99x0w8lnb0jyfcmvyi26pbyh9ggcdivd33p"))))
@@ -349,8 +349,7 @@ varieties, i.e. Jacobians of hyperelliptic curves.
 It can also be used to compute theta constants at arbitrary
 precision.")
    (license license:gpl3+)
-   (home-page
-     "https://gitlab.inria.fr/cmh/cmh#cmh-computation-of-genus-2-class-polynomials")))
+   (home-page "http://www.multiprecision.org/cmh/home.html")))
 
 (define-public giac
   (package
