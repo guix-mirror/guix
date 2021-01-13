@@ -54,7 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
@@ -361,25 +361,24 @@ data types.")
     (name "python")
     (properties `((superseded . ,python-2)))))
 
-(define-public python-3.8
+(define-public python-3.9
   (package
     (inherit python-2)
     (name "python")
-    (version "3.8.5")
+    (version "3.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-3-arm-alignment.patch"
-                        "python-3-fix-tests.patch"
-                        "python-3.8-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
-                        "python-3-search-paths.patch"
-                        "python-3-hurd-configure.patch"))
+                        "python-3-fix-tests.patch"
+                        "python-3-hurd-configure.patch"
+                        "python-3-search-paths.patch"))
               (sha256
                (base32
-                "1c43dbv9lvlp3ynqmgdi4rh8q94swanhqarqrdx62zmigpakw073"))
+                "1zq3k4ymify5ig739zyvx9s2ainvchxb1zpy139z74krr653y74r"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -394,11 +393,8 @@ data types.")
        ((#:make-flags _)
         `(list (string-append
                 (format #f "TESTOPTS=-j~d" (parallel-job-count))
-                ;; test_mmap fails on low-memory systems.
-                " --exclude test_mmap"
-                ;; test_socket may hang and eventually run out of memory
-                ;; on some systems: <https://bugs.python.org/issue34587>.
-                " test_socket"
+                ;; test_mmap fails on low-memory systems
+                " --exclude test_mmap test_socket"
                 ,@(if (hurd-target?)
                       '(" test_posix"      ;multiple errors
                         " test_time"
@@ -444,12 +440,6 @@ data types.")
                                        (or native-inputs inputs) "tzdata")
                                       "/share/zoneinfo"))
                #t))
-           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
-           ;; again afterwards.  See <https://bugs.python.org/issue34022>.
-           (add-before 'check 'unset-SOURCE_DATE_EPOCH
-             (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
-           (add-after 'check 'reset-SOURCE_DATE_EPOCH
-             (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
            (replace 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -458,22 +448,21 @@ data types.")
                  (setenv "PYTHONHASHSEED" "0")
                  (for-each
                   (lambda (opt)
-                    (format #t "Compiling with optimization level: ~a\n"
-                            (if (null? opt) "none" (car opt)))
-                    (for-each (lambda (file)
-                                (apply invoke
-                                       `(,,(if (%current-target-system)
-                                               "python3"
-                                               '(string-append out
-                                                               "/bin/python3"))
-                                         ,@opt
-                                         "-m" "compileall"
-                                         "-f" ; force rebuild
-                                         ;; Don't build lib2to3, because it's Python 2 code.
-                                         "-x" "lib2to3/.*"
-                                         ,file)))
-                              (find-files out "\\.py$")))
-                  (list '() '("-O") '("-OO")))
+                    (format #t "Compiling with optimization level: ~a\n" opt)
+                    (lambda (file)
+                      (apply invoke
+                             `(,,(if (%current-target-system)
+                                     "python3"
+                                     '(string-append out
+                                                     "/bin/python3"))
+                               ,opt
+                               "-m" "compileall"
+                               "-f" ; force rebuild
+                               "--invalidation-mode=unchecked-hash"
+                               ;; Don't build lib2to3, because it's Python 2 code.
+                               "-x" "lib2to3/.*"
+                               ,out))))
+                  (list "none" "-O" "-OO"))
                  #t)))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
@@ -489,7 +478,7 @@ data types.")
                                         "/site-packages"))))))))
 
 ;; Current 3.x version.
-(define-public python-3 python-3.8)
+(define-public python-3 python-3.9)
 
 ;; Current major version.
 (define-public python python-3)
