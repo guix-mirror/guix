@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -119,23 +119,25 @@ ensuring they are started and stopped in the right order.")))
   (service shepherd-root-service-type '()))
 
 (define-syntax shepherd-service-type
-  (syntax-rules ()
+  (syntax-rules (description)
     "Return a <service-type> denoting a simple shepherd service--i.e., the type
 for a service that extends SHEPHERD-ROOT-SERVICE-TYPE and nothing else.  When
 DEFAULT is given, use it as the service's default value."
-    ((_ service-name proc default)
+    ((_ service-name proc default (description text))
      (service-type
       (name service-name)
       (extensions
        (list (service-extension shepherd-root-service-type
                                 (compose list proc))))
-      (default-value default)))
-    ((_ service-name proc)
+      (default-value default)
+      (description text)))
+    ((_ service-name proc (description text))
      (service-type
       (name service-name)
       (extensions
        (list (service-extension shepherd-root-service-type
-                                (compose list proc))))))))
+                                (compose list proc))))
+      (description text)))))
 
 (define %default-imported-modules
   ;; Default set of modules imported for a service's consumption.

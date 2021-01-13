@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -212,7 +212,9 @@ the given target.")
                 ;; 'user-processes' doesn't depend on us.  The 'user-file-systems'
                 ;; service will unmount TARGET eventually.
                 (delete-file-recursively
-                 (string-append target #$%backing-directory))))))))
+                 (string-append target #$%backing-directory))))))
+   (description "Make the store copy-on-write, with writes going to \
+the given target.")))
 
 (define (cow-store-service)
   "Return a service that makes the store copy-on-write, such that writes go to

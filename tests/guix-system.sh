@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -204,7 +204,8 @@ cat > "$tmpfile" <<EOF
       (shepherd-service
         (provision '(buggy!))
         (requirement '(does-not-exist))
-        (start #t)))))
+        (start #t)))
+    (description "Buggy.")))
 
 (operating-system
   $OS_BASE

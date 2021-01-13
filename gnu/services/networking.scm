@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -283,7 +283,9 @@ fe80::1%lo0 apps.facebook.com\n")
                    (and (zero? (cdr (waitpid pid)))
                         (read-pid-file #$pid-file)))))
       (stop #~(make-kill-destructor))))
-   isc-dhcp))
+   isc-dhcp
+   (description "Run @command{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.")))
 
 (define-deprecated (dhcp-client-service #:key (dhcp isc-dhcp))
   dhcp-client-service-type
