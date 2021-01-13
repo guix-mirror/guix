@@ -6196,31 +6196,15 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.25.0")
+    (version "0.26.0")
     (source
      (origin
        (method url-fetch)
-       (uri (list
-             ;; Older releases get moved into a versioned directory
-             (string-append "http://crawl.develz.org/release/"
-                            (version-major+minor version) "/stone_soup-"
-                            version "-nodeps.tar.xz")
-             ;; Only the latest release is in this directory
-             (string-append "http://crawl.develz.org/release/stone_soup-"
-                            version "-nodeps.tar.xz")))
+       (uri (string-append "https://github.com/crawl/crawl/releases/download/"
+                           version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "0rn1wjxdqw33caiwisfypm1j8cid3c9pz01ahicl17144zs29z3d"))
-       (patches (search-patches "crawl-upgrade-saves.patch"))
-       ;; The 0.25.0 -nodeps.tar.xz was built from an OSX machine; normally
-       ;; apparently it's built from a Debian machine before the Debian
-       ;; packages are made.  These ._* files are binary and have the string
-       ;; "Mac OS X" in them... removing these seems to result in compilation
-       ;; again.
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each delete-file (find-files "." "^\\._"))
-           #t))))
+        (base32 "1m81x1sp6p2ka5w2nib3pcw5w5iv58z41c8aqn0dayi1lb3yslfb"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
