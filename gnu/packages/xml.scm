@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -297,8 +297,10 @@ It uses libxml2 to access the XML files.")
     (name "python-libxml2")
     (source (origin
               (inherit (package-source libxml2))
-              (patches (cons (search-patch "python-libxml2-utf8.patch")
-                             (origin-patches (package-source libxml2))))))
+              (patches
+                (append (search-patches "python-libxml2-python39-compat.patch"
+                                        "python-libxml2-utf8.patch")
+                        (origin-patches (package-source libxml2))))))
     (build-system python-build-system)
     (outputs '("out"))
     (arguments

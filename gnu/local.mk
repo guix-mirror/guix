@@ -1520,6 +1520,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
+  %D%/packages/patches/python-libxml2-python39-compat.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
