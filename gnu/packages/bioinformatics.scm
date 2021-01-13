@@ -3598,9 +3598,9 @@ comment or quality sections.")
     (home-page "https://github.com/genetics-statistics/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
     (description
-     "Genome-wide Efficient Mixed Model Association (GEMMA) provides a
-standard linear mixed model resolver with application in genome-wide
-association studies (GWAS).")
+     "@acronym{GEMMA, Genome-wide Efficient Mixed Model Association} provides a
+standard linear mixed model resolver with application in @acronym{GWAS,
+genome-wide association studies}.")
     (license license:gpl3)))
 
 (define-public grit
