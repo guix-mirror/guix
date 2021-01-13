@@ -13048,3 +13048,37 @@ standard library.")
 
 (define-public cl-shlex
   (sbcl-package->cl-source-package sbcl-shlex))
+
+(define-public sbcl-cmd
+  (let ((commit "8e68274a935ae61f38d3309c08765d8a49d09c1f"))
+    (package
+      (name "sbcl-cmd")
+      (version (git-version "0.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ruricolist/cmd/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06bwwhy7wmk6fpjrqj1bfscn8rnmk8z9kwc00adp8iq6w5yjsbbj"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("serapeum" ,sbcl-serapeum)
+         ("shlex" ,sbcl-shlex)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://github.com/ruricolist/cmd")
+      (synopsis "Conveniently run external programs from Common Lisp")
+      (description
+       "A utility for running external programs, built on UIOP.
+Cmd is designed to be natural to use, protect against shell interpolation and
+be usable from multi-threaded programs.")
+      (license license:expat))))
+
+(define-public ecl-cmd
+  (sbcl-package->ecl-package sbcl-cmd))
+
+(define-public cl-cmd
+  (sbcl-package->ecl-package sbcl-cmd))
