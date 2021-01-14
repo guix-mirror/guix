@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -1075,7 +1075,7 @@ supported by the MyPy typechecker.")
        ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-lxml" ,python-lxml)
        ("python-psutil" ,python-psutil)
-       ("python-pytest" ,python-pytest-6)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-forked" ,python-pytest-forked)
        ("python-pytest-xdist" ,python-pytest-xdist)
