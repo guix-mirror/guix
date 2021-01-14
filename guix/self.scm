@@ -59,6 +59,7 @@
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
       ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))
+      ("guile-zstd" (ref '(gnu packages guile) 'guile-zstd))
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
@@ -823,6 +824,9 @@ itself."
   (define guile-lzlib
     (specification->package "guile-lzlib"))
 
+  (define guile-zstd
+    (specification->package "guile-zstd"))
+
   (define guile-gcrypt
     (specification->package "guile-gcrypt"))
 
@@ -836,7 +840,7 @@ itself."
     (append-map transitive-package-dependencies
                 (list guile-gcrypt gnutls guile-git guile-avahi
                       guile-json guile-semver guile-ssh guile-sqlite3
-                      guile-zlib guile-lzlib)))
+                      guile-zlib guile-lzlib guile-zstd)))
 
   (define *core-modules*
     (scheme-node "guix-core"
