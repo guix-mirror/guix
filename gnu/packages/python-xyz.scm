@@ -15428,23 +15428,77 @@ version, is suitable to be include as a dependency in other projects.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "4.3.4")
+    (version "5.7.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              ;; Tests pass only from the Github sources
-              (url "https://github.com/timothycrosley/isort")
-              (commit version)))
+             ;; Tests pass only from the Github sources
+             (url "https://github.com/timothycrosley/isort")
+             (commit version)))
        (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet '(for-each delete-file (find-files "." "\\.whl$")))
        (sha256
         (base32
-         "1q0mlrpki5vjbgwxag5rghljjcfg7mvb0pbkwid80p0sqrxlm2p6"))))
+         "0phq4s911mjjdyr5h5siz93jnpkqb2qgphgcfk6axncgxr8i7vi1"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; A foretaste of what our future python-build-system will need to
+         ;; do.
+         (replace 'build
+           (lambda _
+             (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (whl (car (find-files "dist" "\\.whl$"))))
+               (invoke "pip" "--no-cache-dir" "--no-input"
+                       "install" "--no-deps" "--prefix" out whl))))
+         (add-after 'install 'install-example-plugins
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Patch to use the core poetry API.
+               (substitute* '("example_isort_formatting_plugin/pyproject.toml"
+                              "example_shared_isort_profile/pyproject.toml")
+                 (("poetry>=0.12")
+                  "poetry-core>=1.0.0")
+                 (("poetry.masonry.api")
+                  "poetry.core.masonry.api"))
+               ;; Build the example plugins.
+               (for-each (lambda (source-directory)
+                           (invoke "python" "-m" "build" "--wheel"
+                                   "--no-isolation" "--outdir=dist"
+                                   source-directory))
+                         '("example_isort_formatting_plugin"
+                           "example_shared_isort_profile"))
+               ;; Install them to temporary storage, for the test.
+               (setenv "HOME" (getcwd))
+               (let ((example-whls (find-files "dist" "^example.*\\.whl$")))
+                 (apply invoke "pip" "--no-cache-dir" "--no-input"
+                        "install"  "--user" "--no-deps" example-whls)))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (setenv "PATH" (string-append (getenv "PATH") ":" bin)))
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "tests/unit/"
+                       "--ignore=tests/unit/test_deprecated_finders.py")))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("git" ,git-minimal)
+       ("python-black" ,python-black)
+       ("python-colorama" ,python-colorama)
+       ("python-hypothesmith" ,python-hypothesmith)
+       ("python-libcst" ,python-libcst-minimal)
+       ("python-poetry-core" ,python-poetry-core)
+       ("python-pylama" ,python-pylama)
+       ("python-pypa-build" ,python-pypa-build)
+       ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/timothycrosley/isort")
+    (home-page "https://github.com/PyCQA/isort")
     (synopsis "Python utility/library to sort python imports")
     (description "@code{python-isort} is a python utility/library to sort
 imports alphabetically, and automatically separated into sections.  It
