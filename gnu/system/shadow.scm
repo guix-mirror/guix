@@ -321,13 +321,13 @@ of user '~a' is undeclared")
 <user-group> objects.  Raise an error if a user account refers to a undefined
 group."
   (define accounts
-    (filter user-account? accounts+groups))
+    (delete-duplicates (filter user-account? accounts+groups) eq?))
 
   (define user-specs
     (map user-account->gexp accounts))
 
   (define groups
-    (filter user-group? accounts+groups))
+    (delete-duplicates (filter user-group? accounts+groups) eq?))
 
   (define group-specs
     (map user-group->gexp groups))
