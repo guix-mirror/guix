@@ -14923,32 +14923,44 @@ library automatically handles index file generation and use.")
 (define-public vcflib
   (package
     (name "vcflib")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vcflib/vcflib/releases/"
-                           "download/v" version
-                           "/vcflib-" version "-src.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/vcflib/vcflib")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14zzrg8hg8cq9cvq2wdvp21j7nmxxkjrbagw2apd2yqv2kyx42lm"))
-       (patches (search-patches "vcflib-use-shared-libraries.patch"))
+        (base32 "1k1z3876kbzifj1sqfzsf3lgb4rw779hvkg6ryxbyq5bc2paj9kh"))
        (modules '((guix build utils)))
        (snippet
-        `(begin
+        '(begin
+           (substitute* "CMakeLists.txt"
+             ((".*fastahack.*") "")
+             ((".*smithwaterman.*") "")
+             (("(pkg_check_modules\\(TABIXPP)" text)
+              (string-append
+                "pkg_check_modules(FASTAHACK REQUIRED fastahack)\n"
+                "pkg_check_modules(SMITHWATERMAN REQUIRED smithwaterman)\n"
+                text))
+             (("\\$\\{TABIXPP_LIBRARIES\\}" text)
+              (string-append "${FASTAHACK_LIBRARIES} "
+                             "${SMITHWATERMAN_LIBRARIES} "
+                             text)))
            (substitute* (find-files "." "\\.(h|c)(pp)?$")
              (("\"SmithWatermanGotoh.h\"") "<smithwaterman/SmithWatermanGotoh.h>")
              (("\"convert.h\"") "<smithwaterman/convert.h>")
              (("\"disorder.h\"") "<smithwaterman/disorder.h>")
-             (("\"tabix.hpp\"") "<tabix.hpp>")
-             (("\"Fasta.h\"") "<fastahack/Fasta.h>"))
+             (("Fasta.h") "fastahack/Fasta.h"))
            (for-each delete-file-recursively
                      '("fastahack" "filevercmp" "fsom" "googletest" "intervaltree"
-                       "libVCFH" "multichoose" "smithwaterman" "tabixpp"))
+                       "libVCFH" "multichoose" "smithwaterman"))
            #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (inputs
-     `(("htslib" ,htslib)
+     `(("bzip2" ,bzip2)
+       ("htslib" ,htslib)
        ("fastahack" ,fastahack)
        ("perl" ,perl)
        ("python" ,python)
@@ -14961,22 +14973,13 @@ library automatically handles index file generation and use.")
        ;; Submodules.
        ;; This package builds against the .o files so we need to extract the source.
        ("filevercmp-src" ,(package-source filevercmp))
+       ("fsom-src" ,(package-source fsom))
        ("intervaltree-src" ,(package-source intervaltree))
        ("multichoose-src" ,(package-source multichoose))))
     (arguments
      `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-flags
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("LDFLAGS =")
-                (string-append "LDFLAGS = -Wl,-rpath="
-                               (assoc-ref outputs "out") "/lib ")))
-             (substitute* "filevercmp/Makefile"
-               (("-c") "-c -fPIC"))
-             #t))
-         (delete 'configure)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((unpack (lambda (source target)
@@ -14989,39 +14992,10 @@ library automatically handles index file generation and use.")
                                            "--strip-components=1"))))))
                (and
                 (unpack "filevercmp-src" "filevercmp")
+                (unpack "fsom-src" "fsom")
                 (unpack "intervaltree-src" "intervaltree")
-                (unpack "multichoose-src" "multichoose")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (lib (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         (find-files "bin" ".*"))
-               (install-file "libvcflib.so" lib)
-               (install-file "libvcflib.a" lib)
-               (for-each
-                 (lambda (file)
-                   (install-file file (string-append out "/include")))
-                 (find-files "include" "\\.h(pp)?$"))
-               (mkdir-p (string-append lib "/pkgconfig"))
-               (with-output-to-file (string-append lib "/pkgconfig/vcflib.pc")
-                 (lambda _
-                   (format #t "prefix=~a~@
-                           exec_prefix=${prefix}~@
-                           libdir=${exec_prefix}/lib~@
-                           includedir=${prefix}/include~@
-                           ~@
-                           ~@
-                           Name: libvcflib~@
-                           Version: ~a~@
-                           Requires: smithwaterman, fastahack~@
-                           Description: C++ library for parsing and manipulating VCF files~@
-                           Libs: -L${libdir} -lvcflib~@
-                           Cflags: -I${includedir}~%"
-                           out ,version))))
-             #t)))))
+                (unpack "multichoose-src" "multichoose"))
+               #t))))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")
     (description "Vcflib provides methods to manipulate and interpret
