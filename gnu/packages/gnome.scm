@@ -2841,7 +2841,7 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.14")
+    (version "1.5.15")
     (source
      (origin
        (method url-fetch)
@@ -2850,7 +2850,7 @@ database is translated at Transifex.")
              "download/v" version
              "/system-config-printer-" version ".tar.xz"))
        (sha256
-        (base32 "1l79lj44kl079sk308m42x3py1yvcxk5x5bs2vqfmqv26zm8qyqf"))))
+        (base32 "12d6xx51vizc476zfnsga9q09nflp51ipn6y7lhi9w2v4772dlpv"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
