@@ -251,7 +251,7 @@ through the internal use of hash tables."
     (() *unspecified*)
     (duplicates
      (warning
-      (G_ "the following accounts appear more than once:~{ ~a~}")
+      (G_ "the following accounts appear more than once:~{ ~a~}~%")
       duplicates))))
 
 (define (assert-unique-group-names groups)
@@ -259,7 +259,7 @@ through the internal use of hash tables."
     (() *unspecified*)
     (duplicates
      (warning
-      (G_ "the following groups appear more than once:~{ ~a~}")
+      (G_ "the following groups appear more than once:~{ ~a~}~%")
       duplicates))))
 
 (define (assert-valid-users/groups users groups)
