@@ -2265,7 +2265,7 @@ Xwrits hides itself until you should take another break.")
 (define-public xsettingsd
   (package
     (name "xsettingsd")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -2274,8 +2274,7 @@ Xwrits hides itself until you should take another break.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05m4jlw0mgwp24cvyklncpziq1prr2lg0cq9c055sh4n9d93d07v"))))
+        (base32 "14gnkz18dipsa2v24f4nm9syxaa7g21iqjm7y65jn849ka2jr1h8"))))
     (build-system scons-build-system)
     (inputs
      `(("libx11" ,libx11)))
