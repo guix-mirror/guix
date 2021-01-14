@@ -35,7 +35,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -881,69 +881,15 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "5.3.5")
+    (version "6.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "139i9cjhrv5aici3skq8iihvfb3lq0d8xb5j7qycr2hlk8cfjpqd"))))
+         "01n3jny7m05r6g7gphbkj2xdms75ql93x69crd377hlvi6qikr36"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key (tests? #t) #:allow-other-keys)
-             (if tests?
-                 (invoke "pytest" "-vv" "-k"
-                         (string-append
-                          ;; These tests involve the /usr directory, and fails.
-                          "not test_remove_dir_prefix"
-                          " and not test_argcomplete"
-                          ;; This test tries to override PYTHONPATH, and
-                          ;; subsequently fails to locate the test libraries.
-                          " and not test_collection"))
-                 (format #t "test suite not run~%"))
-             #t)))))
-    (propagated-inputs
-     `(("python-atomicwrites" ,python-atomicwrites)
-       ("python-attrs" ,python-attrs-bootstrap)
-       ("python-more-itertools" ,python-more-itertools)
-       ("python-packaging" ,python-packaging-bootstrap)
-       ("python-pluggy" ,python-pluggy)
-       ("python-py" ,python-py)
-       ("python-six" ,python-six-bootstrap)
-       ("python-wcwidth" ,python-wcwidth)))
-    (native-inputs
-     `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
-       ("bash" ,bash)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest-bootstrap)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-xmlschema" ,python-xmlschema)))
-    (home-page "https://docs.pytest.org/en/latest/")
-    (synopsis "Python testing library")
-    (description
-     "Pytest is a testing tool that provides auto-discovery of test modules
-and functions, detailed info on failing assert statements, modular fixtures,
-and many external plugins.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-pytest))))))
-
-(define-public python-pytest-6
-  (package
-    (inherit (strip-python2-variant python-pytest))
-    (version "6.1.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest" version))
-       (sha256
-        (base32
-         "0gl2sdm322vzmsh5k4f8kj9raiq2y7kdinnca4m45ifvii5fk9y0"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -959,18 +905,35 @@ and many external plugins.")
                           ;; fail.
                           " and not test_code_highlight"
                           " and not test_color_yes"))
-                 (format #t "test suite not run~%"))
-             #t)))))
+                 (format #t "test suite not run~%")))))))
     (propagated-inputs
-     (append (alist-delete "python-py"
-                           (package-propagated-inputs python-pytest))
-             `(("python-py" ,python-py))))
+     `(("python-atomicwrites" ,python-atomicwrites)
+       ("python-attrs" ,python-attrs-bootstrap)
+       ("python-more-itertools" ,python-more-itertools)
+       ("python-packaging" ,python-packaging-bootstrap)
+       ("python-pluggy" ,python-pluggy)
+       ("python-py" ,python-py)
+       ("python-six" ,python-six-bootstrap)
+       ("python-wcwidth" ,python-wcwidth)))
     (native-inputs
-     (append (alist-delete "python-pytest"
-                           (package-native-inputs python-pytest))
-             `(("python-pytest" ,python-pytest-6-bootstrap)
-               ("python-toml" ,python-toml)
-               ("python-iniconfig" ,python-iniconfig))))))
+     `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
+       ("bash" ,bash)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-iniconfig" ,python-iniconfig)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest-bootstrap)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)
+       ("python-xmlschema" ,python-xmlschema)))
+    (home-page "https://docs.pytest.org/en/latest/")
+    (synopsis "Python testing library")
+    (description
+     "Pytest is a testing tool that provides auto-discovery of test modules
+and functions, detailed info on failing assert statements, modular fixtures,
+and many external plugins.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest))))))
 
 ;; Pytest 4.x are the last versions that support Python 2.
 (define-public python2-pytest
@@ -1012,18 +975,11 @@ and many external plugins.")
   (package
     (inherit (strip-python2-variant python-pytest))
     (name "python-pytest-bootstrap")
-    (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (native-inputs `(("python-iniconfig" ,python-iniconfig)
+                     ("python-setuptools-scm" ,python-setuptools-scm)
+                     ("python-toml" ,python-toml)))
     (arguments `(#:tests? #f))
     (properties `((python2-variant . ,(delay python2-pytest-bootstrap))))))
-
-(define-public python-pytest-6-bootstrap
-  (package
-    (inherit (strip-python2-variant python-pytest-6))
-    (name "python-pytest-bootstrap")
-    (arguments `(#:tests? #f))
-    (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-toml" ,python-toml)))))
 
 (define-public python2-pytest-bootstrap
   (hidden-package
