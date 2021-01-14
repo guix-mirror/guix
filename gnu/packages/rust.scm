@@ -8,8 +8,9 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
-;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020, 2021 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -452,6 +453,7 @@ test = { path = \"../libtest\" }
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
 
+    (supported-systems '("x86_64-linux"))
     (synopsis "Compiler for the Rust programming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
@@ -1315,8 +1317,139 @@ move around."
                  #t)))))))))
 
 (define-public rust-1.46
-  (rust-bootstrapped-package rust-1.45 "1.46.0"
-    "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.45 "1.46.0"
+           "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid")))
+    (package
+      (inherit base-rust)
+      (outputs (cons "rustfmt" (package-outputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda* _
+                 (invoke "./x.py" "build")
+                 (invoke "./x.py" "build" "src/tools/cargo")
+                 (invoke "./x.py" "build" "src/tools/rustfmt")))
+             (replace 'check
+               (lambda* _
+                 ;; Test rustfmt.
+                 (let ((parallel-job-spec
+                        (string-append "-j" (number->string
+                                             (min 4
+                                                  (parallel-job-count))))))
+                   (invoke "./x.py" parallel-job-spec "test" "-vv")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/cargo")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/rustfmt"))))
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "./x.py" "install")
+                 (substitute* "config.toml"
+                   ;; replace prefix to specific output
+                   (("prefix = \"[^\"]*\"")
+                    (string-append "prefix = \"" (assoc-ref outputs "cargo") "\"")))
+                 (invoke "./x.py" "install" "cargo")
+                 (substitute* "config.toml"
+                   ;; replace prefix to specific output
+                   (("prefix = \"[^\"]*\"")
+                    (string-append "prefix = \"" (assoc-ref outputs "rustfmt") "\"")))
+                 (invoke "./x.py" "install" "rustfmt")))
+             (replace 'delete-install-logs
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (define (delete-manifest-file out-path file)
+                   (delete-file (string-append out-path "/lib/rustlib/" file)))
+
+                 (let ((out (assoc-ref outputs "out"))
+                       (cargo-out (assoc-ref outputs "cargo"))
+                       (rustfmt-out (assoc-ref outputs "rustfmt")))
+                   (for-each
+                     (lambda (file) (delete-manifest-file out file))
+                     '("install.log"
+                       "manifest-rust-docs"
+                       ,(string-append "manifest-rust-std-"
+                                       (nix-system->gnu-triplet-for-rust))
+                       "manifest-rustc"))
+                   (for-each
+                     (lambda (file) (delete-manifest-file cargo-out file))
+                     '("install.log"
+                       "manifest-cargo"))
+                   (for-each
+                     (lambda (file) (delete-manifest-file rustfmt-out file))
+                     '("install.log"
+                       "manifest-rustfmt-preview"))
+                   #t))))))))))
+
+(define-public rust-1.47
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.46 "1.47.0"
+          "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
+    (package
+      (inherit base-rust)
+      (inputs
+        (alist-replace "llvm" (list llvm-11)
+                       (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; The source code got rearranged: libstd is now in the newly created library folder.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+                   (substitute* "library/std/src/sys/unix/process/process_common.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t)))
+             (delete 'patch-cargo-checksums)
+             (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
+               ;; Generate checksums after patching generated files (in
+               ;; particular, vendor/jemalloc/rep/Makefile).
+               (lambda* _
+                 (use-modules (guix build cargo-utils))
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor")
+                 #t)))))))))
+
+(define-public rust-1.48
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.47 "1.48.0"
+           "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf")))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          ;; New patch required due to the second part of the source code rearrangement:
+          ;; the relevant source code is now in the compiler directory.
+          (patches (search-patches "rust-1.48-linker-locale.patch"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Some tests got split out into separate files.
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "library/std/src/process/tests.rs"
+                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
+                   (substitute* "library/std/src/sys/unix/process/process_common/tests.rs"
+                     (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   #t))))))))))
+
+(define-public rust-1.49
+  (rust-bootstrapped-package rust-1.48 "1.49.0"
+    "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.45)

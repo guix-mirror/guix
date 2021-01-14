@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -294,51 +295,64 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
       license:mpl1.1))))
 
 (define-public rtmpdump
-  (package
-    (name "rtmpdump")
-    (version "2.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.ffmpeg.org/rtmpdump")
-             (commit "c28f1bab7822de97353849e7787b59e50bbb1428")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1n3kdip83nvvs4sin30zpcdr5q711mqhq2lxrv5vgbc6lskpwzlj"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
-       (list
-        ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
-        (string-append "LDFLAGS=-Wl,-rpath="
-                       (assoc-ref %outputs "out") "/lib")
-        (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'omit-static-library
-           (lambda _
-             (substitute* "librtmp/Makefile"
-               (("cp librtmp\\.a .*")   ; don't install it
-                "")
-               (("librtmp\\.a ")        ; don't build it
-                ""))
-             #t))
-         (delete 'configure))))
-    (inputs
-     `(("openssl" ,openssl-1.0)
-       ("zlib" ,zlib)))
-    (synopsis "Tools and library for handling RTMP streams")
-    (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
+  ;; There are no tags in the repository, and the project is unlikely to
+  ;; make new releases.  Take a recent commit for multiple security fixes
+  ;; as well as GnuTLS compatibility.
+  (let ((commit "c5f04a58fc2aeea6296ca7c44ee4734c18401aa3")
+        (revision "0")
+        (version "2.4"))                ;as mentioned in README and man pages
+    (package
+      (name "rtmpdump")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.ffmpeg.org/rtmpdump")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "07ias612jgmxpam9h418kvlag32da914jsnjsfyafklpnh8gdzjb"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags
+         (list
+          ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
+          (string-append "LDFLAGS=-Wl,-rpath="
+                         (assoc-ref %outputs "out") "/lib")
+          (string-append "prefix=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'omit-static-library
+             (lambda _
+               (substitute* "librtmp/Makefile"
+                 (("cp librtmp\\.a .*") ; don't install it
+                  "")
+                 (("librtmp\\.a ")      ; don't build it
+                  ""))
+               #t))
+           (add-after 'unpack 'prefer-gnutls
+             (lambda _
+               (substitute* '("Makefile" "librtmp/Makefile")
+                 (("CRYPTO=OPENSSL")
+                  "#CRYPTO=OPENSSL")
+                 (("#CRYPTO=GNUTLS")
+                  "CRYPTO=GNUTLS"))))
+           (delete 'configure))))
+      (inputs
+       `(("gnutls" ,gnutls)
+         ("zlib" ,zlib)))
+      (synopsis "Tools and library for handling RTMP streams")
+      (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
 supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
-    (home-page "https://rtmpdump.mplayerhq.hu/")
-    (license
-     (list
-      ;; Library.
-      license:lgpl2.1+
-      ;; Others.
-      license:gpl2+))))
+      (home-page "https://rtmpdump.mplayerhq.hu/")
+      (license
+       (list
+        ;; Library.
+        license:lgpl2.1+
+        ;; Others.
+        license:gpl2+)))))
 
 (define-public srt
   (package
@@ -688,6 +702,13 @@ or, more generally, MAC addresses of the same category of hardware.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-iproute2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((iproute (assoc-ref inputs "iproute"))
+                    (ip (string-append iproute "/sbin/ip")))
+               (substitute* "misc/client-hook.iproute"
+                 (("/sbin/ip") ip))
+               #t)))
          ;; The checkconf test in src/ requires network access.
          (add-before
           'check 'disable-checkconf-test
@@ -695,6 +716,8 @@ or, more generally, MAC addresses of the same category of hardware.")
             (substitute* "src/Makefile"
               (("^TESTS = .*") "TESTS = \n"))
             #t)))))
+    (inputs
+     `(("iproute" ,iproute)))
     (home-page "https://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
@@ -1075,14 +1098,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.9")
+    (version "5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0vwam1ay184z237vnl8ivb0rdjjbljp9pj3kjzhc6yzq180k4aai"))))
+                "1kygjg6g90017k53b8342i59cpwgidalqpa3gdilqyrhm6b56zc1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1281,18 +1304,21 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.6")
+    (version "5.5.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           "whois_" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/rfc1036/whois")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0kpi981zjczvdcxfcq455c529vlaxa73x8kbm530z5b01h0fk8fb"))))
+        (base32 "1w3d0ffl0ng1m4i10k968kk4xicviq24w5vwl6d8dhja61d7yd2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PKG_CONFIG=" ,(pkg-config-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -1323,14 +1349,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.0")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1bm8jj2rviis9j9l6nixvhxcfx362y9iphkxssgmiz2kj6yypr37"))))
+        (base32 "1i548w6zv6ni5n22rs90a12aakyq811493dxmadlcsj2krr6i66y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1555,14 +1581,16 @@ application stack itself.")
 (define-public httpstat
   (package
     (name "httpstat")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "httpstat" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/reorx/httpstat")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1chw2nk56vaq87aba012a270k9na06hfx1pfbsrc3jfvlc2kb9hb"))))
+        (base32 "0cw8299a080m42slsimz31xs0gjnh833gpbj2dsr4hkcinrn4iyd"))))
     (build-system python-build-system)
     (inputs `(("curl" ,curl)))
     (arguments
@@ -1574,7 +1602,10 @@ application stack itself.")
                (("ENV_CURL_BIN.get\\('curl'\\)")
                 (string-append "ENV_CURL_BIN.get('"
                                (assoc-ref inputs "curl")
-                               "/bin/curl')")))
+                               "/bin/curl')"))
+               ;; "curl -w time_*" units seems to have
+               ;; changed from seconds to nanoseconds.
+               (("d\\[k\\] \\* 1000") "d[k] / 1000"))
              #t)))))
     (home-page "https://github.com/reorx/httpstat")
     (synopsis "Visualize curl statistics")
@@ -2046,30 +2077,6 @@ It is intended primarily for use in testing.")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
   (license license:gpl1+)))
 
-;; TODO: Use the geolite-mirror-simple.pl script from the example
-;; directory to stay current with the databases. How?
-(define-public perl-geo-ip
- (package
-  (name "perl-geo-ip")
-  (version "1.51")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/M/MA/MAXMIND/Geo-IP-"
-             version
-             ".tar.gz"))
-      (sha256
-        (base32
-          "1fka8fr7fw6sh3xa9glhs1zjg3s2gfkhi7n7da1l2m2wblqj0c0n"))))
-  (build-system perl-build-system)
-  (home-page "https://metacpan.org/release/Geo-IP")
-  (synopsis
-    "Look up location and network information by IP Address in Perl")
-  (description "The Perl module @code{Geo::IP}.  It looks up location and
-network information by IP Address.")
-  (license license:perl-license)))
-
 (define-public perl-io-socket-inet6
  (package
   (name "perl-io-socket-inet6")
@@ -2103,7 +2110,7 @@ sockets in Perl.")
 (define-public libproxy
   (package
     (name "libproxy")
-    (version "0.4.15")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libproxy/libproxy/"
@@ -2111,7 +2118,7 @@ sockets in Perl.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0kvdrazlzwia876w988cmlypp253gwy6idlh8mjk958c29jb8kb5"))))
+                "01cbgz6lc3v59sldqk96l1281kp2qxnsa2qwlf2ikvjlyr1gi2dw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3024,6 +3031,19 @@ asynchronous model using a modern C++ approach.")
                  (base32
                   "1idd9b4f2pnhcpk1bh030hqg5zq25gkwxd53xi3c0cj242w7sp2j"))
                 (file-name (git-file-name name version))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-crypto-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "shadowsocks/shell.py"
+                 (("config\\.get\\('libopenssl', None\\)")
+                  (format #f "config.get('libopenssl', ~s)"
+                          (string-append
+                           (assoc-ref inputs "openssl")
+                           "/lib/libssl.so")))))))))
       (build-system python-build-system)
       (synopsis "Fast tunnel proxy that helps you bypass firewalls")
       (description

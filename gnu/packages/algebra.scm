@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -276,7 +276,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11pl4")
+   (version "0.0.12")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -284,7 +284,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "1cnnh7diqc97q76q5pyhpbljbhc0sz8mlrbqgiwi0sjkgh8iqsj0"))))
+                "039ip7qkwwv46wrcdrz7y12m30kazzkjr44kqbc0h137g4wzd7zf"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -355,7 +355,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-31")
+    (version "1.6.0-41")
     (source
      (origin
        (method url-fetch)
@@ -367,7 +367,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1dr1y88sx2gzldn0zl6p8b1ngjjcmh89iv4kzyhi2cf74j3yw85m"))))
+        (base32 "1z5b3jm6ffxk3yvdqzwn9icbna68brkrz5kspgacq823d03jfklc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -410,7 +410,7 @@ precision.")
     (inputs
      ;; TODO: Add libnauty, unbundle "libmicropython.a".
      `(("fltk" ,fltk)
-       ("glpk" ,glpk)
+       ("glpk" ,glpk-4)
        ("gmp" ,gmp)
        ("gsl" ,gsl)
        ("lapack" ,lapack)
@@ -533,14 +533,14 @@ fast arithmetic.")
                        (string-append "--with-flint=" flint)
                        (string-append "--with-gmp=" gmp)
                        (string-append "--with-mpfr=" mpfr))))))))
+    (home-page "https://arblib.org")
     (synopsis "Arbitrary precision floating-point ball arithmetic")
     (description
      "Arb is a C library for arbitrary-precision floating-point ball
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-    (license license:lgpl2.1+)
-    (home-page "http://arblib.org")))
+    (license license:lgpl2.1+)))
 
 (define-public python-flint
   (package

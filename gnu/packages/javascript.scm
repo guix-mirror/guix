@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,13 +28,71 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system minify)
   #:use-module (guix utils))
+
+(define-public cjson
+  (package
+    (name "cjson")
+    (version "1.7.14")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/DaveGamble/cJSON")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1rlnailhjm180zb6pc17jwphjwivw8kfpqgixjfgq4iyryq46sah"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DENABLE_CJSON_UTILS=On")))
+    (home-page "https://github.com/DaveGamble/cJSON")
+    (synopsis "JSON parser written in ANSI C")
+    (description "This library provides a portable embeddable JSON parser.")
+    (license license:expat)))
+
+(define-public js-context-menu
+  (package
+    (name "js-context-menu")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/zorkow/context-menu")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1q063l6477z285j6h5wvccp6iswvlp0jmb96sgk32sh0lf7nhknh"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (chdir (assoc-ref %build-inputs "source"))
+         (let ((target (string-append %output "/share/javascript/context-menu")))
+           (apply invoke (string-append (assoc-ref %build-inputs "esbuild")
+                                        "/bin/esbuild")
+                  "--bundle"
+                  "--tsconfig=tsconfig.json"
+                  (string-append "--outdir=" target)
+                  (find-files "ts" "\\.ts$"))))))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://github.com/zorkow/context-menu")
+    (synopsis "Generic context menu")
+    (description "This package provides a reimplementation of the MathJax
+context menu in TypeScript.")
+    (license license:asl2.0)))
 
 (define-public font-mathjax
   (package
@@ -128,6 +187,88 @@ and AsciiMath notation that works in all modern browsers.  It requires no
 plugins or software to be installed on the browser.  So the page author can
 write web documents that include mathematics and be confident that readers will
 be able to view it naturally and easily.")))
+
+(define-public js-commander
+  (package
+    (name "js-commander")
+    (version "6.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tj/commander.js")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "126m25s6mxpxmdj4aw5awz06b47r8r798lcf1c5bnmmh39cik5i1"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (chdir (assoc-ref %build-inputs "source"))
+         (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
+                                       "/bin/esbuild"))
+               (target (string-append %output "/share/javascript/commander")))
+           (invoke esbuild
+                   "--bundle"
+                   "--minify"
+                   "--tsconfig=tsconfig.json"
+                   "--platform=node"
+                   (string-append "--outfile=" target "/index.min.js")
+                   "index.js")))))
+    (native-inputs
+     `(("esbuild" ,esbuild)))
+    (home-page "https://github.com/tj/commander.js")
+    (synopsis "Library for node.js command-line interfaces")
+    (description "Commander.js aims to be the complete solution for node.js
+command-line interfaces.  ")
+    (license license:expat)))
+
+(define-public js-xmldom-sre
+  ;; This commit corresponds to the untagged release 0.1.32
+  (let ((commit "3c79325bc2c9e5d27e3ba44b680fa8c5dd6a381d")
+        (revision "1"))
+    (package
+      (name "js-xmldom-sre")
+      (version "0.1.32")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zorkow/xmldom/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0a88v0id3mjflpvjqhv8a28br0xvaaszxbf7alg6pxfbnkb69yyq"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (chdir (assoc-ref %build-inputs "source"))
+           (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
+                                         "/bin/esbuild"))
+                 (target (string-append %output "/share/javascript/xmldom-sre")))
+             (invoke esbuild
+                     "--bundle"
+                     "--minify"
+                     "--platform=node"
+                     (string-append "--outfile=" target "/dom-parser.min.js")
+                     "dom-parser.js")))))
+      (native-inputs
+       `(("esbuild" ,esbuild)))
+      (home-page "https://github.com/zorkow/xmldom/")
+      (synopsis "DOM parser and XML serializer")
+      (description "This is a fork of the xmldom library.  It allows the use
+of wicked-good-xpath together with xmldom.")
+      ;; One of these licenses may be selected.
+      (license (list license:expat
+                     license:lgpl2.0)))))
 
 (define-public js-respond
   (package
@@ -482,4 +623,32 @@ asynchronous generators, proxies, BigInt and BigDecimal.  It can compile
 Javascript sources to executables with no external dependency.  It includes a
 command line interpreter with contextual colorization implemented in
 Javascript and a small built-in standard library with C library wrappers.")
+    (license license:expat)))
+
+(define-public duktape
+  (package
+    (name "duktape")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://duktape.org/duktape-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "19szwxzvl2g65fw95ggvb8h0ma5bd9vvnnccn59hwnc4dida1x4n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:make-flags (list "-f" "Makefile.sharedlibrary"
+                          (string-append "INSTALL_PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://duktape.org/")
+    (synopsis "Small embeddable Javascript engine")
+    (description "Duktape is an embeddable Javascript engine, with a focus on
+portability and compact footprint.  Duktape is easy to integrate into a C/C++
+project: add @file{duktape.c}, @file{duktape.h}, and @file{duk_config.h} to
+your build, and use the Duktape API to call ECMAScript functions from C code
+and vice versa.")
     (license license:expat)))

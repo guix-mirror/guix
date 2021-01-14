@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,17 +167,19 @@ Callback Hell.
 (define-public python-aiohttp-socks
   (package
     (name "python-aiohttp-socks")
-    (version "0.2.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp_socks" version))
        (sha256
         (base32
-         "0473702jk66xrgpm28wbdgpnak4v0dh2qmdjw7ky7hf3lwwqkggf"))))
+         "0jmhb0l1w8k1nishij3awd9zv8zbyb5l35a2pdalrqxxasbhbcif"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)))
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-attrs" ,python-attrs)
+       ("python-socks" ,python-socks)))
     (home-page "https://github.com/romis2012/aiohttp-socks")
     (synopsis "SOCKS proxy connector for aiohttp")
     (description "This package provides a SOCKS proxy connector for
@@ -1037,14 +1040,14 @@ storage.")
 (define-public python-html5lib
   (package
     (name "python-html5lib")
-    (version "1.0.1")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "html5lib" version))
         (sha256
           (base32
-            "0dipzfrycv6j1jw82v9b7d8lzggx3x8xngx6l4xrqkxwvg7hvjv6"))))
+            "0vqlhk0hgbsfkh7ybmby93xhlx8dq6pr5blf356ka3z2c41b9rdj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -2428,13 +2431,13 @@ APIs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.24.0")
+    (version "2.25.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "06r3017hz0hzxv42gpg73l8xvdjbzw7q904ljvp36b5p3l9rlmdk"))))
+               "1y6mb8c0ipd64d5axq2p368yxndp3f966hmabjka2q2a5y9hn6kz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -2666,14 +2669,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.25.9")
+    (version "1.26.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "09rmjqm5syhhc8fx3v06h3yv6cqy0b1081jg8wm5grpwpr72j61h"))))
+          "024yldjwjavps39yb77sc422z8fa9bn20wcqrcncjwrqjab8y60r"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
@@ -2716,14 +2719,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.18.183")
+    (version "1.18.203")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0n1pmdl33r1v8qnrcg08ihvri9zm4fvsp14605vwmlkxvs8nb7s5"))))
+         "128zg24961j8nmnq2dxqg6a7zwh3qgv87cmvclsdqwwih9nigxv9"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
@@ -3015,16 +3018,34 @@ library.")
 @code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
     (license license:bsd-2)))
 
+(define-public python-dpkt
+  (package
+    (name "python-dpkt")
+    (version "1.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dpkt" version))
+       (sha256
+        (base32
+         "1d28r8pmhzjjd6hrn1xcddinfhwv8lcl1s59ygmqa8kfmz5pkrgl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kbandla/dpkt")
+    (synopsis "Packet generator and parser for TCP/IP protocols")
+    (description "The dpkt module is a fast, simple packet generator and parser
+for the basic TCP/IP protocols.")
+    (license license:bsd-3)))
+
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
-    (version "1.3.1")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "geventhttpclient" version))
               (sha256
                (base32
-                "07d0q3wzmml75227r6y6mrl5a0zpf4v9gj0ni5rhbyzmaj4az1xx"))
+                "1hy4qm9d3r69n5199i7qjji1v7718n7cxbj8ggi0njify99m37pm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3052,7 +3073,8 @@ library.")
                      "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-dpkt" ,python-dpkt)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
        ("python-gevent" ,python-gevent)
@@ -3062,9 +3084,6 @@ library.")
     (description "@code{python-geventhttpclient} is a high performance,
 concurrent HTTP client library for python using @code{gevent}.")
     (license license:expat)))
-
-(define-public python2-geventhttpclient
-  (package-with-python2 python-geventhttpclient))
 
 (define-public python-requests-oauthlib
   (package
@@ -3473,9 +3492,6 @@ documentation builder.")
 specs from your Flask-Restful projects.")
     (license license:expat)))
 
-(define-public python2-flask-restful-swagger
-  (package-with-python2 python-flask-restful-swagger))
-
 (define-public python-htmlmin
   (package
     (name "python-htmlmin")
@@ -3760,9 +3776,6 @@ and other command-line tasks that belong outside the web application
 itself.")
   (license license:bsd-3)))
 
-(define-public python2-flask-script
-  (package-with-python2 python-flask-script))
-
 (define-public python-flask-migrate
   (package
   (name "python-flask-migrate")
@@ -3836,9 +3849,6 @@ Flask.  It supports managing both authentication and authorization data in a
 thread-local variable.")
     (license license:expat)))
 
-(define-public python2-flask-principal
-  (package-with-python2 python-flask-principal))
-
 (define-public python-flask-httpauth
   (package
     (name "python-flask-httpauth")
@@ -3858,9 +3868,6 @@ thread-local variable.")
     (description "@code{flask_httpauth} provides Basic and Digest HTTP
 authentication for Flask routes.")
     (license license:expat)))
-
-(define-public python2-flask-httpauth
-  (package-with-python2 python-flask-httpauth))
 
 (define-public python-uritemplate
   (package
@@ -3940,14 +3947,14 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "15kh0z61klp62mrc1prka13xsshxn0rsp1j1s2964iw86yisi6qn"))))
+         "0z74sa1xw5h20yin9faj0vvdbq713cgbj84klc72jr9nmpjv303c"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -3962,7 +3969,7 @@ List.  Forked from and using the same API as the publicsuffix package.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-timeout" ,python-pytest-timeout)))
-    (home-page "https://www.palletsprojects.org/p/werkzeug/")
+    (home-page "https://palletsprojects.com/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
 powerful debugger, full-featured request and response objects, HTTP utilities to
@@ -3970,9 +3977,6 @@ handle entity tags, cache control headers, HTTP dates, cookie handling, file
 uploads, a powerful URL routing system and a bunch of community-contributed
 addon modules.")
     (license license:x11)))
-
-(define-public python2-werkzeug
-  (package-with-python2 python-werkzeug))
 
 (define-public python-bottle
   (package
@@ -4433,26 +4437,21 @@ library to create slugs from unicode strings while keeping it DRY.")
 (define-public python-tinycss2
   (package
     (name "python-tinycss2")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tinycss2" version))
-       (patches (search-patches "python-tinycss2-flake8-compat.patch"))
        (sha256
-        (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
+        (base32 "12p16k8x8ig51gpfcwz3k3kxpxrwwkn41a1avdgvh3nn8hqarp7v"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "pytest"))))))
+     ;; Test data is missing from the PyPI archive, and the build system is
+     ;; based on Flit, which wants an unmaintained and unpackaged
+     ;; python-pytoml dependency.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)))
-    (native-inputs
-     `(("python-pytest-flake8" ,python-pytest-flake8)
-       ("python-pytest-isort" ,python-pytest-isort)
-       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://tinycss2.readthedocs.io/")
     (synopsis "Low-level CSS parser for Python")
     (description "@code{tinycss2} can parse strings, return Python objects
@@ -4467,13 +4466,13 @@ in various CSS modules.")
 (define-public python-cssselect2
   (package
     (name "python-cssselect2")
-    (version "0.2.2")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cssselect2" version))
        (sha256
-        (base32 "0skymzb4ncrm2zdsy80f53vi0arf776lvbp51hzh4ayp1il5lj3h"))))
+        (base32 "1j2fcr217rsvkipsg6zjq03rl64rxnvb5hqqpx0dv58fhspvkywk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4919,7 +4918,7 @@ and serve updated contents upon changes to the directory.")
 (define-public python-httpcore
   (package
     (name "python-httpcore")
-    (version "0.11.0")
+    (version "0.12.2")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4929,33 +4928,21 @@ and serve updated contents upon changes to the directory.")
              (commit  version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01bhajcxqgkdzg7b7x0fqs2lwcfsajlgqwi1nlxx58jss7g2kxn9"))))
+        (base32 "1nrwwfdqjfc2a1k3j41cdwkprwvplf95fwmypdl2aq2qgp3209q0"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Tests hang at 98%
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-unavailable-tests
-           (lambda _
-             ;; These tests require 'mitmproxy' which is not packaged.
-             (for-each (lambda (f)
-                         (delete-file f))
-                       '("tests/conftest.py"
-                         "tests/sync_tests/test_interfaces.py"
-                         "tests/async_tests/test_interfaces.py"))
-             #t))
-         (add-after 'remove-unavailable-tests 'force-h11-version
-           ;; Allow build with h11 >= 0.10.
-           (lambda _
-             (substitute* "setup.py" (("h11>=0.8,<0.10") "h11"))
-             #t))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "--cov=httpcore"
-                     "--cov=tests" "tests"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "--cov=httpcore"
+                       "--cov=tests" "tests"))
+             #t)))))
     (native-inputs
-     `(;; ("mitmproxy" ,mitmproxy) ;; TODO: Package this.
-       ("python-autoflake" ,python-autoflake)
+     `(("python-autoflake" ,python-autoflake)
        ("python-flake8" ,python-flake8)
        ("python-flake8-bugbear" ,python-flake8-bugbear)
        ("python-flake8-pie" ,python-flake8-pie)
@@ -4994,7 +4981,7 @@ Some things HTTP Core does do:
 (define-public python-httpx
   (package
     (name "python-httpx")
-    (version "0.15.4")
+    (version "0.16.1")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -5004,7 +4991,7 @@ Some things HTTP Core does do:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qr91xw6jxynvihmw953bi5446ssm9ffmb2c4nhfa77v7883sp21"))))
+        (base32 "00gmq45fckcqkj910bvd7pyqz1mvgsdvz4s0k7dzbnc5czzq1f4a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5610,15 +5597,25 @@ Encoding for HTTP.")
                      '("captcha/2captcha.py"
                        "captcha/9kw.py"
                        "captcha/anticaptcha.py"
-                       "captcha/deathbycaptcha.py"
-                       "interpreters/js2py.py"
-                       "interpreters/v8.py"))
+                       "captcha/deathbycaptcha.py"))
            (substitute* "__init__.py"
              ;; Perhaps it's a joke, but don't promote proprietary software.
              (("([Th]is feature is not available) in the .*'" _ prefix)
               (string-append prefix ".'")))
            #t))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; XXX: Dependencies, that have not yet been packaged
+         ;;      and cause an import error when included.
+         (add-after 'unpack 'drop-unsupported-sources
+           (lambda _
+             (with-directory-excursion "cloudscraper"
+               (for-each delete-file
+                         '("interpreters/js2py.py"
+                           "interpreters/v8.py")))
+             #t)))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
@@ -5657,4 +5654,120 @@ over IMAP:
 @item Work with emails in folders (copy, delete, flag, move, seen)
 @item Work with mailbox folders (list, set, get, create, exists, rename, delete, status)
 @end itemize")
+    (license license:asl2.0)))
+
+(define-public python-hstspreload
+  (package
+    (name "python-hstspreload")
+    (version "2020.10.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hstspreload" version))
+       (sha256
+        (base32
+         "1qah80p2xlib1rhivvdj9v5y3girxrj7dwp1mnh8mwaj5wy32y8a"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sethmlarson/hstspreload")
+    (synopsis
+     "Chromium HSTS Preload list as a Python package")
+    (description
+     "@code{python-hstspreload} contains Chromium HSTS Preload list
+as a Python package.")
+    (license license:bsd-3)))
+
+(define-public python-sanic
+  (package
+    (name "python-sanic")
+    (version "20.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sanic" version))
+       (sha256
+        (base32
+         "06p0lsxqbfbka2yaqlpp0bg5pf7ma44zi6kq7qbb6hhry48dp1w6"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-recent-pytest
+           ;; Allow using recent dependencies.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("httpcore==0.3.0") "httpcore")
+               (("pytest==5.2.1") "pytest")
+               (("multidict==5.0.0") "multidict")
+               (("httpx==0\\.15\\.4") "httpx"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "./tests" "-k"
+                     "not test_zero_downtime and not test_gunicorn_worker"))))))
+    (propagated-inputs
+     `(("python-aiofiles" ,python-aiofiles)
+       ("python-httptools" ,python-httptools)
+       ("python-httpx" ,python-httpx)
+       ("python-multidict" ,python-multidict)
+       ("python-ujson" ,python-ujson)
+       ("python-uvloop" ,python-uvloop)
+       ("python-websockets" ,python-websockets)))
+    (native-inputs
+     `(("gunicorn" ,gunicorn)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-hstspreload" ,python-hstspreload)
+       ("python-httpcore" ,python-httpcore)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
+       ("python-pytest-sanic" ,python-pytest-sanic)
+       ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-urllib3" ,python-urllib3)
+       ("python-uvicorn" ,python-uvicorn)))
+    (home-page
+     "https://github.com/huge-success/sanic/")
+    (synopsis
+     "Async Python 3.6+ web server/framework")
+    (description
+     "Sanic is a Python 3.6+ web server and web framework
+that's written to go fast.  It allows the usage of the
+@code{async/await} syntax added in Python 3.5, which makes
+your code non-blocking and speedy.")
+    (license license:expat)))
+
+(define-public python-socks
+  (package
+    (name "python-socks")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-socks" version))
+        (sha256
+         (base32
+          "06mgv3icsyglv50w3sb71x6cpbskza20pqd93l5xk59x574i6xgs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; tests not included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "tests/" "-s"))
+             #t)))))
+    (propagated-inputs
+     `(("python-async-timeout" ,python-async-timeout)
+       ("python-curio" ,python-curio)
+       ("python-trio" ,python-trio)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/romis2012/python-socks")
+    (synopsis
+     "Core proxy (SOCKS4, SOCKS5, HTTP tunneling) functionality for Python")
+    (description
+     "Socks is a library providing core proxy (SOCKS4, SOCKS5, HTTP tunneling)
+ functionality.")
     (license license:asl2.0)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -317,4 +318,53 @@ log files are in their computer.  But it is also designed for advanced users,
 who want to quickly see problems occurring on their server.
 
 This package is part of the KDE administration module.")
+    (license license:gpl2+)))
+
+(define-public yakuake
+  (package
+    (name "yakuake")
+    (version "20.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/" version
+                                  "/src/yakuake-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02pal9xx1wbpw7dimvs2aw1xnyjqlvbjlybkkfhf8x7c6m1r63aa"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("breeze-icons" ,breeze-icons)
+       ("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("knotifications" ,knotifications)
+       ("knotifyconfig" ,knotifyconfig)
+       ("konsole" ,konsole)
+       ("kparts" ,kparts)
+       ("kwayland" ,kwayland)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://www.kde.org/applications/system/yakuake/")
+    (synopsis "Quad-style terminal emulator for KDE")
+    (description "Yakuake is a drop-down terminal emulator based on KDE Konsole
+technology.  Features include:
+@itemize
+@item Smoothly rolls down from the top of your screen
+@item Tabbed interface
+@item Configurable dimensions and animation speed
+@item Skinnable
+@item Sophisticated D-Bus interface
+@end itemize")
     (license license:gpl2+)))

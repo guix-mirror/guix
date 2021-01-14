@@ -34,12 +34,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix build utils) #:select (alist-replace))
+  #:use-module ((guix build utils) #:select (alist-replace delete-file-recursively))
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages base) #:prefix base:)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages flex)
@@ -554,7 +556,8 @@ language.")
          ("libusb-compat" ,libusb-compat)))
       (arguments
        '(#:configure-flags
-         (append (list "--disable-werror"
+         (append (list "LIBS=-lutil"
+                       "--disable-werror"
                        "--enable-sysfsgpio"
                        "--disable-internal-jimtcl"
                        "--disable-internal-libjaylink")
@@ -1175,14 +1178,14 @@ SPI, I2C, JTAG.")
 (define-public fc-host-tools
   (package
     (name "fc-host-tools")
-    (version "13")
+    (version "14")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
                                   "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
               (sha256
                (base32
-                "0bpxz4y0z3hmlirzvfwq0k45yzn9fzgqs9r1fpkrhn48gr2zrpa8"))))
+                "09ccd76khfvlx4dwi9dhrzl5mm68402mlych0g7f9ncfr5jzyf26"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -1419,3 +1422,101 @@ handling communication with eBUS devices connected to a 2-wire bus system
 (\"energy bus\" used by numerous heating systems).")
     (home-page "https://ebusd.eu/")
     (license license:gpl3+)))
+
+(define-public ucsim
+  (package
+    (name "ucsim")
+    (version "0.6-pre67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mazsola.iit.uni-miskolc.hu/ucsim/download/unix/"
+                    "devel/ucsim-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0aahj9pbfjphjrm4hgs9pfmp6d5aikaq4yvxlrvhywjinnnf0qp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-avr-port"
+                           "--enable-m6809-port"
+                           "--enable-p1516-port"
+                           "--enable-st7-port")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefiles
+           (lambda _
+             (substitute* (find-files "." "(\\.mk$|\\.in$)")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'install 'remove-empty-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out") "/share/man"))
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (home-page "http://mazsola.iit.uni-miskolc.hu/ucsim/")
+    (synopsis "Simulators for various microcontroller families")
+    (description "μCsim is a collection of software simulators for
+microcontrollers in the Atmel AVR; Intel MCS-51 (8051); Motorola 68HC08 and
+6809; P1516; Padauk PDK13, PDK14 and PDK15; STMicroelectronics ST7 and STM8;
+and Zilog Z80 families, plus many of their variants.")
+    (license license:gpl2+)))
+
+(define-public sdcc
+  (package
+    (name "sdcc")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/sdcc/sdcc"
+                    "/" version "/sdcc-src-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "042fxw5mnsfhpc0z9lxfsw88kdkm32pwrxacp88kj2n2dy0814a8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove non-free source files
+                  (delete-file-recursively "device/non-free")
+                  ;; Remove bundled μCsim source
+                  (delete-file-recursively "sim")
+                  #t))
+              (patches (search-patches "sdcc-disable-non-free-code.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("boost" ,boost)
+       ("flex" ,flex)
+       ("python-2" ,python-2)
+       ("texinfo" ,texinfo)
+       ("zlib" ,zlib)))
+    (arguments
+     `(;; GPUTILS is required for the PIC ports, but the licensing status of
+       ;; some of the files contained in its distribution is unclear (see
+       ;; https://issues.guix.gnu.org/44557).  For this reason it is not yet
+       ;; available as a package in Guix.
+       #:configure-flags
+       '("--disable-pic14-port" "--disable-pic16-port" "--disable-ucsim")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefiles
+           (lambda _
+             (substitute* (find-files "." "(\\.mk$|\\.in$)")
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (home-page "http://sdcc.sourceforge.net")
+    (synopsis "C compiler suite for 8-bit microcontrollers")
+    (description "SDCC is a retargetable, optimizing Standard C compiler suite
+that targets 8-bit microcontrollers in the Intel MCS-51 (8051); Motorola
+68HC08; Padauk PDK13, PDK14 and PDK15; STMicroelectronics STM8; and Zilog Z80
+families, plus many of their variants.")
+    (license (list license:gpl2+
+                   license:gpl3+
+                   license:lgpl2.0+
+                   license:lgpl2.1+
+                   license:lgpl3+
+                   license:public-domain
+                   license:zlib))))

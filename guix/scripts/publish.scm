@@ -42,6 +42,7 @@
   #:use-module (web server)
   #:use-module (web uri)
   #:autoload   (sxml simple) (sxml->xml)
+  #:autoload   (guix avahi) (avahi-publish-service-thread)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix config)
@@ -70,6 +71,7 @@
             signed-string
 
             open-server-socket
+            publish-service-type
             run-publish-server
             guix-publish))
 
@@ -82,6 +84,8 @@ Publish ~a over HTTP.\n") %store-directory)
       --listen=HOST      listen on the network interface for HOST"))
   (display (G_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (G_ "
+  -a, --advertise        advertise on the local network"))
   (display (G_ "
   -C, --compression[=METHOD:LEVEL]
                          compress archives with METHOD at LEVEL"))
@@ -157,6 +161,9 @@ usage."
         (option '(#\V "version") #f #f
                 (lambda _
                   (show-version-and-exit "guix publish")))
+        (option '(#\a "advertise") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'advertise? #t result)))
         (option '(#\u "user") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'user arg result)))
@@ -817,32 +824,6 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define %http-write
   (@@ (web server http) http-write))
 
-(match (list (major-version) (minor-version) (micro-version))
-  (("2" "2" "5")                                  ;Guile 2.2.5
-   (let ()
-     (define %read-line (@ (ice-9 rdelim) %read-line))
-     (define bad-header (@@ (web http) bad-header))
-
-     ;; XXX: Work around <https://bugs.gnu.org/36350> by reverting to the
-     ;; definition of 'read-header-line' as found in 2.2.4 and earlier.
-     (define (read-header-line port)
-       "Read an HTTP header line and return it without its final CRLF or LF.
-Raise a 'bad-header' exception if the line does not end in CRLF or LF,
-or if EOF is reached."
-       (match (%read-line port)
-         (((? string? line) . #\newline)
-          ;; '%read-line' does not consider #\return a delimiter; so if it's
-          ;; there, remove it.  We are more tolerant than the RFC in that we
-          ;; tolerate LF-only endings.
-          (if (string-suffix? "\r" line)
-              (string-drop-right line 1)
-              line))
-         ((line . _)                              ;EOF or missing delimiter
-          (bad-header 'read-header-line line))))
-
-     (set! (@@ (web http) read-header-line) read-header-line)))
-  (_ #t))
-
 (define (strip-headers response)
   "Return RESPONSE's headers minus 'Content-Length' and our internal headers."
   (fold alist-delete
@@ -1069,11 +1050,29 @@ methods, return the applicable compression."
           (x (not-found request)))
         (not-found request))))
 
+(define (service-name)
+  "Return the Avahi service name of the server."
+  (string-append "guix-publish-" (gethostname)))
+
+(define publish-service-type
+  ;; Return the Avahi service type of the server.
+  "_guix_publish._tcp")
+
 (define* (run-publish-server socket store
                              #:key
+                             advertise? port
                              (compressions (list %no-compression))
                              (nar-path "nar") narinfo-ttl
                              cache pool)
+  (when advertise?
+    (let ((name (service-name)))
+      ;; XXX: Use a callback from Guile-Avahi here, as Avahi can pick a
+      ;; different name to avoid name clashes.
+      (info (G_ "Advertising ~a~%.") name)
+      (avahi-publish-service-thread name
+                                    #:type publish-service-type
+                                    #:port port)))
+
   (run-server (make-request-handler store
                                     #:cache cache
                                     #:pool pool
@@ -1119,9 +1118,10 @@ methods, return the applicable compression."
                                 (lambda (arg result)
                                   (leave (G_ "~A: extraneous argument~%") arg))
                                 %default-options))
-           (user    (assoc-ref opts 'user))
-           (port    (assoc-ref opts 'port))
-           (ttl     (assoc-ref opts 'narinfo-ttl))
+           (advertise?  (assoc-ref opts 'advertise?))
+           (user        (assoc-ref opts 'user))
+           (port        (assoc-ref opts 'port))
+           (ttl         (assoc-ref opts 'narinfo-ttl))
            (compressions (match (filter-map (match-lambda
                                               (('compression . compression)
                                                compression)
@@ -1179,6 +1179,8 @@ consider using the '--user' option!~%")))
 
         (with-store store
           (run-publish-server socket store
+                              #:advertise? advertise?
+                              #:port port
                               #:cache cache
                               #:pool (and cache (make-pool workers
                                                            #:thread-name

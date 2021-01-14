@@ -6,7 +6,8 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -149,7 +151,7 @@
        ("python2-css-parser" ,python2-css-parser)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
-       ("python2-dnspython" ,python2-dnspython)
+       ("python2-dnspython" ,python2-dnspython-1.16)
        ("python2-dukpy" ,python2-dukpy)
        ("python2-feedparser" ,python2-feedparser)
        ("python2-html2text" ,python2-html2text)
@@ -314,6 +316,32 @@ e-books for convenient reading.")
                    license:silofl1.1
                    license:cc-by-sa3.0))))
 
+(define-public ebook-tools
+  (package
+    (name "ebook-tools")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/ebook-tools/ebook-tools/"
+                           version "/ebook-tools-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bi7wsz3p5slb43kj7lgb3r6lb91lvb6ldi556k4y50ix6b5khyb"))))
+    (arguments
+     `(#:tests? #f)) ; No 'test' target
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libzip" ,libzip)
+       ("libxml2" ,libxml2)))
+    (home-page "http://ebook-tools.sourceforge.net")
+    (synopsis "Tools and library for dealing with various ebook file formats")
+    (description "This package provides command-line tools and a library for
+accessing and converting various ebook file formats.")
+    (license license:expat)))
+
 (define-public liblinebreak
   (package
     (name "liblinebreak")
@@ -415,7 +443,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.7.6")
+    (version "0.7.8")
     (source
      (origin
        (method git-fetch)
@@ -424,7 +452,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pg0djhg4p32vxfwf6bfals31zf93m56fx1x4q5jhhdwmll7xl6w"))))
+        (base32 "0z2wj9g32aa5g9pw81q49iv1smb6yvlv9zs0vrzbx6mw8cj3c5d2"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

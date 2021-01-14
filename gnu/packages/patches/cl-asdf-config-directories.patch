@@ -1,0 +1,44 @@
+Search for ASDF configuration files first in user directories, and then in
+Guix profiles.
+
+diff -ru a/asdf-3.3.4.lisp b/asdf-3.3.4.lisp
+--- a/asdf-3.3.4.lisp	2020-02-14 20:16:22.000000000 +0100
++++ b/asdf-3.3.4.lisp	2020-12-05 11:09:56.066229482 +0100
+@@ -12535,10 +12535,15 @@
+     (find-preferred-file (system-config-pathnames *output-translations-file*)
+                          :direction direction))
+   (defun user-output-translations-directory-pathname (&key (direction :input))
+-    (xdg-config-pathname *output-translations-directory* direction))
+-  (defun system-output-translations-directory-pathname (&key (direction :input))
+-    (find-preferred-file (system-config-pathnames *output-translations-directory*)
++    (find-preferred-file (list (xdg-config-home *output-translations-directory*))
+                          :direction direction))
++  (defun system-output-translations-directory-pathname (&key (direction :input))
++    `(:output-translations
++      ,@(loop :for dir :in (filter-pathname-set
++                            (xdg-config-dirs
++                             "common-lisp/asdf-output-translations.conf.d/"))
++              :collect `(:include ,dir))
++      :inherit-configuration))
+   (defun environment-output-translations ()
+     (getenv "ASDF_OUTPUT_TRANSLATIONS"))
+ 
+@@ -12921,10 +12926,15 @@
+     (find-preferred-file (system-config-pathnames *source-registry-file*)
+                          :direction direction))
+   (defun user-source-registry-directory (&key (direction :input))
+-    (xdg-config-pathname *source-registry-directory* direction))
+-  (defun system-source-registry-directory (&key (direction :input))
+-    (find-preferred-file (system-config-pathnames *source-registry-directory*)
++    (find-preferred-file (list (xdg-config-home *source-registry-directory*))
+                          :direction direction))
++  (defun system-source-registry-directory (&key (direction :input))
++    `(:source-registry
++      ,@(loop :for dir :in (filter-pathname-set
++                            (xdg-config-dirs
++                             "common-lisp/source-registry.conf.d/"))
++              :collect `(:include ,dir))
++      :inherit-configuration))
+   (defun environment-source-registry ()
+     (getenv "CL_SOURCE_REGISTRY"))
+ 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -274,11 +274,11 @@ text {
 var nodes = {},
     nodeArray = [],
     links = [];
-" (search-path %load-path "d3.v3.js")))
+" (search-path %load-path "guix/d3.v3.js")))
 
 (define (emit-d3js-epilogue port)
   (format port "</script><script type=\"text/javascript\" src=\"~a\"></script></body></html>"
-          (search-path %load-path "graph.js")))
+          (search-path %load-path "guix/graph.js")))
 
 (define (emit-d3js-node id label port)
   (format port "\

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,13 +28,13 @@
 (define-public rcm
   (package
     (name "rcm")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://thoughtbot.github.io/rcm/dist/rcm-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "1bqk7rrp1ckzvsvl9wghsr77m8xl3a7yc5gqdsisz492dx2j8mck"))))
+               (base32 "0jn2crdqcna0fyg7w7x1mcyjblzykd3lh4vdxhsd5x4w8hvsw4cv"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
                       (200 "This is the description.")
                       (200 "fake tarball contents"))
     (parameterize ((current-http-proxy (%local-url)))
-      (match (elpa->guix-package pkg 'gnu/http)
+      (match (elpa->guix-package pkg #:repo 'gnu/http)
         (('package
            ('name "emacs-auctex")
            ('version "11.88.6")

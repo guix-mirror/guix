@@ -4,11 +4,11 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -301,7 +301,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
@@ -309,7 +309,7 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "1f155yf5v57dwhzb7z0kh67lckr3yq4x8040dm54qgbxw582la77"))))
+        (base32 "0h7gpjx1221jwsq3k91p8zhf1h77qaxyasakc88s3g57vawhckgk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -476,41 +476,15 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
 (define-public alsa-modular-synth
   (package
     (name "alsa-modular-synth")
-    (version "2.1.2")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/alsamodular/alsamodular"
                                   "/" version "/ams-" version ".tar.bz2"))
               (sha256
                (base32
-                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))
-              (patches
-               (search-patches "alsa-modular-synth-fix-vocoder.patch"))))
+                "056dn6b9c5nsw2jdww7z1kxrjqqfvxjzxhsd5x9gi4wkwyiv21nz"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       '("--enable-qt5"
-         "CXXFLAGS=-std=gnu++11")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'set-paths 'hide-default-gcc
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((gcc (assoc-ref inputs "gcc")))
-               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
-               ;; conflicts with the GCC 5 input.
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-join
-                        (delete (string-append gcc "/include/c++")
-                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
-                        ":"))
-               #t)))
-         ;; Insert an extra space between linker flags.
-         (add-before 'configure 'add-missing-space
-           (lambda _
-             (substitute* "configure"
-               (("LIBS\\+=\\$LIBSsave") "LIBS+=\" $LIBSsave\"")
-               (("CFLAGS\\+=\\$CFLAGSsave") "CFLAGS+=\" $CFLAGSsave\""))
-             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ;; We cannot use zita-alsa-pcmi (the successor of clalsadrv) due to
@@ -523,8 +497,7 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
        ("qtbase" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)
-       ("gcc@5" ,gcc-5)))
+       ("qttools" ,qttools)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
@@ -703,7 +676,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method git-fetch)
@@ -713,8 +686,9 @@ engineers, musicians, soundtrack editors and composers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xk0piv72d2xd3p7igr916fhcbrm76fhjr418k1rlqdzzg1hfljn"))
-       (patches (search-patches "audacity-build-with-system-portaudio.patch"))
+         "0lklcvqkxrr2gkb9gh3422iadzl2rv9v0a8s76rwq43lj2im7546"))
+       (patches (search-patches "audacity-build-with-system-portaudio.patch"
+                                "audacity-add-include.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -724,7 +698,7 @@ engineers, musicians, soundtrack editors and composers.")
               (delete-file-recursively (string-append "lib-src/" dir)))
             '("expat" "ffmpeg" "lame" "libflac" "libid3tag" "libmad" "libogg"
               "libsndfile" "libsoxr" "libvamp" "libvorbis" "lv2"
-              "portaudio-v19" "portmidi" "soundtouch" "twolame"
+              "portmidi" "soundtouch" "twolame"
               ;; FIXME: these libraries have not been packaged yet:
               ;; "libnyquist"
               ;; "libscorealign"
@@ -738,7 +712,7 @@ engineers, musicians, soundtrack editors and composers.")
               ;; "sbsms"
               ))
            #t))))
-    (build-system glib-or-gtk-build-system)
+    (build-system cmake-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("gtk+" ,gtk+)
@@ -760,7 +734,6 @@ engineers, musicians, soundtrack editors and composers.")
        ("lv2" ,lv2)
        ("lilv" ,lilv)                   ;for lv2
        ("suil" ,suil)                   ;for lv2
-       ("portaudio" ,portaudio)
        ("portmidi" ,portmidi)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -772,52 +745,18 @@ engineers, musicians, soundtrack editors and composers.")
        ("which" ,which)))
     (arguments
      `(#:configure-flags
-       (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
-             (libmad (assoc-ref %build-inputs "libmad"))
-             (portmidi (assoc-ref %build-inputs "portmidi")))
-         (list
-          ;; Loading FFmpeg dynamically is problematic.
-          "--disable-dynamic-loading"
-          ;; SSE instructions are available on Intel systems only.
-          ,@(if (any (cute string-prefix? <> (or (%current-target-system)
-                                                 (%current-system)))
-                    '("x86_64" "i686"))
-              '()
-              '("--enable-sse=no"))
-          ;; portmidi, libid3tag and libmad provide no .pc files, so
-          ;; pkg-config fails to find them.  Force their inclusion.
-          (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
-          (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")
-          (string-append "LIBMAD_CFLAGS=-I" libmad "/include")
-          (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")
-          (string-append "PORTMIDI_CFLAGS=-I" portmidi "/include")
-          (string-append "PORTMIDI_LIBS=-L" portmidi "/lib -lportmidi")
-          "EXPAT_USE_SYSTEM=yes"
-          "FFMPEG_USE_SYSTEM=yes"
-          "LAME_USE_SYSTEM=yes"
-          "LIBFLAC_USE_SYSTEM=yes"
-          "LIBID3TAG_USE_SYSTEM=yes"
-          "LIBMAD_USE_SYSTEM=yes"
-          "USE_LOCAL_LIBNYQUIST="      ;not packaged yet
-          ;;"LIBSBSMS_USE_SYSTEM=yes"  ;bundled version is patched
-          "LIBSNDFILE_USE_SYSTEM=yes"
-          "LIBSOUNDTOUCH_USE_SYSTEM=yes"
-          "LIBSOXR_USE_SYSTEM=yes"
-          "LIBTWOLAME_USE_SYSTEM=yes"
-          "LIBVAMP_USE_SYSTEM=yes"
-          "LIBVORBIS_USE_SYSTEM=yes"
-          "LV2_USE_SYSTEM=yes"
-          "PORTAUDIO_USE_SYSTEM=yes"))
+       (list
+        ;; Loading FFmpeg dynamically is problematic.
+        "-Daudacity_use_ffmpeg=linked"
+        "-Daudacity_use_lame=system"
+        "-Daudacity_use_portsmf=system")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sbsms-check
+         (add-after 'unpack 'comment-out-revision-ident
            (lambda _
-             ;; This check is wrong: there is no 2.2.0 release; not even the
-             ;; bundled sources match this release string.
-             (substitute* '("m4/audacity_checklib_libsbsms.m4"
-                            "configure")
-               (("sbsms >= 2.2.0") "sbsms >= 2.0.0"))
-             #t))
+             (substitute* "src/AboutDialog.cpp"
+               (("(.*RevisionIdent\\.h.*)" include-line)
+                (string-append "// " include-line)))))
          (add-after 'unpack 'use-upstream-headers
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/NoteTrack.cpp"
@@ -827,12 +766,11 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
-               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
-             #t)))
-       ;; The test suite is not "well exercised" according to the developers,
-       ;; and fails with various errors.  See
-       ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
-       #:tests? #f))
+               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")))))
+         ;; The test suite is not "well exercised" according to the developers,
+         ;; and fails with various errors.  See
+         ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
+         #:tests? #f))
     (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
@@ -1969,8 +1907,15 @@ well suited to all musical instruments and vocals.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "INSTDIR="
                             (assoc-ref %outputs "out") "/lib/lv2"))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)        ; no configure script
+         ;; See https://github.com/tomszilagyi/ir.lv2/pull/20
+         (add-after 'unpack 'fix-type 
+           (lambda _
+             (substitute* '("ir_gui.cc" "lv2_ui.h")
+               (("_LV2UI_Descriptor") "LV2UI_Descriptor"))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
@@ -2398,14 +2343,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.8")
+    (version "0.24.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0063i5zgf3d3accwmyx651hw0wh5ik7kji2hvfkcdbl1qia3dp6a"))))
+               "1565zy0yz46cf2f25pi46msdnzkj6bbhml9gfigdpjnsdlyskfyi"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2694,14 +2639,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.6.3")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0zbb4jlx56qvcqyhx34mbagkqf3wbxgj84hk0ppf5cmcrxv67d4x"))))
+                "1gaabf2ncd5xd846fjm3k5d0kzphlyc33k9pralc2j3r3g0cb5ji"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -2758,7 +2703,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.11.0")
+    (version "3.11.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2769,7 +2714,7 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))
+                "1gi7nrmjmbnjndqkmhfrkk0jchrzvnhl3f6gp6n5wgdd4mxbgxgw"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
@@ -2799,7 +2744,8 @@ link REQUIRED)"))
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
                            "-DSC_QT=ON" "-DCMAKE_BUILD_TYPE=Release"
-                           "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
+                           "-DFORTIFY=ON"
+                           ;"-DLIBSCSYNTH=ON"   ; TODO: Re-enable?
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
        #:phases
@@ -3015,14 +2961,14 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.6.4")
+    (version "0.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/sratom-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0vh0biy3ngpzzgdml309c2mqz8xq9q0hlblczb4c6alhp0a8yv0l"))))
+                "178v90qvsp6lw4sqdmdz0bzyjkgwhv9m75ph1d1z8say5bv0p4gv"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f))          ;no check target
     (propagated-inputs
@@ -3042,14 +2988,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.6")
+    (version "0.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/suil-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0z4v01pjw4wh65x38w6icn28wdwxz13ayl8hvn4p1g9kmamp1z06"))))
+                "0h0ghk1s0lrj4gh12r7390b0ybaw7awnj0vhchyy9ll0gvhqgkci"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -3102,7 +3048,7 @@ for loudness normalisation.")
 (define-public timidity++
   (package
     (name "timidity++")
-    (version "2.14.0")
+    (version "2.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/timidity/TiMidity++"
@@ -3110,7 +3056,7 @@ for loudness normalisation.")
                                   "/TiMidity++-" version ".tar.bz2"))
               (sha256
                (base32
-                "0xk41w4qbk23z1fvqdyfblbz10mmxsllw0svxzjw5sa9y11vczzr"))))
+                "1xf8n6dqzvi6nr2asags12ijbj1lwk1hgl3s27vm2szib8ww07qn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -4237,7 +4183,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.6.1")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4246,7 +4192,7 @@ representations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kvhqgijs29909w3sq9m0bslx2zxxn4b3i07kdz4hb0dqkppxpjy"))))
+                "04j5hb29hivcbk542sfsx9m57dbnj2s6qpvy9fs488zvgjbgxrai"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4887,16 +4833,15 @@ edited, converted, compressed and saved.")
 (define-public lsp-dsp-lib
   (package
     (name "lsp-dsp-lib")
-    (version "0.5.8")
+    (version "0.5.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/sadko4u/lsp-dsp-lib/"
-                            "releases/download/lsp-dsp-lib-" version
+                            "releases/download/" version
                             "/lsp-dsp-lib-" version "-src.tar.gz"))
         (sha256
-         (base32
-          "07w3d2i0z0xmvi1ngcgs7lc5a0da8jvf7rv4dnjk01md43b7fkh1"))))
+         (base32 "0lkar6r9jfrrqswi8nnndlm5a9kfwqjn92d81gp2yhc3p46xsswz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -4904,6 +4849,11 @@ edited, converted, compressed and saved.")
        (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           (lambda _
+             (substitute* "src/Makefile"
+               ((".*@.*ARTIFACT_SLIB.*") "")       ; don't install it
+               ((" \\$\\(ARTIFACT_SLIB\\)") "")))) ; don't build it
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "config"

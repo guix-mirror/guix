@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,8 +36,12 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:export (darkstat-configuration
-            prometheus-node-exporter-configuration
             darkstat-service-type
+
+            prometheus-node-exporter-configuration
+            prometheus-node-exporter-configuration?
+            prometheus-node-exporter-configuration-package
+            prometheus-node-exporter-web-listen-address
             prometheus-node-exporter-service-type
 
             zabbix-server-configuration
@@ -110,6 +114,11 @@ HTTP.")
           (service-extension shepherd-root-service-type
                              (compose list darkstat-shepherd-service))))))
 
+
+;;;
+;;; Prometheus node exporter
+;;;
+
 (define-record-type* <prometheus-node-exporter-configuration>
   prometheus-node-exporter-configuration
   make-prometheus-node-exporter-configuration
@@ -117,31 +126,73 @@ HTTP.")
   (package prometheus-node-exporter-configuration-package
            (default go-github-com-prometheus-node-exporter))
   (web-listen-address prometheus-node-exporter-web-listen-address
-                      (default ":9100")))
+                      (default ":9100"))
+  (textfile-directory prometheus-node-exporter-textfile-directory
+                      (default "/var/lib/prometheus/node-exporter"))
+  (extra-options      prometheus-node-exporter-extra-options
+                      (default '())))
+
+(define %prometheus-node-exporter-accounts
+  (list (user-account
+         (name "prometheus-node-exporter")
+         (group "prometheus-node-exporter")
+         (system? #t)
+         (comment "Prometheus node exporter daemon user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))
+        (user-group
+         (name "prometheus-node-exporter")
+         (system? #t))))
 
 (define prometheus-node-exporter-shepherd-service
   (match-lambda
     (( $ <prometheus-node-exporter-configuration>
-         package web-listen-address)
-     (shepherd-service
-      (documentation "Prometheus node exporter.")
-      (provision '(prometheus-node-exporter))
-      (requirement '(networking))
-      (start #~(make-forkexec-constructor
-                (list #$(file-append package "/bin/node_exporter")
-                      "--web.listen-address" #$web-listen-address)))
-      (stop #~(make-kill-destructor))))))
+         package web-listen-address textfile-directory extra-options)
+     (list
+      (shepherd-service
+       (documentation "Prometheus node exporter.")
+       (provision '(prometheus-node-exporter))
+       (requirement '(networking))
+       (start #~(make-forkexec-constructor
+                 (list #$(file-append package "/bin/node_exporter")
+                       "--web.listen-address" #$web-listen-address
+                       #$@(if textfile-directory
+                              (list "--collector.textfile.directory"
+                                    textfile-directory)
+                              '())
+                       #$@extra-options)
+                 #:user "prometheus-node-exporter"
+                 #:group "prometheus-node-exporter"
+                 #:log-file "/var/log/prometheus-node-exporter.log"))
+       (stop #~(make-kill-destructor)))))))
+
+(define (prometheus-node-exporter-activation config)
+  (with-imported-modules '((guix build utils))
+    #~(let ((textfile-directory
+             #$(prometheus-node-exporter-textfile-directory config)))
+        (use-modules (guix build utils))
+
+        (when textfile-directory
+          (let ((user (getpw "prometheus-node-exporter")))
+            #t
+            (mkdir-p textfile-directory)
+            (chown textfile-directory (passwd:uid user) (passwd:gid user))
+            (chmod textfile-directory #o775))))))
 
 (define prometheus-node-exporter-service-type
   (service-type
    (name 'prometheus-node-exporter)
    (description
     "Run @command{node_exporter} to serve hardware and OS metrics to
-prometheus.")
+Prometheus.")
    (extensions
-    (list (service-extension
-           shepherd-root-service-type
-           (compose list prometheus-node-exporter-shepherd-service))))
+    (list
+     (service-extension account-service-type
+                        (const %prometheus-node-exporter-accounts))
+     (service-extension activation-service-type
+                        prometheus-node-exporter-activation)
+     (service-extension shepherd-root-service-type
+                        prometheus-node-exporter-shepherd-service)))
    (default-value (prometheus-node-exporter-configuration))))
 
 
@@ -343,7 +394,7 @@ configuration file."))
    (group "zabbix")
    "Group who will run the Zabbix agent.")
   (hostname
-   (string "Zabbix server")
+   (string "")
    "Unique, case sensitive hostname which is required for active checks and
 must match hostname as configured on the server.")
   (log-type

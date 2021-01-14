@@ -27,6 +27,7 @@
   ;; (guix store) since this is "daemon-side" code.
   #:use-module (guix store)
   #:use-module (guix store database)
+  #:use-module ((guix store deduplication) #:select (dump-file/deduplicate))
   #:use-module ((guix build store-copy) #:select (store-info))
 
   #:use-module (guix i18n)
@@ -114,8 +115,8 @@ held."
           ;; Install the new TARGET.
           (rename-file source target)
 
-          ;; Register TARGET.  As a side effect, it resets the timestamps of all
-          ;; its files, recursively, and runs a deduplication pass.
+          ;; Register TARGET.  The 'restore-file' call took care of
+          ;; deduplication, timestamps, and permissions.
           (register-items db
                           (list (store-info target deriver references))))
 
@@ -210,7 +211,8 @@ s-expression"))
   (let-values (((port get-hash)
                 (open-sha256-input-port port)))
     (with-temporary-store-file temp
-      (restore-file port temp)
+      (restore-file port temp
+                    #:dump-file dump-file/deduplicate)
 
       (let ((magic (read-int port)))
         (unless (= magic %export-magic)

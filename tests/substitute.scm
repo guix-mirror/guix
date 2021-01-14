@@ -28,7 +28,9 @@
   #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix ui) #:select (guix-warning-port))
-  #:use-module ((guix utils) #:select (call-with-compressed-output-port))
+  #:use-module ((guix utils)
+                #:select (call-with-temporary-directory
+                          call-with-compressed-output-port))
   #:use-module ((guix build utils)
                 #:select (mkdir-p delete-file-recursively dump-port))
   #:use-module (guix tests http)
@@ -36,6 +38,7 @@
   #:use-module (rnrs io ports)
   #:use-module (web uri)
   #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -47,7 +50,8 @@ it writes to GUIX-WARNING-PORT a messages that matches ERROR-RX."
   (test-equal name
     '(1 #t)
     (let ((error-output (open-output-string)))
-      (parameterize ((guix-warning-port error-output))
+      (parameterize ((current-error-port error-output)
+                     (guix-warning-port error-output))
         (catch 'quit
           (lambda ()
             exp
@@ -56,6 +60,14 @@ it writes to GUIX-WARNING-PORT a messages that matches ERROR-RX."
             (list value
                   (let ((message (get-output-string error-output)))
                     (->bool (string-match error-rx message))))))))))
+
+(define (request-substitution item destination)
+  "Run 'guix substitute --substitute' to fetch ITEM to DESTINATION."
+  (parameterize ((guix-warning-port (current-error-port)))
+    (with-input-from-string (string-append "substitute " item " "
+                                           destination "\n")
+      (lambda ()
+        (guix-substitute "--substitute")))))
 
 (define %public-key
   ;; This key is known to be in the ACL by default.
@@ -183,6 +195,11 @@ a file for NARINFO."
 ;; Transmit these options to 'guix substitute'.
 (substitute-urls (list (getenv "GUIX_BINARY_SUBSTITUTE_URL")))
 
+;; Never use file descriptor 4, unlike what happens when invoked by the
+;; daemon.
+(%error-to-file-descriptor-4? #f)
+
+
 (test-equal "query narinfo without signature"
   ""                                              ; not substitutable
 
@@ -283,21 +300,68 @@ System: mips64el-linux\n")
 (test-quit "substitute, no signature"
     "no valid substitute"
   (with-narinfo %narinfo
-    (guix-substitute "--substitute"
-                     (string-append (%store-prefix)
-                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                     "foo")))
+    (with-input-from-string (string-append "substitute "
+                                           (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo"
+                                           " foo\n")
+      (lambda ()
+        (guix-substitute "--substitute")))))
 
-(test-quit "substitute, invalid hash"
+(test-quit "substitute, invalid narinfo hash"
     "no valid substitute"
   ;; The hash in the signature differs from the hash of %NARINFO.
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field "different body")
                                "\n")
-    (guix-substitute "--substitute"
-                     (string-append (%store-prefix)
-                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                     "foo")))
+    (with-input-from-string (string-append "substitute "
+                                           (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo"
+                                           " foo\n")
+      (lambda ()
+        (guix-substitute "--substitute")))))
+
+(test-equal "substitute, invalid hash"
+  (string-append "hash-mismatch sha256 "
+                 (bytevector->nix-base32-string (sha256 #vu8())) " "
+                 (let-values (((port get-hash)
+                               (open-hash-port (hash-algorithm sha256)))
+                              ((content)
+                               "Substitutable data."))
+                   (write-file-tree "foo" port
+                                    #:file-type+size
+                                    (lambda _
+                                      (values 'regular
+                                              (string-length content)))
+                                    #:file-port
+                                    (lambda _
+                                      (open-input-string content)))
+                   (close-port port)
+                   (bytevector->nix-base32-string (get-hash)))
+                 "\n")
+
+  ;; Arrange so the actual data hash does not match the 'NarHash' field in the
+  ;; narinfo.
+  (with-output-to-string
+    (lambda ()
+      (let ((narinfo (string-append "StorePath: " (%store-prefix)
+                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-wrong-hash
+URL: example.nar
+Compression: none
+NarHash: sha256:" (bytevector->nix-base32-string (sha256 #vu8())) "
+NarSize: 42
+References: 
+Deriver: " (%store-prefix) "/foo.drv
+System: mips64el-linux\n")))
+        (with-narinfo (string-append narinfo "Signature: "
+                                     (signature-field narinfo) "\n")
+          (call-with-temporary-directory
+           (lambda (directory)
+             (with-input-from-string (string-append
+                                      "substitute " (%store-prefix)
+                                      "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-wrong-hash "
+                                      directory "/wrong-hash\n")
+               (lambda ()
+                 (guix-substitute "--substitute"))))))))))
 
 (test-quit "substitute, unauthorized key"
     "no valid substitute"
@@ -306,23 +370,26 @@ System: mips64el-linux\n")
                                 %narinfo
                                 #:public-key %wrong-public-key)
                                "\n")
-    (guix-substitute "--substitute"
-                     (string-append (%store-prefix)
-                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                     "foo")))
+    (with-input-from-string (string-append "substitute "
+                                           (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo"
+                                           " foo\n")
+      (lambda ()
+        (guix-substitute "--substitute")))))
 
 (test-equal "substitute, authorized key"
-  "Substitutable data."
+  '("Substitutable data." 1 #o444)
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field %narinfo))
     (dynamic-wind
       (const #t)
       (lambda ()
-        (guix-substitute "--substitute"
-                         (string-append (%store-prefix)
-                                        "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                         "substitute-retrieved")
-        (call-with-input-file "substitute-retrieved" get-string-all))
+        (request-substitution (string-append (%store-prefix)
+                                             "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                              "substitute-retrieved")
+        (list (call-with-input-file "substitute-retrieved" get-string-all)
+              (stat:mtime (lstat "substitute-retrieved"))
+              (stat:perms (lstat "substitute-retrieved"))))
       (lambda ()
         (false-if-exception (delete-file "substitute-retrieved"))))))
 
@@ -351,10 +418,9 @@ System: mips64el-linux\n")
                           (map (cut string-append "file://" <>)
                                (list %alternate-substitute-directory
                                      %main-substitute-directory))))
-            (guix-substitute "--substitute"
-                             (string-append (%store-prefix)
-                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                             "substitute-retrieved"))
+            (request-substitution (string-append (%store-prefix)
+                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                  "substitute-retrieved"))
           (call-with-input-file "substitute-retrieved" get-string-all))
         (lambda ()
           (false-if-exception (delete-file "substitute-retrieved")))))))
@@ -380,10 +446,9 @@ System: mips64el-linux\n")
                           (map (cut string-append "file://" <>)
                                (list %alternate-substitute-directory
                                      %main-substitute-directory))))
-            (guix-substitute "--substitute"
-                             (string-append (%store-prefix)
-                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                             "substitute-retrieved"))
+            (request-substitution (string-append (%store-prefix)
+                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                  "substitute-retrieved"))
           (call-with-input-file "substitute-retrieved" get-string-all))
         (lambda ()
           (false-if-exception (delete-file "substitute-retrieved")))))))
@@ -416,10 +481,9 @@ System: mips64el-linux\n")
                           (map (cut string-append "file://" <>)
                                (list %alternate-substitute-directory
                                      %main-substitute-directory))))
-            (guix-substitute "--substitute"
-                             (string-append (%store-prefix)
-                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                             "substitute-retrieved"))
+            (request-substitution (string-append (%store-prefix)
+                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                  "substitute-retrieved"))
           (call-with-input-file "substitute-retrieved" get-string-all))
         (lambda ()
           (false-if-exception (delete-file "substitute-retrieved")))))))
@@ -450,10 +514,9 @@ System: mips64el-linux\n")
                           (map (cut string-append "file://" <>)
                                (list %alternate-substitute-directory
                                      %main-substitute-directory))))
-            (guix-substitute "--substitute"
-                             (string-append (%store-prefix)
-                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                             "substitute-retrieved"))
+            (request-substitution (string-append (%store-prefix)
+                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                  "substitute-retrieved"))
           (call-with-input-file "substitute-retrieved" get-string-all))
         (lambda ()
           (false-if-exception (delete-file "substitute-retrieved")))))))
@@ -469,10 +532,12 @@ System: mips64el-linux\n")
                                    #:public-key %wrong-public-key))
         %main-substitute-directory
 
-      (guix-substitute "--substitute"
-                       (string-append (%store-prefix)
-                                      "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                       "substitute-retrieved"))))
+      (with-input-from-string (string-append "substitute "
+                                             (%store-prefix)
+                                             "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo"
+                                             " substitute-retrieved\n")
+        (lambda ()
+          (guix-substitute "--substitute"))))))
 
 (test-equal "substitute, narinfo with several URLs"
   "Substitutable data."
@@ -512,10 +577,9 @@ System: mips64el-linux\n")))
           (parameterize ((substitute-urls
                           (list (string-append "file://"
                                                %main-substitute-directory))))
-            (guix-substitute "--substitute"
-                             (string-append (%store-prefix)
-                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                             "substitute-retrieved"))
+            (request-substitution (string-append (%store-prefix)
+                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                  "substitute-retrieved"))
           (call-with-input-file "substitute-retrieved" get-string-all))
         (lambda ()
           (false-if-exception (delete-file "substitute-retrieved")))))))

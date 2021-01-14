@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
@@ -159,7 +159,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.20.3")
+    (version "0.20.4")
     (source
      (origin
        (method url-fetch)
@@ -167,7 +167,7 @@ programs for the manipulation and analysis of astronomical data.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "0z5r7b1ac43l330xphxnw54xg7jm87ajix8yl4hkq82cs5ja7097"))))
+        (base32 "1253zlr0mi4kdbj119spxk7spg4rkahb4rlpd0hz1d81mnv3n0v3"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)

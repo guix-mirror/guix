@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -51,6 +51,8 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 David Dashyan <mail@davie.li>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -349,39 +351,38 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-
-;; The current "stable" kernel. That is, the most recently released major
-;; version.
-(define-public linux-libre-5.9-version "5.9.11")
-(define deblob-scripts-5.9
+;; The current "stable" kernels. That is, the most recently released major
+;; versions that are still supported upstream.
+(define-public linux-libre-5.10-version "5.10.6")
+(define deblob-scripts-5.10
   (linux-libre-deblob-scripts
-   linux-libre-5.9-version
-   (base32 "1l0iw2lp6alk0a8nvdafklyks83iiyw4b2r5xif84z47qfbydsis")
-   (base32 "0yb04a4j2wq3mwvks3cj7kcm2pscmfs29lrz3falkxpbvjxbbgq2")))
-(define-public linux-libre-5.9-pristine-source
-  (let ((version linux-libre-5.9-version)
-        (hash (base32 "0q6jlnigyjjnnxw6l724zv8acgs95s3pafabz4l9jrhhlijhmcjy")))
+   linux-libre-5.10-version
+   (base32 "0i99adbfjnir8p8ihhac58dv8p7mnqg4z2jpgvhj35lksdskngf7")
+   (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
+(define-public linux-libre-5.10-pristine-source
+  (let ((version linux-libre-5.10-version)
+        (hash (base32 "02v91afra3pcwfws74wxdsm8pfc57vws659b7j6jmsxm3hnd0rvp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-5.9)))
+                            deblob-scripts-5.10)))
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.80")
+(define-public linux-libre-5.4-version "5.4.88")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
-   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "167zcfkw62pm6nv1xdvvhxw0ca724sywcywnv3z00189f8f8p3vg")))
+   (base32 "0q3gwf3b404brjld7aj9krzv0wdpzvs8fgy088ag7q106cwgqg8i")
+   (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1iv4rsc9mr13xqzayzwz8mpdrdpnc425mn1izz9hylrw3xf45nj9")))
+        (hash (base32 "1ci432xanm7glgg05012kh43pfi4k771kzih0816y5674v0hg02b")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.160")
+(define-public linux-libre-4.19-version "4.19.166")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -389,12 +390,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "118maapizgqgrgawnw7xmbcz26c61g5d012jzbd8l7n6z4354d0q")))
+        (hash (base32 "03l86ykdjs5wa0n4wknpgy9dv2r6l92qfsyak373jkhs684z53mr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.209")
+(define-public linux-libre-4.14-version "4.14.214")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -402,12 +403,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "171b31c4rz9sn95s4s4yqchd4s46kivmvch78z0jr5zir1f4c0nb")))
+        (hash (base32 "07ir4yw7s5c6yb3gjbgjvcqqdgpbsjxrvapgh6zs22ffd8hrchpm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.246")
+(define-public linux-libre-4.9-version "4.9.250")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -415,12 +416,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1xd9vgc4yj2vrr5r76cy3fp9a1fc3086lj5aws68wf1dsz3ndqj9")))
+        (hash (base32 "15vizxd2i2311skjank406ny3bc30c5rz2p9jvh5xz1yv12vzgcy")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.246")
+(define-public linux-libre-4.4-version "4.4.250")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -428,7 +429,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "15xd1dqw53kwqvsa71nr1ymp0jp22pkl4h2yks4hqbd132zxw2wy")))
+        (hash (base32 "12m14j8654rawj2znkyhvcnwnf53x10zlghxd0mpl8dfzwvn2f5b")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -461,8 +462,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-5.9-source
-  (source-with-patches linux-libre-5.9-pristine-source
+(define-public linux-libre-5.10-source
+  (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -565,9 +566,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-5.9
-  (make-linux-libre-headers* linux-libre-5.9-version
-                             linux-libre-5.9-source))
+(define-public linux-libre-headers-5.10
+  (make-linux-libre-headers* linux-libre-5.10-version
+                             linux-libre-5.10-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -856,16 +857,16 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-5.9
-  (make-linux-libre* linux-libre-5.9-version
-                     linux-libre-5.9-source
+(define-public linux-libre-5.10
+  (make-linux-libre* linux-libre-5.10-version
+                     linux-libre-5.10-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-5.9-version)
-(define-public linux-libre-pristine-source linux-libre-5.9-pristine-source)
-(define-public linux-libre-source          linux-libre-5.9-source)
-(define-public linux-libre                 linux-libre-5.9)
+(define-public linux-libre-version         linux-libre-5.10-version)
+(define-public linux-libre-pristine-source linux-libre-5.10-pristine-source)
+(define-public linux-libre-source          linux-libre-5.10-source)
+(define-public linux-libre                 linux-libre-5.10)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -902,6 +903,15 @@ It has been modified to remove all non-free binary blobs.")
                         ;; This option was removed upstream in version 4.7.
                         ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                       %default-extra-linux-options)))
+
+;; Linux-Libre-LTS points to the *newest* released long-term support version of
+;; Linux-Libre.
+;; Reference: https://jxself.org/linux-libre/
+
+(define-public linux-libre-lts-version         linux-libre-5.10-version)
+(define-public linux-libre-lts-pristine-source linux-libre-5.10-pristine-source)
+(define-public linux-libre-lts-source          linux-libre-5.10-source)
+(define-public linux-libre-lts                 linux-libre-5.10)
 
 
 ;;;
@@ -1023,8 +1033,8 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-with-bpf
   (let ((base-linux-libre
          (make-linux-libre*
-          linux-libre-5.9-version
-          linux-libre-5.9-source
+          linux-libre-5.10-version
+          linux-libre-5.10-source
           '("x86_64-linux" "i686-linux" "armhf-linux"
             "aarch64-linux" "riscv64-linux")
           #:extra-version "bpf"
@@ -1092,8 +1102,8 @@ and should be used with caution, especially on untested models.")
     (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "e9fbf5c051453941bbc029810b893a6c010714e6")
-        (revision "2"))
+  (let ((commit "62cb003043e4daeeba0b8805137fa604af450ed2")
+        (revision "3"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1105,7 +1115,7 @@ and should be used with caution, especially on untested models.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0y71q7ajwz1w38gdmxd4p05hhkqndq504nndy6vfa16fxz6pqxhn"))
+          (base32 "1kragxkjprjy7nl9h2rd0mwcry1ygw07zb1p2qkj7cmz0r2035yz"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1138,8 +1148,8 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
 (define-public rtl8821ce-linux-module
-  (let ((commit "fe97b5003f2f3dd070f76ec38c00b83798c1cdea")
-        (revision "1"))
+  (let ((commit "14b536f0c9ad2d0abbdab8afc7ade684900ca9cf")
+        (revision "2"))
     (package
       (name "rtl8821ce-linux-module")
       (version (git-version "0.0.0" revision commit))
@@ -1152,7 +1162,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "10mrp63npbqb39c442vx8mra278hw7sczb3b6bjrpr3gan6ljshn"))))
+           "0z7r7spsgn22gwv9pcmkdjn9ingi8jj7xkxasph8118h46fw8ip2"))))
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags
@@ -1303,7 +1313,7 @@ application by hooking GStreamer into the loopback device.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.4.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1312,7 +1322,7 @@ application by hooking GStreamer into the loopback device.")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "0d6hvz6lpkac08hw5wnlhfdm0fhqd0n6jf6v7fz3jhg6a6694vfd"))
+         "1z4jayf69qyyxln1gl6ch4qxfd66ib1g42garnrv2d8i1drl0790"))
        (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
@@ -2043,7 +2053,7 @@ trace of all the system calls made by a another process/program.")
               (base32
                "00wmbdghqbz6x95m1mcdd3wd46l6hgcr4wggdp049dbifh3qqvqf"))))
     (build-system gnu-build-system)
-    (inputs `(("libelf" ,libelf)))
+    (inputs `(("libelf" ,elfutils)))
     (arguments
      ;; Compilation uses -Werror by default, but it fails.
      '(#:configure-flags '("--disable-werror")))
@@ -2058,7 +2068,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.3.2")
+    (version "1.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2066,7 +2076,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "05dyk856ppvqymazyk1cmpln53g88cq1wjpnsygqrvnamyvwa7z8"))))
+               "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -2082,14 +2092,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1ai1z4kf91b1m3qrpwqkc1af5vm2fkdkknqv95xdwf19q94aw6gz"))))
+               "09m4dnn4kplawprd2bl15nwa0b4r1brab3x44ga7f1fyk7aw5zwq"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -2152,6 +2162,11 @@ MIDI functionality to the Linux-based operating system.")
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
     (outputs '("out" "pulseaudio" "jack"))
+    (native-search-paths
+      (list (search-path-specification
+              (variable "ALSA_PLUGIN_DIR")
+              (files '("lib/alsa-lib"))
+              (separator #f))))
     (arguments
      `(#:configure-flags '(;; Do not install a "local" configuration targeted
                            ;; for /etc/alsa.  On Guix System plugins are loaded from
@@ -2238,6 +2253,53 @@ IPv6 packet filter.
 Both commands are targeted at system administrators.")
     (license license:gpl2+)))
 
+(define-public jitterentropy-rngd
+  (package
+    (name "jitterentropy-rngd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/smuellerDD/jitterentropy-rngd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fb8zfwhwkl1d8n4cdn7rdv5rwd75qgc00d36pmkl7wgnj3c9xda"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "UNITDIR=$(PREFIX)/lib/systemd/system")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no ./configure script
+    (home-page "https://www.chronox.de/jent.html")
+    (synopsis "CPU jitter random number generator daemon")
+    (description
+     "This simple daemon feeds entropy from the CPU Jitter @acronym{RNG, random
+number generator} core to the kernel Linux's entropy estimator.  This prevents
+the @file{/dev/random} device from blocking and should benefit users of the
+preferred @file{/dev/urandom} and @code{getrandom()} interfaces too.
+
+The CPU Jitter RNG itself is part of the kernel and claims to provide good
+entropy by collecting and magnifying differences in CPU execution time as
+measured by the high-resolution timer built into modern CPUs.  It requires no
+additional hardware or external entropy source.
+
+The random bit stream generated by @command{jitterentropy-rngd} is not processed
+by a cryptographically secure whitening function.  Nonetheless, its authors
+believe it to be a suitable source of cryptographically secure key material or
+other cryptographically sensitive data.
+
+If you agree with them, start this daemon as early as possible to provide
+properly seeded random numbers to services like SSH or those using TLS during
+early boot when entropy may be low, especially in virtualised environments.")
+    (license (list license:bsd-3        ; or
+                   license:gpl2+))))
+
 (define-public lsscsi
   (package
     (name "lsscsi")
@@ -2302,6 +2364,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
        #:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
+                            (string-append "CC=" ,(cc-for-target))
+                            "HOSTCC=gcc"
                             (string-append "BASH_COMPDIR=" out
                                            "/etc/bash_completion.d")
                             (string-append "LIBDIR=" out "/lib")
@@ -2317,7 +2381,16 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
                         (("^.*ARPDDIR.*$") ""))
-                      #t)))))
+                      #t))
+                  (add-after 'unpack 'patch-configure
+                    (lambda _
+                      (let ((target ,(%current-target-system)))
+                        (substitute* "configure"
+                          (("pkg-config")
+                            (if target
+                              (string-append target "-pkg-config")
+                              "pkg-config")))
+                        #t))))))
     (inputs
      `(("db4" ,bdb)
        ("iptables" ,iptables)
@@ -2466,7 +2539,7 @@ Linux-based operating systems.")
 (define-public libcap
   (package
     (inherit libcap-2.31)
-    (version "2.44")
+    (version "2.45")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2474,7 +2547,7 @@ Linux-based operating systems.")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "1qf80lifygbnxwvqjf8jz5j24n6fqqx4ixnkbf76xs2vrmcq664j"))))
+                "11ijmi7jik9iw6pdszc6bylhggghr8cza03bcrbhbqf0cpvkjrnn"))))
     (arguments
      (substitute-keyword-arguments (package-arguments libcap-2.31)
        ((#:phases phases)
@@ -2828,7 +2901,7 @@ user-space processes.")
 (define-public unionfs-fuse
   (package
     (name "unionfs-fuse")
-    (version "2.0")
+    (version "2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2837,7 +2910,7 @@ user-space processes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lb8zgdxnjy2fjr2284hvdfn7inc1in44ynzgcr66x54bxzvynj6"))))
+                "0bwx70x834qgqh53vqp18bhbxbsny80hz922rbgj8k9wj7cbfilm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)))
@@ -3139,7 +3212,7 @@ for systems using the Linux kernel.  This includes commands such as
 (define-public inotify-tools
   (package
     (name "inotify-tools")
-    (version "3.20.2.2")
+    (version "3.20.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3148,12 +3221,15 @@ for systems using the Linux kernel.  This includes commands such as
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r12bglkb0bkqff6kgxjm81hk6z20nrxq3m7iv15d4nrqf9pm7s0"))))
+                "1m8avqccrhm38krlhp88a7v949f3hrzx060bbrr5dp5qw2nmw9j2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "https://github.com/rvoicilas/inotify-tools/wiki")
     (synopsis "Monitor file accesses")
     (description
@@ -3397,7 +3473,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.03.10")
+    (version "2.03.11")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://sourceware.org/ftp/lvm2/LVM2."
@@ -3406,7 +3482,7 @@ devices that can inject events directly into the input subsystem.")
                                         version ".tgz")))
               (sha256
                (base32
-                "1l0fkn9abrgk5mfn6jfh9qhdr86b59l1c5pk6lp8jh0491d69las"))
+                "1m4xpda8vbyd89ca0w8nacvnl4j34yzsa625gn990fb5sh84ab44"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4045,18 +4121,18 @@ thanks to the use of namespaces.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-references
            (lambda _
-             (substitute* "libexec/cli/build.exec"
-               (("if ! singularity_which mksquashfs") "if 0")
-               (("if ! mksquashfs")
-                (string-append "if ! " (which "mksquashfs"))))
-             (substitute* (list "libexec/cli/help.exec"
-                                "libexec/bootstrap-scripts/functions"
-                                "libexec/bootstrap-scripts/post.sh"
-                                "libexec/functions")
+             (substitute* "libexec/cli/build.exec.in"
+               (("-mksquashfs") (string-append "-" (which "mksquashfs"))))
+             (substitute* (append
+                            (find-files "libexec" "functions")
+                            (find-files "libexec/bootstrap-scripts" ".*sh$")
+                            (find-files "libexec/cli" ".*exec$"))
                (("\\| grep ")
                 (string-append "| " (which "grep") " "))
                (("egrep ")
-                (string-append (which "egrep") " ")))
+                (string-append (which "egrep") " "))
+               ((" sed ")
+                (string-append " " (which "sed") " ")))
              #t))
          (add-after 'install 'set-PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4544,7 +4620,7 @@ arrays when needed.")
        ;; For tests.
        ("cmocka" ,cmocka)))
     (inputs
-     `(("json-c" ,json-c-0.13)
+     `(("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)
@@ -4644,14 +4720,15 @@ event traces from the kernel (via the relaying through the debug file system).")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
+              (patches (search-patches "sbc-fix-build-non-x86.patch"))
               (sha256
                (base32
-                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
+                "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))
@@ -5058,7 +5135,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5066,7 +5143,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "0z9c0y3qq75iyqknl5k0v7v46l8c3pcifpqb0yqalrs24blkm7dk"))))
+                "1lab1446c78xsjwhpki7s85z4171m8p9279c8yhm4882wba674k1"))))
     (inputs
      `(("libuuid" ,util-linux "lib")))))
 
@@ -5080,9 +5157,10 @@ disks and SD cards.  This package provides the userland utilities.")
        (let ((libuuid-static (assoc-ref %build-inputs "libuuid:static"))
              (libuuid (assoc-ref %build-inputs "libuuid")))
          (list
-          (string-append "libuuid_CFLAGS=-I" libuuid "/include")
+          (string-append "libuuid_CFLAGS=-I" libuuid "/include/uuid")
           (string-append "libuuid_LIBS=-L" libuuid-static "/lib -luuid")
-          (string-append "libblkid_CFLAGS=-I" libuuid "/include")
+          (string-append "libblkid_CFLAGS=-I" libuuid "/include/uuid "
+                         "-I" libuuid "/include/blkid")
           (string-append "libblkid_LIBS=-L" libuuid-static "/lib -lblkid")))
        #:disallowed-references (,util-linux)
        #:phases
@@ -5294,6 +5372,92 @@ kernel module provided by the @code{acpi-call-linux-module} package, which must
 be installed and loaded separately.  Only the original vendor firmware is
 supported.")
     (license license:gpl3+)))
+
+(define-public tmon
+  (package
+    (name "tmon")
+    ;; Tmon's ‘VERSION = 1.0’ hasn't been touched since 2013; the code has.
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "INSTALL_ROOT=" (assoc-ref %outputs "out"))
+             "BINDIR=bin")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/thermal/tmon")
+             #t))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man8 (string-append out "/share/man/man8")))
+               (install-file "tmon.8" man8)
+               #t)))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Monitor and test the Linux thermal subsystem in real time")
+    (description
+     "Tmon is a tool to interact with the complex thermal subsystem of the
+kernel Linux.  It helps visualize thermal relationships and real-time thermal
+data, tune and test cooling devices and sensors, and collect thermal data for
+further analysis.
+
+As computers become smaller and more thermally constrained, more sensors are
+added and new cooling capabilities introduced.  Thermal relationships can change
+dynamically.  Their complexity grows exponentially among cooling devices, zones,
+sensors, and trip points.
+
+Linux exposes this relationship through @file{/sys/class/thermal} with a matrix
+of symbolic links, trip point bindings, and device instances.  To traverse it
+by hand is no trivial task: @command{tmon} aims to make it understandable.")
+    (license (list license:gpl2         ; the man page
+                   license:gpl2+))))    ; the actual rest
+
+(define-public turbostat
+  (package
+    (name "turbostat")
+    ;; XXX turbostat reports a version like ‘20.09.30’ but using it here would
+    ;; make it harder to benefit from ‘free’ linux-libre package updates.
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/power/x86/turbostat")
+             #t))
+         (delete 'configure))))         ; no configure script
+    (inputs
+     `(("libcap" ,libcap)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Report x86 processor frequency and idle statistics")
+    (description
+     "Turbostat reports x86 processor topology, frequency, idle power state
+statistics, temperature, and power consumption.  Some information is unavailable
+on older processors.
+
+It can be used to identify machines that are inefficient in terms of power usage
+or idle time, report the rate of @acronym{SMI, system management interrupt}s
+occurring on the system, or verify the effects of power management tuning.
+
+@command{turbostat} reads hardware counters but doesn't write to them, so it
+won't interfere with the OS or other running processes---including multiple
+invocations of itself.")
+    (license license:gpl2)))
 
 (define-public ntfs-3g
   (package
@@ -5755,14 +5919,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "172")
+    (version "173")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "17666056masfly83791q831yzw6sy1m6rwkxw7sqgjrhchn9sc4w"))
+                "1a1j4lsvql3aiqbkdn10hhpvmhavhlr9qkh2scxcv1kn7rvvclih"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -5866,7 +6030,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -5875,7 +6039,7 @@ developers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
+        (base32 "0ay6vl9zsz9b2scy0fnsy482pzizj52i27syxwny4z4i9wrk2wmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5983,14 +6147,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.1")
+    (version "12.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                            "sysstat-" version ".tar.xz"))
        (sha256
-        (base32 "02yf2c9n56c3ic72r4p4kb99zjxr8fldvsnmcy7s262izx78vbr4"))))
+        (base32 "13q1zb7ip389b35rcgy2ngf1z9zhdmdwx5bv9lwfnl1xi30v409p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.
@@ -6961,10 +7125,35 @@ communicate with the kernel.  It can be used to add and remove interfaces, set
 IP addresses and routes, and configure IPsec.")
     (license license:asl2.0)))
 
+(define-public libinih
+  (package
+    (name "libinih")
+    (version "52")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/benhoyt/inih")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lsvm34zabvi1xlximybzvgc58zb90mm3b9babwxlqs05jy871m4"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Ddistro_install=true" "-Ddefault_library=shared")))
+    (home-page "https://github.com/benhoyt/inih")
+    (synopsis "Simple .INI parser library for C")
+    (description "The inih (INI Not Invented Here) library is a simple .INI file
+parser written in C.  It's only a couple of pages of code, and it was designed to
+be small and simple, so it's good for embedded systems.  It's also more or less
+compatible with Python's ConfigParser style of .INI files, including RFC
+822-style multi-line syntax and name: value entries.")
+    (license license:bsd-3)))
+
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.9.0")
+    (version "5.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6972,7 +7161,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "13xkn9jpmwp4fm9r68vhgznkmxhnv83n2b39mhy2qdaph90w2a1l"))))
+                "1wcvcv9fl955g3zl68057hq7pp9bm7i733vc7j6xr6wnfd8qf6sr"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -6996,7 +7185,8 @@ IP addresses and routes, and configure IPsec.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libuuid" ,util-linux "lib")
+     `(("libinih" ,libinih)
+       ("libuuid" ,util-linux "lib")
        ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
@@ -7252,7 +7442,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.13")
+    (version "0.3.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7261,7 +7451,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19j5kmb7iaivkq2agfzncfm2qms41ckqi0ddxvhpc91ihwprdc5w"))))
+                "1yghhgs18yqrnd0b2r75l5n8yng962r1wszbsi01v6i9zib3jc9g"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
@@ -7347,14 +7537,14 @@ to ring buffers shared with a consumer daemon.")
 (define-public kexec-tools
   (package
     (name "kexec-tools")
-    (version "2.0.20")
+    (version "2.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kernel"
                                   "/kexec/kexec-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "1j7qlhxk1rbv9jbj8wd6hb7zl8p2mp29ymrmccgmsi0m0dzhgn6s"))))
+                "00l7iqp337cr846b6w4lc5vl893v4zwjrxz0jsnkh5l9xqni84z1"))))
     (build-system gnu-build-system)
     (arguments
      ;; There are no automated tests.
@@ -7603,13 +7793,13 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
 (define-public ipset
   (package
     (name "ipset")
-    (version "7.9")
+    (version "7.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ipset.netfilter.org/ipset-" version ".tar.bz2"))
               (sha256
                (base32
-                "02mkp7vmsh609dcp02xi290sxmsgq2fsch3875dxkwfxkrl16p5p"))))
+                "1xlwgsy06jx0bckc5r2wvyys8jfpc5klfqqqshmk5zp28fx0cjdj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libmnl" ,libmnl)))
@@ -7671,3 +7861,32 @@ helpers to setup and teardown io_uring instances, and also a simplified
 interface for applications that don't need (or want) to deal with the full
 kernel side implementation.")
     (license license:expat)))
+
+(define-public erofs-utils
+  (package
+    (name "erofs-utils")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07hvijq2hsn3gg1kb8abrfk23n83j57yx8kyv4wqgwhhvd30myjc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("libuuid" ,util-linux "lib")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
+    (synopsis "User-space tools for EROFS filesystem")
+    (description "EROFS (Enhanced Read-Only File System) is a compressed,
+read-only filesystem optimized for resource-scarce devices.  This package
+provides user-space tools for creating EROFS filesystems.")
+    (license license:gpl2+)))

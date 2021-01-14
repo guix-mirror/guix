@@ -38,6 +38,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
@@ -53,7 +54,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
@@ -62,6 +65,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -202,6 +206,64 @@ storage system.")
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
 to share commonly used Xfce widgets among the Xfce applications.")
     (license lgpl2.0+)))
+
+(define-public catfish
+  (package
+    (name "catfish")
+    (version "1.4.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.xfce.org/src/apps/"
+                                  "catfish/" (version-major+minor version)
+                                  "/catfish-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0fg89946z6n8njxn4mv29jksw8yavg8vypsljn9031pjwl3fmh2q"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-command-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "catfish/CatfishSearchEngine.py"
+               (("'which'") (string-append "'" (which "which") "'")))
+             (substitute* "catfish/CatfishWindow.py"
+               (("xdg-mime") (which "xdg-mime"))
+               (("xdg-open") (which "xdg-open")))))
+         ;; setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/")))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/catfish")
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-distutils-extra" ,python-distutils-extra)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("which" ,which)
+       ("xdg-utils" ,xdg-utils)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("python-dbus" ,python-dbus)
+       ("python-pexpect" ,python-pexpect)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://docs.xfce.org/apps/catfish/start")
+    (synopsis "File searching tool for Xfce")
+    (description
+     "Catfish is a file searching tool for Linux and Unix.  The interface is
+intentionally lightweight and simple, using only GTK+ 3.  You can configure
+it to your needs by using several command line options.")
+    (license gpl2+)))
 
 (define-public elementary-xfce-icon-theme
   (package
@@ -515,7 +577,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.4.6")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
@@ -523,7 +585,7 @@ keys for controlling the audio volume.")
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
-        (base32 "0i2pn8852x6zvlys4610knscscyjpha6wjzy7rljixbxr26d6x49"))))
+        (base32 "09b9i68pf5ghq6dj55s4h3fj07jd5zpn1fghjwnnwxmakj54y1xj"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -531,11 +593,21 @@ keys for controlling the audio volume.")
     (inputs
      `(("xfce4-panel" ,xfce4-panel)
        ("garcon" ,garcon)
+       ("gettext" ,gettext-minimal)
        ("exo" ,exo)
        ("gtk+" ,gtk+)
        ("libxfce4ui" ,libxfce4ui)))
     (arguments
-      `(#:tests? #f)) ; no tests
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-shell-script
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (string-append "panel-plugin/xfce4-popup-whiskermenu.in")
+               (("@CMAKE_INSTALL_FULL_BINDIR@")
+                (string-append (assoc-ref inputs "xfce4-panel") "/bin"))
+               (("gettext") (which "gettext")))
+             #t)))))
     (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-whiskermenu-plugin")
     (synopsis "Application menu panel plugin for Xfce")
     (description
@@ -549,7 +621,7 @@ applications, and includes a search bar to search for applications.")
 (define-public xfce4-xkb-plugin
   (package
     (name "xfce4-xkb-plugin")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -557,7 +629,7 @@ applications, and includes a search bar to search for applications.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "18b7cnaf3zxm598p2i47vim3kbbi8w923ia1hwabdph1c89cz7n1"))))
+                "0rvrz464y7ji989zvi2v85kg47444nqsdq9rv6k8dkbkdwzy2jxv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -853,7 +925,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.9.2")
+    (version "0.8.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/" name "/"
@@ -861,7 +933,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1szfmvx4gbwcqag7fnlqh96i9cmvs6xm1yrdbnlzh3imdpw3p8lv"))))
+                "1irxyg5vp6vyd9vxdqav6jhchfkmhlqq511386h644p0k30kfcvs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1001,7 +1073,7 @@ the desktop wallpaper.")
 (define-public xfce4-taskmanager
   (package
     (name "xfce4-taskmanager")
-    (version "1.2.3")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1009,7 +1081,7 @@ the desktop wallpaper.")
                                   "xfce4-taskmanager-" version ".tar.bz2"))
               (sha256
                (base32
-                "1i63bnvpjpblnd0d3l1v065x9q1cz74cvlab5hzd0q8zgkd49z6w"))))
+                "0hvx7qqkiyq81axcbkqfv39bn84x8gjzrybq3w3hkz0mzkfq8mk5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1138,7 +1210,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.4.2")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/mousepad/"
@@ -1146,7 +1218,7 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1myy7954r1a30dk7inwy7kwki7zvfbnnsc3a8swk72vzrbgjmh44"))))
+                "10m52yrh89j7xbr299m9f0mqrhqz95lp3qi5zbqd0bg839xjfbix"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
@@ -1180,7 +1252,7 @@ of data to either CD/DVD/BD.")
 (define-public xfce4-screenshooter
   (package
    (name "xfce4-screenshooter")
-   (version "1.9.7")
+   (version "1.9.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1190,7 +1262,7 @@ of data to either CD/DVD/BD.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1lbhl0sh0ayv3zhgzcd9hj9q9m3lnyv7vlglfqrl39i3782n2w8g"))))
+              "0l1cyrb4ym7d95yliyl8gn701wvnr734v622yyy3zdnk99hrs0kg"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -1289,7 +1361,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-cpugraph-plugin
   (package
    (name "xfce4-cpugraph-plugin")
-   (version "1.1.0")
+   (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1298,7 +1370,7 @@ A plugin for the Xfce panel is also available.")
                                   "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "193bj1p54l4zrvgdjj0pvjn161d6dn82jh9invcy09sqwlj0mkiy"))))
+                "19rdc3k085z7bv8365g26vz6iy9dx2f4x4q3wszsjmq5pvdxsrkq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1378,7 +1450,7 @@ each time a new earthquake occurs.")
 (define-public xfce4-datetime-plugin
   (package
    (name "xfce4-datetime-plugin")
-   (version "0.8.0")
+   (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1387,7 +1459,7 @@ each time a new earthquake occurs.")
                                   "/xfce4-datetime-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1m7bmpvbmiz2xdffpg675qn80zx2n0cnlf842ppvh1q7zz18ndfd"))))
+                "0h15mxq5lawlxyr6h1vxc60rkf0rpmnv81l0f52mrswww9dz3xp9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1405,7 +1477,7 @@ and a calendar appears when you left-click on it.")
 (define-public xfce4-calculator-plugin
   (package
    (name "xfce4-calculator-plugin")
-   (version "0.7.0")
+   (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1414,7 +1486,7 @@ and a calendar appears when you left-click on it.")
                                   "/xfce4-calculator-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1scx7z5ijg2fpcqrzv1nxhpj9vrqic7pyghig70f2n5hgaaanl3v"))))
+                "10fsb9pyr2cr9dj1k3n96dq6g02g61g5y4z4jzfvskpgqc1nl0g4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1460,7 +1532,7 @@ governor and frequencies supported and used by your system.")
 (define-public xfce4-diskperf-plugin
   (package
    (name "xfce4-diskperf-plugin")
-   (version "2.6.2")
+   (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1469,7 +1541,7 @@ governor and frequencies supported and used by your system.")
                                   "/xfce4-diskperf-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0i4nrsvwcn15g5gmnba9p07sad3c96x517l2lybdw8jqv91rhbpx"))))
+                "0n8wsnjvzw98z8r0f0zr8n2gicjz6hhislp86xrjh0r4xcnymcbk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1522,7 +1594,7 @@ this very convenient.")
 (define-public xfce4-fsguard-plugin
   (package
    (name "xfce4-fsguard-plugin")
-   (version "1.1.1")
+   (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1531,7 +1603,7 @@ this very convenient.")
                                   "/xfce4-fsguard-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "05nmfkrmifm76bsywqmbjd1qdvzagv5cbvnwbkb57156j055vl6n"))))
+                "01a1an5z4kpgi68lk98q7wga7sx676fcbnrsd5cpq4d736ifdn37"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1552,7 +1624,7 @@ be clicked to open the chosen mount point.")
 (define-public xfce4-genmon-plugin
   (package
    (name "xfce4-genmon-plugin")
-   (version "4.0.2")
+   (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1561,7 +1633,7 @@ be clicked to open the chosen mount point.")
                                   "/xfce4-genmon-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ai3pwgv61nv7i2dyrvncnc63r8kdjbkp40vp51vzak1dx924v15"))))
+                "0zafr1jrw87l7h4z3wp88gj7n5mcygm22aw42vdpnp2l8x5nn9fi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1611,7 +1683,7 @@ Caps, Scroll and Num Lock in Xfce panel.")
 (define-public xfce4-mailwatch-plugin
   (package
    (name "xfce4-mailwatch-plugin")
-   (version "1.2.0")
+   (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1620,7 +1692,7 @@ Caps, Scroll and Num Lock in Xfce panel.")
                                   "/xfce4-mailwatch-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bfw3smwivr9mzdyq768biqrl4aq94zqi3xjzq6kqnd8561cqjk2"))))
+                "0bmykjhd3gs1737fl3zn5gg6f3vlncak2xqz89zv5018znz1xy90"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1692,7 +1764,7 @@ right-click menu
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
-   (version "1.1.3")
+   (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1701,7 +1773,7 @@ right-click menu
                                   "/xfce4-mount-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "07lijjhimjrcyrhasr2299km6wm22xcd3fazdfpqvisbk1mvvrda"))))
+                "1hlfnlxwwx0hkm82mcz777f3i22x6bh6k3gzl0yjnm4yj9adjk2q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1790,7 +1862,7 @@ opens up a menu with the following:
 (define-public xfce4-smartbookmark-plugin
   (package
    (name "xfce4-smartbookmark-plugin")
-   (version "0.5.1")
+   (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1799,7 +1871,7 @@ opens up a menu with the following:
                                   "/xfce4-smartbookmark-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "001nf2bqly8vm868qvafzgihc9463c488mkim24iw9g2s9ygna1y"))))
+                "1lyd64qc9w6qnpqjb5xk0mjq4l7riv6z7l9aws28clalb8prw9ra"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1876,7 +1948,7 @@ freedesktop.org specification.")
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
-   (version "1.2.3")
+   (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1885,7 +1957,7 @@ freedesktop.org specification.")
                                   "/xfce4-systemload-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0x87a8h5l3ashz1ksfaxcpn9a392jzlsbx5n5pga8g90fp2hf905"))))
+                "0dcqg13phlcri4i4g9752m4zfkcmidiqpjv4s3l3pfiwjbgvhc85"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1962,7 +2034,7 @@ period.")
 (define-public xfce4-verve-plugin
   (package
    (name "xfce4-verve-plugin")
-   (version "2.0.0")
+   (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1971,7 +2043,7 @@ period.")
                                   "/xfce4-verve-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ljcmgc8ixrbz134ggxbbh4zzdnp7mhi9ay6s5hgrz28djx10rcy"))))
+                "09gqp0jb5ccjh7ny798n5cy9skdx3hpis4kgvjpl4vidnrg5xnpb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1996,7 +2068,7 @@ for the Xfce panel.  It supports several features, such as:
 (define-public xfce4-wavelan-plugin
   (package
    (name "xfce4-wavelan-plugin")
-   (version "0.6.1")
+   (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -2005,7 +2077,7 @@ for the Xfce panel.  It supports several features, such as:
                                   "/xfce4-wavelan-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "05zdiq1igr1fcvnwlivg8g3szvxmlr3yc7jfj3bwgqrs0vm827zl"))))
+                "07a8nmc60in48licjj0gmwm77vb8divh1lb7jnib35n5a1ka6ypa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

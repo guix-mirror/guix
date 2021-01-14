@@ -373,14 +373,14 @@ freedesktop.org project.")
   ;; Updating this will rebuild over 700 packages through libinput-minimal.
   (package
     (name "libinput")
-    (version "1.16.2")
+    (version "1.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "1ab0q4iya07kvjd2g1vzamj9h57qldi15h3b8324vg3szr88qggw"))))
+                "0acywdjppj5i591l879bnqa9cs4vgdwnhilwk550x5x8sl33m4k5"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
@@ -1480,7 +1480,7 @@ wish to perform colour calibration.")
 (define-public libfprint
   (package
     (name "libfprint")
-    (version "1.90.3")
+    (version "1.90.6")
     (source
      (origin
        (method git-fetch)
@@ -1489,7 +1489,7 @@ wish to perform colour calibration.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fs0qrfrqnvc6kcsg81l5p89n8jnsx9dr1pzxpb8ghwas8c9v52i"))))
+        (base32 "0hagm1i78mrd772y3cinr7bda4myx0v4bixwqnqbxknds8m9h8sg"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
@@ -1615,7 +1615,7 @@ to applications simultaneously competing for fingerprint readers.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.24")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
@@ -1623,10 +1623,12 @@ to applications simultaneously competing for fingerprint readers.")
                                   "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "1nc3bwjdrpcrkbdmzvhckq0yngbcxspwj2n1r7jr3gmx1jk5vpm1"))))
+                "02bkfi6fyk4c0gh2avd897882ww5zl7qg7bzzf28qb57kvkvsvdj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)))
     (home-page "https://www.freedesktop.org/wiki/Software/desktop-file-utils/")

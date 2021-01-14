@@ -3,6 +3,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +45,14 @@
 (define-public python-cypari2
   (package
     (name "python-cypari2")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cypari2" version))
        (sha256
         (base32
-         "1nwkzgqvbw6361x0rpggy1q5nx663fswhpvg8md6xhqyfwpgc7nz"))))
+         "0ymc4i9y60aazscc1blivirkr1rflzz6akkmvfzyn5l7mgnlbk83"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))

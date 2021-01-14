@@ -309,8 +309,12 @@ dynamic extent of EXP."
 definitely available in REPOSITORY, false otherwise."
   (match ref
     (('commit . commit)
-     (false-if-git-not-found
-      (->bool (commit-lookup repository (string->oid commit)))))
+     (let ((len (string-length commit))
+           (oid (string->oid commit)))
+       (false-if-git-not-found
+        (->bool (if (< len 40)
+                    (object-lookup-prefix repository oid len OBJ-COMMIT)
+                    (commit-lookup repository oid))))))
     (_
      #f)))
 

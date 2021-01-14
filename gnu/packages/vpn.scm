@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
+;;; Copyright © 2020 David Dashyan <mail@davie.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -263,8 +264,6 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
    (build-system gnu-build-system)
    (propagated-inputs
     `(("libxml2" ,libxml2)
-      ;; XXX ‘DTLS is insecure in GnuTLS v3.6.3 through v3.6.12.’
-      ;; See <https://gitlab.com/gnutls/gnutls/-/issues/960>.
       ("gnutls" ,gnutls)
       ("zlib" ,zlib)))
    (inputs
@@ -287,10 +286,38 @@ and probably others.")
    (license license:lgpl2.1)
    (home-page "https://www.infradead.org/openconnect/")))
 
+(define-public openfortivpn
+  (package
+    (name "openfortivpn")
+    (version "1.15.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/adrienverge/openfortivpn")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qsfgpxg553s8rc9cyrc4k96z0pislxsdxb9wyhp8fdprkak2mw2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autotools" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("ppp" ,ppp)))
+    (home-page "https://github.com/adrienverge/openfortivpn")
+    (synopsis "Client for PPP+SSL VPN tunnel services")
+    (description "Openfortivpn is a client for PPP+SSL VPN tunnel services.  It
+spawns a pppd process and operates the communication between the gateway and
+this process.  It is compatible with Fortinet VPNs.")
+    (license license:gpl3+)))
+
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.9")
+    (version "2.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -298,7 +325,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1qpbllwlha7cffsd5dlddb8rl22g9rar5zflkz1wrcllhvfkl7v4"))))
+                "0xx378ja2rdfaayc257z0z5ddsp8h0jcpqnd1a6bdw3rlsam6a6g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -322,7 +349,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 (define-public protonvpn-cli
   (package
     (name "protonvpn-cli")
-    (version "2.2.4")
+    (version "2.2.6")
     (source
      (origin
        ;; PyPI has a ".whl" file but not a proper source release.
@@ -333,19 +360,44 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08yca0a0prrnrc7ir7ajd56yxvxpcs4m1k8f5kf273f5whgr7wzw"))))
+        (base32 "0y7v9ikrmy5dbjlpbpacp08gy838i8z54m8m4ps7ldk1j6kyia3n"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no tests in repo
+    (arguments
+     '(#:tests? #f ; no tests in repo
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'wrap-wrapper
+           ;; Wrap entrypoint with paths to its hard dependencies.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((entrypoint (string-append (assoc-ref outputs "out")
+                                              "/bin/.protonvpn-real")))
+               (wrap-program entrypoint
+                            `("PATH" ":" prefix
+                              ,(map (lambda (name)
+                                      (let ((input (assoc-ref inputs name)))
+                                        (string-append input "/bin:"
+                                                       input "/sbin")))
+                                    (list "dialog"
+                                          "iproute2"
+                                          "iptables"
+                                          "ncurses"
+                                          "openvpn"
+                                          "procps"
+                                          "which")))))
+             #t)))))
     (native-inputs
      `(("python-docopt" ,python-docopt)))
     (inputs
-     `(("python-jinja2" ,python-jinja2)
+     `(("dialog" ,dialog)
+       ("iproute2" ,iproute)
+       ("iptables" ,iptables)
+       ("ncurses" ,ncurses)
+       ("openvpn" ,openvpn)
+       ("procps" ,procps)
+       ("python-jinja2" ,python-jinja2)
        ("python-pythondialog" ,python-pythondialog)
-       ("python-requests" ,python-requests)))
-    (propagated-inputs
-     `(("openvpn" ,openvpn)
-       ("dialog" ,dialog)))
+       ("python-requests" ,python-requests)
+       ("which" ,which)))
     (synopsis "Command-line client for ProtonVPN")
     (description
      "This is the official command-line interface for ProtonVPN, a secure
@@ -505,7 +557,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard-linux-compat
   (package
     (name "wireguard-linux-compat")
-    (version "1.0.20201112")
+    (version "1.0.20201221")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/wireguard-linux-compat/"
@@ -513,7 +565,7 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                                   ".tar.xz"))
               (sha256
                (base32
-                "1qcpg1rcmy4h529a0spjm50qgxjgjy20j29fpbrqsv5xq3qfgsl9"))))
+                "0ci13in0fqq32n5qamch4qhjgbdq86ygrgmfhc9szsh2nsl8jlkf"))))
     (build-system linux-module-build-system)
     (outputs '("out"
                "kernel-patch"))

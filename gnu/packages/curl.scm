@@ -2,13 +2,13 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -53,15 +53,15 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.73.0")
+   (version "7.74.0")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "https://curl.haxx.se/download/curl-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "12j0qaij1ppgspray8xvs2qk3h3m23wdqh27x87y1aw8xaj7qk3w"))
-            (patches (search-patches "curl-use-ssl-cert-env.patch"))))
+             (method url-fetch)
+             (uri (string-append "https://curl.haxx.se/download/curl-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "12w7gskrglg6qrmp822j37fmbr0icrcxv7rib1fy5xiw80n5z7cr"))
+             (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -192,49 +192,82 @@ not offer a replacement for libcurl.")
 (define-public guile-curl
   (package
    (name "guile-curl")
-   (version "0.6")
+   (version "0.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.lonelycactus.com/tarball/"
                                 "guile_curl-" version ".tar.gz"))
             (sha256
              (base32
-              "1pxdhnk288ky6gkpad8i60m0p6404rdvls43lr1b5d3csrklyc70"))))
+              "1zk0ijx6bj212k0j0ma84cpvpvn0x6raaxnby3wdx3w4wnhnscn7"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:configure-flags (list (string-append
+    `(#:modules (((guix build guile-build-system)
+                  #:select (target-guile-effective-version))
+                 ,@%gnu-build-system-modules)
+      #:imported-modules ((guix build guile-build-system)
+                          ,@%gnu-build-system-modules)
+      #:configure-flags (list (string-append
                                "--with-guilesitedir="
                                (assoc-ref %outputs "out")
-                               "/share/guile/site/2.2")
+                               "/share/guile/site/"
+                               (target-guile-effective-version
+                                (assoc-ref %build-inputs "guile")))
                               (string-append
                                "-with-guileextensiondir="
                                (assoc-ref %outputs "out")
-                               "/lib/guile/2.2/extensions"))
+                               "/lib/guile/"
+                               (target-guile-effective-version
+                                (assoc-ref %build-inputs "guile"))
+                               "/extensions"))
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-undefined-references
+          (lambda* _
+            (substitute* "src/curl.scm"
+              ;; The following #defines are missing from our curl package
+              ;; and therefore result in the evaluation of undefined symbols.
+              ((",CURLOPT_HAPROXYPROTOCOL") "#f")
+              ((",CURLOPT_DISALLOW_USERNAME_IN_URL") "#f")
+              ((",CURLOPT_TIMEVALUE_LARGE") "#f")
+              ((",CURLOPT_DNS_SHUFFLE_ADDRESSES") "#f")
+              ((",CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS") "#f"))))
         (add-after 'install 'patch-extension-path
           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out      (assoc-ref outputs "out"))
-                    (curl.scm (string-append
-                               out "/share/guile/site/2.2/curl.scm"))
-                    (curl.go  (string-append
-                               out "/lib/guile/2.2/site-ccache/curl.go"))
-                    (ext      (string-append out "/lib/guile/2.2/"
-                                             "extensions/libguile-curl")))
-               (substitute* curl.scm (("libguile-curl") ext))
-               ;; The build system does not actually compile the Scheme module.
-               ;; So we can compile it and put it in the right place in one go.
-               (invoke "guild" "compile" curl.scm "-o" curl.go)))))))
+            (let* ((out      (assoc-ref outputs "out"))
+                   (curl.scm (string-append
+                              out "/share/guile/site/"
+                              (target-guile-effective-version)
+                              "/curl.scm"))
+                   (curl.go  (string-append
+                              out "/lib/guile/"
+                              (target-guile-effective-version)
+                              "/site-ccache/curl.go"))
+                   (ext      (string-append out "/lib/guile/"
+                                            (target-guile-effective-version)
+                                            "/extensions/libguile-curl")))
+              (substitute* curl.scm (("libguile-curl") ext))
+              ;; The build system does not actually compile the Scheme module.
+              ;; So we can compile it and put it in the right place in one go.
+              (invoke "guild" "compile" curl.scm "-o" curl.go)))))))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs
     `(("curl" ,curl)
-      ("guile" ,guile-2.2)))
+      ("guile" ,guile-3.0)))
    (home-page "http://www.lonelycactus.com/guile-curl.html")
    (synopsis "Curl bindings for Guile")
    (description "@code{guile-curl} is a project that has procedures that allow
 Guile to do client-side URL transfers, like requesting documents from HTTP or
 FTP servers.  It is based on the curl library.")
    (license license:gpl3+)))
+
+(define-public guile2.2-curl
+  (package
+    (inherit guile-curl)
+    (name "guile2.2-curl")
+    (inputs
+     `(("curl" ,curl)
+       ("guile" ,guile-2.2)))))
 
 (define-public curlpp
   (package

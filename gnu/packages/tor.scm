@@ -155,7 +155,7 @@ rejects UDP traffic from the application you're using.")
 (define-public privoxy
   (package
     (name "privoxy")
-    (version "3.0.28")
+    (version "3.0.29")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
@@ -163,7 +163,7 @@ rejects UDP traffic from the application you're using.")
                                  version "-stable-src.tar.gz"))
              (sha256
               (base32
-               "0jl2yav1qzqnaqnnx8i6i53ayckkimcrs3l6ryvv7bda6v08rmxm"))))
+               "17a8fbdyb0ixc0wwq68fg7xn7l6n7jq67njpq93psmxgzng0dii5"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The default 'sysconfdir' is $out/etc; change that to
@@ -171,7 +171,9 @@ rejects UDP traffic from the application you're using.")
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy")
-                               "--localstatedir=/var")
+                               "--localstatedir=/var"
+                               "--with-brotli"
+                               "--with-openssl")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
@@ -193,8 +195,10 @@ rejects UDP traffic from the application you're using.")
                  (("^logfile") "#logfile")))
              #t)))))
     (inputs
-     `(("w3m" ,w3m)
+     `(("brotli" ,brotli)
+       ("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("w3m" ,w3m)
        ("zlib" ,zlib)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -249,7 +253,7 @@ networks.")
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
-     `(("python-pycrypto" ,python-pycrypto)
+     `(("python-pycryptodome" ,python-pycryptodome)
        ("python-flask" ,python-flask)
        ("python-flask-httpauth" ,python-flask-httpauth)
        ("python-nautilus" ,python-nautilus)

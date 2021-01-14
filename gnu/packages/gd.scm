@@ -94,14 +94,14 @@ most common applications of GD involve website development.")
 (define-public perl-gd
   (package
     (name "perl-gd")
-    (version "2.72")
+    (version "2.73")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "GD-" version ".tar.gz"))
        (sha256
-        (base32 "014ik1rng6cnjfgdarkyy5m6wl4pdzc2b445m27krfn3zh9hgl31"))))
+        (base32 "0arjpa8id6k5yjxfq0j2hsinhhjzjch5lwk6gscf48l54drrw729"))))
     (build-system perl-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)

@@ -1042,22 +1042,31 @@ supported by the MyPy typechecker.")
 (define-public python-mypy
   (package
     (name "python-mypy")
-    (version "0.782")
+    (version "0.790")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mypy" version))
-        (sha256
-         (base32
-          "030kn709515452n6gy2i1d9fg6fyrkmdz228lfpmbslybsld9xzg"))))
+     (origin
+       ;; Because of https://github.com/python/mypy/issues/9584, the
+       ;; mypyc/analysis directory is missing in the PyPI archive, leading to
+       ;; test failures.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/mypy")
+             (commit (string-append "v" version))
+             ;; Fetch git submodules otherwise typeshed is not fetched.
+             ;; Typeshed is a collection of Python sources type annotation
+             ;; (data) files.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0zq3lpdf9hphcklk40wz444h8w3dkhwa12mqba5j9lmg11klnhz7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "./runtests.py")
-             #t)))))
+             (invoke "pytest" "mypyc"))))))
     (native-inputs
      `(("python-attrs" ,python-attrs)
        ("python-flake8" ,python-flake8)
@@ -1066,8 +1075,7 @@ supported by the MyPy typechecker.")
        ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-lxml" ,python-lxml)
        ("python-psutil" ,python-psutil)
-       ("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)
+       ("python-pytest" ,python-pytest-6)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-forked" ,python-pytest-forked)
        ("python-pytest-xdist" ,python-pytest-xdist)
@@ -1145,3 +1153,30 @@ execute @code{unittest} test suites using multiple processes to split up
 execution of a test suite.  It will also store a history of all test runs to
 help in debugging failures and optimizing the scheduler to improve speed.")
     (license license:asl2.0)))
+
+;; This is only used by python-sanic
+(define-public python-pytest-sanic
+  (package
+    (name "python-pytest-sanic")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-sanic" version))
+              (sha256
+                (base32
+                  "02ajd8z77ahi69kzkz200qgxrb4s2j4qb6k8j9ds1kz6qa6fsa34"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests depend on python-sanic.
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("python-aiohttp" ,python-aiohttp)
+        ("python-async-generator"
+         ,python-async-generator)
+        ("python-pytest" ,python-pytest)))
+    (home-page
+      "https://github.com/yunstanford/pytest-sanic")
+    (synopsis "Pytest plugin for Sanic")
+    (description "A pytest plugin for Sanic.  It helps you to test your
+code asynchronously.")
+    (license license:expat)))

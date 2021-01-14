@@ -8,6 +8,8 @@
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -40,6 +43,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-science)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages storage)
   #:use-module (ice-9 match))
@@ -47,14 +51,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.24")
+    (version "3.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "0qshbyqpvm01hmpkmk0v0jhjz23sngqhy291kiz38z04s2df4vxn"))))
+                "16r734an459cz1ax3jyhxc269i3syzdkll4qbv18wqaxpm5y34v6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -128,7 +132,7 @@ is to write a job file matching the I/O load one wants to simulate.")
                          (if (string=? (package-name mpi) "openmpi")
                              ""
                              (string-append "-" (package-name mpi)))))
-    (version "2019.3")
+    (version "2019.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -137,7 +141,16 @@ is to write a job file matching the I/O load one wants to simulate.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0si5xi6ilhd3w0gbsg124589pvp094hvf366rvjjb9pi7pdk5p4i"))))
+                "02hxbk9g9nl59bk5qcfl3djj7b58vsqys340m1xdbyqwcrbnahh9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Some source configuration files in the original tarball
+                  ;; have inappropriate execute permissions, which interferes
+                  ;; with the install phase below.
+                  (for-each (lambda (file) (chmod file #o444))
+                            (find-files "WINDOWS" "."))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,mpi)))
@@ -267,3 +280,66 @@ benchmark how your file systems perform with respect to data read and write
 speed, the number of seeks that can be performed per second, and the number of
 file metadata operations that can be performed per second.")
     (license license:gpl2)))   ;GPL 2 only, see copyright.txt
+
+(define-public python-locust
+  (package
+    (name "python-locust")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "locust" version))
+       (sha256
+        (base32
+         "1q2nza37fwsqf8qdmisfz6bmjpss90shi1bajrclf6gkbslhryxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'extend-PATH
+           ;; Add the 'locust' script to PATH, which is used in the test
+           ;; suite.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PATH" (string-append out "/bin:"
+                                             (getenv "PATH"))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"
+                     "-k" (string-join
+                           (list
+                            ;; These tests return "non-zero exit status 1".
+                            "not test_default_headless_spawn_options"
+                            "not test_default_headless_spawn_options_with_shape"
+                            "not test_headless_spawn_options_wo_run_time"
+                            ;; This test depends on networking.
+                            "not test_web_options"
+                            ;; This test fails because of the warning "System open
+                            ;; file limit '1024' is below minimum setting '10000'".
+                            "not test_skip_logging") " and "))
+             #t)))))
+    (propagated-inputs
+     `(("python-configargparse" ,python-configargparse)
+       ("python-flask" ,python-flask)
+       ("python-flask-basicauth" ,python-flask-basicauth)
+       ("python-gevent" ,python-gevent)
+       ("python-geventhttpclient" ,python-geventhttpclient)
+       ("python-msgpack" ,python-msgpack)
+       ("python-psutil" ,python-psutil)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests" ,python-requests)
+       ("python-werkzeug" ,python-werkzeug)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyquery" ,python-pyquery)
+       ("python-pytest" ,python-pytest))) ;for more easily skipping tests
+    (home-page "https://locust.io/")
+    (synopsis "Distributed load testing framework")
+    (description "Locust is a performance testing tool that aims to be easy to
+use, scriptable and scalable.  The test scenarios are described in plain
+Python.  It provides a web-based user interface to visualize the results in
+real-time, but can also be run non-interactively.  Locust is primarily geared
+toward testing HTTP-based applications or services, but it can be customized to
+test any system or protocol.")
+    (license license:expat)))

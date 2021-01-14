@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "2c11cf1b91b07ed8c00b5525ab6a75e81f5cc289")
-        (revision 2))
+        (commit "db42ee65bd657bae9b1a598cbdbe86079dc85f81")
+        (revision 9))
     (package
       (name "guix")
 
@@ -148,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0w9yrky8qx6zwh97aq6z07mxpjixxg5pp7lzw1r72j3qg3rircj2"))
+                  "1kizkw6cxh6mhc8kal2fglnhyp1i668b4ilqbxq72slbmf9jr9jl"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -294,6 +295,7 @@ $(prefix)/etc/init.d\n")))
                                (guile  ,@(if (%current-target-system)
                                              '((assoc-ref native-inputs "guile"))
                                              '((assoc-ref inputs "guile"))))
+                               (avahi  (assoc-ref inputs "guile-avahi"))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
@@ -305,8 +307,11 @@ $(prefix)/etc/init.d\n")))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
-                               (deps   (list gcrypt json sqlite gnutls
-                                             git bs ssh zlib lzlib))
+                               (deps   (list gcrypt json sqlite gnutls git
+                                             bs ssh zlib lzlib))
+                               (deps*  ,@(if (%current-target-system)
+                                             '(deps)
+                                             '((cons avahi deps))))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -316,13 +321,13 @@ $(prefix)/etc/init.d\n")))
                                         (map (cut string-append <>
                                                   "/share/guile/site/"
                                                   effective)
-                                             (delete #f deps))
+                                             (delete #f deps*))
                                         ":"))
                                (gopath (string-join
                                         (map (cut string-append <>
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
-                                             (delete #f deps))
+                                             (delete #f deps*))
                                         ":"))
                                (locpath (string-append locales "/lib/locale")))
 
@@ -349,6 +354,9 @@ $(prefix)/etc/init.d\n")))
                        ;; cross-compilation.
                        ("guile" ,guile-3.0-latest) ;for faster builds
                        ("gnutls" ,gnutls)
+                       ,@(if (%current-target-system)
+                             '()
+                             `(("guile-avahi" ,guile-avahi)))
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-4)
                        ("guile-sqlite3" ,guile-sqlite3)
@@ -399,6 +407,10 @@ $(prefix)/etc/init.d\n")))
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
        `(("gnutls" ,gnutls)
+         ;; Avahi requires "glib" which doesn't cross-compile yet.
+         ,@(if (%current-target-system)
+               '()
+               `(("guile-avahi" ,guile-avahi)))
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
@@ -406,6 +418,10 @@ $(prefix)/etc/init.d\n")))
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ("guile-lzlib" ,guile-lzlib)))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GUIX_EXTENSIONS_PATH")
+              (files '("share/guix/extensions")))))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -572,14 +588,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.9")
+    (version "2.3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1yi2c1fp33sxv9j0pvxlpxs1dhq3axrwkxdwr867ll90lbdiycvj"))))
+               "1axphwkx270c10bjyn4icq9wlx46npgnw0qkpymigl23vramxa58"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
@@ -669,7 +685,7 @@ features of Stow with some extensions.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.14.2.1")
+    (version "4.16.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -677,7 +693,7 @@ features of Stow with some extensions.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1nmck2fq9h85fgs3zhh6w1avlw5y16cbz5khd459ry3jfd5w4f8i"))))
+                "1k6ank2aad7r503w12m6m494mxr6iccj52wqhwbc94pwxsf34mw3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -701,6 +717,7 @@ features of Stow with some extensions.")
        ("nss" ,nss)
        ("nspr" ,nspr)
        ("libarchive" ,libarchive)
+       ("libgcrypt" ,libgcrypt)
        ("file" ,file)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
@@ -1015,8 +1032,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "ed3b2e56655ccf4cd9574f00e72b20e9022d9ab0")
-        (revision "8"))
+  (let ((commit "b5d998c22f7d4db3e26166ada9489af363f2d47a")
+        (revision "15"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1027,7 +1044,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "15c7398km1870w82410jrmcnb4mvkhrsb8qvshr8wa1gjcpb6s6z"))
+                  "1jfmwfx7cvfsvryc3w70nw6mixdamjymkqh40qkv99sspkd86dkr"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1086,9 +1103,13 @@ environments.")
       (inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("sqlite" ,sqlite)
-         ("sqitch" ,sqitch)))
+         ,@(if (hurd-target?)
+               '()
+               `(("sqitch" ,sqitch)))))
       (propagated-inputs
-       `(("guile-fibers" ,guile-fibers)
+       `(,@(if (hurd-target?)
+               '()
+               `(("guile-fibers" ,guile-fibers)))
          ("guile-prometheus" ,guile-prometheus)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)

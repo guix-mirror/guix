@@ -54,13 +54,16 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages gettext)
+  #:use-module (guix i18n)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 optargs)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (glibc
@@ -1099,9 +1102,16 @@ to the @code{share/locale} sub-directory of this package.")
                                         ,(version-major+minor
                                           (package-version glibc)))))))))))
 
-(define-public (make-glibc-utf8-locales glibc)
+(define %default-utf8-locales
+  ;; These are the locales commonly used for tests---e.g., in Guile's i18n
+  ;; tests.
+  '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
+(define*-public (make-glibc-utf8-locales glibc #:key
+                                         (locales %default-utf8-locales)
+                                         (name "glibc-utf8-locales"))
+  (define default-locales? (equal? locales %default-utf8-locales))
   (package
-    (name "glibc-utf8-locales")
+    (name name)
     (version (package-version glibc))
     (source #f)
     (build-system trivial-build-system)
@@ -1135,17 +1145,22 @@ to the @code{share/locale} sub-directory of this package.")
                                  (symlink (string-append locale ".utf8")
                                           (string-append localedir "/"
                                                          locale ".UTF-8")))
-
-                               ;; These are the locales commonly used for
-                               ;; tests---e.g., in Guile's i18n tests.
-                               '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
+                               ',locales)
                      #t))))
     (native-inputs `(("glibc" ,glibc)
                      ("gzip" ,gzip)))
-    (synopsis "Small sample of UTF-8 locales")
+    (synopsis (if default-locales?
+                  (P_ "Small sample of UTF-8 locales")
+                  (P_ "Customized sample of UTF-8 locales")))
     (description
-     "This package provides a small sample of UTF-8 locales mostly useful in
+     (if default-locales?
+         (P_ "This package provides a small sample of UTF-8 locales mostly useful in
 test environments.")
+         (format #f (P_ "This package provides the following UTF-8 locales:
+@itemize
+~{@item ~a~%~}
+@end itemize~%")
+                 locales)))
     (home-page (package-home-page glibc))
     (license (package-license glibc))))
 
@@ -1221,7 +1236,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2020d")
+    (version "2020f")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1229,7 +1244,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1wxskk9mh1x2073n99qna2mq58mgi648mbq5dxlqfcrnvrbkk0cd"))))
+               "10b8cr55x6ji14n3kqkn3avj1s9b79b8gszh81fxrrisij8k248j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1288,7 +1303,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1mgsckixmmk9qxzsflfxnp3999qi3ls72bgksclk01g852x51w3c"))))))
+                            "1i998crd9fxdfhv4jd241j1arx0ng7j7cvczpmj4y5j5fwmfmvng"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

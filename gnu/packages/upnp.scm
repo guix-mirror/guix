@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,21 +24,22 @@
 
 (define-module (gnu packages upnp)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages video)
-  #:use-module (gnu packages photo)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xiph)
-  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (guix build-system gnu)
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (ice-9 match))
 
@@ -89,12 +91,12 @@ while running behind a UPnP-enabled router or firewall.  Such applications
 include peer-to-peer applications, active-mode FTP clients, DCC file transfers
 over IRC, instant messaging, network games, and most server software.")
     (license
-     (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
+     (license:x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
 
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.12.1")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
@@ -102,7 +104,7 @@ over IRC, instant messaging, network games, and most server software.")
                           "/release-" version "/libupnp-" version".tar.bz2"))
       (sha256
        (base32
-        "02a0dnbk1cla8xlb5l2zp09grv2hsf8n4jbd560mmzj830mn8dpw"))))
+        "1sswsdqzarrd6h9mld2lncbcrfhd4p16zcafvmxqm34nj513vcpc"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
@@ -120,43 +122,49 @@ API and code for building control points, devices, and bridges that are
 compliant with Version 1.0 of the Universal Plug and Play Device Architecture
 Specification and support several operating systems like Linux, *BSD, Solaris
 and others.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public readymedia
   (package
     (name "readymedia")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://git.code.sf.net/p/minidlna/git")
              (commit (string-append
-                      "v"
-                      (string-map (match-lambda
-                                    (#\. #\_)
-                                    (chr chr))
-                                  version)))))
+                      "v" (string-replace-substring version "." "_")))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "160915yv38k0p5zmyncs12kkbbcd8m8fk9jq70fkfd5x6dz40xm4"))))
+         "0g04lffj37wdv5bnpl5faxpnmlj6bbk8y7ziaz2wp6h82g6kb5wj"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-os-name=Linux")      ; uname -s
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "Makefile.am"
+               ((".*LIBAVUTIL_LIBS.*") ""))
+             #t)))))
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("libexif" ,libexif)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libid3tag" ,libid3tag)
+     `(("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
+       ("libexif" ,libexif)
+       ("libid3tag" ,libid3tag)
+       ("libjpeg" ,libjpeg-turbo)
        ("libvorbis" ,libvorbis)
        ("sqlite" ,sqlite)
-       ("ffmpeg" ,ffmpeg)))
+       ("zlib" ,zlib)))
     (home-page "https://sourceforge.net/projects/minidlna/")
     (synopsis "DLNA/UPnP-AV media server")
     (description "ReadyMedia (formerly known as MiniDLNA) is a simple media
 server, which serves multimedia content to compatible clients on the network.
 It aims to be fully compliant with DLNA and UPnP-AV standards.")
-    (license gpl2)))
+    (license license:gpl2)))

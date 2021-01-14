@@ -172,7 +172,6 @@ shared NFS home directories.")
   (package
    (name "glib")
    (version "2.62.6")
-   (replacement glib-with-gio-patch)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -181,7 +180,8 @@ shared NFS home directories.")
             (sha256
              (base32
               "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
-            (patches (search-patches "glib-tests-timer.patch"))
+            (patches (search-patches "glib-appinfo-watch.patch"
+                                     "glib-tests-timer.patch"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -228,6 +228,17 @@ shared NFS home directories.")
                (("gio-launch-desktop")
                 (string-append out "/libexec/gio-launch-desktop")))
               #t)))
+        ;; TODO: Remove the conditional in the next core-updates cycle.
+        ;; Needed to build glib on slower ARM nodes.
+        ,@(if (string-prefix? "arm" (%current-system))
+              `((add-after 'unpack 'increase-test-timeout
+                  (lambda _
+                    (substitute* "meson.build"
+                      (("test_timeout = 60")
+                       "test_timeout = 90")
+                      (("test_timeout_slow = 120")
+                       "test_timeout_slow = 180")))))
+              '())
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
@@ -383,16 +394,6 @@ dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
 
-(define glib-with-gio-patch
-  ;; GLib with a fix for <https://bugs.gnu.org/35594>.
-  ;; TODO: Fold into 'glib' above in the next rebuild cycle.
-  (package
-    (inherit glib)
-    (source (origin
-              (inherit (package-source glib))
-              (patches (cons (search-patch "glib-appinfo-watch.patch")
-                             (origin-patches (package-source glib))))))))
-
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
   ;; which in turn depends on glib.
@@ -445,34 +446,38 @@ dynamic loading, and an object system.")
                (("#!@PYTHON_CMD@")
                 (string-append "#!" (which "python3"))))
              #t)))))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib)
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
-    (native-inputs
-     `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(;; In practice, GIR users will need libffi when using
        ;; gobject-introspection.
        ("libffi" ,libffi)))
     (native-search-paths
-     (list (search-path-specification
-            (variable "GI_TYPELIB_PATH")
-            (files '("lib/girepository-1.0")))))
+     (list
+      (search-path-specification
+       (variable "GI_TYPELIB_PATH")
+       (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
-    (home-page "https://wiki.gnome.org/GObjectIntrospection")
-    (synopsis "Generate interface introspection data for GObject libraries")
-    (description
-     "GObject introspection is a middleware layer between C libraries (using
-GObject) and language bindings.  The C library can be scanned at compile time
-and generate a metadata file, in addition to the actual native C library.  Then
-at runtime, language bindings can read this metadata and automatically provide
-bindings to call into the C library.")
-    ; Some bits are distributed under the LGPL2+, others under the GPL2+
-    (license license:gpl2+)))
+    (synopsis "GObject introspection tools and libraries")
+    (description "GObject introspection is a middleware layer between
+C libraries (using GObject) and language bindings.  The C library can be scanned
+at compile time and generate metadata files, in addition to the actual native
+C library.  Then language bindings can read this metadata and automatically
+provide bindings to call into the C library.")
+    (home-page "https://wiki.gnome.org/Projects/GObjectIntrospection")
+    (license
+     (list
+      ;; For library.
+      license:lgpl2.0+
+      ;; For tools.
+      license:gpl2+))))
 
 (define intltool
   (package

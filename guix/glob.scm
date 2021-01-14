@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,11 @@ STR, a glob pattern such as \"foo*\" or \"foo??bar\"."
        (flatten (reverse (if (null? pending)
                              result
                              (cons-string pending result)))))
+      ((#\* #\* #\/ . rest)
+       (if (zero? brackets)
+           (loop rest '() 0
+                 (cons* '**/ (cons-string pending result)))
+           (loop rest (cons '**/ pending) brackets result)))
       (((and chr (or #\? #\*)) . rest)
        (let ((wildcard (match chr
                          (#\? '?)
@@ -121,6 +127,15 @@ STR, a glob pattern such as \"foo*\" or \"foo??bar\"."
       (string-null? str))
      (('*)
       #t)
+     (('**/)
+      #t)
+     (('**/ suffix . rest)
+      (let ((rest (if (eq? '* suffix) (cdr rest) rest))
+            (suffix (if (eq? '* suffix) (car rest) suffix)))
+        (match (string-contains str suffix)
+          (#f    #f)
+          (index (loop rest (string-drop str
+                                         (+ index (string-length suffix))))))))
      (('* suffix . rest)
       (match (string-contains str suffix)
         (#f    #f)

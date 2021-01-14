@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
@@ -476,15 +476,14 @@ under permissive licensing terms.  See the 'Copyright' file."))))
 (define-public ispell
   (package
     (name "ispell")
-    (version "3.4.00")
+    (version "3.4.01")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.cs.hmc.edu/~geoff/tars/ispell-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1hmfnz55qzfpz7lz0r3m4kkv31smir92ks9s5l1iiwimhr2jxi2x"))))
+        (base32 "103vscg4bc7x2q84y18x1l75k54yhkw8lpza3qh8xxhcz5b0w7jb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f

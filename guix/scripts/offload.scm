@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,7 @@
             build-machine-overload-threshold
             build-machine-systems
             build-machine-features
+            build-machine-location
 
             build-requirements
             build-requirements?
@@ -112,11 +114,17 @@
   (speed           build-machine-speed            ; inexact real
                    (default 1.0))
   (features        build-machine-features         ; list of strings
-                   (default '())))
+                   (default '()))
+  (location        build-machine-location
+                   (default (and=> (current-source-location)
+                                   source-properties->location))
+                   (innate)))
 
 ;;; Deprecated.
 (define (build-machine-system machine)
-  (warning (G_ "The 'system' field is deprecated, \
+  (warning
+    (build-machine-location machine)
+    (G_ "The 'system' field is deprecated, \
 please use 'systems' instead.~%"))
   (%build-machine-system machine))
 
@@ -626,7 +634,8 @@ daemon is not running."
                            (and add-text-to-store 'alright))
                         node)
     ('alright #t)
-    (_ (report-module-error name)))
+    (_ (leave (G_ "(guix) module not usable on remote host '~a'")
+              name)))
 
   (match (inferior-eval '(begin
                            (use-modules (guix))

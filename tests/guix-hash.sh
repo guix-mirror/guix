@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2016, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
@@ -43,6 +43,7 @@ chmod +x "$tmpdir/exe"
 mkdir "$tmpdir/subdir"
 
 test `guix hash -r "$tmpdir"` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+test `guix hash -r "$tmpdir" -H sha512` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
 
 # Without '-r', this should fail.
 ! guix hash "$tmpdir"

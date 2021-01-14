@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,16 +27,19 @@
   #:use-module (guix import json)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix memoization)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-71)
   #:export (crate->guix-package
             guix-package->crate-name
             string->license
@@ -85,9 +88,15 @@
   crate-dependency?
   json->crate-dependency
   (id            crate-dependency-id "crate_id")  ;string
-  (kind          crate-dependency-kind "kind"     ;'normal | 'dev
+  (kind          crate-dependency-kind "kind"     ;'normal | 'dev | 'build
                  string->symbol)
   (requirement   crate-dependency-requirement "req")) ;string
+
+;; Autoload Guile-Semver so we only have a soft dependency.
+(module-autoload! (current-module)
+		  '(semver) '(string->semver semver->string semver<?))
+(module-autoload! (current-module)
+		  '(semver ranges) '(string->semver-range semver-range-contains?))
 
 (define (lookup-crate name)
   "Look up NAME on https://crates.io and return the corresopnding <crate>
@@ -103,6 +112,8 @@ record or #f if it was not found."
              (let ((versions (or (assoc-ref json "versions") '#())))
                (json->crate `(,@alist
                               ("actual_versions" . ,versions))))))))
+
+(define lookup-crate* (memoize lookup-crate))
 
 (define (crate-version-dependencies version)
   "Return the list of <crate-dependency> records of VERSION, a
@@ -141,17 +152,29 @@ record or #f if it was not found."
     ((args ...)
      `((arguments (,'quasiquote ,args))))))
 
+(define (version->semver-prefix version)
+  "Return the version up to and including the first non-zero part"
+  (first
+   (map match:substring
+        (list-matches "^(0+\\.){,2}[0-9]+" version))))
+
 (define* (make-crate-sexp #:key name version cargo-inputs cargo-development-inputs
-                          home-page synopsis description license
-                          #:allow-other-keys)
+                          home-page synopsis description license build?)
   "Return the `package' s-expression for a rust package with the given NAME,
 VERSION, CARGO-INPUTS, CARGO-DEVELOPMENT-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION,
 and LICENSE."
+  (define (format-inputs inputs)
+    (map
+     (match-lambda
+      ((name version)
+       (list (crate-name->package-name name)
+             (version->semver-prefix version))))
+     inputs))
+
   (let* ((port (http-fetch (crate-uri name version)))
          (guix-name (crate-name->package-name name))
-         (cargo-inputs (map crate-name->package-name cargo-inputs))
-         (cargo-development-inputs (map crate-name->package-name
-                                        cargo-development-inputs))
+         (cargo-inputs (format-inputs cargo-inputs))
+         (cargo-development-inputs (format-inputs cargo-development-inputs))
          (pkg `(package
                    (name ,guix-name)
                    (version ,version)
@@ -163,7 +186,10 @@ and LICENSE."
                               (base32
                                ,(bytevector->nix-base32-string (port-sha256 port))))))
                    (build-system cargo-build-system)
-                   ,@(maybe-arguments (append (maybe-cargo-inputs cargo-inputs)
+                   ,@(maybe-arguments (append (if build?
+                                                 '()
+                                                 '(#:skip-build? #t))
+                                              (maybe-cargo-inputs cargo-inputs)
                                               (maybe-cargo-development-inputs
                                                 cargo-development-inputs)))
                    (home-page ,(match home-page
@@ -176,7 +202,7 @@ and LICENSE."
                                ((license) license)
                                (_ `(list ,@license)))))))
          (close-port port)
-         pkg))
+         (package->definition pkg (version->semver-prefix version))))
 
 (define (string->license string)
   (filter-map (lambda (license)
@@ -187,41 +213,94 @@ and LICENSE."
                          'unknown-license!)))
               (string-split string (string->char-set " /"))))
 
-(define* (crate->guix-package crate-name #:optional version)
+(define* (crate->guix-package crate-name #:key version include-dev-deps? repo)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
 `package' s-expression corresponding to that package, or #f on failure.
-When VERSION is specified, attempt to fetch that version; otherwise fetch the
-latest version of CRATE-NAME."
+When VERSION is specified, convert it into a semver range and attempt to fetch
+the latest version matching this semver range; otherwise fetch the latest
+version of CRATE-NAME. If INCLUDE-DEV-DEPS is true then this will also
+look up the development dependencs for the given crate."
+
+  (define (semver-range-contains-string? range version)
+    (semver-range-contains? (string->semver-range range)
+                            (string->semver version)))
 
   (define (normal-dependency? dependency)
-    (eq? (crate-dependency-kind dependency) 'normal))
+    (or (eq? (crate-dependency-kind dependency) 'build)
+        (eq? (crate-dependency-kind dependency) 'normal)))
 
   (define crate
-    (lookup-crate crate-name))
+    (lookup-crate* crate-name))
 
   (define version-number
     (and crate
          (or version
              (crate-latest-version crate))))
 
+  ;; find the highest existing package that fulfills the semver <range>
+  (define (find-package-version name range)
+    (let* ((semver-range (string->semver-range range))
+           (versions
+            (sort
+             (filter (lambda (version)
+                       (semver-range-contains? semver-range version))
+                     (map (lambda (pkg)
+                            (string->semver (package-version pkg)))
+                          (find-packages-by-name
+                           (crate-name->package-name name))))
+             semver<?)))
+      (and (not (null-list? versions))
+           (semver->string (last versions)))))
+
+  ;; find the highest version of a crate that fulfills the semver <range>
+  (define (find-crate-version crate range)
+    (let* ((semver-range (string->semver-range range))
+           (versions
+            (sort
+             (filter (lambda (entry)
+                       (semver-range-contains? semver-range (first entry)))
+                     (map (lambda (ver)
+                            (list (string->semver (crate-version-number ver))
+                                  ver))
+                          (crate-versions crate)))
+             (match-lambda* (((semver _) ...)
+                             (apply semver<? semver))))))
+      (and (not (null-list? versions))
+           (second (last versions)))))
+
+  (define (dependency-name+version dep)
+    (let* ((name (crate-dependency-id dep))
+           (req (crate-dependency-requirement dep))
+           (existing-version (find-package-version name req)))
+      (if existing-version
+          (list name existing-version)
+          (let* ((crate (lookup-crate* name))
+                 (ver (find-crate-version crate req)))
+            (list name
+                  (crate-version-number ver))))))
+
   (define version*
     (and crate
-         (find (lambda (version)
-                 (string=? (crate-version-number version)
-                           version-number))
-               (crate-versions crate))))
+         (find-crate-version crate version-number)))
+
+  ;; sort and map the dependencies to a list containing
+  ;; pairs of (name version)
+  (define (sort-map-dependencies deps)
+    (sort (map dependency-name+version
+               deps)
+          (match-lambda* (((name _) ...)
+                          (apply string-ci<? name)))))
 
   (and crate version*
-       (let* ((dependencies   (crate-version-dependencies version*))
-              (dep-crates     (filter normal-dependency? dependencies))
-              (dev-dep-crates (remove normal-dependency? dependencies))
-              (cargo-inputs   (sort (map crate-dependency-id dep-crates)
-                                    string-ci<?))
-              (cargo-development-inputs
-               (sort (map crate-dependency-id dev-dep-crates)
-                     string-ci<?)))
+       (let* ((dependencies (crate-version-dependencies version*))
+              (dep-crates dev-dep-crates (partition normal-dependency? dependencies))
+              (cargo-inputs (sort-map-dependencies dep-crates))
+              (cargo-development-inputs (if include-dev-deps?
+                                            (sort-map-dependencies dev-dep-crates)
+                                            '())))
          (values
-          (make-crate-sexp #:name crate-name
+          (make-crate-sexp #:build? include-dev-deps?
+                           #:name crate-name
                            #:version (crate-version-number version*)
                            #:cargo-inputs cargo-inputs
                            #:cargo-development-inputs cargo-development-inputs
@@ -233,13 +312,15 @@ latest version of CRATE-NAME."
                                             string->license))
           (append cargo-inputs cargo-development-inputs)))))
 
-(define* (crate-recursive-import crate-name #:optional version)
-  (recursive-import crate-name #f
-                    #:repo->guix-package
-                    (lambda (name repo)
-                      (let ((version (and (string=? name crate-name)
-                                          version)))
-                        (crate->guix-package name version)))
+(define* (crate-recursive-import crate-name #:key version)
+  (recursive-import crate-name
+                    #:repo->guix-package (lambda* params
+                      ;; download development dependencies only for the top level package
+                      (let ((include-dev-deps? (equal? (car params) crate-name))
+                            (crate->guix-package* (memoize crate->guix-package)))
+                        (apply crate->guix-package*
+                               (append params `(#:include-dev-deps? ,include-dev-deps?)))))
+                    #:version version
                     #:guix-name crate-name->package-name))
 
 (define (guix-package->crate-name package)
@@ -254,7 +335,7 @@ latest version of CRATE-NAME."
       ((name _ ...) name))))
 
 (define (crate-name->package-name name)
-  (string-append "rust-" (string-join (string-split name #\_) "-")))
+  (guix-name "rust-" name))
 
 
 ;;;
@@ -277,7 +358,7 @@ latest version of CRATE-NAME."
 
 (define %crate-updater
   (upstream-updater
-   (name 'crates)
+   (name 'crate)
    (description "Updater for crates.io packages")
    (pred crate-package?)
    (latest latest-release)))

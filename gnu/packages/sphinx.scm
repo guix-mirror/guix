@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,14 +49,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "3.2.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "1s70hxhddzf656kmj01lws4cbywgsinbg8750r9ilf7s2sdns79j"))))
+         "0023vc2i29pjxmvdqbz1wdbi7gbj56y1br1b2z8h8wa44li5k38y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -596,4 +597,33 @@ translate and to apply translation to Sphinx generated document.")
      "This package lets you watch a Sphinx directory and rebuild the
 documentation when a change is detected.  It also includes a livereload
 enabled web server.")
+    (license license:expat)))
+
+(define-public python-nbsphinx
+  (package
+    (name "python-nbsphinx")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nbsphinx" version))
+        (sha256
+          (base32
+            "0j56bxdj08vn3q1804qwb1ywhga1mdg1awgm7i64wfpfwi8df2zm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-docutils" ,python-docutils)
+        ("python-jinja2" ,python-jinja2)
+        ("python-nbconvert" ,python-nbconvert)
+        ("python-nbformat" ,python-nbformat)
+        ("python-sphinx" ,python-sphinx)
+        ("python-traitlets" ,python-traitlets)))
+    (home-page "https://nbsphinx.readthedocs.io/")
+    (synopsis "Jupyter Notebook Tools for Sphinx")
+    (description "@code{python-nbsphinx} is a Sphinx extension that
+provides a source parser for @code{*.ipynb} files.  Custom Sphinx
+directives are used to show Jupyter Notebook code cells (and of course
+their results) in both HTML and LaTeX output.  Un-evaluated notebooks
+- i.e. notebooks without stored output cells - will be automatically
+executed during the Sphinx build process.")
     (license license:expat)))

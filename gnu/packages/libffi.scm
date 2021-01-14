@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 John Doe <dftxbs3e@free.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,7 @@
        ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
        #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
 
-       ;; TODO: Inline patch on next rebuild cycle.
+       ;; TODO: Inline patches on next rebuild cycle.
        ,@(if (string-prefix? "powerpc-" (or (%current-target-system)
                                             (%current-system)))
              '(#:phases (modify-phases %standard-phases
@@ -66,15 +67,30 @@
                             (lambda* (#:key inputs #:allow-other-keys)
                               (let ((patch (assoc-ref inputs
                                                       "powerpc-patch")))
-                                (invoke "patch" "--batch" "-p1"
+                                (invoke "patch" "--force" "-p1"
+                                        "-i" patch))))))
+             '())
+       ,@(if (string-prefix? "powerpc64le-" (or (%current-target-system)
+                                                (%current-system)))
+             '(#:phases (modify-phases %standard-phases
+                          (add-after 'unpack 'apply-patch2
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs
+                                                      "powerpc64le-patch")))
+                                (invoke "patch" "--force" "-p1"
                                         "-i" patch))))))
              '())))
     (inputs
-     (if (string-prefix? "powerpc-" (or (%current-target-system)
+     (cond
+      ((string-prefix? "powerpc-" (or (%current-target-system)
                                         (%current-system)))
-         `(("powerpc-patch" ,@(search-patches
-                               "libffi-3.3-powerpc-fixes.patch")))
-         '()))
+       `(("powerpc-patch" ,@(search-patches
+                             "libffi-3.3-powerpc-fixes.patch"))))
+      ((string-prefix? "powerpc64le-" (or (%current-target-system)
+                                          (%current-system)))
+       `(("powerpc64le-patch" ,@(search-patches
+                                 "libffi-float128-powerpc64le.patch"))))
+      (else '())))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
@@ -96,13 +112,13 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.14.0")
+    (version "1.14.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1dn279gw5ql8i5n3s5v4rnv96rhhjjfn7xq729qbl5bs2954yf1d"))))
+       (base32 "0v080s7vlrjz9z823x2yh36yc8drwpvvir6w8wfkkzd7k2z5qihs"))))
     (build-system python-build-system)
     (inputs
      `(("libffi" ,libffi)))

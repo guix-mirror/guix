@@ -1,11 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +38,57 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control))
+
+(define-public bat
+  (package
+    (name "bat")
+    (version "0.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bat" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ia12774prjnm3msiaja6qdpxkpyknxswqpgkmwzj0wn9nhkc7nz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-colours" ,rust-ansi-colours-1)
+        ("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-console" ,rust-console-0.13)
+        ("rust-content-inspector" ,rust-content-inspector-0.2)
+        ("rust-dirs" ,rust-dirs-3)
+        ("rust-encoding" ,rust-encoding-0.2)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-git2" ,rust-git2-0.13)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-path-abs" ,rust-path-abs-0.5)
+        ("rust-semver" ,rust-semver-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-shell-words" ,rust-shell-words-1)
+        ("rust-syntect" ,rust-syntect-4)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-wild" ,rust-wild-2))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/sharkdp/bat")
+    (synopsis "@command{cat} clone with syntax highlighting and git integration")
+    (description
+     "@command{bat} is a drop-in @command{cat} replacement featuring syntax
+highlighting for a large number of languages, git integration, and automatic
+paging.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public exa
   (package
@@ -147,7 +200,7 @@ also knows about symlinks, extended attributes, and Git.")
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-anyhow" ,rust-anyhow-1)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-ctrlc" ,rust-ctrlc-3.1)
@@ -319,6 +372,62 @@ gitignore rules.")
      "This package provides a tool for generating C/C++ bindings to Rust code.")
     (license license:mpl2.0)))
 
+(define-public rust-cbindgen-0.16
+  (package
+    (inherit rust-cbindgen)
+    (name "rust-cbindgen")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cbindgen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "049cai626nzw0km03parx4sxwaxgbr7i5ifjbjwnfxkqkj5k2i4k"))))
+    (arguments
+     `(#:tests? #false                  ;missing files
+       #:cargo-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-heck" ,rust-heck-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-toml" ,rust-toml-0.5))
+       #:cargo-development-inputs
+       (("rust-serial-test" ,rust-serial-test-0.5))))))
+
+(define-public rust-cbindgen-0.15
+  (package
+    (inherit rust-cbindgen)
+    (name "rust-cbindgen")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cbindgen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dgf49zij9rxnf0lv4k5gcmx1mxcz16czkk6q63anz0xp8ds3xhx"))))
+    (arguments
+     `(#:tests? #false                  ;missing files
+       #:cargo-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-heck" ,rust-heck-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-toml" ,rust-toml-0.5))))))
+
 (define-public rust-cbindgen-0.14
   (package
     (inherit rust-cbindgen)
@@ -407,7 +516,7 @@ blanks grouped by language.")
 (define-public watchexec
   (package
     (name "watchexec")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -415,8 +524,7 @@ blanks grouped by language.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bwgqb5fvyqbf2lf0005fxzpbpbwbszc7144g3kg2cmzy5cbrf0w"))))
+        (base32 "1vqaa462sjpzi0crh12ixqc2wa5bblirc129pnj8jr8iz3xw3gvd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:phases
@@ -431,7 +539,7 @@ blanks grouped by language.")
                (install-file "README.md" doc)
                #t))))
        #:cargo-inputs
-       (("rust-clap" ,rust-clap-2)
+       (("rust-embed-resource" ,rust-embed-resource-1.3)
         ("rust-derive-builder" ,rust-derive-builder-0.9)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-glob" ,rust-glob-0.3)
@@ -440,8 +548,7 @@ blanks grouped by language.")
         ("rust-log" ,rust-log-0.4)
         ("rust-nix" ,rust-nix-0.17)
         ("rust-notify" ,rust-notify-4)
-        ("rust-walkdir" ,rust-walkdir-2)
-        ("rust-winapi" ,rust-winapi-0.3))))
+        ("rust-walkdir" ,rust-walkdir-2))))
     (home-page "https://github.com/watchexec/watchexec")
     (synopsis "Executes commands in response to file modifications")
     (description

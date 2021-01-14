@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,34 +75,36 @@ with Graphtec and Sihouette plotting cutters using an SVG file as its input.")
     (license license:gpl3+)))
 
 (define-public brlaser
-  (package
-    (name "brlaser")
-    (version "6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/pdewacht/brlaser")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1995s69ksq1fz0vb34v0ndiqncrinbrlpmp70rkl6az7kag99s80"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DCUPS_DATA_DIR="
-                            (assoc-ref %outputs "out")
-                            "/share/cups")
-             (string-append "-DCUPS_SERVER_BIN="
-                            (assoc-ref %outputs "out")
-                            "/lib/cups"))))
-    (inputs
-     `(("ghostscript" ,ghostscript)
-       ("cups" ,cups)
-       ("zlib" ,zlib)))
-    (home-page "https://github.com/pdewacht/brlaser")
-    (synopsis "Brother laser printer driver")
-    (description "Brlaser is a CUPS driver for Brother laser printers.  This
+  (let ((commit "9d7ddda8383bfc4d205b5e1b49de2b8bcd9137f1")
+        (revision "1"))
+    (package
+      (name "brlaser")
+      (version (git-version "6" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pdewacht/brlaser")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1drh0nk7amn9a8wykki4l9maqa4vy7vwminypfy1712alwj31nd4"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags
+         (list (string-append "-DCUPS_DATA_DIR="
+                              (assoc-ref %outputs "out")
+                              "/share/cups")
+               (string-append "-DCUPS_SERVER_BIN="
+                              (assoc-ref %outputs "out")
+                              "/lib/cups"))))
+      (inputs
+       `(("ghostscript" ,ghostscript)
+         ("cups" ,cups)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/pdewacht/brlaser")
+      (synopsis "Brother laser printer driver")
+      (description "Brlaser is a CUPS driver for Brother laser printers.  This
 driver is known to work with these printers:
 
 @enumerate
@@ -137,4 +139,4 @@ driver is known to work with these printers:
 @item Brother MFC-L2710DW series
 @item Lenovo M7605D
 @end enumerate")
-    (license license:gpl2+)))
+      (license license:gpl2+))))

@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020 Jens Mølgaard <jens@zete.tk>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
@@ -314,14 +314,14 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/liberationfonts/liberation-fonts/"
-                           "files/4743886/liberation-fonts-ttf-" version ".tar.gz"))
+                           "files/5722233/liberation-fonts-ttf-" version ".tar.gz"))
        (sha256
-        (base32 "1jkg8j8jx7ffj13z5ilw7dids99dyypljm1pv06ycmghw1pw3qlf"))))
+        (base32 "1q7qx9bpn1gqjh1zbb8n9fkzwz8skn41hyy61186g4c3y8q4js8l"))))
     (build-system font-build-system)
     (home-page "https://github.com/liberationfonts")
     (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
@@ -711,7 +711,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.04")
+    (version "13.0.05")
     (source
      (origin
        (method url-fetch)
@@ -721,7 +721,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "064ilpbnz62cwmpajszs2b08x2zg7yh9whlaiqhjzi7bir3im94j"))))
+        (base32 "0kkgagnyhl92pwgnvf1vjrc1ql8lk5khb125sz18ck8vnxk4i3pr"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1034,15 +1034,15 @@ Sans Pro family.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.206")
-    (source (origin
-              (method url-fetch/zipbomb)
-              (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
-                                  "download/" version
-                                  "/FiraCode_" version ".zip"))
-              (sha256
-               (base32
-                "02r1lcp0c9135ps71v66wdvbsrcxwirrp0blqsa1xbjkkq2rwgj3"))))
+    (version "5.2")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
+                           "download/" version
+                           "/Fira_Code_v" version ".zip"))
+       (sha256
+        (base32 "1zayrb6k0gd7xdvx7yx44dpip767q0bzhqwf4j6nf8nx02z746jj"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")
@@ -1198,7 +1198,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
   (package
     (name "font-iosevka")
     ;; When updating, also update the hash of the Iosevka variant(s) below.
-    (version "3.4.7")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1206,7 +1206,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "178xyxz57ncigv715db0898d5arcx1l7qi73a8prb2fdlb7x2yx6"))))
+        (base32 "1xc45rs09aj899wz9ghyizq6ddbgxpkqq5bl1jc89hls5laf7qjb"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1229,7 +1229,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "1zqgly4ymmmz3ckfsc2vdxw6d62axcyl79fq3gi630c4951nfikz"))))))
+        (base32 "0qpfzyi050zca0bwhb460nvcaarij4srhify0rb8sf9ygpzyvnjh"))))))
 
 (define-public font-iosevka-term
   (package
@@ -1243,8 +1243,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttf-iosevka-term-" version ".zip"))
        (sha256
-        (base32
-         "0nfwxhxgrgz3hhhrvr759263bm88zbh0zsavpnmphxwg9kykjq39"))))
+        (base32 "092ygzv24wbi8cjjsmq0jkxdf4cm7wqlfj7jkn0cip7nlbyskl3h"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1261,12 +1260,11 @@ programming.  Iosevka is completely generated from its source code.")
     (source
      (origin
        (method url-fetch/zipbomb)
-       (uri (string-append "https://github.com/be5invis/Iosevka"
-                           "/releases/download/v" version
-                           "/ttf-iosevka-term-slab-" version ".zip"))
+       (uri (string-append "https://github.com/be5invis/Iosevka/"
+                           "releases/download/v" version "/"
+                           "ttf-iosevka-term-slab-" version ".zip"))
        (sha256
-        (base32
-         "01ynnwlfq3294p8v0656xw6wcfmqklf0yqwkqh3sh2wmj7rrs7wi"))))
+        (base32 "157kdxrxz981ympd2iww66v50vm2cxd7z98vvb36rii94hf30k7x"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1287,7 +1285,35 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-aile-" version ".zip"))
        (sha256
-        (base32 "0h4wzjyw3h5zbxzfb71z7aj5xwp8r1hd93qim6zicxfk9dgczgw5"))))))
+        (base32 "0n52lfn7awc28a4f5yh4my8q4ikzza705kp69chfw9jm2xx79npc"))))))
+
+(define-public font-iosevka-curly
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-curly")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka/"
+                           "releases/download/v" version  "/"
+                           "ttc-iosevka-curly-" version ".zip"))
+       (sha256
+        (base32 "0m51r0bc25khllq8nsfgsldhwfs7kzl8kqasivjlm14mpv5080fn"))))))
+
+(define-public font-iosevka-curly-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-curly-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka/"
+                           "releases/download/v" version  "/"
+                           "ttc-iosevka-curly-slab-" version ".zip"))
+       (sha256
+        (base32 "0ffiz2kg43kc2dxv48sjji33ra3kc6sy8vlard93c601fqjmrjws"))))))
 
 (define-public font-iosevka-etoile
   (package
@@ -1301,7 +1327,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-etoile-" version ".zip"))
        (sha256
-        (base32 "1n1jy7g0q0kd4ihsyka1v02s7xgpg80rf9sml1yhxkqw5pq62972"))))))
+        (base32 "1fj8g7sjp9idjh14iqk4wsz3rdarlmq7amcdsr0dznwyivx8a9wx"))))))
 
 (define-public font-iosevka-sparkle
   (package
@@ -1315,7 +1341,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-sparkle-" version ".zip"))
        (sha256
-        (base32 "0chl6x3xy6alq64sax71psvpq6f6fgw6pbn04f5j5skgrbqkk292"))))))
+        (base32 "00dw894930xdikai8bcaimp0a3720diwi0r7ii52jwl4d70w53dx"))))))
 
 (define-public font-sarasa-gothic
   (package
@@ -1761,7 +1787,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "2.210")
+    (version "2.221")
     (source
      (origin
        (method url-fetch)
@@ -1769,7 +1795,7 @@ This package provides the TrueType fonts.")
         (string-append "https://github.com/JetBrains/JetBrainsMono/releases/"
                        "download/v" version "/JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "19wbggnmqs3k1wdqy7l7imnx23g7hh159pl32nz3mzz8s8sqfdix"))))
+        (base32 "1acrgv2q9vxviirpi01xy67pkkswyssw4dn5pgyvrnjxr85cgjrg"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

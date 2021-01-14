@@ -11,6 +11,8 @@
 ;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
+;;; Copyright © 2020 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2020 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +64,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
@@ -786,6 +789,14 @@ editors.")
                  (("/usr/share")
                   (string-append out "/share")))
                #t)))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install desktop file.
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (source "TeXmacs/misc/mime/texmacs.desktop"))
+               (install-file source apps)
+               #t)))
          (add-before 'configure 'gzip-flags
            (lambda _
              (substitute* "Makefile.in"
@@ -803,14 +814,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.4.5")
+    (version "4.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "1v1kyxj7rv5rxadbg8gl8wh1jafpy7zj0wr6dcyxq9209dl6h8ag"))))
+        (base32 "1p62dq2fgdkvdn2clz1xjdj09acv87rbifl67zhlz7skqip31y9d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -849,14 +860,14 @@ and multiple fonts.")
 (define-public geany
   (package
     (name "geany")
-    (version "1.37")
+    (version "1.37.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.geany.org/"
                            "geany-" version ".tar.bz2"))
        (sha256
-        (base32 "0l9xds0qghxv21ymifdc9spvp9mpvpnxn9scf1b9qxivha22brfx"))))
+        (base32 "060sachn33xpx3a609f09y97qq5ky17gvv686zbvrn618ij7bi8q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1029,3 +1040,42 @@ files.  It was originally developed on the Amiga 3000T.")
 systems that displays its buffer(s) as a hex dump.  The user interface is kept
 similar to vi/ex.")
     (license license:bsd-3)))
+
+(define-public virtaal
+  (package
+    (name "virtaal")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/translate/Virtaal/"
+                                  version "/virtaal-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0cyimjp3191qlmw6n0ipqdr9xr0cq4f6dqvz4rl9q31h6l3kywf9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:use-setuptools? #f
+       #:tests? #f ;; Failing tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Set data file path to absolute store path.
+             (substitute* "virtaal/common/pan_app.py"
+               (("file_discovery\\.get_abs_data_filename.*")
+                (string-append "os.path.join('"
+                               (assoc-ref outputs "out")
+                               "/share', *path_parts)"))))))))
+    (inputs
+     `(("python2-lxml" ,python2-lxml)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-simplejson" ,python2-simplejson)
+       ("python2-translate-toolkit" ,python2-translate-toolkit)
+       ("python2-pycurl" ,python2-pycurl)))
+    (synopsis "Graphical translation tool")
+    (description "Virtaal is a powerful yet simple translation tool with an
+uncluttered user interface.  It supports a multitude of translation formats
+provided by the Translate Toolkit, including XLIFF and PO.")
+    (home-page "https://virtaal.translatehouse.org/")
+    (license license:gpl2+)))

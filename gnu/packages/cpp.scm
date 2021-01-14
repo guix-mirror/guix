@@ -43,10 +43,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -332,7 +334,8 @@ as ordering relation.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "-DJSON_TestDataDirectory="
+       (list "-DJSON_MultipleHeaders=ON" ; For json_fwd.hpp.
+             (string-append "-DJSON_TestDataDirectory="
                             (assoc-ref %build-inputs "json_test_data")))
        #:phases (modify-phases %standard-phases
                   ;; XXX: When tests are enabled, the install phase will cause
@@ -374,7 +377,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.21")
+    (version "0.6.23")
     (source (origin
               (method git-fetch)
               (uri
@@ -383,7 +386,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "08xhyy9fm2ddkdrgb1qyd2bs371a2xr7xzar482pwphz27vr035w"))
+                "1kd9zl4h6nrsg29hq13vwp4zhfj8sa90vj40726lpw6vxz48k4di"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
@@ -731,3 +734,77 @@ of C++14 components that complements @code{std} and Boost.")
     ;; 32-bit is not supported: https://github.com/facebook/folly/issues/103
     (supported-systems '("aarch64-linux" "x86_64-linux"))
     (license license:asl2.0)))
+
+(define-public aws-sdk-cpp
+  (package
+    (name "aws-sdk-cpp")
+    (version "1.8.102")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aws/aws-sdk-cpp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w8x2vakg5ngjyyg08n4g3dqy8wqnz0k3gkrlqrh460s2pvdivba"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; Tests are run during the build phase.
+       #:tests? #f
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=OFF"
+         "-DBUILD_DEPS=OFF")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)
+       ("aws-c-event-stream" ,aws-c-event-stream)))
+    (inputs
+     `(("aws-checksums" ,aws-checksums)
+       ("curl" ,curl)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (synopsis "Amazon Web Services SDK for C++")
+    (description
+     "The AWS SDK for C++ provides a C++11 interface to the @acronym{AWS,Amazon
+Web Services} API.  AWS provides on-demand computing infrastructure and software
+services including database, analytic, and machine learning technologies.")
+    (home-page "https://github.com/aws/aws-sdk-cpp")
+    (license license:asl2.0)))
+
+(define-public libexpected
+  (package
+    (name "libexpected")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TartanLlama/expected")
+             (commit (string-append "v" version))
+             ;; NOTE: Requires TL_CMAKE from custom
+             ;; repository. Should not affect reproducibility.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       ;; NOTE: This patch will be unnecessary on subsequent tags.
+       (patches (search-patches "libexpected-nofetch.patch"))
+       (sha256
+        (base32 "1ckzfrljzzdw9wf8hvdfjz4wjx5na57iwxc48mbv9rf5067m21a5"))))
+    (build-system cmake-build-system)
+    ;; TODO: Clean up install phase.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./tests"))))))
+    (native-inputs
+     `(("catch2" ,catch-framework2)))
+    (synopsis "C++11/14/17 std::expected with functional-style extensions")
+    (description "@code{std::expected} is proposed as the preferred way to
+represent objects which will either have an expected value, or an unexpected
+value giving information about why something failed.  Unfortunately, chaining
+together many computations which may fail can be verbose, as error-checking
+code will be mixed in with the actual programming logic.  This implementation
+provides a number of utilities to make coding with expected cleaner.")
+    (home-page "https://tl.tartanllama.xyz/")
+    (license license:cc0)))

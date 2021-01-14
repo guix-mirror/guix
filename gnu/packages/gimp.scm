@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -190,7 +190,7 @@ of a larger interface.")
     (propagated-inputs
      ;; Propagated to satisfy ‘babl.pc’.
      `(("lcms" ,lcms)))
-    (home-page "http://gegl.org/babl/")
+    (home-page "https://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
      "Babl is a dynamic, any-to-any pixel format translation library.
@@ -409,7 +409,7 @@ inverse fourier transform.")
 (define-public libmypaint
   (package
     (name "libmypaint")
-    (version "1.5.1")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mypaint/libmypaint/"
@@ -417,7 +417,7 @@ inverse fourier transform.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0aqcv4fyscpfhknxgfpq0v84aj2nzigqvpi4zgv2zkl41h51by5f"))))
+                "0priwpmc7dizccqvn21ig6d649bprl3xl1hmjj7nddznjgr585vl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -537,4 +537,93 @@ MyPaint.")
 tools for healing selections (content-aware fill), enlarging the canvas and
 healing the border, increasing the resolution while adding detail, and
 transferring the style of an image.")
+    (license license:gpl3+)))
+
+(define-public glimpse
+  (package
+    (name "glimpse")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/glimpse-editor/Glimpse")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0drngj2xqzxfaag6pc4xjffiw003n4y43x5rb5bf4ziv1ac51dm9"))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ; 9 MiB of gtk-doc HTML
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html")
+             "--enable-gtk-doc"
+
+             ;; Prevent the build system from running 'gtk-update-icon-cache'
+             ;; which is not needed during the build because Guix runs it at
+             ;; profile creation time.
+             "ac_cv_path_GTK_UPDATE_ICON_CACHE=true"
+
+             ;; Disable automatic network request on startup to check for
+             ;; version updates.
+             "--disable-check-update"
+
+             ;; ./configure requests not to annoy upstream with packaging bugs.
+             "--with-bug-report-url=https://bugs.gnu.org/guix")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-sitecustomize.py
+           ;; Install 'sitecustomize.py' into glimpse's python directory to
+           ;; add pygobject and pygtk to pygimp's search path.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((pythonpath (getenv "PYTHONPATH"))
+                    (out        (assoc-ref outputs "out"))
+                    (sitecustomize.py
+                     (string-append
+                      out "/lib/glimpse/2.0/python/sitecustomize.py")))
+               (call-with-output-file sitecustomize.py
+                 (lambda (port)
+                   (format port "import site~%")
+                   (format port "for dir in '~a'.split(':'):~%" pythonpath)
+                   (format port "    site.addsitedir(dir)~%")))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt) ; for xsltproc
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin"))) ; for gdbus-codegen
+    (inputs
+     `(("babl" ,babl)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libjpeg" ,libjpeg-turbo)
+       ("atk" ,atk)
+       ("gexiv2" ,gexiv2)
+       ("gtk+" ,gtk+-2)
+       ("libmypaint" ,libmypaint)
+       ("mypaint-brushes" ,mypaint-brushes-1.3)
+       ("exif" ,libexif)                ; optional, EXIF + XMP support
+       ("lcms" ,lcms)                   ; optional, color management
+       ("librsvg" ,librsvg)             ; optional, SVG support
+       ("libxcursor" ,libxcursor)       ; optional, Mouse Cursor support
+       ("poppler" ,poppler)             ; optional, PDF support
+       ("poppler-data" ,poppler-data)
+       ("python" ,python-2)             ; optional, Python support
+       ("python2-pygtk" ,python2-pygtk) ; optional, Python support
+       ("gegl" ,gegl)))
+    (home-page "https://glimpse-editor.github.io/")
+    (synopsis "Glimpse Image Editor")
+    (description "The Glimpse Image Editor is an application for image
+manipulation tasks such as photo retouching, composition and authoring.
+It supports all common image formats as well as specialized ones.  It
+features a highly customizable interface that is extensible via a plugin
+system.  It was forked from the GNU Image Manipulation Program.")
     (license license:gpl3+)))

@@ -7,11 +7,12 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
@@ -1330,7 +1332,7 @@ multi-system game/emulator system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
+       (uri (string-append "https://downloads.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
         (base32 "11vknasm5dna2vqr6gk343qynh7nhsq3kf60zayarn1vb5z6as8l"))))
@@ -1380,10 +1382,177 @@ just replaces the executables shipped with the games, allowing you to
 play them on systems for which they were never designed!")
     (license license:gpl2+)))
 
+(define-public libticables2
+  (package
+    (name "libticables2")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-libusb10")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libticables2-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libticables2-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autogen" ,autogen)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libusb" ,libusb)))
+    (synopsis "Link cable library for TI calculators")
+    (description
+     "This package contains libticables, a library for operations on
+@acronym{TI, Texas Instruments} calculator link cables.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
+(define-public libticonv
+  (package
+    (name "libticonv")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; build fails with out --enable-iconv (...?)
+     `(#:configure-flags (list "--enable-iconv")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libticonv-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libticonv-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (synopsis "Character conversion library for TI calculators")
+    (description
+     "This package contains libticonv, a library to support working with
+@acronym{TI, Texas Instruments} calculator charsets.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
+(define-public libtifiles2
+  (package
+    (name "libtifiles2")
+    (version "1.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libtifiles2-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libtifiles2-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libarchive" ,libarchive)
+       ("libticonv" ,libticonv)))
+    (synopsis "File functions library for TI calculators")
+    (description
+     "This package contains libticonv, a library to support working with
+@acronym{TI, Texas Instruments} calculator files.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
+(define-public libticalcs2
+  (package
+    (name "libticalcs2")
+    (version "1.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libticalcs2-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libticalcs2-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libarchive" ,libarchive)
+       ("libticables2" ,libticables2)
+       ("libticonv" ,libticonv)
+       ("libtifiles2" ,libtifiles2)))
+    (synopsis "Support library for TI calculators")
+    (description
+     "This project aims to develop a multi-platform linking program for use
+with all @acronym{TI, Texas Instruments} graphing calculators (TI73 to
+V200PLT).
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
 (define-public mame
   (package
     (name "mame")
-    (version "0.226")
+    (version "0.227")
     (source
      (origin
        (method git-fetch)
@@ -1392,7 +1561,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yfns42rk1l0qprj5ksj9fqsgqpa23xnzxf29r4434p4n18bb77v"))
+        (base32 "0p7xhsahmkr5hh3j6hc1mpgi5z4navy77v4k35i0sgpdv1ax4y2l"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

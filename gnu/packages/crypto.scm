@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -444,14 +444,14 @@ total number of shares generated.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/releases/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "0bggzzqmpfiknr76lyl8iszybrcpyqlbgiqk47fxq08h2b5ln1ic"))))
+                "136nfnpaz29hngwwnzrmc858gpnvnb977gf4ldbpapw1h1k3r8mk"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -717,7 +717,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "8.2.0")
+    (version "8.4.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -725,7 +725,7 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "0n40hlz5jkvlcp9vxrj0fsrcfp7dm0zmmv6h52dx3f8i5qjf5w03"))))
+                "16kvfm11xv7j9a3yykzysjgw38a9b7lnc5n5x5h82g395k6ybxf0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1028,10 +1028,10 @@ trivial to build for local use.  Portability is emphasized over performance.")
     (license license:unlicense)))
 
 (define-public libsecp256k1
-  (let ((commit "d644dda5c9dbdecee52d1aa259235510fdc2d4ee"))
+  (let ((commit "dbd41db16a0e91b2566820898a3ab2d7dad4fe00"))
     (package
       (name "libsecp256k1")
-      (version (git-version "20191213" "1" commit))
+      (version (git-version "20200615" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1039,9 +1039,14 @@ trivial to build for local use.  Portability is emphasized over performance.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0zmx32746khsm2cx0p3pdy3j2vkwmafvf7axiixijhgcg0xjv93i"))
+                  "1fcpnksq5cqwqzshn5f0lq94b73p3frwbp04hgmmbnrndpqg6mpy"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
+      (arguments
+       '(#:configure-flags '("--enable-module-recovery"
+                             "--enable-experimental"
+                             "--enable-module-ecdh"
+                             "--enable-shared")))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

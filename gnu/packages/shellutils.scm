@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 aecepoglu <aecepoglu@fastmail.fm>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
@@ -42,6 +45,46 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tmux))
+
+(define-public boxes
+  (package
+    (name "boxes")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ascii-boxes/boxes")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b12rsynrmkldlwcb62drk33kk0aqwbj10mq5y5x3hjf626gjwsi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list (string-append "GLOBALCONF="
+                                         (assoc-ref %outputs "out")
+                                         "/etc/boxes-config"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dest (assoc-ref outputs "out")))
+               (for-each (lambda (x)
+                           (install-file (car x)
+                                         (string-append dest "/" (cdr x))))
+                         '(("src/boxes" . "bin")
+                           ("doc/boxes.1" . "share/man/man1")
+                           ("boxes-config" . "etc/")))
+               #t))))))
+    (native-inputs `(("flex" ,flex) ("bison" ,bison)))
+    (synopsis "Command line ASCII boxes")
+    (description
+     "This command-line filter program draws ASCII-art boxes around your input
+text.")
+    (home-page "https://boxes.thomasjensen.com/build.html")
+    (license license:gpl2)))
 
 (define-public zsh-autosuggestions
   (package

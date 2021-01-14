@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -346,6 +346,14 @@ by MACHINE."
 ;;; System deployment.
 ;;;
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix _ ...) #t)
+    (('gnu _ ...) #t)
+    (_ #f)))
+
 (define (machine-boot-parameters machine)
   "Monadic procedure returning a list of 'boot-parameters' for the generations
 of MACHINE's system profile, ordered from most recent to oldest."
@@ -354,9 +362,10 @@ of MACHINE's system profile, ordered from most recent to oldest."
 
   (define remote-exp
     (with-extensions (list guile-gcrypt)
-      (with-imported-modules (source-module-closure
-                              `(((guix config) => ,(make-config.scm))
-                                (guix profiles)))
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  '((guix profiles))
+                                  #:select? not-config?))
         #~(begin
             (use-modules (guix config)
                          (guix profiles)
@@ -484,6 +493,8 @@ an environment type of 'managed-host."
                                         (list (second boot-parameters))))
                        (locale -> (boot-parameters-locale
                                    (second boot-parameters)))
+                       (crypto-dev -> (boot-parameters-store-crypto-devices
+                                       (second boot-parameters)))
                        (store-dir -> (boot-parameters-store-directory-prefix
                                       (second boot-parameters)))
                        (old-entries -> (map boot-parameters->menu-entry
@@ -496,6 +507,7 @@ an environment type of 'managed-host."
                                     bootloader))
                                   bootloader entries
                                   #:locale locale
+                                  #:store-crypto-devices crypto-dev
                                   #:store-directory-prefix store-dir
                                   #:old-entries old-entries)))
                        (remote-result (machine-remote-eval machine remote-exp)))

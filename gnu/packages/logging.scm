@@ -190,7 +190,7 @@ output in multiple windows in a terminal.")
 (define-public spdlog
   (package
     (name "spdlog")
-    (version "1.7.0")
+    (version "1.8.2")
     (source
      (origin
        (method git-fetch)
@@ -200,7 +200,7 @@ output in multiple windows in a terminal.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ryaa22ppj60461hcdb8nk7jwj84arp4iw4lyw594py92g4vnx3j"))))
+         "03vmwbi9v7r3v8kzd0lj10fchp54kxbxwzfx7dp6qzkxjrvmx2dx"))))
     (build-system cmake-build-system)
     ;; TODO run benchmark. Currently not possible, as adding
     ;; (gnu packages benchmark) forms a dependency cycle
@@ -215,3 +215,19 @@ library.")
     ;; spdlog is under Expat license, but the bundled fmt library in
     ;; "include/spdlog/fmt/bundled" is under BSD 2 clause license.
     (license (list license:expat license:bsd-2))))
+
+(define-public spdlog-1.7
+  (package
+    (inherit spdlog)
+    (name "spdlog")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gabime/spdlog")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ryaa22ppj60461hcdb8nk7jwj84arp4iw4lyw594py92g4vnx3j"))))))

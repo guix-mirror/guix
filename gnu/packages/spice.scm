@@ -261,7 +261,7 @@ Internet and from a wide variety of machine architectures.")
 (define-public spice-vdagent
   (package
     (name "spice-vdagent")
-    (version "0.17.0")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -269,7 +269,7 @@ Internet and from a wide variety of machine architectures.")
                 "spice-vdagent-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gdkyylyg1hksg0i0anvznqfli2q39335fnrmcd6847frpc8njpi"))))
+                "0n9k2kna2gd1zi6jv45zsp2jlv439nz5l5jjijirxqaycwi74srf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -294,6 +294,7 @@ Internet and from a wide variety of machine architectures.")
       `(("alsa-lib" ,alsa-lib)
         ("dbus" ,dbus)
         ("glib" ,glib)
+        ("libdrm" ,libdrm)
         ("libpciaccess" ,libpciaccess)
         ("libx11" ,libx11)
         ("libxext" ,libxext)

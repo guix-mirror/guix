@@ -86,11 +86,8 @@ as \"x86_64-linux\"."
              ("i586"        => "X86"))))
 
 (define (llvm-uri component version)
-  (if (version>=? version "9.0.1")
-      (string-append "https://github.com/llvm/llvm-project/releases/download"
-                     "/llvmorg-" version "/" component "-" version ".src.tar.xz")
-      (string-append "https://releases.llvm.org/" version "/" component "-"
-                     version ".src.tar.xz")))
+  (string-append "https://github.com/llvm/llvm-project/releases/download"
+                 "/llvmorg-" version "/" component "-" version ".src.tar.xz"))
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))

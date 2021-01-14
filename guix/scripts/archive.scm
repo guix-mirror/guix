@@ -347,6 +347,8 @@ output port."
                   (match type
                     ('directory
                      (format #t "D ~a~%" file))
+                    ('directory-complete
+                     #t)
                     ('symlink
                      (format #t "S ~a -> ~a~%" file content))
                     ((or 'regular 'executable)

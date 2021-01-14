@@ -7,12 +7,12 @@
 gnu: ${1:`(with-temp-buffer
            (magit-git-wash #'magit-diff-wash-diffs
              "diff" "--staged")
-           (beginning-of-buffer)
-           (when (search-forward "(define-public " nil 'noerror)
-             (thing-at-point 'sexp 'no-properties)))`}: Update to ${2:`(with-temp-buffer
+           (goto-char (point-min))
+           (when (re-search-forward "(define-public \\(\\S-+\\)" nil 'noerror)
+             (match-string-no-properties 1)))`}: Update to ${2:`(with-temp-buffer
     (magit-git-wash #'magit-diff-wash-diffs
       "diff" "--staged")
-    (beginning-of-buffer)
+    (goto-char (point-min))
     (search-forward "name" nil 'noerror)
     (search-forward "+" nil 'noerror)   ; first change
     (when (and (search-forward "version " nil 'noerror)

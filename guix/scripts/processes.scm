@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -176,6 +177,9 @@ active sessions, and the master 'guix-daemon' process."
     (values (filter-map child-process->session children)
             master)))
 
+(define (lock->recutils lock port)
+  (format port "LockHeld: ~a~%" lock))
+
 (define (daemon-session->recutils session port)
   "Display SESSION information in recutils format on PORT."
   (format port "SessionPID: ~a~%"
@@ -184,28 +188,111 @@ active sessions, and the master 'guix-daemon' process."
           (process-id (daemon-session-client session)))
   (format port "ClientCommand:~{ ~a~}~%"
           (process-command (daemon-session-client session)))
-  (for-each (lambda (lock)
-              (format port "LockHeld: ~a~%" lock))
+  (for-each (lambda (lock) (lock->recutils lock port))
             (daemon-session-locks-held session))
   (for-each (lambda (process)
-              (format port "ChildProcess: ~a:~{ ~a~}~%"
-                      (process-id process)
+              (format port "ChildPID: ~a~%"
+                      (process-id process))
+              (format port "ChildCommand: :~{ ~a~}~%"
                       (process-command process)))
             (daemon-session-children session)))
+
+(define (daemon-sessions->recutils port sessions)
+  "Display denormalized SESSIONS information to PORT."
+  (for-each (lambda (session)
+              (daemon-session->recutils session port)
+              (newline port))
+            sessions))
+
+(define session-rec-type
+  "%rec: Session
+%type: PID int
+%type: ClientPID int
+%key: PID
+%mandatory: ClientPID ClientCommand")
+
+(define lock-rec-type
+  "%rec: Lock
+%mandatory: LockHeld
+%type: Session rec Session")
+
+(define child-process-rec-type
+  "%rec: ChildProcess
+%type: PID int
+%type: Session rec Session
+%key: PID
+%mandatory: Command")
+
+(define (session-key->recutils session port)
+  "Display SESSION PID as a recutils field on PORT."
+  (format
+   port "Session: ~a"
+   (process-id (daemon-session-process session))))
+
+(define (session-scalars->normalized-record session port)
+  "Display SESSION scalar fields to PORT in normalized form."
+  (format port "PID: ~a~%"
+          (process-id (daemon-session-process session)))
+  (format port "ClientPID: ~a~%"
+          (process-id (daemon-session-client session)))
+  (format port "ClientCommand:~{ ~a~}~%"
+          (process-command (daemon-session-client session))))
+
+(define (child-process->normalized-record process port)
+  "Display PROCESS record on PORT in normalized form"
+  (format port "PID: ~a" (process-id process))
+  (newline port)
+  (format port "Command:~{ ~a~}" (process-command process)))
+
+(define (daemon-sessions->normalized-record port sessions)
+  "Display SESSIONS recutils on PORT in normalized form"
+  (display session-rec-type port)
+  (newline port)
+  (newline port)
+  (for-each (lambda (session)
+              (session-scalars->normalized-record session port)
+              (newline port))
+            sessions)
+
+  (display lock-rec-type port)
+  (newline port)
+  (newline port)
+  (for-each (lambda (session)
+              (for-each (lambda (lock)
+                          (lock->recutils "testing testing" port)
+                          (session-key->recutils session port)
+                          (newline port)
+                          (newline port))
+                        (daemon-session-locks-held session)))
+            sessions)
+
+  (display child-process-rec-type port)
+  (newline port)
+  (newline port)
+  (for-each (lambda (session)
+              (for-each (lambda (process)
+                          (child-process->normalized-record process port)
+                          (newline port)
+                          (session-key->recutils session port)
+                          (newline port)
+                          (newline port))
+                        (daemon-session-children session)))
+            sessions))
 
 
 ;;;
 ;;; Options.
 ;;;
 
-(define %options
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix processes")))))
+(define %available-formats
+  '("recutils" "normalized"))
+
+(define (list-formats)
+  (display (G_ "The available formats are:\n"))
+  (newline)
+  (for-each (lambda (f)
+              (format #t "  - ~a~%" f))
+            %available-formats))
 
 (define (show-help)
   (display (G_ "Usage: guix processes
@@ -216,7 +303,32 @@ List the current Guix sessions and their processes."))
   (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
+  (display (G_ "
+  -f, --format=FORMAT    display results as normalized record sets"))
+  (display (G_ "
+      --list-formats     display available formats"))
+  (newline)
   (show-bug-report-information))
+
+(define %options
+  (list (option '(#\h "help") #f #f
+                (lambda args
+                  (show-help)
+                  (exit 0)))
+        (option '(#\V "version") #f #f
+                (lambda args
+                  (show-version-and-exit "guix processes")))
+        (option '(#\f "format") #t #f
+                (lambda (opt name arg result)
+                  (unless (member arg %available-formats)
+                    (leave (G_ "~a: unsupported output format~%") arg))
+                  (alist-cons 'format (string->symbol arg) result)))
+        (option '("list-formats") #f #f
+                (lambda (opt name arg result)
+                  (list-formats)
+                  (exit 0)))))
+
+(define %default-options '((format . recutils)))
 
 
 ;;;
@@ -226,18 +338,16 @@ List the current Guix sessions and their processes."))
 (define-command (guix-processes . args)
   (category plumbing)
   (synopsis "list currently running sessions")
+
   (define options
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                cons
-                '()))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f))
 
   (with-paginated-output-port port
-    (for-each (lambda (session)
-                (daemon-session->recutils session port)
-                (newline port))
-              (daemon-sessions))
+    (match (assoc-ref options 'format)
+      ('normalized
+       (daemon-sessions->normalized-record port (daemon-sessions)))
+      (_ (daemon-sessions->recutils port (daemon-sessions))))
 
     ;; Pass 'R' (instead of 'r') so 'less' correctly estimates line length.
     #:less-options "FRX"))

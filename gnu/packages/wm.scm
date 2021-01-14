@@ -37,6 +37,10 @@
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1206,18 +1210,17 @@ It is inspired by Xmonad and dwm.  Its major features include:
 (define-public cwm
   (package
     (name "cwm")
-    (version "6.6")
+    (version "6.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://leahneukirchen.org/releases/cwm-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0p350pbfn92m21jiq4i324sdskxhs71p435g0mgz7cmzprnhhg92"))))
+        (base32 "022zld29qawd8gl700g4m24qa89il3aks397zkhh66wvzssdblzx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:tests? #f
        #:phases
@@ -1298,14 +1301,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.4.3")
+    (version "3.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
-                           "download/" version "/polybar-" version ".tar"))
+                           "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "0bw22qvbcdvyd0qv3ax48r34rnclbbb6dyb8h8zljq1r3lf15vfl"))))
+        (base32 "1016g4b981c4hl2pr0m09b4wy0ln1zf3mfp09wrxs73zgfdbngyj"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
@@ -1375,12 +1378,12 @@ functionality to display information about the most commonly used services.")
        ("mesa" ,mesa)
        ("pixman" ,pixman)
        ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("xcb-util-errors" ,xcb-util-errors)
        ("xcb-util-wm" ,xcb-util-wm)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("wayland-protocols" ,wayland-protocols)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -1543,7 +1546,7 @@ modules for building a Wayland compositor.")
               ("libmpdclent" ,libmpdclient)
               ("libnl" ,libnl)
               ("pulseaudio" ,pulseaudio)
-              ("spdlog" ,spdlog)
+              ("spdlog" ,spdlog-1.7)
               ("wayland" ,wayland)))
     (native-inputs
      `(("gcc" ,gcc-8)                   ; for #include <filesystem>
@@ -1555,6 +1558,27 @@ modules for building a Wayland compositor.")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
 Wlroots based compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public wlr-randr
+  (package
+    (name "wlr-randr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/wlr-randr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10c8zzp78s5bw34vvjhilipa28bsdx3jbyhnxgp8f8kawh3cvgsc"))))
+    (build-system meson-build-system)
+    (inputs `(("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/emersion/wlr-randr")
+    (synopsis "Utility to manage Wayland compositor outputs")
+    (description "wlr-randr is a utility to manage outputs of a Wayland compositor.")
     (license license:expat))) ; MIT license
 
 (define-public mako
@@ -1585,10 +1609,34 @@ Wlroots based compositors.")
 compositors that support the layer-shell protocol.")
     (license license:expat))) ; MIT license
 
+(define-public kanshi
+  (package
+    (name "kanshi")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/kanshi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nbpgm8qnn7ljsg9vgs35kl8l4rrk542vdcbx8wrn9r909ld3x92"))))
+    (build-system meson-build-system)
+    (inputs `(("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)))
+    (home-page "https://wayland.emersion.fr/kanshi")
+    (synopsis "Hotswappable output profiles for Wayland")
+    (description "Kanshi allows you to define output profiles that are
+automatically enabled and disabled on hotplug.  Kanshi can be used with
+Wayland compositors supporting the wlr-output-management protocol.")
+    (license license:expat))) ; MIT license
+
 (define-public stumpwm
   (package
     (name "stumpwm")
-    (version "19.11")
+    (version "20.11")
     (source
      (origin
        (method git-fetch)
@@ -1597,7 +1645,7 @@ compositors that support the layer-shell protocol.")
              (commit version)))
        (file-name (git-file-name "stumpwm" version))
        (sha256
-        (base32 "1ha8803ll7472kqxsy2xz0v5d4sv8apmc9z631d67m31q0z1m9rz"))))
+        (base32 "1ghs6ihvmb3bz4q4ys1d3h6rdi96xyiw7l2ip7jh54c25049aymf"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
                      ("texinfo" ,texinfo)
@@ -1679,6 +1727,7 @@ productive, customizable lisp based systems.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (program (string-append out "/bin/stumpwm")))
+                 (setenv "HOME" "/tmp")
                  (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
                                 #:dependencies '("stumpwm" "slynk")
@@ -1891,6 +1940,107 @@ between windows.")
     (description "Keyboard layout switcher for StumpWM")
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-numpad-layouts
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-numpad-layouts")
+    (arguments
+     '(#:asd-systems '("numpad-layouts")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/numpad-layouts"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/numpad-layouts")
+    (synopsis "Keyboard numpad layouts for StumpWM")
+    (description "This is a module for handling different keyboards numpad
+layouts in StumpWM.")
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-cpu
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-cpu")
+    (arguments
+     '(#:asd-systems '("cpu")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "modeline/cpu"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/cpu")
+    (synopsis "Modeline support for CPU info")
+    (description "Modeline support for CPU info.")
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-mem
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-mem")
+    (arguments
+     '(#:asd-systems '("mem")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "modeline/mem"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/mem")
+    (synopsis "Modeline support for memory info")
+    (description "Modeline support for memory info.")
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-winner-mode
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-winner-mode")
+    (arguments
+     '(#:asd-systems '("winner-mode")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/winner-mode"))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/winner-mode")
+    (synopsis "Emacs' winner-mode for StumpWM")
+    (description "This module provides a winner-mode for StumpWM similar to the
+one in Emacs.")
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-screenshot
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-screenshot")
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("zpng" ,sbcl-zpng)))
+    (arguments
+     '(#:asd-systems '("screenshot")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/screenshot")))
+         (add-after 'chdir 'fix-build
+           (lambda _
+             (substitute* "screenshot.asd"
+               (("#:zpng")
+                "#:stumpwm #:zpng")))))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/screenshot")
+    (synopsis "Screenshots for StumpWM")
+    (description "This StumpWM module can take screenshots and store them as
+PNG files.")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
@@ -1928,42 +2078,86 @@ formatting, RandR and Xinerama support and EWMH compliance without
 wasting your precious memory.")
       (license license:x11))))
 
-(define-public xclickroot
-  (let ((commit "309fd17174dba4149b5ea66654c6fd02cfcf7c9a")
-        (revision "1"))
+(define-public lemonbar-xft
+  ;; Upstream v2.0 tag is several years behind HEAD
+  (let ((commit "481e12363e2a0fe0ddd2176a8e003392be90ed02"))
     (package
-      (name "xclickroot")
-      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (inherit lemonbar)
+      (name "lemonbar-xft")
+      (version (string-append "2.0." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/phillbush/xclickroot")
+                      (url "https://github.com/drscream/lemonbar-xft")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0fjqkg3wnyks0my1vrzhxfjicsfy8xwnijaazmpz6mhilcqkpvnd"))))
-      (build-system gnu-build-system)
+                  "0588g37h18lv50h7w8vfbwhvc3iajh7sdr53848spaif99nh3mh4"))))
       (inputs
-       `(("libx11" ,libx11)))
+       `(("freetype" ,freetype)
+         ("libxft" ,libxft)
+         ("libx11" ,libx11)
+         ,@(package-inputs lemonbar)))
       (arguments
-       `(#:tests? #f ;no test suite
-         #:make-flags
-         (list ,(string-append "CC=" (cc-for-target))
-               (string-append "PREFIX=" %output))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))
-      (home-page "https://github.com/phillbush/xclickroot")
-      (synopsis "Run a command when a mouse button is pressed on the root window")
-      (description "@code{xclickroot} runs a command every time a given mouse
+       (substitute-keyword-arguments (package-arguments lemonbar)
+         ((#:make-flags make-flags)
+          `(append
+            ,make-flags
+            (list (string-append
+                   "CFLAGS="
+                   (string-join
+                    (list (string-append
+                           "-I" (assoc-ref %build-inputs "freetype")
+                           "/include/freetype2")
+                          (string-append
+                           "-D" "VERSION="
+                           (format #f "'~s'" ,version))))))))))
+      (home-page "https://github.com/drscream/lemonbar-xft")
+      (synopsis
+       (string-append
+        (package-synopsis lemonbar)
+        " with fontconfig support"))
+      (description
+       (string-append
+        (package-description lemonbar)
+        "This is a fork of the @code{lemonbar} package that adds fontconfig
+support, for easier unicode usage.")))))
+
+(define-public xclickroot
+  (package
+    (name "xclickroot")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/phillbush/xclickroot")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1nd5qz0qz5j7gx2jsbcp234giwaa0xmg42vrcjrcf587q9ivakfl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/phillbush/xclickroot")
+    (synopsis "Run a command when a mouse button is pressed on the root window")
+    (description "@code{xclickroot} runs a command every time a given mouse
 button is pressed on the root window.")
-      (license license:public-domain))))
+    (license license:public-domain)))
 
 (define-public xmenu
   (package
     (name "xmenu")
-    (version "3.4")
+    (version "4.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1972,10 +2166,11 @@ button is pressed on the root window.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sw9l87fh03jp03a2v7rhgpyx29yg2x9blzfzp40jwad2whs7m7n"))))
+                "1s70zvsaqnsjqs298vw3py0vcvia68xlks1wcz37pb88bwligz1x"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)
        ("libxft" ,libxft)
        ("freetype" ,freetype)
        ("imlib2" ,imlib2)))
@@ -2052,16 +2247,16 @@ start-up.")
 (define-public xnotify
   (package
     (name "xnotify")
-    (version "0.5.0")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/phillbush/xnotify")
-                    (commit (string-append "v" version))))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ris7jhi7hgw7nxkwkn3zk7n3y4nvnnm6dbz0qs0g2srp2k67v7v"))))
+                "09s29m8z4x3mc3wja2587ik3f6zg16b40adr3nllnpyy1mqnprq5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -2083,4 +2278,33 @@ start-up.")
     (synopsis "Displays a notification on the screen")
     (description "XNotify receives a notification specification in stdin and
 shows a notification for the user on the screen.")
+    (license license:expat)))
+
+(define-public cagebreak
+  (package
+    (name "cagebreak")
+    (version "1.4.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/project-repo/cagebreak")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mnxs1m7jrqdl0asx39nxfzvkp7d4jqpdchi63w2yd1igpj2frb2"))))
+    (build-system meson-build-system)
+    (arguments '(#:configure-flags '("-Dxwayland=true")))
+    (native-inputs
+     `(("pandoc" ,pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pango" ,pango)
+       ("wlroots" ,wlroots)))
+    (home-page "https://github.com/project-repo/cagebreak")
+    (synopsis "Tiling wayland compositor inspired by ratpoison")
+    (description
+     "@command{cagebreak} is a slim, keyboard-controlled, tiling compositor
+for wayland conceptually based on the X11 window manager
+@command{ratpoison}.")
     (license license:expat)))

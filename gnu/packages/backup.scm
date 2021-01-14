@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,7 +149,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -157,7 +158,7 @@ spying and/or modification by the server.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f1jsd5sw2wynjzi7yjqjaf13yhyjfdid91p8yh0jn32y03kjyrz"))))
+                "11mx8q29cr0sryd11awab7y4mhqgbamb1ss77rffjj6in8pb4hdk"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
@@ -569,13 +570,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.14")
+    (version "1.1.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "1fpdj73cgp96xwasdcifxl7q2pr1my2f4vfdjpv771llri3hgfvx"))
+        (base32 "1g62sdzcw3zx4ccky125ciwnzx6z9kwyvskvp7ijmqxqk3nrxjs9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -593,7 +594,8 @@ detection, and lossless compression.")
                        "src/borg/platform/darwin.c"
                        "src/borg/platform/freebsd.c"
                        "src/borg/platform/linux.c"
-                       "src/borg/platform/posix.c"))
+                       "src/borg/platform/posix.c"
+                       "src/borg/platform/syncfilerange.c"))
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
@@ -653,6 +655,7 @@ detection, and lossless compression.")
                         "and not test_access_acl "
                         "and not test_default_acl "
                         "and not test_non_ascii_acl "
+                        "and not test_create_stdin "
                         ;; This test needs the unpackaged pytest-benchmark.
                         "and not benchmark "
                         ;; These tests assume the kernel supports FUSE.
@@ -670,6 +673,19 @@ detection, and lossless compression.")
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
                (copy-recursively "docs/man" man)
+               #t)))
+         (add-after 'install-docs 'install-shell-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion "scripts/shell_completions"
+                 (install-file "bash/borg"
+                               (string-append etc "/bash_completion.d"))
+                 (install-file "zsh/_borg"
+                               (string-append share "/zsh/site-functions"))
+                 (install-file "fish/borg.fish"
+                               (string-append share "/fish/vendor_completions.d")))
                #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -695,50 +711,6 @@ stored.  The authenticated encryption technique makes it suitable for backups
 to not fully trusted targets.  Borg is a fork of Attic.")
     (home-page "https://www.borgbackup.org/")
     (license license:bsd-3)))
-
-(define-public attic
-  (package
-    (name "attic")
-    (version "0.16")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "Attic" version))
-              (sha256
-               (base32
-                "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
-    (build-system python-build-system)
-    (arguments
-     `(;; The tests assume they are run as root:
-       ;; https://github.com/jborg/attic/issues/7
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'build 'set-openssl-prefix
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "ATTIC_OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
-            #t)))))
-    (inputs
-     `(("acl" ,acl)
-       ("openssl" ,openssl)
-       ("python-msgpack" ,python-msgpack)
-
-       ;; Attic is probably incompatible with llfuse > 0.41.
-       ;; These links are to discussions of llfuse compatibility from
-       ;; the borg project. Borg is a recent fork of attic, and attic
-       ;; has not been updated since the fork, so it's likely that
-       ;; llfuse compatibility requirements are still the same.
-       ;; https://github.com/borgbackup/borg/issues/642
-       ;; https://github.com/borgbackup/borg/issues/643
-       ("python-llfuse" ,python-llfuse-0.41)))
-    (synopsis "Deduplicating backup program")
-    (description "Attic is a deduplicating backup program.  The main goal of
-Attic is to provide an efficient and secure way to backup data.  The data
-deduplication technique used makes Attic suitable for daily backups since only
-changes are stored.")
-    (home-page "https://attic-backup.org/")
-    (license license:bsd-3)
-    (properties `((superseded . ,borg)))))
 
 (define-public wimlib
   (package

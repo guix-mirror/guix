@@ -273,7 +273,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "6.3.3")
+    (version "6.5.0")
     (source
      (origin
        (method git-fetch)
@@ -282,7 +282,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zlyk241s6sh5zaqrvfpg4lx7jdifajsdf6c9qhh77vxxh5gwzrc"))))
+        (base32 "0sqd4ddkfc7f7gx02wffvwbqgfbhpkcgyv7v5rh3gx60jca02p4w"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -611,14 +611,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.48.0")
+    (version "5.48.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "12bd53r841r8zsn3v1kzws2qar908p6g6mlnm50kmjkxramr63ga"))))
+        (base32 "0k728l6zi0lkhzyipsb0f2jw53s4xicm7arp33ikhrvc4jlwcp4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -677,15 +677,15 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "19.08.3")
+    (version "20.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/applications/"
+        (uri (string-append "mirror://kde/stable/release-service/"
                             version "/src/ktouch-" version ".tar.xz"))
         (sha256
          (base32
-          "0dqxb3xsjc2rwc9779l5fnr4crhq51bc8ln4azbgnnkzldvq6a4a"))))
+          "1s8pcwakx94aygfyjmyps5b43j4kv6dmfw7n12japcka2yfp9bi2"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases

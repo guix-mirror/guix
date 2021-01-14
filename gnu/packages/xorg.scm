@@ -11,10 +11,10 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -3912,27 +3912,25 @@ alternative implementations like XRandR or TwinView.")
     (license license:x11)))
 
 
-(define xkbcomp-intermediate ; used as input for xkeyboard-config
+(define xkbcomp-intermediate            ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xkbcomp-"
-               version
-               ".tar.bz2"))
-        (sha256
-         (base32
-          "0dflr250nlj6rrnv658f6dm8qx37sj0xfimc3ihay761kwb2q906"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xkbcomp-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0zpjkbap9160pdd6jpgb5f0yg5281w0rkkx1l0i7g887lq1ydk2r"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxkbfile" ,libxkbfile)
-        ("libx11" ,libx11)))
+     `(("xorgproto" ,xorgproto)
+       ("libxkbfile" ,libxkbfile)
+       ("libx11" ,libx11)))
     (native-inputs
-        `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Compile XKB keyboard description")
     (description
@@ -4331,23 +4329,21 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xprop-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0lzp7kyhpwd5hm83j2zm6j3w3z1z5i4ykgg2nwr01ij6dq4znxwc"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xprop-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "18ckr8g1z50zkc01hprkpm1npwbq32yqib4b3l98c95z2q1yv4lv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+     `(("libx11" ,libx11)
+       ("xorgproto" ,xorgproto)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display X server properties")
     (description
@@ -5328,7 +5324,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.9")
+    (version "1.20.10")
     (source
       (origin
         (method url-fetch)
@@ -5336,7 +5332,7 @@ over Xlib, including:
                             "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))
+          "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p"))
         (patches
          (list
           ;; See:
@@ -5759,7 +5755,7 @@ The XCB util module provides the following libraries:
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
         ("libtool" ,libtool)
-        ("python-2" ,python-2)
+        ("python" ,python-wrapper)
         ("pkg-config" ,pkg-config)))
      (arguments
       `(#:phases
@@ -6079,7 +6075,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "362")
+    (version "363")
     (source
      (origin
        (method url-fetch)
@@ -6089,7 +6085,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
              (string-append "ftp://ftp.invisible-island.net/xterm/"
                             "xterm-" version ".tgz")))
        (sha256
-        (base32 "18mch57f5sypgfdbvna22ailcfpnixw0fc5wkf2j3w58dwigwkqx"))))
+        (base32 "0j0bl5z3kmhahf770mbrj2zwm2nvxkhqpwnwbdvbclk5w8wkc6nq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"

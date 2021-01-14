@@ -26,6 +26,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -36,6 +38,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libsigsegv)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xorg))
@@ -43,26 +46,61 @@
 (define-public smalltalk
   (package
     (name "smalltalk")
-    (version "3.2.5")
+    (version "3.2.91")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/smalltalk/smalltalk-"
+      ;; XXX: Revert to mirror://gnu with the next release of Smalltalk.
+      (uri (string-append "https://alpha.gnu.org/gnu/smalltalk/smalltalk-"
                           version ".tar.xz"))
       (sha256
        (base32
-        "1k2ssrapfzhngc7bg1zrnd9n2vyxp9c9m70byvsma6wapbvib6l1"))))
+        "1zb2h5cbz1cwybqjl24lflw359lwj7sjvvhwb4x6miypzhwq4qh0"))
+      ;; XXX: To be removed with the next release of Smalltalk.
+      (patches (search-patches "smalltalk-multiplication-overflow.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("libffi" ,libffi)
+     `(("pkg-config" ,pkg-config)
+       ;; XXX: To be removed with the next release of Smalltalk.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    ;; TODO: These optional dependencies raise the closure size to ~1 GiB
+    ;; from the current ~100 MiB, although some of them might be very
+    ;; useful for end users:
+    ;;  - freeglut
+    ;;  - glib
+    ;;  - gobject-introspection
+    ;;  - gtk+-2
+    ;;  - tcl/tk
+    ;;  - SDL (sdl-union)
+    ;;  - sqlite
+    ;;  - zlib
+    (inputs
+     `(("gmp" ,gmp)
+       ("libffi" ,libffi)
        ("libltdl" ,libltdl)
        ("libsigsegv" ,libsigsegv)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("zip" ,zip)))
+       ("lightning" ,lightning)
+       ("zip" ,zip)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; XXX: To be removed with the next release of Smalltalk.
+         ;; The overflow patch modifies configure.ac, therefore remove
+         ;; old configure script and enforce an autoreconf.
+         (add-before 'bootstrap 'remove-unpatched-configure
+           (lambda _
+             (delete-file "configure")
+             #t))
+         ;; XXX: To be removed with the next release of Smalltalk.
+         ;; We don't want to regenerate the info files.
+         (add-after 'build 'keep-generated-info-manual
+           (lambda _
+             (for-each (lambda (file)
+                         (invoke "touch" file))
+                       (find-files "doc" "\\.info"))
+             #t))
          (add-before 'configure 'fix-libc
            (lambda _
              (let ((libc (assoc-ref %build-inputs "libc")))

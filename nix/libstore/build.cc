@@ -82,7 +82,6 @@ using std::map;
 
 /* Forward definition. */
 class Worker;
-struct Agent;
 
 
 /* A pointer to a goal. */
@@ -263,6 +262,7 @@ public:
     LocalStore & store;
 
     std::shared_ptr<Agent> hook;
+    std::shared_ptr<Agent> substituter;
 
     Worker(LocalStore & store);
     ~Worker();
@@ -1638,12 +1638,6 @@ void DerivationGoal::startBuilder()
        getdents returns the inode of the mount point). */
     env["PWD"] = tmpDirInSandbox;
 
-    /* Compatibility hack with Nix <= 0.7: if this is a fixed-output
-       derivation, tell the builder, so that for instance `fetchurl'
-       can skip checking the output.  On older Nixes, this environment
-       variable won't be set, so `fetchurl' will do the check. */
-    if (fixedOutput) env["NIX_OUTPUT_CHECKED"] = "1";
-
     /* *Only* if this is a fixed-output derivation, propagate the
        values of the environment variables specified in the
        `impureEnvVars' attribute to the builder.  This allows for
@@ -2780,15 +2774,6 @@ private:
     /* Path info returned by the substituter's query info operation. */
     SubstitutablePathInfo info;
 
-    /* Pipe for the substituter's standard output. */
-    Pipe outPipe;
-
-    /* Pipe for the substituter's standard error. */
-    Pipe logPipe;
-
-    /* The process ID of the builder. */
-    Pid pid;
-
     /* Lock on the store path. */
     std::shared_ptr<PathLocks> outputLock;
 
@@ -2801,6 +2786,13 @@ private:
 
     typedef void (SubstitutionGoal::*GoalState)();
     GoalState state;
+
+    /* The substituter. */
+    std::shared_ptr<Agent> substituter;
+
+    /* Either the empty string, or the status phrase returned by the
+       substituter.  */
+    string status;
 
     void tryNext();
 
@@ -2847,7 +2839,7 @@ SubstitutionGoal::SubstitutionGoal(const Path & storePath, Worker & worker, bool
 
 SubstitutionGoal::~SubstitutionGoal()
 {
-    if (pid != -1) worker.childTerminated(pid);
+    if (substituter) worker.childTerminated(substituter->pid);
 }
 
 
@@ -2855,9 +2847,9 @@ void SubstitutionGoal::timedOut()
 {
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ substituter-failed %1% timeout") % storePath);
-    if (pid != -1) {
-        pid_t savedPid = pid;
-        pid.kill();
+    if (substituter) {
+        pid_t savedPid = substituter->pid;
+	substituter.reset();
         worker.childTerminated(savedPid);
     }
     amDone(ecFailed);
@@ -2984,44 +2976,34 @@ void SubstitutionGoal::tryToRun()
 
     printMsg(lvlInfo, format("fetching path `%1%'...") % storePath);
 
-    outPipe.create();
-    logPipe.create();
-
     destPath = repair ? storePath + ".tmp" : storePath;
 
     /* Remove the (stale) output path if it exists. */
     if (pathExists(destPath))
         deletePath(destPath);
 
-    worker.store.setSubstituterEnv();
+    if (!worker.substituter) {
+	const Strings args = { "substitute", "--substitute" };
+	const std::map<string, string> env = {
+	    { "_NIX_OPTIONS",
+	      settings.pack() + "deduplicate="
+	      + (settings.autoOptimiseStore ? "yes" : "no")
+	    }
+	};
+	worker.substituter = std::make_shared<Agent>(settings.guixProgram, args, env);
+    }
 
-    /* Fill in the arguments. */
-    Strings args;
-    args.push_back("guix");
-    args.push_back("substitute");
-    args.push_back("--substitute");
-    args.push_back(storePath);
-    args.push_back(destPath);
+    /* Borrow the worker's substituter.  */
+    if (!substituter) substituter.swap(worker.substituter);
 
-    /* Fork the substitute program. */
-    pid = startProcess([&]() {
+    /* Send the request to the substituter.  */
+    writeLine(substituter->toAgent.writeSide,
+	      (format("substitute %1% %2%") % storePath % destPath).str());
 
-        commonChildInit(logPipe);
-
-        if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
-            throw SysError("cannot dup output pipe into stdout");
-
-        execv(settings.guixProgram.c_str(), stringsToCharPtrs(args).data());
-
-        throw SysError(format("executing `%1% substitute'") % settings.guixProgram);
-    });
-
-    pid.setSeparatePG(true);
-    pid.setKillSignal(SIGTERM);
-    outPipe.writeSide.close();
-    logPipe.writeSide.close();
-    worker.childStarted(shared_from_this(),
-        pid, singleton<set<int> >(logPipe.readSide), true, true);
+    set<int> fds;
+    fds.insert(substituter->fromAgent.readSide);
+    fds.insert(substituter->builderOut.readSide);
+    worker.childStarted(shared_from_this(), substituter->pid, fds, true, true);
 
     state = &SubstitutionGoal::finished;
 
@@ -3036,54 +3018,62 @@ void SubstitutionGoal::finished()
 {
     trace("substitute finished");
 
-    /* Since we got an EOF on the logger pipe, the substitute is
-       presumed to have terminated.  */
-    pid_t savedPid = pid;
-    int status = pid.wait(true);
+    /* Remove the 'guix substitute' process from the list of children.  */
+    worker.childTerminated(substituter->pid);
 
-    /* So the child is gone now. */
-    worker.childTerminated(savedPid);
-
-    /* Close the read side of the logger pipe. */
-    logPipe.readSide.close();
-
-    /* Get the hash info from stdout. */
-    string dummy = readLine(outPipe.readSide);
-    string expectedHashStr = statusOk(status) ? readLine(outPipe.readSide) : "";
-    outPipe.readSide.close();
+    /* If max-jobs > 1, the worker might have created a new 'substitute'
+       process in the meantime.  If that is the case, terminate ours;
+       otherwise, give it back to the worker.  */
+    if (worker.substituter) {
+	substituter.reset ();
+    } else {
+	worker.substituter.swap(substituter);
+    }
 
     /* Check the exit status and the build result. */
     HashResult hash;
     try {
+	auto statusList = tokenizeString<vector<string> >(status);
 
-        if (!statusOk(status))
-            throw SubstError(format("fetching path `%1%' %2%")
-                % storePath % statusToString(status));
-
-        if (!pathExists(destPath))
-            throw SubstError(format("substitute did not produce path `%1%'") % destPath);
-
-        hash = hashPath(htSHA256, destPath);
-
-        /* Verify the expected hash we got from the substituer. */
-        if (expectedHashStr != "") {
-            size_t n = expectedHashStr.find(':');
-            if (n == string::npos)
-                throw Error(format("bad hash from substituter: %1%") % expectedHashStr);
-            HashType hashType = parseHashType(string(expectedHashStr, 0, n));
-            if (hashType == htUnknown)
-                throw Error(format("unknown hash algorithm in `%1%'") % expectedHashStr);
-            Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
-            Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
-            if (expectedHash != actualHash) {
-		if (settings.printBuildTrace)
-		    printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
-			     % storePath % "sha256"
-			     % printHash16or32(expectedHash)
-			     % printHash16or32(actualHash));
-                throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
+	if (statusList.empty()) {
+            throw SubstError(format("fetching path `%1%' (empty status: '%2%')")
+			     % storePath % status);
+	} else if (statusList[0] == "hash-mismatch") {
+	    if (settings.printBuildTrace) {
+		auto hashType = statusList[1];
+		auto expectedHash = statusList[2];
+		auto actualHash = statusList[3];
+		printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
+			 % storePath
+			 % hashType % expectedHash % actualHash);
 	    }
-        }
+	    throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
+	} else if (statusList[0] == "success") {
+	    if (!pathExists(destPath))
+		throw SubstError(format("substitute did not produce path `%1%'") % destPath);
+
+	    std::string hashStr = statusList[1];
+	    size_t n = hashStr.find(':');
+	    if (n == string::npos)
+		throw Error(format("bad hash from substituter: %1%") % hashStr);
+
+	    HashType hashType = parseHashType(string(hashStr, 0, n));
+	    switch (hashType) {
+	    case htUnknown:
+		throw Error(format("unknown hash algorithm in `%1%'") % hashStr);
+	    case htSHA256:
+		hash.first = parseHash16or32(hashType, string(hashStr, n + 1));
+		hash.second = std::atoi(statusList[2].c_str());
+		break;
+	    default:
+		/* The database only stores SHA256 hashes, so compute it.  */
+		hash = hashPath(htSHA256, destPath);
+		break;
+	    }
+	}
+	else
+            throw SubstError(format("fetching path `%1%' (status: '%2%')")
+                % storePath % status);
 
     } catch (SubstError & e) {
 
@@ -3100,9 +3090,8 @@ void SubstitutionGoal::finished()
 
     if (repair) replaceValidPath(storePath, destPath);
 
-    canonicalisePathMetaData(storePath, -1);
-
-    worker.store.optimisePath(storePath); // FIXME: combine with hashPath()
+    /* Note: 'guix substitute' takes care of resetting timestamps and of
+       deduplicating 'destPath', so no need to do it here.  */
 
     ValidPathInfo info2;
     info2.path = storePath;
@@ -3129,16 +3118,38 @@ void SubstitutionGoal::finished()
 
 void SubstitutionGoal::handleChildOutput(int fd, const string & data)
 {
-    assert(fd == logPipe.readSide);
-    if (verbosity >= settings.buildVerbosity) writeToStderr(data);
-    /* Don't write substitution output to a log file for now.  We
-       probably should, though. */
+    if (verbosity >= settings.buildVerbosity
+	&& fd == substituter->builderOut.readSide) {
+	writeToStderr(data);
+	/* Don't write substitution output to a log file for now.  We
+	   probably should, though. */
+    }
+
+    if (fd == substituter->fromAgent.readSide) {
+	/* DATA may consist of several lines.  Process them one by one.  */
+	string input = data;
+	while (!input.empty()) {
+	    /* Process up to the first newline.  */
+	    size_t end = input.find_first_of("\n");
+	    string trimmed = (end != string::npos) ? input.substr(0, end) : input;
+
+	    /* Update the goal's state accordingly.  */
+	    if (status == "") {
+		status = trimmed;
+		worker.wakeUp(shared_from_this());
+	    } else {
+		printMsg(lvlError, format("unexpected substituter message '%1%'") % input);
+	    }
+
+	    input = (end != string::npos) ? input.substr(end + 1) : "";
+	}
+    }
 }
 
 
 void SubstitutionGoal::handleEOF(int fd)
 {
-    if (fd == logPipe.readSide) worker.wakeUp(shared_from_this());
+    worker.wakeUp(shared_from_this());
 }
 
 

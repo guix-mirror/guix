@@ -21,7 +21,6 @@
 (define-module (guix store database)
   #:use-module (sqlite3)
   #:use-module (guix config)
-  #:use-module (guix gexp)
   #:use-module (guix serialization)
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
@@ -29,7 +28,6 @@
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (mkdir-p executable-file?))
-  #:use-module (guix utils)
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -41,10 +39,10 @@
   #:export (sql-schema
             %default-database-file
             store-database-file
+            call-with-database
             with-database
             path-id
             sqlite-register
-            register-path
             register-items
             %epoch
             reset-timestamps))
@@ -325,8 +323,19 @@ ids of items referred to."
                 (sqlite-fold cons '() stmt))
               references)))
 
+(define (timestamp)
+  "Return a timestamp, either the current time of SOURCE_DATE_EPOCH."
+  (match (getenv "SOURCE_DATE_EPOCH")
+    (#f
+     (current-time time-utc))
+    ((= string->number seconds)
+     (if seconds
+         (make-time time-utc 0 seconds)
+         (current-time time-utc)))))
+
 (define* (sqlite-register db #:key path (references '())
-                          deriver hash nar-size time)
+                          deriver hash nar-size
+                          (time (timestamp)))
   "Registers this stuff in DB.  PATH is the store item to register and
 REFERENCES is the list of store items PATH refers to; DERIVER is the '.drv'
 that produced PATH, HASH is the base16-encoded Nix sha256 hash of
@@ -339,9 +348,7 @@ Every store item in REFERENCES must already be registered."
                               #:deriver deriver
                               #:hash hash
                               #:nar-size nar-size
-                              #:time (time-second
-                                      (or time
-                                          (current-time time-utc))))))
+                              #:time (time-second time))))
     ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
     ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
     (add-references db id
@@ -384,44 +391,13 @@ is true."
          (chmod file (if (executable-file? file) #o555 #o444)))
        (utime file 1 1 0 0)))))
 
-(define* (register-path path
-                        #:key (references '()) deriver prefix
-                        state-directory (deduplicate? #t)
-                        (reset-timestamps? #t)
-                        (schema (sql-schema)))
-  "Register PATH as a valid store file, with REFERENCES as its list of
-references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
-given, it must be the name of the directory containing the new store to
-initialize; if STATE-DIRECTORY is given, it must be a string containing the
-absolute file name to the state directory of the store being initialized.
-Return #t on success.
-
-Use with care as it directly modifies the store!  This is primarily meant to
-be used internally by the daemon's build hook.
-
-PATH must be protected from GC and locked during execution of this, typically
-by adding it as a temp-root."
-  (define db-file
-    (store-database-file #:prefix prefix
-                         #:state-directory state-directory))
-
-  (parameterize ((sql-schema schema))
-    (with-database db-file db
-      (register-items db (list (store-info path deriver references))
-                      #:prefix prefix
-                      #:deduplicate? deduplicate?
-                      #:reset-timestamps? reset-timestamps?
-                      #:log-port (%make-void-port "w")))))
-
 (define %epoch
   ;; When it all began.
   (make-time time-utc 0 1))
 
 (define* (register-items db items
                          #:key prefix
-                         (deduplicate? #t)
-                         (reset-timestamps? #t)
-                         registration-time
+                         (registration-time (timestamp))
                          (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in DB.  ITEMS must be in topological order (with
@@ -454,8 +430,6 @@ typically by adding them as temp-roots."
     ;; significant differences when 'register-closures' is called
     ;; consecutively for overlapping closures such as 'system' and 'bootcfg'.
     (unless (path-id db to-register)
-      (when reset-timestamps?
-        (reset-timestamps real-file-name))
       (let-values (((hash nar-size) (nar-sha256 real-file-name)))
         (call-with-retrying-transaction db
           (lambda ()
@@ -466,9 +440,7 @@ typically by adding them as temp-roots."
                                      "sha256:"
                                      (bytevector->base16-string hash))
                              #:nar-size nar-size
-                             #:time registration-time)))
-        (when deduplicate?
-          (deduplicate real-file-name hash #:store store-dir)))))
+                             #:time registration-time))))))
 
   (let* ((prefix   (format #f "registering ~a items" (length items)))
          (progress (progress-reporter/bar (length items)

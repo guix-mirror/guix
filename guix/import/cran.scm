@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 receive)
   #:use-module (web uri)
   #:use-module (guix memoization)
@@ -49,7 +51,9 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (gnu packages)
-  #:export (cran->guix-package
+  #:export (%input-style
+
+            cran->guix-package
             bioconductor->guix-package
             cran-recursive-import
             %cran-updater
@@ -71,6 +75,9 @@
 ;;; cran.r-project.org.
 ;;;
 ;;; Code:
+
+(define %input-style
+  (make-parameter 'variable)) ; or 'specification
 
 (define string->license
   (match-lambda
@@ -126,7 +133,11 @@
 (define (format-inputs names)
   "Generate a sorted list of package inputs from a list of package NAMES."
   (map (lambda (name)
-         (list name (list 'unquote (string->symbol name))))
+         (case (%input-style)
+           ((specification)
+            (list name (list 'unquote (list 'specification->package name))))
+           (else
+            (list name (list 'unquote (string->symbol name))))))
        (sort names string-ci<?)))
 
 (define* (maybe-inputs package-inputs #:optional (type 'inputs))
@@ -139,11 +150,12 @@ package definition."
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
 (define %cran-url "https://cran.r-project.org/web/packages/")
+(define %cran-canonical-url "https://cran.r-project.org/package=")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.11.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.12.  Bioconductor packages should be
 ;; updated together.
-(define %bioconductor-version "3.11")
+(define %bioconductor-version "3.12")
 
 (define* (bioconductor-packages-list-url #:optional type)
   (string-append "https://bioconductor.org/packages/"
@@ -439,6 +451,10 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((bioconductor) %bioconductor-url)
                        ((git)          #f)
                        ((hg)           #f)))
+         (canonical-url-base (case repository
+                               ((cran)         %cran-canonical-url)
+                               ((bioconductor) %bioconductor-url)
+                               ((git)          #f)))
          (uri-helper (case repository
                        ((cran)         cran-uri)
                        ((bioconductor) bioconductor-uri)
@@ -454,7 +470,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((hg)  (assoc-ref meta 'hg))
                        (else (match (listify meta "URL")
                                ((url rest ...) url)
-                               (_ (string-append base-url name))))))
+                               (_ (string-append canonical-url-base name))))))
          (source-url (case repository
                        ((git) (assoc-ref meta 'git))
                        ((hg)  (assoc-ref meta 'hg))
@@ -568,7 +584,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
 
 (define cran->guix-package
   (memoize
-   (lambda* (package-name #:optional (repo 'cran))
+   (lambda* (package-name #:key (repo 'cran) version)
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
      (let ((description (fetch-description repo package-name)))
@@ -577,17 +593,21 @@ s-expression corresponding to that package, or #f on failure."
            (case repo
              ((git)
               ;; Retry import from Bioconductor
-              (cran->guix-package package-name 'bioconductor))
+              (cran->guix-package package-name #:repo 'bioconductor))
              ((hg)
               ;; Retry import from Bioconductor
-              (cran->guix-package package-name 'bioconductor))
+              (cran->guix-package package-name #:repo 'bioconductor))
              ((bioconductor)
               ;; Retry import from CRAN
-              (cran->guix-package package-name 'cran))
-             (else (values #f '()))))))))
+              (cran->guix-package package-name #:repo 'cran))
+             (else
+              (raise (condition
+                      (&message
+                       (message "couldn't find meta-data for R package")))))))))))
 
-(define* (cran-recursive-import package-name #:optional (repo 'cran))
-  (recursive-import package-name repo
+(define* (cran-recursive-import package-name #:key (repo 'cran))
+  (recursive-import package-name
+                    #:repo repo
                     #:repo->guix-package cran->guix-package
                     #:guix-name cran-guix-name))
 
@@ -653,7 +673,7 @@ s-expression corresponding to that package, or #f on failure."
         (input-changes
          (changed-inputs
           pkg
-          (cran->guix-package upstream-name 'bioconductor))))))
+          (cran->guix-package upstream-name #:repo 'bioconductor))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."

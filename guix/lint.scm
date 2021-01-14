@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -1183,7 +1183,7 @@ vulnerability records for PACKAGE by calling PACKAGE-VULNERABILITIES."
           (format #f (G_ "while retrieving upstream info for '~a'")
                   (package-name package))
           #f
-          (package-latest-release* package (force %updaters)))
+          (package-latest-release* package))
     ((? upstream-source? source)
      (if (version>? (upstream-source-version source)
                     (package-version package))

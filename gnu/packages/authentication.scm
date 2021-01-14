@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +33,14 @@
 (define-public oath-toolkit
   (package
     (name "oath-toolkit")
-    (version "2.6.4")
+    (version "2.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "116na9nncpwshl3ww8w3llzwk49igilplxcjy1k6jzl3mmg2bimz"))))
+        (base32 "06f21smb412xads4lygvyb47fcpvhdns0k6h880m9pbzgq6141yj"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO ‘--enable-pskc’ causes xmlsec-related test suite failures.
@@ -115,3 +115,28 @@ and the time-based @dfn{TOTP} algorithm (RFC6238).")
       (description "The Yubico PAM module provides an easy way to integrate the
 YubiKey into your existing user authentication infrastructure.")
       (license license:bsd-2))))
+
+(define-public pamtester
+  (package
+    (name "pamtester")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/pamtester/pamtester/"
+             version "/pamtester-" version ".tar.gz"))
+       (sha256
+        (base32 "1mdj1wj0adcnx354fs17928yn2xfr1hj5mfraq282dagi873sqw3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("linux-pam" ,linux-pam)))
+    (home-page "http://pamtester.sourceforge.net/")
+    (synopsis "Utility for testing pluggable authentication modules (PAM) facility")
+    (description
+     "Pamtester is a tiny utility program to test the pluggable authentication
+modules (PAM) facility, specifically designed to help PAM module authors to
+intensively test their own modules.")
+    (license license:bsd-3)))

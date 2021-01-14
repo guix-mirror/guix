@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -127,14 +127,14 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.21")
+    (version "0.23.22")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                           "download/" version "/p11-kit-" version ".tar.xz"))
       (sha256
-       (base32 "09q6n63qmqcdw6v0fwmhdmsqrcndnp5m9jvby1kxi82wy29s9fpi"))))
+       (base32 "1dn6br4v033d3gp2max9lsr3y4q0nj6iyr1yq3kzi8ym7lal13wa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -168,17 +168,17 @@ living in the same process.")
     (name "gnutls")
     (version "3.6.15")
     (source (origin
-             (method url-fetch)
-             (uri
+              (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
               ;; schism (after version 3.1.5).
-              (string-append "mirror://gnupg/gnutls/v"
-                             (version-major+minor version)
-                             "/gnutls-" version ".tar.xz"))
-             (patches (search-patches "gnutls-skip-trust-store-test.patch"))
-             (sha256
-              (base32
-               "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-" version ".tar.xz"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-cross.patch"))
+              (sha256
+               (base32
+                "0n0m93ymzd0q9hbknxc2ycanz49sqlkyyf73g9fk7n787llc7a0f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? ,(not (or (%current-target-system)
@@ -243,7 +243,10 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(,@(if (hurd-target?)
+     `(,@(if (%current-target-system)             ;for cross-build
+             `(("guile" ,guile-3.0))              ;to create .go files
+             '())
+       ,@(if (hurd-target?)
              '()
              `(("net-tools" ,net-tools)
                ("iproute" ,iproute)               ;for 'ss'
@@ -251,7 +254,8 @@ living in the same process.")
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
        ("which" ,which)
-       ,@(if (hurd-target?) '()
+       ,@(if (hurd-target?)
+             '()
              `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
@@ -309,7 +313,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.1.1g")
+   (version "1.1.1i")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -319,10 +323,10 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/openssl-" version ".tar.gz")))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "0ikdcc038i7jk8h7asq5xcn8b1xc2rrbc88yfm4hqbz3y5s4gc6x"))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))))
+               "0hjj1phcwkz69lx1lrvr9grhpl4y529mwqycqc1hdla1zqsnmgp8"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
@@ -537,18 +541,18 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   "libressl-" version ".tar.gz"))
               (sha256
                (base32
-                "1dnbbnr43jashxivnafmh9gnn57c7ayva788ba03z633k6f18k21"))))
+                "1504a1sf43frw43j14pij0q1f48rm5q86ggrlxxhw708qp7ds4rc"))))
     (build-system gnu-build-system)
     (arguments
-     ;; Do as if 'getentropy' was missing since older Linux kernels lack it
-     ;; and libc would return ENOSYS, which is not properly handled.
+     ;; Do as if 'getentropy' were missing: Linux kernels before 3.17 lack its
+     ;; underlying 'getrandom' system call and ENOSYS isn't properly handled.
      ;; See <https://lists.gnu.org/archive/html/guix-devel/2017-04/msg00235.html>.
      '(#:configure-flags '("ac_cv_func_getentropy=no"
                            ;; Provide a TLS-enabled netcat.
@@ -579,13 +583,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.8.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0b80qmlchf8f071nrrh4ihq64cwicn9rshs34snp73952iyhd3dd"))))
+                "1n1g29f3qzy77xn06dss9nc92wndgm8phgjrvx740sy9xnd5bfzw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -636,7 +640,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1r2k54d2k2smn4c3lpd0z6gdzfqk4654kwbh1p8wqhv5mwbcads8"))))
+                "1dww9m1a2p3a9vpxs5j29f8cdkqywqb4j70z3cnkpl7017yf77hd"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -942,7 +946,7 @@ coding footprint.")
 (define-public dehydrated
   (package
     (name "dehydrated")
-    (version "0.6.5")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -950,7 +954,7 @@ coding footprint.")
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
-                "0dgskgbdd95p13jx6s13p77y15wngb5cm6p4305cf2s54w0bvahh"))))
+                "1yf4kldyd5y13r6qxrkcbbk74ykngq7jzy0351vb2r3ywp114pqw"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils)

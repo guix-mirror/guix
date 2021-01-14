@@ -33,6 +33,7 @@
             installer-locale-page
             installer-menu-page
             installer-network-page
+            installer-substitutes-page
             installer-timezone-page
             installer-hostname-page
             installer-user-page
@@ -73,6 +74,8 @@
   (menu-page installer-menu-page)
   ;; procedure void -> void
   (network-page installer-network-page)
+  ;; procedure void -> void
+  (substitutes-page installer-substitutes-page)
   ;; procedure (zonetab) -> posix-timezone
   (timezone-page installer-timezone-page)
   ;; procedure void -> void

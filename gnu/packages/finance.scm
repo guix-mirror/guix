@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
@@ -493,7 +495,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.8")
+    (version "4.0.9")
     (source
      (origin
        (method url-fetch)
@@ -501,7 +503,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1g00cj1pmckd4xis8r032wmraiv3vd3zc803hnyxa2bnhj8z3bg2"))
+        (base32 "1fvjiagi78f32nxgr2rx8jas8hxfvpp1c8fpfcalvykmlhdc2gva"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -510,21 +512,19 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyaes" ,python-pyaes)
-       ("python-pysocks" ,python-pysocks)
-       ("python-sip" ,python-sip)
-       ("python-pyqt" ,python-pyqt)
-       ("python-ecdsa" ,python-ecdsa)
-       ("python-pbkdf2" ,python-pbkdf2)
-       ("python-requests" ,python-requests)
+     `(("python-pyqt" ,python-pyqt)
        ("python-qrcode" ,python-qrcode)
        ("python-protobuf" ,python-protobuf)
        ("python-aiohttp" ,python-aiohttp)
        ("python-aiohttp-socks" ,python-aiohttp-socks)
        ("python-aiorpcx" ,python-aiorpcx)
        ("python-certifi" ,python-certifi)
+       ("python-bitstring" ,python-bitstring)
+       ("python-attrs" ,python-attrs)
+       ("python-cryptography" ,python-cryptography)
+       ("python-qdarkstyle" ,python-qdarkstyle)
        ("python-dnspython" ,python-dnspython)
-       ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
+       ("libsecp256k1" ,libsecp256k1)))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
@@ -538,7 +538,14 @@ do so.")
                (substitute* "setup.py"
                  (("sys\\.prefix")
                   (format #f "\"~a\"" out)))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'use-libsecp256k1-input
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "electrum/ecc_fast.py"
+               (("library_paths = .* 'libsecp256k1.so.0'.")
+                (string-append "library_paths = ('"
+                               (assoc-ref inputs "libsecp256k1")
+                               "/lib/libsecp256k1.so.0'"))))))))
     (home-page "https://electrum.org/")
     (synopsis "Bitcoin wallet")
     (description
@@ -551,7 +558,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.2.2")
+    (version "4.2.3")
     (source
      (origin
        (method git-fetch)
@@ -560,7 +567,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zk40zbf67wid2s5wg1fknb71409wg0qlvznk44q571v9risrdy7"))))
+        (base32 "1q18p86a3a3wpf9nbpymhyilmaw9vffvwxh4hhx29bywfzvav11f"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -623,7 +630,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.1.5")
+    (version "0.17.1.9")
     (source
      (origin
        (method git-fetch)
@@ -643,7 +650,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32 "0yy9n2qng02j314h8fh5n0mcy6vpdks0yk4d8ifn8hj03f3g2c8b"))))
+        (base32 "0jqss4csvkcrhrmaa3vrnyv6yiwqpbfw7037clx9xcfm4qrrfiwy"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -733,16 +740,24 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.1.5")
+    (version "0.17.1.9")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/monero-project/monero-gui")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             (recursive? #t)))
        (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled monero sources, we already have them.
+           ;; See the 'extract-monero-sources' phase.
+           (delete-file-recursively "monero")
+           #t))
        (sha256
-        (base32 "0qlcqli0wvrjfy89mbgh1hpmk60dxgn5sws93h8lhgyfwx557iw0"))))
+        (base32 "0vpvpvsbbj547yir15g84qy9l9lwbip795zlliz79i7d66l23b1w"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -771,6 +786,7 @@ the Monero command line client and daemon.")
            ;; Some of the monero package source code is required
            ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "monero")
              (invoke "tar" "-xv" "--strip-components=1"
                      "-C" "monero"
                      "-f" (assoc-ref inputs "monero-source"))))
@@ -1229,20 +1245,25 @@ trezord as a regular user instead of needing to it run as root.")
 (define-public trezord
   (package
     (name "trezord")
-    (version "2.0.29")
+    (version "2.0.30")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/trezor/trezord-go")
-              (commit (string-append "v" version))))
+             (url "https://github.com/trezor/trezord-go")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "1ks1fa0027s3xp0z6qp0dxmayvrb4dwwscfhbx7da0khp153f2cp"))
+         "1hzvk0wfgg7b4wpqjk3738yqxlv3pj5i7zxwm0jady2h97hmrqrr"))
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/trezor/trezord-go"))
+    (native-inputs
+     `(("github.com/gorilla-csrf" ,go-github-com-gorilla-csrf)
+       ("github.com/gorilla/handlers" ,go-github-com-gorilla-handlers)
+       ("github.com/gorilla/mux" ,go-github-com-gorilla-mux)
+       ("gopkg.in/natefinch/lumberjack.v2" ,go-gopkg-in-natefinch-lumberjack.v2)))
     (home-page "https://trezor.io")
     (synopsis "Trezor Communication Daemon aka Trezor Bridge (written in Go)")
     (description "This allows a Trezor hardware wallet to communicate to the
@@ -1462,6 +1483,11 @@ entity management.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
+             ;; Fix data specific test failure
+             ;; https://reviews.bitcoinabc.org/rABC67bbd3d0aaee2952ff1cb5da51d1fd0b50c2b63a
+             (substitute* "src/test/rpc_tests.cpp"
+               (("1607731200") "9907731200"))
+
              ;; Disable utilprocess_tests because it never ends.
              ;; It looks like it tries to start /bin/sleep and waits until it
              ;; is in the list of running processes, but /bin/sleep doesn't
@@ -1648,3 +1674,54 @@ generate a variety of reports from them, and provides a web interface.")
     (synopsis "Emacs mode for beancount")
     (description
       "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))
+
+(define-public hledger-web
+  (package
+    (name "hledger-web")
+    (version "1.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hledger-web/hledger-web-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w59nr7mj0nx8z44cvhy1rhlj5rmx0wq4p5nfl4dycfmp7jwvsm1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-decimal" ,ghc-decimal)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-clientsession" ,ghc-clientsession)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-hjsmin" ,ghc-hjsmin)
+       ("hledger" ,hledger)
+       ("ghc-hledger-lib" ,ghc-hledger-lib)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-json" ,ghc-json)
+       ("ghc-megaparsec" ,ghc-megaparsec)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-wai-handler-launch" ,ghc-wai-handler-launch)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-yesod" ,ghc-yesod)
+       ("ghc-yesod-core" ,ghc-yesod-core)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-yesod-static" ,ghc-yesod-static)))
+    (home-page "https://hledger.org")
+    (synopsis "Web-based user interface for the hledger accounting system")
+    (description "This package provides a simple Web-based User
+Interface (UI) for the hledger accounting system.  It can be used as a
+local, single-user UI, or as a multi-user UI for viewing, adding, and
+editing on the Web.")
+    (license license:gpl3)))

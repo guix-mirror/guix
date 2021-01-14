@@ -180,7 +180,7 @@ ISP.")
 (define-public dfu-util
   (package
     (name "dfu-util")
-    (version "0.9")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -188,7 +188,7 @@ ISP.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0czq73m92ngf30asdzrfkzraag95hlrr74imbanqq25kdim8qhin"))))
+                "0hlvc47ccf5hry13saqhc1j5cdq5jyjv4i05kj0mdh3rzj6wagd0"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)))

@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages djvu)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
@@ -887,7 +889,7 @@ using a stylus.")
 (define-public xournalpp
   (package
     (name "xournalpp")
-    (version "1.0.19")
+    (version "1.0.20")
     (source
      (origin
        (method git-fetch)
@@ -896,7 +898,7 @@ using a stylus.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05nx4cmrka6hwdn7r91yy4h46qpa9k7iy9dkgaq3hrkh9z3fxlkq"))))
+        (base32 "1c7n03xm3m4lwcwxgplkn25i8c6s3i7rijbkcx86br1j4jadcs3k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DENABLE_CPPUNIT=ON") ;enable tests
@@ -1428,14 +1430,17 @@ manipulating PDF documents from the command line.  It supports
 (define-public weasyprint
   (package
     (name "weasyprint")
-    (version "51")
+    (version "52.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "WeasyPrint" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FelixSchwarz/WeasyPrint")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0skdzwq7cd715dnnds6abx0k0xmmnmsqp0vb1r1w20sg7abp3sdk"))
-       (patches (search-patches "weasyprint-library-paths.patch"))))
+        (base32
+         "0rcj9yah3bp6bbvkmny3w4csx4l5v49lc7mrk29g0x77qnwswjy7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1447,27 +1452,39 @@ manipulating PDF documents from the command line.  It supports
                    (pango (assoc-ref inputs "pango"))
                    (pangoft2 (assoc-ref inputs "pangoft2")))
                (substitute* "weasyprint/fonts.py"
-                 (("@fontconfig@")
-                  (string-append fontconfig "/lib/libfontconfig.so"))
-                 (("@pangoft2@")
-                  (string-append pango "/lib/libpangoft2-1.0.so")))
+                 (("'fontconfig'")
+                  (format #f "'~a/lib/libfontconfig.so'" fontconfig))
+                 (("'pangoft2-1.0'")
+                  (format #f "'~a/lib/libpangoft2-1.0.so'" pango)))
                (substitute* "weasyprint/text.py"
-                 (("@gobject@")
-                  (string-append glib "/lib/libgobject-2.0.so"))
-                 (("@pango@")
-                  (string-append pango "/lib/libpango-1.0.so"))
-                 (("@pangocairo@")
-                  (string-append pango "/lib/libpangocairo-1.0.so"))))))
-         (add-after 'unpack 'remove-pytest-options
+                 (("'gobject-2.0'")
+                  (format #f "'~a/lib/libgobject-2.0.so'" glib))
+                 (("'pango-1.0'")
+                  (format #f "'~a/lib/libpango-1.0.so'" pango))
+                 (("'pangocairo-1.0'")
+                  (format #f "'~a/lib/libpangocairo-1.0.so'" pango)))
+               #t)))
+         (add-after 'unpack 'disable-linters
+           ;; Their check fails; none of our business.
            (lambda _
              (substitute* "setup.cfg"
-               ;; flake8 and isort syntax checks fail, which is not our
-               ;; business.
-               (("addopts = --flake8 --isort") ""))))
-         (replace 'check
-           (lambda _
-             ;; Run pytest, excluding one failing test.
-             (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
+               ((".*pytest-flake8.*") "")
+               ((".*pytest-isort.*") "")
+               (("--flake8") "")
+               (("--isort") ""))
+             #t))
+         (add-before 'check 'register-dejavu-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; TODO: fix FreeType so that fonts found in XDG_DATA_DIRS are
+             ;; honored.
+             (let* ((HOME "/tmp")
+                    (dejavu (assoc-ref inputs "font-dejavu"))
+                    (fonts-dir (string-append HOME "/.fonts")))
+               (setenv "HOME" HOME)
+               (mkdir-p fonts-dir)
+               (symlink (string-append dejavu "/share/fonts/truetype")
+                        (string-append fonts-dir "/truetype"))
+               (invoke "fc-cache" "-rv")))))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("glib" ,glib)
@@ -1482,7 +1499,8 @@ manipulating PDF documents from the command line.  It supports
        ("python-pyphen" ,python-pyphen)
        ("python-tinycss2" ,python-tinycss2)))
     (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)
+     `(("font-dejavu" ,font-dejavu)     ;tests depend on it
+       ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://weasyprint.org/")
     (synopsis "Document factory for creating PDF files from HTML")

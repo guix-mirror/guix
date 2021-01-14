@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -62,6 +64,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -470,7 +473,7 @@ interface.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -478,7 +481,7 @@ interface.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "0jip413yvyhdaywz0iadc32aaanjnhbx1d1vwzx3z1xbgc4i9svn"))))
+        (base32 "15l7jphy1qjsh6y6kd5mgkxsl6ymm9564g1yypa946jbyrgi8k2m"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -587,7 +590,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-4")
+    (version "2-pre-release-5")
     (source
      (origin
        (method git-fetch)
@@ -598,7 +601,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "00865plmvgl1nj009a4w9bcb5mf0zgqjx7w6slacyqgidjzad6qm"))
+         "1sdafyhiicasd4wyzqnzdyrr16mz55y4b2hf5ya6i7nvm2vyhywl"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -656,7 +659,7 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cl-chanl" ,sbcl-chanl)
+       ("cl-calispel" ,sbcl-calispel)
        ("cl-containers" ,sbcl-cl-containers)
        ("cl-css" ,sbcl-cl-css)
        ("cl-json" ,sbcl-cl-json)
@@ -674,6 +677,7 @@ driven and does not detract you from your daily work.")
        ("log4cl" ,sbcl-log4cl)
        ("mk-string-metrics" ,sbcl-mk-string-metrics)
        ("moptilities" ,sbcl-moptilities)
+       ("named-readtables" ,sbcl-named-readtables)
        ("osicat" ,sbcl-osicat)
        ("parenscript" ,sbcl-parenscript)
        ("plump" ,sbcl-plump)
@@ -706,10 +710,47 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 (define-public sbcl-next
   (deprecated-package "sbcl-next" nyxt))
 
+(define-public gmni
+  (let ((commit "d8f0870446c471a42612d6a8e853ad9b723a6d39")
+        (revision "0"))
+    (package
+      (name "gmni")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~sircmpwn/gmni")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1h0iqm7l0i06glf5b2872w656s1mjdiqva14zh6sl4f5yp7zmvwr"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no check target
+         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("scdoc" ,scdoc)))
+      (home-page "https://sr.ht/~sircmpwn/gmni")
+      (synopsis "Minimalist command line Gemini client")
+      (description "The gmni package includes:
+
+@itemize
+@item A CLI utility (like curl): gmni
+@item A line-mode browser: gmnlm
+@end itemize")
+      (license (list license:gpl3+
+                     (license:non-copyleft
+                      "https://curl.se/docs/copyright.html"
+                      "Used only for files taken from curl."))))))
+
 (define-public bombadillo
   (package
     (name "bombadillo")
-    (version "2.3.1")
+    (version "2.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -717,7 +758,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                     (commit version)))
               (sha256
                (base32
-                "0n0gza9qfx1hxigicyvf6wg1ccc2irvh17yhzpw9gx75ls5ybrjn"))
+                "02w6h44sxzmk3bkdidl8xla0i9rwwpdqljnvcbydx5kyixycmg0q"))
               (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments

@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -587,7 +587,7 @@ testing exception-throwing code with about the same amount of typing.")
 (define-public perl-test-file
   (package
     (name "perl-test-file")
-    (version "1.443")
+    (version "1.444")
     (source
      (origin
        (method url-fetch)
@@ -596,8 +596,7 @@ testing exception-throwing code with about the same amount of typing.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "1mdwb3x8d4l24wsymamsnq2c73a637v4q5kmb5xqqz31iymsdd31"))))
+        (base32 "0195dnvwxxphwbglw6cjid3j7kq15xg46lr7r4468idvadyal6c7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-utf8" ,perl-test-utf8)))

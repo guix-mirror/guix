@@ -18,9 +18,77 @@
 (channel-news
  (version 0)
 
+ (entry (commit "e38d90d497e19e00263fa28961c688a433154386")
+        (title (en "New @option{--with-patch} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-patch}")
+               (fr "Nouvelle option de transformation @option{--with-patch}"))
+        (body
+         (en "The new @option{--with-patch} package transformation option
+applies patches to the specified packages before building them.  The example
+below builds the GNU Core Utilities against a patched C library (glibc):
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Die neue Paketumwandlungsoption @option{--with-patch} wendet
+Patches auf die angegebenen Pakete an, bevor sie erstellt werden. Das folgende
+Beispiel lässt die GNU Core Utilities mit einer gepatchten
+C-Bibliothek (glibc) erstellen:
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-patch} applique des modifications (@i{patches}) aux paquets
+spécifiés avant de les compiler.  L'exemple suivant compile les utilitaires de
+base GNU avec une bibliothèque C (glibc) modifiée :
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
+ (entry (commit "79f9dee3c4c0e6d21066f142116a537207ae7ba4")
+        (title (en "Local substitute servers discovery is now supported")
+               (de "Substitutserver können jetzt im lokalen Netz erkannt werden")
+               (es "Los servidores de sustituciones se pueden descubrir localmente")
+               (fr "La découverte des serveurs de substituts locaux est désormais supportée"))
+        (body
+         (en "The @command{guix-daemon} can now discover local substitute
+servers when the @option{--discover} option is passed.  Only the substitute
+servers started with the @option{--advertise} option will be discovered.  The
+network discovery is based on mDNS and DNS-SD protocols, using Guile-Avahi
+library for now.")
+         (de "Mit dem @command{guix-daemon} können jetzt lokal laufende
+Substitutserver erkannt werden, wenn die Befehlszeilenoption
+@option{--discover} übergeben wurde.  Nur solche Substitutserver werden
+gefunden, die mit der Befehlszeilenoption @option{--advertise} gestartet
+wurden.  Die Ermittlung im Netzwerk verfügbarer Substitutserver baut auf den
+Protokollen mDNS und DNS-SD auf.  Derzeit wird dazu die Bibliothek Guile-Avahi
+benutzt.")
+         (es "El daemon @command{guix-daemon} ahora puede descubrir servidores
+de sustituciones locales cuando se le proporciona la opción
+@option{--discover}.  Únicamente se descubrirán los servidores de
+sustituciones que se hayan arrancado con la opción @option{--advertise}. La
+búsqueda en la red se basa en los protocolos mDNS y DNS-SD, actualmente
+mediante el uso de la biblioteca Guile-Avahi.")
+         (fr "Le @command{guix-daemon} peut désormais découvrir les serveurs
+de substituts locaux lorsque l'option @option{--discover} est passée.  Seuls
+les serveurs de substituts démarrés avec l'option @option{--advertise} seront
+découverts.  La découverte réseau utilise les protocoles mDNS et DNS-SD, pour
+l'instant grâce à la librairie Guile-Avahi.")))
+
  (entry (commit "a9a2fdaabcc78e7a54d9a6bcfa4ee3de308e9a90")
         (title (en "Logical Volume Manager (LVM) now supported on Guix System")
-               (de "Logical Volume Manager (LVM) wird jetzt auf Guix System unterstützt"))
+               (de "Logical Volume Manager (LVM) wird jetzt auf Guix System unterstützt")
+               (es "El sistema Guix ahora implementa también volúmenes lógicos LVM"))
         (body
          (en "On Guix System, the new @code{lvm-device-mapping} variable
 allows you to declare ``mapped devices'' for LVM, the Linux Logical Volume
@@ -48,7 +116,21 @@ Datenträgergruppe (Volume Group) „vg0“ wie folgt deklariert werden:
   (type lvm-device-mapping))
 @end lisp
 
-Siehe @command{info \"(guix.de) Zugeordnete Geräte\"} für nähere Informationen.")))
+Siehe @command{info \"(guix.de) Zugeordnete Geräte\"} für nähere Informationen.")
+         (es "En el sistema Guix, la nueva variable @code{lvm-device-mapping}
+le permite declarar «dispositivos traducidos» para LVM, el gestor de volúmenes
+lógicos de Linux. A continuación se muestra un ejemplo con la declaración de
+los volúmenes lógicos «alfa» y «beta» del grupo de volúmenes «vg0»:
+
+@lisp
+(mapped-device
+  (source \"vg0\")
+  (target (list \"vg0-alfa\" \"vg0-beta\"))
+  (type lvm-device-mapping))
+@end lisp
+
+Véase @command{info \"(guix.es) Dispositivos traducidos\"} para obtener más
+información.")))
 
  (entry (commit "3b6e4e5fd05e72b8a32ff1a2d5e21464260e21e6")
         (title (en "List of substitute keys is now declarative on Guix System")

@@ -183,9 +183,27 @@
            (equal? (list glibc) install)
            (equal? (list (cons guile-1.8.8 guile-2.0.9)) upgrade)))))
 
+(test-assert "manifest-transaction-effects no double install or upgrades"
+  (let* ((m0 (manifest (list guile-1.8.8)))
+         (t  (manifest-transaction
+              (install (list guile-2.0.9 glibc glibc)))))
+    (let-values (((remove install upgrade downgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (null? remove) (null? downgrade)
+           (equal? (list glibc) install)
+           (equal? (list (cons guile-1.8.8 guile-2.0.9)) upgrade)))))
+
 (test-assert "manifest-transaction-effects and downgrades"
   (let* ((m0 (manifest (list guile-2.0.9)))
          (t  (manifest-transaction (install (list guile-1.8.8)))))
+    (let-values (((remove install upgrade downgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (null? remove) (null? install) (null? upgrade)
+           (equal? (list (cons guile-2.0.9 guile-1.8.8)) downgrade)))))
+
+(test-assert "manifest-transaction-effects no double downgrade"
+  (let* ((m0 (manifest (list guile-2.0.9)))
+         (t  (manifest-transaction (install (list guile-1.8.8 guile-1.8.8)))))
     (let-values (((remove install upgrade downgrade)
                   (manifest-transaction-effects m0 t)))
       (and (null? remove) (null? install) (null? upgrade)
@@ -208,6 +226,16 @@
             (remove (list (manifest-pattern (name "guile")))))))
     (and (manifest-transaction-removal-candidate? guile-2.0.9 t)
          (not (manifest-transaction-removal-candidate? glibc t)))))
+
+(test-assert "manifest-transaction-effects no double removal"
+  (let* ((m0 (manifest (list guile-2.0.9)))
+         (t  (manifest-transaction
+              (remove (list (manifest-pattern (name "guile")))))))
+    (let-values (((remove install upgrade downgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (= 1 (length remove))
+           (manifest-transaction-removal-candidate? guile-2.0.9 t)
+           (null? install) (null? downgrade) (null? upgrade)))))
 
 (test-assertm "profile-derivation"
   (mlet* %store-monad
@@ -355,6 +383,16 @@
            (package-transitive-native-search-paths mpl)
            (manifest-entry-search-paths
             (package->manifest-entry mpl)))))
+
+(test-assert "packages->manifest, no duplicates"
+  (let ((expected
+         (manifest
+          (list
+           (package->manifest-entry packages:guile-2.2))))
+        (manifest (packages->manifest
+                   (list packages:guile-2.2 packages:guile-2.2))))
+    (every manifest-entry=? (manifest-entries expected)
+           (manifest-entries manifest))))
 
 (test-equal "packages->manifest, propagated inputs"
   (map (match-lambda

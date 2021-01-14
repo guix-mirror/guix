@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
@@ -64,14 +64,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.11")
+    (version "6.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "1n98hy3zi4klm1xxhb840br1x7hhz0xx8kp5sch84kr07yd26ndq"))))
+                "1vw570pvir73kl4y6fhd6ns936ankimkhb1ii43yh8lr0p1xqbcj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -87,12 +87,6 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'bootstrap
-           ;; Force a bootstrap to fix a ‘cannot find install-sh, install.sh,
-           ;; or shtool’ error since version 6.10.
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t))
          (add-before 'configure 'set-root-sbin
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Don't try to install into "/sbin".
@@ -178,14 +172,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.13.2")
+    (version "4.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "1d7j79c8aggwiv90y2q1yz63d9p5n4paq0fsbdvqpn05d8wn8r17"))
+        (base32 "0hb5fli4kgwg376c289mcmdqszd51vs8pzzrw7j6yr9k7za8a1f1"))
        (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,9 +51,11 @@
                (module-ref (resolve-interface module) variable))))
     (match-lambda
       ("guile"      (ref '(gnu packages guile) 'guile-3.0/libgc-7))
+      ("guile-avahi" (ref '(gnu packages guile-xyz) 'guile-avahi))
       ("guile-json" (ref '(gnu packages guile) 'guile-json-4))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
+      ("guile-semver"  (ref '(gnu packages guile-xyz) 'guile-semver))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
       ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))
@@ -646,18 +649,26 @@ load path."
 
   (program-file "guix-command"
                 #~(begin
+                    ;; Remove the empty extension from the search path.
+                    (set! %load-extensions '(".scm"))
+
                     (set! %load-path
-                      (cons (string-append #$module-directory
-                                           "/share/guile/site/"
-                                           (effective-version))
-                            %load-path))
+                      (append (list (string-append #$module-directory
+                                                   "/share/guile/site/"
+                                                   (effective-version))
+                                    (string-append #$guile "/share/guile/"
+                                                   (effective-version)))
+                              %load-path))
 
                     (set! %load-compiled-path
-                      (cons (string-append #$module-directory
-                                           "/lib/guile/"
-                                           (effective-version)
-                                           "/site-ccache")
-                            %load-compiled-path))
+                      (append (list (string-append #$module-directory
+                                                   "/lib/guile/"
+                                                   (effective-version)
+                                                   "/site-ccache")
+                                    (string-append #$guile "/lib/guile/"
+                                                   (effective-version)
+                                                   "/ccache"))
+                              %load-compiled-path))
 
                     ;; To maximize the chances that locales are set up right
                     ;; out-of-the-box, bundle "common" UTF-8 locales.
@@ -774,6 +785,13 @@ Info manual."
                          (copy-recursively #$miscellany #$output
                                            #:log (%make-void-port "w")))))))
 
+(define (transitive-package-dependencies package)
+  "Return the list of packages propagated by PACKAGE, including PACKAGE
+itself."
+  (match (package-transitive-propagated-inputs package)
+    (((labels packages _ ...) ...)
+     (cons package packages))))
+
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
                         (name (string-append "guix-" version))
@@ -784,6 +802,9 @@ Info manual."
                         (xz (specification->package "xz"))
                         (guix (specification->package "guix")))
   "Return a file-like object that contains a compiled Guix."
+  (define guile-avahi
+    (specification->package "guile-avahi"))
+
   (define guile-json
     (specification->package "guile-json"))
 
@@ -805,17 +826,17 @@ Info manual."
   (define guile-gcrypt
     (specification->package "guile-gcrypt"))
 
+  (define guile-semver
+    (specification->package "guile-semver"))
+
   (define gnutls
     (specification->package "gnutls"))
 
   (define dependencies
-    (match (append-map (lambda (package)
-                         (cons (list "x" package)
-                               (package-transitive-propagated-inputs package)))
-                       (list guile-gcrypt gnutls guile-git guile-json
-                             guile-ssh guile-sqlite3 guile-zlib guile-lzlib))
-      (((labels packages _ ...) ...)
-       packages)))
+    (append-map transitive-package-dependencies
+                (list guile-gcrypt gnutls guile-git guile-avahi
+                      guile-json guile-semver guile-ssh guile-sqlite3
+                      guile-zlib guile-lzlib)))
 
   (define *core-modules*
     (scheme-node "guix-core"
@@ -859,6 +880,11 @@ Info manual."
                                (name name))
                              (scheme-modules* source "guix"))
                  (list *core-modules*)
+
+                 #:extra-files
+                 `(("guix/graph.js" ,(local-file "../guix/graph.js"))
+                   ("guix/d3.v3.js" ,(local-file "../guix/d3.v3.js")))
+
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 

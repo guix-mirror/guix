@@ -89,37 +89,41 @@ GID."
          (id 40000))
         (nix-build-accounts 10 #:group "nixbld")))
 
-(define nix-activation
+(define (nix-activation _)
   ;; Return the activation gexp.
+  #~(begin
+      (use-modules (guix build utils)
+                   (srfi srfi-26))
+      (for-each (cut mkdir-p <>) '("/nix/store" "/nix/var/log"
+                                   "/nix/var/nix/gcroots/per-user"
+                                   "/nix/var/nix/profiles/per-user"))
+      (chown "/nix/store"
+             (passwd:uid (getpw "root")) (group:gid (getpw "nixbld01")))
+      (chmod "/nix/store" #o775)
+      (for-each (cut chmod <> #o777) '("/nix/var/nix/profiles"
+                                       "/nix/var/nix/profiles/per-user"))))
+
+(define nix-service-etc
   (match-lambda
     (($ <nix-configuration> package sandbox build-sandbox-items extra-config)
-     (with-imported-modules (source-module-closure
-                             '((guix build store-copy)))
-       #~(begin
-           (use-modules (guix build utils)
-                        (ice-9 format)
-                        (srfi srfi-1)
-                        (srfi srfi-26))
-           (for-each (cut mkdir-p <>) '("/nix/store" "/nix/var/log"
-                                        "/nix/var/nix/gcroots/per-user"
-                                        "/nix/var/nix/profiles/per-user"))
-           (chown "/nix/store"
-                  (passwd:uid (getpw "root")) (group:gid (getpw "nixbld01")))
-           (chmod "/nix/store" #o775)
-           (for-each (cut chmod <> #o777) '("/nix/var/nix/profiles"
-                                            "/nix/var/nix/profiles/per-user"))
-           (mkdir-p "/etc/nix")
-           (with-output-to-file "/etc/nix/nix.conf"
-             (lambda _
-               (format #t "sandbox = ~a~%" (if #$sandbox "true" "false"))
-               ;; config.nix captures store file names.
-               (format #t "build-sandbox-paths = ~{~a ~}~%"
-                       (append (append-map (cut call-with-input-file <> read)
-                                           '#$(map references-file
-                                                   (list package)))
-                               '#$build-sandbox-items))
-               (for-each (cut display <>) '#$extra-config)
-               (newline))))))))
+     (let ((ref-file (references-file package)))
+       `(("nix/nix.conf"
+          ,(computed-file
+            "nix.conf"
+            #~(begin
+                (use-modules (srfi srfi-26)
+                             (ice-9 format))
+                (with-output-to-file #$output
+                  (lambda _
+                    (define internal-sandbox-paths
+                      (call-with-input-file #$ref-file read))
+
+                    (format #t "sandbox = ~a~%" (if #$sandbox "true" "false"))
+                    ;; config.nix captures store file names.
+                    (format #t "build-sandbox-paths = ~{~a ~}~%"
+                            (append internal-sandbox-paths
+                                    '#$build-sandbox-items))
+                    (for-each (cut display <>) '#$extra-config)))))))))))
 
 (define nix-shepherd-service
   ;; Return a <shepherd-service> for Nix.
@@ -143,6 +147,7 @@ GID."
     (list (service-extension shepherd-root-service-type nix-shepherd-service)
           (service-extension account-service-type nix-accounts)
           (service-extension activation-service-type nix-activation)
+          (service-extension etc-service-type nix-service-etc)
           (service-extension profile-service-type
                              (compose list nix-configuration-package))))
    (description "Run the Nix daemon.")

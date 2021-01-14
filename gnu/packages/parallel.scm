@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -55,14 +55,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20201122")
+    (version "20201222")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0c7zrb26xhbn48kvxs01qyj1vhwrpzkm11xxvi23njb6qi1bz82d"))))
+       (base32 "13kxg2vmy20ciiv1gp96g33bmvma1nh5d66jdix1fqj6xjaizr5n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -108,7 +108,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "20.02.5")
+   (version "20.11.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -116,7 +116,7 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "08qp60rxsny6fcx58xim88avx7f7h7q1vpq3lfw6nlha04r7lan3"))
+              "15h2vs58apgdz02ijgr46090vjyaa81qcm76mm6fxlvkkfd4pyxp"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -195,6 +195,21 @@ by managing a queue of pending work.")
 ;; <https://slurm.schedmd.com/troubleshoot.html#network>.  Thus, keep older
 ;; releases here.  See also <https://issues.guix.gnu.org/44387>.
 
+(define-public slurm-20.02
+  (package
+    (inherit slurm)
+    (version "20.02.6-1")
+    (source (origin
+              (inherit (package-source slurm))
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.schedmd.com/slurm/slurm-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
+
+
 (define-public slurm-19.05
   (package
     (inherit slurm)
@@ -208,6 +223,21 @@ by managing a queue of pending work.")
               (sha256
                (base32
                 "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
+
+;; Same as Debian 10
+(define-public slurm-18.08
+  (package
+    (inherit slurm)
+    (version "18.08.5-2")
+    (source
+      (origin
+        (inherit (package-source slurm))
+        (uri (string-append
+               "https://download.schedmd.com/slurm/slurm-"
+               version ".tar.bz2"))
+        (sha256
+         (base32
+          "0xrj12nmkhvhzi7cyh4yvdm8qa51ji3j82mgpq7sx87g30f9spn4"))))))
 
 (define-public slurm-drmaa
   (package

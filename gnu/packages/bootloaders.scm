@@ -424,7 +424,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -432,7 +432,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "07q3mdsvl4smbiakriq3hnsyyd0q344lsm306q0kgz4hjq1p82v6"))))
+                "0bf8801z6fpd1gz9mxd5pqqj8nq101x393cyw8rpkc712w13nl0h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -898,7 +898,14 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
-              (add-after 'unpack 'set-environment
+              (add-after 'unpack 'patch-rockpro64-config
+                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
+                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
+                (lambda _
+                  (substitute* "configs/rockpro64-rk3399_defconfig"
+                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
+                  #t))
+              (add-after 'patch-rockpro64-config 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
                                                 "/bl31.elf"))

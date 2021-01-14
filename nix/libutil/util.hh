@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <signal.h>
+#include <map>
 #include <functional>
 
 #include <cstdio>
@@ -281,8 +282,10 @@ struct Agent
     /* The process ID of the agent. */
     Pid pid;
 
-    /* The command and arguments passed to the agent.  */
-    Agent(const string &command, const Strings &args);
+    /* The command and arguments passed to the agent along with a list of
+       environment variable name/value pairs.  */
+    Agent(const string &command, const Strings &args,
+	  const std::map<string, string> &env = std::map<string, string>());
 
     ~Agent();
 };

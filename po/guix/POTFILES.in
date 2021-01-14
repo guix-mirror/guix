@@ -25,6 +25,7 @@ gnu/installer/newt/network.scm
 gnu/installer/newt/page.scm
 gnu/installer/newt/partition.scm
 gnu/installer/newt/services.scm
+gnu/installer/newt/substitutes.scm
 gnu/installer/newt/timezone.scm
 gnu/installer/newt/user.scm
 gnu/installer/newt/utils.scm

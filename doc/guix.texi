@@ -21,7 +21,7 @@
 @set SUBSTITUTE-URL https://@value{SUBSTITUTE-SERVER}
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -84,6 +84,8 @@ Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*
 Copyright @copyright{} 2020 raingloom@*
 Copyright @copyright{} 2020 Daniel Brooks@*
+Copyright @copyright{} 2020 John Soo@*
+Copyright @copyright{} 2020 Jonathan Brielmaier@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -829,6 +831,7 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 or later;
 @item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
+@item @uref{https://www.nongnu.org/guile-avahi/, Guile-Avahi};
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0
@@ -847,6 +850,10 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 @command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
 version 0.13.0 or later.
+
+@item
+@uref{https://ngyro.com/software/guile-semver.html, Guile-Semver} for
+the @code{crate} importer (@pxref{Invoking guix import}).
 
 @item
 When @url{http://www.bzip.org, libbz2} is available,
@@ -1290,7 +1297,7 @@ master node:
 @end example
 
 This will attempt to connect to each of the build machines specified in
-@file{/etc/guix/machines.scm}, make sure Guile and the Guix modules are
+@file{/etc/guix/machines.scm}, make sure Guix is
 available on each machine, attempt to export to the machine and import
 from it, and report any error in the process.
 
@@ -1577,6 +1584,36 @@ Compress build logs according to @var{type}, one of @code{gzip},
 Unless @option{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
 them with Bzip2 by default.
+
+@item --discover[=yes|no]
+Whether to discover substitute servers on the local network using mDNS
+and DNS-SD.
+
+This feature is still experimental. However, here are a few
+considerations.
+
+@enumerate
+@item
+It might be faster/less expensive than fetching from remote servers;
+@item
+There are no security risks, only genuine substitutes will be used
+(@pxref{Substitute Authentication});
+@item
+An attacker advertising @command{guix publish} on your LAN cannot serve
+you malicious binaries, but they can learn what software you’re
+installing;
+@item
+Servers may serve substitute over HTTP, unencrypted, so anyone on the
+LAN can see what software you’re installing.
+@end enumerate
+
+It is also possible to enable or disable substitute server discovery at
+run-time by running:
+
+@example
+herd discover guix-daemon on
+herd discover guix-daemon off
+@end example
 
 @item --disable-deduplication
 @cindex deduplication
@@ -2355,9 +2392,9 @@ bootloaders.
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
-Guix System only supports ext4, btrfs, and JFS file systems.  In particular,
-code that reads file system UUIDs and labels only works for these file system
-types.}.  For the ESP, if you have one and assuming it is
+Guix System only supports ext4, btrfs, JFS, and F2FS file systems.  In
+particular, code that reads file system UUIDs and labels only works for these
+file system types.}.  For the ESP, if you have one and assuming it is
 @file{/dev/sda1}, run:
 
 @example
@@ -2750,7 +2787,7 @@ the command prints and, similar to what we saw above, paste these two
 lines in your terminal and @file{.bash_profile}:
 
 @example
-GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+GUIX_PROFILE="$HOME/.config/guix/current"
 . "$GUIX_PROFILE/etc/profile"
 @end example
 
@@ -7311,6 +7348,29 @@ parameters available to cargo.  It will also remove an included
 defined by the crate.
 @end defvr
 
+@defvr {Scheme Variable} chicken-build-system
+This variable is exported by @code{(guix build-system chicken)}.  It
+builds @uref{https://call-cc.org/, CHICKEN Scheme} modules, also called
+``eggs'' or ``extensions''.  CHICKEN generates C source code, which then
+gets compiled by a C compiler, in this case GCC.
+
+This build system adds @code{chicken} to the package inputs, as well as
+the packages of @code{gnu-build-system}.
+
+The build system can't (yet) deduce the egg's name automatically, so just like
+with @code{go-build-system} and its @code{#:import-path}, you should define
+@code{#:egg-name} in the package's @code{arguments} field.
+
+For example, if you are packaging the @code{srfi-1} egg:
+
+@lisp
+(arguments '(#:egg-name "srfi-1"))
+@end lisp
+
+Egg dependencies must be defined in @code{propagated-inputs}, not @code{inputs}
+because CHICKEN doesn't embed absolute references in compiled eggs.
+Test dependencies should go to @code{native-inputs}, as usual.
+@end defvr
 
 @defvr {Scheme Variable} copy-build-system
 This variable is exported by @code{(guix build-system copy)}.  It
@@ -7878,6 +7938,7 @@ Which D compiler is used can be specified with the @code{#:ldc}
 parameter which defaults to @code{ldc}.
 @end defvr
 
+@anchor{emacs-build-system}
 @defvr {Scheme Variable} emacs-build-system
 This variable is exported by @code{(guix build-system emacs)}.  It
 implements an installation procedure similar to the packaging system
@@ -10306,6 +10367,24 @@ This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
 Git commit SHA1 identifier or a tag.
 
+@item --with-patch=@var{package}=@var{file}
+Add @var{file} to the list of patches applied to @var{package}, where
+@var{package} is a spec such as @code{python@@3.8} or @code{glibc}.
+@var{file} must contain a patch; it is applied with the flags specified
+in the @code{origin} of @var{package} (@pxref{origin Reference}), which
+by default includes @code{-p1} (@pxref{patch Directories,,, diffutils,
+Comparing and Merging Files}).
+
+As an example, the command below rebuilds Coreutils with the GNU C
+Library (glibc) patched with the given patch:
+
+@example
+guix build coreutils --with-patch=glibc=./glibc-frob.patch
+@end example
+
+In this example, glibc itself as well as everything that leads to
+Coreutils in the dependency graph is rebuilt.
+
 @cindex test suite, skipping
 @item --without-tests=@var{package}
 Build @var{package} without running its tests.  This can be useful in
@@ -10408,6 +10487,13 @@ source tarball.
 The returned source tarball is the result of applying any patches and
 code snippets specified in the package @code{origin} (@pxref{Defining
 Packages}).
+
+@cindex source, verification
+As with other derivations, the result of building a source derivation
+can be verified using the @option{--check} option (@pxref{build-check}).
+This is useful to validate that a (potentially already built or
+substituted, thus cached) package source matches against its declared
+hash.
 
 Note that @command{guix build -S} compiles the sources only of the
 specified packages.  They do not include the sources of statically
@@ -10951,6 +11037,13 @@ When @option{--recursive} is added, the importer will traverse the
 dependency graph of the given upstream package recursively and generate
 package expressions for all those packages that are not yet in Guix.
 
+When @option{--style=specification} is added, the importer will generate
+package definitions whose inputs are package specifications instead of
+references to package variables.  This is useful when generated package
+definitions are to be appended to existing user modules, as the list of
+used package modules need not be changed.  The default is
+@option{--style=variable}.
+
 When @option{--archive=bioconductor} is added, metadata is imported from
 @uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
 packages for the analysis and comprehension of high-throughput
@@ -11234,6 +11327,25 @@ in Guix.
 @cindex OCaml
 Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
 repository used by the OCaml community.
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@item --repo
+Select the given repository (a repository name).  Possible values include:
+@itemize
+@item @code{opam}, the default opam repository,
+@item @code{coq} or @code{coq-released}, the stable repository for coq packages,
+@item @code{coq-core-dev}, the repository that contains development versions of coq,
+@item @code{coq-extra-dev}, the repository that contains development versions
+      of coq packages.
+@end itemize
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -12167,6 +12279,11 @@ The signing key pair must be generated before @command{guix publish} is
 launched, using @command{guix archive --generate-key} (@pxref{Invoking
 guix archive}).
 
+When the @option{--advertise} option is passed, the server advertises
+its availability on the local network using multicast DNS (mDNS) and DNS
+service discovery (DNS-SD), currently @i{via} Guile-Avahi (@pxref{Top,,,
+guile-avahi, Using Avahi in Guile Scheme Programs}).
+
 The general syntax is:
 
 @example
@@ -12846,9 +12963,12 @@ ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 LockHeld: /gnu/store/@dots{}-perl-ipc-cmd-0.96.lock
 LockHeld: /gnu/store/@dots{}-python-six-bootstrap-1.11.0.lock
 LockHeld: /gnu/store/@dots{}-libjpeg-turbo-2.0.0.lock
-ChildProcess: 20495: guix offload x86_64-linux 7200 1 28800
-ChildProcess: 27733: guix offload x86_64-linux 7200 1 28800
-ChildProcess: 27793: guix offload x86_64-linux 7200 1 28800
+ChildPID: 20495
+ChildCommand: guix offload x86_64-linux 7200 1 28800
+ChildPID: 27733
+ChildCommand: guix offload x86_64-linux 7200 1 28800
+ChildPID: 27793
+ChildCommand: guix offload x86_64-linux 7200 1 28800
 @end example
 
 In this example we see that @command{guix-daemon} has three clients:
@@ -12857,12 +12977,12 @@ integration tool; their process identifier (PID) is given by the
 @code{ClientPID} field.  The @code{SessionPID} field gives the PID of the
 @command{guix-daemon} sub-process of this particular session.
 
-The @code{LockHeld} fields show which store items are currently locked by this
-session, which corresponds to store items being built or substituted (the
-@code{LockHeld} field is not displayed when @command{guix processes} is not
-running as root).  Last, by looking at the @code{ChildProcess} field, we
-understand that these three builds are being offloaded (@pxref{Daemon Offload
-Setup}).
+The @code{LockHeld} fields show which store items are currently locked
+by this session, which corresponds to store items being built or
+substituted (the @code{LockHeld} field is not displayed when
+@command{guix processes} is not running as root).  Last, by looking at
+the @code{ChildPID} and @code{ChildCommand} fields, we understand that
+these three builds are being offloaded (@pxref{Daemon Offload Setup}).
 
 The output is in Recutils format so we can use the handy @command{recsel}
 command to select sessions of interest (@pxref{Selection Expressions,,,
@@ -12875,6 +12995,45 @@ $ sudo guix processes | \
 ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
+
+Additional options are listed below.
+
+@table @code
+@item --format=@var{format}
+@itemx -f @var{format}
+Produce output in the specified @var{format}, one of:
+
+@table @code
+@item recutils
+The default option. It outputs a set of Session recutils records
+that include each @code{ChildProcess} as a field.
+
+@item normalized
+Normalize the output records into record sets (@pxref{Record Sets,,,
+recutils, GNU recutils manual}).  Normalizing into record sets allows
+joins across record types.  The example below lists the PID of each
+@code{ChildProcess} and the associated PID for @code{Session} that
+spawned the @code{ChildProcess} where the @code{Session} was started
+using @command{guix build}.
+
+@example
+$ guix processes --format=normalized | \
+    recsel \
+    -j Session \
+    -t ChildProcess \
+    -p Session.PID,PID \
+    -e 'Session.ClientCommand ~ "guix build"'
+PID: 4435
+Session_PID: 4278
+
+PID: 4554
+Session_PID: 4278
+
+PID: 4646
+Session_PID: 4278
+@end example
+@end table
+@end table
 
 @node System Configuration
 @chapter System Configuration
@@ -13209,7 +13368,8 @@ The default label includes the kernel name and version.
 @item @code{keyboard-layout} (default: @code{#f})
 This field specifies the keyboard layout to use in the console.  It can be
 either @code{#f}, in which case the default keyboard layout is used (usually
-US English), or a @code{<keyboard-layout>} record.
+US English), or a @code{<keyboard-layout>} record. @xref{Keyboard Layout},
+for more information.
 
 This keyboard layout is in effect as soon as the kernel has booted.  For
 instance, it is the keyboard layout in effect when you type a passphrase if
@@ -15019,6 +15179,10 @@ disables the timeout.
 The type of compression used for build logs---one of @code{gzip},
 @code{bzip2}, or @code{none}.
 
+@item @code{discover?} (default: @code{#f})
+Whether to discover substitute servers on the local network using mDNS
+and DNS-SD.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
@@ -15225,6 +15389,14 @@ The TCP port to listen for connections.
 @item @code{host} (default: @code{"localhost"})
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
+
+@item @code{advertise?} (default: @code{#f})
+When true, advertise the service on the local network @i{via} the DNS-SD
+protocol, using Avahi.
+
+This allows neighboring Guix devices with discovery on (see
+@code{guix-configuration} above) to discover this @command{guix publish}
+instance and to automatically download substitutes from it.
 
 @item @code{compression} (default: @code{'(("gzip" 3))})
 This is a list of compression method/level tuple used when compressing
@@ -17102,6 +17274,10 @@ only restarts services that are not currently running, which is
 conservative: it minimizes disruption but leaves outdated services
 running.
 
+Use @command{herd status} to find out candidates for restarting.
+@xref{Services}, for general information about services.  Common
+services to restart would include @code{ntpd} and @code{ssh-daemon}.
+
 By default, the @code{mcron} service is restarted.  This ensures that
 the latest version of the unattended upgrade job will be used next time.
 
@@ -18451,6 +18627,12 @@ This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password.
+
+Note that @code{xfce4-panel} and its plugin packages should be installed in
+the same profile to ensure compatibility.  When using this service, you should
+add extra plugins (@code{xfce4-whiskermenu-plugin},
+@code{xfce4-weather-plugin}, etc.) to the @code{packages} field of your
+@code{operating-system}.
 @end defvr
 
 @deftp {Data Type} xfce-desktop-configuration
@@ -21046,6 +21228,30 @@ Mailutils Manual}, for details.
 @end table
 @end deftp
 
+@subsubheading Radicale Service
+@cindex CalDAV
+@cindex CardDAV
+
+@deffn {Scheme Variable} radicale-service-type
+This is the type of the @uref{https://radicale.org, Radicale} CalDAV/CardDAV
+server whose value should be a @code{radicale-configuration}.
+@end deffn
+
+@deftp {Data Type} radicale-configuration
+Data type representing the configuration of @command{radicale}.
+
+@table @asis
+@item @code{package} (default: @code{radicale})
+The package that provides @command{radicale}.
+
+@item @code{config-file} (default: @code{%default-radicale-config-file})
+File-like object of the configuration file to use, by default it will listen
+on TCP port 5232 of @code{localhost} and use the @code{htpasswd} file at
+@file{/var/lib/radicale/users} with no (@code{plain}) encryption.
+
+@end table
+@end deftp
+
 @node Messaging Services
 @subsection Messaging Services
 
@@ -21917,13 +22123,10 @@ where monitoring these statistics is desirable.
 @defvar {Scheme variable} prometheus-node-exporter-service-type
 This is the service type for the
 @uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
-service, its value must be a @code{prometheus-node-exporter-configuration}
-record as in this example:
+service, its value must be a @code{prometheus-node-exporter-configuration}.
 
 @lisp
-(service prometheus-node-exporter-service-type
-         (prometheus-node-exporter-configuration
-           (web-listen-address ":9100")))
+(service prometheus-node-exporter-service-type)
 @end lisp
 @end defvar
 
@@ -21936,6 +22139,14 @@ The prometheus-node-exporter package to use.
 
 @item @code{web-listen-address} (default: @code{":9100"})
 Bind the web interface to the specified address.
+
+@item @code{textfile-directory} (default: @code{"/var/lib/prometheus/node-exporter"})
+This directory can be used to export metrics specific to this machine.
+Files containing metrics in the text format, with the filename ending in
+@code{.prom} should be placed in this directory.
+
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass to the Prometheus node exporter.
 
 @end table
 @end deftp
@@ -22112,7 +22323,7 @@ Defaults to @samp{"zabbix"}.
 Unique, case sensitive hostname which is required for active checks and
 must match hostname as configured on the server.
 
-Defaults to @samp{"Zabbix server"}.
+Defaults to @samp{""}.
 
 @end deftypevr
 
@@ -25571,6 +25782,9 @@ Owner's group of the @code{cuirass} process.
 @item @code{interval} (default: @code{60})
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
+
+@item @code{queue-size} (default: @code{1})
+Size of the database writer queue.
 
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
@@ -31344,10 +31558,12 @@ each other:
 @table @code
 
 @item extension-graph
-Emit in Dot/Graphviz format to standard output the @dfn{service
+Emit to standard output the @dfn{service
 extension graph} of the operating system defined in @var{file}
 (@pxref{Service Composition}, for more information on service
-extensions).
+extensions).  By default the output is in Dot/Graphviz format, but you
+can choose a different format with @option{--graph-backend}, as with
+@command{guix graph} (@pxref{Invoking guix graph, @option{--backend}}):
 
 The command:
 
@@ -31359,10 +31575,13 @@ shows the extension relations among services.
 
 @anchor{system-shepherd-graph}
 @item shepherd-graph
-Emit in Dot/Graphviz format to standard output the @dfn{dependency
+Emit to standard output the @dfn{dependency
 graph} of shepherd services of the operating system defined in
 @var{file}.  @xref{Shepherd Services}, for more information and for an
 example graph.
+
+Again, the default output format is Dot/Graphviz, but you can pass
+@option{--graph-backend} to select a different one.
 
 @end table
 
@@ -32699,10 +32918,15 @@ Bootstrapping in our context refers to how the distribution gets built
 ``from nothing''.  Remember that the build environment of a derivation
 contains nothing but its declared inputs (@pxref{Introduction}).  So
 there's an obvious chicken-and-egg problem: how does the first package
-get built?  How does the first compiler get compiled?  Note that this is
-a question of interest only to the curious hacker, not to the regular
-user, so you can shamelessly skip this section if you consider yourself
-a ``regular user''.
+get built?  How does the first compiler get compiled?
+
+It is tempting to think of this question as one that only die-hard
+hackers may care about.  However, while the answer to that question is
+technical in nature, its implications are wide-ranging.  How the
+distribution is bootstrapped defines the extent to which we, as
+individuals and as a collective of users and hackers, can trust the
+software we run.  It is a central concern from the standpoint of
+@emph{security} and from a @emph{user freedom} viewpoint.
 
 @cindex bootstrap binaries
 The GNU system is primarily made of C code, with libc at its core.  The

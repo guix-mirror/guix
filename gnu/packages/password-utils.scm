@@ -307,15 +307,19 @@ applications, there is xclip integration." )
 (define-public yapet
   (package
     (name "yapet")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://yapet.guengel.ch/downloads/yapet-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0b1v0whf70dfjzlwqwwvfv526s828skjvm4xvwly3vcvcmpz59sh"))))
+        (base32 "0hpibsdry259cmvps35isr6jn9cd9fsk3r1h0ppjx9zxfrpqwldg"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc",name "-" ,version))))
     (inputs
      `(("argon2" ,argon2)
        ("ncurses" ,ncurses)
@@ -900,7 +904,7 @@ between hosts and entries in the password store.")
        `(("gmp" ,gmp)
          ("libpcap" ,libpcap)
          ("nss" ,nss)
-         ("openssl" ,openssl-1.0)
+         ("openssl" ,openssl)
          ("python" ,python-2)           ; For "python" and "python2" shebangs
          ("ruby" ,ruby)                 ; For genincstats.rb
          ("zlib" ,zlib)))

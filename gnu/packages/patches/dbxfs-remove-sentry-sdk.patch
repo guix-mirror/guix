@@ -54,7 +54,7 @@ index 89e25c6..f940d47 100644
 @@ -43,7 +43,6 @@ setup(
          "privy>=6.0,<7",
          "keyring>=15.1.0",
-         "keyrings.alt>=3.1,<4",
+         "keyrings.alt>=3.1,<5",
 -        "sentry_sdk>=0.3,<1",
      ],
      extras_require={

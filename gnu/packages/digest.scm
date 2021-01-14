@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,8 +22,43 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (ice-9 match))
+
+(define-public wyhash
+  (package
+    (name "wyhash")
+    (version "5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wangyi-fudan/wyhash")
+                    (commit (string-append "wyhash_v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "03ljs5iw9zrm3bydwggjvpwrcwmsd75h3dv1j4am4hw3h22cjdjc"))))
+    (build-system trivial-build-system) ;; source-only package
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (string-append (assoc-ref %outputs "out")))
+                (include (string-append out "/include"))
+                (doc (string-append out "/share/doc/" ,name "-" ,version))
+                (source (assoc-ref %build-inputs "source")))
+           (with-directory-excursion source
+             (install-file "wyhash.h" include)
+             (install-file "LICENSE" doc)
+             (install-file "README.md" doc))
+           #t))))
+    (home-page "https://github.com/wangyi-fudan/wyhash")
+    (synopsis "Embeddable hash function and random number generator")
+    (description "This package provides a portable hash function and random
+number generator suitable for use in data structures.  Provided by default in
+Zig, V, and Nim programming language standard libraries.")
+    (license license:unlicense)))
 
 (define-public xxhash
   (package

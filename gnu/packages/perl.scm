@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1711,7 +1712,7 @@ and objects.")
 (define-public perl-common-sense
   (package
     (name "perl-common-sense")
-    (version "3.74")
+    (version "3.75")
     (source
      (origin
        (method url-fetch)
@@ -1719,7 +1720,7 @@ and objects.")
                            "common-sense-" version ".tar.gz"))
        (sha256
         (base32
-         "1wxv2s0hbjkrnssvxvsds0k213awg5pgdlrpkr6xkpnimc17s7vp"))))
+         "0zhfp8f0czg69ycwn7r6ayg6idm5kyh2ai06g5s6s07kli61qsm8"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/common-sense")
     (synopsis "Sane defaults for Perl programs")
@@ -2032,14 +2033,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.18")
+    (version "4.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1dnnf6bjz0fi9hk8gzmsklmh5y0z137vk62k3d7s88q30maf3rk3"))))
+        (base32 "061940vyj9y3rzwq47z2a3f5i5rfpa90ccz7fgz228zr7njkvfpr"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -4055,6 +4056,41 @@ environment, other than a fixed list of specified variables.  Compilation
 errors are rethrown automatically.")
     (license (package-license perl))))
 
+(define-public perl-eval-withlexicals
+  (package
+    (name "perl-eval-withlexicals")
+    (version "1.003006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/Eval-WithLexicals-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0x09mq0q745cxkw3xgr0h7dil7p1pdq3l5299kj3mk2ijkk2gwb6"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-tinyrepl
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (wrap-program (string-append out "/bin/tinyrepl")
+                          `("PERL5LIB" ":" prefix
+                            (,(getenv "PERL5LIB")
+                             ,(string-append out "/lib/perl5/site_perl"))))
+                        #t))))))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "https://metacpan.org/release/Eval-WithLexicals")
+    (synopsis "Lexical scope evaluation library for Perl")
+    (description "The Eval::WithLexicals Perl library provides support for
+lexical scope evaluation.  This package also includes the @command{tinyrepl}
+command, which can be used as a minimal Perl read-eval-print loop (REPL).")
+    (license (package-license perl))))
+
 (define-public perl-exception-class
   (package
     (name "perl-exception-class")
@@ -5571,18 +5607,18 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.004000")
+    (version "1.004003")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
+         "1grg8saa318bs4x2wqnww7y0nra7azrzg35bk5pgvkwxzwbkpvjv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-without-module" ,perl-test-without-module)))
+     `(("perl-test-needs" ,perl-test-needs)))
     (inputs
      `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
     (home-page "https://metacpan.org/release/JSON-MaybeXS")
@@ -8412,14 +8448,14 @@ with performing the actual translation of text.
 (define-public perl-pod-simple
   (package
     (name "perl-pod-simple")
-    (version "3.35")
+    (version "3.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
                                   "Pod-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0gg11ibbc02l2aw0bsv4jx0jax8z0apgfy3p5csqnvhlsb6218cr"))))
+                "1icagrjqw1azmff82h17cbrhqgql7rg21gz64mjpiqqq0cpfpz59"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Pod-Simple")
     (synopsis "Parsing library for text in Pod format")

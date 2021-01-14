@@ -2,8 +2,9 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,53 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
+(define-public breeze
+  (package
+    (name "breeze")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0dpk1w7zcafrzf46j060i1qb0fwqpsflkfzr6gcar81llmjnc4b1"))))
+    (build-system qt-build-system)
+    ;; TODO: Warning at /gnu/store/…-kpackage-5.34.0/…/KF5PackageMacros.cmake:
+    ;;   warnings during generation of metainfo for org.kde.breezedark.desktop:
+    ;;   Package type "Plasma/LookAndFeel" not found
+    ;; TODO: Check whether is makes sence splitting into several outputs, like
+    ;; Debian does:
+    ;; - breeze-cursor-theme
+    ;; - "out", "devel"
+    ;; - kde-style-breeze - Widget style
+    ;; - kde-style-breeze-qt4 - propably not useful
+    ;; - kwin-style-breeze
+    ;; - qml-module-qtquick-controls-styles-breeze - QtQuick style
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kcmutils" ,kcmutils) ; optional
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kde-frameworkintegration" ,kde-frameworkintegration) ; optional
+       ("kdecoration" ,kdecoration)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes) ; for optional kde-frameworkintegration
+       ("kpackage" ,kpackage)
+       ("kwayland" ,kwayland) ; optional
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative) ; optional
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://invent.kde.org/plasma/breeze")
+    (synopsis "Default KDE Plasma theme")
+    (description "Artwork, styles and assets for the Breeze visual style for
+the Plasma Desktop.  Breeze is the default theme for the KDE Plasma desktop.")
+    (license license:gpl2+)))
+
 (define-public kdecoration
   (package
     (name "kdecoration")
@@ -52,12 +100,41 @@
     (inputs
      `(("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
-    (home-page "https://cgit.kde.org/kdecoration.git")
+    (home-page "https://invent.kde.org/plasma/kdecoration")
     (synopsis "Plugin based library to create window decorations")
     (description "KDecoration is a library to create window decorations.
 These window decorations can be used by for example an X11 based window
 manager which re-parents a Client window to a window decoration frame.")
     (license license:lgpl3+)))
+
+(define-public ksshaskpass
+  (package
+    (name "ksshaskpass")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/" version
+                                  "/ksshaskpass-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1k2va2v9051f71w78dn3gihk642iyy5yzrkcfnp97fag8g6dpisi"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/plasma/ksshaskpass")
+    (synopsis "Front-end for ssh-add using kwallet")
+    (description "Ksshaskpass is a front-end for @code{ssh-add} which stores the
+password of the ssh key in KWallet.  Ksshaskpass is not meant to be executed
+directly, you need to tell @code{ssh-add} about it.  @code{ssh-add} will then
+call it if it is not associated to a terminal.")
+    (license license:gpl2+)))
 
 (define-public kscreenlocker
   (package
@@ -119,7 +196,7 @@ manager which re-parents a Client window to a window decoration frame.")
        ("solid" ,solid)
        ("wayland" ,wayland)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
-    (home-page "https://cgit.kde.org/kscreenlocker.git")
+    (home-page "https://invent.kde.org/plasma/kscreenlocker")
     (synopsis "Screen locking library")
     (description
      "@code{kscreenlocker} is a library for creating secure lock screens.")

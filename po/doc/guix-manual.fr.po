@@ -41,7 +41,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2020-11-05 17:27+0100\n"
-"PO-Revision-Date: 2020-11-20 14:37+0100\n"
+"PO-Revision-Date: 2020-11-24 17:52+0100\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -15988,7 +15988,7 @@ msgstr "{Procédure Scheme} copy-recursively @var{source} @var{destination} @"
 #: doc/guix.texi:8277
 msgid "[#:log (current-output-port)] [#:follow-symlinks? #f] [#:keep-mtime? #f] Copy @var{source} directory to @var{destination}.  Follow symlinks if @var{follow-symlinks?} is true; otherwise, just preserve them.  When @var{keep-mtime?} is true, keep the modification time of the files in @var{source} on those of @var{destination}.  Write verbose output to the @var{log} port."
 msgstr ""
-"[#:log (current-output-port)] [#:follow-symlinks ? #f] [#:keep-mtime ? #f] \n"
+"[#:log (current-output-port)] [#:follow-symlinks? #f] [#:keep-mtime? #f] \n"
 "Copie le répertoire @var{source} dans @var{destination}.  Suivez les liens symboliques si @var{follow-symlinks?} est vrai ; sinon, conservez-les.  Lorsque @var{keep-mtime?} est vrai, conservez les heures de modification des fichiers dans @var{source} sur celles de @var{destination}.  Écrivez une sortie verbeuse sur le port @var{log}."
 
 #. type: deffn
@@ -16091,7 +16091,7 @@ msgstr "{Procédure Scheme} find-files @var{dir} [@var{pred}] @"
 #: doc/guix.texi:8336
 msgid "[#:stat lstat] [#:directories? #f] [#:fail-on-error? #f] Return the lexicographically sorted list of files under @var{dir} for which @var{pred} returns true.  @var{pred} is passed two arguments: the absolute file name, and its stat buffer; the default predicate always returns true.  @var{pred} can also be a regular expression, in which case it is equivalent to @code{(file-name-predicate @var{pred})}.  @var{stat} is used to obtain file information; using @code{lstat} means that symlinks are not followed.  If @var{directories?} is true, then directories will also be included.  If @var{fail-on-error?} is true, raise an exception upon error."
 msgstr ""
-"[#:stat lstat] [#:directories ? #f] [#:fail-on-error ? #f] \n"
+"[#:stat lstat] [#:directories? #f] [#:fail-on-error? #f] \n"
 "Renvoie la liste des fichiers triés lexicographiquement sous @var{dir} pour lesquels @var{pred} renvoie « vrai ».  Deux arguments sont passés à @var{pred} : le nom absolu du fichier et son tampon stat ; le prédicat par défaut renvoie toujours « vrai ».  @var{pred} peut également être une expression régulière, auquel cas elle est équivalente à @code{(file-name-predicate @var{pred})}.  @var{stat} est utilisé pour obtenir des informations sur les fichiers ; l'utilisation de @code{lstat} signifie que les liens symboliques ne sont pas suivis.  Si @var{directories?} est vrai, alors les répertoires seront également inclus.  Si @var{fail-on-error?} est vrai, il lance une exception en cas d'erreur."
 
 #. type: Plain text

@@ -45,6 +45,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -516,14 +517,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.20")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1r511qr95q0ywdaql3pdjiwzkfqxhhfzb13ilvl7mznfm4iv1myg"))))
+        (base32 "1lcjy1b9krnb2gk72qd1fvivlfiyfvknfi3wngyvyk9ifzijr9nm"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -898,7 +899,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.5.6")
+    (version "10.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -906,7 +907,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i257h0zdypdfj5wkg6ck9pxlkph0jvjs92k22pjr6gnx5lxs1gz"))
+                "1s3vfm73911cddjhgpcbkya6nz7ag2zygg56qqzwscn5ybv28j7b"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -956,6 +957,10 @@ Language.")
          "-DDEFAULT_COLLATION=utf8_general_ci"
          "-DMYSQL_DATADIR=/var/lib/mysql"
          "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+
+         ;; Do not install the benchmark suite.
+         "-DINSTALL_SQLBENCHDIR=false"
+
          (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
          (string-append "-DCMAKE_INSTALL_RPATH=" (assoc-ref %outputs "lib")
                         "/lib")
@@ -985,14 +990,26 @@ Language.")
              ;; to other variables such as $INSTALL_INCLUDEDIR, which does
              ;; not work when the latter uses an absolute file name.
              (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
-               (("@CMAKE_INSTALL_PREFIX@/@INSTALL_INCLUDEDIR@")
-                "@INSTALL_INCLUDEDIR@"))
+               (("%s/@INSTALL_INCLUDEDIR@")
+                (string-append "@INSTALL_INCLUDEDIR@"))
+               ;; As of 10.5.8, the mariadb_config program tries to be
+               ;; clever and computes the installation directory relative
+               ;; to /proc/self/exe when running on Linux.  Make it fall
+               ;; back to the old behaviour.
+               (("defined\\(__linux__\\)")
+                "0"))
              (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
                (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
                 "@INSTALL_INCLUDEDIR@"))
+             (substitute* "support-files/mariadb.pc.in"
+               (("^(include|bin|script|doc|man)dir=\\$\\{prefix\\}/" _ dir)
+                (string-append dir "dir=")))
              (substitute* "include/CMakeLists.txt"
                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
                 "${INSTALL_INCLUDEDIR}"))
+             (substitute* "cmake/mariadb_connector_c.cmake"
+               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
+                "${INSTALL_BINDIR}"))
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
@@ -1005,7 +1022,20 @@ Language.")
                       "main.explain_non_select"
                       "main.stat_tables"
                       "main.stat_tables_innodb"
+                      "main.upgrade_MDEV-19650"
                       "roles.acl_statistics"
+
+                      ;; FIXME: This test checks various table encodings and
+                      ;; fails because Guix defaults to UTF8 instead of the
+                      ;; upstream default latin1_swedish_ci.  It's not easily
+                      ;; substitutable because several encodings are tested.
+                      "main.sp2"
+
+                      ;; XXX: This test occasionally fails on i686-linux:
+                      ;; <https://jira.mariadb.org/browse/MDEV-24458>
+                      ,@(if (string-prefix? "i686" (%current-system))
+                            '("main.myisampack")
+                            '())
 
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
@@ -1077,12 +1107,12 @@ Language.")
                 (("\\$basedir/share/mysql")
                  (string-append lib "/share/mysql")))
 
-              ;; Remove unneeded files for testing.
               (with-directory-excursion lib
-                (for-each delete-file-recursively
-                          '("mysql-test" "sql-bench"))
-                ;; And static libraries.
+                ;; Remove tests.
+                (delete-file-recursively "mysql-test")
+                ;; Remove static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
+
               (with-directory-excursion out
                 (delete-file "share/man/man1/mysql-test-run.pl.1")
                 ;; Delete huge and unnecessary executables.
@@ -1158,21 +1188,26 @@ developed in C/C++ to MariaDB and MySQL databases.")
     (license license:lgpl2.1+)))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
-(define-public postgresql
+(define-public postgresql-13
   (package
     (name "postgresql")
-    (version "10.13")
+    (version "13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))
+                "07z6zwr58dckaa97yl9ml240z83d1lhgaxw9aq49i8lsp21mqd0j"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl")
+     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl"
+                           ;; PostgreSQL installs its own Makefile (should it?).
+                           ;; Prevent it from retaining needless references to
+                           ;; the build tools in order to save size.
+                           "MKDIR_P=mkdir -p" "INSTALL_BIN=install -c"
+                           "LD=ld" "TAR=tar")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
@@ -1204,33 +1239,44 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
-(define-public postgresql-10 postgresql)
-
 (define-public postgresql-11
   (package
-    (inherit postgresql)
+    (inherit postgresql-13)
     (name "postgresql")
     (version "11.6")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
+(define-public postgresql-10
+  (package
+    (inherit postgresql-11)
+    (version "10.13")
+    (source (origin
+              (inherit (package-source postgresql-11))
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))))))
+
 (define-public postgresql-9.6
   (package
-    (inherit postgresql)
-    (name "postgresql")
+    (inherit postgresql-10)
     (version "9.6.16")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-10))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "1rr2dgv4ams8r2lp13w85c77rkmzpb88fjlc28mvlw6zq2fblv2w"))))))
+
+(define-public postgresql postgresql-13)
 
 (define-public python-pymysql
   (package
@@ -2117,19 +2163,43 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "5.0.7")
+    (version "6.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "0ax8sf3vw0yadr41kzc04917scrg5wir1d94zmbz00b8pzm79nv1"))))
+                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Delete bundled jemalloc, as the package will use the libc one
+               '(begin (delete-file-recursively "deps/jemalloc")
+                       #t))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("procps" ,procps) ; for tests
+       ("tcl" ,tcl)))     ; for tests
     (arguments
-     '(#:tests? #f ; tests related to master/slave and replication fail
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'use-correct-tclsh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "runtest"
+               (("^TCLSH=.*")
+                (string-append "TCLSH="
+                               (assoc-ref inputs "tcl")
+                               "/bin/tclsh")))
+             #t))
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             ;; Disable failing tests
+             (substitute* "tests/test_helper.tcl"
+               (("    integration/replication[^-]") "")
+               (("    integration/replication-4") "")
+               (("    integration/replication-psync") ""))
+             #t)))
        #:make-flags `("CC=gcc"
                       "MALLOC=libc"
                       "LDFLAGS=-ldl"
@@ -2340,7 +2410,25 @@ database.")
              (chdir "libraries/liblmdb")
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out")))
-            #t)))))
+            #t))
+         (add-after 'install 'create-pkg-config-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/pkgconfig"))
+               (with-output-to-file (string-append out "/lib/pkgconfig/liblmdb.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=~a~@
+                           libdir=~a/lib~@
+                           includedir=~a/include~@
+                           ~@
+                           Name: liblmdb~@
+                           Version: ~a~@
+                           Description: Lightning Memory-Mapped Database library~@
+                           Libs: -L${libdir} -llmdb~@
+                           Cflags: -I${includedir}~%"
+                           out out out out ,version)))
+                 #t))))))
     (home-page "https://symas.com/lmdb/")
     (synopsis "Lightning Memory-Mapped Database library")
     (description
@@ -3750,9 +3838,6 @@ algorithm implementations.")
 implementation, along with tools for interoperability with pandas, NumPy, and
 other traditional Python scientific computing packages.")
     (license license:asl2.0)))
-
-(define-public python2-pyarrow
-  (package-with-python2 python-pyarrow))
 
 (define-public python-crate
   (package

@@ -17,14 +17,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer proxy)
+  #:use-module (gnu installer utils)
   #:use-module (gnu services herd)
   #:export (set-http-proxy
             clear-http-proxy))
-
-(define-syntax-rule (with-silent-shepherd exp ...)
-  (parameterize ((shepherd-message-port
-                  (%make-void-port "w")))
-    exp ...))
 
 (define (set-http-proxy proxy)
   (with-silent-shepherd

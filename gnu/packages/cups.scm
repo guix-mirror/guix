@@ -418,17 +418,16 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.9")
+    (version "3.20.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "1prdbp410405xrfggjc7y34nzljg7jnbgjzalgv4khwwma4i299n"))
+                "04fvdyjyjbkviy3awgm7g43p3lrvrsmgaqz8bwra22g7v2rpa5hb"))
               (modules '((guix build utils)))
-              (patches (search-patches "hplip-fix-bug-1898438.patch"
-                                       "hplip-remove-imageprocessor.patch"))
+              (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
                   ;; Delete non-free blobs: .so files, pre-compiled
@@ -449,6 +448,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                      "locatedriverdir = $(pkglibexecdir)\n"))
                   #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "ppd"))
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
     (synopsis "HP printer drivers")
     (description
@@ -476,6 +476,8 @@ should only be used as part of the Guix cups-pk-helper service.")
                          (assoc-ref %outputs "out") "/lib/cups/filter")
          ,(string-append "--with-cupsbackenddir="
                          (assoc-ref %outputs "out") "/lib/cups/backend")
+         ,(string-append "--with-hpppddir="
+                         (assoc-ref %outputs "ppd") "/share/ppd/HP")
          ,(string-append "--with-icondir="
                          (assoc-ref %outputs "out") "/share/applications")
          ,(string-append "--with-systraydir="
@@ -537,7 +539,7 @@ should only be used as part of the Guix cups-pk-helper service.")
          (add-before 'configure 'fix-build-with-python-3.8
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python (assoc-ref inputs "python")))
-               ;; XXX: The configure script of looks for Python headers in the
+               ;; XXX: The configure script looks for Python headers in the
                ;; wrong places as of version 3.20.3.  Help it by adding the
                ;; include directory on C_INCLUDE_PATH.
                (when python
@@ -717,6 +719,41 @@ printer/driver specific, but spooler-independent PPD file.")
                         (("^MODTIME[[:blank:]]*=.*$")
                          "MODTIME = echo Thu Jan 01 01:00:00 1970\n"))
                       #t))
+                  (add-before 'install 'make-install-dirs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Make missing install dirs
+                      (let ((out (assoc-ref outputs "out"))
+                            (dirs '("/share/cups/model"
+                                    "/share/foomatic/db/source/opt"
+                                    "/share/foomatic/db/source/printer"
+                                    "/share/foomatic/db/source/driver"
+                                    "/lib/cups/filter")))
+                        (for-each (lambda (dir)
+                                    (mkdir-p (string-append out dir)))
+                                  dirs))))
+                  (add-after 'install 'wrap-wrappers
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (ghostscript (assoc-ref inputs "ghostscript"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (sed (assoc-ref inputs "sed")))
+                        (for-each (lambda (file)
+                                    (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append ghostscript "/bin:"
+                                                         coreutils "/bin:"
+                                                         sed "/bin")))))
+                                  (find-files (string-append
+                                               out "/bin") "wrapper$")))))
+                  (add-after 'install 'install-cups-filters-symlinks
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each
+                         (lambda (file)
+                           (symlink file
+                                    (string-append out "/lib/cups/filter/"
+                                                   (basename file))))
+                         (find-files (string-append out "/bin"))))))
                   (add-after 'install 'remove-pdf
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Remove 'manual.pdf' which is (1) useless (it's a
@@ -730,7 +767,9 @@ printer/driver specific, but spooler-independent PPD file.")
        #:tests? #f                                ;no tests
        #:make-flags '("CC=gcc")))
     (inputs
-     `(("ghostscript" ,ghostscript)
+     `(("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("ghostscript" ,ghostscript)
        ("foomatic-filters" ,foomatic-filters)))   ;for 'foomatic-rip'
     (native-inputs
      `(("bc" ,bc)

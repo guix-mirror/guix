@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
+;;; Copyright © 2020 Paul A. Patience <paul@apatience.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1061,3 +1062,41 @@ signals to Linux processes.")
     (description "This package provides Lua module for nonblocking system
 shell command executions.")
     (license license:bsd-3)))
+
+(define-public fennel
+  (package
+    (name "fennel")
+    (version "0.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~technomancy/fennel")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17pdcwhfw754fblppw46qphnsvxrn3b7066cz54lv8c0c12iryim"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "fennelview.lua") #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'patch-fennel
+           (lambda _
+             (substitute* "fennel"
+               (("/usr/bin/env lua") (which "lua")))
+             #t)))))
+    (inputs `(("lua" ,lua)))
+    (home-page "https://fennel-lang.org/")
+    (synopsis "A Lisp that compiles to Lua")
+    (description
+     "Fennel is a programming language that brings together the speed,
+simplicity, and reach of Lua with the flexibility of a Lisp syntax and macro
+system.")
+    (license license:expat)))

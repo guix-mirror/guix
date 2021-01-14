@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,6 +414,149 @@ in C/C++.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))))
 
+(define-public mozjs-78
+  (package
+    (inherit mozjs-60)
+    (version "78.5.0")
+    (source (origin
+              (method url-fetch)
+              ;; TODO: Switch to IceCat source once available on ftp.gnu.org.
+              (uri (string-append "https://archive.mozilla.org/pub/firefox"
+                                  "/releases/" version "esr/source/firefox-"
+                                  version "esr.source.tar.xz"))
+              (sha256
+               (base32
+                "1442yjmwz69hkfcvh8kkb60jf4c9ms0pac04nc3xw2da13v4zxai"))))
+    (arguments
+     `(#:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
+       #:modules ((guix build cargo-utils)
+                  ,@%gnu-build-system-modules)
+       #:test-target "check-jstests"
+       #:configure-flags
+       '(;; Disable debugging symbols to save space.
+         "--disable-debug"
+         "--disable-debug-symbols"
+         ;; This is important because without it gjs will segfault during the
+         ;; configure phase.  With jemalloc only the standalone mozjs console
+         ;; will work.
+         "--disable-jemalloc"
+         "--enable-tests"
+         "--enable-hardening"
+         "--enable-optimize"
+         "--enable-release"
+         "--enable-rust-simd"
+         "--enable-readline"
+         "--enable-shared-js"
+         "--with-system-icu"
+         "--with-system-nspr"
+         "--with-system-zlib"
+         "--with-intl-api")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-cargo-checksums
+           (lambda _
+             (let ((null-hash
+                    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
+               (for-each (lambda (file)
+                           (format #t "patching checksums in ~a~%" file)
+                           (substitute* file
+                             (("^checksum = \".*\"")
+                              (string-append "checksum = \"" null-hash "\""))))
+                         (find-files "." "Cargo\\.lock$"))
+               (for-each generate-all-checksums
+                         '("js" "third_party/rust"))
+               #t)))
+         (replace 'configure
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
+             ;; The configure script does not accept environment variables as
+             ;; arguments.  It also must be run from a different directory,
+             ;; but not the root directory either.
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir "run-configure-from-here")
+               (chdir "run-configure-from-here")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
+                                                 "/bin/autoconf"))
+               (apply invoke "../js/src/configure"
+                      (cons (string-append "--prefix=" out)
+                            configure-flags))
+               #t)))
+         (add-after 'unpack 'adjust-for-icu-68
+           (lambda _
+             (with-directory-excursion "js/src/tests"
+               ;; The test suite expects a lightly patched ICU 67.  Since
+               ;; Guix is about to switch to ICU 68, massage the tests to
+               ;; work with that instead of patching ICU.  Try removing this
+               ;; phase for newer versions of mozjs.
+
+               ;; These tests look up locale names and expects to get
+               ;; "GB" instead of "UK".
+               (substitute* "non262/Intl/DisplayNames/language.js"
+                 (("Traditionell, GB")
+                  "Traditionell, UK"))
+               (substitute* "non262/Intl/DisplayNames/region.js"
+                 (("\"GB\": \"GB\"")
+                  "\"GB\": \"UK\""))
+
+               ;; XXX: Some localized time formats have changed, and
+               ;; substitution fails for accented characters, even though
+               ;; it works in the REPL(?).  Just delete these for now.
+               (delete-file "non262/Intl/Date/toLocaleString_timeZone.js")
+               (delete-file "non262/Intl/Date/toLocaleDateString_timeZone.js")
+
+               ;; Similarly, these get an unexpected "A" suffix when looking
+               ;; up a time in the "ar-MA-u-ca-islamicc" locale, which is
+               ;; tricky to substitute.
+               (delete-file "non262/Intl/DateTimeFormat/format_timeZone.js")
+               (delete-file "non262/Intl/DateTimeFormat/format.js")
+
+               ;; This file compares a generated list of ICU locale names
+               ;; with actual lookups.  Some have changed slightly, i.e.
+               ;; daf-Latn-ZZ -> daf-Latn-CI, so drop it for simplicity.
+               (delete-file "non262/Intl/Locale/likely-subtags-generated.js"))
+
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (with-directory-excursion "../js/src/tests"
+               (substitute* "shell/os.js"
+                 ;; FIXME: Why does the killed process have an exit status?
+                 ((".*killed process should not have exitStatus.*")
+                  ""))
+
+               ;; XXX: Delete all tests that test time zone functionality,
+               ;; because the test suite uses /etc/localtime to figure out
+               ;; the offset from the hardware clock, which does not work
+               ;; in the build container.  See <tests/non262/Date/shell.js>.
+               (delete-file-recursively "non262/Date")
+               (delete-file "non262/Intl/DateTimeFormat/tz-environment-variable.js")
+
+               (setenv "JSTESTS_EXTRA_ARGS"
+                       (string-join
+                        (list
+                         ;; Do not run tests marked as "random".
+                         "--exclude-random"
+                         ;; Exclude web platform tests.
+                         "--wpt=disabled"
+                         ;; Respect the daemons configured number of jobs.
+                         (string-append "--worker-count="
+                                        (number->string (parallel-job-count)))))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf-2.13)
+       ("automake" ,automake)
+       ("llvm" ,llvm)                   ;for llvm-objdump
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-3)
+       ("rust" ,rust)
+       ("cargo" ,rust "cargo")))
+    (inputs
+     `(("icu4c" ,icu4c-68)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))))
+
 (define mozilla-compare-locales
   (origin
     (method hg-fetch)
@@ -550,8 +694,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "78.5.0-guix0-preview1")
-(define %icecat-build-id "20201117000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "78.6.1-guix0-preview1")
+(define %icecat-build-id "20210107000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -573,11 +717,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1442yjmwz69hkfcvh8kkb60jf4c9ms0pac04nc3xw2da13v4zxai"))))
+              "1kp75838a38x4h0w98qn01g9asn7jlgm64bz7n70353bnr6bf1qd"))))
 
-         (upstream-icecat-base-version "78.5.0") ; maybe older than base-version
+         (upstream-icecat-base-version "78.6.1") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "bcfe407570cae32d00dd33a268de0e0593166f7b")
+         (gnuzilla-commit "10ca84bd9d255caeed506ef36bd3dbe2ad6375ab")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -589,7 +733,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "1pg8fjjg91qyrv7za585ds1xrdvmybbkf2jmkff107fh5y23lxrg"))))
+              "07i3pfbzprnmzrilsh13jjrrk0jixpb9nrrqxzzdvzr2gz06vw29"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
@@ -1161,11 +1305,11 @@ standards of the IceCat project.")
        (cpe-version . ,(first (string-split version #\-)))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20201117000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20201215000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "78.5.0")
+    (version "78.6.0")
     (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
@@ -1445,7 +1589,7 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "92abc26b9c80383e974fb0234f22e06fea793be2"))
+        ,(let ((changeset "18be92a3f0388fe1b69941a50cdbadbf2c95b885"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
@@ -1454,7 +1598,7 @@ standards of the IceCat project.")
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "0468k3qrqs9w1vva2fdxvwqdsypqpsdy5iixgx58dqivchg4qlf9")))))
+               "1w21g19l93bcna20260cgxjsh17pznd3kdfvyrn23wjkslgpbyi3")))))
        ("autoconf" ,autoconf-2.13)
        ("cargo" ,rust-1.41 "cargo")
        ("clang" ,clang)

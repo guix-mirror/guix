@@ -180,7 +180,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "13.0")
+    (version "14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -188,7 +188,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0mw0ybrqj7hvf8lqs5gjzip464hfnixw453lr0mqzlng3b5266wn"))
+               "0qf20rgg0ysrnvg3359j56ndls07qmfn5rsy9r85bc42jdfpfd58"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -242,7 +242,7 @@ rates.")
 
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("check" ,check-0.14)
+     `(("check" ,check)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("m4" ,m4)
@@ -523,7 +523,7 @@ module-gsettings is loaded in the sound server.")
 (define-public rnnoise
   (package
     (name "rnnoise")
-    (version "0.9")
+    (version "0.91")
     (source
      (origin
        (method git-fetch)
@@ -532,7 +532,7 @@ module-gsettings is loaded in the sound server.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18bq5b50xw3d4r1ildinafpg3isb9y216430h4mm9wr3ir7h76a7"))))
+        (base32 "11pwisbcks7g0mdgcrrv49v3ci1l6m26bbb7f67xz4pr1hai5dwc"))))
     (build-system cmake-build-system)
     (arguments
      ;; No tests.
@@ -556,7 +556,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
 (define-public noisetorch
   (package
     (name "noisetorch")
-    (version "0.7.2-beta")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -565,7 +565,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06xlqjma8h7lcnqgc9226blps6m9dp487hk71lslfxj0jkay548k"))))
+        (base32 "115sq4waq048bv82lnq5sblf62m50yvyakx7x06qq359v7qf5ji1"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lawl/NoiseTorch"

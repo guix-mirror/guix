@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,12 +120,29 @@
 (define-peg-pattern condition-string all (and QUOTE (* STRCHR) QUOTE))
 (define-peg-pattern condition-var all (+ (or (range #\a #\z) "-" ":")))
 
-(define (get-opam-repository)
+(define* (get-opam-repository #:optional repo)
   "Update or fetch the latest version of the opam repository and return the
 path to the repository."
-  (receive (location commit _)
-    (update-cached-checkout "https://github.com/ocaml/opam-repository")
-    location))
+  (let ((url (cond
+               ((or (not repo) (equal? repo 'opam))
+                "https://github.com/ocaml/opam-repository")
+               ((string-prefix? "coq-" (symbol->string repo))
+                "https://github.com/coq/opam-coq-archive")
+               ((equal? repo 'coq) "https://github.com/coq/opam-coq-archive")
+               (else (throw 'unknown-repository repo)))))
+    (receive (location commit _)
+      (update-cached-checkout url)
+      (cond
+        ((or (not repo) (equal? repo 'opam))
+         location)
+        ((equal? repo 'coq)
+         (string-append location "/released"))
+        ((string-prefix? "coq-" (symbol->string repo))
+         (string-append location "/" (substring (symbol->string repo) 4)))
+        (else location)))))
+
+;; Prevent Guile 3 from inlining this procedure so we can mock it in tests.
+(set! get-opam-repository get-opam-repository)
 
 (define (latest-version versions)
   "Find the most recent version from a list of versions."
@@ -160,6 +178,7 @@ path to the repository."
   (substitute-char
     (cond
       ((equal? name "ocamlfind") "ocaml-findlib")
+      ((equal? name "coq") name)
       ((string-prefix? "ocaml" name) name)
       ((string-prefix? "conf-" name) (substring name 5))
       (else (string-append "ocaml-" name)))
@@ -234,12 +253,15 @@ path to the repository."
                      (equal? "ocaml" name))
                names)))
 
-(define (depends->inputs depends)
+(define (filter-dependencies depends)
+  "Remove implicit dependencies from the list of dependencies in @var{depends}."
   (filter (lambda (name)
-            (and (not (equal? "" name))
-                 (not (equal? "ocaml" name))
-                 (not (equal? "ocamlfind" name))))
-    (map dependency->input depends)))
+            (and (not (member name '("" "ocaml" "ocamlfind" "dune" "jbuilder")))
+                 (not (string-prefix? "base-" name))))
+          depends))
+
+(define (depends->inputs depends)
+  (filter-dependencies (map dependency->input depends)))
 
 (define (depends->native-inputs depends)
   (filter (lambda (name) (not (equal? "" name)))
@@ -260,18 +282,19 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define* (opam->guix-package name #:key (repository (get-opam-repository)))
+(define* (opam->guix-package name #:key (repo 'opam) version)
   "Import OPAM package NAME from REPOSITORY (a directory name) or, if
 REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
-  (and-let* ((opam-file (opam-fetch name repository))
+  (and-let* ((opam-file (opam-fetch name (get-opam-repository repo)))
              (version (assoc-ref opam-file "version"))
-             (opam-content (pk (assoc-ref opam-file "metadata")))
+             (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
              (source-url (or (metadata-ref url-dict "src")
                              (metadata-ref url-dict "archive")))
              (requirements (metadata-ref opam-content "depends"))
-             (dependencies (dependency-list->names requirements))
+             (names (dependency-list->names requirements))
+             (dependencies (filter-dependencies names))
              (native-dependencies (depends->native-inputs requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
              (native-inputs (dependency-list->inputs
@@ -281,10 +304,7 @@ or #f on failure."
                                 (lambda (name)
                                   (not (member name '("dune" "jbuilder"))))
                                 native-dependencies))))
-        ;; If one of these are required at build time, it means we
-        ;; can use the much nicer dune-build-system.
-        (let ((use-dune? (or (member "dune" (append dependencies native-dependencies))
-                        (member "jbuilder" (append dependencies native-dependencies)))))
+        (let ((use-dune? (member "dune" names)))
           (call-with-temporary-output-file
             (lambda (temp port)
               (and (url-fetch source-url temp)
@@ -321,11 +341,11 @@ or #f on failure."
                         (not (member name '("dune" "jbuilder"))))
                       dependencies))))))))
 
-(define (opam-recursive-import package-name)
-  (recursive-import package-name #f
-                    #:repo->guix-package (lambda (name repo)
-                                           (opam->guix-package name))
-                    #:guix-name ocaml-name->guix-name))
+(define* (opam-recursive-import package-name #:key repo)
+  (recursive-import package-name
+                    #:repo->guix-package opam->guix-package
+                    #:guix-name ocaml-name->guix-name
+                    #:repo repo))
 
 (define (guix-name->opam-name name)
   (if (string-prefix? "ocaml-" name)

@@ -41,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -75,6 +76,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
@@ -467,7 +469,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.2.1")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
@@ -475,11 +477,11 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "035rvqmw386hm0jpi14lf4dnpr5rjkalzjkyprqh42nwi3m86dkf"))))
+        (base32 "1nmx5lmhp7igav5pswqxmacsbnhgydgvxh1q53wlmyd9bqgxxlvd"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
+     `(#:configure-flags '("-DBINARY_PACKAGE_BUILD=On"
+                           "-DBUILD_TESTING=On")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
@@ -519,16 +521,19 @@ photographic equipment.")
                                   "/lib"))))
              #t)))))
     (native-inputs
-     `(("clang" ,clang-9)
+     `(("clang" ,clang-11)
+       ("cmocka" ,cmocka)
        ("desktop-file-utils" ,desktop-file-utils)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("llvm" ,llvm-9) ;should match the Clang version
+       ("llvm" ,llvm-11) ;should match the Clang version
        ("opencl-headers" ,opencl-headers)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("po4a" ,po4a)))
+       ("po4a" ,po4a)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
     (inputs
      `(("cairo" ,cairo)
        ("colord-gtk" ,colord-gtk) ;optional, for color profile support
@@ -580,7 +585,7 @@ and enhance them.")
 (define-public photoflare
   (package
     (name "photoflare")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
      (origin
        (method git-fetch)
@@ -589,7 +594,7 @@ and enhance them.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0a394324h7ds567z3i3pw6kkii78n4qwdn129kgkkm996yh03q89"))))
+        (base32 "07lrlxagv1bljj607s8m0zsbzx9jrvi18bnxahnm7r4i5car5x2d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;no tests

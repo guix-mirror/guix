@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
@@ -39,7 +39,7 @@
 (define-public drbd-utils
   (package
     (name "drbd-utils")
-    (version "9.15.0")
+    (version "9.15.1")
     (source (origin
               (method url-fetch)
               ;; Older releases are moved to /archive.  List it first because in
@@ -51,7 +51,7 @@
                                         "/utils/drbd-utils-" version ".tar.gz")))
               (sha256
                (base32
-                "0jh7zdxpbjkq53pmrn0jfn33abi4vs8axp55h5256czwc2gfb6z8"))
+                "1q92bwnprqkkj9iy6fxcybcfpxvvjw5clis0igrbxqnq869kwp1i"))
               (modules '((guix build utils)))
               (snippet
                '(begin

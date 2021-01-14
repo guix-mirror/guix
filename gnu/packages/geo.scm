@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,6 +227,12 @@ topology functions.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
+         (add-after 'unpack 'patch-dbus-service
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "data/org.gnome.Maps.service.in"
+               (("@pkgdatadir@/org.gnome.Maps")
+                (string-append  (assoc-ref outputs "out") "/bin/gnome-maps")))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -365,10 +372,58 @@ writing GeoTIFF information tags.")
                    (license:non-copyleft "file://LICENSE"
                                          "See LICENSE in the distribution.")))))
 
+(define-public librttopo
+  (package
+    (name "librttopo")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.osgeo.org/gitea/rttopo/librttopo")
+             (commit (string-append "librttopo-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h7lzlkn9g4xky6h81ndy0aa6dxz8wb6rnl8v3987jy1i6pr072p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autogen
+           (lambda _
+             (let ((autoconf (which "autoconf"))
+                   (autoheader (which "autoheader"))
+                   (aclocal (which "aclocal"))
+                   (automake (which "automake"))
+                   (libtoolize (which "libtoolize")))
+               (substitute* "autogen.sh"
+                            (("`which autoconf 2>/dev/null`") autoconf)
+                            (("`which autoheader 2>/dev/null`") autoheader)
+                            (("ACLOCAL=.*$")
+                             (string-append "ACLOCAL=" aclocal "\n"))
+                            (("AUTOMAKE=.*$")
+                             (string-append "AUTOMAKE=" automake "\n"))
+                            (("LIBTOOLIZE=.*$")
+                             (string-append "LIBTOOLIZE=" libtoolize "\n"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("geos" ,geos)))
+    (synopsis "Library to handle SQL/MM topologies")
+    (description
+     "The RT Topology Library exposes an API to create and manage standard
+(ISO 13249 aka SQL/MM) topologies using user-provided data stores.")
+    (home-page "https://git.osgeo.org/gitea/rttopo/librttopo")
+    (license license:gpl2+)))
+
 (define-public libspatialite
   (package
     (name "libspatialite")
-    (version "4.3.0a")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
@@ -376,19 +431,23 @@ writing GeoTIFF information tags.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "16d4lpl7xrm9zy4gphy6nwanpjp8wn9g4wq2i2kh8abnlhq01448"))))
+         "1b3dmkgwbfi43hj3jzy2mh707khavrnw91vdd5sv387m8c1dfzvv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freexl" ,freexl)
        ("geos" ,geos)
+       ("librttopo" ,librttopo)
        ("libxml2" ,libxml2)
+       ("minizip" ,minizip)
        ("proj.4" ,proj.4)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       '("--enable-rttopo=yes")
+       #:phases
        (modify-phases %standard-phases
          ;; 3 tests are failing, ignore them:
          (add-after 'unpack 'ignore-broken-tests
@@ -1277,7 +1336,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "17084")
+    (version "17329")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1286,7 +1345,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "0pl1v0lj6lslnaxlr5isivg97xgnydsp0f491idvf93fi2g5grn5"))
+                "0bq6mirdsi0kmhjfzfp3innxi5a4395d7mas7ikxaz0cziljrz1i"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1500,15 +1559,14 @@ The API also works with MaxMind’s free GeoLite2 databases.")
 (define-public routino
   (package
    (name "routino")
-   (version "3.3.2")
+   (version "3.3.3")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://www.routino.org/download/routino-"
                          version ".tgz"))
      (sha256
-      (base32
-       "1ccx3s99j8syxc1gqkzsaqkmyf44l7h3adildnc5iq2md7bp8wab"))))
+      (base32 "1xa7l2bjn832nk6bc7b481nv8hd2gj41jwhg0d2qy10lqdvjpn5b"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("perl" ,perl)))
@@ -1621,7 +1679,7 @@ QLandkarte GT application.")
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "readosm-" version ".tar.gz"))
        (sha256
-        (base32 "0zv6p352pqjcv70nvcaf2x3011z35jqa24dcdm27a4ns1wha3cjc"))))
+        (base32 "0igif2bxf4dr82glxz9gyx5mmni0r2dsnx9p9k6pxv3c4lfhaz6v"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1638,14 +1696,14 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
 (define-public spatialite-tools
   (package
     (name "spatialite-tools")
-    (version "4.3.0")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "spatialite-tools-" version ".tar.gz"))
        (sha256
-        (base32 "12fggjhi8cgwvw8f6nk76f83b8lqkc07abxyj5ap6f2gq2dqafgp"))))
+        (base32 "0ckddgdpxhy6vkpr9q2hnx5qmanrd8g4pqnifbrq1i5jrj82s2dd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1653,8 +1711,10 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
      `(("expat" ,expat)
        ("freexl" ,freexl)
        ("geos" ,geos)
+       ("librttopo" ,librttopo)
        ("libspatialite" ,libspatialite)
        ("libxml2" ,libxml2)
+       ("minizip" ,minizip)
        ("proj.4" ,proj.4)
        ("readosm" ,readosm)
        ("sqlite" ,sqlite)
@@ -1761,7 +1821,7 @@ track your position right from your laptop.")
                    license:zlib))))
 
 (define-public grass
-  (let* ((version "7.8.4")
+  (let* ((version "7.8.5")
          (majorminor (string-join (list-head (string-split version #\.) 2) ""))
          (grassxx (string-append "grass" majorminor)))
     (package
@@ -1773,7 +1833,7 @@ track your position right from your laptop.")
          (uri (string-append "https://grass.osgeo.org/" grassxx
                              "/source/grass-" version ".tar.gz"))
          (sha256
-          (base32 "1yfghvp522ijww3n3l5xarjbc21rm0gmlgr3lvwxrv23bvxmllyr"))))
+          (base32 "0dzzhgcsrszzinvjir50nvzq873b8gsp0p9k8fvcrv14amkbnnd3"))))
       (build-system gnu-build-system)
       (inputs
        `(("bzip2" ,bzip2)

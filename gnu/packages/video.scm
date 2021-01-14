@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 201–72021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
+;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +65,7 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -153,6 +154,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
+  #:use-module (gnu packages re2c)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages samba)
@@ -245,7 +247,7 @@
        ("faac" ,faac)
        ("ffmpeg" ,ffmpeg)
        ("freetype" ,freetype)
-       ("imagemagick" ,imagemagick-next)
+       ("imagemagick" ,imagemagick)
        ("lame" ,lame)
        ("liba52" ,liba52)
        ("libdv" ,libdv)
@@ -766,7 +768,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -775,7 +777,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1616xjhj6770ykn82ml741h8hx44v507iky3s9h7a5lnk9d4cxzy"))))
+                "1vakwmcwvmmrdw7460m8hzq96y71lxqix8b2g07c6s12br0rrdhl"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1007,7 +1009,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method git-fetch)
@@ -1016,7 +1018,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0idp1ayqghi5bg83v9qmvzz9wj05flwrp1fxb4kqa6vwxmprvhyk"))))
+        (base32 "1s6w8m9377ajy21x7lf6mbgp5yk5i70nhzmqscibjnarr3xfg9zs"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1030,13 +1032,13 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-term-readline-gnu" ,perl-term-readline-gnu)
        ("perl-unicode-linebreak" ,perl-unicode-linebreak)
-       ("xdg-utils" ,xdg-utils)
-
-       ;; Some videos play without youtube-dl, but others silently fail to.
-       ("youtube-dl" ,youtube-dl)))
-
-       ;; Required only when building the graphical interface (--gtk).
-       ;;("perl-file-sharedir" ,perl-file-sharedir)
+       ("xdg-utils" ,xdg-utils)))
+    ;; Required only when building the graphical interface (--gtk).
+    ;;("perl-file-sharedir" ,perl-file-sharedir)
+    
+    ;; Some videos play without youtube-dl, but others silently fail to.
+    (propagated-inputs
+     `(("youtube-dl" ,youtube-dl)))
     (arguments
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
@@ -1327,19 +1329,14 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.9.0")
+    (version "2.10.0")
     (source
      (origin
        (method url-fetch)
-       (uri (list
-             ;; Newer releases are only available on GitHub.
-             (string-append "https://github.com/01org/libva/releases/download/"
-                            version "/libva-" version ".tar.bz2")
-             ;; Keep the old URL around for compatibility.
-             (string-append "https://www.freedesktop.org/software/vaapi/releases/"
-                            "libva/libva-" version "/libva-" version ".tar.bz2")))
+       (uri (string-append "https://github.com/intel/libva/releases/download/"
+                           version "/libva-" version ".tar.bz2"))
        (sha256
-        (base32 "0jsq6ia3fzyzvq7lxsrn4a8kn2kx4z3v777xkxn6k4ny5lww2i73"))))
+        (base32 "0dh2zjn6wi74ga75r6pbrrj8hjm213zyxvn9bv78z0fra1dy70gs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1624,7 +1621,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-librav1e" ,flags))))))
+        `(delete "--enable-librav1e" ,flags))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("rav1e")))))
 
 (define-public ffmpeg-3.4
   (package
@@ -1698,7 +1698,10 @@ audio/video codec library.")
                     (path (string-join (map dirname dso) ":")))
                (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
                (setenv "LD_LIBRARY_PATH" path)
-               #t))))))))
+               #t))))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("dav1d" "libaom" "rav1e" "srt")))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -1769,6 +1772,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                     "https://download.videolan.org/pub/videolan/vlc/"
                     (car (string-split version #\-))
                     "/vlc-" version ".tar.xz"))
+              (patches (search-patches "vlc-qt-5.15.patch"))
               (sha256
                (base32
                 "1f46h0hv7fk35zg4iczlp7ib7h2jmh8m4r5klw3g2558ib9134qq"))))
@@ -2189,14 +2193,25 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.11.26")
+    (version "2021.01.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "0zvgb1b5kzd2y97rvynxf7qvz3narllf1m26xsph1zll1zb6q47v"))))
+                "1k870v9xc7g16nvixa272sdjnmc7pl49ymmnn6rdz0mcj2548h3k"))
+              (snippet
+               '(begin
+                  ;; Delete the pre-generated files, except for the man page
+                  ;; which requires 'pandoc' to build.
+                  (for-each delete-file '("youtube-dl"
+                                          ;;pandoc is needed to generate
+                                          ;;"youtube-dl.1"
+                                          "youtube-dl.bash-completion"
+                                          "youtube-dl.fish"
+                                          "youtube-dl.zsh"))
+                  #t))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2217,6 +2232,16 @@ To load this plugin, specify the following option when starting mpv:
                         (("\\.get\\('ffmpeg_location'\\)" match)
                          (format #f "~a or '~a'" match (which "ffmpeg"))))
                       #t))
+                  (add-before 'build 'build-generated-files
+                    (lambda _
+                      ;; Avoid the make targets that require pandoc.
+                      (invoke "make"
+                              "PYTHON=python"
+                              "youtube-dl"
+                              ;;"youtube-dl.1"   ; needs pandoc
+                              "youtube-dl.bash-completion"
+                              "youtube-dl.zsh"
+                              "youtube-dl.fish")))
                   (add-before 'install 'fix-the-data-directories
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -2240,6 +2265,8 @@ To load this plugin, specify the following option when starting mpv:
                         (copy-file "youtube-dl.zsh"
                                    (string-append zsh "/_youtube-dl"))
                         #t))))))
+    (native-inputs
+     `(("zip" ,zip)))
     (inputs
      `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos from YouTube.com and other sites")
@@ -2348,7 +2375,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1488")
+    (version "0.4.1500")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2357,7 +2384,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10dx1gka92m42f8ah1mzylbd71apzrphfa48r5ci7g1j8ysdcs7q"))))
+                "02wkmq6bjg9iz0kccsgs192aiky99l2jnw1xs6zjhvjvq7jyvf7s"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2387,7 +2414,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.9")
+    (version "3.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2396,7 +2423,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16p0sa91h0zpqdpqmy348g6b9qj5f6qrbzrljn157vk00cg6mx18"))))
+                "0xdybiihd66b79rbsawjhxs9snm78gld5ziz3gnp8vdcw0bshwz7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2845,14 +2872,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.4.1")
+    (version "1.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "1s458k8z1lv0w8i82sxs8dys66fwm4yr9j1m7fzp7r0piz8phcpd"))))
+          "0ymqxzpwk7mr77w0dnnv7dj63d46q7cl1l4vj9llgn8jfaj64ypq"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
@@ -2984,14 +3011,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.16.6")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bkqlrizx0j2rd6ybam2x17bjrpwzl4v4szmnzm3cmixis3w3npr"))))
+                "1xr66y6w422hil6s7n8d61a2vhwh4im8l267amf41jvw7xqihqcm"))))
     (build-system gnu-build-system)
     ;; Separate graphical tools in order to save almost 1 GiB on the closure
     ;; for the common case.
@@ -3047,7 +3074,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "26.0.2")
+    (version "26.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3056,7 +3083,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1d502f80whh686mvq0yn6zpa5nvmnlzxwp5sjz43vpbbvhpbrdqj"))))
+                "18b40ayww5isjqnjz63l05fi5xwzrcc64jvwxwq8nqsydn0b14ng"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3133,19 +3160,29 @@ present in modern GPUs.")
 (define-public vdpauinfo
   (package
     (name "vdpauinfo")
-    (version "1.0")
+    (version "1.4")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
-                            name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.freedesktop.org/vdpau/vdpauinfo")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1i2b0k9h8r0lnxlrkgqzmrjakgaw3f1ygqqwzx8w6676g85rcm20"))))
+         (base32 "0s84bavxr39w0r7zfaac7kpbfsg88hgymqyzcr0yvbj1yry3liz2"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; ./autogen.sh runs ./configure too soon.
+           (lambda _
+             (invoke "autoreconf" "-fiv"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libx11" ,libx11)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libx11" ,libx11)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libvdpau" ,libvdpau)))
     (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
@@ -3963,33 +4000,72 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
-(define-public gst-transcoder
-  (package
-    (name "gst-transcoder")
-    (version "1.12.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pitivi/gst-transcoder")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0nw1zykqc6c8xs3ri55pm00pwyz93z4y4nd880apfiwj7yv5p3az"))))
-    (build-system meson-build-system)
-    (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
+(define-public pitivi
+  ;; Pitivi switched to a non-semantic versioning scheme close before 1.0
+  (let ((latest-semver "0.999.0")
+        (%version "2020.09.2"))
+   (package
+     (name "pitivi")
+     (version (string-append latest-semver "-" %version))
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnome/sources/" name "/"
+                                   (version-major+minor %version) "/"
+                                   name "-" %version ".tar.xz"))
+               (sha256
+                (base32
+                 "0hzvv4wia4rk0kvq16y27imq2qd4q5lg3vx99hdcjdb1x3zqqfg0"))))
+     (build-system meson-build-system)
+     (inputs
+      `(("glib" ,glib)
+        ("gst-editing-services" ,gst-editing-services)
+        ("gstreamer" ,gstreamer)
+        ("gst-plugins-base" ,gst-plugins-base)
+        ("gst-plugins-good" ,gst-plugins-good)
+        ("gst-plugins-bad"
+         ,(gst-plugins/selection gst-plugins-bad
+                                 #:plugins '("debugutils" "transcoder")
+                                 #:configure-flags '("-Dintrospection=enabled")))
+        ("gst-libav" ,gst-libav)
+        ("gsound" ,gsound)
+        ("gtk+" ,gtk+)
+        ("gdk-pixbuf+svg" ,gdk-pixbuf+svg)
+        ("libpeas" ,libpeas)
+        ("libnotify" ,libnotify)
+        ("pango" ,pango)
+        ("python-gst" ,python-gst)
+        ("python-numpy" ,python-numpy)
+        ("python-matplotlib" ,python-matplotlib)
+        ("python-pycairo" ,python-pycairo)
+        ("python-pygobject" ,python-pygobject)))
     (native-inputs
-     `(("python" ,python)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/pitivi/gst-transcoder/")
-    (synopsis "GStreamer Transcoding API")
-    (description "GStreamer Transcoding API")
-    (license license:lgpl2.1)))
+     (arguments
+      `(#:glib-or-gtk? #t
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'glib-or-gtk-wrap 'wrap-other-dependencies
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((prog (string-append (assoc-ref outputs "out")
+                                         "/bin/pitivi")))
+                (wrap-program prog
+                  `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                  ;; We've only added inputs for what Pitivi deems either
+                  ;; necessary or optional.  Let the user's packages take
+                  ;; precedence in case they have e.g. the full gst-plugins-bad.
+                  `("GST_PLUGIN_SYSTEM_PATH" suffix
+                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))))
+                #t)))))
+     (home-page "http://www.pitivi.org")
+     (synopsis "Video editor based on GStreamer Editing Services")
+     (description "Pitivi is a video editor built upon the GStreamer Editing
+Services.  It aims to be an intuitive and flexible application that can appeal
+to newbies and professionals alike.")
+     (license license:lgpl2.1+))))
 
 (define-public gavl
   (package
@@ -4379,7 +4455,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
       (origin
         (method git-fetch)
@@ -4388,8 +4464,7 @@ transitions, and effects and then export your film to many common formats.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0mjn87xjdqv0q1gj4s4f6fdmsj504mhk4qmqiyrhq2rs7yqj4csv"))))
+         (base32 "1820fpmmq1vxjzjmza6ydk4fgxipb8gmcc5skybki64qn7410v7x"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
@@ -4430,7 +4505,7 @@ video from a Wayland session.")
 (define-public gaupol
   (package
     (name "gaupol")
-    (version "1.7")
+    (version "1.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4439,7 +4514,7 @@ video from a Wayland session.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cp0ka8hzma1dxiisdhl2fznxklj2pl63vkdqcd91lrblghdj6x9"))))
+                "1mmjg8nwhif2hmmp8i11643izwzdf839brqdai3ksfg0qkh8rnxk"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -4562,19 +4637,19 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.5")
+    (version "0.8.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenVisualCloud/SVT-AV1")
+             (url "https://github.com/AOMediaCodec/SVT-AV1")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gfxdmdql090p7c8ln1z344g467l41p45287lmwy590hv8gw6bfg"))))
+        (base32 "1wzamg89azi1f93wxvdy7silsgklckc754ca066k33drvyacicyw"))))
     (build-system cmake-build-system)
-    ;; SVT-AV1 only supports Intel-compatible CPUs.
-    (supported-systems '("x86_64-linux" "i686-linux"))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
     (arguments
       ;; The test suite tries to download test data and git clone a 3rd-party
       ;; fork of libaom.  Skip it.
@@ -4593,7 +4668,41 @@ transcode or reformat the videos in any way, producing perfect backups.")
     (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
 work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
-    (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
+    (home-page "https://github.com/AOMediaCodec/SVT-AV1")
+    (license license:bsd-2)))
+
+(define-public svt-vp9
+  (package
+    (name "svt-vp9")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OpenVisualCloud/SVT-VP9")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ypdiw4cq22llvm8jyszxdq6r1aydkj80dsxjarjn5b7c1f2q3ar"))))
+    ;; SVT-AV1 only supports 64-bit Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux"))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (copy-recursively "../source/Docs" doc)
+               #t))))))
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (home-page "https://github.com/OpenVisualCloud/SVT-VP9")
+    (synopsis "VP9 video encoder")
+    (description "SVT-VP9 is a VP9 video encoder implementation.  It is focused
+on supporting video-on-demand and live encoding on Intel Xeon processors.")
     (license license:bsd-2)))
 
 (define-public w-scan
@@ -4627,7 +4736,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.3")
+    (version "0.3.5")
     (source
       (origin
         (method url-fetch)
@@ -4636,17 +4745,18 @@ result in several formats:
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "053bh8hc6jj81ydq4gcak01b0ady59hvkl7d87im3y8nafg7xzb4"))))
+          "0c40gq4qid2apmlgzx98f6826jmn2n61prk0rn7sjxaw7yimw854"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-aom-sys" ,rust-aom-sys-0.1)
+       (("rust-aom-sys" ,rust-aom-sys-0.2)
         ("rust-arbitrary" ,rust-arbitrary-0.2)
         ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
         ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-cc" ,rust-cc-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.11)
@@ -4658,6 +4768,7 @@ result in several formats:
         ("rust-ivf" ,rust-ivf-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
+        ("rust-nasm-rs" ,rust-nasm-rs-0.2)
         ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.2)
         ("rust-num-derive" ,rust-num-derive-0.3)
         ("rust-num-traits" ,rust-num-traits-0.2)
@@ -4666,17 +4777,15 @@ result in several formats:
         ("rust-rand-chacha" ,rust-rand-chacha-0.2)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-scan-fmt" ,rust-scan-fmt-0.2)
         ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-y4m" ,rust-y4m-0.5)
-        ("rust-cc" ,rust-cc-1)
-        ("rust-nasm-rs" ,rust-nasm-rs-0.1)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-vergen" ,rust-vergen-3.1))
+        ("rust-vergen" ,rust-vergen-3.1)
+        ("rust-y4m" ,rust-y4m-0.5))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
         ("rust-criterion" ,rust-criterion-0.3)
@@ -4886,3 +4995,40 @@ BBC iPlayer output.")
 includes @code{dvdxchap} tool for extracting chapter information from DVD.")
     (license license:gpl2)
     (home-page "https://www.bunkus.org/videotools/ogmtools/")))
+
+(define-public libcaption
+  (package
+    (name "libcaption")
+    (version "0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/szatmary/libcaption")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16mhw8wpl7wdjj4n7rd1c294p1r8r322plj7z91crla5aah726rq"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; Cannot figure out how to run the unit tests
+       #:configure-flags '("-DENABLE_RE2C=ON")))
+    (native-inputs
+     `(("re2c" ,re2c)))
+    (synopsis "CEA608 / CEA708 closed-caption codec")
+    (description "Libcaption creates and parses closed-caption data,
+providing an encoder / decoder for the EIA608 and CEA708 closed-caption
+standards.
+
+608 support is currently limited to encoding and decoding the necessary control
+and preamble codes as well as support for the Basic North American, Special
+North American and Extended Western European character sets.
+
+708 support is limited to encoding the 608 data in NTSC field 1 user data type
+structure.
+
+In addition, utility functions to create h.264 SEI (Supplementary enhancement
+information) NALUs (Network Abstraction Layer Unit) for inclusion into an h.264
+elementary stream are provided.")
+    (home-page "https://github.com/szatmary/libcaption")
+    (license license:expat)))

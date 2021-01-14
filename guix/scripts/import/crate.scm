@@ -2,7 +2,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +42,7 @@
 
 (define (show-help)
   (display (G_ "Usage: guix import crate PACKAGE-NAME
-Import and convert the crate.io package for PACKAGE-NAME.\n"))
+Import and convert the crates.io package for PACKAGE-NAME.\n"))
   (display (G_ "
   -r, --recursive        import packages recursively"))
   (newline)
@@ -95,19 +95,14 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
          (package-name->name+version spec))
 
        (if (assoc-ref opts 'recursive)
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
-                (crate-recursive-import name version))
-           (let ((sexp (crate->guix-package name version)))
+           (crate-recursive-import name #:version version)
+           (let ((sexp (crate->guix-package name #:version version #:include-dev-deps? #t)))
              (unless sexp
                (leave (G_ "failed to download meta-data for package '~a'~%")
                       (if version
                           (string-append name "@" version)
                           name)))
-             sexp)))
+             (list sexp))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

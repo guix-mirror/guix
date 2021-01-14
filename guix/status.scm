@@ -423,6 +423,9 @@ addition to build events."
         (cute colorize-string <> (color RED BOLD))
         identity))
 
+  (define tty?
+    (isatty?* port))
+
   (define (report-build-progress phase %)
     (let ((% (min (max % 0) 100)))                ;sanitize
       (erase-current-line port)
@@ -542,6 +545,7 @@ addition to build events."
                          (nar-uri-abbreviation uri)
                          (basename uri))))
             (display-download-progress uri size
+                                       #:tty? tty?
                                        #:start-time
                                        (download-start download)
                                        #:transferred transferred))))))

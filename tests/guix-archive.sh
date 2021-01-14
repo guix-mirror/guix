@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -28,7 +28,7 @@ tmpdir="t-archive-dir-$$"
 rm -f "$archive" "$archive_alt"
 rm -rf "$tmpdir"
 
-trap 'rm -f "$archive" "$archive_alt"; rm -rf "$tmpdir"' EXIT
+trap 'rm -f "$archive" "$archive_alt"; chmod -R +w "$tmpdir"; rm -rf "$tmpdir"' EXIT
 
 guix archive --export guile-bootstrap > "$archive"
 guix archive --export guile-bootstrap:out > "$archive_alt"

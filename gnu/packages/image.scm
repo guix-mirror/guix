@@ -9,7 +9,7 @@
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,8 +61,10 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
@@ -76,7 +79,9 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -610,7 +615,7 @@ collection of tools for doing simple manipulations of TIFF images.")
 (define-public leptonica
   (package
     (name "leptonica")
-    (version "1.74.4")
+    (version "1.80.0")
     (source
      (origin
        (method git-fetch)
@@ -619,7 +624,7 @@ collection of tools for doing simple manipulations of TIFF images.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sfg1ky0lghlq7xx0qii5167bim0wwfnnr83dl4skbj9awyvjiwi"))))
+        (base32 "12ddln72z5l3icz0i9rpsfkg5xik8fcwcn8lb0cp3jigjxi8gvkg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnuplot" ,gnuplot)             ;needed for test suite
@@ -811,35 +816,33 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
   (package
     (name "openjpeg")
     (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uclouvain/openjpeg")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "openjpeg" version))
-              (sha256
-               (base32
-                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/uclouvain/openjpeg")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name "openjpeg" version))
+       (sha256
+        (base32 "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f                   ;TODO: requires a 1.1 GiB data repository
+     '(#:tests? #f           ;TODO: requires a 1.1 GiB data repository
        #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
     (inputs
-      `(("lcms" ,lcms)
-        ("libpng" ,libpng)
-        ("libtiff" ,libtiff)
-        ("zlib" ,zlib)))
-    (synopsis "JPEG 2000 codec")
-    (description
-      "The OpenJPEG library is a JPEG 2000 codec written in C.  It has
-been developed in order to promote the use of JPEG 2000, the new
-still-image compression standard from the Joint Photographic Experts
-Group (JPEG).
-
-In addition to the basic codec, various other features are under
-development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
-an indexing tool useful for the JPIP protocol, JPWL-tools for
-error-resilience, a Java-viewer for j2k-images, ...")
+     `(("lcms" ,lcms)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (synopsis "OPENJPEG Library and Applications")
+    (description "OpenJPEG is an implementation of JPEG 2000 codec written in C
+language.  It has been developed in order to promote the use of JPEG 2000, a
+still-image compression standard from the Joint Photographic Experts Group
+(JPEG).  Since April 2015, it is officially recognized by ISO/IEC and ITU-T as a
+JPEG 2000 Reference Software.")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
@@ -979,7 +982,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -987,7 +990,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0zdk4afdrrr1539f2q15zja19j4wwfmpswzws2ffgflcnhywlxhr"))))
+                "01y45cdml2dr9cqgybrgxr86sd77d1qfa1gzclzy1j6bkminlfh3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--disable-static")))
@@ -1415,7 +1418,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.22")
+    (version "2.0.23")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1424,7 +1427,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qw96mwwd9xw21jg5s7njqgbam566skj93i81aflijy40s31dfwz"))))
+                "1fccpss5ii9rnsd2pkg6k7mkckwpfi8dgp64qzqv3zp1vs2nffw6"))))
     (build-system cmake-build-system)
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))
@@ -1613,15 +1616,14 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.4")
-    (replacement libjpeg-turbo/fixed)
+    (version "2.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "01ill8bgjyk582wipx7sh7gj2nidylpbzvwhx0wkcm6mxx3qbp9k"))))
+                "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
@@ -1670,18 +1672,6 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
-
-(define libjpeg-turbo/fixed
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))))
 
 (define-deprecated libjpeg libjpeg-turbo)
 (export libjpeg)
@@ -1733,7 +1723,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (define-public gpick
   (package
     (name "gpick")
-    (version "0.2.5")
+    (version "0.2.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1742,12 +1732,13 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mcj806zagh122qgrdkrg0macpzby97y89xi2sjyn3bh8vmmyxjy"))))
+                "0nl89gca5nmbyycv5rl5bm6k7facapdk4pab9pl949aa3cjw9bk7"))))
     (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
        ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("ragel" ,ragel)))
     (inputs
      `(("expat" ,expat)
        ("gtk2" ,gtk+-2)
@@ -2082,7 +2073,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.7.3")
+    (version "0.8.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2091,11 +2082,11 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17hagdngpc4xzrr0aa48nx399y5lawyyx9cpcdhpds1mqk6p77lp"))))
+                "1qvjd3xi9r89pcblxdgz4c6hqp67ss53b1x9zkg7lrik7g3lwq8d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
-                           "-DAVIF_CODEC_RAV1E=OFF" ; not packaged yet
+                           "-DAVIF_CODEC_RAV1E=ON"
                            "-DAVIF_BUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
@@ -2109,8 +2100,9 @@ This package can be used to create @code{favicon.ico} files for web sites.")
                (install-file "../source/README.md" doc)
                #t))))))
     (inputs
-     `(("libaom" ,libaom)
-       ("dav1d" ,dav1d)))
+     `(("dav1d" ,dav1d)
+       ("libaom" ,libaom)
+       ("rav1e" ,rav1e)))
     (synopsis "Encode and decode AVIF files")
     (description "Libavif is a C implementation of @acronym{AVIF, the AV1 Image
 File Format}.  It can encode and decode all YUV formats and bit depths supported
@@ -2165,6 +2157,66 @@ It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
     (license license:gpl3+)))
+
+(define-public mypaint
+  (package
+    (name "mypaint")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mypaint/mypaint/"
+                                  "releases/download/v" version "/mypaint-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "05mvay73vb9d2sh1ckv4vny45n059dmsps1jcppjizfmrpbkgr7k"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gdk-pixbuf (assoc-ref inputs "gdk-pixbuf"))
+                    (gtk+ (assoc-ref inputs "gtk+")))
+               (wrap-program (string-append out "/bin/mypaint")
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH"))))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests need writing access
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("swig" ,swig)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libmypaint" ,libmypaint)
+       ("mypaint-brushes" ,mypaint-brushes)
+       ("json-c" ,json-c)
+       ("lcms" ,lcms)
+       ("python-numpy" ,python-numpy)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "http://mypaint.org/")
+    (synopsis "Fast and simple painting app for artists")
+    (description
+     "MyPaint is a simple drawing and painting program that works well with
+Wacom-style graphics tablets.")
+    (license license:gpl2+)))
 
 (define-public phockup
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -151,7 +151,8 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
       ;; Catch and gracefully report possible '&nar-error' conditions.
       (with-error-handling
         (if (assoc-ref opts 'recursive?)
-            (let-values (((port get-hash) (open-sha256-port)))
+            (let-values (((port get-hash)
+                          (open-hash-port (assoc-ref opts 'hash-algorithm))))
               (write-file file port #:select? select?)
               (force-output port)
               (get-hash))

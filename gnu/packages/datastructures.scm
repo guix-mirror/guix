@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,13 +25,15 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)   ;for meson-0.55
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson))
 
 (define-public gdsl
   (package
@@ -279,6 +282,28 @@ operations of the original object efficiently.  The theoretical time
 complexity of an operation performed on the classical data structure and the
 equivalent succinct data structure are (most of the time) identical.")
     (license license:gpl3+)))
+
+(define-public tllist
+  (package
+    (name "tllist")
+    (version "1.0.4")
+    (home-page "https://codeberg.org/dnkl/tllist")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1a26vwb7ll6mv3h8rbafsdx4vic1f286hiqn8s359sw8b7yjkvzs"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:meson ,meson-0.55))
+    (synopsis "Typed link list for C")
+    (description
+     "@code{tllist} is a @dfn{typed linked list} C header file only library
+implemented using pre-processor macros.  It supports primitive data types as
+well as aggregated ones such as structs, enums and unions.")
+    (license license:expat)))
 
 (define-public libdivsufsort
   (package

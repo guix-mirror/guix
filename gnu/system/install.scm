@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -34,6 +34,7 @@
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
   #:use-module (gnu system locale)
+  #:use-module (gnu services avahi)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
@@ -175,6 +176,13 @@ manual."
   (shepherd-service-type
    'cow-store
    (lambda _
+     (define (import-module? module)
+       ;; Since we don't use deduplication support in 'populate-store', don't
+       ;; import (guix store deduplication) and its dependencies, which
+       ;; includes Guile-Gcrypt.
+       (and (guix-module-name? module)
+            (not (equal? module '(guix store deduplication)))))
+
      (shepherd-service
       (requirement '(root-file-system user-processes))
       (provision '(cow-store))
@@ -189,7 +197,8 @@ the given target.")
                  ,@%default-modules))
       (start
        (with-imported-modules (source-module-closure
-                               '((gnu build install)))
+                               '((gnu build install))
+                               #:select? import-module?)
          #~(case-lambda
              ((target)
               (mount-cow-store target #$%backing-directory)
@@ -335,6 +344,10 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
+          ;; Use the Avahi daemon to discover substitute servers on the local
+          ;; network.  It can be faster than fetching from remote servers.
+          (service avahi-service-type)
+
           ;; The build daemon.  Register the default substitute server key(s)
           ;; as trusted to allow the installation process to use substitutes by
           ;; default.
@@ -435,6 +448,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (host-name "gnu")
     (timezone "Europe/Paris")
     (locale "en_US.utf8")
+    (name-service-switch %mdns-host-lookup-nss)
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
                  (target "/dev/sda")))
