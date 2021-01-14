@@ -9170,40 +9170,53 @@ approach to templating.")
   (sbcl-package->ecl-package sbcl-cl-mysql))
 
 (define-public sbcl-postmodern
-  (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
-        (revision "1"))
-    (package
-      (name "sbcl-postmodern")
-      (version (git-version "1.19" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/marijnh/Postmodern")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0im7ymnyxjhn2w74jfg76k5gpr0gl33n31akx33hl28722ljd0hd"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("fiveam" ,sbcl-fiveam)))
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("bordeaux-threads" ,sbcl-bordeaux-threads)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("global-vars" ,sbcl-global-vars)
-         ("md5" ,sbcl-md5)
-         ("split-sequence" ,sbcl-split-sequence)
-         ("usocket" ,sbcl-usocket)))
-      (arguments
-       ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
-       ;; cl-postgres/tests and s-sql/tests.
-       `(#:tests? #f
-         #:asd-systems '("postmodern"
-                         "simple-date/postgres-glue")))
-      (synopsis "Common Lisp library for interacting with PostgreSQL")
-      (description
-       "@code{postmodern} is a Common Lisp library for interacting with
+  (package
+    (name "sbcl-postmodern")
+    (version "1.32.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/marijnh/Postmodern")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bfx0hcb9wv47qd334xs0fpmisl75dpvasq1zai210s5wqg0km6d"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-base64" ,sbcl-cl-base64)
+       ("cl-unicode" ,sbcl-cl-unicode)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("global-vars" ,sbcl-global-vars)
+       ("ironclad" ,sbcl-ironclad)
+       ("local-time" ,sbcl-local-time)
+       ("md5" ,sbcl-md5)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("uax-15" ,sbcl-uax-15)
+       ("usocket" ,sbcl-usocket)))
+    (arguments
+     ;; TODO: (Sharlatan-20210114T171037+0000) tests still failing but on other
+     ;; step, some functionality in `local-time' prevents passing tests.
+     ;; Error:
+     ;;
+     ;; Can't create directory
+     ;; /gnu/store
+     ;;  /4f47agf1kyiz057ppy6x5p98i7mcbfsv-sbcl-local-time-1.0.6-2.a177eb9
+     ;;   /lib/common-lisp/sbcl/local-time/src/integration/
+     ;;
+     `(#:tests? #f
+       #:asd-systems '("cl-postgres"
+                       "s-sql"
+                       "postmodern"
+                       "simple-date"
+                       "simple-date/postgres-glue")))
+    (synopsis "Common Lisp library for interacting with PostgreSQL")
+    (description
+     "@code{postmodern} is a Common Lisp library for interacting with
 PostgreSQL databases.  It provides the following features:
 
 @itemize
@@ -9213,9 +9226,27 @@ foreign libraries.
 @item A syntax for mixing SQL and Lisp code.
 @item Convenient support for prepared statements and stored procedures.
 @item A metaclass for simple database-access objects.
-@end itemize\n")
-      (home-page "https://marijnhaverbeke.nl/postmodern/")
-      (license license:zlib))))
+@end itemize\n
+
+This package produces 4 systems: postmodern, cl-postgres, s-sql, simple-date
+
+@code{SIMPLE-DATE} is a very basic implementation of date and time objects, used
+to support storing and retrieving time-related SQL types.  It is not loaded by
+default and you can use local-time (which has support for timezones) instead.
+
+@code{S-SQL} is used to compile s-expressions to strings of SQL code, escaping
+any Lisp values inside, and doing as much as possible of the work at compile
+time.
+
+@code{CL-POSTGRES} is the low-level library used for interfacing with a PostgreSQL
+server over a socket.
+
+@code{POSTMODERN} itself is a wrapper around these packages and provides higher
+level functions, a very simple data access object that can be mapped directly to
+database tables and some convient utilities.  It then tries to put all these
+things together into a convenient programming interface")
+    (home-page "https://marijnhaverbeke.nl/postmodern/")
+    (license license:zlib)))
 
 (define-public cl-postmodern
   (sbcl-package->cl-source-package sbcl-postmodern))
@@ -9225,15 +9256,18 @@ foreign libraries.
     (inherit (sbcl-package->ecl-package sbcl-postmodern))
     (arguments
      `(#:tests? #f
-       #:asd-systems '("postmodern"
+       #:asd-systems '("cl-postgres"
+                       "s-sql"
+                       "postmodern"
+                       "simple-date"
                        "simple-date/postgres-glue")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-build
            (lambda _
              (substitute* "cl-postgres.asd"
-               (("\\) \"usocket\"")
-                " :ecl) \"usocket\""))
+               ((":or :sbcl :allegro :ccl :clisp" all)
+                (string-append all " :ecl")))
              #t)))))))
 
 (define-public sbcl-db3
