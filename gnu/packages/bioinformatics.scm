@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2019, 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -7072,6 +7072,55 @@ sequence.")
     ;; Infernal 1.1.3 requires VMX or SSE capability for parallel instructions.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
+
+(define-public r-snapatac
+  (package
+    (name "r-snapatac")
+    (version "2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/r3fang/SnapATAC")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "037jzlbl436fi7lkpq7d83i2vd1crnrik3vac2x6xj75dbikb2av"))))
+    (properties `((upstream-name . "SnapATAC")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-bigmemory" ,r-bigmemory)
+        ("r-doparallel" ,r-doparallel)
+        ("r-dosnow" ,r-dosnow)
+        ("r-edger" ,r-edger)
+        ("r-foreach" ,r-foreach)
+        ("r-genomicranges" ,r-genomicranges)
+        ("r-igraph" ,r-igraph)
+        ("r-iranges" ,r-iranges)
+        ("r-irlba" ,r-irlba)
+        ("r-matrix" ,r-matrix)
+        ("r-plyr" ,r-plyr)
+        ("r-plot3d" ,r-plot3d)
+        ("r-rann" ,r-rann)
+        ("r-raster" ,r-raster)
+        ("r-rcolorbrewer" ,r-rcolorbrewer)
+        ("r-rhdf5" ,r-rhdf5)
+        ("r-rtsne" ,r-rtsne)
+        ("r-scales" ,r-scales)
+        ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/r3fang/SnapATAC")
+    (synopsis "Single nucleus analysis package for ATAC-Seq")
+    (description
+      "This package provides a fast and accurate analysis toolkit for single
+cell ATAC-seq (Assay for transposase-accessible chromatin using sequencing).
+Single cell ATAC-seq can resolve the heterogeneity of a complex tissue and
+reveal cell-type specific regulatory landscapes.  However, the exceeding data
+sparsity has posed unique challenges for the data analysis.  This package
+@code{r-snapatac} is an end-to-end bioinformatics pipeline for analyzing large-
+scale single cell ATAC-seq data which includes quality control, normalization,
+clustering analysis, differential analysis, motif inference and exploration of
+single cell ATAC-seq sequencing data.")
+    (license license:gpl3)))
 
 (define-public r-scde
   (package
