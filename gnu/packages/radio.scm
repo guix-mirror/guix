@@ -303,7 +303,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-scipy" ,python-scipy)
        ("python-sphinx" ,python-sphinx)
        ("swig" ,swig)
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         ;; TODO: Add newunicodechar.
                                         texlive-latex-graphics)))
@@ -471,7 +471,7 @@ to access different radio hardware.")
        ("doxygen" ,doxygen)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         ;; TODO: Add newunicodechar.
                                         texlive-latex-graphics)))))

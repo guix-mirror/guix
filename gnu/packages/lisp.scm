@@ -434,7 +434,7 @@ an interpreter, a compiler, a debugger, and much more.")
        ("ed" ,ed)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-tex-texinfo)))
        ("which" ,which)
        ("zlib" ,zlib)))
     (arguments

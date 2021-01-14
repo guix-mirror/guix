@@ -3009,7 +3009,7 @@ tables.")
                    (symlink pdftex (string-append out "/bin/pdfxmltex"))
                    #t)))))))
       (propagated-inputs
-       ;; The following fonts are propagated as a texlive-union as the font
+       ;; The following fonts are propagated as a texlive-updmap.cfg as the font
        ;; maps need to be recreated for the fonts to be usable.  They are
        ;; required by xmltex through mlnames.sty and unicode.sty.
        `(("texlive" ,(texlive-updmap.cfg
@@ -3843,7 +3843,7 @@ ones.")
 ;; For use in package definitions only
 (define-public texlive-tiny
   (package
-    (inherit (texlive-union))
+    (inherit (texlive-updmap.cfg))
     (name "texlive-tiny")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
@@ -5803,7 +5803,7 @@ Simple Young tableaux.
                    (symlink pdftex (string-append out "/bin/pdfjadetex"))
                    #t)))))))
       (propagated-inputs
-       ;; Propagate the texlive-union input used by xmltex, which provides the
+       ;; Propagate the texlive-updmap.cfg input used by xmltex, which provides the
        ;; required fonts for its use.
        `(("texlive-xmltex" ,texlive-xmltex)
          ("texlive-kpathsea" ,texlive-kpathsea))) ;for fmtutil.cnf template
@@ -6685,7 +6685,7 @@ develop documents with LaTeX, in a single application.")
              (delete-file "book.pdf")
              #t)))))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-fonts-adobe-palatino
                                         texlive-fonts-adobe-zapfding
                                         texlive-knuth-lib
@@ -6755,7 +6755,7 @@ and Karl Berry.")
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("texlive" ,(texlive-union (list texlive-fonts-ec)))))
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-fonts-ec)))))
     (native-inputs
      `(("python" ,python)
        ("pkg-config" ,pkg-config)))

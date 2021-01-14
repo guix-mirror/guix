@@ -88,7 +88,7 @@
        ("zlib:static" ,zlib "static")
        ("stex" ,stex)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-latex-oberdiek
                                         texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
@@ -273,7 +273,7 @@ and 32-bit PowerPC architectures.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("ghostscript" ,ghostscript)
-         ("texlive" ,(texlive-union (list texlive-latex-oberdiek
+         ("texlive" ,(texlive-updmap.cfg (list texlive-latex-oberdiek
                                           texlive-generic-epsf
                                           texlive-metapost
                                           texlive-fonts-charter
@@ -332,7 +332,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,(texlive-union (list texlive-pdftex)))))
+         ("texlive" ,(texlive-updmap.cfg (list texlive-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases

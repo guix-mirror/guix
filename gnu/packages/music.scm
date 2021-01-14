@@ -1342,7 +1342,7 @@ and auto-mapping slices to MIDI note numbers.")
        ("gettext" ,gettext-minimal)
        ("imagemagick" ,imagemagick)
        ("netpbm" ,netpbm)               ;for pngtopnm
-       ("texlive" ,(texlive-union (list texlive-metapost
+       ("texlive" ,(texlive-updmap.cfg (list texlive-metapost
                                         texlive-generic-epsf
                                         texlive-lh
                                         texlive-latex-cyrillic)))

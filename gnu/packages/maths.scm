@@ -2010,7 +2010,7 @@ script files.")
        ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
-       ("texlive" ,(texlive-union (list texlive-epsf))) ; for texi2dvi
+       ("texlive" ,(texlive-updmap.cfg (list texlive-epsf))) ; for texi2dvi
        ,@(package-native-inputs octave-cli)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave-cli)
@@ -4464,7 +4464,7 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
-       ("texlive" ,(texlive-union (list texlive-xypic
+       ("texlive" ,(texlive-updmap.cfg (list texlive-xypic
                                         texlive-cm
                                         texlive-latex-hyperref
                                         texlive-bibtex)))

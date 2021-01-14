@@ -170,7 +170,7 @@
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)
        ("m4" ,m4)))
     (inputs

@@ -226,7 +226,7 @@ colors, styles, options and details.")
        ("perl" ,perl)
        ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-epsf
                                         texlive-etoolbox
                                         texlive-latex-base

@@ -4678,7 +4678,7 @@ color scales, and color space conversion easy.  It has support for:
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,(texlive-union (list texlive-fonts-cm-super
+       ("texlive" ,(texlive-updmap.cfg (list texlive-fonts-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
@@ -4744,7 +4744,7 @@ color scales, and color space conversion easy.  It has support for:
                     (sphinx-theme-checkout (assoc-ref inputs scipy-sphinx-theme))
                     (pyver ,(string-append "PYVER=")))
 
-               ;; FIXME: this is needed to for texlive-union to generate
+               ;; FIXME: this is needed to for texlive-updmap.cfg to generate
                ;; fonts, which are not found.
                (setenv "HOME" "/tmp")
 
@@ -5210,7 +5210,7 @@ toolkits.")
        ("python-ipykernel" ,python-ipykernel)
        ("python-mock" ,python-mock)
        ("graphviz" ,graphviz)
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         texlive-latex-enumitem
                                         texlive-latex-expdlist
@@ -7323,7 +7323,7 @@ computing.")
      `(("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ;; FIXME: It's possible that a smaller union would work just as well.
-       ("texlive" ,(texlive-union (list texlive-amsfonts
+       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-pdftex
@@ -22865,7 +22865,7 @@ By default it uses the open Python vulnerability database Safety DB.")
     (propagated-inputs
      `(("wheel" ,python-wheel)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-fonts-ec
                                         texlive-latex-hyperref
                                         texlive-latex-oberdiek

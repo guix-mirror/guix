@@ -3144,7 +3144,7 @@ API.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-generic-epsf)))))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-generic-epsf)))))
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("guile" ,guile-3.0)
@@ -3421,7 +3421,7 @@ feature-set, fully programmable in Guile Scheme.")
        ("vigra-c" ,vigra-c)
        ("guile" ,guile-2.2)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-booktabs
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-booktabs
                                         texlive-lm
                                         texlive-siunitx
                                         texlive-standalone

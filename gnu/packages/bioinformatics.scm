@@ -2904,7 +2904,7 @@ data and settings.")
        ("cairo" ,cairo)
        ("rmath-standalone" ,rmath-standalone)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-cm
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-cm
                                         texlive-amsfonts
 
                                         texlive-latex-doi
@@ -14186,7 +14186,7 @@ to an artifact/contaminant file.")
      `(("openmpi" ,openmpi)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-latex-graphics
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-latex-graphics
                                         texlive-latex-hyperref)))))
     (home-page "https://www.ebi.ac.uk/~zerbino/velvet/")
     (synopsis "Nucleic acid sequence assembler for very short reads")
