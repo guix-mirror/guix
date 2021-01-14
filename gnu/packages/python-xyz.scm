@@ -2446,14 +2446,14 @@ server.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "1ajjazg3913n0sp3vjyva9c2qh5anx8ziryng935f89604a0h9sy"))))
+         "1lqvkqk3b440g9z82gqbzlzas84wrm6ir8kplzhzavmn2pd1pf11"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: "ImportError: 'test' module incorrectly imported from
@@ -2469,18 +2469,6 @@ server.")
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
 code introspection, and logging.")
     (license license:expat)))
-
-(define-public python-py-next
-  (package
-    (inherit python-py)
-    (version "1.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "py" version))
-       (sha256
-        (base32
-         "0hpk0gzd4v1pcnq7zinwg5n219czi23qghcswykqskkbwly8i9lw"))))))
 
 (define-public python2-py
   (package-with-python2 python-py))

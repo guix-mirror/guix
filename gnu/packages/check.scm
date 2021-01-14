@@ -964,7 +964,7 @@ and many external plugins.")
     (propagated-inputs
      (append (alist-delete "python-py"
                            (package-propagated-inputs python-pytest))
-             `(("python-py" ,python-py-next))))
+             `(("python-py" ,python-py))))
     (native-inputs
      (append (alist-delete "python-pytest"
                            (package-native-inputs python-pytest))
