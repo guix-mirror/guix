@@ -3572,12 +3572,22 @@ comment or quality sections.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1p8a7kkfn1mmrg017aziy544aha8i9h6wd1x2dk3w2794wl33qb7"))))
+                "1p8a7kkfn1mmrg017aziy544aha8i9h6wd1x2dk3w2794wl33qb7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib")
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("gsl" ,gsl)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("catch" ,catch-framework2-1)
+       ("perl" ,perl)
+       ("shunit2" ,shunit2)
+       ("which" ,which)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3589,12 +3599,18 @@ comment or quality sections.")
                (("/usr/local/opt/openblas")
                 (assoc-ref inputs "openblas")))
              #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; 'make slow-check' expects shunit2-2.0.3.
+               (with-directory-excursion "test"
+                 (invoke "./test_suite.sh"))
+               #t)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "bin/gemma"
                            (string-append (assoc-ref outputs "out") "/bin"))
-             #t)))
-       #:tests? #f)) ; no tests included yet
+             #t)))))
     (home-page "https://github.com/genetics-statistics/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
     (description
