@@ -2183,14 +2183,14 @@ sets, bitmaps and hyperloglogs.")
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
-    (version "1.2.78")
+    (version "1.2.79")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://fallabs.com/kyotocabinet/pkg/"
                                   "kyotocabinet-" version ".tar.gz"))
               (sha256
                (base32
-                "1bxkf9kmcavq9rqridb8mvmrk3hj4447ffi24m2admsbm61n6k29"))))
+                "079ymsahlrijswgwfr2la9yw5h57l752cprhp5dz31iamsj1vyv7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
