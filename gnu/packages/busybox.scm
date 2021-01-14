@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,7 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.32.0")
+    (version "1.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +41,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "12g63zsvzfz04wbyga8riyl8ils05riw4xf26cyiaasbs3qqfpf3"))))
+                "1vhd59qmrdyrr1q7rvxmyl96z192mxl089hi87yl0hcp6fyw8mwx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
