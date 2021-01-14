@@ -1,0 +1,134 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2015, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (gnu packages python-build)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix packages))
+
+;;; Commentary:
+;;;
+;;; Python packages to build... Python packages.  Since they are bound to be
+;;; relied on by many, their dependencies should be kept minimal, and this
+;;; module should not depend on other modules containing Python packages.
+;;;
+;;; Code:
+
+(define-public python-wheel
+  (package
+    (name "python-wheel")
+    (version "0.33.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "wheel" version))
+        (sha256
+         (base32
+          "0ii6f34rvpjg3nmw4bc2h7fhdsy38y1h93hghncfs5akfrldmj8h"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
+     ;; fails to find the newly-built bdist_wheel library, even though it is
+     ;; available on PYTHONPATH.  What search path is consulted by setup.py?
+     '(#:tests? #f))
+    (home-page "https://bitbucket.org/pypa/wheel/")
+    (synopsis "Format for built Python packages")
+    (description
+     "A wheel is a ZIP-format archive with a specially formatted filename and
+the @code{.whl} extension.  It is designed to contain all the files for a PEP
+376 compatible install in a way that is very close to the on-disk format.  Many
+packages will be properly installed with only the @code{Unpack} step and the
+unpacked archive preserves enough information to @code{Spread} (copy data and
+scripts to their final locations) at any later time.  Wheel files can be
+installed with a newer @code{pip} or with wheel's own command line utility.")
+    (license license:expat)))
+
+(define-public python2-wheel
+  (package-with-python2 python-wheel))
+
+;;; XXX: Not really at home, but this seems the best place to prevent circular
+;;; module dependencies.
+(define-public python-toml
+  (package
+    (name "python-toml")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toml" version))
+       (sha256
+        (base32
+         "03wbqm5cn685cwx2664hjdpz370njl7lf0yal8s0dkp5w4mn2swj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                     ;no tests suite in release
+    (home-page "https://github.com/uiri/toml")
+    (synopsis "Library for TOML")
+    (description
+     "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
+Language (TOML) configuration files.")
+    (license license:expat)))
+
+(define-public python-pep517-bootstrap
+  (hidden-package
+   (package
+     (name "python-pep517-bootstrap")
+     (version "0.9.1")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pep517" version))
+        (sha256
+         (base32
+          "0zqidxah03qpnp6zkg3zd1kmd5f79hhdsfmlc0cldaniy80qddxf"))))
+     (build-system python-build-system)
+     (arguments
+      `(#:tests? #f))                     ;to avoid circular dependencies
+     (propagated-inputs
+      `(("python-toml" ,python-toml)
+        ("python-wheel" ,python-wheel)))
+     (home-page "https://github.com/pypa/pep517")
+     (synopsis "Wrappers to build Python packages using PEP 517 hooks")
+     (description
+      "Wrappers to build Python packages using PEP 517 hooks.")
+     (license license:expat))))
+
+(define-public python-poetry-core
+  (package
+    (name "python-poetry-core")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poetry-core" version))
+       (sha256
+        (base32 "1mgv276h1iphn5fqhp2sgkgd5d0c39hs33vgaf157x5ri7rlyrka"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/python-poetry/poetry-core")
+    (synopsis "Poetry PEP 517 build back-end")
+    (description
+     "The @code{poetry-core} module provides a PEP 517 build back-end
+implementation developed for Poetry.  This project is intended to be
+a light weight, fully compliant, self-contained package allowing PEP 517
+compatible build front-ends to build Poetry managed projects.")
+    (license license:expat)))
