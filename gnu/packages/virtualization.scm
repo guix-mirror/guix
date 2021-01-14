@@ -952,7 +952,7 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "4.0.5")
+    (version "4.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -960,7 +960,7 @@ all common programming languages.  Vala bindings are also provided.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1976l9308rx1ria1gazasypk5rmmf5jiqdh54dfrws5bslbdcb5g"))))
+                "0qz4l7mlhq7hx53q606qgvkyzyr01glsw290v8ppzvxn1fydlrci"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
