@@ -62,11 +62,11 @@ environment presented by Intel's EFI.")
     ;; Distribution is allowed only when accepting all those licenses.
     (license (list license:bsd-2 license:bsd-3 license:bsd-4 license:expat))))
 
-(define-public efi_analyzer
+(define-public efi-analyzer
   (let ((commit "77c9e3a67cd7c2fca48a4292dad25a5429872f95")
         (revision "0"))
     (package
-      (name "efi_analyzer")
+      (name "efi-analyzer")
       (version (git-version "0.0.0" revision commit))
       (source
        (origin
@@ -95,6 +95,10 @@ environment presented by Intel's EFI.")
        "The EFI Analyzer checks EFI binaries and prints out header and section
 information.")
       (license license:bsd-2))))
+
+(define-public efi_analyzer
+  ;; For a short while the package name contained an underscore.
+  (deprecated-package "efi_analyzer" efi-analyzer))
 
 (define-public sbsigntools
   (package
