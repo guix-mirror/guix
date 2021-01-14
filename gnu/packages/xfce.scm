@@ -820,7 +820,7 @@ and import the new pictures from your camera.")
 (define-public xfwm4
   (package
     (name "xfwm4")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -828,7 +828,7 @@ and import the new pictures from your camera.")
                                   "xfwm4-" version ".tar.bz2"))
               (sha256
                (base32
-                "1czyy4vck4yh6bbxyk6f15mvzv3ndrhabc2k2zyynv5npghyl8hy"))))
+                "133ip28v6j3x4l413d81ixsisf32sa0xzd54n0nn8g6p9fh4rcmm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
