@@ -23,8 +23,11 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
@@ -38,6 +41,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -45,15 +49,87 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module ((guix licenses)
                 #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1))
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1 fdl1.2+))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
+
+(define-public hime
+  (package
+    (name "hime")
+    (version "0.9.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hime-ime/hime.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1wn0ici78x5qh6hvv50bf76ld7ds42hzzl4l5qz34hp8wyvrwakw"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:imported-modules
+       (,@%glib-or-gtk-build-system-modules
+        (guix build cmake-build-system)
+        (guix build qt-build-system))
+       #:modules
+       ((guix build glib-or-gtk-build-system)
+        ((guix build qt-build-system)
+         #:prefix qt:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        ;; FIXME
+        ;; error: unknown type name ‘GtkStatusIcon’
+        "--disable-system-tray")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-std
+           (lambda _
+             (substitute* "configure"
+               (("gnu17")
+                "gnu11")
+               (("gnu++17")
+                "gnu++11"))
+             #t))
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("whereis" ,util-linux)))
+    (inputs
+     `(("anthy" ,anthy)
+       ("appindicator" ,libappindicator)
+       ("chewing" ,libchewing)
+       ("gtk+" ,gtk+)
+       ("qtbase" ,qtbase)
+       ("xtst" ,libxtst)))
+    (synopsis "HIME Input Method Editor")
+    (description "Hime is an extremely easy-to-use input method framework.  It
+is lightweight, stable, powerful and supports many commonly used input methods,
+including Cangjie, Zhuyin, Dayi, Ranked, Shrimp, Greek, Anthy, Korean, Latin,
+Random Cage Fighting Birds, Cool Music etc.")
+    (home-page "http://hime-ime.github.io/")
+    (license
+     (list
+      gpl2+
+      lgpl2.1+
+      ;; Documentation
+      fdl1.2+))))
 
 (define-public libchewing
   (package
