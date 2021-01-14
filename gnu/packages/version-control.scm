@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2020 EuAndreh <eu@euandre.org>
@@ -1938,7 +1938,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 (define-public diffstat
   (package
     (name "diffstat")
-    (version "1.63")
+    (version "1.64")
     (source (origin
               (method url-fetch)
               (uri
@@ -1949,7 +1949,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                                 "diffstat-" version ".tgz")))
               (sha256
                (base32
-                "0vyw200s5dv1257pmrh6c6fdkmw3slyz5szpqfx916xr04sdbpby"))))
+                "1z7pwcv48fjnhxrjcsjdy83x8b9ckl582mbbds90a79fkn6y7bmq"))))
     (build-system gnu-build-system)
     (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
