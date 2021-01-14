@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -287,6 +287,55 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
+
+(define-public shunit2
+  (package
+    (name "shunit2")
+    (version "2.1.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kward/shunit2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08vs0jjl3pfh100sjlw31x4638xj7fghr0j2g1zfikba8n1f9491"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)    ; no configure script
+         (delete 'build)
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* "shunit2"
+               (("#! /bin/sh") (string-append "#! " (which "sh")))
+               (("/usr/bin/od") (which "od")))
+             (substitute* "test_runner"
+               (("/bin/sh") (which "sh"))
+               (("/bin/bash") (which "bash")))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test is buggy in the build container.
+               (delete-file "shunit2_misc_test.sh")
+               (invoke "sh" "test_runner"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "shunit2"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin"))
+             #t)))))
+    (home-page "https://github.com/kward/shunit2")
+    (synopsis "@code{xUnit} based unit testing for Unix shell scripts")
+    (description "@code{shUnit2} was originally developed to provide a
+consistent testing solution for @code{log4sh}, a shell based logging framework
+similar to @code{log4j}.  It is designed to work in a similar manner to JUnit,
+PyUnit and others.")
+    (license license:asl2.0)))
 
 ;; When dependent packages upgraded to use newer version of catch, this one should
 ;; be removed.
