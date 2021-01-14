@@ -15855,9 +15855,6 @@ of corner cases, factory_boy allows you to use objects customized for the
 current test, while only declaring the test-specific fields")
     (license license:expat)))
 
-(define-public python2-factory-boy
-  (package-with-python2 python-factory-boy))
-
 (define-public python-translate-toolkit
   (package
     (name "python-translate-toolkit")
