@@ -6497,14 +6497,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.100")
+    (version "0.9.101")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://adishatz.org/eolie/eolie-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vzhfp8j1z3jvd5ndqfyn7nqrx3zdvx9mv1byjl36nnd9g63ji62"))))
+                "1v8n21y75abdzsnx5idyd0q6yfb6cd0sqbknlbkwh5fdgvjzyvwn"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
