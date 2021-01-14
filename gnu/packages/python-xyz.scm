@@ -164,6 +164,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
@@ -2720,38 +2721,6 @@ with sensible defaults out of the box.")
         (base32 "0njsm0wn31l21bi118g5825ma5sa3rwn7v2x4wjd7yiiahkri337"))))
     (arguments `())))
 
-(define-public python-wheel
-  (package
-    (name "python-wheel")
-    (version "0.36.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "wheel" version))
-        (sha256
-         (base32
-          "0pi4w0brz7a86ddk6pm8p6j0w6d7jgacgxm0c2dab3k5cb8yy7p1"))))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
-     ;; fails to find the newly-built bdist_wheel library, even though it is
-     ;; available on PYTHONPATH.  What search path is consulted by setup.py?
-     '(#:tests? #f))
-    (home-page "https://bitbucket.org/pypa/wheel/")
-    (synopsis "Format for built Python packages")
-    (description
-     "A wheel is a ZIP-format archive with a specially formatted filename and
-the @code{.whl} extension.  It is designed to contain all the files for a PEP
-376 compatible install in a way that is very close to the on-disk format.  Many
-packages will be properly installed with only the @code{Unpack} step and the
-unpacked archive preserves enough information to @code{Spread} (copy data and
-scripts to their final locations) at any later time.  Wheel files can be
-installed with a newer @code{pip} or with wheel's own command line utility.")
-    (license license:expat)))
-
-(define-public python2-wheel
-  (package-with-python2 python-wheel))
-
 (define-public python-vcversioner
   (package
     (name "python-vcversioner")
@@ -4061,27 +4030,6 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
-
-(define-public python-toml
-  (package
-    (name "python-toml")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "toml" version))
-       (sha256
-        (base32
-         "03wbqm5cn685cwx2664hjdpz370njl7lf0yal8s0dkp5w4mn2swj"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                     ;no tests suite in release
-    (home-page "https://github.com/uiri/toml")
-    (synopsis "Library for TOML")
-    (description
-     "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
-Language (TOML) configuration files.")
-    (license license:expat)))
 
 (define-public python-jsonrpc-server
   (package
@@ -8308,16 +8256,8 @@ PEP 8.")
 
 (define-public python-pep517
   (package
+    (inherit python-pep517-bootstrap)
     (name "python-pep517")
-    (version "0.9.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pep517" version))
-        (sha256
-         (base32
-          "0zqidxah03qpnp6zkg3zd1kmd5f79hhdsfmlc0cldaniy80qddxf"))))
-    (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -8333,15 +8273,7 @@ PEP 8.")
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-testpath" ,python-testpath)))
-    (propagated-inputs
-     `(("python-toml" ,python-toml)
-       ("python-wheel" ,python-wheel)))
-    (home-page "https://github.com/pypa/pep517")
-    (synopsis "Wrappers to build Python packages using PEP 517 hooks")
-    (description
-     "Wrappers to build Python packages using PEP 517 hooks.")
-    (properties `((python2-variant . ,(delay python2-pep517))))
-    (license license:expat)))
+    (properties `((python2-variant . ,(delay python2-pep517))))))
 
 ;; Skip the tests so we don't create a cyclical dependency with pytest.
 (define-public python2-pep517
@@ -13220,26 +13152,6 @@ strings require only one extra byte in addition to the strings themselves.")
      "Cachy provides a simple yet effective caching library.  A simple but
 powerful API: thread-safety; decorator syntax; support for memcached, redis,
 database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
-    (license license:expat)))
-
-(define-public python-poetry-core
-  (package
-    (name "python-poetry-core")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "poetry-core" version))
-       (sha256
-        (base32 "1mgv276h1iphn5fqhp2sgkgd5d0c39hs33vgaf157x5ri7rlyrka"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/python-poetry/poetry-core")
-    (synopsis "Poetry PEP 517 build back-end")
-    (description
-     "The @code{poetry-core} module provides a PEP 517 build back-end
-implementation developed for Poetry.  This project is intended to be
-a light weight, fully compliant, self-contained package allowing PEP 517
-compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
 
 (define-public poetry

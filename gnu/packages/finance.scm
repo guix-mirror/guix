@@ -92,6 +92,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)

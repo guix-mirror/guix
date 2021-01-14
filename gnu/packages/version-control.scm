@@ -98,6 +98,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
