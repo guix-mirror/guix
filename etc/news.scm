@@ -1,6 +1,6 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
-;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
@@ -17,6 +17,41 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "a879e35116043d5daf3d9d175b697d10b9177fd5")
+        (title (en "Substitutes can now be compressed with zstd")
+               (fr "Les substituts peuvent maintenant être compressés avec zstd"))
+        (body
+         (en "The @command{guix publish} command now supports substitute
+compression with zstd and @command{guix-daemon} can now fetch and decompress
+them.
+
+The advantage of zstd over the other options is its high compression and
+decompression throughput, with good compression ratios (not as good as lzip,
+but slightly better than gzip).  Its high decompression throughput makes it a
+good choice in situations where substitute downloads would otherwise be
+CPU-bound, typically when having a high-speed connection to the substitute
+server.  Run @command{info \"(guix) Invoking guix publish\"} for more info.
+
+To be able to fetch zstd-compressed substitutes (if the substitute servers you
+chose provide them), you need to upgrade your daemon.  Run @command{info
+\"(guix) Upgrading Guix\"} to learn how to do it.")
+         (fr "La commande @command{guix publish} peut maintenant compresser
+les substituts avec zstd et @command{guix-daemon} est capable de les récupérer
+et de les décompresser.
+
+L'avantage de zstd par rapport aux autres méthodes est son haut débit en
+compression et décompression, avec un taux de compression correct (pas aussi
+bon que lzip, mais légèrement meilleur que gzip).  Sa vitesse de décompression
+en fait un bon choix dans les situations où le temps de téléchargement des
+substituts se retrouve sinon limité par le temps de calcul comme c'est le cas
+lorsqu'on bénéficie d'une connexion rapide au serveur de substitut.  Lancer
+@command{info \"(guix.fr) Invoquer guix publish\"} pour plus d'informations.
+
+Pour pouvoir télécharger des substituts compressés avec zstd (si les serveurs
+de substituts choisis les fournissent), il faudra d'abord mettre à jour le
+démon.  Lancer @command{info \"(guix.fr) Mettre à niveau Guix\"} pour voir
+comment faire.")))
 
  (entry (commit "e38d90d497e19e00263fa28961c688a433154386")
         (title (en "New @option{--with-patch} package transformation option")
