@@ -12117,7 +12117,7 @@ and cangjie.")
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "posframe-" version ".el"))
+                           "posframe-" version ".tar"))
        (sha256
         (base32 "1sn35ibp5y4y80l1xm4b8i94ld953a9gbkk99zqd9mrq9bwjyhdp"))))
     (build-system emacs-build-system)
