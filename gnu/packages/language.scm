@@ -26,10 +26,15 @@
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -47,6 +52,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix build-system cmake)
@@ -61,6 +67,138 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
+
+(define-public nimf
+  (package
+    (name "nimf")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hamonikr/nimf.git")
+         (commit
+          (string-append "nimf-" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "01qi7flmaqrn2fk03sa42r0caks9d8lsv88s0bgxahhxwk1x76gc"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:imported-modules
+       (,@%glib-or-gtk-build-system-modules
+        (guix build cmake-build-system)
+        (guix build qt-build-system))
+       #:modules
+       ((guix build glib-or-gtk-build-system)
+        ((guix build qt-build-system)
+         #:prefix qt:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        "--with-im-config-data"
+        "--with-imsettings-data"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-flags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("-Werror")
+                "-Wno-error"))
+             #t))
+         (add-after 'patch-flags 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "nimf-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.3")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'patch-docbook-xml 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("/usr/share/anthy/anthy.dic")
+                (string-append (assoc-ref inputs "anthy")
+                               "/share/anthy/anthy.dic")))
+             (substitute* "configure.ac"
+               (("/usr/bin:\\$GTK3_LIBDIR/libgtk-3-0")
+                (string-append (assoc-ref inputs "gtk+:bin")
+                               "/bin:$GTK3_LIBDIR/libgtk-3-0"))
+               (("/usr/bin:\\$GTK2_LIBDIR/libgtk2.0-0")
+                (string-append (assoc-ref inputs "gtk+-2:bin")
+                               "/bin:$GTK2_LIBDIR/libgtk2.0-0")))
+             (substitute* "modules/clients/gtk/Makefile.am"
+               (("\\$\\(GTK3_LIBDIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib"))
+               (("\\$\\(GTK2_LIBDIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib")))
+             (substitute* "modules/clients/qt4/Makefile.am"
+               (("\\$\\(QT4_LIB_DIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib")))
+             (substitute* "modules/clients/qt5/Makefile.am"
+               (("\\$\\(QT5_IM_MODULE_DIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib/qt5/plugins/inputmethods")))
+             (substitute* '("bin/nimf-settings/Makefile.am"
+                            "data/apparmor-abstractions/Makefile.am"
+                            "data/Makefile.am" "data/im-config/Makefile.am"
+                            "data/imsettings/Makefile.am")
+               (("/etc")
+                (string-append (assoc-ref outputs "out")
+                               "/etc"))
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out")
+                               "/share")))
+             #t))
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml-4.3" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+-2:bin" ,gtk+-2 "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("anthy" ,anthy)
+       ("appindicator" ,libappindicator)
+       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+)
+       ("hangul" ,libhangul)
+       ("m17n-db" ,m17n-db)
+       ("m17n-lib" ,m17n-lib)
+       ("qt-4" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("rime" ,librime)
+       ("rsvg" ,librsvg)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("x11" ,libx11)
+       ("xkbcommon" ,libxkbcommon)
+       ("xklavier" ,libxklavier)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Lightweight input method framework")
+    (description "Nimf is a lightweight, fast and extensible input method
+framework.  This package provides a fork of the original nimf project, that
+focusses especially on Korean input (Hangul, Hanja, ...).")
+    (home-page "https://github.com/hamonikr/nimf/")
+    (license lgpl3+)))
 
 (define-public hime
   (package
