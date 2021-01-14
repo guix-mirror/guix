@@ -10513,41 +10513,20 @@ explore and perform basic analysis of single cell sequencing data coming from
 droplet sequencing.  It has been particularly tailored for Drop-seq.")
       (license license:gpl3))))
 
-(define htslib-for-sambamba
-  (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
-    (package
-      (inherit htslib)
-      (name "htslib-for-sambamba")
-      (version (string-append "1.3.1-1." (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/lomereiter/htslib")
-               (commit commit)))
-         (file-name (string-append "htslib-" version "-checkout"))
-         (sha256
-          (base32
-           "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ,@(package-native-inputs htslib))))))
-
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lomereiter/sambamba")
+             (url "https://github.com/biod/sambamba")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "111h05b60pj8dxbidiamy4imc92x2962b3lmb7wgysl6lx064qis"))))
+         "07dznzl6m8k7sw84jxw2kx6i3ymrapbmcmyh0fxz8wrybhw8fmwc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -10557,52 +10536,30 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (delete 'configure)
          (add-after 'unpack 'fix-ldc-version
            (lambda _
-             (substitute* "gen_ldc_version_info.py"
-               (("/usr/bin/env.*") (which "python3")))
              (substitute* "Makefile"
                ;; We use ldc2 instead of ldmd2 to compile sambamba.
                (("\\$\\(shell which ldmd2\\)") (which "ldc2")))
              #t))
-         (add-after 'unpack 'place-biod-and-undead
-           (lambda* (#:key inputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "biod") "BioD")
-             #t))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
              (substitute* "Makefile"
-               (("htslib/libhts.a lz4/lib/liblz4.a")
-                "-L-lhts -L-llz4")
-               ((" lz4-static htslib-static") ""))
+               (("= lz4/lib/liblz4.a") "= -L-llz4")
+               (("ldc_version_info lz4-static") "ldc_version_info"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (bin   (string-append out "/bin")))
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
                (copy-file (string-append "bin/sambamba-" ,version)
                           (string-append bin "/sambamba"))
                #t))))))
     (native-inputs
-     `(("ldc" ,ldc)
-       ("rdmd" ,rdmd)
-       ("python" ,python)
-       ("biod"
-        ,(let ((commit "7969eb0a847b05874e83ffddead26e193ece8101"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/biod/BioD")
-                   (commit commit)))
-             (file-name (string-append "biod-"
-                                       (string-take commit 9)
-                                       "-checkout"))
-             (sha256
-              (base32
-               "0mjxsmbmv0jxl3pq21p8j5r829d648if8q58ka50b2956lc6qkpm")))))))
+     `(("python" ,python)))
     (inputs
-     `(("lz4" ,lz4)
-       ("htslib" ,htslib-for-sambamba)))
-    (home-page "https://lomereiter.github.io/sambamba/")
+     `(("ldc" ,ldc)
+       ("lz4" ,lz4)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/biod/sambamba")
     (synopsis "Tools for working with SAM/BAM data")
     (description "Sambamba is a high performance modern robust and
 fast tool (and library), written in the D programming language, for
