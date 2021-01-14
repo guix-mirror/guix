@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "db42ee65bd657bae9b1a598cbdbe86079dc85f81")
-        (revision 9))
+        (commit "23862011c3d02814181399765a024c7fa3fadd97")
+        (revision 10))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kizkw6cxh6mhc8kal2fglnhyp1i668b4ilqbxq72slbmf9jr9jl"))
+                  "1w6i9z4z24yl8v1gf5m7fgf0bz42gg4dpnhi25fg4a4y5qi7aahk"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -301,6 +301,7 @@ $(prefix)/etc/init.d\n")))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (zlib   (assoc-ref inputs "guile-zlib"))
                                (lzlib  (assoc-ref inputs "guile-lzlib"))
+                               (zstd   (assoc-ref inputs "guile-zstd"))
                                (git    (assoc-ref inputs "guile-git"))
                                (bs     (assoc-ref inputs
                                                   "guile-bytestructures"))
@@ -308,7 +309,7 @@ $(prefix)/etc/init.d\n")))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
-                                             bs ssh zlib lzlib))
+                                             bs ssh zlib lzlib zstd))
                                (deps*  ,@(if (%current-target-system)
                                              '(deps)
                                              '((cons avahi deps))))
@@ -362,6 +363,7 @@ $(prefix)/etc/init.d\n")))
                        ("guile-sqlite3" ,guile-sqlite3)
                        ("guile-zlib" ,guile-zlib)
                        ("guile-lzlib" ,guile-lzlib)
+                       ("guile-zstd" ,guile-zstd)
                        ("guile-ssh" ,guile-ssh)
                        ("guile-git" ,guile-git)
 
@@ -417,7 +419,8 @@ $(prefix)/etc/init.d\n")))
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
-         ("guile-lzlib" ,guile-lzlib)))
+         ("guile-lzlib" ,guile-lzlib)
+         ("guile-zstd" ,guile-zstd)))
       (native-search-paths
        (list (search-path-specification
               (variable "GUIX_EXTENSIONS_PATH")
