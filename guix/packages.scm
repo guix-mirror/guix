@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -635,11 +635,9 @@ specifies modules in scope when evaluating SNIPPET."
 
   (define (tarxz-name file-name)
     ;; Return a '.tar.xz' file name based on FILE-NAME.
-    (let ((base (cond ((numeric-extension? file-name)
-                       original-file-name)
-                      ((checkout? file-name)
-                       (string-drop-right file-name 9))
-                      (else (file-sans-extension file-name)))))
+    (let ((base (if (numeric-extension? file-name)
+                    original-file-name
+                    (file-sans-extension file-name))))
       (string-append base
                      (if (equal? (file-extension base) "tar")
                          ".xz"
@@ -688,6 +686,29 @@ specifies modules in scope when evaluating SNIPPET."
               (car (scandir directory
                             (lambda (name)
                               (not (member name '("." "..")))))))
+
+            (define (repack directory output)
+              ;; Write to OUTPUT a compressed tarball containing DIRECTORY.
+              (unless tar-supports-sort?
+                (call-with-output-file ".file_list"
+                  (lambda (port)
+                    (for-each (lambda (name)
+                                (format port "~a~%" name))
+                              (find-files directory
+                                          #:directories? #t
+                                          #:fail-on-error? #t)))))
+
+              (apply invoke #+(file-append tar "/bin/tar")
+                     "cvfa" output
+                     ;; Avoid non-determinism in the archive.  Set the mtime
+                     ;; to 1 as is the case in the store (software like gzip
+                     ;; behaves differently when it stumbles upon mtime = 0).
+                     "--mtime=@1"
+                     "--owner=root:0" "--group=root:0"
+                     (if tar-supports-sort?
+                         `("--sort=name" ,directory)
+                         '("--no-recursion"
+                           "--files-from=.file_list"))))
 
             ;; Encoding/decoding errors shouldn't be silent.
             (fluid-set! %default-port-conversion-strategy 'error)
@@ -742,30 +763,16 @@ specifies modules in scope when evaluating SNIPPET."
 
               (chdir "..")
 
-              (unless tar-supports-sort?
-                (call-with-output-file ".file_list"
-                  (lambda (port)
-                    (for-each (lambda (name)
-                                (format port "~a~%" name))
-                              (find-files directory
-                                          #:directories? #t
-                                          #:fail-on-error? #t)))))
-              (apply invoke
-                     (string-append #+tar "/bin/tar")
-                     "cvfa" #$output
-                     ;; Avoid non-determinism in the archive.  Set the mtime
-                     ;; to 1 as is the case in the store (software like gzip
-                     ;; behaves differently when it stumbles upon mtime = 0).
-                     "--mtime=@1"
-                     "--owner=root:0"
-                     "--group=root:0"
-                     (if tar-supports-sort?
-                         `("--sort=name"
-                           ,directory)
-                         '("--no-recursion"
-                           "--files-from=.file_list")))))))
+              ;; If SOURCE is a directory (such as a checkout), return a
+              ;; directory.  Otherwise create a tarball.
+              (if (file-is-directory? #+source)
+                  (copy-recursively directory #$output
+                                    #:log (%make-void-port "w"))
+                  (repack directory #$output))))))
 
-    (let ((name (tarxz-name original-file-name)))
+    (let ((name (if (checkout? original-file-name)
+                    original-file-name
+                    (tarxz-name original-file-name))))
       (gexp->derivation name build
                         #:graft? #f
                         #:system system
