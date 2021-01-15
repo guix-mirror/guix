@@ -887,14 +887,27 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
     (for-each (match-lambda
                 ((name . proc)
                  (let ((start (current-time time-monotonic)))
-                   (format #t "starting phase `~a'~%" name)
-                   (let ((result (apply proc args))
-                         (end    (current-time time-monotonic)))
-                     (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                             name result
-                             (elapsed-time end start))
+                   (define (end-of-phase success?)
+                     (let ((end (current-time time-monotonic)))
+                       (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                               name success?
+                               (elapsed-time end start))
 
-                     ;; Dump the environment variables as a shell script, for handy debugging.
-                     (system "export > $NIX_BUILD_TOP/environment-variables")
-                     result))))
+                       ;; Dump the environment variables as a shell script,
+                       ;; for handy debugging.
+                       (system "export > $NIX_BUILD_TOP/environment-variables")))
+
+                   (format #t "starting phase `~a'~%" name)
+                   (with-throw-handler #t
+                     (lambda ()
+                       (apply proc args)
+                       (end-of-phase #t))
+                     (lambda args
+                       ;; This handler executes before the stack is unwound.
+                       ;; The exception is automatically re-thrown from here,
+                       ;; and we should get a proper backtrace.
+                       (format (current-error-port)
+                               "error: in phase '~a': uncaught exception:
+~{~s ~}~%" name args)
+                       (end-of-phase #f))))))
               phases)))
