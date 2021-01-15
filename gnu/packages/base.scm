@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
@@ -284,16 +284,15 @@ interactive means to merge two files.")
 (define-public findutils
   (package
    (name "findutils")
-   (version "4.7.0")
+   (version "4.8.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/findutils/findutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "16kqz9yz98dasmj70jwf5py7jk558w96w0vgp3zf9xsqk3gzpzn5"))
-            (patches (search-patches "findutils-localstatedir.patch"
-                                     "findutils-test-rwlock-threads.patch"))))
+              "0r3i72hnw0a30khlczi9k2c51aamaj6kfmp5mk3844nrjxz7n4jp"))
+            (patches (search-patches "findutils-localstatedir.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list

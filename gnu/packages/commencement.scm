@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -2549,7 +2549,17 @@ exec " gcc "/bin/" program
                  ((or "arm-linux" "aarch64-linux")
                   ''("--disable-dependency-tracking"))
                  (_ ''()))
-              ,flags)))))))
+              ,flags))
+           ((#:phases phases '%standard-phases)
+            `(modify-phases ,phases
+               (add-before 'check 'skip-fnmatch-test
+                 (lambda _
+                   ;; 'test-fnmatch' fails when using glibc-mesboot@2.16, due
+                   ;; to incorrect handling of the [:alpha:] regexp character
+                   ;; class.  Ignore it.
+                   (substitute* "gnulib-tests/Makefile"
+                     (("^XFAIL_TESTS =")
+                      "XFAIL_TESTS = test-fnmatch ")))))))))))
 
 (define file
   (package
