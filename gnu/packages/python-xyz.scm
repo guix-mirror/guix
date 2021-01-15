@@ -1929,16 +1929,18 @@ audio playback capability for Python 3 on OSX, Windows, and Linux.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.17.0")
+    (version "3.17.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "108yf3252fy4ndqab7h46raksxfhcn113bzy2yd8369vidrjnjrb"))))
+        "0hc8nqwdlll4a9cr1k9msn5kmb6kmbjirpgvhjh254nr4sgwgv3m"))))
     (build-system python-build-system)
-    (home-page "http://simplejson.readthedocs.org/en/latest/")
+    (native-inputs
+     `(("python-toml" ,python-toml)))
+    (home-page "https://simplejson.readthedocs.io/en/latest")
     (synopsis
      "Json library for Python")
     (description
