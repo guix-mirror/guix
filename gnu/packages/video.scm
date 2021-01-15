@@ -47,6 +47,7 @@
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3083,7 +3084,9 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k1asqiqw757v59ayx0w029ril947hs0lcp8n91knzjl891fr4nc"))))
+                "1k1asqiqw757v59ayx0w029ril947hs0lcp8n91knzjl891fr4nc"))
+              (patches
+               (search-patches "obs-modules-location.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3098,6 +3101,15 @@ be used for realtime video capture via Linux-specific APIs.")
                (wrap-program (string-append out "/bin/obs")
                  `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OBS_PLUGINS_DIRECTORY")
+            (separator #f)                         ;single entry
+            (files '("lib/obs-plugins")))
+           (search-path-specification
+            (variable "OBS_PLUGINS_DATA_DIRECTORY")
+            (separator #f)                         ;single entry
+            (files '("share/obs/obs-plugins")))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)))

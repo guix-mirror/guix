@@ -1,0 +1,33 @@
+From d250434e6c8eb4f8c8cb47ef3cc6e6de8fa8f828 Mon Sep 17 00:00:00 2001
+From: Alexey Abramov <levenson@mmer.org>
+Date: Fri, 15 Jan 2021 17:07:17 +0100
+Subject: [PATCH] Use environment variable for a default module location
+
+diff --git a/libobs/obs-nix.c b/libobs/obs-nix.c
+index 382fa0546..481ea0f14 100644
+*** a/libobs/obs-nix.c
+--- b/libobs/obs-nix.c
+@@ -66,8 +66,19 @@
+ 
+ void add_default_module_paths(void)
+ {
+-	for (int i = 0; i < module_patterns_size; i++)
+-		obs_add_module_path(module_bin[i], module_data[i]);
++	char *bin_directory = getenv("OBS_PLUGINS_DIRECTORY");
++	char *data_directory = getenv("OBS_PLUGINS_DATA_DIRECTORY");
++	if (bin_directory && data_directory) {
++		struct dstr dstr_data_directory;
++		dstr_init_copy(&dstr_data_directory, data_directory);
++		dstr_cat(&dstr_data_directory, "/%module%");
++		obs_add_module_path(bin_directory, dstr_data_directory.array);
++		dstr_free(&dstr_data_directory);
++
++	} else {
++		for (int i = 0; i < module_patterns_size; i++)
++			obs_add_module_path(module_bin[i], module_data[i]);
++	}
+ }
+ 
+ /*
+-- 
+2.29.2
