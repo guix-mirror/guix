@@ -475,7 +475,12 @@ data types.")
             (variable "PYTHONPATH")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
-                                        "/site-packages"))))))))
+                                        "/site-packages"))))
+           ;; Used to locate tzdata by the zoneinfo module introduced in
+           ;; Python 3.9.
+           (search-path-specification
+            (variable "PYTHONTZPATH")
+            (files (list "share/zoneinfo")))))))
 
 ;; Current 3.x version.
 (define-public python-3 python-3.9)
