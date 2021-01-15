@@ -8261,9 +8261,10 @@ PEP 8.")
             "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-pytest" ,python-pytest-bootstrap)
+      `(("python-toml", python-toml)
+        ("python-pytest" ,python-pytest-bootstrap)
         ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://github.com/flintwork/mccabe")
+    (home-page "https://github.com/PyCQA/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
     (description
       "This package provides a Flake8 plug-in to compute the McCabe cyclomatic
