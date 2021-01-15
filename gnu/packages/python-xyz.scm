@@ -8253,22 +8253,21 @@ PEP 8.")
     (name "python-mccabe")
     (version "0.6.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mccabe" version))
-        (sha256
-          (base32
-            "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mccabe" version))
+       (sha256
+        (base32
+         "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-toml", python-toml)
-        ("python-pytest" ,python-pytest-bootstrap)
-        ("python-pytest-runner" ,python-pytest-runner)))
+     `(("python-toml", python-toml)
+       ("python-pytest" ,python-pytest-bootstrap)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/PyCQA/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
-    (description
-      "This package provides a Flake8 plug-in to compute the McCabe cyclomatic
-complexity of Python source code.")
+    (description "This package provides a Flake8 plug-in to compute the McCabe
+cyclomatic complexity of Python source code.")
     (license license:expat)))
 
 (define-public python2-mccabe
