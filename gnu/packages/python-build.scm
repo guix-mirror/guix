@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +112,32 @@ Language (TOML) configuration files.")
      (description
       "Wrappers to build Python packages using PEP 517 hooks.")
      (license license:expat))))
+
+;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
+;;; a name clash with python-build from (guix build-system python).
+(define-public python-pypa-build
+  (package
+    (name "python-pypa-build")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "build" version))
+              (sha256
+               (base32
+                "1d6m21lijwm04g50nwgsgj7x3vhblzw7jv05ah8psqgzk20bbch8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;to tests in the PyPI release
+    (propagated-inputs
+     `(("python-pep517", python-pep517-bootstrap)
+       ("python-toml" ,python-toml)))
+    (home-page "https://pypa-build.readthedocs.io/en/latest/")
+    (synopsis "Simple Python PEP 517 package builder")
+    (description "The @command{build} command invokes the PEP 517 hooks to
+build a distribution package.  It is a simple build tool and does not perform
+any dependency management.  It aims to keep dependencies to a minimum, in
+order to make bootstrapping easier.")
+    (license license:expat)))
 
 (define-public python-poetry-core
   (package
