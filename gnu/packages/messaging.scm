@@ -24,7 +24,7 @@
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Robert Karszniewicz <avoidr@posteo.de>
 ;;;
@@ -2354,7 +2354,7 @@ There is support for:
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.4e")
+    (version "0.0.9.4f")
     (outputs '("out" "debug"))
     (source
      (origin
@@ -2364,7 +2364,7 @@ There is support for:
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hqhg7l6wpkdbzrdjvrbqymmahziri07ba0hvbii7dd2p0h248fv"))))
+        (base32 "1q9ddz4rs02a0w3lwrsjnh59khv38cq9f0kv09vnwvazvayn87ck"))))
     (build-system qt-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
@@ -2375,7 +2375,7 @@ There is support for:
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
-       ("xdg-utils", xdg-utils)))
+       ("xdg-utils" ,xdg-utils)))
     (arguments
      `(#:tests? #f))                    ; no tests
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
