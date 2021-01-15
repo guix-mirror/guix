@@ -3158,30 +3158,24 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "20.2.1")
+    (version "20.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "1rd6wmymsgv0cdsn50jwybcvbbslzym3mzffcjbl42l8br9cgap0"))))
+         "1nbhnpzswcf3lmzn5xabmfdd7ki8r2w2i37y6wml54di6qi1l48c"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ;; NOTE: guix lint remarks that "python-setuptools should probably not
-       ;; be an input at all". However, removing the input makes the build error:
-       ;; File "setup.py", line 4, in <module>
-       ;;   raise RuntimeError("setuptools >= 41 required to build")
-       ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)
        ("python-distlib" ,python-distlib/next)
        ("python-filelock" ,python-filelock)
-       ("python-six" ,python-six)
-       ("python-importlib-metadata" ,python-importlib-metadata)))
+       ("python-six" ,python-six)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
