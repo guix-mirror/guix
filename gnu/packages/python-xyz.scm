@@ -687,15 +687,16 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
     (version "2.9.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (pypi-uri "Babel" version))
-      (sha256
-       (base32
-        "018yg7g2pa6vjixx1nx41cfispgfi0azzp0a1chlycbj8jsil0ys"))))
+       (method url-fetch)
+       (uri (pypi-uri "Babel" version))
+       (sha256
+        (base32
+         "018yg7g2pa6vjixx1nx41cfispgfi0azzp0a1chlycbj8jsil0ys"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("tzdata" ,tzdata-for-tests)))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
     (arguments
