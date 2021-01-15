@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -1431,9 +1431,8 @@ or junctions, and always follows hard links.")
                ;; Make sure the pkg-config file refers to the right output.
                (substitute* (string-append shared-libs "/pkgconfig/libzstd.pc")
                  (("^prefix=.*")
-                  (string-append "prefix=" lib "\n")))
-
-               #t))))
+                  ;; Note: The .pc file expects a trailing slash for 'prefix'.
+                  (string-append "prefix=" lib "/\n")))))))
        #:make-flags
        (list ,(string-append "CC=" (cc-for-target))
              (string-append "prefix=" (assoc-ref %outputs "out"))
