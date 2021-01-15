@@ -13185,17 +13185,16 @@ some degree most natural languages too.")
              (delete-file "libcst/tests/test_pyre_integration.py")
              (delete-file "libcst/codemod/tests/test_codemod_cli.py")
              (delete-file "libcst/metadata/tests/test_full_repo_manager.py")
-             (delete-file "libcst/metadata/tests/test_type_inference_provider.py")
-             #t))
+             (delete-file "libcst/metadata/tests/test_type_inference_provider.py")))
          (add-before 'check 'generate-test-data
            (lambda _
              (setenv "PYTHONPATH" (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (invoke "python" "-m" "libcst.codegen.generate" "visitors")
              (invoke "python" "-m" "libcst.codegen.generate" "return_types")))
          (replace 'check
-           (lambda _
-             (invoke "python" "-m" "unittest")
-             #t)))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "unittest")))))))
     (native-inputs
      `(("python-black" ,python-black)
        ("python-isort" ,python-isort)))
@@ -13219,6 +13218,14 @@ feels like an AST.")
                    license:psfl
                    ;; libcst/_add_slots.py
                    license:asl2.0))))
+
+(define-public python-libcst-minimal
+  (hidden-package
+   (package
+     (inherit python-libcst)
+     (name "python-libcst-minimal")
+     (arguments '(#:tests? #f))
+     (native-inputs '()))))
 
 (define-public python-typing-inspect
   (package
