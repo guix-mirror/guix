@@ -6374,6 +6374,29 @@ cards created in Org mode.")
 (SRS) but would like to make cards in Org mode.")
       (license license:gpl3+))))
 
+(define-public emacs-org-mime
+  (package
+    (name "emacs-org-mime")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/org-mime/org-mime")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vchyd80ybvr6317dwm50nxcgxfrpc0bz6259vnrh24p5sb8shbj"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/org-mime/org-mime")
+    (synopsis "Send HTML email using Org mode HTML export")
+    (description
+     "This program sends HTML email using Org-mode HTML export.
+This approximates a WYSiWYG HTML mail editor from within Emacs, and can be
+useful for sending tables, fontified source code, and inline images in
+email.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
