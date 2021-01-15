@@ -13484,7 +13484,8 @@ YAML-serialized data.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+       ("python-nose" ,python-nose)
+       ("python-toml" ,python-toml)))
     (propagated-inputs
      `(("python-simplejson" ,python-simplejson)))
     (home-page "https://github.com/sdispater/backpack")
