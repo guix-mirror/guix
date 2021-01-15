@@ -8404,14 +8404,14 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 (define-public python-flake8-pyi
   (package
     (name "python-flake8-pyi")
-    (version "20.5.0")
+    (version "20.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flake8-pyi" version))
        (sha256
         (base32
-         "1zpq4s9kp8w95pccmhhyyx1ff2zhnidcf1zb3xs46lzcx9plvnzk"))))
+         "0b27n2pmrxcc7nva4wp2i7mrag0fnq0firvhg1ljq593a45b5qyf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)
