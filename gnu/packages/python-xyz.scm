@@ -18023,7 +18023,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typed-ast
   (package
     (name "python-typed-ast")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -18031,7 +18031,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
              (url "https://github.com/python/typed_ast")
              (commit version)))
        (sha256
-        (base32 "0l0hz809f7i356kmqkvfsaswiidb98j9hs9rrjnfawzqcbffzgyb"))
+        (base32 "1wr6pkvvrq6rzjjw88pd5xy8fy06msam4hlxbkglvdmwh4c083l0"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
