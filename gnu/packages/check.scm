@@ -1913,19 +1913,19 @@ seamlessly into your existing Python unit testing work flow.")
 (define-public python-hypothesmith
   (package
     (name "python-hypothesmith")
-    (version "0.1.2")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hypothesmith" version))
        (sha256
         (base32
-         "09331sspknv459xcyn1k0lx5flqlc6gmnwp9370pfvg4kg1zmss6"))))
+         "02j101m5grjrbvrgjap17jsxd1hgawkylmyswcn33vf42mxh9zzr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-hypothesis" ,python-hypothesis-5.23)
+     `(("python-hypothesis" ,python-hypothesis)
        ("python-lark-parser" ,python-lark-parser)
-       ("python-libcst" ,python-libcst)))
+       ("python-libcst" ,python-libcst-minimal)))
     (home-page "https://github.com/Zac-HD/hypothesmith")
     (synopsis "Strategies for generating Python programs")
     (description
