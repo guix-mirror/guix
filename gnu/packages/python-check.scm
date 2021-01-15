@@ -1096,6 +1096,20 @@ any Python VM with basically no runtime overhead.")
     ;; mypyc/lib-rt/getargs.c
     (license (list license:expat license:psfl))))
 
+;;; This variant exists to break a cycle between python-pylama and python-isort.
+(define-public python-mypy-minimal
+  (hidden-package
+   (package
+     (inherit python-mypy)
+     (name "python-mypy-minimal")
+     (arguments
+      `(#:tests? #f
+        #:phases (modify-phases %standard-phases
+                   ;; XXX: Fails with: "In procedure utime: No such file or
+                   ;; directory".
+                   (delete 'ensure-no-mtimes-pre-1980))))
+     (native-inputs '()))))
+
 (define-public python-robber
   (package
     (name "python-robber")
