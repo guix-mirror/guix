@@ -13236,7 +13236,8 @@ feels like an AST.")
               (uri (pypi-uri "typing_inspect" version))
               (sha256
                (base32
-                "1dzs9a1pr23dhbvmnvms2jv7l7jk26023g5ysf0zvnq8b791s6wg"))))
+                "1dzs9a1pr23dhbvmnvms2jv7l7jk26023g5ysf0zvnq8b791s6wg"))
+              (patches (search-patches "python-typing-inspect-fix.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mypy-extensions" ,python-mypy-extensions)
