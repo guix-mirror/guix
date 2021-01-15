@@ -3048,13 +3048,13 @@ JavaScript-like message boxes.  Types of dialog boxes include:
   (package
     (name "python-pympler")
     (home-page "https://pythonhosted.org/Pympler/")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Pympler" version))
               (sha256
                (base32
-                "08mrpnb6cv2nvfncvr8a9a8bpwhnasa924anapnjvnaw5jcd4k7p"))))
+                "0ivfw2k86nbw9ck9swidl4422w7bhjldxwj90a4sy5r1cbgygjzj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
