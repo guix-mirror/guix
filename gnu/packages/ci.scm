@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages docbook)
@@ -68,8 +69,8 @@
                 (file-name (string-append name "-" version "-checkout")))))))
 
 (define-public cuirass
-  (let ((commit "697fa14584551d9595cd042f1ffeba240e45a127")
-        (revision "56"))
+  (let ((commit "da6a5c0355e72d725003c9005a9974f2a476d999")
+        (revision "58"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -81,43 +82,33 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0gw9cja8fiyra9vnn3y384gwanvsqdq6gwjcvmz91sy5lvfwv34m"))))
+                  "0p9ad0aisbl7clb3vi7zmfbnmnsnxq90vgx8v9ly5b0dgrav91p4"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
-
          #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
-
+         #:tests? #f  ;requires a PostgreSQL database.
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'disable-repo-tests
-             (lambda _
-               ;; Disable tests that use a connection to the Guix daemon.
-               (substitute* "Makefile.am"
-                 (("tests/repo.scm \\\\") "\\"))
-               #t))
-           (add-after 'disable-repo-tests 'patch-/bin/sh
-             (lambda _
-               (substitute* "build-aux/git-version-gen"
-                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
-               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
                (let* ((out    (assoc-ref outputs "out"))
+                      (avahi  (assoc-ref inputs "guile-avahi"))
                       (gcrypt (assoc-ref inputs "guile-gcrypt"))
                       (json   (assoc-ref inputs "guile-json"))
-                      (sqlite (assoc-ref inputs "guile-sqlite3"))
+                      (zmq    (assoc-ref inputs "guile-simple-zmq"))
+                      (squee  (assoc-ref inputs "guile-squee"))
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (zlib   (assoc-ref inputs "guile-zlib"))
                       (guix   (assoc-ref inputs "guix"))
-                      (deps   (list gcrypt json sqlite git bytes fibers
-                                    zlib guix))
+                      (deps   (list avahi gcrypt json zmq squee git bytes
+                                    fibers zlib guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
@@ -137,17 +128,22 @@
                                1)))
                  ;; Make sure 'cuirass' can find the 'evaluate' command, as
                  ;; well as the relevant Guile modules.
-                 (wrap-program (string-append out "/bin/cuirass")
-                   `("PATH" ":" prefix (,(string-append out "/bin")))
-                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
+                 (for-each
+                  (lambda (name)
+                    (wrap-program (string-append out "/bin/" name)
+                      `("PATH" ":" prefix (,(string-append out "/bin")))
+                      `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs))))
+                  '("cuirass" "remote-server" "remote-worker"))
                  #t))))))
       (inputs
        `(("guile" ,guile-3.0/libgc-7)
+         ("guile-avahi" ,guile-avahi)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
-         ("guile-sqlite3" ,guile-sqlite3-dev)
+         ("guile-simple-zmq" ,guile-simple-zmq)
+         ("guile-squee" ,guile-squee)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among

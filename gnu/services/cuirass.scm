@@ -29,6 +29,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services databases)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services admin)
   #:use-module (gnu system shadow)
@@ -54,11 +55,6 @@
                     (default "/var/log/cuirass.log"))
   (web-log-file     cuirass-configuration-web-log-file ;string
                     (default "/var/log/cuirass-web.log"))
-  (queries-log-file cuirass-configuration-queries-log-file ;string
-                    (default #f))
-  (web-queries-log-file
-                    cuirass-configuration-web-queries-log-file ;string
-                    (default #f))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
                     (default "/var/cache/cuirass"))
   (ttl              cuirass-configuration-ttl     ;integer
@@ -69,10 +65,8 @@
                     (default "cuirass"))
   (interval         cuirass-configuration-interval ;integer (seconds)
                     (default 60))
-  (queue-size       cuirass-configuration-queue-size
-                    (default 1))
-  (database         cuirass-configuration-database ;string (file-name)
-                    (default "/var/lib/cuirass/cuirass.db"))
+  (database         cuirass-configuration-database ;string
+                    (default "dbname=cuirass host=/var/run/postgresql"))
   (port             cuirass-configuration-port ;integer (port)
                     (default 8081))
   (host             cuirass-configuration-host ;string
@@ -94,13 +88,9 @@
         (cache-directory  (cuirass-configuration-cache-directory config))
         (web-log-file     (cuirass-configuration-web-log-file config))
         (log-file         (cuirass-configuration-log-file config))
-        (queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-                          (cuirass-configuration-web-queries-log-file config))
         (user             (cuirass-configuration-user config))
         (group            (cuirass-configuration-group config))
         (interval         (cuirass-configuration-interval config))
-        (queue-size       (cuirass-configuration-queue-size config))
         (database         (cuirass-configuration-database config))
         (ttl              (cuirass-configuration-ttl config))
         (port             (cuirass-configuration-port config))
@@ -113,7 +103,7 @@
     (list (shepherd-service
            (documentation "Run Cuirass.")
            (provision '(cuirass))
-           (requirement '(guix-daemon networking))
+           (requirement '(guix-daemon postgres networking))
            (start #~(make-forkexec-constructor
                      (list (string-append #$cuirass "/bin/cuirass")
                            "--cache-directory" #$cache-directory
@@ -122,11 +112,6 @@
                            "--database" #$database
                            "--ttl" #$(string-append (number->string ttl) "s")
                            "--interval" #$(number->string interval)
-                           "--queue-size" #$(number->string queue-size)
-                           #$@(if queries-log-file
-                                  (list (string-append "--log-queries="
-                                                       queries-log-file))
-                                  '())
                            #$@(if use-substitutes? '("--use-substitutes") '())
                            #$@(if one-shot? '("--one-shot") '())
                            #$@(if fallback? '("--fallback") '())
@@ -144,22 +129,16 @@
           (shepherd-service
            (documentation "Run Cuirass web interface.")
            (provision '(cuirass-web))
-           (requirement '(guix-daemon networking))
+           (requirement '(guix-daemon postgres networking))
            (start #~(make-forkexec-constructor
                      (list (string-append #$cuirass "/bin/cuirass")
                            "--cache-directory" #$cache-directory
-                           "--specifications"
-                           #$(scheme-file "cuirass-specs.scm" specs)
                            "--database" #$database
                            "--ttl" #$(string-append (number->string ttl) "s")
                            "--web"
                            "--port" #$(number->string port)
                            "--listen" #$host
                            "--interval" #$(number->string interval)
-                           #$@(if web-queries-log-file
-                                  (list (string-append "--log-queries="
-                                                       web-queries-log-file))
-                                  '())
                            #$@(if use-substitutes? '("--use-substitutes") '())
                            #$@(if fallback? '("--fallback") '())
                            #$@extra-options)
@@ -184,15 +163,18 @@
            (home-directory (string-append "/var/lib/" cuirass-user))
            (shell (file-append shadow "/sbin/nologin"))))))
 
+(define (cuirass-postgresql-role config)
+  (let ((user (cuirass-configuration-user config)))
+    (list (postgresql-role
+           (name user)
+           (create-database? #t)))))
+
 (define (cuirass-activation config)
   "Return the activation code for CONFIG."
   (let ((cache (cuirass-configuration-cache-directory config))
         (db    (dirname (cuirass-configuration-database config)))
         (user  (cuirass-configuration-user config))
         (log   "/var/log/cuirass")
-        (queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-         (cuirass-configuration-web-queries-log-file config))
         (group (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
@@ -206,33 +188,14 @@
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
             (chown #$db uid gid)
-            (chown #$log uid gid)
-
-            (let ((queries-log-file #$queries-log-file))
-              (when queries-log-file
-                (call-with-output-file queries-log-file (const #t))
-                (chown #$queries-log-file uid gid)))
-
-            (let ((web-queries-log-file #$web-queries-log-file))
-              (when web-queries-log-file
-                (call-with-output-file web-queries-log-file (const #t))
-                (chown web-queries-log-file uid gid))))))))
+            (chown #$log uid gid))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
-  (let ((queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-         (cuirass-configuration-web-queries-log-file config)))
-    (list (log-rotation
-           (files `(,(cuirass-configuration-log-file config)
-                    ,@(if queries-log-file
-                          (list queries-log-file)
-                          '())
-                    ,@(if web-queries-log-file
-                          (list web-queries-log-file)
-                          '())))
-           (frequency 'weekly)
-           (options '("rotate 40"))))))              ;worth keeping
+  (list (log-rotation
+         (files (list (cuirass-configuration-log-file config)))
+         (frequency 'weekly)
+         (options '("rotate 40")))))              ;worth keeping
 
 (define cuirass-service-type
   (service-type
@@ -244,7 +207,8 @@
      (service-extension rottlog-service-type cuirass-log-rotations)
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
-     (service-extension account-service-type cuirass-account)))
+     (service-extension account-service-type cuirass-account)
+     (service-extension postgresql-role-service-type
+                        cuirass-postgresql-role)))
    (description
     "Run the Cuirass continuous integration service.")))
-
