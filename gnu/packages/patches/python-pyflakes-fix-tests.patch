@@ -1,0 +1,40 @@
+From c873a25136dfdb062855b595cdf0a992ac825adf Mon Sep 17 00:00:00 2001
+From: Louis Sautier <sautier.louis@gmail.com>
+Date: Sat, 3 Oct 2020 01:36:15 +0200
+Subject: [PATCH] Fix tests with Python 3.9, closes #549
+
+---
+ pyflakes/test/test_api.py | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/pyflakes/test/test_api.py b/pyflakes/test/test_api.py
+index 8e1e3c9c..906fb396 100644
+--- a/pyflakes/test/test_api.py
++++ b/pyflakes/test/test_api.py
+@@ -517,6 +515,8 @@ def foo(bar=baz, bax):
+             if ERROR_HAS_LAST_LINE:
+                 if PYPY:
+                     column = 7
++                elif sys.version_info >= (3, 9):
++                    column = 21
+                 elif sys.version_info >= (3, 8):
+                     column = 9
+                 else:
+@@ -545,6 +545,8 @@ def test_nonKeywordAfterKeywordSyntaxError(self):
+             if ERROR_HAS_LAST_LINE:
+                 if PYPY:
+                     column = 12
++                elif sys.version_info >= (3, 9):
++                    column = 17
+                 elif sys.version_info >= (3, 8):
+                     column = 14
+                 else:
+@@ -579,6 +581,8 @@ def test_invalidEscape(self):
+                 position_end = 1
+                 if PYPY:
+                     column = 6
++                elif ver >= (3,9):
++                    column = 13
+                 else:
+                     column = 7
+                     # Column has been "fixed" since 3.2.4 and 3.3.1
