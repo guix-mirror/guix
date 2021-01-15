@@ -20,7 +20,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +50,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
@@ -2512,6 +2513,26 @@ interactive modeler, OpenSCAD generates 3D models from a script, giving you
 full programmatic control over your models.")
     (home-page "https://www.openscad.org/")
     (license license:gpl2+)))
+
+(define-public emacs-scad-mode
+  (package
+    (inherit openscad)
+    (name "emacs-scad-mode")
+    (native-inputs '())
+    (inputs '())
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "contrib")
+             #t)))))
+    (synopsis "Emacs major mode for editing editing OpenSCAD code")
+    (description "@code{scad-mode} provides an Emacs major mode for editing
+OpenSCAD code.  It supports syntax highlighting, indenting and refilling of
+comments.")))
 
 (define-public freecad
   (let ((commit-ref "7616153b3c31ace006169cdc2fdafab484498858")
