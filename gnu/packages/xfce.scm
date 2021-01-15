@@ -344,7 +344,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.8.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -352,12 +352,13 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "1fx19953fnrk93lak66y3zqbn4n1qvpc77ynzzgdnj5wwngdh4a8"))))
+                "07fjsgdjqxbcm84ga3cl495782k381k6mwksyrks3zf1l8klk4c4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin")))
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("gtk+-3" ,gtk+)                 ; required by garcon-gtk3-1.pc
        ("libxfce4ui" ,libxfce4ui)))     ; required by garcon-gtk3-1.pc
