@@ -1871,13 +1871,13 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "5.4.1")
+    (version "6.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0zn09bn6hadk4vxl6jy8bkjr5fz8mrhin3z46w7pq5qgbaycr89p"))))
+                "0wj7ip779naf2n076nylf2gi0sjz68z1ir9d9r2rgs7br18naqdf"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: Tests are not distributed with the PyPI archive.
@@ -1893,18 +1893,6 @@ seamlessly into your existing Python unit testing work flow.")
     (home-page "https://github.com/HypothesisWorks/hypothesis-python")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
-
-(define-public python-hypothesis-5.23
-  (package
-    (inherit python-hypothesis)
-    (version "5.23.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "hypothesis" version))
-              (sha256
-               (base32
-                "0sy1v6nyxg4rjcf3rlr8nalb7wqd9nccpb2lzkchbj5an13ysf1h"))))
-    (home-page "https://github.com/HypothesisWorks/hypothesis")))
 
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
