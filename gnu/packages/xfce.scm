@@ -155,6 +155,13 @@ Xfce Desktop Environment.")
              ;; For the missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0")
              (invoke "dbus-launch" "make" "check")))
+         (add-after 'custom-check 'install-shell-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (with-directory-excursion "completions"
+                 (install-file "xfconf-query"
+                               (string-append etc "/bash_completion.d"))))))
          (delete 'check))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
