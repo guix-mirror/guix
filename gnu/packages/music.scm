@@ -5932,33 +5932,38 @@ hall reverb and a room reverb.  Both are available as LV2 plugins as well
 as JACK standalone applications.")
     (license license:gpl3+)))
 
-(define-public zlfo
+(define-public zplugins
   (package
-    (name "zlfo")
-    (version "0.1.3")
+    (name "zplugins")
+    (version "0.1.7")
     (source
      (origin
        (method git-fetch)
-       (uri (git-reference
-             (url "https://git.zrythm.org/git/ZLFO")
-             (commit (string-append "v" version))))
+       (uri
+        (git-reference
+         (url "https://git.zrythm.org/git/zplugins")
+         (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bm466ci5xyvxvq7l9p6xyh789lvk6i31b4zja1igqh13akbjnjz"))))
+         "1rkm2xajmyik6289b20rp5a5br9f3sh1xk8nb1bs6qpmcrfirgbs"))))
     (build-system meson-build-system)
     (inputs
-     `(("librsvg" ,librsvg)
-       ("lv2" ,lv2)
-       ("ztoolkit-rsvg" ,ztoolkit-rsvg)))
+      `(("guile" ,guile-2.2)
+        ("libsndfile" ,libsndfile)
+        ("lv2" ,lv2)
+        ("ztoolkit-rsvg" ,ztoolkit-rsvg)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (synopsis "Low frequency oscillator plugin")
-    (description "ZLFO is a fully featured
-@dfn{low frequency oscillator} (LFO) for @dfn{control voltage} (CV)-based
-automation that comes as an LV2 plugin bundle with a custom UI.")
-    (home-page "https://git.zrythm.org/cgit/ZLFO/")
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Audio plugin collection")
+    (description "ZPlugins is a collection of audio DSP plugins intended
+to be bundled with the Zrythm @dfn{digital audio workstation} (DAW).")
+    (home-page "https://www.zrythm.org/en/plugins.html")
     (license license:agpl3+)))
+
+(define-public zlfo
+  ;; The "zlfo" package is now included in zplugins
+  (deprecated-package "zlfo" zplugins))
 
 (define-public remid-lv2
   (package
