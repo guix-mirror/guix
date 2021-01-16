@@ -2252,6 +2252,16 @@ and keep up to date translations of documentation.")
            (lambda _
              (substitute* "meson-postinstall.sh"
                (("update-desktop-database") (which "true")))
+             #t))
+         (add-after 'install 'patch-thumbnailer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute*
+                   (string-append
+                    out
+                    "/share/thumbnailers/gnome-font-viewer.thumbnailer")
+                 (("gnome-thumbnail-font")
+                  (string-append out "/bin/gnome-thumbnail-font"))))
              #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
