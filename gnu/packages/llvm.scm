@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -476,13 +476,14 @@ output), and Binutils.")
 (define-public llvm-11
   (package
     (name "llvm")
-    (version "11.0.1")
+    (version "11.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
-       (base32 "0a5mb65xa5bal8q6cb37xgkqis2bip87fsafgq3wbsva9cjprn6c"))))
+       (base32
+        "0s94lwil98w7zb7cjrbnxli0z7gklb312pkw74xs1d6zk346hgwi"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -537,11 +538,11 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public clang-runtime-11
   (clang-runtime-from-llvm
    llvm-11
-   "1z470r8c5aahdwkmflglx998n0i77j8b1c69d7cir1kf27qy6yq8"))
+   "0d5j5l8phwqjjscmk8rmqn0i2i0abl537gdbkagl8fjpzy1gyjip"))
 
 (define-public clang-11
   (clang-from-llvm llvm-11 clang-runtime-11
-                   "0kab4zmkxffg98a3rx95756jlwhxflalin5w05g1anpwxv175xbk"
+                   "02ajkij85966vd150iy246mv16dsaph1kfi0y8wnncp8w6nar5hg"
                    #:patches '("clang-11.0-libc-search-path.patch")
                    #:tools-extra
                    (origin
@@ -550,7 +551,7 @@ of programming tools as well as libraries with equivalent functionality.")
                                     (package-version llvm-11)))
                      (sha256
                       (base32
-                       "1j8n6n4l54k2lrdxh266y1fl4z8vy5dc76wsf0csk5n3ikfi38ic")))))
+                       "02bcwwn54661madhq4nxc069s7p7pj5gpqi8ww50w3anbpviilzy")))))
 
 (define-public clang-toolchain-11
   (make-clang-toolchain clang-11))
