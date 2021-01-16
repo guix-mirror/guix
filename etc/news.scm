@@ -5,7 +5,7 @@
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
-;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;; Copyright © 2019, 2020, 2021 Florian Pelz <pelzflorian@pelzflorian.de>
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -20,6 +20,7 @@
 
  (entry (commit "a879e35116043d5daf3d9d175b697d10b9177fd5")
         (title (en "Substitutes can now be compressed with zstd")
+               (de "Substitute können nun mit zstd komprimiert werden")
                (fr "Les substituts peuvent maintenant être compressés avec zstd"))
         (body
          (en "The @command{guix publish} command now supports substitute
@@ -36,6 +37,22 @@ server.  Run @command{info \"(guix) Invoking guix publish\"} for more info.
 To be able to fetch zstd-compressed substitutes (if the substitute servers you
 chose provide them), you need to upgrade your daemon.  Run @command{info
 \"(guix) Upgrading Guix\"} to learn how to do it.")
+         (de "Mit dem Befehl @command{guix publish} können Sie jetzt auch
+Substitute mit zstd komprimieren und @command{guix-daemon} kann sie laden und
+dekomprimieren.
+
+zstd bietet gegenüber den anderen Optionen einen hohen Durchsatz bei
+Kompression und Dekompression mit guten Kompressionsverhältnissen (nicht so
+gut wie lzip, aber etwas besser als gzip).  Wegen des hohen Durchsatzes bei
+der Dekompression ist zstd eine gute Wahl, wenn beim Herunterladen von
+Substituten ansonsten der Engpass bei der Prozessorleistung läge, etwa weil
+eine schnelle Netzwerkverbindung zum Substitutserver besteht.  Führen Sie für
+mehr Informationen @command{info \"(guix.de) Aufruf von guix publish\"} aus.
+
+Um zstd-komprimierte Substitute benutzen zu können (wenn der Substitutserver
+sie anbietet), müssen Sie Ihren Daemon aktualisieren.  Führen Sie
+@command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren, wie
+Sie ihn aktualisieren.")
          (fr "La commande @command{guix publish} peut maintenant compresser
 les substituts avec zstd et @command{guix-daemon} est capable de les récupérer
 et de les décompresser.
