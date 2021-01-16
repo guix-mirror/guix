@@ -1,8 +1,9 @@
 ;;;; test-driver.scm - Guile test driver for Automake testsuite harness
 
-(define script-version "2017-03-22.13") ;UTC
+(define script-version "2021-01-26.20") ;UTC
 
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This program is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
@@ -35,7 +36,7 @@
                [--expect-failure={yes|no}] [--color-tests={yes|no}]
                [--enable-hard-errors={yes|no}] [--brief={yes|no}}] [--]
                TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
-The '--test-name', '--log-file' and '--trs-file' options are mandatory.\n"))
+The '--test-name' option is mandatory.\n"))
 
 (define %options
   '((test-name                 (value #t))
@@ -75,11 +76,14 @@ The '--test-name', '--log-file' and '--trs-file' options are mandatory.\n"))
                        "[m")          ;no color
         result)))
 
-(define* (test-runner-gnu test-name #:key color? brief? out-port trs-port)
+(define* (test-runner-gnu test-name #:key color? brief?
+                          (out-port (current-output-port))
+                          (trs-port (%make-void-port "w")))
   "Return an custom SRFI-64 test runner.  TEST-NAME is a string specifying the
 file name of the current the test.  COLOR? specifies whether to use colors,
-and BRIEF?, well, you know.  OUT-PORT and TRS-PORT must be output ports.  The
-current output port is supposed to be redirected to a '.log' file."
+and BRIEF?, well, you know.  OUT-PORT and TRS-PORT must be output ports.
+OUT-PORT defaults to the current output port, while TRS-PORT defaults to a
+void port, which means no TRS output is logged."
 
   (define (test-on-test-begin-gnu runner)
     ;; Procedure called at the start of an individual test case, before the
@@ -156,20 +160,22 @@ current output port is supposed to be redirected to a '.log' file."
      ((option 'help #f)    (show-help))
      ((option 'version #f) (format #t "test-driver.scm ~A" script-version))
      (else
-      (let ((log (open-file (option 'log-file "") "w0"))
-            (trs (open-file (option 'trs-file "") "wl"))
-            (out (duplicate-port (current-output-port) "wl")))
-        (redirect-port log (current-output-port))
-        (redirect-port log (current-warning-port))
-        (redirect-port log (current-error-port))
+      (let ((log (and=> (option 'log-file #f) (cut open-file <> "w0")))
+            (trs (and=> (option 'trs-file #f) (cut open-file <> "wl")))
+            (out (duplicate-port (current-output-port) "wl"))
+            (test-name (option 'test-name #f)))
+        (when log
+          (redirect-port log (current-output-port))
+          (redirect-port log (current-warning-port))
+          (redirect-port log (current-error-port)))
         (test-with-runner
-            (test-runner-gnu (option 'test-name #f)
+            (test-runner-gnu test-name
                              #:color? (option->boolean opts 'color-tests)
                              #:brief? (option->boolean opts 'brief)
                              #:out-port out #:trs-port trs)
-          (load-from-path (option 'test-name #f)))
-        (close-port log)
-        (close-port trs)
+          (load-from-path test-name))
+        (and=> log close-port)
+        (and=> trs close-port)
         (close-port out))))
     (exit 0)))
 
