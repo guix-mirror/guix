@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2021 Aurora <rind38@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2511,7 +2512,7 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define-public sbcl-cffi
   (package
     (name "sbcl-cffi")
-    (version "0.21.0")
+    (version "0.23.0")
     (source
      (origin
        (method git-fetch)
@@ -2520,7 +2521,7 @@ non-consing thread safe queues and fibonacci priority queues.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "1qalargz9bhp850qv60ffwpdqi4xirzar4l3g6qcg8yc6xqf2cjk"))))
+        (base32 "03s98imc5niwnpj3hhrafl7dmxq45g74h96sm68976k7ahi3vl5b"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("alexandria" ,sbcl-alexandria)
