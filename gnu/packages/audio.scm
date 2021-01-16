@@ -4829,11 +4829,13 @@ with the provided metadata and adhere to well-known best practices.")
         (base32
          "07xl3cmdaf7k9mm58m93cn8i1jvgimmiifdw1w7v2jl88nx60pm1"))))
     (build-system meson-build-system)
-    (inputs
-     `(("cairo" ,cairo)
-       ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    ;; These are listed as propagated inputs because they are dependencies
+    ;; in pkgconfig.
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)))
     (synopsis "GUI toolkit for LV2 plugins")
     (description "ZToolkit (Ztk) is a cross-platform GUI toolkit heavily
 inspired by GTK.  It handles events and low level drawing on behalf of
