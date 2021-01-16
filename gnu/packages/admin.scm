@@ -4306,3 +4306,30 @@ This program allows you to view and manipulate this EEPROM list.")
     (home-page "https://github.com/xobs/novena-eeprom/")
     (supported-systems '("armhf-linux"))
     (license license:bsd-3)))
+
+(define-public lrzsz
+  (package
+    (name "lrzsz")
+    (version "0.12.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ohse.de/uwe/releases/lrzsz-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1wcgfa9fsigf1gri74gq0pa7pyajk12m4z69x7ci9c6x9fqkd2y2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (which "bash"))
+             (invoke "./configure"
+              (string-append "--prefix="
+                             (assoc-ref outputs "out"))))))))
+    (synopsis "Implementation of XMODEM/YMODEM/ZMODEM transfer protocols")
+    (description "This package provides programs that transfer files using
+the XMODEM/YMODEM/ZMODEM file transfer protocols.")
+    (home-page "https://ohse.de/uwe/software/lrzsz.html")
+    (license license:gpl2+)))
