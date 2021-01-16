@@ -4884,9 +4884,9 @@ edited, converted, compressed and saved.")
     (name "ztoolkit-rsvg")
     (arguments
      `(#:configure-flags `("-Denable_rsvg=true")))
-    (inputs
+    (propagated-inputs
      `(("librsvg" ,librsvg)
-       ,@(package-inputs ztoolkit)))
+       ,@(package-propagated-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
 
 (define-public lsp-dsp-lib
