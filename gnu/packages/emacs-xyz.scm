@@ -18313,16 +18313,16 @@ appropriate directory if no @code{eshell} session is active.")
 (define-public emacs-eshell-syntax-highlighting
   (package
     (name "emacs-eshell-syntax-highlighting")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/akreisher/eshell-syntax-highlighting")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0id27874wsb5y169030x8g1ldpa1mnskv1s2j3ygqiyh5fvpfash"))))
+        (base32 "1fb9aa85a3hx1rcmv71j6sc3y278452p1y4dabpwy07avb6apd0p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/akreisher/eshell-syntax-highlighting")
     (synopsis "Add syntax highlighting to Eshell")
