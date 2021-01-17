@@ -921,6 +921,18 @@ the @code{SCM_LOG_DRIVER_FLAGS} makefile variable as in this example:
 make check TESTS="tests/base64.scm" SCM_LOG_DRIVER_FLAGS="--brief=no"
 @end example
 
+The underlying SRFI 64 custom Automake test driver used for the 'check'
+test suite (located at @file{build-aux/test-driver.scm}) also allows
+selecting which test cases to run at a finer level, via its
+@option{--select} and @option{--exclude} options.  Here's an example, to
+run all the test cases from the @file{tests/packages.scm} test file
+whose names start with ``transaction-upgrade-entry'':
+
+@example
+export SCM_LOG_DRIVER_FLAGS="--select=^transaction-upgrade-entry"
+make check TESTS="tests/packages.scm"
+@end example
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 @file{test-suite.log} file.  Please specify the Guix version being used
 as well as version numbers of the dependencies (@pxref{Requirements}) in

@@ -27,6 +27,8 @@
 
 (use-modules (ice-9 getopt-long)
              (ice-9 pretty-print)
+             (ice-9 regex)
+             (srfi srfi-1)
              (srfi srfi-26)
              (srfi srfi-64))
 
@@ -34,14 +36,19 @@
   (display "Usage:
    test-driver --test-name=NAME --log-file=PATH --trs-file=PATH
                [--expect-failure={yes|no}] [--color-tests={yes|no}]
+               [--select=REGEXP] [--exclude=REGEXP]
                [--enable-hard-errors={yes|no}] [--brief={yes|no}}] [--]
                TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
-The '--test-name' option is mandatory.\n"))
+The '--test-name' option is mandatory.  The '--select' and '--exclude' options
+allow selecting or excluding individual test cases via a regexp,
+respectively.\n"))
 
 (define %options
   '((test-name                 (value #t))
     (log-file                  (value #t))
     (trs-file                  (value #t))
+    (select                    (value #t))
+    (exclude                   (value #t))
     (color-tests               (value #t))
     (expect-failure            (value #t)) ;XXX: not implemented yet
     (enable-hard-errors        (value #t)) ;not implemented in SRFI-64
@@ -76,14 +83,22 @@ The '--test-name' option is mandatory.\n"))
                        "[m")          ;no color
         result)))
 
+
+;;;
+;;; SRFI 64 custom test runner.
+;;;
+
 (define* (test-runner-gnu test-name #:key color? brief?
                           (out-port (current-output-port))
-                          (trs-port (%make-void-port "w")))
+                          (trs-port (%make-void-port "w"))
+                          select exclude)
   "Return an custom SRFI-64 test runner.  TEST-NAME is a string specifying the
 file name of the current the test.  COLOR? specifies whether to use colors,
 and BRIEF?, well, you know.  OUT-PORT and TRS-PORT must be output ports.
 OUT-PORT defaults to the current output port, while TRS-PORT defaults to a
-void port, which means no TRS output is logged."
+void port, which means no TRS output is logged.  SELECT and EXCLUDE may take a
+regular expression to select or exclude individual test cases based on their
+names."
 
   (define (test-on-test-begin-gnu runner)
     ;; Procedure called at the start of an individual test case, before the
@@ -150,6 +165,34 @@ void port, which means no TRS output is logged."
 
 
 ;;;
+;;; SRFI 64 test specifiers.
+;;;
+(define (test-match-name* regexp)
+  "Return a test specifier that matches a test name against REGEXP."
+  (lambda (runner)
+    (string-match regexp (test-runner-test-name runner))))
+
+(define (test-match-name*/negated regexp)
+  "Return a negated test specifier version of test-match-name*."
+  (lambda (runner)
+    (not (string-match regexp (test-runner-test-name runner)))))
+
+;;; XXX: test-match-all is a syntax, which isn't convenient to use with a list
+;;; of test specifiers computed at run time.  Copy this SRFI 64 internal
+;;; definition here, which is the procedural equivalent of 'test-match-all'.
+(define (%test-match-all . pred-list)
+  (lambda (runner)
+    (let ((result #t))
+      (let loop ((l pred-list))
+	(if (null? l)
+	    result
+	    (begin
+	      (if (not ((car l) runner))
+		  (set! result #f))
+	      (loop (cdr l))))))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -160,13 +203,20 @@ void port, which means no TRS output is logged."
      ((option 'help #f)    (show-help))
      ((option 'version #f) (format #t "test-driver.scm ~A" script-version))
      (else
-      (let ((log (and=> (option 'log-file #f) (cut open-file <> "w0")))
-            (trs (and=> (option 'trs-file #f) (cut open-file <> "wl")))
-            (out (duplicate-port (current-output-port) "wl"))
-            (test-name (option 'test-name #f))
-            (color-tests (if (assoc 'color-tests opts)
-                             (option->boolean opts 'color-tests)
-                             #t)))
+      (let* ((log (and=> (option 'log-file #f) (cut open-file <> "w0")))
+             (trs (and=> (option 'trs-file #f) (cut open-file <> "wl")))
+             (out (duplicate-port (current-output-port) "wl"))
+             (test-name (option 'test-name #f))
+             (select (option 'select #f))
+             (exclude (option 'exclude #f))
+             (test-specifiers (filter-map
+                               identity
+                               (list (and=> select test-match-name*)
+                                     (and=> exclude test-match-name*/negated))))
+             (test-specifier (apply %test-match-all test-specifiers))
+             (color-tests (if (assoc 'color-tests opts)
+                              (option->boolean opts 'color-tests)
+                              #t)))
         (when log
           (redirect-port log (current-output-port))
           (redirect-port log (current-warning-port))
@@ -176,7 +226,9 @@ void port, which means no TRS output is logged."
                              #:color? color-tests
                              #:brief? (option->boolean opts 'brief)
                              #:out-port out #:trs-port trs)
-          (load-from-path test-name))
+          (test-apply test-specifier
+                      (lambda _
+                        (load-from-path test-name))))
         (and=> log close-port)
         (and=> trs close-port)
         (close-port out))))
