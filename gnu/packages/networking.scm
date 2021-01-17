@@ -913,14 +913,14 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/zeromq/libzmq/releases"
-                                  "/download/v" version "/zeromq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
+    (version "4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/zeromq/libzmq/releases"
+                           "/download/v" version "/zeromq-" version ".tar.gz"))
+       (sha256
+        (base32 "1rf3jmi36ms8jh2g5cvi253h43l6xdfq0r7mvp95va7mi4d014y5"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://zeromq.org")
@@ -3849,15 +3849,14 @@ stamps.")
 (define-public nbd
   (package
     (name "nbd")
-    (version "3.20")
+    (version "3.21")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://sourceforge/nbd/nbd/3.20/nbd-" version
-                            ".tar.xz"))
+        (uri (string-append "mirror://sourceforge/nbd/nbd/" version
+                            "/nbd-" version ".tar.xz"))
         (sha256
-         (base32
-          "1kfnyx52nna2mnw264njk1dl2zc8m78sz031yp65mbmpi99v7qg0"))))
+         (base32 "1ydylvvayi4w2d08flji9q03sl7y8hn0c26vsay3nwwikprqls77"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
