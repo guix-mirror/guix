@@ -57,6 +57,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix deprecation)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
@@ -15011,125 +15012,97 @@ manipulations on VCF files.")
     (license license:expat)))
 
 (define-public freebayes
-  (let ((commit "3ce827d8ebf89bb3bdc097ee0fe7f46f9f30d5fb")
-        (revision "1")
-        (version "1.0.2"))
-    (package
-      (name "freebayes")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ekg/freebayes")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "1sbzwmcbn78ybymjnhwk7qc5r912azy5vqz2y7y81616yc3ba2a2"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("bamtools" ,bamtools)
-         ("htslib" ,htslib)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("bc" ,bc)                     ; Needed for running tests.
-         ("samtools" ,samtools)         ; Needed for running tests.
-         ("parallel" ,parallel)         ; Needed for running tests.
-         ("perl" ,perl)                 ; Needed for running tests.
-         ("procps" ,procps)             ; Needed for running tests.
-         ("python" ,python-2)           ; Needed for running tests.
-         ("vcflib-src" ,(package-source vcflib))
-         ;; These are submodules for the vcflib version used in freebayes.
-         ;; This package builds against the .o files so we need to extract the source.
-         ("tabixpp-src" ,(package-source tabixpp))
-         ("smithwaterman-src" ,(package-source smithwaterman))
-         ("multichoose-src" ,(package-source multichoose))
-         ("fsom-src" ,(package-source fsom))
-         ("filevercmp-src" ,(package-source filevercmp))
-         ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src" ,(package-source intervaltree))
-         ;; These submodules are needed to run the tests.
-         ("bash-tap-src" ,(package-source bash-tap))
-         ("test-simple-bash-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ingydotnet/test-simple-bash/")
-                   (commit "124673ff204b01c8e96b7fc9f9b32ee35d898acc")))
-             (file-name "test-simple-bash-src-checkout")
-             (sha256
-              (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
-      (arguments
-       `(#:make-flags
-         (list "CC=gcc"
-               (string-append "BAMTOOLS_ROOT="
-                              (assoc-ref %build-inputs "bamtools")))
-         #:test-target "test"
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'fix-tests
-             (lambda _
-               (substitute* "test/t/01_call_variants.t"
-                 (("grep -P \"\\(\\\\t500\\$\\|\\\\t11000\\$\\|\\\\t1000\\$\\)\"")
-                  "grep -E '	(500|11000|1000)$'"))
-               #t))
-           (add-after 'unpack 'unpack-submodule-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (if (file-is-directory? (assoc-ref inputs source))
-                                     (copy-recursively (assoc-ref inputs source) ".")
-                                     (invoke "tar" "xvf"
-                                             (assoc-ref inputs source)
-                                             "--strip-components=1"))))))
-                 (and
-                  (unpack "vcflib-src" "vcflib")
-                  (unpack "fastahack-src" "vcflib/fastahack")
-                  (unpack "filevercmp-src" "vcflib/filevercmp")
-                  (unpack "fsom-src" "vcflib/fsom")
-                  (unpack "intervaltree-src" "vcflib/intervaltree")
-                  (unpack "multichoose-src" "vcflib/multichoose")
-                  (unpack "smithwaterman-src" "vcflib/smithwaterman")
-                  (unpack "tabixpp-src" "vcflib/tabixpp")
-                  (unpack "test-simple-bash-src" "test/test-simple-bash")
-                  (unpack "bash-tap-src" "test/bash-tap")))))
-           (add-after 'unpack-submodule-sources 'fix-makefiles
-             (lambda _
-               ;; We don't have the .git folder to get the version tag from.
-               (substitute* "vcflib/Makefile"
-                 (("^GIT_VERSION.*")
-                  (string-append "GIT_VERSION = v" ,version)))
-               (substitute* "src/Makefile"
-                 (("-I\\$\\(BAMTOOLS_ROOT\\)/src")
-                  "-I$(BAMTOOLS_ROOT)/include/bamtools"))
-               #t))
-           (add-before 'build 'build-tabixpp-and-vcflib
-             (lambda* (#:key inputs make-flags #:allow-other-keys)
-               (with-directory-excursion "vcflib"
-                 (with-directory-excursion "tabixpp"
-                   (apply invoke "make"
-                          (string-append "HTS_LIB="
-                                         (assoc-ref inputs "htslib")
-                                         "/lib/libhts.a")
-                          make-flags))
-                 (apply invoke "make"
-                        (string-append "CFLAGS=-Itabixpp")
-                        "all"
-                        make-flags))))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "bin/freebayes" bin)
-                 (install-file "bin/bamleftalign" bin))
-               #t)))))
-      (home-page "https://github.com/ekg/freebayes")
-      (synopsis "Haplotype-based variant detector")
-      (description "FreeBayes is a Bayesian genetic variant detector designed to
+  (package
+    (name "freebayes")
+    (version "1.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ekg/freebayes")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0myz3giad7jqp6ricdfnig9ymlcps2h67mlivadvx97ngagm85z8"))
+              (patches (search-patches "freebayes-devendor-deps.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib/htslib")
+                  #t))))
+    (build-system meson-build-system)
+    (inputs
+     `(("fastahack" ,fastahack)
+       ("htslib" ,htslib)
+       ("smithwaterman" ,smithwaterman)
+       ("tabixpp" ,tabixpp)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bash-tap" ,bash-tap)
+       ("bc" ,bc)
+       ("grep" ,grep)   ; Built with perl support.
+       ("parallel" ,parallel)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("samtools" ,samtools)
+       ("simde" ,simde)
+       ;; We need some binaries from vcflib, but we also need to link against a
+       ;; subset of the library.  Vendor the parts we need until we have a shared library.
+       ("vcflib" ,vcflib)
+       ("vcflib-src" ,(package-source vcflib))
+       ("intervaltree-src" ,(package-source intervaltree))
+       ;; This submodule is needed to run the tests.
+       ("test-simple-bash-src"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/ingydotnet/test-simple-bash/")
+                 (commit "124673ff204b01c8e96b7fc9f9b32ee35d898acc")))
+           (file-name "test-simple-bash-src-checkout")
+           (sha256
+            (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash-tap (assoc-ref inputs "bash-tap")))
+               (substitute* (find-files "test/t")
+                 (("BASH_TAP_ROOT=bash-tap")
+                  (string-append "BASH_TAP_ROOT=" bash-tap "/bin"))
+                 (("bash-tap/bash-tap-bootstrap")
+                  (string-append bash-tap "/bin/bash-tap-bootstrap"))
+                 (("source.*bash-tap-bootstrap")
+                  (string-append "source " bash-tap "/bin/bash-tap-bootstrap")))
+               (substitute* "meson.build"
+                  ;; Some inputs aren't actually needed.
+                 ((".*bamtools/src.*") "")
+                 ((".*multichoose.*") "")
+                 (("'vcflib/filevercmp'") ""))
+               #t)))
+         (add-after 'unpack 'unpack-submodule-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unpack (lambda (source target)
+                             (unless (directory-exists? target)
+                               (mkdir-p target))
+                             (with-directory-excursion target
+                               (if (file-is-directory? (assoc-ref inputs source))
+                                   (copy-recursively (assoc-ref inputs source) ".")
+                                   (invoke "tar" "xvf"
+                                           (assoc-ref inputs source)
+                                           "--strip-components=1"))))))
+               (and
+                (unpack "vcflib-src" "vcflib")
+                (unpack "intervaltree-src" "vcflib/intervaltree")
+                (unpack "test-simple-bash-src" "test/test-simple-bash"))
+               #t))))))
+    (home-page "https://github.com/ekg/freebayes")
+    (synopsis "Haplotype-based variant detector")
+    (description "FreeBayes is a Bayesian genetic variant detector designed to
 find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms),
 indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and
 complex events (composite insertion and substitution events) smaller than the
 length of a short-read sequencing alignment.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public samblaster
   (package

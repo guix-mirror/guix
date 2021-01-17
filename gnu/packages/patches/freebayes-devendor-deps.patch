@@ -1,0 +1,129 @@
+This patch is original to Guix, ongoing work to upstream bits as possible.
+
+From 50833daba0b1dbe2ed364b1e980b67a09a312789 Mon Sep 17 00:00:00 2001
+From: Efraim Flashner <efraim@flashner.co.il>
+Date: Sun, 17 Jan 2021 13:27:17 +0200
+Subject: [PATCH] devendor-dependants
+
+---
+ meson.build | 60 +++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 47 insertions(+), 13 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index f6bf242..7a3805e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -9,8 +9,12 @@ project('freebayes', ['cpp', 'c'],
+ 
+ zlib_dep = dependency('zlib')
+ lzma_dep = dependency('liblzma')
++simde_dep = dependency('simde')
+ bzip2_dep = dependency('bz2lib', required: false)
+ htslib_dep = dependency('htslib', required : false)
++tabixpp_dep = dependency('tabixpp', required : false)
++fastahack_dep = dependency('fastahack', required : false)
++smithwaterman_dep = dependency('smithwaterman', required : false)
+ thread_dep = dependency('threads')
+ 
+ if htslib_dep.found()
+@@ -59,6 +63,41 @@ else
+ ]
+ endif
+ 
++if tabixpp_dep.found()
++  tabixpp_includes = ''
++  tabixpp_src = []
++else
++  tabixpp_includes = [
++    'vcflib/tabixpp',
++    ]
++  tabixpp_src = [
++    'vcflib/tabixpp/tabix.cpp',
++    ]
++endif
++
++if fastahack_dep.found()
++  fastahack_src = []
++else
++  fastahack_src = [
++    'vcflib/fastahack/Fasta.cpp',
++    ]
++endif
++
++if smithwaterman_dep.found()
++  smithwaterman_includes = ''
++  smithwaterman_src = []
++else
++  smithwaterman_includes = [
++    'vcflib/smithwaterman',
++    ]
++  smithwaterman_src = [
++    'vcflib/smithwaterman/SmithWatermanGotoh.cpp',
++    'vcflib/smithwaterman/disorder.cpp',
++    'vcflib/smithwaterman/Repeats.cpp',
++    'vcflib/smithwaterman/LeftAlign.cpp',
++    'vcflib/smithwaterman/IndelAllele.cpp',
++    ]
++endif
+ 
+ 
+ #
+@@ -105,22 +144,17 @@ seqlib_src = [
+ ]
+ 
+ vcflib_src = [
+-    'vcflib/tabixpp/tabix.cpp',
+     'vcflib/src/Variant.cpp',
+-    'vcflib/smithwaterman/SmithWatermanGotoh.cpp',
+-    'vcflib/smithwaterman/disorder.cpp',
+-    'vcflib/smithwaterman/Repeats.cpp',
+-    'vcflib/smithwaterman/LeftAlign.cpp',
+-    'vcflib/smithwaterman/IndelAllele.cpp',
++    tabixpp_src,
++    smithwaterman_src,
+ ]
+ 
+ bamleftalign_src = [
+     'src/bamleftalign.cpp',
+     'src/IndelAllele.cpp',
+     'contrib/SeqLib/src/BamWriter.cpp',
+-    'vcflib/fastahack/Fasta.cpp',
+-    'vcflib/smithwaterman/LeftAlign.cpp',
+-    'vcflib/smithwaterman/IndelAllele.cpp',
++    fastahack_src,
++    smithwaterman_src,
+     'vcflib/src/split.cpp',
+     'src/LeftAlign.cpp',
+ ]
+@@ -135,8 +169,8 @@ incdir = include_directories(
+     'contrib',
+     'contrib/SeqLib',
+     'vcflib/src',
+-    'vcflib/tabixpp',
+-    'vcflib/smithwaterman',
++    tabixpp_includes,
++    smithwaterman_includes,
+     'vcflib/multichoose',
+     'vcflib/filevercmp')
+ 
+@@ -152,7 +186,7 @@ executable('freebayes',
+            include_directories : incdir,
+            cpp_args : cpp_args,
+            c_args :   c_args,
+-           dependencies: [zlib_dep, lzma_dep, htslib_dep, thread_dep],
++           dependencies: [zlib_dep, lzma_dep, simde_dep, htslib_dep, tabixpp_dep, smithwaterman_dep, thread_dep],
+            install: true
+           )
+ 
+@@ -165,7 +199,7 @@ executable('bamleftalign',
+            include_directories : incdir,
+            cpp_args : cpp_args,
+            c_args :   c_args,
+-           dependencies: [zlib_dep, lzma_dep, htslib_dep, thread_dep],
++           dependencies: [zlib_dep, lzma_dep, simde_dep, htslib_dep, tabixpp_dep, fastahack_dep, smithwaterman_dep, thread_dep],
+            install: true
+           )
+ 
+-- 
+2.30.0
+
