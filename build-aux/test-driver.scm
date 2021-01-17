@@ -163,14 +163,17 @@ void port, which means no TRS output is logged."
       (let ((log (and=> (option 'log-file #f) (cut open-file <> "w0")))
             (trs (and=> (option 'trs-file #f) (cut open-file <> "wl")))
             (out (duplicate-port (current-output-port) "wl"))
-            (test-name (option 'test-name #f)))
+            (test-name (option 'test-name #f))
+            (color-tests (if (assoc 'color-tests opts)
+                             (option->boolean opts 'color-tests)
+                             #t)))
         (when log
           (redirect-port log (current-output-port))
           (redirect-port log (current-warning-port))
           (redirect-port log (current-error-port)))
         (test-with-runner
             (test-runner-gnu test-name
-                             #:color? (option->boolean opts 'color-tests)
+                             #:color? color-tests
                              #:brief? (option->boolean opts 'brief)
                              #:out-port out #:trs-port trs)
           (load-from-path test-name))
