@@ -1,3 +1,6 @@
+#!/bin/sh
+exec guile --no-auto-compile -e main -s "$0" "$@"
+!#
 ;;;; test-driver.scm - Guile test driver for Automake testsuite harness
 
 (define script-version "2021-01-26.20") ;UTC
@@ -211,7 +214,7 @@ cases based on their names."
          (option (cut option-ref opts <> <>)))
     (cond
      ((option 'help #f)    (show-help))
-     ((option 'version #f) (format #t "test-driver.scm ~A" script-version))
+     ((option 'version #f) (format #t "test-driver.scm ~A~%" script-version))
      (else
       (let* ((log (and=> (option 'log-file #f) (cut open-file <> "w0")))
              (trs (and=> (option 'trs-file #f) (cut open-file <> "wl")))
