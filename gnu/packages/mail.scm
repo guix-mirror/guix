@@ -2631,7 +2631,7 @@ converts them to maildir format directories.")
 (define-public mblaze
   (package
     (name "mblaze")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -2640,7 +2640,7 @@ converts them to maildir format directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hxy3mjjv4hg856sl1r15fdmqaw4s9c26b3lidsd5x0kpqy601ai"))))
+        (base32 "1bir977vnqs76g8jgv1yivqw0wk2kn56l3l5r4w2ipix3fir138y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
