@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +77,7 @@ CLAUSES."
       ((#:autoload module _ rest ...)
        (loop rest (cons module result)))
       (((or #:export #:re-export #:export-syntax #:re-export-syntax
-            #:replace #:version)
+            #:re-export-and-replace #:replace #:version)
         _ rest ...)
        (loop rest result))
       (((or #:pure #:no-backtrace) rest ...)
