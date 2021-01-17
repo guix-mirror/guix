@@ -92,7 +92,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 (define-public rpcbind
   (package
     (name "rpcbind")
-    (version "0.2.4")
+    (version "1.2.5")
     (source
      (origin
       (method url-fetch)
@@ -102,7 +102,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
       (patches (search-patches "rpcbind-CVE-2017-8779.patch"))
       (sha256
        (base32
-        "0rjc867mdacag4yqvs827wqhkh27135rp9asj06ixhf71m9rljh7"))))
+        "0ynszy5hpc7wbz8xngqwyhgbi9cay73y43izqhcmrcv375l61qrc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
