@@ -9385,8 +9385,9 @@ group or two ChIP groups run under different conditions.")
            (delete 'configure) ; There is no configure phase.
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "filevercmp" bin)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "filevercmp" (string-append out "/bin"))
+                 (install-file "filevercmp.h" (string-append out "/include"))
                  #t))))))
       (home-page "https://github.com/ekg/filevercmp")
       (synopsis "This program compares version strings")
