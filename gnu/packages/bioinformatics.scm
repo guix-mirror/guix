@@ -14812,10 +14812,14 @@ some of the details of opening and jumping in tabix-indexed files.")
          (delete 'configure) ; There is no configure phase.
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (include (string-append out "/include")))
                ;; TODO: There are Python modules for these programs too.
                (install-file "multichoose" bin)
-               (install-file "multipermute" bin))
+               (install-file "multipermute" bin)
+               (install-file "multichoose.h" include)
+               (install-file "multipermute.h" include))
              #t)))))
     (home-page "https://github.com/ekg/multichoose")
     (synopsis "Efficient loopless multiset combination generation algorithm")
