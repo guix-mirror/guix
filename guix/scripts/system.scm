@@ -705,9 +705,11 @@ checking this by themselves in their 'check' procedure."
                                                   image-size
                                                   (* 70 (expt 2 20)))
                                               #:mappings mappings))
-      ((disk-image)
+      ((image disk-image)
        (let* ((base-image (os->image os #:type image-type))
               (base-target (image-target base-image)))
+         (when (eq? action 'disk-image)
+           (warning (G_ "'disk-image' is deprecated: use 'image' instead~%")))
          (lower-object
           (system-image
            (image
@@ -779,7 +781,7 @@ and TARGET arguments."
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
-the 'vm-image' and 'disk-image' actions.  IMAGE-TYPE is the type of image to
+the 'vm-image' and 'image' actions.  IMAGE-TYPE is the type of image to
 be built.  When VOLATILE-ROOT? is #t, the root file system is mounted
 volatile.
 
@@ -968,7 +970,7 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    vm-image         build a freestanding virtual machine image\n"))
   (display (G_ "\
-   disk-image       build a disk image, suitable for a USB stick\n"))
+   image            build a Guix System image\n"))
   (display (G_ "\
    docker-image     build a Docker image\n"))
   (display (G_ "\
@@ -994,15 +996,15 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --list-image-types list available image types"))
   (display (G_ "
-  -t, --image-type=TYPE  for 'disk-image', produce an image of TYPE"))
+  -t, --image-type=TYPE  for 'image', produce an image of TYPE"))
   (display (G_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
-      --volatile         for 'disk-image', make the root file system volatile"))
+      --volatile         for 'image', make the root file system volatile"))
   (display (G_ "
-      --label=LABEL      for 'disk-image', label disk image with LABEL"))
+      --label=LABEL      for 'image', label disk image with LABEL"))
   (display (G_ "
       --save-provenance  save provenance information"))
   (display (G_ "
@@ -1014,7 +1016,7 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
   -N, --network          for 'container', allow containers to access the network"))
   (display (G_ "
-  -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
+  -r, --root=FILE        for 'vm', 'vm-image', 'image', 'container',
                          and 'build', make FILE a symlink to the result, and
                          register it as a garbage collector root"))
   (display (G_ "
@@ -1335,7 +1337,7 @@ argument list and OPTS is the option alist."
         (alist-cons 'argument arg result)
         (let ((action (string->symbol arg)))
           (case action
-            ((build container vm vm-image disk-image reconfigure init
+            ((build container vm vm-image image disk-image reconfigure init
               extension-graph shepherd-graph
               list-generations describe
               delete-generations roll-back
@@ -1368,7 +1370,8 @@ argument list and OPTS is the option alist."
         (exit 1))
 
       (case action
-        ((build container vm vm-image disk-image docker-image reconfigure)
+        ((build container vm vm-image image disk-image docker-image
+                reconfigure)
          (unless (or (= count 1)
                      (and expr (= count 0)))
            (fail)))

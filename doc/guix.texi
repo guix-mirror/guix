@@ -2661,7 +2661,7 @@ The installation image described above was built using the @command{guix
 system} command, specifically:
 
 @example
-guix system disk-image -t iso9660 gnu/system/install.scm
+guix system image -t iso9660 gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
@@ -2678,7 +2678,7 @@ If you build a disk image and the bootloader is not available otherwise
 includes the bootloader, specifically:
 
 @example
-guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
+guix system image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
 @end example
 
 @code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an invalid
@@ -31393,7 +31393,7 @@ size of the image.
 @cindex System images, creation in various formats
 @cindex Creating system images in various formats
 @item vm-image
-@itemx disk-image
+@itemx image
 @itemx docker-image
 Return a virtual machine, disk image, or Docker image of the operating
 system declared in @var{file} that stands alone.  By default,
@@ -31403,22 +31403,22 @@ a value.  Docker images are built to contain exactly what they need, so
 the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
-@cindex disk-image, creating disk images
-The @code{disk-image} command can produce various image types.  The
+@cindex image, creating disk images
+The @code{image} command can produce various image types.  The
 image type can be selected using the @option{--image-type} option.  It
 defaults to @code{efi-raw}.  When its value is @code{iso9660}, the
 @option{--label} option can be used to specify a volume ID with
-@code{disk-image}.  By default, the root file system of a disk image is
+@code{image}.  By default, the root file system of a disk image is
 mounted non-volatile; the @option{--volatile} option can be provided to
-make it volatile instead.  When using @code{disk-image}, the bootloader
+make it volatile instead.  When using @code{image}, the bootloader
 installed on the generated image is taken from the provided
 @code{operating-system} definition.  The following example demonstrates
 how to generate an image that uses the @code{grub-efi-bootloader}
 bootloader and boot it with QEMU:
 
 @example
-image=$(guix system disk-image --image-type=qcow2 \
-             gnu/system/examples/lightweight-desktop.tmpl)
+image=$(guix system image --image-type=qcow2 \
+        gnu/system/examples/lightweight-desktop.tmpl)
 cp $image /tmp/my-image.qcow2
 chmod +w /tmp/my-image.qcow2
 qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000 \
@@ -31431,7 +31431,7 @@ it can be copied as is to a USB stick, for instance.  Assuming
 the image to it using the following command:
 
 @example
-# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc status=progress
+# dd if=$(guix system image my-os.scm) of=/dev/sdc status=progress
 @end example
 
 The @code{--list-image-types} command lists all the available image
@@ -31551,7 +31551,7 @@ of the image.
 
 @item --image-type=@var{type}
 @itemx -t @var{type}
-For the @code{disk-image} action, create an image with given @var{type}.
+For the @code{image} action, create an image with given @var{type}.
 
 When this option is omitted, @command{guix system} uses the
 @code{efi-raw} image type.
@@ -31563,7 +31563,7 @@ When this option is omitted, @command{guix system} uses the
 for burning on CDs and DVDs.
 
 @item --image-size=@var{size}
-For the @code{vm-image} and @code{disk-image} actions, create an image
+For the @code{vm-image} and @code{image} actions, create an image
 of the given @var{size}.  @var{size} may be a number of bytes, or it may
 include a unit as a suffix (@pxref{Block size, size specifications,,
 coreutils, GNU Coreutils}).

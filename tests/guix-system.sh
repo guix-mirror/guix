@@ -262,8 +262,8 @@ guix system vm "$tmpfile" -d | grep '\.drv$'
 drv1="`guix system vm "$tmpfile" -d`"
 drv2="`guix system vm "$tmpfile" -d`"
 test "$drv1" = "$drv2"
-drv1="`guix system disk-image -t iso9660 "$tmpfile" -d`"
-drv2="`guix system disk-image -t iso9660 "$tmpfile" -d`"
+drv1="`guix system image -t iso9660 "$tmpfile" -d`"
+drv2="`guix system image -t iso9660 "$tmpfile" -d`"
 test "$drv1" = "$drv2"
 
 make_user_config "group-that-does-not-exist" "users"
