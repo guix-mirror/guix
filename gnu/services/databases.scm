@@ -115,22 +115,28 @@ host	all	all	::1/128 	md5"))
   (match file
     (($ <postgresql-config-file> log-destination hba-file
                                  ident-file extra-config)
-     (define (single-quote string)
-       (if string
-           (list "'" string "'")
-           '()))
+     ;; See: https://www.postgresql.org/docs/current/config-setting.html.
+    (define (format-value value)
+      (cond
+       ((boolean? value)
+        (list (if value "on" "off")))
+       ((number? value)
+        (list (number->string value)))
+       (else
+        (list "'" value "'"))))
 
-     (define contents
-       (append-map
-        (match-lambda
-          ((key) '())
-          ((key . #f) '())
-          ((key values ...) `(,key " = " ,@values "\n")))
+    (define contents
+      (append-map
+       (match-lambda
+         ((key) '())
+         ((key . #f) '())
+         ((key values ...)
+          `(,key " = " ,@(append-map format-value values) "\n")))
 
-        `(("log_destination" ,@(single-quote log-destination))
-          ("hba_file" ,@(single-quote hba-file))
-          ("ident_file" ,@(single-quote ident-file))
-          ,@extra-config)))
+       `(("log_destination" ,log-destination)
+         ("hba_file" ,hba-file)
+         ("ident_file" ,ident-file)
+         ,@extra-config)))
 
      (gexp->derivation
       "postgresql.conf"

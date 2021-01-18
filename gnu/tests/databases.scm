@@ -218,7 +218,15 @@
   (simple-operating-system
    (service postgresql-service-type
             (postgresql-configuration
-             (postgresql postgresql-10)))))
+             (postgresql postgresql-10)
+             (config-file
+              (postgresql-config-file
+               (extra-config
+                '(("session_preload_libraries" "auto_explain")
+                  ("random_page_cost" 2)
+                  ("auto_explain.log_min_duration" "100 ms")
+                  ("work_mem" "500 MB")
+                  ("debug_print_plan" #t)))))))))
 
 (define (run-postgresql-test)
   "Run tests in %POSTGRESQL-OS."
