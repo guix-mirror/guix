@@ -43,3 +43,25 @@ between older and newer versions of the Julia language.  The Compat package
 provides a macro that lets you use the latest syntax in a backwards-compatible
 way.")
     (license license:expat)))
+
+(define-public julia-orderedcollections
+  (package
+    (name "julia-orderedcollections")
+    (version "1.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaCollections/OrderedCollections.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sfip1ixghsz91q2s7d62rgzw3gppg42fg6bccxlplqa3hfmbycf"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaCollections/OrderedCollections.jl")
+    (synopsis "Associative containers that preserve insertion order")
+    (description "This package implements @code{OrderedDicts} and
+@code{OrderedSets}, which are similar to containers in base Julia.  However,
+during iteration the @code{Ordered*} containers return items in the order in
+which they were added to the collection.")
+    (license license:expat)))
