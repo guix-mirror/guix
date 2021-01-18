@@ -4161,7 +4161,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.2.2")
+    (version "4.3.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method git-fetch)
@@ -4170,7 +4170,7 @@ It counts more than 100 plugins.")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "05c1gx75xy2hw49x6vkydvwxbr80kipsc3nr906k3hq8735svx6f"))
+                "09xs815jsivcilpmnrx2jkcxirj4lg5kp99fkr0p2sdxw03myi95"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4187,7 +4187,7 @@ It counts more than 100 plugins.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
                     (lambda _
-                      (patch-shebang "version.sh")
+                      (patch-shebang "scripts/version.sh")
                       (invoke "autoreconf" "-vfi"))))
        #:configure-flags '("--sysconfdir=/etc")
        #:make-flags (list (string-append "sysconfdir="
