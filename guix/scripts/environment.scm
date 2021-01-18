@@ -675,7 +675,7 @@ message if any test fails."
   (let* ((root (if (string-prefix? "/" root)
                    root
                    (string-append (canonicalize-path (dirname root))
-                                  "/" root))))
+                                  "/" (basename root)))))
     (catch 'system-error
       (lambda ()
         (symlink target root)
