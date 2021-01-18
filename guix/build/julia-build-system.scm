@@ -69,15 +69,22 @@
      (string-append "pushfirst!(DEPOT_PATH, pop!(DEPOT_PATH)); using " package)))
   #t)
 
-(define* (check #:key source inputs outputs #:allow-other-keys)
-  (let* ((out (assoc-ref outputs "out"))
-         (package (strip-store-file-name source))
-         (builddir (string-append out "/share/julia/")))
-    ;; With a patch, SOURCE_DATE_EPOCH is honored
-    (setenv "SOURCE_DATE_EPOCH" "1")
-    (setenv "JULIA_DEPOT_PATH" builddir)
-    (setenv "JULIA_LOAD_PATH" (string-append builddir "packages/"))
-    (invoke-julia (string-append "using Pkg;Pkg.test(\"" package "\")")))
+(define* (check #:key tests? source inputs outputs #:allow-other-keys)
+  (when tests?
+    (let* ((out (assoc-ref outputs "out"))
+           (package (strip-store-file-name source))
+           (builddir (string-append out "/share/julia/")))
+      ;; With a patch, SOURCE_DATE_EPOCH is honored
+      (setenv "SOURCE_DATE_EPOCH" "1")
+      (setenv "JULIA_DEPOT_PATH" builddir)
+      (setenv "JULIA_LOAD_PATH"
+              (string-append builddir "packages/" ":"
+                             (or (getenv "JULIA_LOAD_PATH")
+                                 "")))
+      (setenv "HOME" "/tmp")
+      (invoke "julia"
+              (string-append builddir "packages/"
+                             package "/test/runtests.jl"))))
   #t)
 
 (define (julia-create-package-toml outputs source
@@ -112,7 +119,7 @@ version = \"" version "\"
     (delete 'check) ; tests must be run after installation
     (replace 'install install)
     (add-after 'install 'precompile precompile)
-    ;; (add-after 'install 'check check)
+    (add-after 'install 'check check)
     ;; TODO: In the future we could add a "system-image-generation" phase
     ;; where we use PackageCompiler.jl to speed up package loading times
     (delete 'configure)

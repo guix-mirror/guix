@@ -7616,7 +7616,7 @@ implements the build procedure used by @uref{https://julialang.org/,
 julia} packages, which essentially is similar to running @samp{julia -e
 'using Pkg; Pkg.add(package)'} in an environment where
 @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
-Tests are run with @code{Pkg.test}.
+Tests are run by calling @code{/test/runtests.jl}.
 
 Julia packages require the source @code{file-name} to be the real name of the
 package, correctly capitalized.

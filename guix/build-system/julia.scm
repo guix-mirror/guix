@@ -75,7 +75,7 @@
 
 (define* (julia-build store name inputs
                       #:key source
-                      (tests? #f)
+                      (tests? #t)
                       (phases '(@ (guix build julia-build-system)
                                   %standard-phases))
                       (outputs '("out"))
