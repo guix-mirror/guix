@@ -652,15 +652,16 @@ per window.")
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
-    (version "4.16.0")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/"
                                   (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m09vwgs5i1dy484r2y4w14kp38n469zhg0n4gnj10pcxsm2mf9p"))))
+                "1v77h5634n49idci2jiw0k7jjk0vzpsvgyx2fkp18l39jayykqxz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
