@@ -125,6 +125,31 @@ scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
     (license license:expat)))
 
+(define-public julia-json
+  (package
+    (name "julia-json")
+    (version "0.21.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaIO/JSON.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f9k613kbknmp4fgjxvjaw4d5sfbx8a5hmcszmp1w9rqfqngjx9m"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-datastructures" ,julia-datastructures)
+       ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
+       ("julia-parsers" ,julia-parsers)
+       ("julia-offsetarrays" ,julia-offsetarrays)))
+    (home-page "https://github.com/JuliaIO/JSON.jl")
+    (synopsis "JSON parsing and printing library for Julia")
+    (description "@code{JSON.jl} is a pure Julia module which supports parsing
+and printing JSON documents.")
+    (license license:expat)))
+
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
