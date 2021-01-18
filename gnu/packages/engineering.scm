@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
-;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020,2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
@@ -1524,7 +1524,7 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "4.4.0")
+    (version "5.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1532,7 +1532,7 @@ bindings for Python, Java, OCaml and more.")
                     (commit version)))
               (sha256
                (base32
-                "0gwdnrnk7wdgkajp2qwg4fyplh7nsbmf01bzx07px6xmiscd9z2s"))
+                "0aa7c27kd0l55fy5qfvxqmakp4pz6240v3hn84095qmqkzcbs420"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
