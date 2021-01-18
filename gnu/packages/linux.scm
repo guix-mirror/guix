@@ -6434,14 +6434,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "04dp797llg3cqzivwrql30wg9mfr0ngnp0v5gs7jcdmp11dzm8q4"))))
+        (base32 "16jbp4fs5dz2yf4c3bl1sb48x9x9wi1chv39zwmfgya1k9pimcp9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
