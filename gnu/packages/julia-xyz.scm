@@ -44,6 +44,30 @@ provides a macro that lets you use the latest syntax in a backwards-compatible
 way.")
     (license license:expat)))
 
+(define-public julia-datastructures
+  (package
+    (name "julia-datastructures")
+    (version "0.18.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaCollections/DataStructures.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hdqp8ipsqdw5bqqkdvz4j6n67x80sj5azr9vzyxwjfsgkfbnk2l"))))
+    (propagated-inputs
+     `(("julia-compat" ,julia-compat)
+       ("julia-orderedcollections" ,julia-orderedcollections)))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaCollections/DataStructures.jl")
+    (synopsis "Julia module providing different data structures")
+    (description "This package implements a variety of data structures,
+including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
+@code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
+    (license license:expat)))
+
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
