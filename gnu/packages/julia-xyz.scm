@@ -124,3 +124,23 @@ digits (bits) after the decimal (radix) point.")
 during iteration the @code{Ordered*} containers return items in the order in
 which they were added to the collection.")
     (license license:expat)))
+
+(define-public julia-parsers
+  (package
+    (name "julia-parsers")
+    (version "1.0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaData/Parsers.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16iffl6l28kspgqch48mhi1s8qhspr3cpqcwsph3rqi72lbfqygx"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaData/Parsers.jl")
+    (synopsis "Fast parsing machinery for basic types in Julia")
+    (description "@code{Parsers.jl} is a collection of type parsers and
+utilities for Julia.")
+    (license license:expat)))
