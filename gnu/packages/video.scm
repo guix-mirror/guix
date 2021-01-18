@@ -48,6 +48,7 @@
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
@@ -3172,6 +3174,35 @@ and JACK.")
     (description "This OBS plugins allows you to vizualize MPD and internal
 OBS audio sources.")
     (license license:gpl2)))
+
+(define-public obs-wlrobs
+  (package
+    (name "obs-wlrobs")
+    (version "1.0")
+    (source
+      (origin
+        (method hg-fetch)
+        (uri (hg-reference
+              (url "https://hg.sr.ht/~scoopta/wlrobs")
+              (changeset (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1faiq2gdb7qis3m1hilm4pz8lkmkab75vzm608dbiazahhybf96p"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `() )
+    (inputs `(("obs" ,obs)
+              ("libx11" ,libx11 "out")
+              ("wayland" ,wayland)
+              ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://hg.sr.ht/~scoopta/wlrobs")
+    (synopsis "OBS plugin for Wayland (wlroots) screen capture")
+    (description
+     "This OBS plugin allows you to capture the screen on wlroots-based
+Wayland compositors.")
+    (license license:gpl3+)))
 
 (define-public libvdpau
   (package
