@@ -22,6 +22,28 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system julia))
 
+(define-public julia-adapt
+  (package
+    (name "julia-adapt")
+    (version "3.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaGPU/Adapt.jl")
+             (commit (string-append "v" version))))
+       (file-name "Adapt")
+       (sha256
+        (base32 "1lks6k3a1gvwlplld47nh6xfy3nnlpc0vhkzg6zg0qn33qdmavrg"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaGPU/Adapt.jl")
+    (synopsis "Package providing the @code{adapt} function, similar to @code{convert}")
+    (description "This Julia package provides the @code{adapt(T, x)} function
+acts like @code{convert(T, x)}, but without the restriction of returning a
+@code{T}.  This allows you to \"convert\" wrapper types like @code{Adjoint} to
+be GPU compatible without throwing away the wrapper.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
