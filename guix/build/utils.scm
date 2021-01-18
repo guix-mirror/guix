@@ -144,7 +144,8 @@
 
 (define (%store-directory)
   "Return the directory name of the store."
-  (or (getenv "NIX_STORE")
+  (or (getenv "NIX_STORE_DIR")          ;outside of builder
+      (getenv "NIX_STORE")              ;inside builder, set by the daemon
       "/gnu/store"))
 
 (define (store-file-name? file)
