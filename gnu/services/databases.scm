@@ -43,6 +43,7 @@
             postgresql-config-file-log-destination
             postgresql-config-file-hba-file
             postgresql-config-file-ident-file
+            postgresql-config-file-socket-directory
             postgresql-config-file-extra-config
 
             postgresql-configuration
@@ -101,20 +102,23 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-config-file>
   postgresql-config-file make-postgresql-config-file
   postgresql-config-file?
-  (log-destination postgresql-config-file-log-destination
-                   (default "syslog"))
-  (hba-file        postgresql-config-file-hba-file
-                   (default %default-postgres-hba))
-  (ident-file      postgresql-config-file-ident-file
-                   (default %default-postgres-ident))
-  (extra-config    postgresql-config-file-extra-config
-                   (default '())))
+  (log-destination   postgresql-config-file-log-destination
+                     (default "syslog"))
+  (hba-file          postgresql-config-file-hba-file
+                     (default %default-postgres-hba))
+  (ident-file        postgresql-config-file-ident-file
+                     (default %default-postgres-ident))
+  (socket-directory  postgresql-config-file-socket-directory
+                     (default "/var/run/postgresql"))
+  (extra-config      postgresql-config-file-extra-config
+                     (default '())))
 
 (define-gexp-compiler (postgresql-config-file-compiler
                        (file <postgresql-config-file>) system target)
   (match file
     (($ <postgresql-config-file> log-destination hba-file
-                                 ident-file extra-config)
+                                 ident-file socket-directory
+                                 extra-config)
      ;; See: https://www.postgresql.org/docs/current/config-setting.html.
     (define (format-value value)
       (cond
@@ -136,6 +140,9 @@ host	all	all	::1/128 	md5"))
        `(("log_destination" ,log-destination)
          ("hba_file" ,hba-file)
          ("ident_file" ,ident-file)
+         ,@(if socket-directory
+               `(("unix_socket_directories" ,socket-directory))
+               '())
          ,@extra-config)))
 
      (gexp->derivation
@@ -210,6 +217,13 @@ host	all	all	::1/128 	md5"))
            ;; Create db state directory.
            (mkdir-p #$data-directory)
            (chown #$data-directory (passwd:uid user) (passwd:gid user))
+
+           ;; Create the socket directory.
+           (let ((socket-directory
+                  #$(postgresql-config-file-socket-directory config-file)))
+             (when (string? socket-directory)
+               (mkdir-p socket-directory)
+               (chown socket-directory (passwd:uid user) (passwd:gid user))))
 
            ;; Drop privileges and init state directory in a new
            ;; process.  Wait for it to finish before proceeding.

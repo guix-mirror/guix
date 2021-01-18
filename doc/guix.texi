@@ -19430,6 +19430,12 @@ configuration.
 @item @code{ident-file} (default: @code{%default-postgres-ident})
 Filename or G-expression for the user name mapping configuration.
 
+@item @code{socket-directory} (default: @code{"/var/lib/postgresql"})
+Specifies the directory of the Unix-domain socket(s) on which PostgreSQL
+is to listen for connections from client applications.  If set to
+@code{#false} PostgreSQL does not listen on any Unix-domain sockets, in
+which case only TCP/IP sockets can be used to connect to the server.
+
 @item @code{extra-config} (default: @code{'()})
 List of additional keys and values to include in the PostgreSQL config
 file.  Each entry in the list should be a list where the first element
