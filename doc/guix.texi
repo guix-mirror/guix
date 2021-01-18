@@ -19455,6 +19455,68 @@ here}.
 @end table
 @end deftp
 
+@deffn {Scheme Variable} postgresql-role-service-type
+This service allows to create PostgreSQL roles and databases after
+PostgreSQL service start.  Here is an example of its use.
+
+@lisp
+(service postgresql-role-service-type
+            (postgresql-role-configuration
+             (roles
+              (list (postgresql-role
+                     (name "test")
+                     (create-database? #t))))))
+@end lisp
+
+This service can be extended with extra roles, as in this
+example:
+
+@lisp
+(service-extension postgresql-role-service-type
+                   (const (postgresql-role
+                           (name "alice")
+                           (create-database? #t))))
+@end lisp
+@end deffn
+
+@deftp {Data Type} postgresql-role
+PostgreSQL manages database access permissions using the concept of
+roles.  A role can be thought of as either a database user, or a group
+of database users, depending on how the role is set up.  Roles can own
+database objects (for example, tables) and can assign privileges on
+those objects to other roles to control who has access to which objects.
+
+@table @asis
+@item @code{name}
+The role name.
+
+@item @code{permissions} (default: @code{'(createdb login)})
+The role permissions list.  Supported permissions are @code{bypassrls},
+@code{createdb}, @code{createrole}, @code{login}, @code{replication} and
+@code{superuser}.
+
+@item @code{create-database?} (default: @code{#f})
+Whether to create a database with the same name as the role.
+
+@end table
+@end deftp
+
+@deftp {Data Type} postgresql-role-configuration
+Data type representing the configuration of
+@var{postgresql-role-service-type}.
+
+@table @asis
+@item @code{host} (default: @code{"/var/run/postgresql"})
+The PostgreSQL host to connect to.
+
+@item @code{log} (default: @code{"/var/log/postgresql_roles.log"})
+File name of the log file.
+
+@item @code{roles} (default: @code{'()})
+The initial PostgreSQL roles to create.
+@end table
+@end deftp
+
 @subsubheading MariaDB/MySQL
 
 @defvr {Scheme Variable} mysql-service-type

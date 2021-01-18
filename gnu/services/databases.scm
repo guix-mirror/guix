@@ -58,6 +58,18 @@
             postgresql-service
             postgresql-service-type
 
+            postgresql-role
+            postgresql-role?
+            postgresql-role-name
+            postgresql-role-permissions
+            postgresql-role-create-database?
+            postgresql-role-configuration
+            postgresql-role-configuration?
+            postgresql-role-configuration-host
+            postgresql-role-configuration-roles
+
+            postgresql-role-service-type
+
             memcached-service-type
             memcached-configuration
             memcached-configuration?
@@ -342,6 +354,96 @@ and stores the database cluster in @var{data-directory}."
             (config-file config-file)
             (data-directory data-directory)
             (extension-packages extension-packages))))
+
+(define-record-type* <postgresql-role>
+  postgresql-role make-postgresql-role
+  postgresql-role?
+  (name             postgresql-role-name) ;string
+  (permissions      postgresql-role-permissions
+                    (default '(createdb login))) ;list
+  (create-database? postgresql-role-create-database?  ;boolean
+                    (default #f)))
+
+(define-record-type* <postgresql-role-configuration>
+  postgresql-role-configuration make-postgresql-role-configuration
+  postgresql-role-configuration?
+  (host             postgresql-role-configuration-host ;string
+                    (default "/var/run/postgresql"))
+  (log              postgresql-role-configuration-log ;string
+                    (default "/var/log/postgresql_roles.log"))
+  (roles            postgresql-role-configuration-roles
+                    (default '()))) ;list
+
+(define (postgresql-create-roles config)
+  ;; See: https://www.postgresql.org/docs/current/sql-createrole.html for the
+  ;; complete permissions list.
+  (define (format-permissions permissions)
+    (let ((dict '(bypassrls createdb createrole login replication superuser)))
+      (string-join (filter-map (lambda (permission)
+                                 (and (member permission dict)
+                                      (string-upcase
+                                       (symbol->string permission))))
+                               permissions)
+                   " ")))
+
+  (define (roles->queries roles)
+    (apply mixed-text-file "queries"
+           (append-map
+            (lambda (role)
+              (match-record role <postgresql-role>
+                (name permissions create-database?)
+                `("SELECT NOT(EXISTS(SELECT 1 FROM pg_catalog.pg_roles WHERE \
+rolname = '" ,name "')) as not_exists;\n"
+"\\gset\n"
+"\\if :not_exists\n"
+"CREATE ROLE " ,name
+" WITH " ,(format-permissions permissions)
+";\n"
+,@(if create-database?
+      `("CREATE DATABASE " ,name
+        " OWNER " ,name ";\n")
+      '())
+"\\endif\n")))
+            roles)))
+
+  (let ((host (postgresql-role-configuration-host config))
+        (roles (postgresql-role-configuration-roles config)))
+    (program-file
+     "postgresql-create-roles"
+     #~(begin
+         (let ((psql #$(file-append postgresql "/bin/psql")))
+           (execl psql psql "-a"
+                  "-h" #$host
+                  "-f" #$(roles->queries roles)))))))
+
+(define (postgresql-role-shepherd-service config)
+  (match-record config <postgresql-role-configuration>
+    (log)
+    (list (shepherd-service
+           (requirement '(postgres))
+           (provision '(postgres-roles))
+           (one-shot? #t)
+           (start #~(make-forkexec-constructor
+                     (list #$(postgresql-create-roles config))
+                     #:user "postgres" #:group "postgres"
+                     #:log-file #$log))
+           (documentation "Create PostgreSQL roles.")))))
+
+(define postgresql-role-service-type
+  (service-type (name 'postgresql-role)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          postgresql-role-shepherd-service)))
+                (compose concatenate)
+                (extend (lambda (config extended-roles)
+                          (match-record config <postgresql-role-configuration>
+                            (host roles)
+                            (postgresql-role-configuration
+                             (host host)
+                             (roles (append roles extended-roles))))))
+                (default-value (postgresql-role-configuration))
+                (description "Ensure the specified PostgreSQL roles are
+created after the PostgreSQL database is started.")))
 
 
 ;;;
