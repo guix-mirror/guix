@@ -7726,6 +7726,31 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
+(define-public ruby-bio-vcf
+  (package
+    (name "ruby-bio-vcf")
+    (version "0.9.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "bio-vcf" version))
+        (sha256
+         (base32
+          "1glw5pn9s8z13spxk6yyfqaz80n9lga67f33w35nkpq9dwi2vg6g"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-cucumber" ,ruby-cucumber)))
+    (synopsis "Smart VCF parser DSL")
+    (description
+     "Bio-vcf provides a @acronym{DSL, domain specific language} for processing
+the VCF format.  Record named fields can be queried with regular expressions.
+Bio-vcf is a new generation VCF parser, filter and converter.  Bio-vcf is not
+only very fast for genome-wide (WGS) data, it also comes with a filtering,
+evaluation and rewrite language and can output any type of textual data,
+including VCF header and contents in RDF and JSON.")
+    (home-page "https://github.com/vcflib/bio-vcf")
+    (license license:expat)))
+
 (define-public r-biocviews
   (package
     (name "r-biocviews")
