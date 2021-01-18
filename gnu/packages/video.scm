@@ -3141,6 +3141,33 @@ and JACK.")
     (home-page "https://obsproject.com")
     (license license:gpl2+)))
 
+(define-public obs-spectralizer
+  (package
+    (name "obs-spectralizer")
+    (version "1.3.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/univrsal/spectralizer")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0q75cnyqydpvfda51zm9gxqj3wqr99ad0lxzjhw0ld67qvj1ag6i"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list "-DGLOBAL_INSTALLATION=ON" "-DUSE_CMAKE_LIBDIR=ON")))
+    (inputs `(("obs" ,obs)
+              ("fftw" ,fftw)))
+    (home-page "https://github.com/univrsal/spectralizer")
+    (synopsis "OBS plugin for audio visualization")
+    (description "This OBS plugins allows you to vizualize MPD and internal
+OBS audio sources.")
+    (license license:gpl2)))
+
 (define-public libvdpau
   (package
     (name "libvdpau")
