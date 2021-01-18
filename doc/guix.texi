@@ -933,6 +933,18 @@ export SCM_LOG_DRIVER_FLAGS="--select=^transaction-upgrade-entry"
 make check TESTS="tests/packages.scm"
 @end example
 
+Those wishing to inspect the results of failed tests directly from the
+command line can add the @option{--errors-only=yes} option to the
+@code{SCM_LOG_DRIVER_FLAGS} makefile variable and set the @code{VERBOSE}
+Automake makefile variable, as in:
+
+@example
+make check SCM_LOG_DRIVER_FLAGS="--brief=no --errors-only=yes" VERBOSE=1
+@end example
+
+@xref{Parallel Test Harness,,,automake,GNU Automake} for more
+information about the Automake Parallel Test Harness.
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 @file{test-suite.log} file.  Please specify the Guix version being used
 as well as version numbers of the dependencies (@pxref{Requirements}) in

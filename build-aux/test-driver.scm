@@ -36,12 +36,15 @@
   (display "Usage:
    test-driver --test-name=NAME --log-file=PATH --trs-file=PATH
                [--expect-failure={yes|no}] [--color-tests={yes|no}]
-               [--select=REGEXP] [--exclude=REGEXP]
+               [--select=REGEXP] [--exclude=REGEXP] [--errors-only={yes|no}]
                [--enable-hard-errors={yes|no}] [--brief={yes|no}}] [--]
                TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
 The '--test-name' option is mandatory.  The '--select' and '--exclude' options
-allow selecting or excluding individual test cases via a regexp,
-respectively.\n"))
+allow selecting or excluding individual test cases via a regexp, respectively.
+The '--errors-only' option can be set to \"yes\" to limit the logged test case
+metadata to only those test cases that failed.  When set to \"yes\", the
+'--brief' option disables printing the individual test case result to the
+console.\n"))
 
 (define %options
   '((test-name                 (value #t))
@@ -49,6 +52,7 @@ respectively.\n"))
     (trs-file                  (value #t))
     (select                    (value #t))
     (exclude                   (value #t))
+    (errors-only               (value #t))
     (color-tests               (value #t))
     (expect-failure            (value #t)) ;XXX: not implemented yet
     (enable-hard-errors        (value #t)) ;not implemented in SRFI-64
@@ -88,27 +92,26 @@ respectively.\n"))
 ;;; SRFI 64 custom test runner.
 ;;;
 
-(define* (test-runner-gnu test-name #:key color? brief?
+(define* (test-runner-gnu test-name #:key color? brief? errors-only?
                           (out-port (current-output-port))
                           (trs-port (%make-void-port "w"))
                           select exclude)
   "Return an custom SRFI-64 test runner.  TEST-NAME is a string specifying the
-file name of the current the test.  COLOR? specifies whether to use colors,
-and BRIEF?, well, you know.  OUT-PORT and TRS-PORT must be output ports.
-OUT-PORT defaults to the current output port, while TRS-PORT defaults to a
-void port, which means no TRS output is logged.  SELECT and EXCLUDE may take a
-regular expression to select or exclude individual test cases based on their
-names."
+file name of the current the test.  COLOR? specifies whether to use colors.
+When BRIEF? is true, the individual test cases results are masked and only the
+summary is shown.  ERRORS-ONLY? reduces the amount of test case metadata
+logged to only that of the failed test cases.  OUT-PORT and TRS-PORT must be
+output ports.  OUT-PORT defaults to the current output port, while TRS-PORT
+defaults to a void port, which means no TRS output is logged.  SELECT and
+EXCLUDE may take a regular expression to select or exclude individual test
+cases based on their names."
 
-  (define (test-on-test-begin-gnu runner)
-    ;; Procedure called at the start of an individual test case, before the
-    ;; test expression (and expected value) are evaluated.
-    (let ((result (cute assq-ref (test-result-alist runner) <>)))
-      (format #t "test-name: ~A~%" (result 'test-name))
-      (format #t "location: ~A~%"
-              (string-append (result 'source-file) ":"
-                             (number->string (result 'source-line))))
-      (test-display "source" (result 'source-form) #:pretty? #t)))
+  (define (test-skipped? runner)
+    (eq? 'skip (test-result-kind runner)))
+
+  (define (test-failed? runner)
+    (not (or (test-passed? runner)
+             (test-skipped? runner))))
 
   (define (test-on-test-end-gnu runner)
     ;; Procedure called at the end of an individual test case, when the result
@@ -116,21 +119,29 @@ names."
     (let* ((results (test-result-alist runner))
            (result? (cut assq <> results))
            (result  (cut assq-ref results <>)))
-      (unless brief?
+      (unless (or brief? (and errors-only? (test-skipped? runner)))
         ;; Display the result of each test case on the console.
         (format out-port "~A: ~A - ~A~%"
                 (result->string (test-result-kind runner) #:colorize? color?)
                 test-name (test-runner-test-name runner)))
-      (when (result? 'expected-value)
-        (test-display "expected-value" (result 'expected-value)))
-      (when (result? 'expected-error)
-        (test-display "expected-error" (result 'expected-error) #:pretty? #t))
-      (when (result? 'actual-value)
-        (test-display "actual-value" (result 'actual-value)))
-      (when (result? 'actual-error)
-        (test-display "actual-error" (result 'actual-error) #:pretty? #t))
-      (format #t "result: ~a~%" (result->string (result 'result-kind)))
-      (newline)
+
+      (unless (and errors-only? (not (test-failed? runner)))
+        (format #t "test-name: ~A~%" (result 'test-name))
+        (format #t "location: ~A~%"
+                (string-append (result 'source-file) ":"
+                               (number->string (result 'source-line))))
+        (test-display "source" (result 'source-form) #:pretty? #t)
+        (when (result? 'expected-value)
+          (test-display "expected-value" (result 'expected-value)))
+        (when (result? 'expected-error)
+          (test-display "expected-error" (result 'expected-error) #:pretty? #t))
+        (when (result? 'actual-value)
+          (test-display "actual-value" (result 'actual-value)))
+        (when (result? 'actual-error)
+          (test-display "actual-error" (result 'actual-error) #:pretty? #t))
+        (format #t "result: ~a~%" (result->string (result 'result-kind)))
+        (newline))
+
       (format trs-port ":test-result: ~A ~A~%"
               (result->string (test-result-kind runner))
               (test-runner-test-name runner))))
@@ -157,7 +168,6 @@ names."
       #f))
 
   (let ((runner (test-runner-null)))
-    (test-runner-on-test-begin! runner test-on-test-begin-gnu)
     (test-runner-on-test-end! runner test-on-test-end-gnu)
     (test-runner-on-group-end! runner test-on-group-end-gnu)
     (test-runner-on-bad-end-name! runner test-on-bad-end-name-simple)
@@ -225,6 +235,7 @@ names."
             (test-runner-gnu test-name
                              #:color? color-tests
                              #:brief? (option->boolean opts 'brief)
+                             #:errors-only? (option->boolean opts 'errors-only)
                              #:out-port out #:trs-port trs)
           (test-apply test-specifier
                       (lambda _
