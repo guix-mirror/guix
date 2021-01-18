@@ -52,6 +52,7 @@
             postgresql-configuration-port
             postgresql-configuration-locale
             postgresql-configuration-file
+            postgresql-configuration-log-directory
             postgresql-configuration-data-directory
 
             postgresql-service
@@ -164,6 +165,8 @@ host	all	all	::1/128 	md5"))
                       (default "en_US.utf8"))
   (config-file        postgresql-configuration-file
                       (default (postgresql-config-file)))
+  (log-directory      postgresql-configuration-log-directory
+                      (default "/var/log/postgresql"))
   (data-directory     postgresql-configuration-data-directory
                       (default "/var/lib/postgresql/data"))
   (extension-packages postgresql-configuration-extension-packages
@@ -200,15 +203,18 @@ host	all	all	::1/128 	md5"))
 
 (define postgresql-activation
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory
-        extension-packages)
+    (($ <postgresql-configuration> postgresql port locale config-file
+                                   log-directory data-directory
+                                   extension-packages)
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match))
 
          (let ((user (getpwnam "postgres"))
-               (initdb (string-append #$(final-postgresql postgresql extension-packages)
-                                      "/bin/initdb"))
+               (initdb (string-append
+                        #$(final-postgresql postgresql
+                                            extension-packages)
+                        "/bin/initdb"))
                (initdb-args
                 (append
                  (if #$locale
@@ -224,6 +230,11 @@ host	all	all	::1/128 	md5"))
              (when (string? socket-directory)
                (mkdir-p socket-directory)
                (chown socket-directory (passwd:uid user) (passwd:gid user))))
+
+           ;; Create the log directory.
+           (when (string? #$log-directory)
+             (mkdir-p #$log-directory)
+             (chown #$log-directory (passwd:uid user) (passwd:gid user)))
 
            ;; Drop privileges and init state directory in a new
            ;; process.  Wait for it to finish before proceeding.
@@ -247,8 +258,9 @@ host	all	all	::1/128 	md5"))
 
 (define postgresql-shepherd-service
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory
-        extension-packages)
+    (($ <postgresql-configuration> postgresql port locale config-file
+                                   log-directory data-directory
+                                   extension-packages)
      (let* ((pg_ctl-wrapper
              ;; Wrapper script that switches to the 'postgres' user before
              ;; launching daemon.
@@ -260,13 +272,21 @@ host	all	all	::1/128 	md5"))
                   (match (command-line)
                     ((_ mode)
                      (let ((user (getpwnam "postgres"))
-                           (pg_ctl #$(file-append (final-postgresql postgresql extension-packages)
+                           (pg_ctl #$(file-append
+                                      (final-postgresql postgresql
+                                                        extension-packages)
                                                   "/bin/pg_ctl"))
                            (options (format #f "--config-file=~a -p ~d"
                                             #$config-file #$port)))
                        (setgid (passwd:gid user))
                        (setuid (passwd:uid user))
-                       (execl pg_ctl pg_ctl "-D" #$data-directory "-o" options
+                       (execl pg_ctl pg_ctl "-D" #$data-directory
+                              #$@(if (string? log-directory)
+                                     (list "-l"
+                                           (string-append log-directory
+                                                          "/pg_ctl.log"))
+                                     '())
+                              "-o" options
                               mode)))))))
             (pid-file (in-vicinity data-directory "postmaster.pid"))
             (action (lambda args

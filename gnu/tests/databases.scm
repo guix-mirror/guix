@@ -214,6 +214,9 @@
 ;;; The PostgreSQL service.
 ;;;
 
+(define %postgresql-log-directory
+  "/var/log/postgresql")
+
 (define %postgresql-os
   (simple-operating-system
    (service postgresql-service-type
@@ -260,6 +263,23 @@
              '(begin
                 (use-modules (gnu services herd))
                 (start-service 'postgres))
+             marionette))
+
+          (test-assert "log-file"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 ftw)
+                             (ice-9 match))
+                (current-output-port
+                 (open-file "/dev/console" "w0"))
+                (let ((server-log-file
+                       (string-append #$%postgresql-log-directory
+                                      "/pg_ctl.log")))
+                  (and (file-exists? server-log-file)
+                       (display
+                        (call-with-input-file server-log-file
+                          get-string-all)))
+                  #t))
              marionette))
 
           (test-end)

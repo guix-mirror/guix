@@ -19344,6 +19344,11 @@ The configuration file to use when running PostgreSQL@.  The default
 behaviour uses the postgresql-config-file record with the default values
 for the fields.
 
+@item @code{log-directory} (default: @code{"/var/log/postgresql"})
+The directory where @command{pg_ctl} output will be written in a file
+named @code{"pg_ctl.log"}.  This file can be useful to debug PostgreSQL
+configuration errors for instance.
+
 @item @code{data-directory} (default: @code{"/var/lib/postgresql/data"})
 Directory in which to store the data.
 
