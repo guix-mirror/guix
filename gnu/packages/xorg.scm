@@ -6313,6 +6313,9 @@ basic eye-candy effects.")
               ("xf86-input-keyboard" ,xf86-input-keyboard)
               ("python-pillow" ,python-pillow)
               ;; Optional dependencies.
+              ("libx264" ,libx264)
+              ("x265" ,x265)
+              ("libvpx" ,libvpx)
               ("python-rencode" ,python-rencode) ; For speed.
               ("python-numpy" ,python-numpy)
               ("python-pyopengl" ,python-pyopengl) ; Drawing acceleration.
