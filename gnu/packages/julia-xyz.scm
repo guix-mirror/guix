@@ -68,6 +68,41 @@ including, @code{CircularBuffer}, @code{Queue}, @code{Stack},
 @code{Accumulators}, @code{LinkedLists}, @code{SortedDicts} and many others.")
     (license license:expat)))
 
+(define-public julia-fixedpointnumbers
+  (package
+    (name "julia-fixedpointnumbers")
+    (version "0.8.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaMath/FixedPointNumbers.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j0n40n04q9sk68wh9jq90m6c67k4ws02k41djjzkrqmpzv4rcdi"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-test
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "test/fixed.jl"
+               ;; A deprecation warning is not thrown
+               (("@test_logs.*:warn" all) (string-append "# " all)))
+             #t)))))
+    (propagated-inputs `(("julia-compat" ,julia-compat)))
+    (home-page "https://github.com/JuliaMath/FixedPointNumbers.jl")
+    (synopsis "Fixed point types for Julia")
+    (description "@code{FixedPointNumbers.jl} implements fixed-point number
+types for Julia.  A fixed-point number represents a fractional, or
+non-integral, number.  In contrast with the more widely known floating-point
+numbers, with fixed-point numbers the decimal point doesn't \"float\":
+fixed-point numbers are effectively integers that are interpreted as being
+scaled by a constant factor.  Consequently, they have a fixed number of
+digits (bits) after the decimal (radix) point.")
+    (license license:expat)))
+
 (define-public julia-orderedcollections
   (package
     (name "julia-orderedcollections")
