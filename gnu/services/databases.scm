@@ -194,7 +194,9 @@ host	all	all	::1/128 	md5"))
          #:builder
          (begin
            (use-modules (guix build utils) (guix build union) (srfi srfi-26))
-           (union-build (assoc-ref %outputs "out") (map (lambda (input) (cdr input)) %build-inputs))
+           (union-build (assoc-ref %outputs "out")
+                        (map (lambda (input) (cdr input))
+                             %build-inputs))
            #t)))
       (inputs
        `(("postgresql" ,postgresql)
@@ -306,25 +308,29 @@ host	all	all	::1/128 	md5"))
               (stop (action "stop"))))))))
 
 (define postgresql-service-type
-  (service-type (name 'postgresql)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          postgresql-shepherd-service)
-                       (service-extension activation-service-type
-                                          postgresql-activation)
-                       (service-extension account-service-type
-                                          (const %postgresql-accounts))
-                       (service-extension profile-service-type
-                                          (compose list postgresql-configuration-postgresql))))))
+  (service-type
+   (name 'postgresql)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             postgresql-shepherd-service)
+          (service-extension activation-service-type
+                             postgresql-activation)
+          (service-extension account-service-type
+                             (const %postgresql-accounts))
+          (service-extension
+           profile-service-type
+           (compose list postgresql-configuration-postgresql))))))
 
 (define-deprecated (postgresql-service #:key (postgresql postgresql)
                                        (port 5432)
                                        (locale "en_US.utf8")
                                        (config-file (postgresql-config-file))
-                                       (data-directory "/var/lib/postgresql/data")
+                                       (data-directory
+                                        "/var/lib/postgresql/data")
                                        (extension-packages '()))
   postgresql-service-type
-  "Return a service that runs @var{postgresql}, the PostgreSQL database server.
+  "Return a service that runs @var{postgresql}, the PostgreSQL database
+server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}
 and stores the database cluster in @var{data-directory}."
