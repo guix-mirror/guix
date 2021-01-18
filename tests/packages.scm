@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,13 +18,14 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-packages)
+(define-module (tests packages)
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix grafts)
-  #:use-module ((guix gexp) #:select (local-file local-file-file))
+  #:use-module (guix gexp)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (tarball?))
   #:use-module ((guix diagnostics)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -32,6 +34,7 @@
                                   (else name))))
   #:use-module ((gcrypt hash) #:prefix gcrypt:)
   #:use-module (guix derivations)
+  #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix grafts)
   #:use-module (guix search-paths)
@@ -50,6 +53,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -576,6 +580,11 @@
     (build-derivations %store (list drv))
     (call-with-input-file output get-string-all)))
 
+
+;;;
+;;; Source derivation with snippets.
+;;;
+
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
@@ -630,6 +639,63 @@
          (out    (derivation->output-path drv)))
     (and (build-derivations %store (list (pk 'snippet-drv drv)))
          (call-with-input-file out get-string-all))))
+
+;; Note: lzip is not part of bootstrap-coreutils&co, so is not included to
+;; avoid having to rebuild the world.
+(define compressors '(("gzip"  . "gz")
+                      ("xz"    . "xz")
+                      ("bzip2" . "bz2")
+                      (#f      . #f)))
+
+(for-each
+ (match-lambda
+   ((comp . ext)
+    (unless (network-reachable?) (test-skip 1))
+    (test-equal (string-append "origin->derivation, single file with snippet "
+                               "(compression: " (if comp comp "None") ")")
+      "2 + 2 = 4"
+      (let*-values
+          (((name) "maths")
+           ((compressed-name) (if comp
+                                  (string-append name "." ext)
+                                  name))
+           ((file hash) (test-file %store compressed-name "2 + 2 = 5"))
+           ;; Create an origin using the above computed file and its hash.
+           ((source) (origin
+                       (method url-fetch)
+                       (uri (string-append "file://" file))
+                       (file-name compressed-name)
+                       (patch-inputs `(("tar"   ,%bootstrap-coreutils&co)
+                                       ("xz"    ,%bootstrap-coreutils&co)
+                                       ("bzip2" ,%bootstrap-coreutils&co)
+                                       ("gzip"  ,%bootstrap-coreutils&co)))
+                       (patch-guile %bootstrap-guile)
+                       (modules '((guix build utils)))
+                       (snippet `(substitute* ,name
+                                   (("5") "4")))
+                       (hash (content-hash hash))))
+           ;; Build origin.
+           ((drv) (run-with-store %store (origin->derivation source)))
+           ((out) (derivation->output-path drv)))
+        ;; Decompress the resulting tar.xz and return its content.
+        (and (build-derivations %store (list drv))
+             (if (tarball? out)
+                 (let* ((bin #~(string-append #+%bootstrap-coreutils&co
+                                              "/bin"))
+                        (f (computed-file
+                            name
+                            (with-imported-modules '((guix build utils))
+                              #~(begin
+                                  (use-modules (guix build utils))
+                                  (setenv "PATH" #+bin)
+                                  (invoke "tar" "xvf" #+out)
+                                  (copy-file #+name #$output)))))
+                        (drv (run-with-store %store (lower-object f)))
+                        (_ (build-derivations %store (list drv))))
+                   (call-with-input-file (derivation->output-path drv)
+                     get-string-all))
+                 (call-with-input-file out get-string-all)))))))
+ compressors)
 
 (test-assert "return value"
   (let ((drv (package-derivation %store (dummy-package "p"))))

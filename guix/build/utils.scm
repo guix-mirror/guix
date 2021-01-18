@@ -6,7 +6,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +50,10 @@
             strip-store-file-name
             package-name->name+version
             parallel-job-count
+
+            compressor
+            tarball?
+            %xz-parallel-args
 
             directory-exists?
             executable-file?
@@ -113,9 +117,7 @@
 
             make-desktop-entry-file
 
-            locale-category->string
-
-            %xz-parallel-args))
+            locale-category->string))
 
 
 ;;;
@@ -136,6 +138,32 @@
 
    (module-replace! (current-module) '(setvbuf)))
   (else #f))
+
+
+;;;
+;;; Compression helpers.
+;;;
+
+(define (compressor file-name)
+  "Return the name of the compressor package/binary used to compress or
+decompress FILE-NAME, based on its file extension, else false."
+  (cond ((string-suffix? "gz"  file-name)  "gzip")
+        ((string-suffix? "Z"   file-name)  "gzip")
+        ((string-suffix? "bz2" file-name)  "bzip2")
+        ((string-suffix? "lz"  file-name)  "lzip")
+        ((string-suffix? "zip" file-name)  "unzip")
+        ((string-suffix? "xz"  file-name)  "xz")
+        (else #f)))                ;no compression used/unknown file extension
+
+(define (tarball? file-name)
+  "True when FILE-NAME has a tar file extension."
+  (string-match "\\.(tar(\\..*)?|tgz|tbz)$" file-name))
+
+(define (%xz-parallel-args)
+  "The xz arguments required to enable bit-reproducible, multi-threaded
+compression."
+  (list "--memlimit=50%"
+        (format #f "--threads=~a" (max 2 (parallel-job-count)))))
 
 
 ;;;
@@ -1536,17 +1564,6 @@ returned."
              LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY
              LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE
              LC_TIME)))
-
-
-;;;
-;;; Others.
-;;;
-
-(define (%xz-parallel-args)
-  "The xz arguments required to enable bit-reproducible, multi-threaded
-compression."
-  (list "--memlimit=50%"
-        (format #f "--threads=~a" (max 2 (parallel-job-count)))))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)

@@ -20,12 +20,13 @@
   #:use-module ((guix config) #:select (%storedir %localstatedir))
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix base32)
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:use-module ((guix utils) #:select (substitute-keyword-arguments))
-  #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module ((guix build utils) #:select (mkdir-p compressor))
   #:use-module ((gcrypt hash) #:hide (sha256))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
@@ -60,7 +61,9 @@
             dummy-package
             dummy-origin
 
-            gnu-make-for-tests))
+            gnu-make-for-tests
+
+            test-file))
 
 ;;; Commentary:
 ;;;
@@ -435,6 +438,42 @@ default values, and with EXTRA-FIELDS set as specified."
      (native-inputs '())                          ;no need for 'pkg-config'
      (inputs %bootstrap-inputs-for-tests))))
 
+
+;;;
+;;; Test utility procedures.
+
+(define (test-file store name content)
+  "Create a simple file in STORE with CONTENT (a string), compressed according
+to its file name extension.  Return both its file name and its hash."
+  (let* ((ext (string-index-right name #\.))
+         (name-sans-ext (if ext
+                            (string-take name (string-index-right name #\.))
+                            name))
+         (comp (compressor name))
+         (command #~(if #+comp
+                        (string-append #+%bootstrap-coreutils&co
+                                       "/bin/" #+comp)
+                        #f))
+         (f (with-imported-modules '((guix build utils))
+              (computed-file name
+                             #~(begin
+                                 (use-modules (guix build utils)
+                                              (rnrs io simple))
+                                 (with-output-to-file #+name-sans-ext
+                                   (lambda _
+                                     (format #t #+content)))
+                                 (when #+command
+                                   (invoke #+command #+name-sans-ext))
+                                 (copy-file #+name #$output)))))
+         (file-drv (run-with-store store (lower-object f)))
+         (file (derivation->output-path file-drv))
+         (file-drv-outputs (derivation-outputs file-drv))
+         (_ (build-derivations store (list file-drv)))
+         (file-hash (derivation-output-hash
+                     (assoc-ref file-drv-outputs "out"))))
+    (values file file-hash)))
+
+;;;
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)
 ;; eval: (put 'call-with-derivation-substitute 'scheme-indent-function 2)

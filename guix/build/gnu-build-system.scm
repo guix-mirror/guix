@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,13 +61,15 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
   (setenv "SOURCE_DATE_EPOCH" "1"))
 
 (define (first-subdirectory directory)
-  "Return the file name of the first sub-directory of DIRECTORY."
+  "Return the file name of the first sub-directory of DIRECTORY or false, when
+there are none."
   (match (scandir directory
                   (lambda (file)
                     (and (not (member file '("." "..")))
                          (file-is-directory? (string-append directory "/"
                                                             file)))))
-    ((first . _) first)))
+    ((first . _) first)
+    (_ #f)))
 
 (define* (set-paths #:key target inputs native-inputs
                     (search-paths '()) (native-search-paths '())
@@ -155,10 +158,19 @@ working directory."
         (copy-recursively source "."
                           #:keep-mtime? #t))
       (begin
-        (if (string-suffix? ".zip" source)
-            (invoke "unzip" source)
-            (invoke "tar" "xvf" source))
-        (chdir (first-subdirectory ".")))))
+        (cond
+         ((string-suffix? ".zip" source)
+          (invoke "unzip" source))
+         ((tarball? source)
+          (invoke "tar" "xvf" source))
+         (else
+          (let ((name (strip-store-file-name source))
+                (command (compressor source)))
+            (copy-file source name)
+            (when command
+              (invoke command "--decompress" name)))))
+        ;; Attempt to change into child directory.
+        (and=> (first-subdirectory ".") chdir))))
 
 (define* (bootstrap #:key bootstrap-scripts
                     #:allow-other-keys)

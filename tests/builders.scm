@@ -17,10 +17,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-(define-module (test-builders)
+(define-module (tests builders)
   #:use-module (guix download)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build gnu-build-system)
+  #:use-module (guix build utils)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)
@@ -32,7 +34,9 @@
                           package-derivation package-native-search-paths))
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
 
 ;; Test the higher-level builders.
@@ -77,5 +81,34 @@
 
 (test-assert "gnu-build-system"
   (build-system? gnu-build-system))
+
+(define unpack (assoc-ref %standard-phases 'unpack))
+
+(define compressors '(("gzip"  . "gz")
+                      ("xz"    . "xz")
+                      ("bzip2" . "bz2")
+                      (#f      . #f)))
+
+(for-each
+ (match-lambda
+   ((comp . ext)
+
+    (unless (network-reachable?) (test-skip 1)) ;for bootstrap binaries
+    (test-equal (string-append "gnu-build-system unpack phase, "
+                               "single file (compression: "
+                               (if comp comp "None") ")")
+      "expected text"
+      (let*-values
+          (((name) "test")
+           ((compressed-name) (if ext
+                                  (string-append name "." ext)
+                                  name))
+           ((file hash) (test-file %store compressed-name "expected text")))
+        (call-with-temporary-directory
+         (lambda (dir)
+           (with-directory-excursion dir
+             (unpack #:source file)
+             (call-with-input-file name get-string-all))))))))
+ compressors)
 
 (test-end "builders")

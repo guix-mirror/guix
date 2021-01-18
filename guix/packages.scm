@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix packages)
+  #:use-module ((guix build utils) #:select (compressor tarball?
+                                                        strip-store-file-name))
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -609,20 +611,7 @@ specifies modules in scope when evaluating SNIPPET."
           ((package) package)
           (#f        #f)))))
 
-  (define decompression-type
-    (cond ((string-suffix? "gz" source-file-name)  "gzip")
-          ((string-suffix? "Z" source-file-name)  "gzip")
-          ((string-suffix? "bz2" source-file-name) "bzip2")
-          ((string-suffix? "lz" source-file-name)  "lzip")
-          ((string-suffix? "zip" source-file-name) "unzip")
-          (else "xz")))
-
-  (define original-file-name
-    ;; Remove the store prefix plus the slash, hash, and hyphen.
-    (let* ((sans (string-drop source-file-name
-                              (+ (string-length (%store-prefix)) 1)))
-           (dash (string-index sans #\-)))
-      (string-drop sans (+ 1 dash))))
+  (define original-file-name (strip-store-file-name source-file-name))
 
   (define (numeric-extension? file-name)
     ;; Return true if FILE-NAME ends with digits.
@@ -651,17 +640,24 @@ specifies modules in scope when evaluating SNIPPET."
        (lower-object patch system))))
 
   (mlet %store-monad ((tar ->     (lookup-input "tar"))
+                      (gzip ->    (lookup-input "gzip"))
+                      (bzip2 ->   (lookup-input "bzip2"))
+                      (lzip ->    (lookup-input "lzip"))
                       (xz ->      (lookup-input "xz"))
                       (patch ->   (lookup-input "patch"))
                       (locales -> (lookup-input "locales"))
-                      (decomp ->  (lookup-input decompression-type))
+                      (comp ->    (and=> (compressor source-file-name)
+                                         lookup-input))
                       (patches    (sequence %store-monad
                                             (map instantiate-patch patches))))
     (define build
       (with-imported-modules '((guix build utils))
         #~(begin
             (use-modules (ice-9 ftw)
+                         (ice-9 match)
+                         (ice-9 regex)
                          (srfi srfi-1)
+                         (srfi srfi-26)
                          (guix build utils))
 
             ;; The --sort option was added to GNU tar in version 1.28, released
@@ -723,54 +719,67 @@ specifies modules in scope when evaluating SNIPPET."
                                              (package-version locales)))))
               (setlocale LC_ALL "en_US.utf8"))
 
-            (setenv "PATH" (string-append #+xz "/bin" ":"
-                                          #+decomp "/bin"))
+            (setenv "PATH"
+                    (string-append #+xz "/bin"
+                                   (if #+comp
+                                       (string-append ":" #+comp "/bin")
+                                       "")))
 
             (setenv "XZ_DEFAULTS" (string-join (%xz-parallel-args)))
 
-            ;; SOURCE may be either a directory or a tarball.
-            (if (file-is-directory? #+source)
-                (let* ((store     (%store-directory))
-                       (len       (+ 1 (string-length store)))
-                       (base      (string-drop #+source len))
-                       (dash      (string-index base #\-))
-                       (directory (string-drop base (+ 1 dash))))
-                  (mkdir directory)
-                  (copy-recursively #+source directory))
-                #+(if (string=? decompression-type "unzip")
-                      #~(invoke "unzip" #+source)
-                      #~(invoke (string-append #+tar "/bin/tar")
-                                "xvf" #+source)))
+            ;; SOURCE may be either a directory, a tarball or a simple file.
+            (let ((name (strip-store-file-name #+source))
+                  (command (and=> #+comp (cut string-append <> "/bin/"
+                                              (compressor #+source)))))
+              (if (file-is-directory? #+source)
+                  (copy-recursively #+source name)
+                  (cond
+                   ((tarball? #+source)
+                    (invoke (string-append #+tar "/bin/tar") "xvf" #+source))
+                   ((and=> (compressor #+source) (cut string= "unzip" <>))
+                    ;; Note: Referring to the store unzip here (#+unzip)
+                    ;; would introduce a cycle.
+                    ("unzip" (invoke "unzip" #+source)))
+                   (else
+                    (copy-file #+source name)
+                    (when command
+                      (invoke command "--decompress" name))))))
 
-            (let ((directory (first-file ".")))
-              (format (current-error-port)
-                      "source is under '~a'~%" directory)
-              (chdir directory)
+            (let* ((file (first-file "."))
+                   (directory (if (file-is-directory? file)
+                                  file
+                                  ".")))
+              (format (current-error-port) "source is at '~a'~%" file)
 
-              (for-each apply-patch '#+patches)
+              (with-directory-excursion directory
 
-              #+(if snippet
-                    #~(let ((module (make-fresh-user-module)))
-                        (module-use-interfaces!
-                         module
-                         (map resolve-interface '#+modules))
-                        ((@ (system base compile) compile)
-                         '#+snippet
-                         #:to 'value
-                         #:opts %auto-compilation-options
-                         #:env module))
-                    #~#t)
+                (for-each apply-patch '#+patches)
 
-              (chdir "..")
+                #+(if snippet
+                      #~(let ((module (make-fresh-user-module)))
+                          (module-use-interfaces!
+                           module
+                           (map resolve-interface '#+modules))
+                          ((@ (system base compile) compile)
+                           '#+snippet
+                           #:to 'value
+                           #:opts %auto-compilation-options
+                           #:env module))
+                      #~#t))
 
               ;; If SOURCE is a directory (such as a checkout), return a
               ;; directory.  Otherwise create a tarball.
-              (if (file-is-directory? #+source)
-                  (copy-recursively directory #$output
-                                    #:log (%make-void-port "w"))
-                  (repack directory #$output))))))
+              (cond
+               ((file-is-directory? #+source)
+                (copy-recursively directory #$output
+                                  #:log (%make-void-port "w")))
+               ((not #+comp)
+                (copy-file file #$output))
+               (else
+                (repack directory #$output)))))))
 
-    (let ((name (if (checkout? original-file-name)
+    (let ((name (if (or (checkout? original-file-name)
+                        (not (compressor original-file-name)))
                     original-file-name
                     (tarxz-name original-file-name))))
       (gexp->derivation name build
