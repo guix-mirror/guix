@@ -7726,9 +7726,9 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
-(define-public ruby-bio-vcf
+(define-public bio-vcf
   (package
-    (name "ruby-bio-vcf")
+    (name "bio-vcf")
     (version "0.9.5")
     (source
       (origin
