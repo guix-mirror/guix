@@ -147,6 +147,31 @@ during iteration the @code{Ordered*} containers return items in the order in
 which they were added to the collection.")
     (license license:expat)))
 
+(define-public julia-offsetarrays
+  (package
+    (name "julia-offsetarrays")
+    (version "1.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaArrays/OffsetArrays.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y3fnssw2hzyghrk6jfcxslab0f8sjkjszh482snfq4k6mkrhy77"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     `(("julia-adapt" ,julia-adapt)))
+    ;; CatIndices depends on OffsetArrays, introducing a recursive dependency
+    (arguments '(#:tests? #f))
+    (home-page "https://juliaarrays.github.io/OffsetArrays.jl/stable/")
+    (synopsis "Fortran-like arrays with arbitrary, zero or negative indices")
+    (description "@code{OffsetArrays.jl} provides Julia users with arrays that
+have arbitrary indices, similar to those found in some other programming
+languages like Fortran.")
+    (license license:expat)))
+
 (define-public julia-parsers
   (package
     (name "julia-parsers")
