@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,7 @@
 (define-public julia-compat
   (package
     (name "julia-compat")
-    (version "3.9.1")
+    (version "3.25.0")
     (source
      (origin
        (method git-fetch)
@@ -34,7 +34,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01vwjr2134bzgnaxwd67knbibbhnfgnqjw7gxrp29s6y2a6j3882"))))
+        (base32 "1m4r5i8mq29xjp3mllh6047n5a78sdyld57m15anrnsjgaapcgby"))))
     (build-system julia-build-system)
     (home-page "https://github.com/JuliaLang/Compat.jl")
     (synopsis "Compatibility across Julia versions")
