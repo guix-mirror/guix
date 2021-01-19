@@ -282,7 +282,7 @@ for Qt based application.")
 (define-public fcitx5-chinese-addons
   (package
     (name "fcitx5-chinese-addons")
-    (version "5.0.2")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
@@ -290,7 +290,7 @@ for Qt based application.")
                            "/fcitx5-chinese-addons/fcitx5-chinese-addons-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "0mf91gzwzhfci0jn6g3l516xjw8r4v40ginnbl70h1zx6vr24rfp"))))
+        (base32 "1kmzbllk0g86m2z3piwn9j84ihxixyxzv7rzj832xfvwqgk7gixk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
