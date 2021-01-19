@@ -15121,7 +15121,7 @@ manipulations on VCF files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ekg/freebayes")
+                    (url "https://github.com/freebayes/freebayes")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -15195,7 +15195,7 @@ manipulations on VCF files.")
                   (invoke "meson" "test" "--timeout-multiplier" "5"))
                 #t)))
             '()))))
-    (home-page "https://github.com/ekg/freebayes")
+    (home-page "https://github.com/freebayes/freebayes")
     (synopsis "Haplotype-based variant detector")
     (description "FreeBayes is a Bayesian genetic variant detector designed to
 find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms),
