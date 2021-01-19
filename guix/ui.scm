@@ -2123,6 +2123,14 @@ Run COMMAND with ARGS.\n"))
 (define (run-guix-command command . args)
   "Run COMMAND with the given ARGS.  Report an error when COMMAND is not
 found."
+  (define (command-hint guess commands)
+    (define command-names
+      (map (lambda (command)
+             (match (command-name command)
+               ((head tail ...) head)))
+           commands))
+    (string-closest (symbol->string guess) command-names #:threshold 3))
+
   (define module
     ;; Check if there is a matching extension.
     (match (search-path (extension-directories)
@@ -2132,9 +2140,13 @@ found."
          (lambda ()
            (resolve-interface `(guix scripts ,command)))
          (lambda _
-           (format (current-error-port)
-                   (G_ "guix: ~a: command not found~%") command)
-           (show-guix-usage))))
+           (let ((hint (command-hint command (commands))))
+             (format (current-error-port)
+                     (G_ "guix: ~a: command not found~%") command)
+             (when hint
+               (display-hint (format #f (G_ "Did you mean @code{~a}?")
+                                     hint)))
+             (show-guix-usage)))))
       (file
        (load file)
        (resolve-interface `(guix extensions ,command)))))
