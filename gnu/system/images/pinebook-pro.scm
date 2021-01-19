@@ -51,7 +51,7 @@
                               (extra-options '("-L")) ; no carrier detect
                               (baud-rate "115200")
                               (term "vt100")
-                              (tty "ttyS0")))
+                              (tty "ttyS2")))
                     %base-services))))
 
 (define pinebook-pro-image-type
