@@ -15138,6 +15138,7 @@ manipulations on VCF files.")
        ("htslib" ,htslib)
        ("smithwaterman" ,smithwaterman)
        ("tabixpp" ,tabixpp)
+       ("vcflib" ,vcflib)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bash-tap" ,bash-tap)
@@ -15148,11 +15149,6 @@ manipulations on VCF files.")
        ("pkg-config" ,pkg-config)
        ("samtools" ,samtools)
        ("simde" ,simde)
-       ;; We need some binaries from vcflib, but we also need to link against a
-       ;; subset of the library.  Vendor the parts we need until we have a shared library.
-       ("vcflib" ,vcflib)
-       ("vcflib-src" ,(package-source vcflib))
-       ("intervaltree-src" ,(package-source intervaltree))
        ;; This submodule is needed to run the tests.
        ("test-simple-bash-src"
         ,(origin
@@ -15179,25 +15175,17 @@ manipulations on VCF files.")
                (substitute* "meson.build"
                   ;; Some inputs aren't actually needed.
                  ((".*bamtools/src.*") "")
-                 ((".*multichoose.*") "")
-                 (("'vcflib/filevercmp'") ""))
+                 ((".*multichoose.*") ""))
+               (substitute* '("src/BedReader.cpp"
+                              "src/BedReader.h")
+                 (("../intervaltree/IntervalTree.h") "IntervalTree.h"))
                #t)))
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((unpack (lambda (source target)
-                             (unless (directory-exists? target)
-                               (mkdir-p target))
-                             (with-directory-excursion target
-                               (if (file-is-directory? (assoc-ref inputs source))
-                                   (copy-recursively (assoc-ref inputs source) ".")
-                                   (invoke "tar" "xvf"
-                                           (assoc-ref inputs source)
-                                           "--strip-components=1"))))))
-               (and
-                (unpack "vcflib-src" "vcflib")
-                (unpack "intervaltree-src" "vcflib/intervaltree")
-                (unpack "test-simple-bash-src" "test/test-simple-bash"))
-               #t)))
+             (mkdir-p "test/test-simple-bash")
+             (copy-recursively (assoc-ref inputs "test-simple-bash-src")
+                               "test/test-simple-bash")
+             #t))
         ;; The slow tests take longer than the specified timeout.
         ,@(if (any (cute string=? <> (%current-system))
                    '("armhf-linux" "aarch64-linux"))
