@@ -212,7 +212,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.4.2")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
@@ -223,7 +223,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                                  version ".tar.xz")))
        (sha256
         (base32
-         "18dd01ahs2hv74xm7axjc3yhq839p0x0s4vssvlmm8fknja09qfq"))))
+         "16r95rlmikll1k8vbhh06vq6x3srkc10hzxjjf3021mjs2ld65qf"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
