@@ -15267,7 +15267,19 @@ projects.")
     (build-system python-build-system)
     (arguments
      ;; XXX: Requires many dependencies that are not yet in Guix.
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-bash-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               (substitute* "invoke/config.py"
+                 (("shell = \"/bin/bash\"")
+                  (string-append "shell = \"" bash "/bin/bash\""))
+                 )
+               #t))))))
+    (inputs
+     `(("bash" ,bash-minimal)))
     (synopsis "Pythonic task execution")
     (description
      "Invoke is a Python task execution tool and library, drawing inspiration
