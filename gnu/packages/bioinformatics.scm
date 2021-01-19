@@ -143,6 +143,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
 (define-public aragorn
@@ -15168,7 +15169,16 @@ manipulations on VCF files.")
                 (unpack "vcflib-src" "vcflib")
                 (unpack "intervaltree-src" "vcflib/intervaltree")
                 (unpack "test-simple-bash-src" "test/test-simple-bash"))
-               #t))))))
+               #t)))
+        ;; The slow tests take longer than the specified timeout.
+        ,@(if (any (cute string=? <> (%current-system))
+                   '("armhf-linux" "aarch64-linux"))
+            '((replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                (when tests?
+                  (invoke "meson" "test" "--timeout-multiplier" "5"))
+                #t)))
+            '()))))
     (home-page "https://github.com/ekg/freebayes")
     (synopsis "Haplotype-based variant detector")
     (description "FreeBayes is a Bayesian genetic variant detector designed to
