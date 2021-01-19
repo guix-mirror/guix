@@ -10792,7 +10792,7 @@ advanced image management tool")
     (synopsis "Store and run multiple GNOME terminals in one window")
     (description
      "Terminator allows you to run multiple GNOME terminals in a grid and
-+tabs, and it supports drag and drop re-ordering of terminals.")
+tabs, and it supports drag and drop re-ordering of terminals.")
     (license license:gpl2)))
 
 (define-public libhandy
