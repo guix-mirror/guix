@@ -45,7 +45,7 @@
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1487,7 +1487,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.31")
+    (version "0.8.32")
     (source
      (origin
        (method git-fetch)
@@ -1496,7 +1496,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08ixas858jlnlrgrcpjiccwb3xdaxd7dd42i7676ymi3a2421f5w"))
+        (base32 "17aa269dq0gsm4nlhh1q2mj6k8mw6v8ig3nygwk3s07l2xl5gqvn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
