@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
-;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -46,10 +46,12 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "0wychzkg0yghd2pp8fqz78vp1ayzks191knfpl7mhh8igsmb6bc7"))))
+                "1pachwc6msw3n1mz2z1r1w6h518w9gbhdvbaa5vi1qp3cn3wm6q4"))
+              (patches (search-patches "idris-disable-test.patch"))))
     (build-system haskell-build-system)
     (native-inputs                      ;For tests
      `(("perl" ,perl)
+       ("ghc-cheapskate" ,ghc-cheapskate)
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-golden" ,ghc-tasty-golden)
        ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
@@ -98,7 +100,8 @@
          (add-after 'unpack 'update-constraints
            (lambda _
              (substitute* "idris.cabal"
-               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10"))
+               (("ansi-terminal < 0\\.9") "ansi-terminal < 0.10")
+               (("cheapskate >= 0\\.1\\.1\\.2 && < 0\\.2") "cheapskate >= 0.1.1.1 && < 0.2"))
              #t))
          (add-before 'configure 'set-cc-command
            (lambda _
@@ -118,6 +121,7 @@
          (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys #:rest args)
              (let ((out (assoc-ref outputs "out")))
+               (chmod "test/scripts/timeout" #o755) ;must be executable
                (setenv "TASTY_NUM_THREADS" (number->string (parallel-job-count)))
                (setenv "IDRIS_CC" "gcc") ;Needed for creating executables
                (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
