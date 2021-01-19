@@ -18,6 +18,37 @@
 (channel-news
  (version 0)
 
+ (entry (commit "9ab817b2a4601b4a6755983590ed7d93ebdc8d09")
+        (title (en "New @option{--with-latest} package transformation option")
+               (fr "Nouvelle option de transformation @option{--with-latest}"))
+        (body
+         (en "The new @option{--with-latest} package transformation option
+gets the latest release of a package, as would be identified by @command{guix
+refresh}, and uses it instead of the currently-packaged version.  For example,
+to install the latest release of GNOME Weather linked against the latest
+version of libgweather, run:
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-latest} récupère la dernière version d'un logiciel telle
+qu'elle serait trouvée par @command{guix refresh} et l'utilise à la place la
+version actuellement fournie par le paquet.  Par exemple, pour installer la
+dernière version de GNOME Weather, elle-même compilée avec la dernière version
+de libgweather, on lancera :
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "a879e35116043d5daf3d9d175b697d10b9177fd5")
         (title (en "Substitutes can now be compressed with zstd")
                (de "Substitute können nun mit zstd komprimiert werden")
