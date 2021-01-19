@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
@@ -317,14 +317,14 @@ output is indexed in many ways to simplify browsing.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.16.2")
+    (version "1.16.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-                "1l7dkqbsmbf94ax29jj1jf6a0r6ikc8jybg1p5m0c3ki7pg5ki6c"))
+                "0fmz2fhmzcpacnprl5msphvaflwiy0hvpgmqlgfny72ddijzfazz"))
              (patches
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
