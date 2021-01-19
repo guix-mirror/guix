@@ -176,6 +176,64 @@ scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
     (license license:expat)))
 
+(define-public julia-http
+  (package
+    (name "julia-http")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaWeb/HTTP.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ij0yci13c46p92m4zywvcs02nn8pm0abyfffiyhxvva6hq48lyl"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'disable-network-tests
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("\"async.jl") "# \"async.jl")
+               (("\"client.jl") "# \"client.jl"))
+             (substitute* "test/aws4.jl"
+               (("@testset.*HTTP.request with AWS authentication.*" all)
+                (string-append all "return\n")))
+             (substitute* "test/insert_layers.jl"
+               (("@testset.*Inserted final layer runs handler.*" all)
+                (string-append all "return\n")))
+             (substitute* "test/multipart.jl"
+               (("@testset \"Setting of Content-Type.*" all)
+                (string-append all "return\n"))
+               (("@testset \"Deprecation of .*" all)
+                (string-append all "return\n")))
+             (substitute* "test/websockets.jl"
+               (("@testset.*External Host.*" all)
+                (string-append all "return\n")))
+             (substitute* "test/messages.jl"
+               (("@testset.*Read methods.*" all)
+                (string-append all "return\n"))
+               (("@testset.*Body - .*" all)
+                (string-append all "return\n"))
+               (("@testset.*Write to file.*" all)
+                (string-append all "return\n")))
+             #t)))))
+    (propagated-inputs
+     `(("julia-inifile" ,julia-inifile)
+       ("julia-mbedtls" ,julia-mbedtls)
+       ("julia-uris" ,julia-uris)))
+    ;; required for tests
+    (inputs
+     `(("julia-json" ,julia-json)
+       ("julia-bufferedstreams" ,julia-bufferedstreams)))
+    (home-page "https://juliaweb.github.io/HTTP.jl/")
+    (synopsis "HTTP support for Julia")
+    (description "@code{HTTP.jl} is a Julia library for HTTP Messages,
+implementing both a client and a server.")
+    (license license:expat)))
+
 (define-public julia-inifile
   (package
     (name "julia-inifile")
