@@ -3223,75 +3223,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.21")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1fljkag2gr7c4k5mn798lgf9903xslz8h51bgvl89nnay42qjqpp"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--disable-static"
-             "--enable-vala") ; needed for e.g. gnome-mines
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gdk-pixbuf-loader/Makefile.in"
-               ;; By default the gdk-pixbuf loader is installed under
-               ;; gdk-pixbuf's prefix.  Work around that.
-               (("gdk_pixbuf_moduledir = .*$")
-                (string-append "gdk_pixbuf_moduledir = "
-                               "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
-                                "loaders\n"))
-               ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
-               (("gdk_pixbuf_cache_file = .*$")
-                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
-             #t))
-         (add-before 'check 'remove-failing-tests
-           (lambda _
-             (with-directory-excursion "tests/fixtures/reftests"
-               (for-each delete-file
-                         '(;; This test fails on i686:
-                           "svg1.1/masking-path-04-b.svg"
-                           ;; This test fails on armhf:
-                           "svg1.1/masking-mask-01-b.svg"
-                           ;; This test fails on aarch64:
-                           "bugs/777834-empty-text-children.svg")))
-             #t)))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("vala" ,vala)
-       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
-    (inputs
-     `(;; XXX: 1.44 causes some test failures, so we stick with 1.42 for
-       ;; this ancient version of librsvg.
-       ("pango" ,pango-1.42)
-       ("libcroco" ,libcroco)
-       ("bzip2" ,bzip2)
-       ("libgsf" ,libgsf)
-       ("libxml2" ,libxml2)))
-    (propagated-inputs
-     ;; librsvg-2.0.pc refers to all of that.
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)))
-    (home-page "https://wiki.gnome.org/LibRsvg")
-    (synopsis "Render SVG files using Cairo")
-    (description
-     "Librsvg is a C library to render SVG files using the Cairo 2D graphics
-library.")
-    (license license:lgpl2.0+)))
-
-(define-public librsvg-next
-  (package
-    (name "librsvg")
-    (version "2.50.2")
+    (version "2.50.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -3299,11 +3231,10 @@ library.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "1lsnl08b5pjf01q3agixjd53islw5rqkc38r31rlmm2crrqz44b2"))
+                "0n79i4wj9hm0d3bbn4xvknq5ylhqs16pvhaqr1rxspx9wfc8lad4"))
               (modules '((guix build utils)))
               (snippet
-               '(begin (delete-file-recursively "vendor")
-                       #t))))
+               '(begin (delete-file-recursively "vendor")))))
     (build-system cargo-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3354,7 +3285,7 @@ library.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-float-cmp" ,rust-float-cmp-0.8)
-        ("rust-lopdf" ,rust-lopdf-0.25)
+        ("rust-lopdf" ,rust-lopdf-0.26)
         ("rust-png" ,rust-png-0.16)
         ("rust-predicates" ,rust-predicates-1)
         ("rust-tempfile" ,rust-tempfile-3))
@@ -3366,8 +3297,7 @@ library.")
                (substitute* "rsvg-docs.xml"
                  (("http://www.oasis-open.org/docbook/xml/4.3/")
                   (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                                 "/xml/dtd/docbook/"))))))
          (add-after 'unpack 'prepare-for-build
            (lambda _
              ;; In lieu of #:make-flags
@@ -3375,8 +3305,7 @@ library.")
              ;; Something about the build environment resists building
              ;; successfully with the '--locked' flag.
              (substitute* '("Makefile.am" "Makefile.in")
-               (("--locked") ""))
-             #t))
+               (("--locked") ""))))
          (add-before 'configure 'pre-configure
            (lambda _
              (substitute* "gdk-pixbuf-loader/Makefile.in"
@@ -3388,8 +3317,7 @@ library.")
                                "loaders\n"))
                ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
                (("gdk_pixbuf_cache_file = .*$")
-                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
-             #t))
+                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))))
          (add-after 'configure 'gnu-configure
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              ((assoc-ref gnu:%standard-phases 'configure)
@@ -3406,8 +3334,7 @@ library.")
            (lambda* (#:key vendor-dir #:allow-other-keys)
              ;; Don't keep the whole tarball in the vendor directory
              (delete-file-recursively
-              (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
-             #t))
+              (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))))
          (replace 'build
            (assoc-ref gnu:%standard-phases 'build))
          (add-before 'check 'ignore-failing-tests
@@ -3433,8 +3360,7 @@ library.")
                (("fn multiple_input_files_not_allowed_for_png_output" all)
                 (string-append "#[ignore] " all))
                (("fn stylesheet_option_error" all)
-                (string-append "#[ignore] " all)))
-             #t))
+                (string-append "#[ignore] " all)))))
          (replace 'check
            (lambda* args
              ((assoc-ref gnu:%standard-phases 'check)
@@ -6277,7 +6203,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
       ("libexif" ,libexif)
       ("libpeas" ,libpeas)
       ("libjpeg" ,libjpeg-turbo)
-      ("librsvg" ,librsvg-next)
+      ("librsvg" ,librsvg)
       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
       ("gtk+" ,gtk+)))
    (home-page "https://wiki.gnome.org/Apps/EyeOfGnome")
