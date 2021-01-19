@@ -621,6 +621,37 @@ communication.")
     (home-page "https://github.com/awslabs/aws-c-event-stream")
     (license license:asl2.0)))
 
+(define-public aws-c-io
+  (package
+    (name "aws-c-io")
+    (version "0.9.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vwyf1pm0hhcypyjc9xh9x7y50ic79xlbck1yf9d9wz0bnh43p7v"))
+              (patches
+               (search-patches
+                "aws-c-io-cmake-prefix.patch"
+                "aws-c-io-disable-networking-tests.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-cal" ,aws-c-cal)
+       ("aws-c-common" ,aws-c-common)
+       ("s2n" ,s2n)))
+    (synopsis "Event driven framework for implementing application protocols")
+    (description "This library provides a C99 framework for constructing
+event-driven, asynchronous network application protocols.")
+    (home-page "https://github.com/awslabs/aws-c-io")
+    (license license:asl2.0)))
+
 (define-public aws-c-cal
   (package
     (name "aws-c-cal")
