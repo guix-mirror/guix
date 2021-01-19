@@ -1135,3 +1135,30 @@ relatively simple Bash script.")
 derived from Mozilla's collection.")
       (home-page "https://certifi.io")
       (license license:mpl2.0))))
+
+(define-public s2n
+  (package
+    (name "s2n")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q6kmgwb8jxmc4ijzk9pkqzz8lsbfsv9hyzqvy944w7306zx1r5h"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; tests fail to build for static library
+       #:configure-flags
+       '("-DBUILD_TESTING=OFF"
+         "-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")))
+    (synopsis "SSL/TLS implementation")
+    (description "This library provides a C99 implementation of SSL/TLS.")
+    (home-page "https://github.com/awslabs/s2n")
+    (license license:asl2.0)))
