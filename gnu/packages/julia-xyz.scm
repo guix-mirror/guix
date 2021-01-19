@@ -352,3 +352,37 @@ languages like Fortran.")
     (description "@code{Parsers.jl} is a collection of type parsers and
 utilities for Julia.")
     (license license:expat)))
+
+(define-public julia-uris
+  (package
+    (name "julia-uris")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaWeb/URIs.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fqyagsqks5za7m0czafr34m2xh5501f689k9cn5x3npajdnh2r3"))))
+    (build-system julia-build-system)
+    (arguments
+     '(#:julia-package-name "URIs"      ;required to run tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'change-dir
+           ;; Tests must be run from the testdir
+           (lambda* (#:key source outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (chdir
+                (string-append out "/share/julia/packages/URIs/test")))
+             #t)))))
+    ;; required for tests
+    (inputs `(("julia-json" ,julia-json)))
+    (home-page "https://github.com/JuliaWeb/URIs.jl")
+    (synopsis "URI parsing in Julia")
+    (description "@code{URIs.jl} is a Julia package that allows parsing and
+working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
+3986.")
+    (license license:expat)))
