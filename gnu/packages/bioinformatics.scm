@@ -15061,6 +15061,13 @@ library automatically handles index file generation and use.")
      `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'build-shared-library
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("vcflib STATIC") "vcflib SHARED"))
+             (substitute* "test/Makefile"
+               (("libvcflib.a") "libvcflib.so"))
+             #t))
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((unpack (lambda (source target)
