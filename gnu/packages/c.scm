@@ -52,6 +52,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public tcc
@@ -618,4 +619,33 @@ with fallback to efficient C99 software implementations.")
 event stream encoding, a binary format for bidirectional client-server
 communication.")
     (home-page "https://github.com/awslabs/aws-c-event-stream")
+    (license license:asl2.0)))
+
+(define-public aws-c-cal
+  (package
+    (name "aws-c-cal")
+    (version "0.4.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04acra1mnzw9q7jycs5966akfbgnx96hkrq90nq0dhw8pvarlyv6"))
+              (patches (search-patches "aws-c-cal-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")))
+    (synopsis "Amazon Web Services Crypto Abstraction Layer")
+    (description "This library provides a C99 wrapper for hash, HMAC, and ECC
+cryptographic primitives for the @acronym{AWS,Amazon Web Services} SDK.")
+    (home-page "https://github.com/awslabs/aws-c-cal")
     (license license:asl2.0)))
