@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3944,7 +3945,14 @@ cache of unix and unix-like systems.")
              #t)))))
     (propagated-inputs
      `(("python-pygobject" ,python-pygobject)
-       ("python-pyudev" ,python-pyudev)))
+       ("python-pyudev" ,python-pyudev)
+
+       ;; For GUI.
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-psutil" ,python-psutil)
+       ("python-xlib" ,python-xlib)
+       ("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)))
     (home-page "https://smxi.org/docs/inxi.htm")
     (synopsis "Linux devices manager for the Logitech Unifying Receiver")
     (description "This package provides tools to manage clients of the
