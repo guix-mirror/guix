@@ -15083,7 +15083,28 @@ library automatically handles index file generation and use.")
                 (unpack "fsom-src" "fsom")
                 (unpack "intervaltree-src" "intervaltree")
                 (unpack "multichoose-src" "multichoose"))
-               #t))))))
+               #t)))
+         ;; This pkg-config file is provided by other distributions.
+         (add-after 'install 'install-pkg-config-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkgconfig (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkgconfig)
+               (with-output-to-file (string-append pkgconfig "/libvcflib.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=${prefix}~@
+                           libdir=${exec_prefix}/lib~@
+                           includedir=${prefix}/include~@
+                           ~@
+                           Name: libvcflib~@
+                           Version: ~a~@
+                           Requires: smithwaterman, fastahack~@
+                           Description: C++ library for parsing and manipulating VCF files~@
+                           Libs: -L${libdir} -llibvcflib~@
+                           Cflags: -I${includedir}~%"
+                           out ,version)))
+                 #t))))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")
     (description "Vcflib provides methods to manipulate and interpret
