@@ -850,7 +850,7 @@ track stocks, currencies and cryptocurrencies.")
        ("json-glib" ,json-glib)
        ("jsonrpc-glib" ,jsonrpc-glib)
        ("libgee" ,libgee)
-       ("vala" ,vala-0.50)))
+       ("vala" ,vala)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/benwaffle/vala-language-server")

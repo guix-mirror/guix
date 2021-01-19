@@ -4264,15 +4264,15 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.46.5")
+    (version "0.50.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/vala/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "07fv895sp9wq74b20qig7hic0r4ynrr5pfaqba02r44xb794fy0s"))))
+                "1nx5xjarpkl9hgy0qbqfczx7d7clh5g1r8xr5xp8b97c5fsc2rb1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4280,12 +4280,10 @@ passwords in the GNOME keyring.")
          (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
-                       (substitute* "valadoc/tests/testrunner.sh"
+                       (substitute* "valadoc/tests/libvaladoc\
+/tests-extra-environment.sh"
                          (("export PKG_CONFIG_PATH=" m)
-                          (string-append m "$PKG_CONFIG_PATH:")))
-                       ;; For missing '/etc/machine-id'.
-                       (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))))
+                          (string-append m "$PKG_CONFIG_PATH:"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
@@ -4305,19 +4303,6 @@ language features to GNOME developers without imposing any additional runtime
 requirements and without using a different ABI compared to applications and
 libraries written in C.")
     (license license:lgpl2.1+)))
-
-(define-public vala-0.50
-  (package
-    (inherit vala)
-    (version "0.50.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/vala/"
-                                  (version-major+minor version) "/"
-                                  "vala-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1nnf0x6vk0a9p2y6z7jwjfvmlxh3qhj581v381r0y1sxsv35s39c"))))))
 
 (define-public vte
   (package
