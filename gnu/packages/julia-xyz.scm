@@ -148,6 +148,26 @@ scaled by a constant factor.  Consequently, they have a fixed number of
 digits (bits) after the decimal (radix) point.")
     (license license:expat)))
 
+(define-public julia-inifile
+  (package
+    (name "julia-inifile")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaIO/IniFile.jl")
+             (commit "8ba59958495fa276d6489d2c3903e765d75e0bc0")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11h6f99jpbg729lplw841m68jprka7q3n8yw390bndlmcdsjabpd"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/JuliaIO/IniFile.jl")
+    (synopsis "Reading Windows-style INI files")
+    (description "This is a Julia package that defines an IniFile type that
+allows to interface with @file{.ini} files.")
+    (license license:expat)))
+
 (define-public julia-jllwrappers
   (package
     (name "julia-jllwrappers")
