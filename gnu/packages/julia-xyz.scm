@@ -67,6 +67,34 @@ code easy by supplying a framework for writing and running groups of
 benchmarks as well as comparing benchmark results.")
     (license license:expat)))
 
+(define-public julia-bufferedstreams
+  (package
+    (name "julia-bufferedstreams")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BioJulia/BufferedStreams.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sf4sxbq55mg2pwxyxf0c839z1lk0yxg8nmb7617bfbvw31cp88z"))))
+    (build-system julia-build-system)
+    ;; The package is old and tests are using undefined functions.  They also
+    ;; freeze, see
+    ;; https://travis-ci.org/BioJulia/BufferedStreams.jl/jobs/491050182
+    (arguments
+     '(#:tests? #f
+       #:julia-package-name "BufferedStreams"))
+    (propagated-inputs `(("julia-compat" ,julia-compat)))
+    (home-page "https://github.com/BioJulia/BufferedStreams.jl")
+    (synopsis "Fast composable IO streams")
+    (description "@code{BufferedStreams.jl} provides buffering for IO
+operations.  It can wrap any @code{IO} type automatically making incremental
+reading and writing faster.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
