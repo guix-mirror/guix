@@ -695,8 +695,6 @@ checking this by themselves in their 'check' procedure."
         os
         #:mappings mappings
         #:shared-network? container-shared-network?))
-      ((vm-image)
-       (system-qemu-image os #:disk-image-size image-size))
       ((vm)
        (system-qemu-image/shared-store-script os
                                               #:full-boot? full-boot?
@@ -705,11 +703,16 @@ checking this by themselves in their 'check' procedure."
                                                   image-size
                                                   (* 70 (expt 2 20)))
                                               #:mappings mappings))
-      ((image disk-image)
-       (let* ((base-image (os->image os #:type image-type))
+      ((image disk-image vm-image)
+       (let* ((image-type (if (eq? action 'vm-image)
+                              qcow2-image-type
+                              image-type))
+              (base-image (os->image os #:type image-type))
               (base-target (image-target base-image)))
          (when (eq? action 'disk-image)
            (warning (G_ "'disk-image' is deprecated: use 'image' instead~%")))
+         (when (eq? action 'vm-image)
+           (warning (G_ "'vm-image' is deprecated: use 'image' instead~%")))
          (lower-object
           (system-image
            (image
@@ -781,9 +784,8 @@ and TARGET arguments."
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
-the 'vm-image' and 'image' actions.  IMAGE-TYPE is the type of image to
-be built.  When VOLATILE-ROOT? is #t, the root file system is mounted
-volatile.
+the 'image' action.  IMAGE-TYPE is the type of image to be built.  When
+VOLATILE-ROOT? is #t, the root file system is mounted volatile.
 
 FULL-BOOT? is used for the 'vm' action; it determines whether to
 boot directly to the kernel or to the bootloader.  CONTAINER-SHARED-NETWORK?
@@ -969,8 +971,6 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    vm               build a virtual machine image that shares the host's store\n"))
   (display (G_ "\
-   vm-image         build a freestanding virtual machine image\n"))
-  (display (G_ "\
    image            build a Guix System image\n"))
   (display (G_ "\
    docker-image     build a Docker image\n"))
@@ -999,7 +999,7 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
   -t, --image-type=TYPE  for 'image', produce an image of TYPE"))
   (display (G_ "
-      --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
+      --image-size=SIZE  for 'image', produce an image of SIZE"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
@@ -1017,8 +1017,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
   -N, --network          for 'container', allow containers to access the network"))
   (display (G_ "
-  -r, --root=FILE        for 'vm', 'vm-image', 'image', 'container',
-                         and 'build', make FILE a symlink to the result, and
+  -r, --root=FILE        for 'vm', 'image', 'container' and 'build',
+                         make FILE a symlink to the result, and
                          register it as a garbage collector root"))
   (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))

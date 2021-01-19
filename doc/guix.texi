@@ -32575,8 +32575,7 @@ size of the image.
 
 @cindex System images, creation in various formats
 @cindex Creating system images in various formats
-@item vm-image
-@itemx image
+@item image
 @itemx docker-image
 Return a virtual machine, disk image, or Docker image of the operating
 system declared in @var{file} that stands alone.  By default,
@@ -32620,15 +32619,15 @@ the image to it using the following command:
 The @code{--list-image-types} command lists all the available image
 types.
 
-@cindex vm-image, creating virtual machine images
-When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use. @xref{Running Guix in a VM}, for
-more information on how to run the image in a virtual machine.  The
-@code{grub-bootloader} bootloader is always used independently of what
-is declared in the @code{operating-system} file passed as argument.
-This is to make it easier to work with QEMU, which uses the SeaBIOS BIOS
-by default, expecting a bootloader to be installed in the Master Boot
-Record (MBR).
+@cindex creating virtual machine images
+When using the @code{qcow2} image type, the returned image is in qcow2
+format, which the QEMU emulator can efficiently use. @xref{Running Guix
+in a VM}, for more information on how to run the image in a virtual
+machine.  The @code{grub-bootloader} bootloader is always used
+independently of what is declared in the @code{operating-system} file
+passed as argument.  This is to make it easier to work with QEMU, which
+uses the SeaBIOS BIOS by default, expecting a bootloader to be installed
+in the Master Boot Record (MBR).
 
 @cindex docker-image, creating docker images
 When using @code{docker-image}, a Docker image is produced.  Guix builds
@@ -32723,7 +32722,7 @@ create a virtual machine image that contains provenance information, you
 can run:
 
 @example
-guix system vm-image --save-provenance config.scm
+guix system image -t qcow2 --save-provenance config.scm
 @end example
 
 That way, the resulting image will effectively ``embed its own source''
@@ -32746,10 +32745,10 @@ When this option is omitted, @command{guix system} uses the
 for burning on CDs and DVDs.
 
 @item --image-size=@var{size}
-For the @code{vm-image} and @code{image} actions, create an image
-of the given @var{size}.  @var{size} may be a number of bytes, or it may
-include a unit as a suffix (@pxref{Block size, size specifications,,
-coreutils, GNU Coreutils}).
+For the @code{image} action, create an image of the given @var{size}.
+@var{size} may be a number of bytes, or it may include a unit as a
+suffix (@pxref{Block size, size specifications,, coreutils, GNU
+Coreutils}).
 
 When this option is omitted, @command{guix system} computes an estimate
 of the image size as a function of the size of the system declared in
@@ -33112,7 +33111,7 @@ If you built your own image, you must copy it out of the store
 before you can use it.  When invoking QEMU, you must choose a system
 emulator that is suitable for your hardware platform.  Here is a minimal
 QEMU invocation that will boot the result of @command{guix system
-vm-image} on x86_64 hardware:
+image -t qcow2} on x86_64 hardware:
 
 @example
 $ qemu-system-x86_64 \

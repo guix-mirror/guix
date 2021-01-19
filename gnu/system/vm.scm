@@ -73,7 +73,6 @@
   #:export (expression->derivation-in-linux-vm
             qemu-image
             virtualized-operating-system
-            system-qemu-image
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
@@ -556,68 +555,6 @@ the operating system."
      #:make-disk-image? #f
      #:single-file-output? #t
      #:references-graphs `((,graph ,os)))))
-
-
-;;;
-;;; VM and disk images.
-;;;
-
-(define* (system-qemu-image os
-                            #:key
-                            (file-system-type "ext4")
-                            (disk-image-size (* 900 (expt 2 20))))
-  "Return the derivation of a freestanding QEMU image of DISK-IMAGE-SIZE bytes
-of the GNU system as described by OS."
-  (define file-systems-to-keep
-    ;; Keep only file systems other than root and not normally bound to real
-    ;; devices.
-    (remove (lambda (fs)
-              (let ((target (file-system-mount-point fs))
-                    (source (file-system-device fs)))
-                (or (string=? target "/")
-                    (and (string? source)
-                         (string-prefix? "/dev/" source))
-                    (uuid? source)
-                    (file-system-label? source))))
-            (operating-system-file-systems os)))
-
-  (define root-uuid
-    ;; UUID of the root file system.
-    (operating-system-uuid os
-                           (if (string=? file-system-type "iso9660")
-                               'iso9660
-                               'dce)))
-
-
-  (let* ((os (operating-system
-               (inherit os)
-
-               ;; As in 'virtualized-operating-system', use BIOS-style GRUB.
-               (bootloader (bootloader-configuration
-                            (bootloader grub-bootloader)
-                            (target "/dev/vda")))
-
-               ;; Assume we have an initrd with the whole QEMU shebang.
-
-               ;; Force our own root file system.  Refer to it by UUID so that
-               ;; it works regardless of how the image is used ("qemu -hda",
-               ;; Xen, etc.).
-               (file-systems (cons (file-system
-                                     (mount-point "/")
-                                     (device root-uuid)
-                                     (type file-system-type))
-                                   file-systems-to-keep))))
-         (bootcfg (operating-system-bootcfg os)))
-    (qemu-image  #:os os
-                 #:bootcfg-drv bootcfg
-                 #:bootloader (bootloader-configuration-bootloader
-                               (operating-system-bootloader os))
-                 #:disk-image-size disk-image-size
-                 #:file-system-type file-system-type
-                 #:file-system-uuid root-uuid
-                 #:inputs `(("system" ,os)
-                            ("bootcfg" ,bootcfg))
-                 #:copy-inputs? #t)))
 
 
 ;;;

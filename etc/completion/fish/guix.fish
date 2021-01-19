@@ -133,7 +133,7 @@ complete -f -c guix -n '__fish_guix_using_command pull' -l url -d 'download the 
 complete -f -c guix -n '__fish_guix_using_command pull' -l bootstrap -d 'use the bootstrap Guile to build the new Guix'
 
 #### system
-set -l remotecommands reconfigure roll-back switch-generation list-generations build container vm vm-image disk-image init extension-graph shepherd-graph load-path keep-failed keep-going dry-run fallback no-substitutes substitutes-urls no-grafts no-offload max-silent-time timeout verbosity rounds cores max-jobs derivation on-error image-size no-grub share expose full-boot
+set -l remotecommands reconfigure roll-back switch-generation list-generations build container vm image init extension-graph shepherd-graph load-path keep-failed keep-going dry-run fallback no-substitutes substitutes-urls no-grafts no-offload max-silent-time timeout verbosity rounds cores max-jobs derivation on-error image-size no-grub share expose full-boot
 complete -f -c guix -n '__fish_guix_needs_command' -a system -d 'Build the operating system declared in FILE according to ACTION.'
 complete -f -c guix -n '__fish_guix_using_command system' -l reconfigure -d 'switch to a new operating system configuration'
 complete -f -c guix -n '__fish_guix_using_command system' -l roll-back -d 'switch to the previous operating system configuration'
@@ -142,8 +142,7 @@ complete -f -c guix -n '__fish_guix_using_command system' -l list-generations -d
 complete -f -c guix -n '__fish_guix_using_command system' -l build -d 'build the operating system without installing anything'
 complete -f -c guix -n '__fish_guix_using_command system' -l container -d 'build a container that shares the host\'s store'
 complete -f -c guix -n '__fish_guix_using_command system' -l vm -d 'build a virtual machine image that shares the host\'s store'
-complete -f -c guix -n '__fish_guix_using_command system' -l vm-image -d 'build a freestanding virtual machine image'
-complete -f -c guix -n '__fish_guix_using_command system' -l disk-image -d 'build a disk image, suitable for a USB stick'
+complete -f -c guix -n '__fish_guix_using_command system' -l image -d 'build a disk image, suitable for a USB stick'
 complete -f -c guix -n '__fish_guix_using_command system' -l init -d 'initialize a root file system to run GNU'
 complete -f -c guix -n '__fish_guix_using_command system' -l extension-graph -d 'emit the service extension graph in Dot format'
 complete -f -c guix -n '__fish_guix_using_command system' -l shepherd-graph -d 'emit the graph of shepherd services in Dot format'
@@ -167,7 +166,7 @@ complete -f -c guix -n '__fish_guix_using_command system' -s M -d 'allow at most
 complete -f -c guix -n '__fish_guix_using_command system' -a "--max-jobs=" -d 'allow at most N build jobs'
 complete -f -c guix -n '__fish_guix_using_command system' -s d -l derivation -d 'return the derivation of the given system'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--on-error=" -d 'apply STRATEGY when an error occurs while reading FILE'
-complete -f -c guix -n '__fish_guix_using_command system' -a "--image-size=" -d 'for \'vm-image\', produce an image of SIZE'
+complete -f -c guix -n '__fish_guix_using_command system' -a "--image-size=" -d 'for \'image\', produce an image of SIZE'
 complete -f -c guix -n '__fish_guix_using_command system' -l no-grub -d 'for \'init\', do not install GRUB'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--share=" -d 'for \'vm\', share host file system according to SPEC'
 complete -f -c guix -n '__fish_guix_using_command system' -a "--expose=" -d 'for \'vm\', expose host file system according to SPEC'

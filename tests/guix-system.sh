@@ -339,7 +339,7 @@ done
 
 # Verify that the disk image types can be built.
 guix system -n vm gnu/system/examples/vm-image.tmpl
-guix system -n vm-image gnu/system/examples/vm-image.tmpl
+guix system -n image -t qcow2 gnu/system/examples/vm-image.tmpl
 # This invocation was taken care of in the loop above:
 # guix system -n disk-image gnu/system/examples/bare-bones.tmpl
 guix system -n disk-image -t iso9660 gnu/system/examples/bare-bones.tmpl
