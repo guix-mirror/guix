@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
+  #:use-module ((guix combinators) #:select (fold2))
   #:use-module (guix diagnostics)           ;<location>, &error-location, etc.
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
@@ -115,7 +117,10 @@
             call-with-decompressed-port
             compressed-output-port
             call-with-compressed-output-port
-            canonical-newline-port))
+            canonical-newline-port
+
+            string-distance
+            string-closest))
 
 
 ;;;
@@ -879,6 +884,46 @@ be determined."
          ((or ('filename . #f) #f)
           ;; raising an error would upset Geiser users
           #f))))))
+
+
+;;;
+;;; String comparison.
+;;;
+
+(define (string-distance s1 s2)
+  "Compute the Levenshtein distance between two strings."
+  ;; Naive implemenation
+  (define loop
+    (mlambda (as bt)
+      (match as
+        (() (length bt))
+        ((a s ...)
+         (match bt
+           (() (length as))
+           ((b t ...)
+            (if (char=? a b)
+                (loop s t)
+                (1+ (min
+                     (loop as t)
+                     (loop s bt)
+                     (loop s t))))))))))
+
+  (let ((c1 (string->list s1))
+        (c2 (string->list s2)))
+    (loop c1 c2)))
+
+(define* (string-closest trial tests #:key (threshold 3))
+  "Return the string from TESTS that is the closest from the TRIAL,
+according to 'string-distance'.  If the TESTS are too far from TRIAL,
+according to THRESHOLD, then #f is returned."
+  (identity                              ;discard second return value
+    (fold2 (lambda (test closest minimal)
+             (let ((dist (string-distance trial test)))
+               (if (and  (< dist minimal) (< dist threshold))
+                   (values test dist)
+                   (values closest minimal))))
+           #f +inf.0
+           tests)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)

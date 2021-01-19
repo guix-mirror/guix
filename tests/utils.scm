@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -270,6 +271,23 @@ skip these tests."
                        (column   . 9))
                      string-reverse)
     (call-with-input-file temp-file get-string-all)))
+
+(test-equal "string-distance"
+  '(0 1 1 5 5)
+  (list
+   (string-distance "hello" "hello")
+   (string-distance "hello" "helo")
+   (string-distance "helo" "hello")
+   (string-distance "" "hello")
+   (string-distance "hello" "")))
+
+(test-equal "string-closest"
+  '("hello" "hello" "helo" #f)
+  (list
+   (string-closest "hello" '("hello"))
+   (string-closest "hello" '("helo" "hello" "halo"))
+   (string-closest "hello" '("kikoo" "helo" "hihihi" "halo"))
+   (string-closest "hello" '("aaaaa" "12345" "hellohello" "h"))))
 
 (test-end)
 
