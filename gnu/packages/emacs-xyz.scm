@@ -4666,18 +4666,19 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://git.deparis.io/"
-                           "flycheck-grammalecte/snapshot/"
-                           "flycheck-grammalecte-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.umaneti.net/flycheck-grammalecte/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1mzmzyik843r4j0ibpwqrxmb0g4xmirrf3lxr010bddkmmxf749a"))))
+        (base32 "1f1gapvs9j89qr474103dqgsiyb96phlnsmq5hiv4ba242blg9lb"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:include '("\\.(el|py)$")
+     `(#:include (cons "\\.py$" %default-include)
        #:exclude '("^test-profile.el$")
        #:emacs ,emacs                   ;need libxml support
        #:phases
@@ -4692,28 +4693,22 @@ for Flow files.")
                (substitute* '("conjugueur.py" "flycheck-grammalecte.py")
                  (("/usr/bin/env python3?") python3))
                #t)))
-         (add-before 'build 'link-to-grammalecte
-           ;; XXX: The Python part of the package requires grammalecte, but
-           ;; the library is not specified in PYTHONPATH, since we're not
-           ;; using Python build system.  As a workaround, we symlink
-           ;; grammalecte libraries here.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (grammalecte (assoc-ref inputs "grammalecte"))
-                    (version ,(version-major+minor (package-version python))))
-               (with-directory-excursion
-                   (string-append out "/share/emacs/site-lisp")
-                 (symlink (string-append grammalecte "/lib/"
-                                         "python" version "/site-packages/"
-                                         "grammalecte")
-                          "grammalecte"))
-               #t))))))
+         (add-after 'unpack 'specify-grammalecte-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (make-file-writable "flycheck-grammalecte.el")
+             (emacs-substitute-variables "flycheck-grammalecte.el"
+               ("flycheck-grammalecte--grammalecte-directory"
+                (string-append (assoc-ref inputs "grammalecte")
+                               "/lib/python"
+                               ,(version-major+minor (package-version python))
+                               "/site-packages/grammalecte")))
+             #t)))))
     (inputs
      `(("grammalecte" ,grammalecte)
        ("python" ,python)))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)))
-    (home-page "https://git.deparis.io/flycheck-grammalecte/")
+    (home-page "https://git.umaneti.net/flycheck-grammalecte/")
     (synopsis "Integrate Grammalecte with Flycheck")
     (description
      "Integrate the French grammar and typography checker Grammalecte with
