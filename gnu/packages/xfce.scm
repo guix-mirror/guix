@@ -1918,7 +1918,7 @@ freedesktop.org specification.")
 (define-public xfce4-stopwatch-plugin
   (package
    (name "xfce4-stopwatch-plugin")
-   (version "0.4.0")
+   (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1927,7 +1927,7 @@ freedesktop.org specification.")
                                   "/xfce4-stopwatch-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jfr0ykn97hfngh0hd2wrs9rxswzxaxjv93g6csdp8hnij649nm3"))))
+                "1q840298jzdqlhc9lw49q32xzdhnbzcgvv69qq5slkc704s5w6vw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
