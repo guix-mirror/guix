@@ -597,7 +597,7 @@ with fallback to efficient C99 software implementations.")
 (define-public aws-c-event-stream
   (package
     (name "aws-c-event-stream")
-    (version "0.1.6")
+    (version "0.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -606,13 +606,19 @@ with fallback to efficient C99 software implementations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vl9ainc4klv0g9gk1iv4833bsllni6jxn6mwb0fnv2dnlz7zv9q"))
+                "0xwwr7gdgfrphk6j7vk12rgimfim6m4qnj6hg8hgg16cplhvsfzh"))
               (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_SHARED_LIBS=ON")))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)))
+     `(("aws-c-common" ,aws-c-common)
+       ("aws-c-io" ,aws-c-io)
+       ("aws-checksums" ,aws-checksums)))
     (inputs
-     `(("aws-checksums" ,aws-checksums)))
+     `(("aws-c-cal" ,aws-c-cal)
+       ("s2n" ,s2n)))
     (synopsis "Amazon Web Services client-server message format library")
     (description
      "This library is a C99 implementation for @acronym{AWS,Amazon Web Services}
