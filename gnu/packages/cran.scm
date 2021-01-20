@@ -25251,13 +25251,13 @@ data to rasters.  It speeds up plotting of data with millions of points.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "048vnj0c3mrwhr6yq3jqhgnkg68w99nj1ccsmgnd8rl694w26spj"))))
+                "11rzc7h2ad8z8k5r1sbz4d7y4rl3080qp2hh7vibwmipbkvlial3"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25297,6 +25297,7 @@ data to rasters.  It speeds up plotting of data with millions of points.")
        ("r-rsvd" ,r-rsvd)
        ("r-rtsne" ,r-rtsne)
        ("r-scales" ,r-scales)
+       ("r-scattermore" ,r-scattermore)
        ("r-sctransform" ,r-sctransform)
        ("r-shiny" ,r-shiny)
        ("r-spatstat" ,r-spatstat)
