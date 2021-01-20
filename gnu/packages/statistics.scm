@@ -3038,14 +3038,14 @@ statements.")
 (define-public r-segmented
   (package
     (name "r-segmented")
-    (version "1.3-0")
+    (version "1.3-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "segmented" version))
        (sha256
         (base32
-         "1a9nnlf8j8j4ik34z19x187s8ki7pv1aayr344jrpn3h6m8fk3x5"))))
+         "0g8l1i31zfqamvwc5j537k3ld6dr5z81p84grdlqq41gywmyidmr"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/segmented")
     (synopsis "Regression models with breakpoints estimation")
