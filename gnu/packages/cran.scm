@@ -12382,17 +12382,19 @@ This makes it a convenient and fast interface to C/C++ and Fortran code.")
 (define-public r-spam
   (package
     (name "r-spam")
-    (version "2.5-1")
+    (version "2.6-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spam" version))
        (sha256
-        (base32 "0ry0a76cljlmilrzcriiizcidxyhq1i7i9bqhvl1qda81ld8hifi"))))
+        (base32 "0p5ycvpry955ldrgbbq3syy91wx9425mddpn8r5m9xwlirjxv3v3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dotcall64" ,r-dotcall64)))
-    (native-inputs `(("gfortran" ,gfortran)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://www.math.uzh.ch/pages/spam/")
     (synopsis "Sparse matrix algebra")
     (description
