@@ -19,7 +19,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
+;;; Copyright © 2020, 2021 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Aurora <rind38@disroot.org>
 ;;;
@@ -12193,6 +12193,43 @@ package.")
 
 (define-public ecl-claw-support
   (sbcl-package->ecl-package sbcl-claw-support))
+
+(define-public sbcl-claw
+  (let ((revision "0")
+        (commit "3cd4a96fca95eb9e8d5d069426694669f81b2250"))
+    (package
+      (name "sbcl-claw")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/borodust/claw")
+               (commit commit)))
+         (file-name (git-file-name "claw" version))
+         (sha256
+          (base32 "146yv0hc4hmk72562ssj2d41143pp84dcbd1h7f4nx1c7hf2bb0d"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-json" ,sbcl-cl-json)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("claw-support" ,sbcl-claw-support)
+         ("local-time" ,sbcl-local-time)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/borodust/claw")
+      (synopsis "Autowrapper for Common Lisp")
+      (description
+       "This is a Common Lisp autowrapping facility for quickly creating clean
+and lean bindings to C libraries.")
+      (license license:bsd-2))))
+
+(define-public cl-claw
+  (sbcl-package->cl-source-package sbcl-claw))
+
+(define-public ecl-claw
+  (sbcl-package->ecl-package sbcl-claw))
 
 (define-public sbcl-array-operations
   (let ((commit "75cbc3b1adb2e3ce2109489753d0f290b071e81b")
