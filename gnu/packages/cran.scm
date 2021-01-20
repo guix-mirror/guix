@@ -24909,14 +24909,14 @@ functions or computational engines (e.g. R, Spark, Stan, etc).")
 (define-public r-infer
   (package
     (name "r-infer")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "infer" version))
        (sha256
         (base32
-         "1q0lnxnv8krv4n9z80sh4b442s89rvnbph5bddy34z83bkncwv2g"))))
+         "0wvvgqjhyv7ql98cjzqad61wbmk7xrqd1ybk894jr5cmza13c8w2"))))
     (properties `((upstream-name . "infer")))
     (build-system r-build-system)
     (propagated-inputs
