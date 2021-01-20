@@ -2296,13 +2296,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "012wbj446k1wz6bp6bpf6h77ypvcsw69xvnax6qf6vyc7dj2qimq"))))
+        (base32 "04ph6lm36cmvz01ng53pvvf3jxvzsn9smyflkfc7l3q0pib4gwn9"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
