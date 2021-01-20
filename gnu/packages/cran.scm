@@ -21309,14 +21309,14 @@ least squares.")
 (define-public r-semtools
   (package
     (name "r-semtools")
-    (version "0.5-3")
+    (version "0.5-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "semTools" version))
        (sha256
         (base32
-         "0k3w10fnq0l89inhxvnypyrfhlrm921mfn0kwyyfpndvbqizky1d"))))
+         "15kban4ds2mssxqslm126b89p8biya14c9m68sqk61vzvx5dm2vq"))))
     (properties `((upstream-name . "semTools")))
     (build-system r-build-system)
     (propagated-inputs
