@@ -318,8 +318,8 @@ the input port."
       (warning (G_ "replacing symbolic link ~a with a regular file~%")
                %acl-file)
       (when (string-prefix? (%store-prefix) (readlink %acl-file))
-        (display-hint (G_ "On Guix System, add public keys to the
-@code{authorized-keys} field of your @code{operating-system} instead.")))))
+        (display-hint (G_ "On Guix System, add all @code{authorized-keys} to the
+@code{guix-service-type} service of your @code{operating-system} instead.")))))
 
   (let ((key (read-key))
         (acl (current-acl)))
