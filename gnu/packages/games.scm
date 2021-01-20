@@ -2245,7 +2245,7 @@ and defeat them with your bubbles!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/solarus-games/solarus.git")
+             (url "https://gitlab.com/solarus-games/solarus")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
