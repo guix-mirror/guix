@@ -126,14 +126,14 @@ files and provide more explicit control over line endings.")
 (define-public r-diffobj
   (package
     (name "r-diffobj")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diffobj" version))
        (sha256
         (base32
-         "0v18zz14g8ppzmj1d997rdmsfh327ml4wvpmfx168lravdsk5ym2"))))
+         "1x3d5sk8mk0s2d7dq8wxi1zv6krlx33n22ls2jwnb58b8xrmakj1"))))
     (properties `((upstream-name . "diffobj")))
     (build-system r-build-system)
     (propagated-inputs `(("r-crayon" ,r-crayon)))
