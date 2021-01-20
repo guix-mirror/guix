@@ -19670,20 +19670,22 @@ data for different accelerometer brands.")
 (define-public r-activityindex
   (package
     (name "r-activityindex")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActivityIndex" version))
        (sha256
         (base32
-         "14k6d78s15j7kb7jhixf4msrdjdl28d0r264cbvy41p8dkq7ysvk"))))
+         "1zj2b6x31a1kxl80rarmkrlm7ack4154mrkbqs3fpi48zpmjbgd5"))))
     (properties `((upstream-name . "ActivityIndex")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-matrixstats" ,r-matrixstats)
        ("r-r-utils" ,r-r-utils)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivityIndex/")
     (synopsis "Activity Index calculation using raw accelerometry data")
     (description
