@@ -9811,6 +9811,50 @@ when building command line applications.  They fall back to alternatives on
 terminals that do not support Unicode.")
     (license license:expat)))
 
+(define-public r-credentials
+  (package
+    (name "r-credentials")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "credentials" version))
+       (sha256
+        (base32
+         "1w9zj34xdwz9bszsvhv2cbgq96y5sgxbh7ndn31pgfcpzlkfq6f1"))))
+    (properties `((upstream-name . "credentials")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv-HOME
+           (lambda _
+             ;; This is necessary because git looks for $HOME/.gitconfig
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (inputs
+     `(("git" ,git-minimal)))
+    (propagated-inputs
+     `(("r-askpass" ,r-askpass)
+       ("r-curl" ,r-curl)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-openssl" ,r-openssl)
+       ("r-sys" ,r-sys)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/credentials/")
+    (synopsis "Tools for managing SSH and Git credentials")
+    (description
+     "This package assists you in setting up and retrieving of HTTPS and SSH
+credentials for use with git and other services.  For HTTPS remotes the
+package interfaces the @command{git-credential} utility which @command{git}
+uses to store HTTP usernames and passwords.  For SSH remotes this package
+provides convenient functions to find or generate appropriate SSH keys.  The
+package both helps the user to setup a local git installation, and also
+provides a back-end for git/ssh client libraries to authenticate with existing
+user credentials.")
+    (license license:expat)))
+
 (define-public r-usethis
   (package
     (name "r-usethis")
