@@ -1998,7 +1998,7 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.3")
+    (version "0.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2007,7 +2007,7 @@ is also scriptable and extensible via Guile.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xzfg1xx88cn36352nnjlb1p7xyw32yqkhjzq10px88iaaqz1vv0"))))
+                "1bxnkhrypgv41qyy1n545kcggmlw1hvxnhwihijhhcf2pxd2s654"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
