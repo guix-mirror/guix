@@ -64,3 +64,6 @@
    (inherit
     (os->image pine64-barebones-os #:type pine64-image-type))
    (name 'pine64-barebones-raw-image)))
+
+;; Return the default image.
+pine64-barebones-raw-image

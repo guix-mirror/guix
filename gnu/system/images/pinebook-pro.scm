@@ -66,3 +66,6 @@
    (inherit
     (os->image pinebook-pro-barebones-os #:type pinebook-pro-image-type))
    (name 'pinebook-pro-barebones-raw-image)))
+
+;; Return the default image.
+pinebook-pro-barebones-raw-image
