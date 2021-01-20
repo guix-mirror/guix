@@ -18837,14 +18837,14 @@ identify file sets and individual files.")
 (define-public r-r-devices
   (package
     (name "r-r-devices")
-    (version "2.16.1")
+    (version "2.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "R.devices" version))
        (sha256
         (base32
-         "15zlnq3g27whq26fbcy5zfl5hiddm256h4rga4frblg6wqlbkvdd"))))
+         "1djz6vm1b7sjvx1q319dl47gbnz9kvipaxcz9i0spyp094lv3m62"))))
     (properties `((upstream-name . "R.devices")))
     (build-system r-build-system)
     (propagated-inputs
