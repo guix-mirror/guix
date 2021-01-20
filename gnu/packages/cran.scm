@@ -16970,14 +16970,14 @@ guaranteeing well-connected communities.\" <arXiv:1810.08473>.")
 (define-public r-patchwork
   (package
     (name "r-patchwork")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "patchwork" version))
        (sha256
         (base32
-         "13vswvcfmadmjz7pw0qdqdr6x85zbza4gljx2nx3a39hldj71yck"))))
+         "10glgkf58lcykcwda1hj6xdps02m3i247qynk6s2jmwljagps3fg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
