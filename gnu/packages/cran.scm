@@ -1024,19 +1024,17 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.5.4")
+    (version "1.5.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "066rprqvz9qln6xd85x1yh1wbbmzd157xjl8zq1zbgr8l6347inm"))
+                "05rir03xwamwfq5691vx0x957sgmr4i8iv5vpx5rv1f74y4wkrhb"))
               ;; Unvendor bundled libraries. As of 1.5.4 the vendored libuv
               ;; only contains fixes for building on Solaris.
-              (patches (search-patches "r-httpuv-1.5.4-unvendor-libuv.patch"))
-              (modules '((guix build utils)
-                         (ice-9 ftw)
-                         (srfi srfi-1)))
+              (patches (search-patches "r-httpuv-1.5.5-unvendor-libuv.patch"))
+              (modules '((guix build utils)))
               (snippet
                `(begin
                   (delete-file-recursively "src/libuv")
