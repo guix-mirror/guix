@@ -25161,6 +25161,29 @@ alignment using warping functions, handling of replicated measurements as well
 as allowing spectra with different resolutions.")
     (license license:gpl3+)))
 
+(define-public r-scattermore
+  (package
+    (name "r-scattermore")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scattermore" version))
+       (sha256
+        (base32
+         "18nzlprmphkvjg946h10h2qq0wbkmv2526p8di6k2xl4gccq0qpk"))))
+    (properties `((upstream-name . "scattermore")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/exaexa/scattermore")
+    (synopsis "Scatterplots with more points")
+    (description
+     "This package provides C-based tools for converting large scatterplot
+data to rasters.  It speeds up plotting of data with millions of points.")
+    (license license:gpl3+)))
+
 (define-public r-seurat
   (package
     (name "r-seurat")
