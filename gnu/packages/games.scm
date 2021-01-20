@@ -2240,6 +2240,8 @@ and defeat them with your bubbles!")
 (define-public solarus
   (package
     (name "solarus")
+    ;; XXX: When updating this package, please also update hash in
+    ;; `solarus-quest-editor' below.
     (version "1.6.4")
     (source
      (origin
@@ -2294,6 +2296,40 @@ in mind.")
     ;; Resources are licensed under the terms of CC-BY-SA-3.0 and
     ;; CC-BY-SA 4.0.
     (license (list license:gpl3 license:cc-by-sa3.0 license:cc-by-sa4.0))))
+
+(define-public solarus-quest-editor
+  (package
+    (inherit solarus)
+    (name "solarus-quest-editor")
+    (version (package-version solarus))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/solarus-games/solarus-quest-editor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qbc2j9kalk7xqk9j27s7wnm5zawiyjs47xqkqphw683idmzmjzn"))))
+    (arguments
+     `(#:tests? #false                  ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-qt-build
+           ;; XXX: Fix build with Qt 5.15.  It has been applied upstream as
+           ;; 81d5c7f1 and can be removed at next upgrade.
+           (lambda _
+             (substitute* "src/entities/jumper.cpp"
+               (("#include <QPainter>" all)
+                (string-append all "\n" "#include <QPainterPath>\n")))
+             #t)))))
+    (inputs
+     `(("solarus" ,solarus)
+       ,@(package-inputs solarus)))
+    (synopsis "Create and modify quests for the Solarus engine")
+    (description
+     "Solarus Quest Editor is a graphical user interface to create and
+modify quests for the Solarus engine.")))
 
 (define-public superstarfighter
   (package
