@@ -12866,6 +12866,29 @@ JSONRPC is a generic Remote Procedure Call protocol designed around
 JSON objects.")
     (license license:gpl3+)))
 
+(define-public emacs-jsonnet-mode
+  (package
+    (name "emacs-jsonnet-mode")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tminor/jsonnet-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vi7415n90d1z2ww1hld0gdp6v7z4rd6f70h476dp2x4hydk293i"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/mgyucht/jsonnet-mode")
+    (synopsis "Major mode for editing jsonnet files")
+    (description "This package provides syntax highlighting, indenting,
+formatting, and utility methods for jsonnet files.")
+    (license license:gpl3+)))
+
 (define-public emacs-restclient
   (let ((commit "ac8aad6c6b9e9d918062fa3c89c22c2f4ec48bc3")
         (version "0")
