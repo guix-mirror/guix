@@ -7154,18 +7154,17 @@ references and Rd files.")
 (define-public r-officer
   (package
     (name "r-officer")
-    (version "0.3.15")
+    (version "0.3.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "officer" version))
        (sha256
         (base32
-         "1s9hrkdx105c1plpxywv68bmp8hvvxbdizhwx81fxr79fhj62x5j"))))
+         "1ls5kp70jfxrzxxb3xrg8sn2fyk6qd7rmx23n5jxi7z7850avjrj"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-magrittr" ,r-magrittr)
-       ("r-r6" ,r-r6)
+     `(("r-r6" ,r-r6)
        ("r-uuid" ,r-uuid)
        ("r-xml2" ,r-xml2)
        ("r-zip" ,r-zip)))
