@@ -11886,14 +11886,14 @@ preparing, executing, and processing HTTP requests.")
 (define-public r-gmp
   (package
     (name "r-gmp")
-    (version "0.6-1")
+    (version "0.6-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gmp" version))
        (sha256
         (base32
-         "11rl7qmfrpp1974f0vzsi3zjyx147wlb82ydxak2b60khfvhrn90"))))
+         "03kzbflgpy5sgnzxmhshs5qv7jjmfc113ybkhxys4z8y7xdv9z3b"))))
     (build-system r-build-system)
     (arguments
      '(#:phases
