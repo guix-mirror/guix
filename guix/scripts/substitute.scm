@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
@@ -500,6 +500,7 @@ port to it, or, if connection failed, print a warning and return #f.  Pass
                                                      #:port port))
                                 '()))
                           open-connection-for-uri/maybe)))
+         (newline (current-error-port))
          result))
       ((file #f)
        (let* ((base  (string-append (uri-path uri) "/"))
