@@ -23259,6 +23259,42 @@ by providing functionality for preprocessing, predicting, and validating
 input.")
     (license license:expat)))
 
+(define-public r-lightgbm
+  (package
+    (name "r-lightgbm")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lightgbm" version))
+       (sha256
+        (base32
+         "1pwsh6j9ksahh58b15j5ij56bsc6syy3z4k4a5zhy5n7829rz555"))))
+    (properties `((upstream-name . "lightgbm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-matrix" ,r-matrix)
+       ("r-r6" ,r-r6)))
+    (home-page "https://github.com/Microsoft/LightGBM")
+    (synopsis "Light gradient boosting machine")
+    (description
+     "Tree based algorithms can be improved by introducing boosting
+frameworks.  LightGBM is one such framework, based on Ke, Guolin et
+al. (2017).  This package offers an R interface to work with it.  It is
+designed to be distributed and efficient with the following goals:
+
+@enumerate
+@item Faster training speed and higher efficiency;
+@item lower memory usage;
+@item better accuracy;
+@item parallel learning supported; and
+@item capable of handling large-scale data.
+@end enumerate
+")
+    (license license:expat)))
+
 (define-public r-shapforxgboost
   (package
     (name "r-shapforxgboost")
