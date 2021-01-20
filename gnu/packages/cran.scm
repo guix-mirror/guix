@@ -23732,14 +23732,14 @@ which may also be useful for other purposes.")
 (define-public r-spatstat-data
   (package
     (name "r-spatstat-data")
-    (version "1.5-2")
+    (version "1.7-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatstat.data" version))
        (sha256
         (base32
-         "17vbf48g1mh8iigzzlaa9j4mw087hib7f1kkbl3c50xjcrr5iw6b"))))
+         "0by10dx72jjn6rvgrdj4xwh4zg6vxi4cp536aq4b6drb7za95hdv"))))
     (properties `((upstream-name . "spatstat.data")))
     (build-system r-build-system)
     (propagated-inputs
