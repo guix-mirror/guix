@@ -19482,14 +19482,14 @@ R.")
 (define-public r-hdrcde
   (package
     (name "r-hdrcde")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hdrcde" version))
        (sha256
         (base32
-         "0c2qbw4c3mq1cb068kjs72rxlbibz8svwcrx853jyr8ybs23z7ab"))))
+         "16qlk44cjvn2s0vzaf915df65ksdx20dbxhy7fpdqins46hccha3"))))
     (properties `((upstream-name . "hdrcde")))
     (build-system r-build-system)
     (propagated-inputs
