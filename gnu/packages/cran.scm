@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
@@ -8221,6 +8221,37 @@ and coverage methods to tune the choice of threshold.")
     (description
      "Common utilities used in other Mosaic family packages are collected here.")
     (license license:gpl2+)))
+
+(define-public r-labelled
+  (package
+    (name "r-labelled")
+    (version "2.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "labelled" version))
+       (sha256
+        (base32
+         "1nsb0mh0jg7gggc41b6v55nmfq07g0qn9fy55x4jws5dscs6pdmi"))))
+    (properties `((upstream-name . "labelled")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-haven" ,r-haven)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-pillar" ,r-pillar)
+       ("r-rlang" ,r-rlang)
+       ("r-tidyr" ,r-tidyr)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://larmarange.github.io/labelled/")
+    (synopsis "Manipulating labelled data")
+    (description
+     "This package provides useful functions to deal with the
+@code{haven_labelled} and @code{haven_labelled_spss} classes introduced by the
+haven package. ")
+    (license license:gpl3)))
 
 (define-public r-ggformula
   (package
