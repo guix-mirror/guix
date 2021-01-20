@@ -25403,18 +25403,20 @@ absolute GSEA.")
 (define-public r-calculus
   (package
     (name "r-calculus")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "calculus" version))
        (sha256
         (base32
-         "0hs7hzjl6xjza20v9zx9a1piywxa6w3h2rskr52d1dcbc0vwhinp"))))
+         "1wa5ap89cfcp0ancj9ivx5s2y0wqr2vmp9y115g7f6g772jwhscj"))))
     (properties `((upstream-name . "calculus")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/eguidotti/calculus")
     (synopsis "High dimensional numerical and symbolic calculus")
     (description
