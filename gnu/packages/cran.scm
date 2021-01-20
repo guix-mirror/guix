@@ -6046,14 +6046,14 @@ specific S3-method.")
 (define-public r-vim
   (package
     (name "r-vim")
-    (version "6.0.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VIM" version))
        (sha256
         (base32
-         "0ddhca4v912q82rjpf1qld6i6g2c381g0v5b4hbnygr3lm6a7wiv"))))
+         "1a8aw0ysaf0al95m2la2zx1p3g5mnwqx0x30br1s1dqqkfnv57hz"))))
     (properties `((upstream-name . "VIM")))
     (build-system r-build-system)
     (propagated-inputs
