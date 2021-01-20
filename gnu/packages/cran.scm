@@ -10537,17 +10537,18 @@ Bioconductor packages.")
 (define-public r-rgl
   (package
     (name "r-rgl")
-    (version "0.100.54")
+    (version "0.104.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgl" version))
        (sha256
         (base32
-         "1mgs2d8igmcdzzymfwbqdrypmaidd4pra5n5gnhsn9pm6pqzidqp"))))
+         "169a8riiam8445nl7rcwn0x92dlwyzh5xldvap6dcxjyjqmjwbdq"))))
     (build-system r-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (inputs
      `(("freetype" ,freetype)
        ("libpng" ,libpng)
