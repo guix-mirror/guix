@@ -23359,14 +23359,14 @@ designed to be distributed and efficient with the following goals:
 (define-public r-shapforxgboost
   (package
     (name "r-shapforxgboost")
-    (version "0.0.4")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SHAPforxgboost" version))
        (sha256
         (base32
-         "0k6bg27wqnkzv82bcahbapmqhiz6rvnx81m23zbjw58c7lwshgnq"))))
+         "0jgyss9bawl7sf4dwa75sn7ld3mvrrr0z2074lbkq3f5qb9gwsly"))))
     (properties
      `((upstream-name . "SHAPforxgboost")))
     (build-system r-build-system)
@@ -23377,6 +23377,7 @@ designed to be distributed and efficient with the following goals:
        ("r-ggforce" ,r-ggforce)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggpubr" ,r-ggpubr)
+       ("r-lightgbm" ,r-lightgbm)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-xgboost" ,r-xgboost)))
     (home-page "https://github.com/liuyanguu/SHAPforxgboost")
