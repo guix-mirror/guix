@@ -6871,19 +6871,20 @@ clustering.")
 (define-public r-factominer
   (package
     (name "r-factominer")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "FactoMineR" version))
        (sha256
         (base32
-         "0ldgf3daksh6lpblhqys67m4mxqx3q9s9n5plfam6dwshfik0ky6"))))
+         "0lg8n9fxxk46nchnj4pbpqqf4swxfsq7r9jzr36dmd36kb7avqxr"))))
     (properties `((upstream-name . "FactoMineR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
        ("r-cluster" ,r-cluster)
+       ("r-dt" ,r-dt)
        ("r-ellipse" ,r-ellipse)
        ("r-flashclust" ,r-flashclust)
        ("r-ggplot2" ,r-ggplot2)
@@ -6892,6 +6893,8 @@ clustering.")
        ("r-leaps" ,r-leaps)
        ("r-mass" ,r-mass)
        ("r-scatterplot3d" ,r-scatterplot3d)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://factominer.free.fr")
     (synopsis "Multivariate exploratory data analysis and data mining")
     (description
