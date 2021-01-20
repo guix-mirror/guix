@@ -9937,14 +9937,14 @@ User credentials are shared with command line git through the
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.6.3")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "09lk04kycvf5x9ggrb6pwc7bx5mzqxwialm2w9vn1a0w0gh2gcfc"))))
+         "0m4qnnkdiizsdvq33x502zwkn98hw2qcfm45cjj031vaydcjpai2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -9953,11 +9953,13 @@ User credentials are shared with command line git through the
        ("r-curl" ,r-curl)
        ("r-desc" ,r-desc)
        ("r-fs" ,r-fs)
+       ("r-gert" ,r-gert)
        ("r-gh" ,r-gh)
-       ("r-git2r" ,r-git2r)
        ("r-glue" ,r-glue)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-purrr" ,r-purrr)
-       ("r-rematch2" ,r-rematch2)
+       ("r-rappdirs" ,r-rappdirs)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
