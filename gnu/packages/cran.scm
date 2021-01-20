@@ -23111,19 +23111,26 @@ with posterior predictive checks and leave-one-out cross-validation.")
 (define-public r-mstate
   (package
     (name "r-mstate")
-    (version "0.2.12")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mstate" version))
        (sha256
         (base32
-         "0qnhivbibzss8yfsg44cvbf73n4jj4i28rbdysl88g14ig5sabgv"))))
+         "11i3p7fph8nbnfis1m7rdrq32qryaajv2wrkxk1x6k17zkh4rq6i"))))
     (properties `((upstream-name . "mstate")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-survival" ,r-survival)))
+     `(("r-data-table" ,r-data-table)
+       ("r-lattice" ,r-lattice)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rlang" ,r-rlang)
+       ("r-survival" ,r-survival)
+       ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page
      "https://www.lumc.nl/org/bds/research/medische-statistiek/survival-analysis/")
     (synopsis
