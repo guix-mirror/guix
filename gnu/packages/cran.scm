@@ -1726,14 +1726,14 @@ in R and Shiny via the D3 visualization library.")
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
-    (version "1.1.0.1")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "crosstalk" version))
        (sha256
         (base32
-         "03ihj7cimkklrbad9zic78xsrfcisygmgy859hqnx0hiph80p9rn"))))
+         "1n6c6s7a6yxiwvva71x6bzcrim8xprl5s01fqiy61yq0y3vk8cpd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
