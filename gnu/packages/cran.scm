@@ -3388,14 +3388,14 @@ contexts.")
 (define-public r-squarem
   (package
     (name "r-squarem")
-    (version "2020.5")
+    (version "2021.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SQUAREM" version))
        (sha256
         (base32
-         "1f0j5pbsz2wi7dfl8h8gvdl991bjywiwkd2f6z0xgkh87kl5y0b4"))))
+         "0n1s32l9p4vdm3h5q6g43s0qbpzry08difsh0yay80wrla6f3rb6"))))
     (properties `((upstream-name . "SQUAREM")))
     (build-system r-build-system)
     (home-page "https://coah.jhu.edu/people/Faculty_personal_Pages/Varadhan.html")
