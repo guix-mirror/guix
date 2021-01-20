@@ -24839,14 +24839,14 @@ vignettes in all common formats.")
 (define-public r-tidytext
   (package
     (name "r-tidytext")
-    (version "0.2.6")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidytext" version))
        (sha256
         (base32
-         "0xmjkab7p13ncfglf3a9hvndf8fh96mmxw3l7hcpbnaq9qkiwk29"))))
+         "1icbfw4zkbs9sp6vk814mw2zzm0bc0d7af92vhriqxaga0gbwdkx"))))
     (properties `((upstream-name . "tidytext")))
     (build-system r-build-system)
     (propagated-inputs
@@ -24854,12 +24854,14 @@ vignettes in all common formats.")
        ("r-generics" ,r-generics)
        ("r-hunspell" ,r-hunspell)
        ("r-janeaustenr" ,r-janeaustenr)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-matrix" ,r-matrix)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
-       ("r-tokenizers" ,r-tokenizers)))
+       ("r-tokenizers" ,r-tokenizers)
+       ("r-vctrs" ,r-vctrs)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/juliasilge/tidytext")
