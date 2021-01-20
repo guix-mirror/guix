@@ -222,7 +222,7 @@ reboot\n")
                            #:imported-modules '((gnu services herd)
                                                 (gnu installer tests)
                                                 (guix combinators))))
-                      (installation-image-type 'raw)
+                      (installation-image-type 'efi-raw)
                       (install-size 'guess)
                       (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the system installation procedure) in
@@ -272,7 +272,7 @@ packages defined in installation-os."
                  "-no-reboot"
                  "-m" "1200"
                  #$@(cond
-                     ((eq? 'raw installation-image-type)
+                     ((eq? 'efi-raw installation-image-type)
                       #~("-drive"
                          ,(string-append "file=" #$image
                                          ",if=virtio,readonly")))
