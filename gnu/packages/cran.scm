@@ -24874,14 +24874,14 @@ analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
 (define-public r-parsnip
   (package
     (name "r-parsnip")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "parsnip" version))
        (sha256
         (base32
-         "1134840xisvkkrbkh5kvx24vxp7sx06124svy573a9m4h8c492sr"))))
+         "0c12lyfxqsdprqlcmgy421py38z28h88d68pxb1c4fw14v1c2d06"))))
     (properties `((upstream-name . "parsnip")))
     (build-system r-build-system)
     (propagated-inputs
