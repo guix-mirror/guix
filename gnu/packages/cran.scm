@@ -2716,13 +2716,13 @@ quantities.")
 (define-public r-restrserve
   (package
     (name "r-restrserve")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RestRserve" version))
        (sha256
-        (base32 "07mm65yxzpwlg6x3lsggj41v8nl4m6v9mszhqjpgj19v3yxvwgi0"))))
+        (base32 "1486hrzj5q5w4nbrsbqlv7vv20ly01y90qc2vygl5syzwvyjd422"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
