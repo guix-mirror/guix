@@ -75,6 +75,18 @@
       (inferior-eval '(throw 'a 'b 'c 'd) inferior)
       'badness)))
 
+(test-equal "&inferior-exception, legacy mode"
+  '(a b c d)
+  ;; Omit #:command to open an inferior in "legacy" mode, where Guile runs
+  ;; directly.
+  (let ((inferior (open-inferior %top-builddir)))
+    (guard (c ((inferior-exception? c)
+               (close-inferior inferior)
+               (and (eq? inferior (inferior-exception-inferior c))
+                    (inferior-exception-arguments c))))
+      (inferior-eval '(throw 'a 'b 'c 'd) inferior)
+      'badness)))
+
 (test-equal "inferior-packages"
   (take (sort (fold-packages (lambda (package lst)
                                (cons (list (package-name package)

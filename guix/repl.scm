@@ -78,8 +78,14 @@ output port.  VERSION is the client's protocol version we are targeting."
          (let ((stack (if (repl-prompt)
                           (make-stack #t handle-exception (repl-prompt))
                           (make-stack #t))))
+           ;; Note: 'make-stack' returns #f if there's no 'handle-exception'
+           ;; stack frame, which is the case when this file is being
+           ;; interpreted as with 'primitive-load'.
            `(exception (arguments ,key ,@(map value->sexp args))
-                       (stack ,@(map frame->sexp (stack->frames stack))))))
+                       (stack ,@(map frame->sexp
+                                     (if stack
+                                         (stack->frames stack)
+                                         '()))))))
         (_
          ;; Protocol (0 0).
          `(exception ,key ,@(map value->sexp args)))))
