@@ -30,7 +30,7 @@
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -2236,6 +2236,64 @@ evil overlord who has stolen the galaxy crystal.  Avoid getting hit
 and defeat them with your bubbles!")
     ;; GPL2+ is for code, CC0 is for art.
     (license (list license:gpl2+ license:cc0))))
+
+(define-public solarus
+  (package
+    (name "solarus")
+    (version "1.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/solarus-games/solarus.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6l91yyqjx0pz4w1lp3yybpq0fs2yjswfcm8c1wjfkxwiznbdxi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           ;; The following tests fail reporting a missing "/dev/dri"
+           ;; file.
+           (lambda _
+             (substitute* "tests/cmake/AddTestMaps.cmake"
+               ((".*1200_create_shader_from_source.*" all)
+                (string-append "#" all))
+               ((".*1210_shader_scaling_factor.*" all)
+                (string-append "#" all)))
+             #t))
+         (add-before 'check 'set-home
+           ;; Tests fail without setting the following environment
+           ;; variables.
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("glm" ,glm)
+       ("libmodplug" ,libmodplug)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("luajit" ,luajit)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("qtbase" ,qtbase)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-image sdl2-ttf)))))
+    (home-page "https://www.solarus-games.org/")
+    (synopsis "Lightweight game engine for Action-RPGs")
+    (description
+     "Solarus is a 2D game engine written in C++, that can run games
+scripted in Lua.  It has been designed with 16-bit classic Action-RPGs
+in mind.")
+    ;; The source code is licensed under the terms of GPL-3.0.
+    ;; Resources are licensed under the terms of CC-BY-SA-3.0 and
+    ;; CC-BY-SA 4.0.
+    (license (list license:gpl3 license:cc-by-sa3.0 license:cc-by-sa4.0))))
 
 (define-public superstarfighter
   (package
