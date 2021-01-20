@@ -1128,13 +1128,13 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "07fjznax5sin563ddnzlb7iwc8b39wzf7ymjn66pbmxgskijq2pz"))))
+                "01v33zcs9rv16r6v8ckqh92k5axj6skmk9hyakmqqmgra522xj3a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
