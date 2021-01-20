@@ -1104,13 +1104,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.20")
+    (version "0.21")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0px75vkc6q4iwbirr27bbrbpv0v9ial7zijnbd6dhjccwxl3x1l3"))))
+                "12fk585hmz735v4hra8da9wld1fmd67byqnf95m7jjyh7l3dmh1z"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
