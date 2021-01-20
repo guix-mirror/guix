@@ -12915,14 +12915,14 @@ port-forwarding to your local computer.")
 (define-public r-future
   (package
     (name "r-future")
-    (version "1.20.1")
+    (version "1.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "future" version))
        (sha256
         (base32
-         "14k00g8c9zgf77d6q7x2vibvlivzk2rzj7lwn7v7d9nr6prqzlb6"))))
+         "0bfiy17n5rghxw0702k0vgpjkk13268lniifdlx59flf0q16d7lh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
