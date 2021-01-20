@@ -13549,17 +13549,19 @@ them (Anscombe-Glynn, D'Agostino, Bonett-Seier).")
 (define-public r-msir
   (package
     (name "r-msir")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "msir" version))
        (sha256
         (base32
-         "0pvc3q162vqq3k39nni732x05zzfz4y9y2zf56d83185ypszv9kb"))))
+         "1wm83m3cqd6llxb9p2jwim0wb81v84pgdmgcznygzaaq6kbn3n84"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mclust" ,r-mclust)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/msir")
     (synopsis "Model-based sliced inverse regression")
     (description
