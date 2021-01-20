@@ -7415,14 +7415,14 @@ other add-on packages.")
 (define-public r-insight
   (package
     (name "r-insight")
-    (version "0.11.1")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insight" version))
        (sha256
         (base32
-         "1m95xfvai1kbzqxdggjvdbk6ax2dg4v2lrfpqn7v607g2n77n2k0"))))
+         "0gkvcw9d729ql1gfrpxzgrag4xafd0hchrdww215qz11ma1rzy7s"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
