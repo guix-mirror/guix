@@ -8210,13 +8210,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mosaicCore" version))
        (sha256
-        (base32 "00va6x1i8d3wkm1bgsms9dsjfn5a1l43prpl9pqirgq3zm85hrqj"))))
+        (base32 "1h3ixzna4xy42rdnd89jj0v9q0riy3fnkd33z6l5c0zaidzm58fz"))))
     (properties `((upstream-name . "mosaicCore")))
     (build-system r-build-system)
     (propagated-inputs
