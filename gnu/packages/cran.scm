@@ -7520,23 +7520,25 @@ hypothesis of normality.")
 (define-public r-moonbook
   (package
     (name "r-moonbook")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "moonBook" version))
        (sha256
         (base32
-         "0hys56mwbm776ff7dibi8wzyf69qiais9rs1jazv79lk6h56s9s6"))))
+         "0z78pzc8sr2g19xjdd9cmai4iqyifmh79gj8x40ddww6a27dalry"))))
     (properties `((upstream-name . "moonBook")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
        ("r-nortest" ,r-nortest)
-       ("r-purrr" ,r-purrr)
        ("r-sjmisc" ,r-sjmisc)
        ("r-stringr" ,r-stringr)
-       ("r-survival" ,r-survival)))
+       ("r-survival" ,r-survival)
+       ("r-ztable" ,r-ztable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/cardiomoon/moonBook")
     (synopsis "Functions and datasets for the book by Keon-Woong Moon")
     (description
