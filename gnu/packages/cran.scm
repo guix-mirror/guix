@@ -16311,14 +16311,14 @@ parallel versions of vectorized R functions of the @code{mc*apply} family.")
 (define-public r-blme
   (package
     (name "r-blme")
-    (version "1.0-4")
+    (version "1.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "blme" version))
        (sha256
         (base32
-         "1ca2b0248k0fj3lczn9shfjplz1sl4ay4v6djldizp2ch2vwdgy2"))))
+         "0413j7gwr5yj14jamkizj55q7xii1a0kgazzj0ilqn2ascclz6k7"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-lme4" ,r-lme4)))
     (home-page "https://github.com/vdorie/blme")
