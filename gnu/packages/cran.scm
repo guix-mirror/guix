@@ -8298,13 +8298,13 @@ while providing the intuitive capabilities of @code{r-ggplot2}.")
 (define-public r-mosaicdata
   (package
     (name "r-mosaicdata")
-    (version "0.20.1")
+    (version "0.20.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mosaicData" version))
        (sha256
-        (base32 "05mrwvs7awhpv2gvk0jjva74gndfgh2cl17slxcjhwlpga8nmxji"))))
+        (base32 "0h3f5fgzkzjfgf3ml0qa5j52921y6wy6jgggxmhs31bs8fd4srg4"))))
     (properties `((upstream-name . "mosaicData")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/mosaicData/")
