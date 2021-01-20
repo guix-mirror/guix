@@ -2772,20 +2772,22 @@ package also provides a C++ API, that works with or without Rcpp.")
 (define-public r-ggally
   (package
     (name "r-ggally")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GGally" version))
        (sha256
         (base32
-         "1gkmpzh1yvwvypkw0nwqv3gsf6za3220wig3rfv8g23kss60rl1s"))))
+         "0lvcvlc8p2cii7rqx7m81f7cv3kk9mlf7cbbgv7l75g7ljw8dyvz"))))
     (properties `((upstream-name . "GGally")))
     (build-system r-build-system)
     (inputs
-     `(("libressl" ,libressl)))
+     `(("openssl" ,openssl)))
     (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
+     `(("r-dplyr" ,r-dplyr)
+       ("r-forcats" ,r-forcats)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-gtable" ,r-gtable)
        ("r-lifecycle" ,r-lifecycle)
        ("r-plyr" ,r-plyr)
@@ -2793,7 +2795,8 @@ package also provides a C++ API, that works with or without Rcpp.")
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-reshape" ,r-reshape)
        ("r-rlang" ,r-rlang)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-tidyr" ,r-tidyr)))
     (home-page "https://ggobi.github.io/ggally")
     (synopsis "Extension to ggplot2")
     (description
