@@ -9855,6 +9855,41 @@ provides a back-end for git/ssh client libraries to authenticate with existing
 user credentials.")
     (license license:expat)))
 
+(define-public r-gert
+  (package
+    (name "r-gert")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gert" version))
+       (sha256
+        (base32
+         "1lq4hgv2727lwcv8vha5af26nslj99rjxjrgflshmmcihawpls1n"))))
+    (properties `((upstream-name . "gert")))
+    (build-system r-build-system)
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-askpass" ,r-askpass)
+       ("r-credentials" ,r-credentials)
+       ("r-openssl" ,r-openssl)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-zip" ,r-zip)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/gert/")
+    (synopsis "Simple Git client for R")
+    (description
+     "This package provides a simple git client for R based on libgit2 with
+support for SSH and HTTPS remotes.  All functions in gert use basic R data
+types (such as vectors and data-frames) for their arguments and return values.
+User credentials are shared with command line git through the
+@code{git-credential} store and SSH keys stored on disk or ssh-agent.")
+    (license license:expat)))
+
 (define-public r-usethis
   (package
     (name "r-usethis")
