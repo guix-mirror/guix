@@ -16725,20 +16725,19 @@ the current document.")
 (define-public r-xgboost
   (package
     (name "r-xgboost")
-    (version "1.2.0.1")
+    (version "1.3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xgboost" version))
        (sha256
         (base32
-         "16hpvv2hwdzcyg90z7c1g5d2hj011qk8mivy4l2nqd2g7rkjwis4"))))
+         "117q8xqm82589517fi8xicd8724v9c0wnq3qpl84h6nm3aw65x1g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-magrittr" ,r-magrittr)
-       ("r-matrix" ,r-matrix)
-       ("r-stringi" ,r-stringi)))
+       ("r-matrix" ,r-matrix)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/dmlc/xgboost")
