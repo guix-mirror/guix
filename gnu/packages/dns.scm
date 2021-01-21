@@ -375,15 +375,18 @@ and BOOTP/TFTP for network booting of diskless machines.")
              (with-directory-excursion "fuzz"
                (invoke "make" "check"))
              #t)))))
-    (synopsis "Domain Name System (DNS) implementation")
-    (description "BIND is an implementation of the @dfn{Domain Name System}
-(DNS) protocols for the Internet.  It is a reference implementation of those
-protocols, but it is also production-grade software, suitable for use in
-high-volume and high-reliability applications.  The name BIND stands for
-\"Berkeley Internet Name Domain\", because the software originated in the
-early 1980s at the University of California at Berkeley.  The @code{utils}
-output of this package contains the following DNS name servers related command
-line utilities:
+    (synopsis "@acronym{DNS, Domain Name System} implementation")
+    (description "BIND implements the @acronym{DNS, Domain Name System}
+protocols for the Internet.  It is both a reference implementation of those
+protocols and production-grade software, suitable for use in high-volume and
+high-reliability applications.
+
+The name stands for \"Berkeley Internet Name Domain\" because the software
+originated in the early 1980s at the University of California at Berkeley.
+
+The @code{utils} output of this package contains the following command line
+utilities related to DNS name servers:
+
 @table @code
 @item delv
 DNS lookup and validation utility
