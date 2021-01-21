@@ -298,7 +298,8 @@ interface and is based on GNU Guile.")
      `(("pkg-config" ,pkg-config)
        ("guile" ,guile-2.2)))
     (inputs
-     `(("guile" ,guile-2.2)))))
+     `(("guile" ,guile-2.2)
+       ("guile2.2-readline" ,guile2.2-readline)))))
 
 (define-public guile3.0-shepherd
   (deprecated-package "guile3.0-shepherd" shepherd))
