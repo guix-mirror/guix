@@ -267,7 +267,8 @@ and provides a \"top-like\" mode (monitoring).")
                 "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")))
+     '(#:configure-flags '("--localstatedir=/var")
+       #:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
 
