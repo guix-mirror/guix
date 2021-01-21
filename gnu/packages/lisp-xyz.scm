@@ -13233,3 +13233,46 @@ be usable from multi-threaded programs.")
 
 (define-public cl-cmd
   (sbcl-package->ecl-package sbcl-cmd))
+
+(define-public sbcl-ppath
+  (let ((commit "eb1a8173b4d1d691ea9a7699412123462f58c3ce"))
+    (package
+      (name "sbcl-ppath")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fourier/ppath/")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "1c46q9lmzqv14z80d3fwdawgn3pn4922x31fyqvsvbcjm4hd16fb"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("osicat" ,sbcl-osicat)
+         ("ppcre" ,sbcl-cl-ppcre)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (native-inputs
+       `(("cl-fad" ,sbcl-cl-fad)
+         ("prove" ,sbcl-prove)))
+      (home-page "https://github.com/fourier/ppath")
+      (synopsis "Common Lisp's implementation of the Python's os.path module")
+      (description
+       "This library is a path strings manipulation library inspired by
+Python's @code{os.path}.  All functionality from @code{os.path} is supported on
+major operation systems.
+
+The philosophy behind is to use simple strings and \"dumb\" string
+manipulation functions to handle paths and filenames.  Where possible the
+corresponding OS system functions are called.")
+      (license license:bsd-2))))
+
+(define-public ecl-ppath
+  (sbcl-package->ecl-package sbcl-ppath))
+
+(define-public cl-ppath
+  (sbcl-package->ecl-package sbcl-ppath))
