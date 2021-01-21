@@ -819,6 +819,7 @@ provides a number of utilities to make coding with expected cleaner.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "07j5zdf3vkliwrcv6k663k35akn7qp23794sz2mnvkj9hbv9s8cx"))))
