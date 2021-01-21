@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1257,6 +1258,50 @@ It is inspired by Xmonad and dwm.  Its major features include:
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
 project derived from the original Calm Window Manager.")
     (license license:isc)))
+
+(define-public dwl
+  (package
+    (name "dwl")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/djpohly/dwl")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18g2sx8cv54zl5iw5m9lzngrp6ra2pyp7c68qps2ava3brw9m0j2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure
+         (replace 'install              ; no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "dwl" bin)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("wlroots" ,wlroots)))
+    (home-page "https://github.com/djpohly/dwl")
+    (synopsis "Dynamic window manager for Wayland")
+    (description
+     "@command{dwm} is a compact, hackable compositor for Wayland based on
+wlroots.  It is intended to fill the same space in the Wayland world that dwm
+does in X11, primarily in terms of philosophy, and secondarily in terms of
+functionality.  Like dwm, dwl is easy to understand and hack on, due to a
+limited size and a few external dependencies.  It is configurable via
+@file{config.h}.")
+    ;;             LICENSE       LICENSE.dwm   LICENSE.tinywl
+    (license (list license:gpl3+ license:expat license:cc0))))
 
 (define-public nitrogen
   (package
