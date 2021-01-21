@@ -93,7 +93,7 @@
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
-;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -6749,6 +6749,27 @@ need to use the older and less efficient @code{pkg_resources} package.")
     (description
      "Importmagic is a Python library for automatically managing imports by
 finding unresolved symbols in Python code and their corresponding imports.")
+    (license license:bsd-3)))
+
+(define-public python-inotify-simple
+  (package
+    (name "python-inotify-simple")
+    (version "1.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrisjbillington/inotify_simple")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dv9svrcz31acyq9smjlnw75xv3x5wpn5h6s8j8h0vrqyl3d7l05"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/chrisjbillington/inotify_simple")
+    (synopsis "Simple wrapper around inotify library")
+    (description
+     "@code{inotify-simple} is a simple wrapper around inotify library.")
     (license license:bsd-3)))
 
 (define-public python-jaraco-packaging
