@@ -1665,7 +1665,7 @@ timestamps in the file header with a fixed time (1 January 2008).
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.71")
+    (version "0.13.72")
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
@@ -1674,20 +1674,8 @@ timestamps in the file header with a fixed time (1 January 2008).
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "109vznm9cxkqbj5r83qdgcdfk0j4kbg96dqr0q085nhwpgkw7viz"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'make-files-writable
-           (lambda _
-             (for-each make-file-writable
-                       (find-files "." #:directories? #t))
-             #t)))
-       ;; XXX: The default test target attempts to download external resources and
-       ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
-       ;; To prevent confusing log messages, just run a simple zip test that works.
-       #:test-target "check-readme"))
+                "0i6bpa2b13z19alm6ig80364dnin1w28cvif18k6wkkb0w3dzp8y"))))
+    (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
