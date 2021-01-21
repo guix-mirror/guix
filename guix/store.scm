@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
@@ -114,6 +114,7 @@
             query-failed-paths
             clear-failed-paths
             ensure-path
+            find-roots
             add-temp-root
             add-indirect-root
             add-permanent-root
@@ -340,7 +341,8 @@
      (write-string (bytevector->base16-string arg) p))))
 
 (define-syntax read-arg
-  (syntax-rules (integer boolean string store-path store-path-list string-list
+  (syntax-rules (integer boolean string store-path
+                 store-path-list string-list string-pairs
                  substitutable-path-list path-info base16)
     ((_ integer p)
      (read-int p))
@@ -354,6 +356,8 @@
      (read-store-path-list p))
     ((_ string-list p)
      (read-string-list p))
+    ((_ string-pairs p)
+     (read-string-pairs p))
     ((_ substitutable-path-list p)
      (read-substitutable-path-list p))
     ((_ path-info p)
@@ -1403,6 +1407,15 @@ When a handler is installed with 'with-build-handler', it is called any time
 running a substitute.  As a GC root is not created by the daemon, you may want
 to call ADD-TEMP-ROOT on that store path."
   boolean)
+
+(define-operation (find-roots)
+  "Return a list of root/target pairs: for each pair, the first element is the
+GC root file name and the second element is its target in the store.
+
+When talking to a local daemon, this operation is equivalent to the 'gc-roots'
+procedure in (guix store roots), except that the 'find-roots' excludes
+potential roots that do not point to store items."
+  string-pairs)
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
