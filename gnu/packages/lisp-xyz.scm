@@ -12231,6 +12231,40 @@ and lean bindings to C libraries.")
 (define-public ecl-claw
   (sbcl-package->ecl-package sbcl-claw))
 
+(define-public sbcl-claw-utils
+  (let ((revision "0")
+        (commit "efe25016501973dc369f067a64c7d225802bc56f"))
+    (package
+      (name "sbcl-claw-utils")
+      ;; version is not specified
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/borodust/claw-utils")
+               (commit commit)))
+         (file-name (git-file-name "claw-utils" version))
+         (sha256
+          (base32 "01df3kyf2qs3czi332dnz2s35x2j0fq46vgmsw7wjrrvnqc22mk5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("claw" ,sbcl-claw)))
+      (home-page "https://github.com/borodust/claw-utils")
+      (synopsis "Utilities for easier autowrapping")
+      (description
+       "This Common Lisp library contains various handy utilties to help
+autowrapping with @code{claw}.")
+      (license license:expat))))
+
+(define-public cl-claw-utils
+  (sbcl-package->cl-source-package sbcl-claw-utils))
+
+(define-public ecl-claw-utils
+  (sbcl-package->ecl-package sbcl-claw-utils))
+
 (define-public sbcl-array-operations
   (let ((commit "75cbc3b1adb2e3ce2109489753d0f290b071e81b")
         (revision "0"))
