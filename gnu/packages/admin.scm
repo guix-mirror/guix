@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -574,6 +575,28 @@ application (for console or X terminals) and requires ncurses.")
     (synopsis "Linux/OSX/FreeBSD resource monitor")
     (description "Resource monitor that shows usage and stats for processor,
 memory, disks, network and processes.")
+    (license license:asl2.0)))
+
+(define-public bpytop
+  (package
+    (name "bpytop")
+    (version "1.0.61")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bpytop" version))
+       (sha256
+        (base32
+         "1p5jrrvj68v6cby8w7zms138xm1g5j2q58951lji0qlqr8145jjb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)))
+    (home-page
+     "https://github.com/aristocratos/bpytop")
+    (synopsis "Resource monitor")
+    (description "Resource monitor that shows usage and stats for processor,
+memory, disks, network and processes.  It's a Python port of
+@command{bashtop}.")
     (license license:asl2.0)))
 
 (define-public pies
