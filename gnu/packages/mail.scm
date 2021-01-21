@@ -456,7 +456,8 @@ aliasing facilities to work just as they would on normal mail.")
              (sha256
               (base32
                "1m4ig69qw4g3lhm4351snmy5i0ch65fqc9vqqdybr6jy21w7w225"))
-             (patches (search-patches "mutt-store-references.patch"))))
+             (patches (search-patches "mutt-store-references.patch"
+                                      "mutt-CVE-2021-3181.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
