@@ -1748,7 +1748,7 @@ $ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
-917@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
+917@tie{}MiB@.  Alternatively, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
 
 The @env{GUIX_LOCPATH} variable plays a role similar to @env{LOCPATH}
@@ -2137,7 +2137,7 @@ Access to @file{/dev/srX} usually requires root privileges.
 @unnumberedsubsec Booting
 
 Once this is done, you should be able to reboot the system and boot from
-the USB stick or DVD.  The latter usually requires you to get in the
+the USB stick or DVD@.  The latter usually requires you to get in the
 BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
 In order to boot from Libreboot, switch to the command mode by pressing
 the @kbd{c} key and type @command{search_grub usb}.
@@ -3848,7 +3848,7 @@ authenticating bindings between domain names and public keys).
 
 @vindex http_proxy
 @vindex https_proxy
-Substitutes are downloaded over HTTP or HTTPS.  The @env{http_proxy} and
+Substitutes are downloaded over HTTP or HTTPS@.  The @env{http_proxy} and
 @env{https_proxy} environment variables can be set in the environment of
 @command{guix-daemon} and are honored for downloads of substitutes.
 Note that the value of those environment variables in the environment
@@ -5316,7 +5316,7 @@ repository in the @file{.guix-channel} file, like so:
 
 This allows @command{guix pull} to determine whether it is pulling code
 from a mirror of the channel; when that is the case, it warns the user
-that the mirror might be stale and displays the primary URL.  That way,
+that the mirror might be stale and displays the primary URL@.  That way,
 users cannot be tricked into fetching code from a stale mirror that does
 not receive security updates.
 
@@ -6718,7 +6718,7 @@ values are: a URL represented as a string, or a list thereof.
 
 @cindex fixed-output derivations, for download
 @item @code{method}
-A monadic procedure that handles the given URI.  The procedure must
+A monadic procedure that handles the given URI@.  The procedure must
 accept at least three arguments: the value of the @code{uri} field and
 the hash algorithm and hash value specified by the @code{hash} field.
 It must return a store item or a derivation in the store monad
@@ -7290,7 +7290,7 @@ definition facility for Common Lisp programs and libraries.
 
 The @code{asdf-build-system/source} system installs the packages in
 source form, and can be loaded using any common lisp implementation, via
-ASDF.  The others, such as @code{asdf-build-system/sbcl}, install binary
+ASDF@.  The others, such as @code{asdf-build-system/sbcl}, install binary
 systems in the format which a particular implementation understands.
 These build systems can also be used to produce executable programs, or
 lisp images which contain a set of packages pre-loaded.
@@ -8582,7 +8582,7 @@ instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
 
 @item ssh
 @cindex SSH access to build daemons
-These URIs allow you to connect to a remote daemon over SSH.  This
+These URIs allow you to connect to a remote daemon over SSH@.  This
 feature requires Guile-SSH (@pxref{Requirements}) and a working
 @command{guile} binary in @env{PATH} on the destination machine.  It
 supports public key and GSSAPI authentication.  A typical URL might look
@@ -10307,7 +10307,7 @@ guix build --with-c-toolchain=hwloc=clang-toolchain \
 @quotation Note
 There can be application binary interface (ABI) incompatibilities among
 tool chains.  This is particularly true of the C++ standard library and
-run-time support libraries such as that of OpenMP.  By rebuilding all
+run-time support libraries such as that of OpenMP@.  By rebuilding all
 dependents with the same tool chain, @option{--with-c-toolchain} minimizes
 the risks of incompatibility but cannot entirely eliminate them.  Choose
 @var{package} wisely.
@@ -11730,7 +11730,7 @@ Identify inputs that should most likely be native inputs.
 Probe @code{home-page} and @code{source} URLs and report those that are
 invalid.  Suggest a @code{mirror://} URL when applicable.  If the
 @code{source} URL redirects to a GitHub URL, recommend usage of the GitHub
-URL.  Check that the source file name is meaningful, e.g.@: is not just a
+URL@.  Check that the source file name is meaningful, e.g.@: is not just a
 version number or ``git-checkout'', without a declared @code{file-name}
 (@pxref{origin Reference}).
 
@@ -12024,7 +12024,7 @@ the command-line tools.
 Packages and their dependencies form a @dfn{graph}, specifically a
 directed acyclic graph (DAG).  It can quickly become difficult to have a
 mental model of the package DAG, so the @command{guix graph} command
-provides a visual representation of the DAG.  By default,
+provides a visual representation of the DAG@.  By default,
 @command{guix graph} emits a DAG representation in the input format of
 @uref{https://www.graphviz.org/, Graphviz}, so its output can be passed
 directly to the @command{dot} command of Graphviz.  It can also emit an
@@ -13464,7 +13464,7 @@ Manual}).  Here are some examples:
 
 @table @code
 @item (list (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))
-Use the swap partition with the given UUID.  You can learn the UUID of a
+Use the swap partition with the given UUID@.  You can learn the UUID of a
 Linux swap partition by running @command{swaplabel @var{device}}, where
 @var{device} is the @file{/dev} file name of that partition.
 
@@ -17740,7 +17740,7 @@ auto-login session.
 @deftp {Data Type} xorg-configuration
 This data type represents the configuration of the Xorg graphical display
 server.  Note that there is no Xorg service; instead, the X server is started
-by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
+by a ``display manager'' such as GDM, SDDM, and SLiM@.  Thus, the configuration
 of these display managers aggregates an @code{xorg-configuration} record.
 
 @table @asis
@@ -18729,7 +18729,7 @@ The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
 called Wayland, you need to use the @code{sddm-service} instead of
 GDM as the graphical login manager.  You should then
-select the ``GNOME (Wayland)'' session in SDDM.  Alternatively you can
+select the ``GNOME (Wayland)'' session in SDDM@.  Alternatively you can
 also try starting GNOME on Wayland manually from a TTY with the
 command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
@@ -19343,7 +19343,7 @@ Port on which PostgreSQL should listen.
 Locale to use as the default when creating the database cluster.
 
 @item @code{config-file} (default: @code{(postgresql-config-file)})
-The configuration file to use when running PostgreSQL.  The default
+The configuration file to use when running PostgreSQL@.  The default
 behaviour uses the postgresql-config-file record with the default values
 for the fields.
 
@@ -19396,7 +19396,7 @@ required to add extensions provided by other packages.
 @deftp {Data Type} postgresql-config-file
 Data type representing the PostgreSQL configuration file.  As shown in
 the following example, this can be used to customize the configuration
-of PostgreSQL.  Note that you can use any G-expression or filename in
+of PostgreSQL@.  Note that you can use any G-expression or filename in
 place of this record, if you already have a configuration file you'd
 like to use for example.
 
@@ -19423,7 +19423,7 @@ host	all	all	::1/128 	md5"))
 
 @table @asis
 @item @code{log-destination} (default: @code{"syslog"})
-The logging method to use for PostgreSQL.  Multiple values are accepted,
+The logging method to use for PostgreSQL@.  Multiple values are accepted,
 separated by commas.
 
 @item @code{hba-file} (default: @code{%default-postgres-hba})
@@ -20349,7 +20349,7 @@ could allow a user to delete others' mailboxes, or @code{ln -s
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
 Allow full file system access to clients.  There's no access checks
-other than what the operating system does for the active UID/GID.  It
+other than what the operating system does for the active UID/GID@.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
 names with e.g.@: @file{/path/} or @file{~user/}.
 Defaults to @samp{#f}.
@@ -20382,14 +20382,14 @@ Defaults to @samp{"optimized"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-nfs-storage?
-Mail storage exists in NFS.  Set this to yes to make Dovecot flush
+Mail storage exists in NFS@.  Set this to yes to make Dovecot flush
 NFS caches whenever needed.  If you're using only a single mail server
 this isn't needed.
 Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-nfs-index?
-Mail index files also exist in NFS.  Setting this to yes requires
+Mail index files also exist in NFS@.  Setting this to yes requires
 @samp{mmap-disable? #t} and @samp{fsync-disable? #f}.
 Defaults to @samp{#f}.
 @end deftypevr
@@ -20496,9 +20496,9 @@ Defaults to @samp{"30 secs"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-save-crlf?
-Save mails with CR+LF instead of plain LF.  This makes sending those
+Save mails with CR+LF instead of plain LF@.  This makes sending those
 mails take less CPU, especially with sendfile() syscall with Linux and
-FreeBSD.  But it also creates a bit more disk I/O which may just make it
+FreeBSD@.  But it also creates a bit more disk I/O which may just make it
 slower.  Also note that if other software reads the mboxes/maildirs,
 they may handle the extra CRs wrong and cause problems.
 Defaults to @samp{#f}.
@@ -21562,7 +21562,7 @@ A list of verification options (these mostly map to OpenSSL's
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string-list options
-A list of general options relating to SSL/TLS.  These map to OpenSSL's
+A list of general options relating to SSL/TLS@.  These map to OpenSSL's
 @code{set_options()}.  For a full list of options available in LuaSec, see the
 LuaSec source.
 @end deftypevr
@@ -21627,7 +21627,7 @@ Defaults to @samp{#f}.
 @deftypevr {@code{prosody-configuration} parameter} string-list s2s-insecure-domains
 Many servers don't support encryption or have invalid or self-signed
 certificates.  You can list domains here that will not be required to
-authenticate using certificates.  They will be authenticated using DNS.  See
+authenticate using certificates.  They will be authenticated using DNS@.  See
 @url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{()}.
 @end deftypevr
@@ -22240,7 +22240,7 @@ Bind the web interface to the specified port.
 Bind the web interface to the specified address.
 
 @item @code{base} (default: @code{"/"})
-Specify the path of the base URL.  This can be useful if
+Specify the path of the base URL@.  This can be useful if
 @command{darkstat} is accessed via a reverse proxy.
 
 @end table
@@ -22804,7 +22804,7 @@ Defaults to @samp{"nslcd"}.
 
 @deftypevr {@code{nslcd-configuration} parameter} log-option log
 This option controls the way logging is done via a list containing
-SCHEME and LEVEL.  The SCHEME argument may either be the symbols
+SCHEME and LEVEL@.  The SCHEME argument may either be the symbols
 @samp{none} or @samp{syslog}, or an absolute file name.  The LEVEL
 argument is optional and specifies the log level.  The log level may be
 one of the following symbols: @samp{crit}, @samp{error}, @samp{warning},
@@ -24344,7 +24344,7 @@ first securely generates a key on the server.  It then makes a request
 to the Let's Encrypt certificate authority (CA) to sign the key.  The CA
 checks that the request originates from the host in question by using a
 challenge-response protocol, requiring the server to provide its
-response over HTTP.  If that protocol completes successfully, the CA
+response over HTTP@.  If that protocol completes successfully, the CA
 signs the key, resulting in a certificate.  That certificate is valid
 for a limited period of time, and therefore to continue to provide TLS
 services, the server needs to periodically ask the CA to renew its
@@ -24603,7 +24603,7 @@ must match a key ID defined in a @code{knot-key-configuration}.  No key means
 that a key is not require to match that ACL.
 
 @item @code{action} (default: @code{'()})
-An ordered list of actions that are permitted or forbidden by this ACL.  Possible
+An ordered list of actions that are permitted or forbidden by this ACL@.  Possible
 values are lists of zero or more elements from @code{'transfer}, @code{'notify}
 and @code{'update}.
 
@@ -24714,7 +24714,7 @@ An optional port can be given with the @@ separator.  For instance:
 
 @item @code{via} (default: @code{'()})
 An ordered list of source IP addresses.  An empty list will have Knot choose
-an appropriate source IP.  An optional port can be given with the @@ separator.
+an appropriate source IP@.  An optional port can be given with the @@ separator.
 The default is to choose at random.
 
 @item @code{key} (default: @code{#f})
@@ -24783,11 +24783,11 @@ When @code{#t}, use the Single-Type Signing Scheme.
 An algorithm of signing keys and issued signatures.
 
 @item @code{ksk-size} (default: @code{256})
-The length of the KSK.  Note that this value is correct for the default
+The length of the KSK@.  Note that this value is correct for the default
 algorithm, but would be unsecure for other algorithms.
 
 @item @code{zsk-size} (default: @code{256})
-The length of the ZSK.  Note that this value is correct for the default
+The length of the ZSK@.  Note that this value is correct for the default
 algorithm, but would be unsecure for other algorithms.
 
 @item @code{dnskey-ttl} (default: @code{'default})
@@ -25253,7 +25253,7 @@ Defaults to @samp{()}.
 The @code{(gnu services vpn)} module provides services related to
 @dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
 your machine to connect to a VPN, and a @emph{server} service for your machine
-to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
+to host a VPN@.  Both services use @uref{https://openvpn.net/, OpenVPN}.
 
 @deffn {Scheme Procedure} openvpn-client-service @
        [#:config (openvpn-client-configuration)]
@@ -26175,7 +26175,7 @@ Defaults to @samp{disabled}.
 @end deftypevr
 
 @deftypevr {@code{tlp-configuration} parameter} string energy-perf-policy-on-ac
-Set CPU performance versus energy saving policy on AC.  Alternatives are
+Set CPU performance versus energy saving policy on AC@.  Alternatives are
 performance, normal, powersave.
 
 Defaults to @samp{"performance"}.
@@ -27108,7 +27108,7 @@ Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} optional-string host-uuid
-Host UUID.  UUID must not have all digits be the same.
+Host UUID@.  UUID must not have all digits be the same.
 
 Defaults to @samp{""}.
 
@@ -27390,7 +27390,7 @@ guix build -s armhf-linux inkscape
 
 @noindent
 and it will build Inkscape for ARMv7 @emph{as if it were a native
-build}, transparently using QEMU to emulate the ARMv7 CPU.  Pretty handy
+build}, transparently using QEMU to emulate the ARMv7 CPU@.  Pretty handy
 if you'd like to test a package build for an architecture you don't have
 access to!
 
@@ -28384,7 +28384,7 @@ serve the default @file{/srv/git} over HTTPS might be:
 This example assumes that you are using Let's Encrypt to get your TLS
 certificate.  @xref{Certificate Services}.  The default @code{certbot}
 service will redirect all HTTP traffic on @code{git.my-host.org} to
-HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
+HTTPS@.  You will also need to add an @code{fcgiwrap} proxy to your
 system services.  @xref{Web Services}.
 @end deffn
 
@@ -30637,7 +30637,7 @@ system databases.
 @itemx rpc
 @itemx services
 @itemx shadow
-The system databases handled by the NSS.  Each of these fields must be a
+The system databases handled by the NSS@.  Each of these fields must be a
 list of @code{<name-service>} objects (see below).
 @end table
 @end deftp
@@ -30895,7 +30895,7 @@ in ``legacy'' BIOS mode.
 
 @vindex grub-efi-netboot-bootloader
 @code{grub-efi-netboot-bootloader} allows you to boot your system over network
-through TFTP.  In combination with an NFS root file system this allows you to
+through TFTP@.  In combination with an NFS root file system this allows you to
 build a diskless Guix system.
 
 The installation of the @code{grub-efi-netboot-bootloader} generates the content
@@ -30932,7 +30932,7 @@ TFTP, for example by copying them into the TFTP root directory at @code{target}.
 
 It is important to note that symlinks pointing outside the TFTP root directory
 may need to be allowed in the configuration of your TFTP server.  Further the
-store link exposes the whole store through TFTP.  Both points need to be
+store link exposes the whole store through TFTP@.  Both points need to be
 considered carefully for security aspects.
 
 Beside the @code{grub-efi-netboot-bootloader}, the already mentioned TFTP and
@@ -32049,7 +32049,7 @@ connect pass the @command{-spice port=5930,disable-ticketing} flag to
 @command{qemu}.  See previous section for further information on how to do this.
 
 Spice also allows you to do some nice stuff like share your clipboard with your
-VM.  To enable that you'll also have to pass the following flags to @command{qemu}:
+VM@.  To enable that you'll also have to pass the following flags to @command{qemu}:
 
 @example
 -device virtio-serial-pci,id=virtio-serial0,max_ports=16,bus=pci.0,addr=0x5
@@ -32801,7 +32801,7 @@ missing.
 
 The problem with debugging information is that is takes up a fair amount
 of disk space.  For example, debugging information for the GNU C Library
-weighs in at more than 60 MiB.  Thus, as a user, keeping all the
+weighs in at more than 60 MiB@.  Thus, as a user, keeping all the
 debugging info of all the installed programs is usually not an option.
 Yet, space savings should not come at the cost of an impediment to
 debugging---especially in the GNU system, which should make it easier
