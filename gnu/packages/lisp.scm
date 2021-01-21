@@ -236,7 +236,13 @@ interface to the Tk widget system.")
      `(("cl-asdf" ,cl-asdf)
        ("which" ,which)
        ("texinfo" ,texinfo)))
-    (inputs
+    ;; When ECL is embedded in a program that wants to use Common Lisp as an
+    ;; extension language, libgmp, libatomic-ops, libgc and libffi must be
+    ;; present when compiling the program because they are required by ECL's
+    ;; header file.
+    ;; Therefore we put these libraries in 'propagated-inputs' instead
+    ;; of 'inputs'.
+    (propagated-inputs
      `(("gmp" ,gmp)
        ("libatomic-ops" ,libatomic-ops)
        ("libgc" ,libgc)
