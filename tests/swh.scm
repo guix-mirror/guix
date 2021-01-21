@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,14 +20,31 @@
   #:use-module (guix swh)
   #:use-module (guix tests http)
   #:use-module (web response)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 ;; Test the JSON mapping machinery used in (guix swh).
 
 (define %origin
-  "{ \"visits_url\": \"/visits/42\",
+  "{ \"origin_visits_url\": \"/visits/42\",
      \"type\": \"git\",
      \"url\": \"http://example.org/guix.git\" }")
+
+(define %visits
+  ;; A single visit where 'snapshot_url' is null.
+  ;; See <https://bugs.gnu.org/45615>.
+  "[ {
+    \"origin\": \"https://github.com/Genivia/ugrep\",
+    \"visit\": 1,
+    \"date\": \"2020-05-17T21:43:45.422977+00:00\",
+    \"status\": \"ongoing\",
+    \"snapshot\": null,
+    \"metadata\": {},
+    \"type\": \"git\",
+    \"origin_visit_url\": \"https://archive.softwareheritage.org/api/1/origin/https://github.com/Genivia/ugrep/visit/1/\",
+    \"snapshot_url\": null
+  } ]")
 
 (define %directory-entries
   "[ { \"name\": \"one\",
@@ -58,6 +75,20 @@
   (with-http-server `((404 "Nope."))
     (parameterize ((%swh-base-url (%local-url)))
       (lookup-origin "http://example.org/whatever"))))
+
+(test-equal "origin-visit, no snapshots"
+  '("https://github.com/Genivia/ugrep"
+    "2020-05-17T21:43:45Z"
+    #f)                                      ;see <https://bugs.gnu.org/45615>
+  (with-http-server `((200 ,%origin)
+                      (200 ,%visits))
+    (parameterize ((%swh-base-url (%local-url)))
+      (let ((origin (lookup-origin "http://example.org/whatever")))
+        (match (origin-visits origin)
+          ((visit)
+           (list (visit-origin visit)
+                 (date->string (visit-date visit) "~4")
+                 (visit-snapshot-url visit))))))))
 
 (test-equal "lookup-directory"
   '(("one" 123) ("two" 456))
