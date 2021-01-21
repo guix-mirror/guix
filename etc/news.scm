@@ -20,6 +20,7 @@
 
  (entry (commit "9ab817b2a4601b4a6755983590ed7d93ebdc8d09")
         (title (en "New @option{--with-latest} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-latest}")
                (fr "Nouvelle option de transformation @option{--with-latest}"))
         (body
          (en "The new @option{--with-latest} package transformation option
@@ -34,6 +35,20 @@ guix install gnome-weather \\
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Mit der neuen Paketumwandlungsoption @option{--with-latest} wird
+die neueste Veröffentlichung für ein Paket verwendet.  Diese wird wie bei
+@command{guix refresh} bestimmt und anstelle der zurzeit im Paket festgelegten
+Version verwendet.  Um zum Beispiel die neuste Veröffentlichung von GNOME
+Weather gebunden an die neuste Version von libgweather zu installieren, führen
+Sie dies aus:
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (fr "La nouvelle option de transformation de paquets
 @option{--with-latest} récupère la dernière version d'un logiciel telle
 qu'elle serait trouvée par @command{guix refresh} et l'utilise à la place la
