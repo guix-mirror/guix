@@ -309,10 +309,21 @@ interface and is based on GNU Guile.")
     (inherit shepherd)
     (name "guile2.0-shepherd")
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)
        ("guile" ,guile-2.0)))
     (inputs
-     `(("guile" ,guile-2.0)))))
+     `(("guile" ,guile-2.0)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; (ice-9 threads) isn't available in guile-2.0
+             (substitute* "modules/shepherd.scm"
+               ((".*\\(ice-9 threads\\).*") ""))
+             #t)))
+       ,@(package-arguments shepherd)))))
 
 (define-public cloud-utils
   (package
