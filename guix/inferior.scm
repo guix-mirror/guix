@@ -311,8 +311,7 @@ Raise '&inferior-exception' when an exception is read from PORT."
   "Return the list of name/version pairs corresponding to the set of packages
 available in INFERIOR.
 
-This is faster and requires less resource-intensive than calling
-'inferior-packages'."
+This is faster and less resource-intensive than calling 'inferior-packages'."
   (if (inferior-eval '(defined? 'fold-available-packages)
                      inferior)
       (inferior-eval '(fold-available-packages
