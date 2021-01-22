@@ -4390,8 +4390,8 @@ Long Painful History of Time\".")
   (sbcl-package->ecl-package sbcl-local-time))
 
 (define-public sbcl-trivial-mimes
-  (let ((commit "303f8ac0aa6ca0bc139aa3c34822e623c3723fab")
-        (revision "1"))
+  (let ((commit "a741fc2f567a4f86b853fd4677d75e62c03e51d9")
+        (revision "2"))
     (package
       (name "sbcl-trivial-mimes")
       (version (git-version "1.1.0" revision commit))
@@ -4403,7 +4403,7 @@ Long Painful History of Time\".")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "17jxgl47r695bvsb7wi3n2ws5rp1zzgvw0zii8cy5ggw4b4ayv6m"))))
+          (base32 "00kcm17q5plpzdj1qwg83ldhxksilgpcdkf3m9azxcdr968xs9di"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("stefil" ,sbcl-hu.dwim.stefil)))
@@ -4414,7 +4414,7 @@ Long Painful History of Time\".")
       (description
        "This is a teensy library that provides some functions to determine the
 mime-type of a file.")
-      (license license:artistic2.0))))
+      (license license:zlib))))
 
 (define-public cl-trivial-mimes
   (sbcl-package->cl-source-package sbcl-trivial-mimes))
