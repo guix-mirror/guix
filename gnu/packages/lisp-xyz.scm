@@ -6500,8 +6500,8 @@ ability to store all Common Lisp data types into streams.")
   (sbcl-package->ecl-package sbcl-cl-store))
 
 (define-public sbcl-cl-gobject-introspection
-  (let ((commit "7b703e2384945ea0ac39d9b766de434a08d81560")
-        (revision "0"))
+  (let ((commit "d0136c8d9ade2560123af1fc55bbf70d2e3db539")
+        (revision "1"))
     (package
       (name "sbcl-cl-gobject-introspection")
       (version (git-version "0.3" revision commit))
@@ -6515,7 +6515,7 @@ ability to store all Common Lisp data types into streams.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1zcqd2qj14f6b38vys8gr89s6cijsp9r8j43xa8lynilwva7bwyh"))))
+           "0dz0r73pq7yhz2iq2jnkq977awx2zws2qfxdcy33329sys1ii32p"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -6527,12 +6527,9 @@ ability to store all Common Lisp data types into streams.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       ;; TODO: Tests fail, see
-       ;; https://github.com/andy128k/cl-gobject-introspection/issues/70.
-       '(#:tests? #f
-         #:phases
+       '(#:phases
          (modify-phases %standard-phases
-           (add-after (quote unpack) (quote fix-paths)
+           (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/init.lisp"
                  (("libgobject-2\\.0\\.so")
