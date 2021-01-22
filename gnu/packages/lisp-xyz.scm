@@ -53,6 +53,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -13198,10 +13199,10 @@ standard library.")
   (sbcl-package->cl-source-package sbcl-shlex))
 
 (define-public sbcl-cmd
-  (let ((commit "8e68274a935ae61f38d3309c08765d8a49d09c1f"))
+  (let ((commit "e6a54dbf660bf229c80abc124fa47e7bb6d20c93"))
     (package
       (name "sbcl-cmd")
-      (version (git-version "0.0.1" "1" commit))
+      (version (git-version "0.0.1" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -13210,13 +13211,24 @@ standard library.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "06bwwhy7wmk6fpjrqj1bfscn8rnmk8z9kwc00adp8iq6w5yjsbbj"))))
+          (base32 "1i0l8ci4cnkx84q4afmpkq51nxah24fqpi6k9kgjbxz6li3zp8hy"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("coreutils" ,coreutils)
          ("serapeum" ,sbcl-serapeum)
          ("shlex" ,sbcl-shlex)
          ("trivia" ,sbcl-trivia)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((source (assoc-ref inputs "source"))
+                     (bin (string-append (assoc-ref inputs "coreutils") "/bin")))
+                 (substitute* (string-append "cmd.lisp")
+                   (("\"env\"") (format #f "\"~a/env\"" bin))
+                   (("\"pwd\"") (format #f "\"~a/pwd\"" bin)))))))))
       (home-page "https://github.com/ruricolist/cmd")
       (synopsis "Conveniently run external programs from Common Lisp")
       (description
