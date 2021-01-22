@@ -15,7 +15,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -413,7 +413,6 @@ server and embedded PowerPC, and S390 guests.")
                            (guix build python-build-system))
        #:modules (,@%gnu-build-system-modules
                   ((guix build haskell-build-system) #:prefix haskell:)
-                  ((guix build python-build-system) #:select (python-version))
                   (ice-9 rdelim))
 
        ;; The default test target includes a lot of checks that are only really
@@ -460,8 +459,7 @@ server and embedded PowerPC, and S390 guests.")
              (unless (file-exists? "vcs-version")
                (call-with-output-file "vcs-version"
                  (lambda (port)
-                   (format port "v~a~%" ,version))))
-             #t))
+                   (format port "v~a~%" ,version))))))
          (add-after 'unpack 'patch-absolute-file-names
            (lambda _
              (substitute* '("lib/utils/process.py"
@@ -487,8 +485,7 @@ server and embedded PowerPC, and S390 guests.")
                (("ndisc6") (which "ndisc6"))
                (("fping") (which "fping"))
                (("grep") (which "grep"))
-               (("ip addr") (string-append (which "ip") " addr")))
-             #t))
+               (("ip addr") (string-append (which "ip") " addr")))))
          (add-after 'unpack 'override-builtin-PATH
            (lambda _
              ;; Ganeti runs OS install scripts and similar with a built-in
@@ -496,8 +493,7 @@ server and embedded PowerPC, and S390 guests.")
              (substitute* "src/Ganeti/Constants.hs"
                (("/sbin:/bin:/usr/sbin:/usr/bin")
                 "/run/setuid-programs:/run/current-system/profile/sbin:\
-/run/current-system/profile/bin"))
-             #t))
+/run/current-system/profile/bin"))))
          (add-after 'bootstrap 'patch-sphinx-version-detection
            (lambda _
              ;; The build system runs 'sphinx-build --version' to verify that
@@ -505,8 +501,8 @@ server and embedded PowerPC, and S390 guests.")
              ;; .sphinx-build-real executable name created by the Sphinx wrapper.
              (substitute* "configure"
                (("\\$SPHINX --version 2>&1")
-                "$SPHINX --version 2>&1 | sed 's/.sphinx-build-real/sphinx-build/g'"))
-             #t))
+                "$SPHINX --version 2>&1 \
+| sed 's/.sphinx-build-real/sphinx-build/g'"))))
 
          ;; The build system invokes Cabal and GHC, which do not work with
          ;; GHC_PACKAGE_PATH: <https://github.com/haskell/cabal/issues/3728>.
@@ -520,13 +516,11 @@ server and embedded PowerPC, and S390 guests.")
                (("\\$\\(CABAL\\)")
                 "$(CABAL) --package-db=../package.conf.d")
                (("\\$\\(GHC\\)")
-                "$(GHC) -package-db=../package.conf.d"))
-             #t))
+                "$(GHC) -package-db=../package.conf.d"))))
          (add-after 'configure 'make-ghc-use-shared-libraries
            (lambda _
              (substitute* "Makefile"
-               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))
-             #t))
+               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))))
          (add-after 'configure 'fix-installation-directories
            (lambda _
              (substitute* "Makefile"
@@ -536,8 +530,7 @@ server and embedded PowerPC, and S390 guests.")
                ;; Similarly, do not attempt to install the sample ifup scripts
                ;; to /etc/ganeti.
                (("\\$\\(DESTDIR\\)\\$\\(ifupdir\\)")
-                "$(DESTDIR)${prefix}$(ifupdir)"))
-             #t))
+                "$(DESTDIR)${prefix}$(ifupdir)"))))
          (add-before 'build 'adjust-tests
            (lambda _
              ;; Disable tests that can not run.  Do it early to prevent
@@ -556,36 +549,15 @@ server and embedded PowerPC, and S390 guests.")
                 "")
                ;; This test requires networking.
                (("test/py/import-export_unittest\\.bash")
-                ""))
-
-             ;; Many of the Makefile targets reset PYTHONPATH before running
-             ;; the Python interpreter, which does not work very well for us.
-             (substitute* "Makefile"
-               (("PYTHONPATH=")
-                (string-append "PYTHONPATH=" (getenv "PYTHONPATH") ":")))
-             #t))
+                ""))))
          (add-after 'build 'build-bash-completions
            (lambda _
-             (let ((orig-pythonpath (getenv "PYTHONPATH")))
-               (setenv "PYTHONPATH" (string-append ".:" orig-pythonpath))
-               (invoke "./autotools/build-bash-completion")
-               (setenv "PYTHONPATH" orig-pythonpath)
-               #t)))
+             (invoke "python" "-m" "./autotools/build-bash-completion")))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Set TZDIR so that time zones are found.
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
                                             "/share/zoneinfo"))
-
-             ;; This test checks whether PYTHONPATH is untouched, and extends
-             ;; it to include test directories if so.  Add an else branch for
-             ;; our modified PYTHONPATH, in order to prevent a confusing test
-             ;; failure where expired certificates are not cleaned because
-             ;; check-cert-expired is silently crashing.
-             (substitute* "test/py/ganeti-cleaner_unittest.bash"
-               (("then export PYTHONPATH=(.*)" all testpath)
-                (string-append all "else export PYTHONPATH="
-                               (getenv "PYTHONPATH") ":" testpath "\n")))
 
              (substitute* "test/py/ganeti.utils.process_unittest.py"
                ;; This test attempts to run an executable with
@@ -608,8 +580,7 @@ server and embedded PowerPC, and S390 guests.")
                (for-each (lambda (file)
                            (symlink "../../src/htools" file))
                          '("hspace" "hscan" "hinfo" "hbal" "hroller"
-                           "hcheck" "hail" "hsqueeze")))
-             #t))
+                           "hcheck" "hail" "hsqueeze")))))
          (add-after 'install 'install-bash-completions
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -638,21 +609,15 @@ server and embedded PowerPC, and S390 guests.")
                                       (cons (basename (car (reverse (string-split
                                                                      line #\ ))))
                                             progs))
-                                (loop (read-line port) progs))))))))
-               #t)))
-         ;; Wrap all executables with PYTHONPATH.  We can't borrow the phase
-         ;; from python-build-system because we also need to wrap the scripts
-         ;; in $out/lib/ganeti such as "node-daemon-setup".
+                                (loop (read-line port) progs)))))))))))
+         ;; Wrap all executables with GUIX_PYTHONPATH.  We can't borrow
+         ;; the phase from python-build-system because we also need to wrap
+         ;; the scripts in $out/lib/ganeti such as "node-daemon-setup".
          (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin"))
-                    (lib (string-append out "/lib"))
-                    (python (assoc-ref inputs "python"))
-                    (major+minor (python-version python))
-                    (PYTHONPATH (string-append lib "/python" major+minor
-                                               "/site-packages:"
-                                               (getenv "PYTHONPATH"))))
+                    (lib (string-append out "/lib")))
                (define (shell-script? file)
                  (call-with-ascii-input-file file
                    (lambda (port)
@@ -673,11 +638,11 @@ server and embedded PowerPC, and S390 guests.")
 
                (for-each (lambda (file)
                            (wrap-program file
-                             `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
+                             `("GUIX_PYTHONPATH" ":" prefix
+                               (,(getenv "GUIX_PYTHONPATH")))))
                          (filter wrap?
                                  (append (find-files (string-append lib "/ganeti"))
-                                         (find-files sbin))))
-               #t))))))
+                                         (find-files sbin))))))))))
     (native-inputs
      `(("haskell" ,ghc)
        ("cabal" ,cabal-install)
@@ -1370,7 +1335,7 @@ domains, their live performance and resource utilization statistics.")
                                          (string-take (string-take-right
                                                        (assoc-ref inputs "python") 5) 3)
                                          "/site-packages:"
-                                         (getenv "PYTHONPATH"))))
+                                         (or (getenv "PYTHONPATH") ""))))
                (wrap-program (string-append out "/bin/crit")
                  `("PYTHONPATH" ":" prefix (,path))))
              #t)))))
