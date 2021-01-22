@@ -32782,8 +32782,23 @@ The service type for the Shepherd ``root service''---i.e., PID@tie{}1.
 
 This is the service type that extensions target when they want to create
 shepherd services (@pxref{Service Types and Services}, for an example).
-Each extension must pass a list of @code{<shepherd-service>}.
+Each extension must pass a list of @code{<shepherd-service>}.  Its
+value must be a @code{shepherd-configuration}, as described below.
 @end defvr
+
+@deftp {Data Type} shepherd-configuration
+This data type represents the Shepherd's configuration.
+
+@table @code
+@item shepherd (default: @code{shepherd})
+The Shepherd package to use.
+
+@item services (default: @code{'()})
+A list of @code{<shepherd-service>} to start.
+You should probably use the service extension
+mechanism instead (@pxref{Shepherd Services}).
+@end table
+@end deftp
 
 @defvr {Scheme Variable} %shepherd-root-service
 This service represents PID@tie{}1.

@@ -915,7 +915,8 @@ Run 'herd status' to view the list of services on your system.\n"))))))
   (let* ((services  (operating-system-services os))
          (pid1      (fold-services services
                                    #:target-type shepherd-root-service-type))
-         (shepherds (service-value pid1))         ;list of <shepherd-service>
+         ;; Get the list of <shepherd-service>.
+         (shepherds (shepherd-configuration-services (service-value pid1)))
          (sinks     (filter (lambda (service)
                               (null? (shepherd-service-requirement service)))
                             shepherds)))

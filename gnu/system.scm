@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1134,10 +1135,11 @@ we're running in the final root."
 (define (operating-system-shepherd-service-names os)
   "Return the list of Shepherd service names for OS."
   (append-map shepherd-service-provision
-              (service-value
-               (fold-services (operating-system-services os)
-                              #:target-type
-                              shepherd-root-service-type))))
+              (shepherd-configuration-services
+               (service-value
+                (fold-services (operating-system-services os)
+                               #:target-type
+                               shepherd-root-service-type)))))
 
 (define* (operating-system-derivation os)
   "Return a derivation that builds OS."
