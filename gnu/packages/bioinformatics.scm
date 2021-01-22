@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -208,8 +208,7 @@ structure of the predicted RNA.")
               (snippet
                `(begin
                   ;; Delete bundled htslib.
-                  (delete-file-recursively "c/htslib-1.3.1")
-                  #t))))
+                  (delete-file-recursively "c/htslib-1.3.1")))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; BamM is Python 2 only.
@@ -229,37 +228,22 @@ structure of the predicted RNA.")
                  ;; Use autogen so that 'configure' works.
                  (substitute* "autogen.sh" (("/bin/sh") sh))
                  (setenv "CONFIG_SHELL" sh)
-                 (invoke "./autogen.sh")))
-             #t))
-         (delete 'build)
-         ;; Run tests after installation so compilation only happens once.
-         (delete 'check)
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out  (assoc-ref outputs "out"))
-                   (path (getenv "PATH")))
-              (wrap-program (string-append out "/bin/bamm")
-                `("PATH" ":" prefix (,path))))
-            #t))
-         (add-after 'wrap-executable 'post-install-check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "PATH"
-                     (string-append (assoc-ref outputs "out")
-                                    "/bin:"
-                                    (getenv "PATH")))
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (assoc-ref outputs "out")
-                      "/lib/python"
-                      (string-take (string-take-right
-                                    (assoc-ref inputs "python") 5) 3)
-                      "/site-packages:"
-                      (getenv "PYTHONPATH")))
+                 (invoke "./autogen.sh")))))
+         (delete 'build)                ;the build loops otherwise
+         (replace 'check
+           (lambda _
              ;; There are 2 errors printed, but they are safe to ignore:
              ;; 1) [E::hts_open_format] fail to open file ...
              ;; 2) samtools view: failed to open ...
-             (invoke "nosetests")
-             #t)))))
+             (invoke "nosetests")))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (path (getenv "PATH"))
+                    (pythonpath (getenv "GUIX_PYTHONPATH")))
+               (wrap-program (string-append out "/bin/bamm")
+                 `("PATH" ":" prefix (,path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,pythonpath)))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
