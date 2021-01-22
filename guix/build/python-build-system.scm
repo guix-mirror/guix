@@ -220,21 +220,19 @@ running checks after installing the package."
 
   (define bindirs
     (append-map (match-lambda
-                 ((_ . dir)
-                  (list (string-append dir "/bin")
-                        (string-append dir "/sbin"))))
+                  ((_ . dir)
+                   (list (string-append dir "/bin")
+                         (string-append dir "/sbin"))))
                 outputs))
 
-  (let* ((var `("PYTHONPATH" prefix
-                ,(cons (site-packages inputs outputs)
-                       (search-path-as-string->list
-                        (or (getenv "PYTHONPATH") ""))))))
+  (let* ((var `("GUIX_PYTHONPATH" prefix
+                ,(search-path-as-string->list
+                  (or (getenv "GUIX_PYTHONPATH") "")))))
     (for-each (lambda (dir)
                 (let ((files (list-of-files dir)))
                   (for-each (cut wrap-program <> var)
                             files)))
-              bindirs)
-    #t))
+              bindirs)))
 
 (define* (rename-pth-file #:key name inputs outputs #:allow-other-keys)
   "Rename easy-install.pth to NAME.pth to avoid conflicts between packages
