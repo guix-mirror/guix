@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -170,13 +170,14 @@
     (string-append out "/lib/python" (python-version python) "/site-packages")))
 
 (define (add-installed-pythonpath inputs outputs)
-  "Add the Python site-package of OUTPUT to GUIX_PYTHONPATH.  This is useful
-when running checks after installing the package."
-  (let ((old-path (getenv "GUIX_PYTHONPATH"))
-        (new-path (site-packages inputs outputs)))
-    (setenv "GUIX_PYTHONPATH"
-            (string-append new-path
-                           (if old-path (string-append ":" old-path) "")))))
+  "Prepend the site-package of OUTPUT to GUIX_PYTHONPATH.  This is useful when
+running checks after installing the package."
+  (setenv "GUIX_PYTHONPATH" (string-append (site-packages inputs outputs) ":"
+                                           (getenv "GUIX_PYTHONPATH"))))
+
+(define* (add-install-to-pythonpath #:key inputs outputs #:allow-other-keys)
+  "A phase that just wraps the 'add-installed-pythonpath' procedure."
+  (add-installed-pythonpath inputs outputs))
 
 (define* (install #:key inputs outputs (configure-flags '()) use-setuptools?
                   #:allow-other-keys)
@@ -294,6 +295,7 @@ by Cython."
     (replace 'install install)
     (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
+    (add-before 'check 'add-install-to-pythonpath add-install-to-pythonpath)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
 (define* (python-build #:key inputs (phases %standard-phases)
