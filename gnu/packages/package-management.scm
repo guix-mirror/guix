@@ -424,7 +424,14 @@ $(prefix)/etc/init.d\n")))
       (native-search-paths
        (list (search-path-specification
               (variable "GUIX_EXTENSIONS_PATH")
-              (files '("share/guix/extensions")))))
+              (files '("share/guix/extensions")))
+
+             ;; (guix git) and (guix build download) honor this variable whose
+             ;; name comes from OpenSSL.
+             (search-path-specification
+              (variable "SSL_CERT_DIR")
+              (separator #f)                      ;single entry
+              (files '("etc/ssl/certs")))))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
