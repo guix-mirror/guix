@@ -47,6 +47,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6431,23 +6432,13 @@ Instagram and YouTube.")
      `(#:python ,python-2
        #:phases
        (modify-phases %standard-phases
-         ;; Move the 'check phase to after 'install, so that the installed
-         ;; library can be used
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               ;; Set PYTHONPATH so that the installed linkchecker is used
-               (setenv "PYTHONPATH"
-                       (string-append out "/lib/python2.7/site-packages"
-                                      ":"
-                                      (getenv "PYTHONPATH")))
                ;; Remove this directory to avoid it being used when running
                ;; the tests
                (delete-file-recursively "linkcheck")
-
-               (invoke "py.test" "tests"))
-             #t)))))
+               (invoke "py.test" "tests")))))))
     (home-page "https://linkcheck.github.io/linkchecker")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
