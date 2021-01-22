@@ -22,11 +22,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services cuirass)
+  #:use-module (guix channels)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ci)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages version-control)
   #:use-module (gnu services)
   #:use-module (gnu services base)
@@ -34,6 +36,8 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu services admin)
   #:use-module (gnu system shadow)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (<cuirass-remote-server-configuration>
             cuirass-remote-server-configuration
             cuirass-remote-server-configuration?
@@ -46,7 +50,18 @@
             <cuirass-remote-worker-configuration>
             cuirass-remote-worker-configuration
             cuirass-remote-worker-configuration?
-            cuirass-remote-worker-service-type))
+            cuirass-remote-worker-service-type
+
+            <build-manifest>
+            build-manifest
+            build-manifest?
+
+            <simple-cuirass-configuration>
+            simple-cuirass-configuration
+            simple-cuirass-configuration?
+
+            %default-cuirass-config
+            simple-cuirass-services))
 
 ;;;; Commentary:
 ;;;
@@ -373,3 +388,88 @@ CONFIG."
                         cuirass-remote-worker-shepherd-service)))
    (description
     "Run the Cuirass remote build worker service.")))
+
+(define-record-type* <build-manifest>
+  build-manifest make-build-manifest
+  build-manifest?
+  (channel-name          build-manifest-channel-name) ;symbol
+  (manifest              build-manifest-manifest)) ;string
+
+(define-record-type* <simple-cuirass-configuration>
+  simple-cuirass-configuration make-simple-cuirass-configuration
+  simple-cuirass-configuration?
+  (build                 simple-cuirass-configuration-build
+                         (default 'all))  ;symbol or list of <build-manifest>
+  (channels              simple-cuirass-configuration-channels
+                         (default %default-channels))  ;list of <channel>
+  (non-package-channels  simple-cuirass-configuration-package-channels
+                         (default '())) ;list of channels name
+  (systems               simple-cuirass-configuration-systems
+                         (default (list (%current-system))))) ;list of strings
+
+(define %default-cuirass-config
+  (cuirass-configuration
+   (specifications #~())))
+
+(define* (simple-cuirass-services config
+                                  #:optional
+                                  (cuirass %default-cuirass-config))
+  (define (format-name name)
+    (if (string? name)
+        name
+        (symbol->string name)))
+
+  (define (format-manifests build-manifests)
+    (map (lambda (build-manifest)
+           (match-record build-manifest <build-manifest>
+             (channel-name manifest)
+             (cons (format-name channel-name) manifest)))
+         build-manifests))
+
+  (define (channel->input channel)
+    (let ((name   (channel-name channel))
+          (url    (channel-url channel))
+          (branch (channel-branch channel)))
+      `((#:name . ,(format-name name))
+        (#:url . ,url)
+        (#:load-path . ".")
+        (#:branch . ,branch)
+        (#:no-compile? #t))))
+
+  (define (package-path channels non-package-channels)
+    (filter-map (lambda (channel)
+                  (let ((name (channel-name channel)))
+                    (and (not (member name non-package-channels))
+                         (not (eq? name 'guix))
+                         (format-name name))))
+                channels))
+
+  (define (config->spec config)
+    (match-record config <simple-cuirass-configuration>
+      (build channels non-package-channels systems)
+      `((#:name . "simple-config")
+        (#:load-path-inputs . ("guix"))
+        (#:package-path-inputs . ,(package-path channels
+                                                non-package-channels))
+        (#:proc-input . "guix")
+        (#:proc-file . "build-aux/cuirass/gnu-system.scm")
+        (#:proc . cuirass-jobs)
+        (#:proc-args . ((systems . ,systems)
+                        ,@(if (eq? build 'all)
+                              '()
+                              `((subset . "manifests")
+                                (manifests . ,(format-manifests build))))))
+        (#:inputs  . ,(map channel->input channels))
+        (#:build-outputs . ())
+        (#:priority . 1))))
+
+  (list
+   (service cuirass-service-type
+            (cuirass-configuration
+             (inherit cuirass)
+             (specifications #~(list
+                                '#$(config->spec config)))))
+   (service postgresql-service-type
+            (postgresql-configuration
+             (postgresql postgresql-10)))
+   (service postgresql-role-service-type)))

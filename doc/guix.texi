@@ -27133,6 +27133,108 @@ The Cuirass package to use.
 @end table
 @end deftp
 
+@cindex simple cuirass
+@subsubheading Simple Cuirass
+
+The Cuirass service configuration described above can be a little
+intimidating.  The @code{simple-cuirass-services} procedure offers a way
+to setup a continuous integration server more readily.
+
+It takes a @code{simple-cuirass-configuration} record as its first
+argument.
+
+@deftp {Data Type} simple-cuirass-configuration
+Data type representing the configuration of a simple Cuirass instance.
+
+@table @asis
+@item @code{build} (default: @code{'all})
+The packages to be built by Cuirass.  It defaults to @code{'all}, which
+means that all the discovered packages in the subsequent @code{channels}
+field are to be selected.
+
+It is also possible to set this field to a list of @code{build-manifest}
+records, so that only the packages that are part of the declared
+manifests are built.  This record is described below.
+
+@deftp {Data Type} build-manifest
+@table @asis
+@item @code{channel-name}
+The name of the channel where the manifest is located.
+
+@item @code{manifest}
+The manifest path inside the channel.
+
+@end table
+@end deftp
+
+@item @code{channels} (default: @code{%default-channels})
+The channels to be fetched by Cuirass, see @pxref{Channels}.
+
+@item @code{non-package-channels} (default: @code{'()})
+List the channel names that must not be searched for packages.  That is
+often the case for the channel containing the manifest.
+
+@item @code{systems} (default: @code{(list (%current-system))})
+Build every discovered package for each system in this list.  By default
+only the current system is selected.
+
+@end table
+@end deftp
+
+Here is an example of how to setup a Cuirass instance that builds all
+the packages declared by Guix and a user repository.  The package list
+is re-evaluated each time a commit is pushed in one of the declared
+channels.
+
+@lisp
+(simple-cuirass-services
+ (simple-cuirass-configuration
+  (build 'all)
+  (channels (cons (channel
+                   (name 'my-guix)
+                   (url "https://my-git-repo/guix.git"))
+                  %default-channels))))
+@end lisp
+
+In the same spirit, this builds all the packages that are part of the
+@code{'guix} or @code{'my-guix} channels and declared in the manifest
+located in the @code{'conf} channel.
+
+@lisp
+(simple-cuirass-services
+ (simple-cuirass-configuration
+  (build (list
+          (build-manifest
+           (channel-name 'conf)
+           (manifest "guix/manifest.scm"))))
+  (channels (cons* (channel
+                    (name 'my-guix)
+                    (url "https://my-git-repo/guix.git"))
+                   (channel
+                    (name 'conf)
+                    (url "https://my-git-repo/conf.git"))
+                   %default-channels))
+  (non-package-channels '(conf))))
+@end lisp
+
+Finally, @code{simple-cuirass-services} takes as a second optional
+argument a @code{cuirass-configuration} record.  It can be used to
+customize the configuration of the Cuirass instance.
+
+@lisp
+(simple-cuirass-services
+ (simple-cuirass-configuration
+  (build 'all)
+  (channels (cons (channel
+                   (name 'my-guix)
+                   (url "https://my-git-repo/guix.git"))
+                  %default-channels))
+  (non-package-channels '(conf)))
+ (cuirass-configuration
+  (inherit %default-cuirass-config)
+  (host "0.0.0.0"))) ;listen on all interfaces.
+@end lisp
+
 @node Power Management Services
 @subsection Power Management Services
 
