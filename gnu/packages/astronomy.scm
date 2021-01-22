@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public cfitsio
@@ -298,6 +300,55 @@ Mechanics, Astrometry and Astrodynamics library.")
     (home-page "http://libnova.sourceforge.net/")
     (license (list license:lgpl2.0+
                    license:gpl2+)))) ; examples/transforms.c & lntest/*.c
+
+(define-public libpasastro
+  ;; NOTE: (Sharlatan-20210122T215921+0000): the version tag has a build
+  ;; error on spice which is resolved with the latest commit.
+  (let ((commit "e3c218d1502a18cae858c83a9a8812ab197fcb60")
+        (revision "1"))
+    (package
+      (name "libpasastro")
+      (version (git-version "1.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pchev/libpasastro")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0asp2sn34nds5va2ghppwc41vb6j3d1mf049j949rgrll817kx47"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:make-flags
+         (list
+          ,(match (or (%current-target-system) (%current-system))
+             ((or "aarch64-linux" "armhf-linux" "i686-linux" "x86_64-linux")
+              "OS_TARGET=linux")
+             (_ #f))
+          ,(match (or (%current-target-system) (%current-system))
+             ("i686-linux" "CPU_TARGET=i386")
+             ("x86_64-linux" "CPU_TARGET=x86_64")
+             ((or "armhf-linux" "aarch64-linux") "CPU_TARGET=armv7l")
+             (_ #f))
+          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/pchev/libpasastro")
+      (synopsis "Interface to astronomy library for use from Pascal program")
+      (description
+       "This package provides shared libraries to interface Pascal program with
+standard astronomy libraries:
+
+@itemize
+@item @code{libpasgetdss.so}: Interface with GetDSS to work with DSS images.
+@item @code{libpasplan404.so}: Interface with Plan404 to compute planets position.
+@item @code{libpaswcs.so}: Interface with libwcs to work with FITS WCS.
+@item @code{libpasspice.so}: To work with NAIF/SPICE kernel.
+@end itemize\n")
+      (license license:gpl2+))))
 
 (define-public xplanet
   (package
