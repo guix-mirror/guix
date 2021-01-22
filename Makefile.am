@@ -990,7 +990,10 @@ download-po.$(1):
 	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
 	     "https://translate.fedoraproject.org/api/translations/guix/$(1)/$$$$lang/file/" ; \
 	  then									\
-	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp,} ;			\
+	    msgfilter --no-wrap -i "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"	\
+	      cat > "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp2" ;			\
+	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
+	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp2,} ;			\
 	  else									\
 	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
 	  fi ;									\
