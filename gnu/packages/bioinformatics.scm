@@ -11643,11 +11643,7 @@ variational inference.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (getenv "PYTHONPATH")))
-             (invoke "pytest" "tests")
-             #t)))))
+             (invoke "pytest" "tests"))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
