@@ -6295,25 +6295,6 @@ complexity samples.")
         (base32
          "148vcb7w2wr6a4w6vs2bsxanbqibxfk490zbcbg4m61s8669zdjx"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; Tests must be run after installation, as the "screed" command does
-         ;; not exist right after building.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PYTHONPATH"
-                       (string-append out "/lib/python"
-                                      (string-take (string-take-right
-                                                    (assoc-ref inputs "python")
-                                                    5) 3)
-                                      "/site-packages:"
-                                      (getenv "PYTHONPATH")))
-               (setenv "PATH" (string-append out "/bin:" (getenv "PATH"))))
-             (invoke "python" "setup.py" "test")
-             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
