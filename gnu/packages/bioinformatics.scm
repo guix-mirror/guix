@@ -12924,11 +12924,7 @@ in RNA-seq data.")
              (delete-file "scanpy/tests/test_preprocessing.py")
              (delete-file "scanpy/tests/test_read_10x.py")
 
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (getenv "PYTHONPATH")))
-             (invoke "pytest")
-             #t)))))
+             (invoke "pytest"))))))
     (propagated-inputs
      `(("python-anndata" ,python-anndata)
        ("python-h5py" ,python-h5py)
