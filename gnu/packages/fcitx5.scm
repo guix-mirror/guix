@@ -196,7 +196,7 @@ editors.")
 (define-public fcitx5-gtk
   (package
     (name "fcitx5-gtk")
-    (version "5.0.1")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
@@ -204,7 +204,7 @@ editors.")
                            "/fcitx5-gtk/fcitx5-gtk-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0h53liraqc5nz4nyi3ixdfdw3zzkdcsiff7j25acc3gmaa5gyij7"))))
+        (base32 "18bwwj9a5v82c6ssc8560hd8vwykakvg6sfijwdb5jswk9mafvgj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;No test
@@ -212,7 +212,9 @@ editors.")
        (list (string-append "-DGOBJECT_INTROSPECTION_GIRDIR="
                             %output "/share/gir-1.0")
              (string-append "-DGOBJECT_INTROSPECTION_TYPELIBDIR="
-                            %output "/lib/girepository-1.0"))
+                            %output "/lib/girepository-1.0")
+             ;; TODO: Enable it when Guix has GTK4.
+             "-DENABLE_GTK4_IM_MODULE=Off")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-install-prefix
