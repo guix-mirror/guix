@@ -3576,11 +3576,8 @@ Consequently, this command must be used with care.
 Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options (@pxref{Common Build
 Options}).  It also supports package transformation options, such as
-@option{--with-source} (@pxref{Package Transformation Options}).
-However, note that package transformations are lost when upgrading; to
-preserve transformations across upgrades, you should define your own
-package variant in a Guile module and add it to @env{GUIX_PACKAGE_PATH}
-(@pxref{Defining Packages}).
+@option{--with-source}, and preserves them across upgrades
+(@pxref{Package Transformation Options}).
 
 @node Substitutes
 @section Substitutes
