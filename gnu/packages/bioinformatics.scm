@@ -816,9 +816,7 @@ intended to behave exactly the same as the original BWK awk.")
                 "14w5i40gi25clrr7h4wa2pcpnyipya8hrqi7nq77553zc5wf0df0"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
+     `(#:modules ((srfi srfi-26)
                   (guix build utils)
                   (guix build python-build-system))
        ;; See https://github.com/daler/pybedtools/issues/192
@@ -844,10 +842,7 @@ intended to behave exactly the same as the original BWK awk.")
              ;; This issue still occurs on python2
              (substitute* "pybedtools/test/test_issues.py"
                (("def test_issue_303")
-                "def _test_issue_303"))
-             #t))
-         ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
-         ;; build system.
+                "def _test_issue_303"))))
          ;; Force the Cythonization of C++ files to guard against compilation
          ;; problems.
          (add-after 'unpack 'remove-cython-generated-files
@@ -859,30 +854,12 @@ intended to behave exactly the same as the original BWK awk.")
                  (string-take filename (string-index-right filename #\.)))
                (define (cythonized? c/c++-file)
                  (member (strip-extension c/c++-file) cython-sources))
-               (for-each delete-file (filter cythonized? c/c++-files))
-               #t)))
+               (for-each delete-file (filter cythonized? c/c++-files)))))
          (add-after 'remove-cython-generated-files 'generate-cython-extensions
            (lambda _
              (invoke "python" "setup.py" "cythonize")))
          (replace 'check
            (lambda _
-             (let* ((cwd (getcwd))
-                    (build-root-directory (string-append cwd "/build/"))
-                    (build (string-append
-                            build-root-directory
-                            (find (cut string-prefix? "lib" <>)
-                                  (scandir (string-append
-                                            build-root-directory)))))
-                    (scripts (string-append
-                              build-root-directory
-                              (find (cut string-prefix? "scripts" <>)
-                                    (scandir build-root-directory)))))
-               (setenv "PYTHONPATH"
-                       (string-append build ":" (getenv "PYTHONPATH")))
-               ;; Executable scripts such as 'intron_exon_reads.py' must be
-               ;; available in the PATH.
-               (setenv "PATH"
-                       (string-append scripts ":" (getenv "PATH"))))
              ;; The tests need to be run from elsewhere...
              (mkdir-p "/tmp/test")
              (copy-recursively "pybedtools/test" "/tmp/test")
