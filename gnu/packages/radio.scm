@@ -1117,3 +1117,33 @@ modes:
 @item X10
 @end itemize")
     (license license:gpl2+)))
+
+(define-public nanovna-saver
+  (package
+    (name "nanovna-saver")
+    (version "0.3.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NanoVNA-Saver/nanovna-saver")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0z83rwpnbbs1n74mx8dgh1d1crp90mannj9vfy161dmy4wzc5kpv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyserial" ,python-pyserial)
+       ("python-scipy" ,python-scipy)))
+    (arguments
+     '(#:tests? #f))
+    (home-page "https://github.com/NanoVNA-Saver/nanovna-saver")
+    (synopsis "GUI for NanoVNA devices")
+    (description
+     "NanoVNA-Saver is a tool for reading, displaying and saving data from the
+NanoVNA vector network analyzers.")
+    (license license:gpl3+)))
