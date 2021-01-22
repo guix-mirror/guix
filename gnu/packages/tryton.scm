@@ -117,9 +117,9 @@ and security.")
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)))
     (home-page "https://www.tryton.org/")
-    (synopsis "Client component of Tryton")
+    (synopsis "Tryton Client")
     (description
-     "This package is the client component of Tryton.")
+     "This package provides the Tryton GTK client.")
     (license license:gpl3+)))
 
 (define-public python-trytond-country
