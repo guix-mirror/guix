@@ -179,6 +179,12 @@ running checks after installing the package."
   "A phase that just wraps the 'add-installed-pythonpath' procedure."
   (add-installed-pythonpath inputs outputs))
 
+(define* (add-install-to-path #:key outputs #:allow-other-keys)
+  "Adding Python scripts to PATH is also often useful in tests."
+  (setenv "PATH" (string-append (assoc-ref outputs "out")
+                                "/bin:"
+                                (getenv "PATH"))))
+
 (define* (install #:key inputs outputs (configure-flags '()) use-setuptools?
                   #:allow-other-keys)
   "Install a given Python package."
@@ -296,6 +302,7 @@ by Cython."
     (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
     (add-before 'check 'add-install-to-pythonpath add-install-to-pythonpath)
+    (add-before 'check 'add-install-to-path add-install-to-path)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
 (define* (python-build #:key inputs (phases %standard-phases)
