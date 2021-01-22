@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -463,8 +464,7 @@ sets, both THUMB and ARM mode.")
            (replace 'build
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((mbuild (assoc-ref inputs "mbuild")))
-                 (setenv "PYTHONPATH" (string-append
-                                       (getenv "PYTHONPATH") ":" mbuild))
+                 (setenv "PYTHONPATH" mbuild)
                  (invoke "./mfile.py"
                          (string-append "--build-dir=" build-dir)
                          (string-append "--install-dir=" kit-dir)
@@ -491,8 +491,7 @@ sets, both THUMB and ARM mode.")
                  (copy-recursively (string-append kit-dir "/include")
                                    (string-append lib "/include"))
                  (copy-recursively (string-append kit-dir "/lib")
-                                   (string-append lib "/lib"))
-                 #t)))))))
+                                   (string-append lib "/lib")))))))))
     (home-page "https://intelxed.github.io/")
     (synopsis "Encoder and decoder for x86 (IA32 and Intel64) instructions")
     (description "The Intel X86 Encoder Decoder (XED) is a software library and
