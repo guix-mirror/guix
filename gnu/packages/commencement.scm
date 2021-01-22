@@ -9,6 +9,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix memoization)
   #:use-module (guix utils)
@@ -3095,7 +3097,9 @@ memoized as a function of '%current-system'."
     (inputs
      `(,@(%boot0-inputs)
        ("expat" ,expat-sans-tests)))              ;remove OpenSSL, zlib, etc.
-    (native-inputs '())                           ;and pkg-config
+    (native-inputs                                ;and pkg-config
+     `(("sitecustomize.py" ,(local-file (search-auxiliary-file
+                                         "python/sitecustomize.py")))))
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
@@ -3136,8 +3140,12 @@ memoized as a function of '%current-system'."
                              (substitute* "Lib/plat-generic/regen"
                                (("/usr/include/")
                                 (string-append libc "/include/")))))))
-                     '())))
-           ((#:tests? _ #f) #f))))))
+                     '())
+               (replace 'install-sitecustomize.py
+                 ,(customize-site version))))
+           ((#:tests? _ #f) #f))))
+    (native-search-paths
+     (list (guix-pythonpath-search-path version)))))
 
 (define/system-dependent ld-wrapper-boot0
   ;; The first 'ld' wrapper, defined with 'define/system-dependent' because

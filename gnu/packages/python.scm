@@ -96,13 +96,41 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+
+  #:export (customize-site
+            guix-pythonpath-search-path))
+
+(define* (customize-site version)
+  "Generate a install-sitecustomize.py phase, using VERSION."
+  `(lambda* (#:key inputs outputs #:allow-other-keys)
+     (let* ((out (assoc-ref outputs "out"))
+            (site-packages (string-append
+                            out "/lib/python"
+                            ,(version-major+minor version)
+                            "/site-packages"))
+            (sitecustomize.py (assoc-ref inputs "sitecustomize.py"))
+            (dest (string-append site-packages "/sitecustomize.py")))
+       (mkdir-p site-packages)
+       (copy-file sitecustomize.py dest)
+       ;; Set the correct permissions on the installed file, else the byte
+       ;; compilation phase fails with a permission denied error.
+       (chmod dest #o644))))
+
+(define (guix-pythonpath-search-path version)
+  "Generate a GUIX_PYTHONPATH search path specification, using VERSION."
+  (search-path-specification (variable "GUIX_PYTHONPATH")
+                             (files (list (string-append
+                                           "lib/python"
+                                           (version-major+minor version)
+                                           "/site-packages")))))
 
 (define-public python-2.7
   (package
@@ -266,8 +294,7 @@
                                             (not
                                              (string-prefix? "test_support."
                                                              file))))))
-                      (call-with-output-file "__init__.py" (const #t))
-                      #t)))))))
+                      (call-with-output-file "__init__.py" (const #t)))))))))
          (add-after 'remove-tests 'rebuild-bytecode
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -313,7 +340,9 @@
                                     "/site-packages")))
                       (install-file tkinter.so target)
                       (delete-file tkinter.so)))))
-               #t))))))
+               #t)))
+         (add-after 'install 'install-sitecustomize.py
+           ,(customize-site version)))))
     (inputs
      `(("bzip2" ,bzip2)
        ("expat" ,expat)
@@ -327,15 +356,15 @@
        ("tk" ,tk)))                     ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("sitecustomize.py" ,(local-file (search-auxiliary-file
+                                         "python/sitecustomize.py")))
        ;; When cross-compiling, a native version of Python itself is needed.
        ,@(if (%current-target-system)
              `(("python2" ,this-package)
                ("which" ,which))
              '())))
     (native-search-paths
-     (list (search-path-specification
-            (variable "PYTHONPATH")
-            (files '("lib/python2.7/site-packages")))))
+     (list (guix-pythonpath-search-path version)))
     (home-page "https://www.python.org")
     (synopsis "High-level, dynamically-typed programming language")
     (description
@@ -438,8 +467,7 @@ data types.")
                (setenv "TZDIR"
                        (string-append (assoc-ref
                                        (or native-inputs inputs) "tzdata")
-                                      "/share/zoneinfo"))
-               #t))
+                                      "/share/zoneinfo"))))
            (replace 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -462,8 +490,9 @@ data types.")
                                ;; Don't build lib2to3, because it's Python 2 code.
                                "-x" "lib2to3/.*"
                                ,out))))
-                  (list "none" "-O" "-OO"))
-                 #t)))))))
+                  (list "none" "-O" "-OO")))))
+           (replace 'install-sitecustomize.py
+             ,(customize-site version))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
        ,@(if (%current-target-system)
@@ -471,11 +500,7 @@ data types.")
              '())
        ,@(package-native-inputs python-2)))
     (native-search-paths
-     (list (search-path-specification
-            (variable "PYTHONPATH")
-            (files (list (string-append "lib/python"
-                                        (version-major+minor version)
-                                        "/site-packages"))))
+     (list (guix-pythonpath-search-path version)
            ;; Used to locate tzdata by the zoneinfo module introduced in
            ;; Python 3.9.
            (search-path-specification
