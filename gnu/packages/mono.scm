@@ -134,7 +134,7 @@ Java.")
 (define-public libgdiplus
   (package
     (name "libgdiplus")
-    (version "6.0.4")
+    (version "6.0.5")
     (source
      (origin
        (method url-fetch)
@@ -144,7 +144,7 @@ Java.")
              ".tar.gz"))
        (sha256
         (base32
-         "0adz5813f881z65lpyf0g0w9hcn7d7qkai6sncpkwnsxfv4khp5p"))))
+         "1vr5l09i5i91n9qzky7ab9wwvgdidvrbw26y8llip0z4qdf4w7mq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
