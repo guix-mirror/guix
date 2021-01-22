@@ -170,14 +170,13 @@
     (string-append out "/lib/python" (python-version python) "/site-packages")))
 
 (define (add-installed-pythonpath inputs outputs)
-  "Prepend the Python site-package of OUTPUT to PYTHONPATH.  This is useful
+  "Add the Python site-package of OUTPUT to GUIX_PYTHONPATH.  This is useful
 when running checks after installing the package."
-  (let ((old-path (getenv "PYTHONPATH"))
-        (add-path (site-packages inputs outputs)))
-    (setenv "PYTHONPATH"
-            (string-append add-path
-                           (if old-path (string-append ":" old-path) "")))
-    #t))
+  (let ((old-path (getenv "GUIX_PYTHONPATH"))
+        (new-path (site-packages inputs outputs)))
+    (setenv "GUIX_PYTHONPATH"
+            (string-append new-path
+                           (if old-path (string-append ":" old-path) "")))))
 
 (define* (install #:key inputs outputs (configure-flags '()) use-setuptools?
                   #:allow-other-keys)
