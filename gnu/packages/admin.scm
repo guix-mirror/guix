@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3832,8 +3833,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        (modify-phases %standard-phases
          (add-before 'build 'setenv-PATH
            (lambda _
-             (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
-             #t)))))
+             (setenv "PYTHONPATH" "lib"))))))
     (propagated-inputs
      `(("python-pygobject" ,python-pygobject)
        ("python-pyudev" ,python-pyudev)))
