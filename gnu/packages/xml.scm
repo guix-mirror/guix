@@ -2465,19 +2465,14 @@ libxml2 and libxslt.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key (tests? #t) #:allow-other-keys)
+           (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
-                 (begin
-                   (setenv "PYTHONPATH"
-                           (string-append "./build/lib:"
-                                          (getenv "PYTHONPATH")))
-                   ;; Disable test_export_remote__issue_187, which is known to
-                   ;; fail (see:
-                   ;; https://github.com/sissaschool/xmlschema/issues/206).
-                   (invoke "python" "-m" "unittest" "-v"
-                           "-k" "not test_export_remote__issue_187"))
-                 (format #t "test suite not run~%"))
-             #t)))))
+                 ;; Disable test_export_remote__issue_187, which is known to
+                 ;; fail (see:
+                 ;; https://github.com/sissaschool/xmlschema/issues/206).
+                 (invoke "python" "-m" "unittest" "-v"
+                         "-k" "not test_export_remote__issue_187")
+                 (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-lxml" ,python-lxml)))   ;for tests
     (propagated-inputs
