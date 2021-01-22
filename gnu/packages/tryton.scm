@@ -37,9 +37,9 @@
   #:use-module (guix utils)
   #:use-module (guix build-system python))
 
-(define-public python-trytond
+(define-public trytond
   (package
-    (name "python-trytond")
+    (name "trytond")
     (version "5.6.5")
     (source
      (origin
@@ -71,12 +71,15 @@
              (setenv "HOME" "/tmp")
              #t)))))
     (home-page "https://www.tryton.org/")
-    (synopsis "Server component of Tryton")
+    (synopsis "Tryton Server")
     (description "Tryton is a three-tier high-level general purpose
 application platform using PostgreSQL as its main database engine.  It is the
 core base of a complete business solution providing modularity, scalability
 and security.")
     (license license:gpl3+)))
+
+(define-public python-trytond
+  (deprecated-package "python-trytond" trytond))
 
 (define-public tryton
   (package
@@ -136,7 +139,7 @@ and security.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -159,7 +162,7 @@ and security.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-pycountry" ,python-pycountry)
-       ("python-trytond" ,python-trytond)))
+       ("trytond" ,trytond)))
     (home-page "http://www.tryton.org/")
     (synopsis "Tryton module with countries")
     (description
@@ -183,7 +186,7 @@ and security.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -206,8 +209,8 @@ and security.")
     (propagated-inputs
      `(("python-sql" ,python-sql)
        ("python-stnum" ,python-stdnum)
-       ("python-trytond" ,python-trytond)
-       ("python-trytond-country" ,python-trytond-country)))
+       ("python-trytond-country" ,python-trytond-country)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for parties and addresses")
     (description
@@ -232,7 +235,7 @@ addresses.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -255,7 +258,7 @@ addresses.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)))
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with currencies")
     (description
@@ -280,7 +283,7 @@ currency and rate.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -301,10 +304,10 @@ currency and rate.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-currency"
+     `(("python-trytond-currency"
         ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)))
+       ("python-trytond-party" ,python-trytond-party)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with companies and employees")
     (description
@@ -329,7 +332,7 @@ company and employee and extend the user model.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -351,9 +354,9 @@ company and employee and extend the user model.")
     (propagated-inputs
      `(("python-sql" ,python-sql)
        ("python-stdnum" ,python-stdnum)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-company"
-        ,python-trytond-company)))
+        ,python-trytond-company)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with products")
     (description
@@ -378,7 +381,7 @@ Template and Product.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -400,12 +403,12 @@ Template and Product.")
      `(("python-dateutil" ,python-dateutil)
        ("python-simpleeval" ,python-simpleeval)
        ("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-company"
         ,python-trytond-company)
        ("python-trytond-currency"
         ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)))
+       ("python-trytond-party" ,python-trytond-party)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for accounting")
     (description
@@ -430,7 +433,7 @@ most of accounting needs.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -451,14 +454,14 @@ most of accounting needs.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-account"
         ,python-trytond-account)
        ("python-trytond-company"
         ,python-trytond-company)
        ("python-trytond-currency"
         ,python-trytond-currency)
-       ("python-trytond-party" ,python-trytond-party)))
+       ("python-trytond-party" ,python-trytond-party)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for analytic accounting")
     (description
@@ -483,7 +486,7 @@ required to analyse accounting using multiple different axes.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -504,15 +507,15 @@ required to analyse accounting using multiple different axes.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-account"
+     `(("python-trytond-account"
         ,python-trytond-account)
        ("python-trytond-analytic-account"
         ,python-trytond-analytic-account)
        ("python-trytond-company"
         ,python-trytond-company)
        ("python-trytond-product"
-        ,python-trytond-product)))
+        ,python-trytond-product)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to add accounting on product")
     (description
@@ -537,7 +540,7 @@ and category.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -558,7 +561,6 @@ and category.")
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-account"
         ,python-trytond-account)
        ("python-trytond-account-product"
@@ -569,7 +571,8 @@ and category.")
         ,python-trytond-currency)
        ("python-trytond-party" ,python-trytond-party)
        ("python-trytond-product"
-        ,python-trytond-product)))
+        ,python-trytond-product)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for invoicing")
     (description
@@ -594,7 +597,7 @@ term.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -615,14 +618,14 @@ term.")
     (propagated-inputs
      `(("python-simpleeval" ,python-simpleeval)
        ("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-company"
         ,python-trytond-company)
        ("python-trytond-currency"
         ,python-trytond-currency)
        ("python-trytond-party" ,python-trytond-party)
        ("python-trytond-product"
-        ,python-trytond-product)))
+        ,python-trytond-product)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock and inventory")
     (description
@@ -649,7 +652,7 @@ inventory to control and update stock levels.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -670,10 +673,10 @@ inventory to control and update stock levels.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-product"
+     `(("python-trytond-product"
         ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)))
+       ("python-trytond-stock" ,python-trytond-stock)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for lot of products")
     (description
@@ -699,7 +702,7 @@ inventory to control and update stock levels.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -720,12 +723,12 @@ inventory to control and update stock levels.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-account-invoice"
+     `(("python-trytond-account-invoice"
         ,python-trytond-account-invoice)
        ("python-trytond-product"
         ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)))
+       ("python-trytond-stock" ,python-trytond-stock)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to link stock and invoice")
     (description
@@ -751,7 +754,7 @@ average price of the posted invoice lines that are linked to it.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -772,7 +775,6 @@ average price of the posted invoice lines that are linked to it.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-account"
         ,python-trytond-account)
        ("python-trytond-party" ,python-trytond-party)
@@ -782,7 +784,8 @@ average price of the posted invoice lines that are linked to it.")
         ,python-trytond-purchase)
        ("python-trytond-purchase-request"
         ,python-trytond-purchase-request)
-       ("python-trytond-stock" ,python-trytond-stock)))
+       ("python-trytond-stock" ,python-trytond-stock)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock supply")
     (description
@@ -807,7 +810,7 @@ mechanisms and introduces the concepts of order point.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -828,7 +831,6 @@ mechanisms and introduces the concepts of order point.")
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
      `(("python-sql" ,python-sql)
-       ("python-trytond" ,python-trytond)
        ("python-trytond-account"
         ,python-trytond-account)
        ("python-trytond-account-invoice"
@@ -844,7 +846,8 @@ mechanisms and introduces the concepts of order point.")
        ("python-trytond-party" ,python-trytond-party)
        ("python-trytond-product"
         ,python-trytond-product)
-       ("python-trytond-stock" ,python-trytond-stock)))
+       ("python-trytond-stock" ,python-trytond-stock)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase")
     (description
@@ -868,7 +871,7 @@ mechanisms and introduces the concepts of order point.")
          (replace 'check
            (let ((runtest
                   (string-append
-                   (assoc-ref %build-inputs "python-trytond")
+                   (assoc-ref %build-inputs "trytond")
                    "/lib/python"
                    ,(version-major+minor (package-version python))
                    "/site-packages/trytond/tests/run-tests.py")))
@@ -891,11 +894,11 @@ mechanisms and introduces the concepts of order point.")
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
     (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-product"
+     `(("python-trytond-product"
         ,python-trytond-product)
        ("python-trytond-purchase"
-        ,python-trytond-purchase)))
+        ,python-trytond-purchase)
+       ("trytond" ,trytond)))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase requests")
     (description
