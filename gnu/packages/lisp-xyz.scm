@@ -13475,3 +13475,34 @@ objects themselves.")
 
 (define-public cl-jsown
   (sbcl-package->cl-source-package sbcl-jsown))
+
+(define-public sbcl-system-locale
+  (let ((commit "4b334bc2fa45651bcaa28ae7d9331095d6bf0a17"))
+    (package
+      (name "sbcl-system-locale")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/system-locale/")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "00p5c053kmgq4ks6l9mxsqz6g3bjcybvkvj0bh3r90qgpkaawm1p"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/system-locale/")
+      (synopsis "Get the system's locale and language settings in Common Lisp")
+      (description
+       "This library retrieves locale information configured on the
+system.  This is helpful if you want to write applications and libraries that
+display messages in the user's native language.")
+      (license license:zlib))))
+
+(define-public ecl-system-locale
+  (sbcl-package->ecl-package sbcl-system-locale))
+
+(define-public cl-system-locale
+  (sbcl-package->cl-source-package sbcl-system-locale))
