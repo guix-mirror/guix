@@ -9053,6 +9053,26 @@ traits for both structs and enums.")
 structs and enums.")
   (license license:expat)))
 
+(define-public rust-deunicode-0.4
+  (package
+    (name "rust-deunicode")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "deunicode" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "146nc3wlwz2j9awwf7zf76qvjcahnls0mlv9jm6clcvr9dlph245"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://lib.rs/crates/deunicode")
+    (synopsis "Convert Unicode strings to pure ASCII")
+    (description
+     "This package converts Unicode strings to pure ASCII by
+intelligently transliterating them.  It supports Emoji and Chinese.")
+    (license license:bsd-3)))
+
 (define-public rust-dialoguer-0.6
   (package
     (name "rust-dialoguer")
