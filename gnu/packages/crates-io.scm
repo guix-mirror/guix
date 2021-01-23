@@ -38679,6 +38679,30 @@ panic-free alternative to @code{core::fmt}.")
 Internationalization Crates (UNIC) project.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-unic-ucd-version-0.9
+  (package
+    (name "rust-unic-ucd-version")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unic-ucd-version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i5hnzpfnxkp4ijfk8kvhpvj84bij575ybqx1b6hyigy6wi2zgcn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unic-common" ,rust-unic-common-0.9))))
+    (home-page "https://github.com/open-i18n/rust-unic/")
+    (synopsis "Unicode character database for UNIC")
+    (description
+     "This package provides a Unicode character database for the
+Unicode and Internationalization Crates (UNIC) project.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unicase-2
   (package
     (name "rust-unicase")
