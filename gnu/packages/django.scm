@@ -1236,15 +1236,11 @@ to ElasticSearch.")
                       ;; Do not depend on compatibility package for old
                       ;; Python versions.
                       (substitute* "requirements.txt"
-                        (("enum-compat") ""))
-                      #t))
+                        (("enum-compat") ""))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
                           (begin
-                            (setenv "PYTHONPATH"
-                                    (string-append "./build/lib:.:"
-                                                   (getenv "PYTHONPATH")))
                             (setenv "DJANGO_SETTINGS_MODULE"
                                     "test_project.settings")
                             (invoke "pytest" "-vv" "--doctest-modules"
