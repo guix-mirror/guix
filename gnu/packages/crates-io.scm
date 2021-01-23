@@ -7375,8 +7375,34 @@ criterion.")
     (description "Tools for concurrent programming.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crossbeam-channel-0.5
+  (package
+    (name "rust-crossbeam-channel")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-channel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xfplw54pskl3kyf2q6kw8y2phnq6wn8pqxx003n8qfkz3hnx8nw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-channel")
+    (synopsis "Multi-producer multi-consumer channels for message passing")
+    (description
+     "This package provides multi-producer multi-consumer channels for
+message passing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-channel-0.4
   (package
+    (inherit rust-crossbeam-channel-0.5)
     (name "rust-crossbeam-channel")
     (version "0.4.2")
     (source
@@ -7388,7 +7414,6 @@ criterion.")
         (sha256
          (base32
           "0qd05n5bcwafkmbzq1lspwrfi29xnzlw46qarg1sl0lwj68qdvfc"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
         (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
@@ -7396,16 +7421,7 @@ criterion.")
         #:cargo-development-inputs
         (("rust-num-cpus" ,rust-num-cpus-1)
          ("rust-rand" ,rust-rand-0.6)
-         ("rust-signal-hook" ,rust-signal-hook-0.1))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-channel")
-    (synopsis
-     "Multi-producer multi-consumer channels for message passing")
-    (description
-     "Multi-producer multi-consumer channels for message passing.")
-    (license (list license:expat
-                   license:asl2.0
-                   license:bsd-2))))
+         ("rust-signal-hook" ,rust-signal-hook-0.1))))))
 
 (define-public rust-crossbeam-channel-0.3
   (package
