@@ -7445,8 +7445,33 @@ message passing.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-signal-hook" ,rust-signal-hook-0.1))))))
 
+(define-public rust-crossbeam-deque-0.8
+  (package
+    (name "rust-crossbeam-deque")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-deque" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ad995vzq74k7jd1pgn9zxbacyzj9ii6l0svhlb2dxzy8vxnxbwl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.9)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-deque")
+    (synopsis "Concurrent work-stealing deque")
+    (description "This package provides a concurrent work-stealing deque.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-deque-0.7
   (package
+    (inherit rust-crossbeam-deque-0.8)
     (name "rust-crossbeam-deque")
     (version "0.7.3")
     (source
@@ -7458,19 +7483,13 @@ message passing.")
        (sha256
         (base32
          "11c2c0x5grdba3ah3g94yn6b8s47xi8qwm85h8hq5vmf9nbsy0lz"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-deque")
-    (synopsis "Concurrent work-stealing deque")
-    (description "Concurrent work-stealing deque.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-deque-0.6
   (package
