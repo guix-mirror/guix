@@ -5521,6 +5521,31 @@ chain, the first matching branch is the item that gets emitted.")
     (description "Date and time library for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-chrono-tz-0.5
+  (package
+    (name "rust-chrono-tz")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono-tz" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "085i4940kn0fn4gkl3xi1kv3vp2frhfig1vla1i461pcbwas6m15"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-parse-zoneinfo" ,rust-parse-zoneinfo-0.3)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/chronotope/chrono-tz")
+    (synopsis "TimeZone implementations for rust-chrono from the IANA database")
+    (description
+     "Chrono-TZ is a library that provides implementors of the
+TimeZone trait for @code{rust-chrono}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ci-info-0.3
   (package
     (name "rust-ci-info")
