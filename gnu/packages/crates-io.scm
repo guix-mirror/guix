@@ -34672,6 +34672,29 @@ memory all at once.")
       "Targeting utilities for compilers and related tools")
     (license license:asl2.0)))
 
+(define-public rust-tectonic-xdv-0.1
+  (package
+    (name "rust-tectonic-xdv")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_xdv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ibxv32i7dla3iw6s01cagzgdgzhm1mmxwqjv841m6m4r7g57gxj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Decoder for the XDV and SPX file formats")
+    (description
+     "This package provides a decoder for the XDV and SPX file formats
+used by XeTeX and Tectonic.")
+    (license license:expat)))
+
 (define-public rust-tempdir-0.3
   (package
     (name "rust-tempdir")
