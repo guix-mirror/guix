@@ -13285,3 +13285,37 @@ corresponding OS system functions are called.")
 
 (define-public cl-ppath
   (sbcl-package->cl-source-package sbcl-ppath))
+
+(define-public sbcl-trivial-escapes
+  (let ((commit "1eca78da2078495d09893be58c28b3aa7b8cc4d1"))
+    (package
+      (name "sbcl-trivial-escapes")
+      (version (git-version "1.2.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/williamyaoh/trivial-escapes")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "0v6h8lk17iqv1qkxgqjyzn8gi6v0hvq2vmfbb01md3zjvjqxn6lr"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("named-readtables" ,sbcl-named-readtables)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/williamyaoh/trivial-escapes")
+      (synopsis "C-style escape directives for Common Lisp")
+      (description
+       "This Common Lisp library interprets escape characters the same way that
+most other programming language do.
+It provides four readtables.  The default one lets you write strings like this:
+@code{#\"This string has\na newline in it!\"}.")
+      (license license:public-domain))))
+
+(define-public ecl-trivial-escapes
+  (sbcl-package->ecl-package sbcl-trivial-escapes))
+
+(define-public cl-trivial-escapes
+  (sbcl-package->cl-source-package sbcl-trivial-escapes))
