@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5724,25 +5725,15 @@ to any arbitrary string.  In this case, it is up to you to set valid values.")
                 "18wpvfaa4c13d44cb4sw88c3c7403xdy5m8h82wfq8fjmcq3cmzn")))))))
     (build-system python-build-system)
     (arguments
-     '(#:modules ((ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((cwd (getcwd)))
-               (setenv "TZ" "UTC")
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH"))))
+               (setenv "TZ" "UTC"))
              ;; test_vector_complex has issues when run in our environment.
-             (invoke "pytest" "-v" "rpy2/tests/" "-k" "not test_vector_complex"))))))
+             (invoke "pytest" "-v" "rpy2/tests/"
+                     "-k" "not test_vector_complex"))))))
     (propagated-inputs
      `(("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
