@@ -13536,3 +13536,36 @@ language name mapping.")
 
 (define-public cl-language-codes
   (sbcl-package->cl-source-package sbcl-language-codes))
+
+(define-public sbcl-multilang-documentation
+  (let ((commit "59e798a07e949e8957a20927f52aca425d84e4a0"))
+    (package
+      (name "sbcl-multilang-documentation")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/multilang-documentation")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "13y5jskx8n2b7kimpfarr8v777w3b7zj5swg1b99nj3hk0843ixw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)
+         ("language-codes" ,sbcl-language-codes)
+         ("system-locale" ,sbcl-system-locale)))
+      (home-page "https://shinmera.github.io/multilang-documentation/")
+      (synopsis "Add multiple languages support to Common Lisp documentation")
+      (description
+       "This library provides a drop-in replacement function for
+cl:documentation that supports multiple docstrings per-language, allowing you
+to write documentation that can be internationalised.")
+      (license license:zlib))))
+
+(define-public ecl-multilang-documentation
+  (sbcl-package->ecl-package sbcl-multilang-documentation))
+
+(define-public cl-multilang-documentation
+  (sbcl-package->cl-source-package sbcl-multilang-documentation))
