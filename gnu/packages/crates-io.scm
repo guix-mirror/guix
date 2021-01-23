@@ -21782,6 +21782,29 @@ primitives and enums easier.")
 primitives and enums easier.")
     (license license:bsd-3)))
 
+(define-public rust-num-format-windows-0.3
+  (package
+    (name "rust-num-format-windows")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-format-windows" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sy5jxrbhv6s28c51ibzi34s8qcjm8b21nf7biray7v1qi89h5sf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.47))))
+    (home-page "https://github.com/bcmyers/num-format/num-format-windows")
+    (synopsis "Helper crate for @code{num-format}")
+    (description
+     "This package provides a helper crate for num-format.  Do not use it
+directly.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-integer-0.1
   (package
     (name "rust-num-integer")
