@@ -902,10 +902,8 @@ the order of added relations.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH" (string-append ".:"
-                                                          (getenv "PYTHONPATH")))
                       (setenv "DJANGO_SETTINGS_MODULE" "tests.test_settings")
-                      (invoke "django-admin.py" "test" "-v2"))))))
+                      (invoke "python" "django-admin.py" "test" "-v2"))))))
     (native-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/django-compressor/django-appconf")
