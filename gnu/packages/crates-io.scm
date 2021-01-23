@@ -13840,15 +13840,14 @@ path simultaneously, and returning all of the globs that matched.")
 (define-public rust-globwalk-0.8
   (package
     (name "rust-globwalk")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "globwalk" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0ihld70ngnri1qd8sd61099yfzcl6iqn17rfa102q1bl6ck710hp"))))
+        (base32 "1k6xwkydr7igvwjn3xkwjywk4213lcs53f576ilqz1h84jaazqwk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
