@@ -242,6 +242,30 @@ analogy is that InChI is the bar-code for chemistry and chemical structures.")
               "file://LICENCE"
               "See LICENCE in the distribution."))))
 
+(define-public libmsym
+  (package
+    (name "libmsym")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mcodev31/libmsym")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0a9j28irdsr461qpzlc9z1yjyb9kp64fh5zw7ylspc9zn3189qwk"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:tests? #f))                    ; no check target
+    (home-page "https://github.com/mcodev31/libmsym")
+    (synopsis "C library dealing with point group symmetry in molecules")
+    (description "libmsym is a C library dealing with point group symmetry in
+molecules.")
+    (license license:expat)))
+
 (define-public mmtf-cpp
   (package
     (name "mmtf-cpp")
