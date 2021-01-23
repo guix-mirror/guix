@@ -138,7 +138,6 @@
     (inputs
      `(("dbus" ,dbus)
        ("dconf" ,dconf)
-       ("gconf" ,gconf)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
