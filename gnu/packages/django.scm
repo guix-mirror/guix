@@ -746,14 +746,9 @@ entries, photos, book chapters, or anything else.")
                 (which "env")))))
          (replace 'check
            (lambda*(#:key tests? #:allow-other-keys)
-             (or
-              (not tests?)
-              (begin
-                (setenv "PYTHONPATH"
-                        (string-append (getcwd) ":"
-                                       (getenv "PYTHONPATH")))
-                (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
-                (invoke "django-admin" "test" "tests"))))))))
+             (when tests?
+               (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
+               (invoke "django-admin" "test" "tests")))))))
     (native-inputs
      `(("python-django" ,python-django)))
     (propagated-inputs
