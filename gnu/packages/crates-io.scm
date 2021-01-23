@@ -15747,20 +15747,18 @@ let} expressions.")
 (define-public rust-ignore-0.4
   (package
     (name "rust-ignore")
-    (version "0.4.16")
+    (version "0.4.17")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ignore" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wpcv4qgfzcyzydhlqa2qr56j72fj1a66s11xzdji59898mbzp12"))))
+        (base32 "1347mxd0cwiidcl0qvixl7za524x5ds0izv8vjh2df0bqr2zp1xj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
         ("rust-globset" ,rust-globset-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
@@ -15771,12 +15769,12 @@ let} expressions.")
         ("rust-walkdir" ,rust-walkdir-2)
         ("rust-winapi-util" ,rust-winapi-util-0.1))
        #:cargo-development-inputs
-       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4))))
-    (home-page "https://github.com/BurntSushi/ripgrep/tree/master/ignore")
-    (synopsis "Efficiently match ignore files such as .gitignore")
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5))))
+    (home-page "https://github.com/BurntSushi/ripgrep/tree/master/crates/ignore")
+    (synopsis "Efficiently match ignore files such as @file{.gitignore}")
     (description
      "This package provides a fast library for efficiently matching
-ignore files such as .gitignore against file paths.")
+ignore files such as @file{.gitignore} against file paths.")
     (license (list license:unlicense license:expat))))
 
 (define-public rust-indexmap-1
