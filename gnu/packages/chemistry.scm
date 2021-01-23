@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018, 2021 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -29,6 +29,7 @@
   #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -464,3 +465,49 @@ chemical data.  It's a collaborative project allowing anyone to search, convert,
 analyze, or store data from molecular modeling, chemistry, solid-state
 materials, biochemistry, or related areas.")
     (license license:gpl2)))
+
+(define-public spglib
+  (package
+    (name "spglib")
+    (version "1.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spglib/spglib")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1kzc956m1pnazhz52vspqridlw72wd8x5l3dsilpdxl491aa2nws"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "check"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-header-install-dir
+           (lambda _
+             ;; As of the writing of this package, CMake and GNU build systems
+             ;; install the header to two different location.  This patch makes
+             ;; the CMake build system's choice of header directory compatible
+             ;; with the GNU build system's choice and with what avogadrolibs
+             ;; expects.
+             ;; See https://github.com/spglib/spglib/issues/75 and the relevant
+             ;; part of https://github.com/OpenChemistry/avogadroapp/issues/97.
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{CMAKE_INSTALL_INCLUDEDIR\\}" include-dir)
+                (string-append include-dir "/spglib")))
+             #t)))))
+    (home-page "https://spglib.github.io/spglib/index.html")
+    (synopsis "Library for crystal symmetry search")
+    (description "Spglib is a library for finding and handling crystal
+symmetries written in C.  Spglib can be used to:
+
+@enumerate
+@item Find symmetry operations
+@item Identify space-group type
+@item Wyckoff position assignment
+@item Refine crystal structure
+@item Find a primitive cell
+@item Search irreducible k-points
+@end enumerate")
+    (license license:bsd-3)))
