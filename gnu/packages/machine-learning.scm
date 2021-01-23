@@ -217,20 +217,7 @@ classification.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-dir
-             (lambda _ (chdir "ghmm") #t))
-           (delete 'check)
-           (add-after 'install 'check
-             (assoc-ref %standard-phases 'check))
-           (add-before 'check 'fix-PYTHONPATH
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((python-version (python-version
-                                      (assoc-ref inputs "python"))))
-                 (setenv "PYTHONPATH"
-                         (string-append (getenv "PYTHONPATH")
-                                        ":" (assoc-ref outputs "out")
-                                        "/lib/python" python-version
-                                        "/site-packages")))
-               #t))
+             (lambda _ (chdir "ghmm")))
            (add-after 'enter-dir 'fix-runpath
              (lambda* (#:key outputs #:allow-other-keys)
                (substitute* "ghmmwrapper/setup.py"
@@ -241,8 +228,7 @@ classification.")
                                  line
                                  "\"-Wl,-rpath="
                                  (assoc-ref outputs "out")
-                                 "/lib\", ")))
-               #t))
+                                 "/lib\", ")))))
            (add-after 'enter-dir 'disable-broken-tests
              (lambda _
                (substitute* "tests/Makefile.am"
@@ -262,8 +248,7 @@ classification.")
                    line indent)
                   (string-append indent
                                  "@unittest.skip(\"Disabled by Guix\")\n"
-                                 line)))
-               #t)))))
+                                 line))))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))
