@@ -38659,6 +38659,29 @@ panic-free alternative to @code{core::fmt}.")
      "Unchecked indexing wrapper using regular index syntax.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-unic-char-range-0.9
+  (package
+    (name "rust-unic-char-range")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unic-char-range" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g0z7iwvjhqspi6194zsff8vy6i3921hpqcrp3v1813hbwnh5603"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rayon" ,rust-rayon-1))))
+    (home-page "https://github.com/open-i18n/rust-unic/")
+    (synopsis "Character range and iteration for UNIC")
+    (description
+     "This package provides Unicode character range and iteration for
+the Unicode and Internationalization Crates (UNIC) project.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unic-common-0.9
   (package
     (name "rust-unic-common")
