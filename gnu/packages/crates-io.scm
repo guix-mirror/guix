@@ -41589,25 +41589,24 @@ Read/Write streams as well as low-level in-memory encoding and decoding.")
 (define-public rust-yaml-rust-0.4
   (package
     (name "rust-yaml-rust")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "yaml-rust" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "038byay0dxsz6isckviz4qshfpyjqmyvda7pq96i6d53y4ickw1r"))))
+        (base32 "118wbqrr4n6wgk5rjjnlrdlahawlxc1bdsx146mwk8f79in97han"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-linked-hash-map" ,rust-linked-hash-map-0.5))
        #:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.9))))
-    (home-page "https://chyh1990.github.io/yaml-rust/")
-    (synopsis "The missing YAML 1.2 parser for rust")
-    (description
-     "The missing YAML 1.2 parser for rust.")
-    (license (list license:asl2.0 license:expat))))
+    (home-page "http://chyh1990.github.io/yaml-rust/")
+    (synopsis "YAML 1.2 parser for Rust")
+    (description "This package is a YAML 1.2 parser for Rust.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-yaml-rust-0.3
   (package
