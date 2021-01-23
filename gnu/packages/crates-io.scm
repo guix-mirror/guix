@@ -15803,6 +15803,33 @@ or numerical index.  A corresponding hash set type is also provided.")
 Rust.")
     (license license:expat)))
 
+(define-public rust-indoc-1
+  (package
+    (name "rust-indoc")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "indoc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0diih20xsxjb159nr0dq6jxnyhq7gg10dlsnh2siikphmvm5m9z5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #true
+       #:cargo-inputs
+       (("rust-unindent" ,rust-unindent-0.1))
+       #:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-1)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/dtolnay/indoc")
+    (synopsis "Indented document literals for Rust")
+    (description
+     "This crate provides a procedural macro for indented string literals.
+The @code{indoc!()} macro takes a multiline string literal and un-indents it
+at compile time so the leftmost non-space character is in the first column.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-infer-0.2
   (package
     (name "rust-infer")
