@@ -16,7 +16,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1520,10 +1520,9 @@ Python.")
              ;; https://github.com/tensorflow/tensorflow/issues/34197
              (substitute* (find-files "tensorflow/python" ".*\\.cc$")
                (("(nullptr,)(\\ +/. tp_print)" _ _ tp_print)
-                (string-append "NULL,   " tp_print)))
-             #t))
+                (string-append "NULL,   " tp_print)))))
          (add-after 'python3.7-compatibility 'chdir
-           (lambda _ (chdir "tensorflow/contrib/cmake") #t))
+           (lambda _ (chdir "tensorflow/contrib/cmake")))
          (add-after 'chdir 'disable-downloads
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "external" "\\.cmake$")
@@ -1660,8 +1659,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                     "re2"))
 
              (rename-file "../build/cub/src/cub/cub-1.8.0/"
-                          "../build/cub/src/cub/cub/")
-             #t))
+                          "../build/cub/src/cub/cub/")))
          (add-after 'unpack 'fix-python-build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "protobuf-src")
@@ -1672,9 +1670,6 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                      "-C" "eigen-src" "--strip-components=1")
 
              (substitute* "tensorflow/contrib/cmake/tf_python.cmake"
-               ;; Ensure that all Python dependencies can be found at build time.
-               (("PYTHONPATH=\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/tf_python" m)
-                (string-append m ":" (getenv "PYTHONPATH")))
                ;; Take protobuf source files from our source package.
                (("\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/protobuf/src/protobuf/src/google")
                 (string-append (getcwd) "/protobuf-src/src/google")))
@@ -1700,15 +1695,13 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                 (string-append "set_target_properties(${_AT_TARGET} PROPERTIES \
 COMPILE_FLAGS ${target_compile_flags} \
 INSTALL_RPATH_USE_LINK_PATH TRUE \
-INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
-             #t))
+INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))))
          (add-after 'build 'build-pip-package
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
-             (invoke "make" "tf_python_build_pip_package")
-             #t))
+             (invoke "make" "tf_python_build_pip_package")))
          (add-after 'build-pip-package 'install-python
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -1723,8 +1716,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
                 (string-append
                  out "/lib/python" python-version
                  "/site-packages/tensorflow/contrib/"
-                 "seq2seq/python/ops/lib_beam_search_ops.so"))
-               #t))))))
+                 "seq2seq/python/ops/lib_beam_search_ops.so"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("protobuf:native" ,protobuf-3.6) ; protoc
