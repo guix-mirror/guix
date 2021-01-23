@@ -38726,6 +38726,32 @@ the Unicode and Internationalization Crates (UNIC) project.")
 Internationalization Crates (UNIC) project.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-unic-ucd-segment-0.9
+  (package
+    (name "rust-unic-ucd-segment")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unic-ucd-segment" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0027lczcg0r401g6fnzm2bq9fxhgxvri1nlryhhv8192lqic2y90"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unic-char-property" ,rust-unic-char-property-0.9)
+        ("rust-unic-char-range" ,rust-unic-char-range-0.9)
+        ("rust-unic-ucd-version" ,rust-unic-ucd-version-0.9))))
+    (home-page "https://github.com/open-i18n/rust-unic/")
+    (synopsis "Segmentation properties for the UNIC Unicode character database")
+    (description
+     "This package provides segmentation properties in the Unicode
+character database for the Unicode and Internationalization
+Crates (UNIC) project.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unic-ucd-version-0.9
   (package
     (name "rust-unic-ucd-version")
