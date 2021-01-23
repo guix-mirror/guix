@@ -26260,19 +26260,48 @@ that must be shared-mutable, but merely may use atomic instructions to do so.")
 radix.")
     (license license:asl2.0)))
 
+(define-public rust-rand-0.8
+  (package
+    (name "rust-rand")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07lb17qj02bi17mhqxlmsiyf4g8cmplm6hbiw5hxc900li19nl8q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-packed-simd-2" ,rust-packed-simd-2-0.3)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.3)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-rand-hc" ,rust-rand-hc-0.3)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://crates.io/crates/rand")
+    (synopsis "Random number generators and other randomness functionality")
+    (description
+     "Rand provides utilities to generate random numbers, to convert them to
+useful types and distributions, and some randomness-related algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-0.7
   (package
+    (inherit rust-rand-0.8)
     (name "rust-rand")
     (version "0.7.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rand" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32
+         "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))))
     (arguments
      `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
@@ -26285,14 +26314,7 @@ radix.")
         ("rust-rand-pcg" ,rust-rand-pcg-0.2))
        #:cargo-development-inputs
        (("rust-rand-hc" ,rust-rand-hc-0.2)
-        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))
-    (home-page "https://crates.io/crates/rand")
-    (synopsis "Random number generators and other randomness functionality")
-    (description
-     "Rand provides utilities to generate random numbers, to convert them to
-useful types and distributions, and some randomness-related algorithms.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))))
 
 (define-public rust-rand-0.6
   (package
