@@ -26436,8 +26436,33 @@ useful types and distributions, and some randomness-related algorithms.")
        #:cargo-development-inputs
        (("rust-autocfg" ,rust-autocfg-0.1))))))
 
+(define-public rust-rand-core-0.6
+  (package
+    (name "rust-rand-core")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rand_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rfjrcyaj7blz2nawv2pypm5kqc59p80n6f5pg691399iggxf9n0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://rust-random.github.io/book")
+    (synopsis "Core random number generator traits and tools")
+    (description
+     "This package provides core random number generator traits and
+tools for implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-core-0.5
   (package
+    (inherit rust-rand-core-0.6)
     (name "rust-rand-core")
     (version "0.5.1")
     (source
@@ -26449,17 +26474,10 @@ useful types and distributions, and some randomness-related algorithms.")
        (sha256
         (base32
          "06bdvx08v3rkz451cm7z59xwwqn1rkfh6v9ay77b14f8dwlybgch"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://crates.io/crates/rand-core")
-    (synopsis
-     "Core random number generator traits and tools for implementation")
-    (description
-     "Core random number generator traits and tools for implementation.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-serde" ,rust-serde-1))))))
 
 (define-public rust-rand-core-0.4
   (package
