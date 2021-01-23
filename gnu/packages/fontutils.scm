@@ -514,17 +514,6 @@ applications should be.")
         (base32
          "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
-   (arguments
-    `(#:phases (modify-phases %standard-phases
-                 (add-after 'unpack 'adjust-test-PYTHONPATH
-                   (lambda _
-                     ;; Tell the build system not to override PYTHONPATH
-                     ;; while running the Python tests.
-                     (substitute* "Graphite.cmake"
-                       (("ENVIRONMENT PYTHONPATH=")
-                        (string-append "ENVIRONMENT PYTHONPATH="
-                                       (getenv "PYTHONPATH") ":")))
-                     #t)))))
    (native-inputs
     `(("python" ,python)
       ("python-fonttools" ,python-fonttools)))
