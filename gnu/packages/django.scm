@@ -688,9 +688,6 @@ project aims to bulk update given objects using one query over Django ORM.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append "./build/lib:"
-                                    (getenv "PYTHONPATH")))
              (invoke "coverage" "run" "--source" "contact_form"
                      "runtests.py"))))))
     (native-inputs
