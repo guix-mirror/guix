@@ -34672,6 +34672,29 @@ memory all at once.")
       "Targeting utilities for compilers and related tools")
     (license license:asl2.0)))
 
+(define-public rust-tectonic-cfg-support-0.1
+  (package
+    (name "rust-tectonic-cfg-support")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tectonic_cfg_support" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jsbk89g4s75cdav6350anls81k3lwaq6imhjb4q2c4cmr24i1cz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://tectonic-typesetting.github.io/")
+    (synopsis "Support crate for @code{CARGO_CFG_TARGET_*} variables")
+    (description
+     "This package provides a build.rs support crate that helps deal
+with @code{CARGO_CFG_TARGET_*} variables.")
+    (license license:expat)))
+
 (define-public rust-tectonic-xdv-0.1
   (package
     (name "rust-tectonic-xdv")
