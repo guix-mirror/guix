@@ -32469,6 +32469,30 @@ data type.")
             license:expat
             license:asl2.0))))
 
+(define-public rust-slug-0.1
+  (package
+    (name "rust-slug")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slug" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wrk0w7mcmnvpmc27fw8dxkip6f6xgwpfgp7mp56yv2bd8p7dg5k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-deunicode" ,rust-deunicode-0.4))))
+    (home-page "https://github.com/Stebalien/slug-rs")
+    (synopsis "Convert a Unicode string to a slug")
+    (description
+     "This package is a small library for generating slugs from
+Unicode strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sluice-0.5
   (package
     (name "rust-sluice")
