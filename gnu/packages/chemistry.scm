@@ -242,6 +242,31 @@ analogy is that InChI is the bar-code for chemistry and chemical structures.")
               "file://LICENCE"
               "See LICENCE in the distribution."))))
 
+(define-public mmtf-cpp
+  (package
+    (name "mmtf-cpp")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rcsb/mmtf-cpp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17ylramda69plf5w0v5hxbl4ggkdi5s15z55cv0pljl12yvyva8l"))))
+    (build-system cmake-build-system)
+    ;; Tests require the soon-to-be-deprecated version 1 of the catch-framework.
+    (arguments
+     '(#:tests? #f))
+    (home-page "https://mmtf.rcsb.org/")
+    (synopsis "C++ API for the Macromolecular Transmission Format")
+    (description "This package is a library for the
+@acronym{MMTF,macromolecular transmission format}, a binary encoding of
+biological structures.")
+    (license license:expat)))
+
 (define with-numpy-1.8
   (package-input-rewriting `((,python2-numpy . ,python2-numpy-1.8))))
 
