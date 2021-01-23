@@ -2543,8 +2543,8 @@ through the maps in often tight time limits and can further improve by beating
 the recorded high scores.  All attached single races must be finished in time
 in order to win an event, unlocking additional events and cars.  Most maps are
 equipped with spoken co-driver notes and co-driver icons.")
-    (license license:cc0                ;textures and audio in data.zip
-             license:gpl2+)))
+    (license (list license:cc0               ;textures and audio in data.zip
+                   license:gpl2+))))
 
 (define-public ufo2map
   (package
