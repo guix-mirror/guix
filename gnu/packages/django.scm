@@ -74,23 +74,10 @@
              (substitute* "tests/settings_tests/tests.py"
                ((".*def test_incorrect_timezone.*" all)
                 (string-append "    @unittest.skipIf(True, 'Disabled by Guix')\n"
-                               all)))
-
-             ;; Preserve the PYTHONPATH created by Guix when running the tests.
-             (substitute* "tests/admin_scripts/tests.py"
-               (("python_path = \\[")
-                (string-append "python_path = ['"
-                               (string-join
-                                (string-split (getenv "PYTHONPATH") #\:)
-                                "','")
-                               "', ")))
-
-             #t))
+                               all)))))
          (replace 'check
            (lambda _
              (with-directory-excursion "tests"
-               (setenv "PYTHONPATH"
-                       (string-append "..:" (getenv "PYTHONPATH")))
                (invoke "python" "runtests.py"
                        ;; By default tests run in parallel, which may cause
                        ;; various race conditions.  Run sequentially for
