@@ -2290,20 +2290,10 @@ backported from Python 2.7 for Python 2.4+.")
        ("python-pyhamcrest" ,python-pyhamcrest)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-six" ,python-six)
-       ("python-parse" ,python-parse)
+     `(("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
     (arguments
-     '(#:test-target "behave_test"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-library-loading
-           (lambda _
-             ;; Otherwise, tests fail with no module named 'path'
-             (setenv "PYTHONPATH" (string-append (getenv "PYTHONPATH") ":"
-                                                 (getcwd) "/tasks/_vendor"))
-             #t)))))
+     '(#:test-target "behave_test"))
     (home-page "https://github.com/behave/behave")
     (synopsis "Python behavior-driven development")
     (description
