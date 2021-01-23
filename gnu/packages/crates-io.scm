@@ -31438,32 +31438,28 @@ the application/x-www-form-urlencoded format.")
 (define-public rust-serde-yaml-0.8
   (package
     (name "rust-serde-yaml")
-    (version "0.8.11")
+    (version "0.8.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "serde_yaml" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0d9wdjrlx9gxg80kzc6pvdwz5pwhja2n8n0bxja9vv61kzqif6v9"))))
+        (base32 "17q8rshlq56z6zna7wxhk9pihna3s5qdz8q5niip396lwkvfh6wp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-dtoa" ,rust-dtoa-0.4)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-serde" ,rust-serde-1)
         ("rust-yaml-rust" ,rust-yaml-rust-0.4))
        #:cargo-development-inputs
-       (("rust-serde-derive" ,rust-serde-derive-1)
-        ("rust-unindent" ,rust-unindent-0.1))))
-    (home-page
-     "https://github.com/dtolnay/serde-yaml")
+       (("rust-indoc" ,rust-indoc-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://github.com/dtolnay/serde-yaml")
     (synopsis "YAML support for Serde")
-    (description "YAML support for Serde.")
-    (license (list license:asl2.0 license:expat))))
+    (description "This package provides YAML support for Serde.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-serial-test-0.5
   (package
