@@ -34991,6 +34991,42 @@ directories.")
      "Compact buffer/string type for zero-copy parsing.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tera-1
+  (package
+    (name "rust-tera")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tera" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1p7qzd8akd4xk4b23dmdrqw9q8061xkl1mar34j3f2glmizapipa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chrono-tz" ,rust-chrono-tz-0.5)
+        ("rust-globwalk" ,rust-globwalk-0.8)
+        ("rust-humansize" ,rust-humansize-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-pest" ,rust-pest-2)
+        ("rust-pest-derive" ,rust-pest-derive-2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-slug" ,rust-slug-0.1)
+        ("rust-unic-segment" ,rust-unic-segment-0.9))))
+    (home-page "https://tera.netlify.com/")
+    (synopsis "Template engine based on Jinja2/Django templates")
+    (description
+     "Tera is a template engine inspired by Jinja2 and the Django
+template language.")
+    (license license:expat)))
+
 (define-public rust-term-0.6
  (package
    (name "rust-term")
