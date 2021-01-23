@@ -167,10 +167,6 @@ windows.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; Extend PYTHONPATH so the built package will be found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              ;; Fix <https://github.com/tmux-python/libtmux/issues/265>.
              (setenv "LANG" "en_US.utf8")
              ;; Skip tests that I suspect fail because of a change
