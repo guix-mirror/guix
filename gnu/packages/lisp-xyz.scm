@@ -13395,3 +13395,47 @@ the origin.")
 
 (define-public cl-concrete-syntax-tree
   (sbcl-package->cl-source-package sbcl-concrete-syntax-tree))
+
+(define-public sbcl-eclector
+  (package
+    (name "sbcl-eclector")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/s-expressionists/Eclector")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bwkla0jdp5bg0q1zca5wg22b0nbdmglgax345nrhsf8bdrh47wm"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("acclimation" ,sbcl-acclimation)
+       ("alexandria" ,sbcl-alexandria)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("concrete-syntax-tree" ,sbcl-concrete-syntax-tree)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (arguments
+     '(#:asd-systems '("eclector"
+                       "eclector-concrete-syntax-tree")))
+    (home-page "https://s-expressionists.github.io/Eclector/")
+    (synopsis "Highly customizable, portable Common Lisp reader")
+    (description
+     "Eclector is a portable Common Lisp reader that is highly customizable,
+can recover from errors and can return concrete syntax trees.
+
+In contrast to many other reader implementations, eclector can recover from
+most errors in the input supplied to it and continue reading.  This capability
+is realized as a restart.
+
+It can also produce instances of the concrete syntax tree classes provided by
+the concrete syntax tree library.")
+    (license license:bsd-2)))
+
+(define-public ecl-eclector
+  (sbcl-package->ecl-package sbcl-eclector))
+
+(define-public cl-eclector
+  (sbcl-package->cl-source-package sbcl-eclector))
