@@ -3579,6 +3579,46 @@ devices that can inject events directly into the input subsystem.")
     ;; 'README.md'.
     (license license:gpl3+)))
 
+(define-public interception-dual-function-keys
+  (package
+    (name "interception-dual-function-keys")
+    (version "1.3.0")
+    (home-page "https://gitlab.com/interception/linux/plugins/dual-function-keys")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1gvhkmwzl5fyyc7k8rc4rf2b9mzh05wa8wcybf9hz2x1mqkc7lmz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevdev" ,libevdev)
+       ("yaml-cpp" ,yaml-cpp)))
+    (arguments
+     `(#:make-flags (list "CC=gcc" "CXX=g++"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libevdev-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libevdev (assoc-ref inputs "libevdev")))
+               (substitute* "config.mk"
+                 (("/usr/include/libevdev-1.0")
+                  (string-append libevdev "/include/libevdev-1.0")))
+               #t)))
+         ;; No configure script
+         (delete 'configure)
+         ;; No target 'check'
+         (delete 'check))))
+    (synopsis "Tap for one key, hold for another")
+    (description
+     "Dual Function Keys is a plugin for @code{interception-tools} that allows
+one to send arbitrary keycodes when a given key is tapped or held.")
+    (license license:expat)))
+
 (define-public lvm2
   (package
     (name "lvm2")
