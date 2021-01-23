@@ -38659,6 +38659,26 @@ panic-free alternative to @code{core::fmt}.")
      "Unchecked indexing wrapper using regular index syntax.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-unic-common-0.9
+  (package
+    (name "rust-unic-common")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unic-common" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g1mm954m0zr497dl4kx3vr09yaly290zs33bbl4wrbaba1gzmw0"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/open-i18n/rust-unic/")
+    (synopsis "Common utilities for UNIC")
+    (description
+     "This package provides common utilities for the Unicode and
+Internationalization Crates (UNIC) project.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unicase-2
   (package
     (name "rust-unicase")
