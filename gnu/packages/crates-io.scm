@@ -23262,6 +23262,28 @@ synchronization primitives.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
+(define-public rust-parse-zoneinfo-0.3
+  (package
+    (name "rust-parse-zoneinfo")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parse-zoneinfo" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h8g6jy4kckn2gk8sd5adaws180n1ip65xhzw5jxlq4w8ibg41f7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "")
+    (synopsis "Parse zoneinfo files from the IANA database")
+    (description
+     "This packages parses zoneinfo files from the IANA database.")
+    (license license:expat)))
+
 (define-public rust-partial-io-0.3
   (package
     (name "rust-partial-io")
