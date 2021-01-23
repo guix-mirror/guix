@@ -38726,6 +38726,31 @@ the Unicode and Internationalization Crates (UNIC) project.")
 Internationalization Crates (UNIC) project.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-unic-segment-0.9
+  (package
+    (name "rust-unic-segment")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "unic-segment" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08wgz2q6vrdvmbd23kf9pbg8cyzm5q8hq9spc4blzy2ppqk5vvg4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unic-ucd-segment" ,rust-unic-ucd-segment-0.9))))
+    (home-page "https://github.com/open-i18n/rust-unic/")
+    (synopsis "Text segmentation algorithmes for UNIC")
+    (description
+     "This UNIC component implements algorithms from Unicode Standard
+Annex #29 - Unicode Text Segmentation, used for detecting boundaries
+of text element boundaries, such as user-perceived characters (a.k.a.
+grapheme clusters), words, and sentences.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unic-ucd-segment-0.9
   (package
     (name "rust-unic-ucd-segment")
