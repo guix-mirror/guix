@@ -935,9 +935,7 @@ name is purely coincidental.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./tests/test_project:./build/lib:"
-                                             (getenv "PYTHONPATH")))
+                      (setenv "PYTHONPATH" "./tests/test_project")
                       (setenv "DJANGO_SETTINGS_MODULE" "project.settings")
                       (invoke "pytest" "-vv"))))))
     (native-inputs
