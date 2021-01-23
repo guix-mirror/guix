@@ -31140,15 +31140,14 @@ for the serde framework.")
 (define-public rust-serde-json-1
   (package
     (name "rust-serde-json")
-    (version "1.0.60")
+    (version "1.0.61")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "serde-json" version))
+       (uri (crate-uri "serde_json" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0yapc7xxk8dx12691yj0l13008rgvknmc6krvk8jwj7y4x6yh00m"))))
+        (base32 "0nijvxvgcncvd1wbn73zx7q14bdxah0gf2789qd8kdjpa1cv5kjg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
