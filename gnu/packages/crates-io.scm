@@ -4661,28 +4661,23 @@ in a byte slice, fast.")
 (define-public rust-byteorder-1
   (package
     (name "rust-byteorder")
-    (version "1.3.4")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "byteorder" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1pkjfhgjnq898g1d38ygcfi0msg3m6756cwv0sgysj1d26p8mi08"))))
+        (base32 "0srh0h0594jmsnbvm7n0g8xabhla8lwb3gn8s0fzd7d1snix2i5f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/BurntSushi/byteorder")
-    (synopsis
-     "Reading/writing numbers in big-endian and little-endian")
+       (("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/BurntSushi/byteorder")
+    (synopsis "Reading/writing numbers in big-endian and little-endian")
     (description
-     "Library for reading/writing numbers in big-endian and
+     "This library is used for reading or writing numbers in big-endian and
 little-endian.")
     (license (list license:expat license:unlicense))))
 
