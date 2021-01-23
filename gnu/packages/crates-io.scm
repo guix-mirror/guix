@@ -23047,18 +23047,18 @@ unparking.")
 (define-public rust-parking-lot-0.11
   (package
     (name "rust-parking-lot")
-    (version "0.11.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "parking_lot" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0cw73942xhxb7a49mp9gkjnlwc8acr30wpfs8zk758icz92ki2d4"))))
+        (base32 "1sqmgaia8zfd5fbnqw2w13ijh7crk3lf9vw4cb52vwlx0an48xvd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-instant" ,rust-instant-0.1)
         ("rust-lock-api" ,rust-lock-api-0.4)
         ("rust-parking-lot-core" ,rust-parking-lot-core-0.8))
