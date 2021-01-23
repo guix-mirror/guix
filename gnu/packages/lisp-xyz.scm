@@ -13319,3 +13319,38 @@ It provides four readtables.  The default one lets you write strings like this:
 
 (define-public cl-trivial-escapes
   (sbcl-package->cl-source-package sbcl-trivial-escapes))
+
+(define-public sbcl-cl-indentify
+  (let ((commit "eb770f434defa4cd41d84bca822428dfd0dbac53"))
+    (package
+      (name "sbcl-cl-indentify")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yitzchak/cl-indentify")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "0ha36bhg474vr76vfhr13szc8cfdj1ickg92k1icz791bqaqg67p"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("command-line-arguments" ,sbcl-command-line-arguments)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (native-inputs
+       `(("trivial-escapes" ,sbcl-trivial-escapes)
+         ("rove" ,sbcl-rove)))
+      (home-page "https://github.com/yitzchak/cl-indentify")
+      (synopsis "Code beautifier for Common Lisp")
+      (description
+       "A library and command line utility to automatically indent Common Lisp
+source files.")
+      (license license:expat))))
+
+(define-public ecl-cl-indentify
+  (sbcl-package->ecl-package sbcl-cl-indentify))
+
+(define-public cl-indentify
+  (sbcl-package->cl-source-package sbcl-cl-indentify))
