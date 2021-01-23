@@ -13354,3 +13354,44 @@ source files.")
 
 (define-public cl-indentify
   (sbcl-package->cl-source-package sbcl-cl-indentify))
+
+(define-public sbcl-concrete-syntax-tree
+  (let ((commit "abd242a59dadc5452aa9dbc1d313c83ec2c11f46"))
+    (package
+      (name "sbcl-concrete-syntax-tree")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/s-expressionists/Concrete-Syntax-Tree")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "1lyrglc3h1if44gxd9cwv90wa90nrdjvb7fry39b1xn8ywdfa7di"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)))
+      (home-page "https://github.com/s-expressionists/Concrete-Syntax-Tree")
+      (synopsis "Parse Common Lisp code into a concrete syntax tree")
+      (description
+       "This library is intended to solve the problem of source tracking for
+Common Lisp code.
+
+By \"source tracking\", it is meant that code elements that have a known
+origin in the form of a position in a file or in an editor buffer are
+associated with some kind of information about this origin.
+
+Since the exact nature of such origin information depends on the Common Lisp
+implementation and the purpose of wanting to track that origin, the library
+does not impose a particular structure of this information.  Instead, it
+provides utilities for manipulating source code in the form of what is called
+concrete syntax trees (CSTs for short) that preserve this information about
+the origin.")
+      (license license:bsd-2))))
+
+(define-public ecl-concrete-syntax-tree
+  (sbcl-package->ecl-package sbcl-concrete-syntax-tree))
+
+(define-public cl-concrete-syntax-tree
+  (sbcl-package->cl-source-package sbcl-concrete-syntax-tree))
