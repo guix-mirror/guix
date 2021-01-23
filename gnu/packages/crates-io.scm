@@ -1415,6 +1415,35 @@ escape codes.")
 @code{std::error::Error}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-app-dirs2-2
+  (package
+    (name "rust-app-dirs2")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "app_dirs2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04v2q3jkqr32mwqs4niqfyhbkvvgrcsw0dajwqaz83nc5hs1igsm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-jni" ,rust-jni-0.18)
+        ("rust-ndk-glue" ,rust-ndk-glue-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-xdg" ,rust-xdg-2))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-test-case" ,rust-test-case-1))))
+    (home-page "https://lib.rs/app_dirs2")
+    (synopsis "Put app's data in the right place on every platform")
+    (description
+     "This package helps you to put your app's data in the right place
+on every platform.")
+    (license license:expat)))
+
 (define-public rust-approx-0.3
   (package
     (name "rust-approx")
