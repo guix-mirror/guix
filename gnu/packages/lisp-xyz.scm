@@ -13241,7 +13241,7 @@ be usable from multi-threaded programs.")
   (sbcl-package->ecl-package sbcl-cmd))
 
 (define-public cl-cmd
-  (sbcl-package->ecl-package sbcl-cmd))
+  (sbcl-package->cl-source-package sbcl-cmd))
 
 (define-public sbcl-ppath
   (let ((commit "eb1a8173b4d1d691ea9a7699412123462f58c3ce"))
