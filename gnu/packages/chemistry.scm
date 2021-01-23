@@ -179,6 +179,41 @@ processing useful in computational chemistry, molecular modeling,
 bioinformatics, materials science, and related areas.")
     (license license:bsd-3)))
 
+(define-public avogadro2
+  (package
+    (name "avogadro2")
+    (version "1.93.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenChemistry/avogadroapp")
+             (commit version)))
+       (sha256
+        (base32
+         "1z3pjlwja778a1dmvx9aqz2hlw5q9g3kqxhm9slz08452600jsv7"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("eigen" ,eigen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("avogadrolibs" ,avogadrolibs)
+       ("hdf5" ,hdf5)
+       ("molequeue" ,molequeue)
+       ("qtbase" ,qtbase)))
+    ;; TODO: Enable tests with "-DENABLE_TESTING" configure flag.
+    (arguments
+     '(#:tests? #f))
+    (home-page "https://www.openchemistry.org/projects/avogadro2/")
+    (synopsis "Advanced molecule editor")
+    (description
+     "Avogadro 2 is an advanced molecule editor and visualizer designed for use
+in computational chemistry, molecular modeling, bioinformatics, materials
+science, and related areas.  It offers flexible high quality rendering and a
+powerful plugin architecture.")
+    (license license:bsd-3)))
+
 (define-public domainfinder
   (package
     (name "domainfinder")
