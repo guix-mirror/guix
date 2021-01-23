@@ -3532,6 +3532,53 @@ subsystem.  @code{uinput} allows userspace programs to create and handle input
 devices that can inject events directly into the input subsystem.")
     (license license:bsd-3)))
 
+(define-public interception-tools
+  (package
+    (name "interception-tools")
+    (version "0.6.4")
+    (home-page "https://gitlab.com/interception/linux/tools")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "121jy40ynkbzlqnx7g0dqwvkb7dm2ahcy6vwrz6ylsyd0jmi6s5a"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("libevdev" ,libevdev)
+       ("libudev" ,eudev)
+       ("yaml-cpp" ,yaml-cpp)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libevdev-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libevdev (assoc-ref inputs "libevdev")))
+               (substitute* "CMakeLists.txt"
+                 (("/usr/include/libevdev-1.0")
+                  (string-append libevdev "/include/libevdev-1.0")))
+               #t))))
+       ;; No tests are included.
+       #:tests? #f))
+    (synopsis "Utilities for operating on input events of evdev devices")
+    (description
+     "Interception Tools provides a composable infrastructure on top of
+@code{libudev} and @code{libevdev}.  The following utilities are provided:
+
+@itemize
+@item @command{udevmon} --- monitor input devices for launching tasks
+@item @command{intercept} --- redirect device input events to stdout
+@item @command{uinput} --- redirect device input events from stding to virtual device
+@item @command{mux} --- mux streams of input events
+@end itemize")
+    ;; Dual-licensed under GPLv3+ or "something else" on request, per
+    ;; 'README.md'.
+    (license license:gpl3+)))
+
 (define-public lvm2
   (package
     (name "lvm2")
