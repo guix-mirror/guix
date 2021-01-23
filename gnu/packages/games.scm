@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -2458,6 +2458,93 @@ available, as well as a single-player mode with AI-controlled ships.")
           (("\\$\\(call ZIP\\)")
            "$(call ZIP) -X"))
         #t))))
+
+(define-public trigger-rally
+  (package
+    (name "trigger-rally")
+    (version "0.6.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/trigger-rally/"
+                           "trigger-" version "/"
+                           "trigger-rally-" version ".tar.gz"))
+       (sha256
+        (base32
+         "016bc2hczqscfmngacim870hjcsmwl8r3aq8x03vpf22s49nw23z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("freealut" ,freealut)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image)))
+       ("tinyxml2" ,tinyxml2)))
+    (arguments
+     `(#:make-flags (list (string-append "prefix=" %output)
+                          "bindir=$(prefix)/bin"
+                          "datadir=$(datarootdir)"
+                          "OPTIMS=-Ofast")
+       #:tests? #f                      ; No tests present
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'cd-src
+           (lambda _ (chdir "src")))
+         (add-before 'build 'remove-timestamps
+           (lambda _
+             (substitute* (list "Trigger/menu.cpp"
+                                "PEngine/app.cpp")
+               ((".*__DATE__.*") ""))))
+         (add-before 'build 'make-verbose
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("@\\$\\(CXX\\)") "$(CXX)"))))
+         (add-after 'build 'set-data-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "../bin/trigger-rally.config.defs"
+                 (("<data path=\"C:[^\"]*\"")
+                  (string-append "<data path=\"" out "/share/trigger-rally\""))))))
+         (add-after 'install 'create-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                   (string-append apps "/trigger-rally.desktop")
+                 (lambda ()
+                   (format #t           ; Borrowed from Debian package
+                           "[Desktop Entry]~@
+                            Name=Trigger Rally~@
+                            Icon=trigger-rally~@
+                            Comment=3D rally racing car game~@
+                            Comment[de]=3D Rally-Autorennen~@
+                            Comment[fr_FR]=un jeu de rally en 3D~@
+                            Comment[ro_RO]=Un joc în 3D cu curse de raliu~@
+                            Exec=~a/bin/trigger-rally~@
+                            Terminal=false~@
+                            StartupNotify=false~@
+                            Type=Application~@
+                            TryExec=~:*~a/bin/trigger-rally~@
+                            Categories=Game;ArcadeGame;~@
+                            Keywords=racing;tracks;~@
+                            Keywords[de]=Rennstrecke;~%"
+                           out)))))))))
+    (home-page "http://trigger-rally.sourceforge.net")
+    (synopsis "Fast-paced single-player racing game")
+    (description "Trigger-rally is a 3D rally simulation with great physics
+for drifting on over 200 maps.  Different terrain materials like dirt,
+asphalt, sand, ice, etc. and various weather, light, and fog conditions give
+this rally simulation the edge over many other games.  You need to make it
+through the maps in often tight time limits and can further improve by beating
+the recorded high scores.  All attached single races must be finished in time
+in order to win an event, unlocking additional events and cars.  Most maps are
+equipped with spoken co-driver notes and co-driver icons.")
+    (license license:cc0                ;textures and audio in data.zip
+             license:gpl2+)))
 
 (define-public ufo2map
   (package
