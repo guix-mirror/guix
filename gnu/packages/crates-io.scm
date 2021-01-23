@@ -19455,8 +19455,32 @@ file IO.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-memoffset-0.6
+  (package
+    (name "rust-memoffset")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memoffset" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11yxgw330cf8g4wy0fnb20ag8gg1b33fsnfmg2g8z6h5wc444yqm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1))))
+    (home-page "https://github.com/Gilnaa/memoffset")
+    (synopsis "C-like offset_of functionality for Rust structs")
+    (description
+     "This package provides C-like @code{offset_of} functionality
+for Rust structs.")
+    (license license:expat)))
+
 (define-public rust-memoffset-0.5
   (package
+    (inherit rust-memoffset-0.6)
     (name "rust-memoffset")
     (version "0.5.3")
     (source
@@ -19468,19 +19492,12 @@ file IO.")
        (sha256
         (base32
          "1fblqzc25hfaym8m0pj112s66pqq87avvaqm5hp5rskib2w9w63m"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2))
        #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3))))
-    (home-page "https://github.com/Gilnaa/memoffset")
-    (synopsis
-     "C-like offset_of functionality for Rust structs")
-    (description "This package provides C-like @code{offset_of} functionality
-for Rust structs.")
-    (license license:expat)))
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))))
 
 (define-public rust-memoffset-0.2
   (package
