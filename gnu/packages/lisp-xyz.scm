@@ -13284,4 +13284,4 @@ corresponding OS system functions are called.")
   (sbcl-package->ecl-package sbcl-ppath))
 
 (define-public cl-ppath
-  (sbcl-package->ecl-package sbcl-ppath))
+  (sbcl-package->cl-source-package sbcl-ppath))
