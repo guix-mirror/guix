@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -309,23 +310,18 @@ size and quality.")
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (if tests?
-                 (begin
-                   (add-installed-pythonpath inputs outputs)
-                   (setenv "PYTHONPATH"
-                           (string-append ".:" ;for pytest_django_test
-                                          (getenv "PYTHONPATH")))
-                   (setenv "PYTEST_DJANGO_TEST_RUNNER" "pytest")
-                   (setenv "DJANGO_SETTINGS_MODULE"
-                           "pytest_django_test.settings_sqlite_file")
-                   (invoke "pytest" "-vv" "-k"
-                           ;; FIXME: these tests fail to locate Django templates ...
-                           (string-append "not test_django_not_loaded_without_settings"
-                                          " and not test_settings"
-                                          ;; ... and this does not discover
-                                          ;; 'pytest_django_test'.
-                                          " and not test_urls_cache_is_cleared")))
-                 (format #t "test suite not run~%"))
-             #t)))))
+               (begin
+                 (setenv "PYTEST_DJANGO_TEST_RUNNER" "pytest")
+                 (setenv "DJANGO_SETTINGS_MODULE"
+                         "pytest_django_test.settings_sqlite_file")
+                 (invoke "python" "-m" "pytest" "-vv" "-k"
+                         ;; FIXME: these tests fail to locate Django templates ...
+                         (string-append "not test_django_not_loaded_without_settings"
+                                        " and not test_settings"
+                                        ;; ... and this does not discover
+                                        ;; 'pytest_django_test'.
+                                        " and not test_urls_cache_is_cleared")))
+               (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-django" ,python-django)
        ("python-setuptools-scm" ,python-setuptools-scm)
