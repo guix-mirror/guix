@@ -13598,3 +13598,51 @@ and @code{doseq*}.")
 
 (define-public cl-trivial-do
   (sbcl-package->cl-source-package sbcl-trivial-do))
+
+(define-public sbcl-common-lisp-jupyter
+  (let ((commit "61a9a8e7a18e2abd7af7c697ba5146fd19bd9d62"))
+    (package
+      (name "sbcl-common-lisp-jupyter")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yitzchak/common-lisp-jupyter")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "0zyzl55l45w9z65ygi5pcwda5w5p1j1bb0p2zg2n5cpv8344dkh2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-indentify" ,sbcl-cl-indentify)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("eclector" ,sbcl-eclector)
+         ("ironclad" ,sbcl-ironclad)
+         ("iterate" ,sbcl-iterate)
+         ("jsown" ,sbcl-jsown)
+         ("multilang-documentation" ,sbcl-multilang-documentation)
+         ("pzmq" ,sbcl-pzmq)
+         ("puri" ,sbcl-puri)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("trivial-do" ,sbcl-trivial-do)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("trivial-mimes" ,sbcl-trivial-mimes)))
+      (home-page "https://yitzchak.github.io/common-lisp-jupyter/")
+      (synopsis "Common Lisp kernel for Jupyter")
+      (description
+       "This is a Common Lisp kernel for Jupyter along with a library for
+building Jupyter kernels, based on Maxima-Jupyter which was based on
+@code{cl-jupyter}.")
+      (license license:zlib))))
+
+(define-public ecl-common-lisp-jupyter
+  (sbcl-package->ecl-package sbcl-common-lisp-jupyter))
+
+(define-public cl-common-lisp-jupyter
+  (sbcl-package->cl-source-package sbcl-common-lisp-jupyter))
