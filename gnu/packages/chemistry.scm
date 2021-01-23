@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -44,6 +45,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
@@ -134,6 +136,48 @@ in computational chemistry, molecular modeling, bioinformatics, materials
 science, and related areas.  It offers flexible high quality rendering and a
 powerful plugin architecture.")
     (license license:gpl2+)))
+
+(define-public avogadrolibs
+  (package
+    (name "avogadrolibs")
+    (version "1.93.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenChemistry/avogadrolibs")
+             (commit version)))
+       (sha256
+        (base32 "1xivga626n5acnmwmym8svl0pdri8hkp59czf04ri2zflnviyh39"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("eigen" ,eigen)
+       ("mmtf-cpp" ,mmtf-cpp)
+       ("msgpack" ,msgpack)
+       ("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("pybind11" ,pybind11)))
+    (inputs
+     `(("glew" ,glew)
+       ("libarchive" ,libarchive)
+       ("libmsym" ,libmsym)
+       ("molequeue" ,molequeue)
+       ("python" ,python)
+       ("spglib" ,spglib)
+       ("qtbase" ,qtbase)))
+    (arguments
+     '(#:configure-flags (list "-DENABLE_TESTING=ON"
+                               (string-append "-DSPGLIB_INCLUDE_DIR="
+                                              (assoc-ref %build-inputs "spglib")
+                                              "/include"))))
+    (home-page "https://www.openchemistry.org/projects/avogadro2/")
+    (synopsis "Libraries for chemistry, bioinformatics, and related areas")
+    (description
+     "Avogadro libraries provide 3D rendering, visualization, analysis and data
+processing useful in computational chemistry, molecular modeling,
+bioinformatics, materials science, and related areas.")
+    (license license:bsd-3)))
 
 (define-public domainfinder
   (package
