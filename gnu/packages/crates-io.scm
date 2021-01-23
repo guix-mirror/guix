@@ -27531,15 +27531,14 @@ functionality.")
 (define-public rust-regex-1
   (package
     (name "rust-regex")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "regex" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "172bw2yryv65whn3n5vkww4kgk0bq08lx0zbln8xwia7xl9jrkrq"))))
+        (base32 "12llbg82js69mdl50lav4yn1iqlx71ckb18dww467q99w4wi49fr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
