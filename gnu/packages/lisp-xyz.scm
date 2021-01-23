@@ -13569,3 +13569,32 @@ to write documentation that can be internationalised.")
 
 (define-public cl-multilang-documentation
   (sbcl-package->cl-source-package sbcl-multilang-documentation))
+
+(define-public sbcl-trivial-do
+  (let ((commit "03a1729f1e71bad3ebcf6cf098a0cce52dfa1163"))
+    (package
+      (name "sbcl-trivial-do")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yitzchak/trivial-do")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "1ffva79nkicc7wc8c2ic5nayis3b2rk5sxzj74yjkymkjgbpcrgd"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/yitzchak/trivial-do")
+      (synopsis "Additional dolist style macros for Common Lisp")
+      (description
+       "Additional dolist style macros for Common Lisp, such as
+@code{doalist}, @code{dohash}, @code{dolist*}, @code{doplist}, @code{doseq}
+and @code{doseq*}.")
+      (license license:zlib))))
+
+(define-public ecl-trivial-do
+  (sbcl-package->ecl-package sbcl-trivial-do))
+
+(define-public cl-trivial-do
+  (sbcl-package->cl-source-package sbcl-trivial-do))
