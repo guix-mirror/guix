@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -179,6 +179,11 @@ without requiring the source code to be rewritten.")
 
    (arguments
     `(#:configure-flags '("--disable-static") ; saves 3 MiB
+
+      ;; Work around non-reproducible .go files as described in
+      ;; <https://bugs.gnu.org/20272>, which affects 2.0, 2.2, and 3.0 so far.
+      #:parallel-build? #f
+
       #:phases
       (modify-phases %standard-phases
         ,@(if (hurd-system?)
