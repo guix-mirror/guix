@@ -6056,8 +6056,43 @@ programming languages.")
        (sha256
         (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))))
 
+(define-public rust-combine-4
+  (package
+    (name "rust-combine")
+    (version "4.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "combine" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zkvqp21fbhznf7sjssdiw3zgx3x3q8w10c9mmjdzkf0wjsnjhyc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio" ,rust-tokio-0.3))))
+    (home-page "https://github.com/Marwes/combine")
+    (synopsis "Parser combinators on arbitrary streams with zero-copy support")
+    (description
+     "This package is an implementation of parser combinators for Rust,
+inspired by the Haskell library Parsec.  As in Parsec the parsers are LL(1) by
+default but they can opt-in to arbitrary lookahead using the attempt
+combinator.")
+    (license license:expat)))
+
 (define-public rust-combine-3
   (package
+    (inherit rust-combine-4)
     (name "rust-combine")
     (version "3.8.1")
     (source
@@ -6067,7 +6102,6 @@ programming languages.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1006sbl3ybiky3d5q28p0lyph37hk7sipls1rkhikv11lfxacgfs"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ascii" ,rust-ascii-0.9)
@@ -6082,15 +6116,7 @@ programming languages.")
         ("rust-bytes" ,rust-bytes-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-partial-io" ,rust-partial-io-0.3)
-        ("rust-tokio-codec" ,rust-tokio-codec-0.1))))
-    (home-page "https://github.com/Marwes/combine")
-    (synopsis "Parser combinators on arbitrary streams with zero-copy support")
-    (description
-     "This package is an implementation of parser combinators for Rust,
-inspired by the Haskell library Parsec.  As in Parsec the parsers are LL(1) by
-default but they can opt-in to arbitrary lookahead using the attempt
-combinator.")
-    (license license:expat)))
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1))))))
 
 (define-public rust-combine-regex-1-1
   (package
