@@ -7493,8 +7493,36 @@ message passing.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-crossbeam-epoch-0.9
+  (package
+    (name "rust-crossbeam-epoch")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-epoch" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17anyfg5azjpmcfidq6wn4phj9h0a0zqcxksi33w44akz4wsgam1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-const-fn" ,rust-const-fn-0.4)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memoffset" ,rust-memoffset-0.6)
+        ("rust-scopeguard" ,rust-scopeguard-1))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch")
+    (synopsis "Epoch-based garbage collection")
+    (description "This package provides an Epoch-based garbage collection.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-epoch-0.8
   (package
+    (inherit rust-crossbeam-epoch-0.9)
     (name "rust-crossbeam-epoch")
     (version "0.8.2")
     (source
@@ -7506,7 +7534,6 @@ message passing.")
        (sha256
         (base32
          "1knsf0zz7rgzxn0nwz5gajjcrivxpw3zrdcp946gdhdgr9sd53h5"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
@@ -7517,12 +7544,7 @@ message passing.")
         ("rust-memoffset" ,rust-memoffset-0.5)
         ("rust-scopeguard" ,rust-scopeguard-1))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch")
-    (synopsis "Epoch-based garbage collection")
-    (description "Epoch-based garbage collection.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-epoch-0.7
   (package
