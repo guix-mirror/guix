@@ -13506,3 +13506,33 @@ display messages in the user's native language.")
 
 (define-public cl-system-locale
   (sbcl-package->cl-source-package sbcl-system-locale))
+
+(define-public sbcl-language-codes
+  (let ((commit "e7aa0e37cb97a3d37d6bc7316b479d01bff8f42e"))
+    (package
+      (name "sbcl-language-codes")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/language-codes")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "0py176ibmsc01n5r0q1bs1ykqf5jwdbh8kx0j1a814l9y51241v0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/language-codes/")
+      (synopsis "Map ISO language codes to language names in Common Lisp")
+      (description
+       "This is a small library providing the ISO-639 language code to
+language name mapping.")
+      (license license:zlib))))
+
+(define-public ecl-language-codes
+  (sbcl-package->ecl-package sbcl-language-codes))
+
+(define-public cl-language-codes
+  (sbcl-package->cl-source-package sbcl-language-codes))
