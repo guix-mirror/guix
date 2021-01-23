@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Jethro Cao <jethrocao@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
@@ -748,7 +748,7 @@ programming language.")
                       (url "https://github.com/keharriso/love-nuklear/")
                       (commit commit)
                       (recursive? #t)))
-                ;; NOTE: the HEAD of the Nuklear git-submodule is at commit 
+                ;; NOTE: the HEAD of the Nuklear git-submodule is at commit
                 ;; "adc52d710fe3c87194b99f540c53e82eb75c2521" of Oct 1 2019
                 (file-name (git-file-name name version))
                 (sha256
