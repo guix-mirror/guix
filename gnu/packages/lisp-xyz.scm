@@ -22,6 +22,7 @@
 ;;; Copyright © 2020, 2021 Adam Kandur <rndd@tuta.io>
 ;;; Copyright © 2020, 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Aurora <rind38@disroot.org>
+;;; Copyright © 2021 Matthew Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13224,9 +13225,8 @@ standard library.")
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((source (assoc-ref inputs "source"))
-                     (bin (string-append (assoc-ref inputs "coreutils") "/bin")))
-                 (substitute* (string-append "cmd.lisp")
+               (let ((bin (string-append (assoc-ref inputs "coreutils") "/bin")))
+                 (substitute* "cmd.lisp"
                    (("\"env\"") (format #f "\"~a/env\"" bin))
                    (("\"pwd\"") (format #f "\"~a/pwd\"" bin)))))))))
       (home-page "https://github.com/ruricolist/cmd")
