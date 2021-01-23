@@ -13439,3 +13439,39 @@ the concrete syntax tree library.")
 
 (define-public cl-eclector
   (sbcl-package->cl-source-package sbcl-eclector))
+
+(define-public sbcl-jsown
+  (let ((commit "744c4407bef58dfa876d9da0b5c0205d869e7977"))
+    (package
+      (name "sbcl-jsown")
+      (version (git-version "1.0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/madnificent/jsown")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32 "0gadvmf1d9bq35s61z76psrsnzwwk12svi66jigf491hv48wigw7"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/madnificent/jsown")
+      (synopsis "Fast JSON reader / writer library for Common Lisp")
+      (description
+       "@code{jsown} is a high performance Common Lisp JSON parser.  Its aim
+is to allow for the fast parsing of JSON objects in Common Lisp.  Recently,
+functions and macros have been added to ease the burden of writing and editing
+@code{jsown} objects.
+
+@code{jsown} allows you to parse JSON objects quickly to a modifiable Lisp
+list and write them back.  If you only need partial retrieval of objects,
+@code{jsown} allows you to select the keys which you would like to see parsed.
+@code{jsown} also has a JSON writer and some helper methods to alter the JSON
+objects themselves.")
+      (license license:expat))))
+
+(define-public ecl-jsown
+  (sbcl-package->ecl-package sbcl-jsown))
+
+(define-public cl-jsown
+  (sbcl-package->cl-source-package sbcl-jsown))
