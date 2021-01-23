@@ -993,10 +993,10 @@ block ciphers using AES-NI.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-xdg" ,rust-xdg-2.2))
+        ("rust-xdg" ,rust-xdg-2))
        #:cargo-development-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-xdg" ,rust-xdg-2.2))))
+        ("rust-xdg" ,rust-xdg-2))))
     (home-page "https://github.com/rust-fuzz/afl.rs")
     (synopsis
      "Fuzzing Rust code with american-fuzzy-lop")
@@ -1023,11 +1023,11 @@ block ciphers using AES-NI.")
        #:cargo-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-cc" ,rust-cc-1)
-        ("rust-xdg" ,rust-xdg-2.2)
+        ("rust-xdg" ,rust-xdg-2)
         ("rust-clap" ,rust-clap-2))
        #:cargo-development-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-xdg" ,rust-xdg-2.2))))))
+        ("rust-xdg" ,rust-xdg-2))))))
 
 (define-public rust-afl-0.4
   (package
@@ -41032,7 +41032,7 @@ extended attributes.")
      "This package provides Rust bindings and wrappers for XCB.")
     (license license:expat)))
 
-(define-public rust-xdg-2.2
+(define-public rust-xdg-2
   (package
     (name "rust-xdg")
     (version "2.2.0")
