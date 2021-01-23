@@ -14102,7 +14102,7 @@ loading crate.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
-        ("rust-same-file" ,rust-same-file-1.0)
+        ("rust-same-file" ,rust-same-file-1)
         ("rust-termcolor" ,rust-termcolor-1)
         ("rust-winapi-util" ,rust-winapi-util-0.1))))
     (home-page
@@ -15750,7 +15750,7 @@ let} expressions.")
         ("rust-log" ,rust-log-0.4)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-1)
-        ("rust-same-file" ,rust-same-file-1.0)
+        ("rust-same-file" ,rust-same-file-1)
         ("rust-thread-local" ,rust-thread-local-1)
         ("rust-walkdir" ,rust-walkdir-2)
         ("rust-winapi-util" ,rust-winapi-util-0.1))
@@ -29822,7 +29822,7 @@ quickly convert floating point numbers to decimal strings.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-same-file-1.0
+(define-public rust-same-file-1
   (package
     (name "rust-same-file")
     (version "1.0.6")
@@ -29850,7 +29850,7 @@ paths point to the same file.")
 
 (define-public rust-same-file-0.1
   (package
-    (inherit rust-same-file-1.0)
+    (inherit rust-same-file-1)
     (name "rust-same-file")
     (version "0.1.3")
     (source
@@ -40204,7 +40204,7 @@ specified across Unix and Windows platforms.")
        #:cargo-inputs
        (("rust-winapi-util" ,rust-winapi-util-0.1)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-same-file" ,rust-same-file-1.0))))
+        ("rust-same-file" ,rust-same-file-1))))
     (home-page "https://github.com/BurntSushi/walkdir")
     (synopsis "Recursively walk a directory")
     (description "Recursively walk a directory.")
