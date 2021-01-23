@@ -21782,6 +21782,39 @@ primitives and enums easier.")
 primitives and enums easier.")
     (license license:bsd-3)))
 
+(define-public rust-num-format-0.4
+  (package
+    (name "rust-num-format")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-format" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r94i9lhr15hk32494v9my31r0829w29yyp7iql98a1cf9wl3zms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.4)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-num-bigint" ,rust-num-bigint-0.2)
+        ("rust-num-format-windows" ,rust-num-format-windows-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-widestring" ,rust-widestring-0.4)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/bcmyers/num-format")
+    (synopsis "Produce string-representations of numbers")
+    (description
+     "This package provides a Rust crate for producing string-representations
+of numbers, formatted according to international standards.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-format-windows-0.3
   (package
     (name "rust-num-format-windows")
