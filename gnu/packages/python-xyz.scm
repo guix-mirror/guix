@@ -12479,13 +12479,6 @@ graphviz.")
                         #t)))
                   (replace 'check
                     (lambda _
-                      ;; Make sure the build directory is on PYTHONPATH.
-                      (setenv "PYTHONPATH"
-                              (string-append
-                               (getenv "PYTHONPATH") ":"
-                               (getcwd) "/build/"
-                               (car (scandir "build" (cut string-prefix? "lib." <>)))))
-
                       ;; Use the build daemons configured number of workers.
                       (setenv "NWORKERS" (number->string (parallel-job-count)))
 
