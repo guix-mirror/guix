@@ -15137,23 +15137,10 @@ and bit flag values.")
                 "0wky4h28n7xnr6xv69p9z6kv8bzn50d10c3drmd9ds8gawbcxdzp"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (let ((cwd (getcwd)))
-                        (setenv "PYTHONPATH"
-                                (string-append
-                                 cwd "/build/"
-                                 (find (cut string-prefix? "lib" <>)
-                                       (scandir (string-append cwd "/build")))
-                                 ":"
-                                 (getenv "PYTHONPATH")))
-                        (invoke "python" "-m" "pytest")))))))
+                      (invoke "pytest"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-hypothesis" ,python-hypothesis)
