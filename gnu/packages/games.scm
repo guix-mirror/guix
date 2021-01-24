@@ -3445,9 +3445,12 @@ Widgets, and allows users to create more.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f            ; TODO The test running fails to run some tests.
-       #:modules ((srfi srfi-1)
-                  (guix build cmake-build-system)
-                  (guix build utils))
+       #:imported-modules ,(cons '(guix build python-build-system)
+                                 %cmake-build-system-modules)
+       #:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:select (guix-pythonpath))
+                  (guix build utils)
+                  (srfi srfi-1))
        #:configure-flags
        (list
         (string-append "-DOPENALSOFT_INCLUDE_DIR="
@@ -3474,30 +3477,15 @@ Widgets, and allows users to create more.")
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (define python-version
-               (let* ((version     (last (string-split
-                                          (assoc-ref inputs "python")
-                                          #\-)))
-                      (components  (string-split version #\.))
-                      (major+minor (take components 2)))
-                 (string-join major+minor ".")))
-
              (when tests?
-               ;; Set PYTHONPATH so that python finds the installed modules.
-               (setenv "PYTHONPATH"
-                       (string-append (getenv "PYTHONPATH") ":"
-                                      (assoc-ref outputs "out")
-                                      "/lib/python"
-                                      python-version
-                                      "/site-packages"))
+               (add-installed-pythonpath inputs outputs)
                ;; The tests require an X server.
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")
                (setenv "XDG_RUNTIME_DIR" "/tmp")
                ;; Run tests
                (chdir ,(string-append "../" name "-" version))
-               (invoke "python3" "run_tests.py" "-a"))
-             #t)))))
+               (invoke "python3" "run_tests.py" "-a")))))))
     (inputs
      `(("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
