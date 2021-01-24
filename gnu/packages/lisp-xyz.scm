@@ -9172,7 +9172,7 @@ approach to templating.")
 (define-public sbcl-postmodern
   (package
     (name "sbcl-postmodern")
-    (version "1.32.6")
+    (version "1.32.8")
     (source
      (origin
        (method git-fetch)
@@ -9181,7 +9181,7 @@ approach to templating.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bfx0hcb9wv47qd334xs0fpmisl75dpvasq1zai210s5wqg0km6d"))))
+        (base32 "0vr5inbr8dldf6dsl0qj3h2yrnnsayzfwxfzwkn1pk7xbns2l78q"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
@@ -9208,6 +9208,9 @@ approach to templating.")
      ;;  /4f47agf1kyiz057ppy6x5p98i7mcbfsv-sbcl-local-time-1.0.6-2.a177eb9
      ;;   /lib/common-lisp/sbcl/local-time/src/integration/
      ;;
+     ;; NOTE: (Sharlatan-20210124T191940+0000): When set env HOME to /tmp above
+     ;; issue is resolved but it required live test database to connect to now.
+     ;; Keep tests switched off.
      `(#:tests? #f
        #:asd-systems '("cl-postgres"
                        "s-sql"
