@@ -24,7 +24,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +57,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -555,7 +556,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.40.0")
+   (version "2.42.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -563,26 +564,13 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1rnlx9yfw970maxi2x6niaxmih5la11q1ilr7gzshz2kk585k0hm"))))
+              "05ggmzwvrxq9w4zcvmrnnd6qplsmb4n95lj4q607c7arzlf6mil3"))))
    (build-system meson-build-system)
    (arguments
-    `(#:configure-flags '("-Dinstalled_tests=false")
+    `(#:meson ,meson-0.55
+      #:configure-flags '("-Dinstalled_tests=false")
       #:phases
       (modify-phases %standard-phases
-        (add-after
-         'unpack 'disable-failing-tests
-         (lambda _
-           (substitute* "tests/meson.build"
-             ;; XXX FIXME: This test fails on armhf machines with:
-             ;; SKIP Not enough memory to load bitmap image
-             ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
-             ((".*'cve-2015-4491'.*") "")
-             ;; XXX FIXME: This test fails with:
-             ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
-             ;; assertion failed (error == NULL): Data differ
-             ;; (gdk-pixbuf-error-quark, 0)
-             ((".*'pixbuf-jpeg'.*") ""))
-           #t))
         ;; The slow tests take longer than the specified timeout.
         ,@(if (any (cute string=? <> (%current-system))
                    '("armhf-linux" "aarch64-linux"))
