@@ -18082,24 +18082,11 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH"))))
-             (invoke "pytest")
-             #t)))))
+             (invoke "pytest"))))))
     (native-inputs `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/python/typed_ast")
     (synopsis "Fork of Python @code{ast} modules with type comment support")
