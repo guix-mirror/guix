@@ -16133,23 +16133,11 @@ applying JSON Patches according to RFC 6902.")
                 "17dvx15m3r49bmif5zlli8kzjd6bys6psixzbp14sd5367d9h8qi"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH")))
-             (invoke "pytest" "-v")))))))
+             (invoke "pytest" "-v"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://rfc3986.readthedocs.io/")
