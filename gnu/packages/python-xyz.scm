@@ -8731,14 +8731,7 @@ third-party code.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH")))
-             (invoke "pytest" "-v" "test")))))))
+             (invoke "pytest" "-v" "test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (synopsis "MessagePack (de)serializer")
