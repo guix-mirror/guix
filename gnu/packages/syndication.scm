@@ -196,7 +196,10 @@ file system, and many more features.")
         (base32 "1g9463bvswsm899j6dfhslcg6np70m5wq143mjicr24zy8d17bm7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list
+         "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
