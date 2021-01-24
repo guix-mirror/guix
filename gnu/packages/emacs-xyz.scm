@@ -21164,6 +21164,25 @@ with emacs.  It displays the output of the @code{repo status} command in a
 buffer and launches Magit from the status buffer for the project at point.")
     (license license:gpl3+)))
 
+(define-public emacs-repology
+  (package
+    (name "emacs-repology")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "repology-" version ".tar"))
+       (sha256
+        (base32 "0y12496wafx95izah8vvv1x86k1m8kysm5mlhvshkp0zbpvmb5iq"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/repology.html")
+    (synopsis "Repology API access via Elisp")
+    (description
+     "This package provides tools to query Repology API (see
+@url{https://repology.org/api}), process results, and display them.")
+    (license license:gpl3+)))
+
 (define-public emacs-alect-themes
   (package
     (name "emacs-alect-themes")
