@@ -18750,8 +18750,7 @@ user-space file systems in Python.")
                (("pytest < 5") "pytest < 7"))
              ;; We don't care about a coverage report.
              (substitute* "test/requirements.txt"
-               (("coverage.*") "coverage\n"))
-             #t))
+               (("coverage.*") "coverage\n"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
@@ -18759,11 +18758,7 @@ user-space file systems in Python.")
                (delete-file "test/test_js_client.py")
                (delete-file "test/test_tsd_types.py")
                (delete-file "test/test_python_gen.py")
-               (setenv "PYTHONPATH"
-                       (string-append (getcwd) ":"
-                                      (getenv "PYTHONPATH")))
-               (invoke "pytest"))
-             #t)))))
+               (invoke "pytest")))))))
     (propagated-inputs
      `(("python-ply" ,python-ply)
        ("python-six" ,python-six)))
