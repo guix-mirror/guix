@@ -27351,21 +27351,19 @@ accessors.")
 (define-public rust-rayon-1
   (package
     (name "rust-rayon")
-    (version "1.3.1")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rayon" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "104h6i5lcp9kx8g80jgqf6z7wcqa186q57wj4qzf011xfmb2iw32"))))
+        (base32 "0x2n4zkrm6z3avdfh7zgcwx0wq6hx8332dx89v3j1p7s3448w3cb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
-        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.8)
         ("rust-either" ,rust-either-1)
         ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
@@ -27377,7 +27375,8 @@ accessors.")
     (home-page "https://github.com/rayon-rs/rayon")
     (synopsis "Simple work-stealing parallelism for Rust")
     (description
-     "Simple work-stealing parallelism for Rust.")
+     "This package provides a simple work-stealing parallelism for
+Rust.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-rayon-0.8
