@@ -344,8 +344,6 @@ UFL is part of the FEniCS Project.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; FIXME: three FIAT test modules are known to fail
                ;; with recent versions of pytest (>= 4).  These are
@@ -355,8 +353,7 @@ UFL is part of the FEniCS Project.")
                (invoke "py.test" "unit/"
                        "--ignore=unit/test_fiat.py"
                        "--ignore=unit/test_quadrature.py"
-                       "--ignore=unit/test_reference_element.py"))
-             #t)))))
+                       "--ignore=unit/test_reference_element.py")))))))
     (home-page "https://bitbucket.org/fenics-project/fiat/")
     (synopsis "Tabulation of finite element function spaces")
     (description
