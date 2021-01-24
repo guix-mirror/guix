@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
@@ -255,26 +255,13 @@ mechanism for serializing structured data.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'setup-test-env
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (py3sitedir
-                     (string-append out "/lib/python"
-                                    ,(version-major+minor
-                                      (package-version python))
-                                    "/site-packages")))
-               (setenv "PYTHONPATH"
-                       (string-append py3sitedir ":"
-                                      (getenv "PYTHONPATH"))))
-             #t))
          (replace 'check
            (lambda _
              (invoke "pytest" "--cov-report" "term-missing" "--cov"
                      "pure_protobuf")
              (invoke "flake8" "pure_protobuf" "tests"
                      "--ignore=F541")
-             (invoke "isort" "-rc" "-c" "pure_protobuf" "tests")
-             #t)))))
+             (invoke "isort" "-rc" "-c" "pure_protobuf" "tests"))))))
     (home-page "https://pypi.org/project/pure-protobuf/")
     (synopsis "Protobuf implementation using dataclasses")
     (description
