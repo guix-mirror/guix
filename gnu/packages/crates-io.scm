@@ -3394,7 +3394,7 @@ bindings to C and C++ libraries.")
         ("rust-quote" ,rust-quote-0.6)
         ("rust-regex" ,rust-regex-1)
         ("rust-shlex" ,rust-shlex-0.1)
-        ("rust-which" ,rust-which-2.0))
+        ("rust-which" ,rust-which-2))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
@@ -3429,7 +3429,7 @@ bindings to C and C++ libraries.")
         ("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
         ("rust-regex" ,rust-regex-1)
-        ("rust-which" ,rust-which-2.0))
+        ("rust-which" ,rust-which-2))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
@@ -3498,7 +3498,7 @@ bindings to C and C++ libraries.")
         ("rust-quote" ,rust-quote-0.6)
         ("rust-regex" ,rust-regex-1)
         ("rust-shlex" ,rust-shlex-0.1)
-        ("rust-which" ,rust-which-2.0))
+        ("rust-which" ,rust-which-2))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
@@ -9680,7 +9680,7 @@ from macros.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-which" ,rust-which-2.0))))
+       (("rust-which" ,rust-which-2))))
     (home-page "https://github.com/assert-rs/docmatic")
     (synopsis "Test Rust examples in your documentation")
     (description "Test Rust examples in your documentation.")
@@ -40928,7 +40928,7 @@ using @code{bindgen}.")
 installed executable in cross platforms.")
     (license license:expat)))
 
-(define-public rust-which-2.0
+(define-public rust-which-2
   (package
     (name "rust-which")
     (version "2.0.1")
@@ -40958,7 +40958,7 @@ Locate installed executable in cross platforms.")
 
 (define-public rust-which-1.0
   (package
-    (inherit rust-which-2.0)
+    (inherit rust-which-2)
     (name "rust-which")
     (version "1.0.5")
     (source
