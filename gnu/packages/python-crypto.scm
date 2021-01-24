@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -789,31 +790,20 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
            (substitute* "setup.py"
              (("\"wheel\"") ""))
            ;; Remove bundled libsodium.
-           (delete-file-recursively "src/libsodium")
-           #t))
+           (delete-file-recursively "src/libsodium")))
        (sha256
         (base32
          "01b56hxrbif3hx8l6rwz5kljrgvlbj7shmmd2rjh0hn7974a5sal"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules (,@%python-build-system-modules
-                  (guix build utils)
-                  (ice-9 ftw)
-                  (srfi srfi-26))
-       #:phases
-       (modify-phases (@ (guix build python-build-system) %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
          (add-before 'build 'use-system-sodium
            (lambda _
-             (setenv "SODIUM_INSTALL" "system")
-             #t))
+             (setenv "SODIUM_INSTALL" "system")))
          (replace 'check
            (lambda _
-             (let ((build-directory
-                    (car (scandir "build" (cut string-prefix? "lib" <>)))))
-               (setenv "PYTHONPATH"
-                       (string-append "./build/" build-directory ":"
-                                      (getenv "PYTHONPATH")))
-               (invoke "pytest" "-vv")))))))
+             (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)))
