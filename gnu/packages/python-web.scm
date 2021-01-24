@@ -358,9 +358,6 @@ Model} (SAM) templates into AWS CloudFormation templates.")
                                   "tests/ext/aiohttp/test_client.py"))))
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./build/lib:.:"
-                                             (getenv "PYTHONPATH")))
                       (invoke "pytest" "-vv" "tests"))))))
     (native-inputs
      `(;; These are required for the test suite.
