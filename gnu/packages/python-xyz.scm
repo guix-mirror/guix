@@ -10897,8 +10897,6 @@ text.")
                       #t))
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH" (string-append "./build/lib:"
-                                                          (getenv "PYTHONPATH")))
                       (invoke "pytest" "-vv" "-m" "not network"
                               ;; These tests require Docker.
                               "-k" "not test_terminate_job \
