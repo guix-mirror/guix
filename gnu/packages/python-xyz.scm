@@ -334,12 +334,7 @@ implementation for the Telegram Bot API.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      ;; Extend PYTHONPATH so the built package will be found.
-                      (setenv "PYTHONPATH"
-                              (string-append (getcwd) "/build/lib:"
-                                             (getenv "PYTHONPATH")))
-                      (invoke "pytest" "-p" "no:logging")
-                      #t)))))
+                      (invoke "pytest" "-p" "no:logging"))))))
     (home-page "https://github.com/borntyping/python-colorlog")
     (synopsis "Log formatting with colors for python")
     (description "The @code{colorlog.ColoredFormatter} is a formatter for use
