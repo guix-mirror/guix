@@ -2876,8 +2876,6 @@ presume or force a developer to use a particular tool or library.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH" (string-append "./build/lib:"
-                                                 (getenv "PYTHONPATH")))
              (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-flask-babel" ,python-flask-babel)
