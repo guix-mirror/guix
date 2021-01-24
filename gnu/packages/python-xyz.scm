@@ -16460,19 +16460,13 @@ complex datatypes to and from native Python datatypes.")
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'disable-prance-tests
-                    (lambda _
-                      ;; Disable validation tests since they require the
-                      ;; optional 'prance' library which is not yet in Guix.
-                      (substitute* "tests/test_ext_marshmallow_openapi.py"
-                        (("def test_openapi_tools_validate.*" all)
-                         (string-append "@pytest.mark.xfail\n" all)))))
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./build/lib:"
-                                             (getenv "PYTHONPATH")))
-                      (invoke "pytest" "-vv"))))))
+                      (invoke "pytest" "-vv"
+                              ;; Disable validation tests since they require
+                              ;; the optional 'prance' library which is not
+                              ;; yet in Guix.
+                              "-k" "not openapi_tools_validate"))))))
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
     (native-inputs
