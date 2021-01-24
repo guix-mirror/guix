@@ -8297,10 +8297,6 @@ in pyflakes and pycodestyle.")
              (substitute* "setup.cfg"
                (("\\[pytest\\]")
                 "[tool:pytest]"))
-
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-flake8" ,python-flake8)
