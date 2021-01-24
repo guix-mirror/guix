@@ -99,10 +99,11 @@
                    (("^/usr/bin/env") "env"))
                  #t))))
     (build-system gnu-build-system)
-    (inputs
-     `(("libvorbis" ,libvorbis)
+    (propagated-inputs
+     `(("flac" ,flac)
        ("libogg" ,libogg)
-       ("flac" ,flac)))
+       ("libvorbis" ,libvorbis)
+       ("opus" ,opus)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
