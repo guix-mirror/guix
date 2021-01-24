@@ -401,8 +401,7 @@ FIAT is part of the FEniCS Project.")
                ;; prior to running the tests.
                (invoke "py.test" "unit/" "--ignore=unit/ufc/")
                (with-directory-excursion "uflacs"
-                 (invoke "py.test" "unit/")))
-             #t)))))
+                 (invoke "py.test" "unit/"))))))))
     (home-page "https://bitbucket.org/fenics-project/ffc/")
     (synopsis "Compiler for finite element variational forms")
     (description "The FEniCS Form Compiler (FFC) is a compiler for
