@@ -14238,16 +14238,6 @@ useful as a validator for JSON data.")
         (base32
          "090vdksbz341f7ljvr0zswblw4lspa8qaiikzyjkf318arpxmil9"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'set-pythonpath
-           (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getcwd) "/test/"
-                      ":" (getenv "PYTHONPATH")))
-             #t)))))
     (home-page
      "https://github.com/eliben/pyelftools")
     (synopsis
