@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -122,12 +122,9 @@
                 (string-append "@pytest.mark.xfail\n" all)))
 
              ;; Don't test the aiohttp pytest plugin to avoid a dependency loop.
-             (delete-file "tests/test_pytest_plugin.py")
-             #t))
+             (delete-file "tests/test_pytest_plugin.py")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append ".:" (getenv "PYTHONPATH")))
              (if tests?
                  (invoke "pytest" "-vv"
                          ;; Disable loading the aiohttp coverage plugin
