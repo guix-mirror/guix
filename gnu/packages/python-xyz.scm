@@ -14607,9 +14607,6 @@ protocols written in pure Python.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              (invoke "python" "test/test_pbkdf2.py"))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
