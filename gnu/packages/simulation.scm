@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -267,16 +268,13 @@ problems for efficient solution on parallel systems.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; Disable parallel tests to avoid race condition.  See
                ;; https://github.com/pytest-dev/pytest-cov/issues/237.
                (substitute* "runtests.sh"
                  (("for p in 1 4 8 16; do")
                   "for p in 1; do"))
-               (invoke "./runtests.sh"))
-             #t)))))
+               (invoke "./runtests.sh")))))))
     (home-page "https://bitbucket.org/fenics-project/dijitso/")
     (synopsis "Distributed just-in-time building of shared libraries")
     (description
