@@ -16501,9 +16501,6 @@ as Swagger.")
              (substitute* "Makefile"
                (("flake8 flasgger --ignore=F403")
                 "flake8 flasgger --ignore=E731,F403"))
-             (setenv "PYTHONPATH" (string-append (getcwd)
-                                                 ":"
-                                                 (getenv "PYTHONPATH")))
              (invoke "py.test"))))))
     (propagated-inputs
      `(("python-flask" ,python-flask)
