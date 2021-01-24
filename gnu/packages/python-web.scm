@@ -407,11 +407,6 @@ emit information from within their applications to the AWS X-Ray service.")
                         ;; to avoid a dependency on 'git'.
                         (delete-file
                          "test/unit/module/maintenance/test_update_documentation.py")
-                        (setenv "PYTHONPATH"
-                                (string-append "./build/lib:"
-                                               (getenv "PYTHONPATH")))
-                        (setenv "PATH" (string-append out "/bin:"
-                                                      (getenv "PATH")))
                         (invoke "python" "-m" "unittest" "discover"
                                 "-s" "test")))))))
     (native-inputs
