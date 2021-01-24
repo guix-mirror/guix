@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -901,54 +901,6 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                 (copy-file "libtcc1.a"
                            (string-append out "/lib/tcc/libtcc1.a")))))))))))
 
-(define diffutils-mesboot
-  ;; The initial diffutils.
-  (package
-    (inherit diffutils)
-    (name "diffutils-mesboot")
-    (version "2.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/diffutils/diffutils-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1mirn5i825bn5w7rh6mgn0r8aj9xqanav95dwcl1b8sn82f4iwnm"))))
-    (supported-systems '("i686-linux" "x86_64-linux"))
-    (inputs '())
-    (propagated-inputs '())
-    (native-inputs (%boot-tcc0-inputs))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile
-       #:parallel-build? #f
-       #:tests? #f            ; check is naive, also checks non-built PROGRAMS
-       #:strip-binaries? #f   ; no strip yet
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'remove-diff3-sdiff
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("PROGRAMS = .*" all) "PROGRAMS = cmp diff"))))
-         (replace 'configure           ; needs classic invocation of configure
-           (lambda* (#:key configure-flags #:allow-other-keys)
-             (let* ((out (assoc-ref %outputs "out"))
-                    (bash (assoc-ref %build-inputs "bash"))
-                    (shell (string-append bash "/bin/bash")))
-               (setenv "CONFIG_SHELL" shell)
-               (setenv "CC" "tcc")
-               (setenv "LD" "tcc")
-               (format (current-error-port)
-                       "running ./configure ~a\n" (string-join configure-flags))
-               (apply invoke (cons "./configure" configure-flags)))))
-         (replace 'install
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
-                    (bin (string-append out "/bin")))
-               (mkdir-p bin)
-               (install-file "cmp" bin)
-               (install-file "diff" bin)))))))))
-
 (define patch-mesboot
   ;; The initial patch.
   (package
@@ -1029,10 +981,11 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
 (define (%boot-tcc-inputs)
   `(("bash" ,bash-mesboot0)
     ("bzip2" ,bzip2-mesboot)
-    ("diffutils" ,diffutils-mesboot)
     ("gzip" ,gzip-mesboot)
     ("patch" ,patch-mesboot)
     ("sed" ,sed-mesboot0)
+    ;; Place lower than sed so we don't override it.
+    ("gash-utils" ,gash-utils-boot)
     ("tcc" ,tcc-boot)
     ,@(alist-delete "tcc" (%boot-tcc0-inputs))))
 
