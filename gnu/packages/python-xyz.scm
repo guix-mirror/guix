@@ -3211,13 +3211,8 @@ for Python.")
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
-                          (begin
-                            (setenv "PYTHONPATH"
-                                    (string-append "./build/lib:"
-                                                   (getenv "PYTHONPATH")))
-                            (invoke "pytest" "-vv"))
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (invoke "pytest" "-vv")
+                          (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
