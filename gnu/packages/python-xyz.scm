@@ -2771,8 +2771,6 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
              (invoke "trial" "jsonschema"))))))
     (native-inputs
      `(("python-setuptools_scm" ,python-setuptools-scm)
