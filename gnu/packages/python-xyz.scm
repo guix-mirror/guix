@@ -497,13 +497,8 @@ simple function calls.")
              #t))
          (replace 'check
            (lambda _
-             ;; Extend PYTHONPATH so the built package will be found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              ;; Skip the only failing test "test_parse_url"
-             (invoke "pytest" "-vv" "-k" "not test_parse_url")
-             #t)))))
+             (invoke "pytest" "-vv" "-k" "not test_parse_url"))))))
     (home-page
      "https://github.com/sbraz/pymediainfo")
     (synopsis
