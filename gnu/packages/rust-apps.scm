@@ -576,43 +576,45 @@ of support files.")
 (define-public tokei
   (package
     (name "tokei")
-    (version "10.1.1")
+    (version "12.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "tokei" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "07f5laqw2k9l3k8wrg9h8p2m5d9hkfxngyacwrn3vs7mlnw8l81m"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokei" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "000w549v1bpw7r57xw656p40ywf1gimvxxx5cjnri2js0xg927x4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-clap" ,rust-clap-2)
-        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
-        ("rust-dirs" ,rust-dirs-2.0)
+       (("rust-aho-corasick" ,rust-aho-corasick-0.7)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-dashmap" ,rust-dashmap-4)
+        ("rust-dirs" ,rust-dirs-3)
         ("rust-encoding-rs-io" ,rust-encoding-rs-io-0.1)
-        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-env-logger" ,rust-env-logger-0.8)
         ("rust-grep-searcher" ,rust-grep-searcher-0.1)
         ("rust-hex" ,rust-hex-0.4)
         ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-ignore" ,rust-ignore-0.4)
         ("rust-log" ,rust-log-0.4)
+        ("rust-num-format" ,rust-num-format-0.4)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
         ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1)
-        ("rust-serde-cbor" ,rust-serde-cbor-0.10)
-        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-cbor" ,rust-serde-cbor-0.11)
+        ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-tera" ,rust-tera-1)
         ("rust-term-size" ,rust-term-size-0.3)
         ("rust-toml" ,rust-toml-0.5))
        #:cargo-development-inputs
-       (("rust-git2" ,rust-git2-0.11)
-        ("rust-handlebars" ,rust-handlebars-2.0)
-        ("rust-ignore" ,rust-ignore-0.4)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-git2" ,rust-git2-0.13)
         ("rust-regex" ,rust-regex-1)
-        ("rust-serde-json" ,rust-serde-json-1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
