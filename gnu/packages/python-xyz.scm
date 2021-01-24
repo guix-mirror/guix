@@ -13093,7 +13093,6 @@ some degree most natural languages too.")
              (delete-file "libcst/metadata/tests/test_type_inference_provider.py")))
          (add-before 'check 'generate-test-data
            (lambda _
-             (setenv "PYTHONPATH" (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (invoke "python" "-m" "libcst.codegen.generate" "visitors")
              (invoke "python" "-m" "libcst.codegen.generate" "return_types")))
          (replace 'check
