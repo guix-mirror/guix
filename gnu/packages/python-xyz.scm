@@ -14210,10 +14210,6 @@ is used by PostgreSQL and the OpenSSH Server for example.")
              (delete-file "tests/__init__.py")))
          (replace 'check
            (lambda _
-             ;; Extend PYTHONPATH so the built package will be found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              (invoke "py.test" "-vv" ))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
