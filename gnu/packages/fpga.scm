@@ -4,6 +4,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Andrew Miloradovsky <andrew@interpretmath.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,3 +498,59 @@ components interfaces.  This, in turn, facilitates the integration of systems
 using different abstraction levels.")
     ;; homepages.cae.wisc.edu/~ece734/SystemC/Esperan_SystemC_tutorial.pdf
     (license license:asl2.0)))
+
+(define-public verilator
+  (package
+    (name "verilator")
+    (version "4.108")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/verilator/verilator")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kcs0p8i2hiw348xqqh49pmllqspbzh2ljwmia03b42md5h4x5vf"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("python" ,python)))
+    (inputs
+     `(("perl" ,perl)
+       ("systemc" ,systemc)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "LDFLAGS=-L"
+                            (assoc-ref %build-inputs "systemc")
+                            "/lib-linux64"))
+       #:make-flags
+       (list (string-append "LDFLAGS=-L"
+                            (assoc-ref %build-inputs "systemc")
+                            "/lib-linux64"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "autoconf"))))
+       #:test-target "test"))
+    ;; #error "Something failed during ./configure as config_build.h is incomplete.
+    ;; Perhaps you used autoreconf, don't." -- so we won't. ^^
+    (home-page "https://www.veripool.org/projects/verilator/")
+    (synopsis "Fast Verilog/SystemVerilog simulator")
+    (description
+     "Verilator is invoked with parameters similar to GCC or Synopsys’s VCS.
+It ``Verilates'' the specified Verilog or SystemVerilog code by reading it,
+performing lint checks, and optionally inserting assertion checks and
+coverage-analysis points.  It outputs single- or multi-threaded @file{.cpp}
+and @file{.h} files, the ``Verilated'' code.
+
+The user writes a little C++/SystemC wrapper file, which instantiates the
+Verilated model of the user’s top level module.  These C++/SystemC files are
+then compiled by a C++ compiler (GCC/Clang/etc.).  The resulting executable
+performs the design simulation.  Verilator also supports linking its generated
+libraries, optionally encrypted, into other simulators.")
+    (license license:lgpl3)))
