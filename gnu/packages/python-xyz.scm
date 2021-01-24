@@ -17565,17 +17565,7 @@ user's @file{~/Trash} directory.")
     (license license:bsd-3)))
 
 (define-public python2-send2trash
-  (package
-    (inherit (package-with-python2 (strip-python2-variant python-send2trash)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-send2trash)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'check 'setenv
-             (lambda _
-               (setenv "PYTHONPATH"
-                       (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-               #t))))))))
+  (package-with-python2 (strip-python2-variant python-send2trash)))
 
 (define-public python-pyfavicon
   (package
