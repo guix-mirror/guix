@@ -2653,11 +2653,9 @@ interfaces.")
                                                  "cross-libc" "libc"))))
                (substitute* "src/click/_unicodefun.py"
                  (("'locale'")
-                  (string-append "'" glibc "/bin/locale'"))))
-             #t))
+                  (string-append "'" glibc "/bin/locale'"))))))
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH" (string-append "./src:" (getenv "PYTHONPATH")))
              (invoke "python" "-m" "pytest"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
