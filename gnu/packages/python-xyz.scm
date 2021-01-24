@@ -5419,24 +5419,12 @@ Python code against some of the style conventions in
          "07ikq2c72kd263hpldw55y0px2l3g34hjk66ml9lryh1jv287qmf"))))
     (build-system python-build-system)
     (arguments
-     '(#:modules ((ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
-                          (begin
-                            (let ((libdir (find (cut string-prefix? "lib." <>)
-                                                (scandir "build"))))
-                              (setenv "PYTHONPATH"
-                                      (string-append "./build/" libdir ":"
-                                                     (getenv "PYTHONPATH")))
-                              (invoke "pytest" "-vv")))
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (invoke "pytest" "-vv")
+                          (format #t "test suite not run~%")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)))
