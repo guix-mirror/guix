@@ -8001,8 +8001,6 @@ Python 2 and Python 3.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH" (string-append "./build/lib:"
-                                                 (getenv "PYTHONPATH")))
              (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python2-pytest" ,python2-pytest)))
