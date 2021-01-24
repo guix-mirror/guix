@@ -576,9 +576,6 @@ compliance.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (getenv "PYTHONPATH")))
              (invoke "pytest"))))))
     (propagated-inputs
      `(("python-isort" ,python-isort)
