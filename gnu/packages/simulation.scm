@@ -393,8 +393,6 @@ FIAT is part of the FEniCS Project.")
          (replace 'check
            (lambda _
              (setenv "HOME" (getcwd))
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; FIXME: the tests in subdirectory
                ;; 'unit/ufc/finite_element' require the ffc_factory
