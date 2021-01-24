@@ -1103,25 +1103,23 @@ using AES-NI for high performance.")
 (define-public rust-aho-corasick-0.7
   (package
     (name "rust-aho-corasick")
-    (version "0.7.13")
+    (version "0.7.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "aho-corasick" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "11hfmqf90rdvjdpk0x1lixw1s9n08y3fxfy9zqsk0k2wpbc68c84"))))
+        (base32 "1rb8gzhljl8r87dpf2n5pnqnkl694casgns4ma0sqzd4zazzw13l"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2))
+     `(#:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page "https://github.com/BurntSushi/aho-corasick")
     (synopsis "Fast multiple substring searching")
-    (description
-     "Fast multiple substring searching.")
+    (description "This package provides a fast multiple substring searching.")
     (license (list license:unlicense license:expat))))
 
 (define-public rust-aho-corasick-0.6
