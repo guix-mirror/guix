@@ -401,7 +401,8 @@ FIAT is part of the FEniCS Project.")
                ;; prior to running the tests.
                (invoke "py.test" "unit/" "--ignore=unit/ufc/")
                (with-directory-excursion "uflacs"
-                 (invoke "py.test" "unit/"))))))))
+                 (invoke "py.test" "unit/")))
+             #t)))))
     (home-page "https://bitbucket.org/fenics-project/ffc/")
     (synopsis "Compiler for finite element variational forms")
     (description "The FEniCS Form Compiler (FFC) is a compiler for
@@ -616,8 +617,7 @@ user interface to the FEniCS core components and external libraries.")
              ;; Define paths to store locations.
              (setenv "PYBIND11_DIR" (assoc-ref %build-inputs "pybind11"))
              ;; Move to python sub-directory.
-             (chdir "python")
-             #t))
+             (chdir "python")))
          (add-after 'build 'mpi-setup
            ,%openmpi-setup)
          (add-before 'check 'pre-check
@@ -659,14 +659,8 @@ user interface to the FEniCS core components and external libraries.")
                  "d for d in demos if d[0].stem not in "
                  "excludeList]\n")))
              (setenv "HOME" (getcwd))
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getcwd) "/build/lib.linux-x86_64-"
-                      ,(version-major+minor (package-version python)) ":"
-                      (getenv "PYTHONPATH")))
              ;; Restrict OpenBLAS to MPI-only in preference to MPI+OpenMP.
-             (setenv "OPENBLAS_NUM_THREADS" "1")
-             #t))
+             (setenv "OPENBLAS_NUM_THREADS" "1")))
          (replace 'check
            (lambda _
              (with-directory-excursion "test"
@@ -678,8 +672,7 @@ user interface to the FEniCS core components and external libraries.")
                                        (min 3 (parallel-job-count)))
                        "python" "-B" "-m"
                        "pytest" "unit" "--ignore"
-                       "unit/nls/test_PETScSNES_solver.py"))
-             #t))
+                       "unit/nls/test_PETScSNES_solver.py"))))
          (add-after 'install 'install-demo-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((demos (string-append
@@ -693,8 +686,7 @@ user interface to the FEniCS core components and external libraries.")
                                (unless (equal? "." dir)
                                  (mkdir-p tgt-dir)
                                  (install-file file tgt-dir))))
-                           (find-files "." ".*\\.(py|gz|xdmf)$"))))
-             #t)))))
+                           (find-files "." ".*\\.(py|gz|xdmf)$")))))))))
     (home-page "https://fenicsproject.org/")
     (synopsis "High-level environment for solving differential equations")
     (description
