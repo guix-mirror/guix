@@ -310,11 +310,7 @@ the complexity of that interface.  Parallel support depends on the
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-             (with-directory-excursion "test"
-               (invoke "py.test"))
-             #t)))))
+             (invoke "py.test" "test"))))))
     (home-page "https://bitbucket.org/fenics-project/ufl/")
     (synopsis "Unified language for form-compilers")
     (description "The Unified Form Language (UFL) is a domain specific
