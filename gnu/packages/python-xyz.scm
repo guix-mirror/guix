@@ -13867,27 +13867,14 @@ Python to manipulate OpenDocument 1.2 files.")
                 "1ksqfai72dbcfbwx43pxl658j59mx2rvqypjy1fk0ax2qd6lccx6"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (ice-9 ftw))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-cachedir
            ;; Tests require write access to $HOME by default
            (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t))
          (replace 'check
            (lambda _
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append
-                        cwd "/build/"
-                        (find (cut string-prefix? "lib" <>)
-                              (scandir (string-append cwd "/build")))
-                        ":"
-                        (getenv "PYTHONPATH")))
-               (invoke "pytest" "-v")))))))
+             (invoke "pytest" "-v"))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest-cov" ,python-pytest-cov)
