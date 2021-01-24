@@ -13837,8 +13837,6 @@ discovery, monitoring and configuration.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH" (string-append "./build/lib:"
-                                                 (getenv "PYTHONPATH")))
              (invoke "pytest" "-vv"))))))
     (build-system python-build-system)
     (native-inputs
