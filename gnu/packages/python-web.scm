@@ -3645,13 +3645,9 @@ for Flask.")
                     (lambda _
                       ;; This test requires 'postcss' and 'babel' which are
                       ;; not yet available in Guix.
-                      (delete-file "tests/test_filters.py")
-                      #t))
+                      (delete-file "tests/test_filters.py")))
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./build/lib:"
-                                             (getenv "PYTHONPATH")))
                       (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-jinja2" ,python-jinja2)
