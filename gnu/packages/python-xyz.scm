@@ -3616,17 +3616,14 @@ to deprecate classes, functions or methods.")
                   (add-after 'unpack 'disable-failing-tests
                     (lambda _
                       (substitute* "tests/Issue142.py"
-                        (("testDecodeJson") "disabled_testDecodeJson"))
-                      #t))
+                        (("testDecodeJson")
+                         "disabled_testDecodeJson"))))
                   (add-before 'check 'prepare-for-tests
                     (lambda _
                       (for-each (lambda (f)
                                   (chmod f #o666))
                                 (find-files "./tests"))
-                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests")
-                      (setenv "PYTHONPATH"
-                              (string-append "./tests:" (getenv "PYTHONPATH")))
-                      #t)))))
+                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests"))))))
     (propagated-inputs
      `(("python-deprecated" ,python-deprecated)
        ("python-pyjwt" ,python-pyjwt)
