@@ -20851,8 +20851,6 @@ essential tools are located.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (invoke "python" "./tests/__main__.py"))))))
     (propagated-inputs
      `(("python-dill" ,python-dill)
