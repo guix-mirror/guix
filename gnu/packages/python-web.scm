@@ -703,9 +703,6 @@ content using a variety of algorithms.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./build/lib:"
-                                             (getenv "PYTHONPATH")))
                       (invoke "pytest" "-vv"
                               ;; Prevent running the flake8 and black
                               ;; pytest plugins, which only tests style
