@@ -467,3 +467,33 @@ a hardware description and verification language. ")
     (description "This package provides a VHDL compiler and simulator.")
     (home-page "https://github.com/nickg/nvc")
     (license license:gpl3+)))
+
+(define-public systemc
+  (package
+    (name "systemc")
+    (version "2.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://accellera.org/images/downloads/standards/"
+             "systemc/systemc-" version ".tar.gz"))
+       (sha256
+        (base32 "0gvv3xmhiwx1izmzy06yslzqzh6ygrgmw53xqfmyvbz5a6ivk0ap"))))
+    (native-inputs `(("perl" ,perl)))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-debug")))
+    (home-page "https://accellera.org/community/systemc")
+    (synopsis "Library for event-driven simulation")
+    (description
+     "SystemC is a C++ library for modeling concurrent systems, and the
+reference implementation of IEEE 1666-2011.  It provides a notion of timing as
+well as an event-driven simulations environment.  Due to its concurrent and
+sequential nature, SystemC allows the description and integration of complex
+hardware and software components.  To some extent, SystemC can be seen as
+a Hardware Description Language.  However, unlike VHDL or Verilog, SystemC
+provides sophisticated mechanisms that offer high abstraction levels on
+components interfaces.  This, in turn, facilitates the integration of systems
+using different abstraction levels.")
+    ;; homepages.cae.wisc.edu/~ece734/SystemC/Esperan_SystemC_tutorial.pdf
+    (license license:asl2.0)))
