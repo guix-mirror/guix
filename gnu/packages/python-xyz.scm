@@ -5175,9 +5175,7 @@ toolkits.")
          (replace 'build
            (lambda _
              (chdir "doc")
-             (setenv "PYTHONPATH"
-                     (string-append (getenv "PYTHONPATH")
-                                    ":" (getcwd) "/../examples/units"))
+             (setenv "PYTHONPATH" "../examples/units")
              (substitute* "conf.py"
                ;; Don't use git.
                (("^SHA = check_output.*")
@@ -5212,8 +5210,7 @@ toolkits.")
                           "./matplotlib-figures")
                  (invoke "makeinfo" "--no-split"
                          "-o" "matplotlib.info" "matplotlib.texi"))
-               (install-file "build/texinfo/matplotlib.info" info))
-             #t)))))
+               (install-file "build/texinfo/matplotlib.info" info)))))))
     (home-page (package-home-page python-matplotlib))
     (synopsis "Documentation for the python-matplotlib package")
     (description (package-description python-matplotlib))
