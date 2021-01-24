@@ -27406,25 +27406,23 @@ accessors.")
 (define-public rust-rayon-core-1
   (package
     (name "rust-rayon-core")
-    (version "1.7.1")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rayon-core" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "101jjwkcfw5jk31695gbdm163iicc2pz349q6l8lwj43j3c1abp9"))))
+        (base32 "0jpsi8zf66xyx4m5f329lpgiql8775vpm6zqm7zn5p11b6n4dcws"))))
     (build-system cargo-build-system)
     (arguments
-     `(;; One of the tests attempts to overflow the stack, but the compiler
-       ;; has since gotten smarter and the test became defective.
-       #:tests? #f
+     ;; One of the tests attempts to overflow the stack, but the compiler has
+     ;; since gotten smarter and the test became defective.
+     `(#:tests? #f
        #:cargo-inputs
-       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.8)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-num-cpus" ,rust-num-cpus-1))
        #:cargo-development-inputs
@@ -27434,8 +27432,8 @@ accessors.")
         ("rust-scoped-tls" ,rust-scoped-tls-1))))
     (home-page "https://github.com/rayon-rs/rayon")
     (synopsis "Core APIs for Rayon")
-    (description "Core APIs for Rayon.")
-    (license (list license:expat license:asl2.0))))
+    (description "This package provides core APIs for Rayon.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-rctree-0.3
   (package
