@@ -805,14 +805,6 @@ Expressions are constructed from parsed strings or directly in Python.")
       (modify-phases %standard-phases
         (replace 'check
           (lambda _
-            ;; The 'runexamples' script sets PYTHONPATH to CWD, then goes
-            ;; on to import numpy. Somehow this works on their CI system.
-            ;; Let's just manage PYTHONPATH here instead.
-            (substitute* "runexamples.sh"
-              (("export PYTHONPATH=.*") ""))
-            (setenv "PYTHONPATH"
-                    (string-append (getcwd) ":"
-                                   (getenv "PYTHONPATH")))
             (invoke "./runexamples.sh")
             (invoke "nosetests" "-v"))))))
    (home-page "https://github.com/fhs/python-hdf4")
