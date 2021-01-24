@@ -14490,43 +14490,25 @@ possible on all supported Python versions.")
            "0ar5dqjnqaw0c17mymd6xgd81jn9br9fblawr0x438v1571bkaya"))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'use-absolute-python
                     (lambda _
                       (substitute* "Cheetah/CheetahWrapper.py"
                         (("#!/usr/bin/env python")
-                         (string-append "#!" (which "python"))))
-                      #t))
+                         (string-append "#!" (which "python"))))))
                   (add-after 'unpack 'fix-tests
                     (lambda _
                       (substitute* "Cheetah/Tests/ImportHooks.py"
                         (("os.path.dirname\\(__file__\\)")
-                         (string-append "'" (getcwd) "/Cheetah/Tests'")))
-                      #t))
+                         (string-append "'" (getcwd) "/Cheetah/Tests'")))))
                   (replace 'check
                     (lambda _
-                      (let ((cwd (getcwd)))
-                        (setenv "PYTHONPATH"
-                                (string-append
-                                 cwd "/build/"
-                                 (find (cut string-prefix? "lib" <>)
-                                       (scandir (string-append cwd "/build")))
-                                 ":" (getenv "PYTHONPATH")))
-                        (setenv "PATH"
-                                (string-append (getenv "PATH")
-                                               ":" cwd "/bin"))
-                        (setenv "TMPDIR" "/tmp")
+                      (setenv "TMPDIR" "/tmp")
+                      (substitute* "Cheetah/Tests/Test.py"
+                        (("unittest.TextTestRunner\\(\\)")
+                         "unittest.TextTestRunner(verbosity=2)"))
 
-                        (substitute* "Cheetah/Tests/Test.py"
-                          (("unittest.TextTestRunner\\(\\)")
-                           "unittest.TextTestRunner(verbosity=2)"))
-
-                        (invoke "python" "Cheetah/Tests/Test.py")))))))
+                      (invoke "python" "Cheetah/Tests/Test.py"))))))
     (propagated-inputs
      `(("python-markdown" ,python-markdown)))    ;optional
     (home-page "https://cheetahtemplate.org/")
