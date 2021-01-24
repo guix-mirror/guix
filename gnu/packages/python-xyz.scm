@@ -12311,12 +12311,6 @@ module in Python 3.5 and later.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; Upstream runs tests after installation and the package itself
-             ;; resides in a subdirectory. Extend PYTHONPATH so it will be
-             ;; found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              (invoke "py.test" "-vv" "tests" "README.rst"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
