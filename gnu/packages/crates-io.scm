@@ -8620,8 +8620,35 @@ reading attributes into structs when implementing custom derives.")
 reading attributes into structs when implementing custom derives.")
     (license license:expat)))
 
+(define-public rust-dashmap-4
+  (package
+    (name "rust-dashmap")
+    (version "4.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dashmap" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1773x18k5m2zw1iyibs8l3wl1p1aijdbrc0w844xys06inr46yp7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/xacrimon/dashmap")
+    (synopsis "Blazing fast concurrent HashMap for Rust.")
+    (description "This package implements a blazing fast concurrent HashMap
+for Rust.")
+    (license license:expat)))
+
 (define-public rust-dashmap-3
   (package
+    (inherit rust-dashmap-4)
     (name "rust-dashmap")
     (version "3.11.10")
     (source
@@ -8642,7 +8669,6 @@ reading attributes into structs when implementing custom derives.")
                              "#![feature(inner_deref)]" "\n"
                              all)))
            #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ahash" ,rust-ahash-0.3)
@@ -8653,12 +8679,7 @@ reading attributes into structs when implementing custom derives.")
          (add-after 'unpack 'enable-unstable-features
            (lambda _
              (setenv "RUSTC_BOOTSTRAP" "1")
-             #t)))))
-    (home-page "https://github.com/xacrimon/dashmap")
-    (synopsis "Blazing fast concurrent HashMap for Rust")
-    (description "This package implements a blazing fast concurrent HashMap
-for Rust.")
-    (license license:expat)))
+             #t)))))))
 
 (define-public rust-data-encoding-2
   (package
