@@ -13708,14 +13708,9 @@ binary or text.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-pythonpath
+         (add-before 'check 'set-home
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getcwd) "/src/"
-                      ":" (getenv "PYTHONPATH")))
-             (setenv "HOME" "")
-             #t)))))
+             (setenv "HOME" ""))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
