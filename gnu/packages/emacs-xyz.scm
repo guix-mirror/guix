@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019, 2020, 2021 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1845,6 +1845,34 @@ an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
+
+(define-public emacs-counsel-bbdb
+  (package
+  (name "emacs-counsel-bbdb")
+  (version "20181128.1320")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://melpa.org/packages/counsel-bbdb-"
+                          version ".el"))
+      (sha256
+        (base32
+          "03g3lk8hz9a17vf5r16x054bhyk8xsbnfq0div8ig13fmhqi159q"))))
+  (build-system emacs-build-system)
+  (propagated-inputs `(("emacs-ivy" ,emacs-ivy)))
+  (home-page "https://github.com/redguard/counsel-bbdb")
+  (synopsis "Ivy interface for BBDB")
+  (description "This Ivy extension enables the use of @code{ivy-mode} to input
+email addresses from BBDB efficiently.  The main functions are:
+@table @code
+@item counsel-bbdb-complete-mail to input email addresses;
+@item counsel-bbdb-reload' to reload contacts from BBDB database;
+@item counsel-bbdb-expand-mail-alias to expand mail alias.
+@end table
+Since @code{counsel-bbdb} is based on @code{ivy-mode}, all Ivy key bindings
+are supported.  For example, after @samp{C-u M-x counsel-bbdb-complete-mail},
+you can press @samp{C-M-n} to input multiple email addresses.")
+  (license license:gpl3+)))
 
 (define-public emacs-bluetooth
   (package
