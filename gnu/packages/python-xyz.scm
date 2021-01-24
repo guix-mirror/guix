@@ -1260,9 +1260,6 @@ language.  It aims to be fast.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (format #t "current working dir ~s~%" (getcwd))
-                      (setenv "PYTHONPATH"
-                              (string-append ".:" (getenv "PYTHONPATH")))
                       ;; We must run the test suite module directly, as it
                       ;; fails to define the 'tempdir' variable in scope for
                       ;; the tests otherwise
