@@ -1140,7 +1140,7 @@ outputs of those builds.")
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
-    (version "0.1.0")
+    (version "0.2.0")
     (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
     (source (origin
               (method git-fetch)
@@ -1148,24 +1148,7 @@ outputs of those builds.")
                                   (commit (string-append "v" version))))
               (sha256
                (base32
-                "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2])\n"))
-
-                  ;; Avoid name clash and build failure now that
-                  ;; 'define-json-mapping' is also provided by Guile-JSON, as
-                  ;; of version 4.3.
-                  (substitute* (find-files "." "\\.scm$")
-                    (("define-json-mapping")
-                     "define-json-mapping*")
-                    (("<=>")
-                     "<->"))
-                  #t))
+                "1bjddkj1px1xzm3gia87sclphwsnr4vb92vrfi8gh5dx0z73dmc5"))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
