@@ -4528,12 +4528,9 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
            (lambda _
              (invoke "make" "-C" "docs" "PAPER=a4" "html" "info")
              (delete-file "docs/build/texinfo/Makefile")
-             (delete-file "docs/build/texinfo/Gunicorn.texi")
-             #t))
+             (delete-file "docs/build/texinfo/Gunicorn.texi")))
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append ".:" (getenv "PYTHONPATH")))
              (invoke "pytest")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4550,8 +4547,7 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                (copy-recursively "examples" examples)
                (for-each (lambda (file)
                            (copy-file file (string-append doc "/" file)))
-                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))
-             #t)))))
+                         '("README.rst" "NOTICE" "LICENSE" "THANKS"))))))))
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
        ("python-aiohttp" ,python-aiohttp)
