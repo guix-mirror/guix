@@ -1374,9 +1374,6 @@ another XPath engine to find the matching elements in an XML or HTML document.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (setenv "PYTHONPATH"
-                              (string-append "./build/lib:"
-                                             (getenv "PYTHONPATH")))
                       (invoke "pytest" "tests" "-vv"
                               ;; XXX: This fails with newer Pytest
                               ;; (upstream uses Pytest 3..).
