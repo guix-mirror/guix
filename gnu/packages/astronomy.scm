@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
@@ -130,7 +130,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -138,13 +138,15 @@ header.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "07di6zx2irc5q0zyymx2951ydzxdfjmzd3az5qnk67ncf3hknvj5"))))
+         "1xp6n42qxv0x6yigi2w2l5k8006smv27lhrcssysgsvzbydghzg5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
      `(("cfitsio" ,cfitsio)
+       ("curl" ,curl-minimal)
        ("gsl" ,gsl)
+       ("libgit2" ,libgit2)
        ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("wcslib" ,wcslib)
