@@ -1087,10 +1087,18 @@ shell command executions.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'patch-lua-calls
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lua (string-append (assoc-ref inputs "lua") "/bin/lua")))
+               (setenv "LUA" lua)
+               (substitute* "old/launcher.lua"
+                 (("/usr/bin/env lua") lua))
+               #t)))
          (add-after 'build 'patch-fennel
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "fennel"
-               (("/usr/bin/env lua") (which "lua")))
+               (("/usr/bin/env .*lua")
+                (string-append (assoc-ref inputs "lua") "/bin/lua")))
              #t))
          (delete 'check)
          (add-after 'install 'check
