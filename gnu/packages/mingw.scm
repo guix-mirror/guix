@@ -46,23 +46,26 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
       (name (string-append "mingw-w64" "-" machine
                            (if with-winpthreads? "-winpthreads" "")))
       (version "7.0.0")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
-                      "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
-                (sha256
-                 (base32 "0a5njsa2zw2ssdz10jkb10mhrf3cb8qp9avs89zqmw4n6pzxy85a"))
-                (patches
-                 (search-patches "mingw-w64-6.0.0-gcc.patch"
-                                 "mingw-w64-dlltool-temp-prefix.patch"
-                                 "mingw-w64-reproducible-gendef.patch"))))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "mirror://sourceforge/mingw-w64/mingw-w64/"
+               "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
+         (sha256
+          (base32 "0a5njsa2zw2ssdz10jkb10mhrf3cb8qp9avs89zqmw4n6pzxy85a"))
+         (patches
+          (search-patches "mingw-w64-6.0.0-gcc.patch"
+                          "mingw-w64-dlltool-temp-prefix.patch"
+                          "mingw-w64-reproducible-gendef.patch"))))
       (native-inputs `(("xgcc-core" ,(if xgcc xgcc (cross-gcc triplet)))
-                       ("xbinutils" ,(if xbinutils xbinutils (cross-binutils triplet)))
+                       ("xbinutils" ,(if xbinutils xbinutils
+                                         (cross-binutils triplet)))
                        ,@(if with-winpthreads?
-                             `(("xlibc" ,(make-mingw-w64 machine
-                                                         #:xgcc xgcc
-                                                         #:xbinutils xbinutils)))
+                             `(("xlibc" ,(make-mingw-w64
+                                          machine
+                                          #:xgcc xgcc
+                                          #:xbinutils xbinutils)))
                              '())))
       (build-system gnu-build-system)
       (search-paths
@@ -85,9 +88,11 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
            (add-before 'configure 'setenv
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((xgcc-core (assoc-ref inputs "xgcc-core"))
-                     (mingw-headers (string-append (getcwd) "/mingw-w64-headers")))
+                     (mingw-headers (string-append
+                                     (getcwd) "/mingw-w64-headers")))
                  (setenv "CPP"
-                         (string-append xgcc-core ,(string-append "/bin/" triplet "-cpp")))
+                         (string-append
+                          xgcc-core ,(string-append "/bin/" triplet "-cpp")))
                  (setenv "CROSS_C_INCLUDE_PATH"
                          (string-append
                           mingw-headers
@@ -96,11 +101,11 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
                           ":" mingw-headers "/defaults/include"
                           ":" mingw-headers "/direct-x/include"))
                  (when ,with-winpthreads?
-                     (let ((xlibc (assoc-ref inputs "xlibc")))
-                       (setenv "CROSS_LIBRARY_PATH"
-                               (string-append
-                                xlibc "/lib" ":"
-                                xlibc "/" ,triplet "/lib"))))))))
+                   (let ((xlibc (assoc-ref inputs "xlibc")))
+                     (setenv "CROSS_LIBRARY_PATH"
+                             (string-append
+                              xlibc "/lib" ":"
+                              xlibc "/" ,triplet "/lib"))))))))
          #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
          #:tests? #f ; compiles and includes glibc headers
          #:strip-binaries? #f))
