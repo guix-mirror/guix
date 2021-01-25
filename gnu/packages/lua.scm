@@ -1083,6 +1083,7 @@ shell command executions.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #t      ; even on cross-build
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
