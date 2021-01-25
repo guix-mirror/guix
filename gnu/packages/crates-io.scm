@@ -3168,6 +3168,28 @@ c6e7d37.  However, this package works only up to 128 bytes.")
     (description "This library provides for encoding and decoding any base.")
     (license license:expat)))
 
+(define-public rust-beef-0.4
+  (package
+    (name "rust-beef")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "beef" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hva1rmbx2a54q4ncs8i5lbr26669wyvnya1sh3x22r0cxm64jj7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/maciejhirsz/beef")
+    (synopsis "Faster, more compact implementation of Cow")
+    (description "This package provides faster, more compact implementation of
+Cow.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bencher-0.1
   (package
     (name "rust-bencher")
