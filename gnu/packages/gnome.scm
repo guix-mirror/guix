@@ -6433,7 +6433,7 @@ DAV, and others.")
 (define-public gusb
   (package
     (name "gusb")
-    (version "0.3.0")
+    (version "0.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6442,7 +6442,7 @@ DAV, and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "002pg0p4qzzk5dkyiynm483ir26zxrn4k71c7f6j85mfsdzbgli7"))))
+                "0ifhdqhpyxwsg0z9s1anj7cf5pya5qsqyp5ksh9n7mqwa4lrjkl8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
