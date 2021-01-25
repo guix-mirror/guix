@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -220,4 +221,5 @@ devices.")
         `(cons* "--shared" "--without-npm" ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (delete 'patch-npm-shebang)))))))
+           (delete 'patch-npm-shebang)
+           (delete 'patch-node-shebang)))))))

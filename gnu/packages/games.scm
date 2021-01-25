@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -30,7 +30,7 @@
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -1360,7 +1360,7 @@ does not include game data.")
   (package
     (inherit julius)
     (name "augustus")
-    (version "1.4.1a")
+    (version "2.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1369,7 +1369,7 @@ does not include game data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xqv8j8jh3f13fjhyf7hk1anrn799cwwsvsd75kpl9n5yh5s1j5y"))
+        (base32 "0czazw8mc3fbvdazs2nzvgxd1dpzjc8z5fwiv89vv4nd7laz3jkj"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -2237,6 +2237,100 @@ and defeat them with your bubbles!")
     ;; GPL2+ is for code, CC0 is for art.
     (license (list license:gpl2+ license:cc0))))
 
+(define-public solarus
+  (package
+    (name "solarus")
+    ;; XXX: When updating this package, please also update hash in
+    ;; `solarus-quest-editor' below.
+    (version "1.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/solarus-games/solarus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n6l91yyqjx0pz4w1lp3yybpq0fs2yjswfcm8c1wjfkxwiznbdxi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           ;; The following tests fail reporting a missing "/dev/dri"
+           ;; file.
+           (lambda _
+             (substitute* "tests/cmake/AddTestMaps.cmake"
+               ((".*1200_create_shader_from_source.*" all)
+                (string-append "#" all))
+               ((".*1210_shader_scaling_factor.*" all)
+                (string-append "#" all)))
+             #t))
+         (add-before 'check 'set-home
+           ;; Tests fail without setting the following environment
+           ;; variables.
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("glm" ,glm)
+       ("libmodplug" ,libmodplug)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("luajit" ,luajit)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("qtbase" ,qtbase)
+       ("sdl2" ,(sdl-union (list sdl2 sdl2-image sdl2-ttf)))))
+    (home-page "https://www.solarus-games.org/")
+    (synopsis "Lightweight game engine for Action-RPGs")
+    (description
+     "Solarus is a 2D game engine written in C++, that can run games
+scripted in Lua.  It has been designed with 16-bit classic Action-RPGs
+in mind.")
+    ;; The source code is licensed under the terms of GPL-3.0.
+    ;; Resources are licensed under the terms of CC-BY-SA-3.0 and
+    ;; CC-BY-SA 4.0.
+    (license (list license:gpl3 license:cc-by-sa3.0 license:cc-by-sa4.0))))
+
+(define-public solarus-quest-editor
+  (package
+    (inherit solarus)
+    (name "solarus-quest-editor")
+    (version (package-version solarus))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/solarus-games/solarus-quest-editor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qbc2j9kalk7xqk9j27s7wnm5zawiyjs47xqkqphw683idmzmjzn"))))
+    (arguments
+     `(#:tests? #false                  ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-qt-build
+           ;; XXX: Fix build with Qt 5.15.  It has been applied upstream as
+           ;; 81d5c7f1 and can be removed at next upgrade.
+           (lambda _
+             (substitute* "src/entities/jumper.cpp"
+               (("#include <QPainter>" all)
+                (string-append all "\n" "#include <QPainterPath>\n")))
+             #t)))))
+    (inputs
+     `(("solarus" ,solarus)
+       ,@(package-inputs solarus)))
+    (synopsis "Create and modify quests for the Solarus engine")
+    (description
+     "Solarus Quest Editor is a graphical user interface to create and
+modify quests for the Solarus engine.")))
+
 (define-public superstarfighter
   (package
     (name "superstarfighter")
@@ -2364,6 +2458,93 @@ available, as well as a single-player mode with AI-controlled ships.")
           (("\\$\\(call ZIP\\)")
            "$(call ZIP) -X"))
         #t))))
+
+(define-public trigger-rally
+  (package
+    (name "trigger-rally")
+    (version "0.6.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/trigger-rally/"
+                           "trigger-" version "/"
+                           "trigger-rally-" version ".tar.gz"))
+       (sha256
+        (base32
+         "016bc2hczqscfmngacim870hjcsmwl8r3aq8x03vpf22s49nw23z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("freealut" ,freealut)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image)))
+       ("tinyxml2" ,tinyxml2)))
+    (arguments
+     `(#:make-flags (list (string-append "prefix=" %output)
+                          "bindir=$(prefix)/bin"
+                          "datadir=$(datarootdir)"
+                          "OPTIMS=-Ofast")
+       #:tests? #f                      ; No tests present
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'cd-src
+           (lambda _ (chdir "src")))
+         (add-before 'build 'remove-timestamps
+           (lambda _
+             (substitute* (list "Trigger/menu.cpp"
+                                "PEngine/app.cpp")
+               ((".*__DATE__.*") ""))))
+         (add-before 'build 'make-verbose
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("@\\$\\(CXX\\)") "$(CXX)"))))
+         (add-after 'build 'set-data-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "../bin/trigger-rally.config.defs"
+                 (("<data path=\"C:[^\"]*\"")
+                  (string-append "<data path=\"" out "/share/trigger-rally\""))))))
+         (add-after 'install 'create-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                   (string-append apps "/trigger-rally.desktop")
+                 (lambda ()
+                   (format #t           ; Borrowed from Debian package
+                           "[Desktop Entry]~@
+                            Name=Trigger Rally~@
+                            Icon=trigger-rally~@
+                            Comment=3D rally racing car game~@
+                            Comment[de]=3D Rally-Autorennen~@
+                            Comment[fr_FR]=un jeu de rally en 3D~@
+                            Comment[ro_RO]=Un joc în 3D cu curse de raliu~@
+                            Exec=~a/bin/trigger-rally~@
+                            Terminal=false~@
+                            StartupNotify=false~@
+                            Type=Application~@
+                            TryExec=~:*~a/bin/trigger-rally~@
+                            Categories=Game;ArcadeGame;~@
+                            Keywords=racing;tracks;~@
+                            Keywords[de]=Rennstrecke;~%"
+                           out)))))))))
+    (home-page "http://trigger-rally.sourceforge.net")
+    (synopsis "Fast-paced single-player racing game")
+    (description "Trigger-rally is a 3D rally simulation with great physics
+for drifting on over 200 maps.  Different terrain materials like dirt,
+asphalt, sand, ice, etc. and various weather, light, and fog conditions give
+this rally simulation the edge over many other games.  You need to make it
+through the maps in often tight time limits and can further improve by beating
+the recorded high scores.  All attached single races must be finished in time
+in order to win an event, unlocking additional events and cars.  Most maps are
+equipped with spoken co-driver notes and co-driver icons.")
+    (license (list license:cc0               ;textures and audio in data.zip
+                   license:gpl2+))))
 
 (define-public ufo2map
   (package
@@ -6196,31 +6377,15 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.25.0")
+    (version "0.26.0")
     (source
      (origin
        (method url-fetch)
-       (uri (list
-             ;; Older releases get moved into a versioned directory
-             (string-append "http://crawl.develz.org/release/"
-                            (version-major+minor version) "/stone_soup-"
-                            version "-nodeps.tar.xz")
-             ;; Only the latest release is in this directory
-             (string-append "http://crawl.develz.org/release/stone_soup-"
-                            version "-nodeps.tar.xz")))
+       (uri (string-append "https://github.com/crawl/crawl/releases/download/"
+                           version "/stone_soup-" version "-nodeps.tar.xz"))
        (sha256
-        (base32 "0rn1wjxdqw33caiwisfypm1j8cid3c9pz01ahicl17144zs29z3d"))
-       (patches (search-patches "crawl-upgrade-saves.patch"))
-       ;; The 0.25.0 -nodeps.tar.xz was built from an OSX machine; normally
-       ;; apparently it's built from a Debian machine before the Debian
-       ;; packages are made.  These ._* files are binary and have the string
-       ;; "Mac OS X" in them... removing these seems to result in compilation
-       ;; again.
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each delete-file (find-files "." "^\\._"))
-           #t))))
+        (base32 "1m81x1sp6p2ka5w2nib3pcw5w5iv58z41c8aqn0dayi1lb3yslfb"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)

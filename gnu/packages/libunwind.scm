@@ -28,14 +28,14 @@
 (define-public libunwind
   (package
     (name "libunwind")
-    (version "1.3.1")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/libunwind/libunwind-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1y0l08k6ak1mqbfj6accf9s5686kljwgsl4vcqpxzk5n74wpm6a3"))))
+               "05qhzcg1xag3l5m3c805np6k342gc0f3g087b7g16jidv59pccwh"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: As of glibc 2.25, we get 1 out of 34 test failures (2 are

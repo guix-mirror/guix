@@ -41,7 +41,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
@@ -885,14 +885,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "51.0.0")
+    (version "52.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "0w2crz6wnfw18m9m4zrij1yplcq5drzhz8n58w9kp51wl48a0yn1"))
+        (base32 "15y7ahlifsclnkl70wn5w34dil8nwcwcjnw3k2ydqc6dz4vb0j5s"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -914,6 +914,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("file" ,file)
        ("flac" ,flac)
        ("fmt" ,fmt)
+       ("libdvdread" ,libdvdread)
        ("libmatroska" ,libmatroska)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
@@ -1765,7 +1766,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.11.1")
+    (version "3.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1775,7 +1776,7 @@ videoformats depend on the configuration flags of ffmpeg.")
               (patches (search-patches "vlc-qt-5.15.patch"))
               (sha256
                (base32
-                "1f46h0hv7fk35zg4iczlp7ib7h2jmh8m4r5klw3g2558ib9134qq"))))
+                "0ygqihw2c5vvzv8950dlf7rdwz1cpz1668jgyja604ljibrmix7g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -2193,14 +2194,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.01.08")
+    (version "2021.01.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1k870v9xc7g16nvixa272sdjnmc7pl49ymmnn6rdz0mcj2548h3k"))
+                "1q8pvw5j45k8nvr3d9rvnhi6xaj1mdqlkrg7q7qq6zciq5r54fhi"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -3074,7 +3075,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "26.1.1")
+    (version "26.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3083,7 +3084,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18b40ayww5isjqnjz63l05fi5xwzrcc64jvwxwq8nqsydn0b14ng"))))
+                "1k1asqiqw757v59ayx0w029ril947hs0lcp8n91knzjl891fr4nc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -4156,7 +4157,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.2.2")
+    (version "4.3.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method git-fetch)
@@ -4165,7 +4166,7 @@ It counts more than 100 plugins.")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "05c1gx75xy2hw49x6vkydvwxbr80kipsc3nr906k3hq8735svx6f"))
+                "09xs815jsivcilpmnrx2jkcxirj4lg5kp99fkr0p2sdxw03myi95"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4182,7 +4183,7 @@ It counts more than 100 plugins.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
                     (lambda _
-                      (patch-shebang "version.sh")
+                      (patch-shebang "scripts/version.sh")
                       (invoke "autoreconf" "-vfi"))))
        #:configure-flags '("--sysconfdir=/etc")
        #:make-flags (list (string-append "sysconfdir="

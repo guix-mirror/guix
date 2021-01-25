@@ -1,0 +1,77 @@
+From 052d24d8217c51c572c2f6cbb4a687be2e8ba52d Mon Sep 17 00:00:00 2001
+From: Brice Waegeneire <brice@waegenei.re>
+Date: Fri, 5 Jun 2020 14:38:43 +0200
+Subject: [PATCH] [geniso] Make it reproducible
+
+Some timestamps get embedded in the generated ISO, making it
+unreproducible so we overwrite those timestamps to be at the UNIX epoch.
+---
+ src/util/geniso | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/src/util/geniso b/src/util/geniso
+index ff090d4a..e032ffb0 100755
+--- a/src/util/geniso
++++ b/src/util/geniso
+@@ -11,6 +11,13 @@ function help() {
+ 	echo " -o FILE  save iso image to file"
+ }
+ 
++function reset_timestamp() {
++	for f in "$1"/*; do
++		touch -t 197001010100 "$f"
++	done
++	touch -t 197001010100 "$1"
++}
++
+ LEGACY=0
+ FIRST=""
+ 
+@@ -37,8 +44,9 @@ if [ -z "${OUT}" ]; then
+ 	exit 1
+ fi
+ 
+-# There should either be mkisofs or the compatible genisoimage program
+-for command in genisoimage mkisofs; do
++# There should either be mkisofs, xorriso or the compatible genisoimage
++# program
++for command in xorriso genisoimage mkisofs; do
+ 	if ${command} --version >/dev/null 2>/dev/null; then
+ 		mkisofs=(${command})
+ 		break
+@@ -46,8 +54,10 @@ for command in genisoimage mkisofs; do
+ done
+ 
+ if [ -z "${mkisofs}" ]; then
+-	echo "${0}: mkisofs or genisoimage not found, please install or set PATH" >&2
++	echo "${0}: mkisofs, xorriso or genisoimage not found, please install or set PATH" >&2
+ 	exit 1
++elif [ "$mkisofs" = "xorriso" ]; then
++	 mkisofs+=(-as mkisofs)
+ fi
+ 
+ dir=$(mktemp -d bin/iso.dir.XXXXXX)
+@@ -115,6 +125,8 @@ case "${LEGACY}" in
+ 			exit 1
+ 		fi
+ 
++		reset_timestamp "$dir"
++
+ 		# generate the iso image
+ 		"${mkisofs[@]}" -b boot.img -output ${OUT} ${dir}
+ 		;;
+@@ -127,6 +139,12 @@ case "${LEGACY}" in
+ 			cp ${LDLINUX_C32} ${dir}
+ 		fi
+ 
++		reset_timestamp "$dir"
++
++		if [ "${mkisofs[0]}" = "xorriso" ]; then
++			mkisofs+=(-isohybrid-mbr "$SYSLINUX_MBR_DISK_PATH")
++		fi
++
+ 		# generate the iso image
+ 		"${mkisofs[@]}" -b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -output ${OUT} ${dir}
+ 
+-- 
+2.26.2

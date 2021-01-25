@@ -2296,7 +2296,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-3")
+    (version "0.51-4")
     (source (origin
               (method url-fetch)
               (uri
@@ -2304,7 +2304,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "10cqg387xdpiirak5v9y1lpvcds9bpqz61znx6d1m1hb45n513aw"))))
+                "1hgw1ciwr59f4f9s0h7c2l36wcsn3jsddhr1r9qj97vf64c1ynaj"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -3481,8 +3481,8 @@ websites such as Libre.fm.")
     (synopsis "Bandcamp plugin for beets")
     (description
      "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
-                                                                      https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
-    using the beets FetchArt plugin.")
+https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+using the beets FetchArt plugin.")
     (license license:gpl2)))
 
 (define-public milkytracker
@@ -4434,7 +4434,7 @@ standalone JACK client and an LV2 plugin is also available.")
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.5.2")
+    (version "3.6")
     (source
      (origin
        (method git-fetch)
@@ -4443,7 +4443,7 @@ standalone JACK client and an LV2 plugin is also available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yzps5xxa50cr2i5iv2ycjdywd0mcrdd6hx93l4p8lfljag3w3al"))
+        (base32 "0c9yf8irkism3ffzzpkx636wa6b1r1lgpsb2x63pr0gbi5ss5kyh"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove unused libraries.

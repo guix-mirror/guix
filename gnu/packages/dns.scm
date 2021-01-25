@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -13,7 +13,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
@@ -277,7 +277,7 @@ prompt the user with the option to go with insecure DNS only.")
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.82")
+    (version "2.83")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -285,7 +285,7 @@ prompt the user with the option to go with insecure DNS only.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0cn1xd1s6xs78jmrmwjnh9m6w3q38pk6dyqy2phvasqiyd33cll4"))))
+                "1sjamz1v588qf35m8z6wcqkjk5w12bqhj7d7p48dj8jyn3lgghgz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -317,7 +317,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.10")
+    (version "9.16.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -325,7 +325,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "1cv26gzbyk3ahidr1fip0pgj28s7l52cafdqpykfc1b2kh0zqixw"))))
+                "1hcr0q6i2mk83yi12zxjs5q21y3gx7683q99l77ibxfqsx6zc481"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs

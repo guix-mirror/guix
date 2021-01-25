@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +34,7 @@
             write-bytevector write-string
             read-string read-latin1-string read-maybe-utf8-string
             write-string-list read-string-list
-            write-string-pairs
+            write-string-pairs read-string-pairs
             write-store-path read-store-path
             write-store-path-list read-store-path-list
             (dump . dump-port*)
@@ -166,6 +166,14 @@ substitute invalid byte sequences with question marks.  This is a
   (write-int (length l) p)
   (for-each (cut write-string <> p) l))
 
+(define (read-string-list p)
+  (let ((len (read-int p)))
+    (unfold (cut >= <> len)
+            (lambda (i)
+              (read-string p))
+            1+
+            0)))
+
 (define (write-string-pairs l p)
   (write-int (length l) p)
   (for-each (match-lambda
@@ -174,11 +182,11 @@ substitute invalid byte sequences with question marks.  This is a
               (write-string second p)))
             l))
 
-(define (read-string-list p)
+(define (read-string-pairs p)
   (let ((len (read-int p)))
     (unfold (cut >= <> len)
             (lambda (i)
-              (read-string p))
+              (cons (read-string p) (read-string p)))
             1+
             0)))
 

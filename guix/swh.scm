@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -348,6 +348,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (checksums     directory-entry-checksums "checksums"
                  (match-lambda
                    (#f  #f)
+                   ((? unspecified?) #f)
                    (lst (json->checksums lst))))
   (id            directory-entry-id "dir_id")
   (length        directory-entry-length)

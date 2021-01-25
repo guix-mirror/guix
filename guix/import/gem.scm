@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,6 +49,7 @@
                    ;; This is sometimes #nil (the JSON 'null' value).  Arrange
                    ;; to always return a list.
                    (cond ((not licenses) '())
+                         ((unspecified? licenses) '())
                          ((vector? licenses) (vector->list licenses))
                          (else '()))))
   (info          gem-info)
@@ -69,7 +70,7 @@
                  json->gem-dependency-list))
 
 (define (json->gem-dependency-list vector)
-  (if vector
+  (if (and vector (not (unspecified? vector)))
       (map json->gem-dependency (vector->list vector))
       '()))
 

@@ -5020,10 +5020,16 @@ both CSS3 selector and XPath 1.0 support.")
          "1pnyh44qycnf9mzi1j6fywd5fkskv3x7nmsqrrws0rjn5dd4ayfp"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:test-target "spec"))
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-git-ls-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Rakefile"
+               (("git ls-files") "find . -type f"))
+             #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("git" ,git)))
+     `(("ruby-rspec" ,ruby-rspec)))
     (synopsis "Retrieve the source code for Ruby methods")
     (description "Method_source retrieves the source code for Ruby methods.
 Additionally, it can extract source code from Proc and Lambda objects or just

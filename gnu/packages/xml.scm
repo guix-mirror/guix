@@ -26,6 +26,8 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +53,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -139,14 +142,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/libebml/"
                            "libebml-" version ".tar.xz"))
        (sha256
-        (base32 "1cy4hbk8qbxn4c6pwvlsvr1rp8vhfach9rwfg4c50qa94nlckaw0"))))
+        (base32 "0ckhf7wcfwik1c8ilwipdr9p7b58pvqvj8x54l6slqah81lwd53f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -357,6 +360,86 @@ It uses libxml2 to access the XML files.")
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
+
+(define-public openjade
+  (package
+    (name "openjade")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/openjade/openjade/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l92sfvx1f0wmkbvzv1385y1gb3hh010xksi1iyviyclrjb7jb8x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-spincludedir="
+                            (assoc-ref %build-inputs "opensp")
+                            "/include/OpenSP")
+             (string-append "--enable-splibdir="
+                            (assoc-ref %build-inputs "opensp") "/lib")
+             ;; Workaround segfaults in OpenJade (see:
+             ;; https://bugs.launchpad.net/ubuntu/+source/openjade/+bug/1869734).
+             "CXXFLAGS=-O0")
+       #:parallel-build? #f             ;build fails otherwise
+       ;; The test suite fails with diff errors between the actual and
+       ;; expected results, like: (char<? #\a #\A) returning #t rather than
+       ;; #f (see: https://sourceforge.net/p/openjade/bugs/150/).
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-deprecated-getopt
+           ;; See: https://sourceforge.net/p/openjade/bugs/140/.
+           (lambda _
+             (substitute* "msggen.pl"
+               (("use POSIX;") "use POSIX;\nuse Getopt::Std;")
+               (("do 'getopts.pl';") "")
+               (("&Getopts") "getopts"))
+             #t))
+         (add-after 'replace-deprecated-getopt 'fix-locale-lookup
+           ;; See: https://sourceforge.net/p/openjade/bugs/149/.
+           (lambda _
+             (substitute* "testsuite/expr-lang.dsl"
+               (("\\(language \"EN\" \"US\"\\)")
+                "(language \"EN\" \"US.UTF-8\")"))
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; TODO: Generate the manpage from source, with
+             ;; openjade-bootstrap and jadetex.  See the file docsrc/Makefile.
+             (let* ((out (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (install-file "docsrc/openjade.1" man1)
+               #t)))
+         (add-after 'install-doc 'install-dtds
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (dtd (string-append out "/sgml/dtd")))
+              (mkdir-p dtd)
+              (copy-recursively "dsssl" dtd)
+              #t)))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key tests? out #:allow-other-keys)
+             (if tests?
+                 (with-directory-excursion "testsuite"
+                   (invoke "make"))
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (inputs
+     `(("opensp" ,opensp)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://openjade.sourceforge.net/")
+    (synopsis "ISO/IEC 10179:1996 standard DSSSL language implementation")
+    (description "OpenJade is an implementation of Document Style Semantics
+and Specification Language (DSSSL), a style language to format SGML or XML
+documents.  It contains backends for various formats such as RTF, HTML, TeX,
+MIF, SGML2SGML, and FOT.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define-public perl-graph-readwrite
   (package
@@ -2209,6 +2292,95 @@ It converts the procedure call into an XML document, sends it to a remote
 server using HTTP, and gets back the response as XML.  This library provides a
 modular implementation of XML-RPC for C and C++.")
     (license (list license:psfl license:expat))))
+
+(define-public opensp
+  (package
+    (name "opensp")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/openjade/opensp/"
+                                  version "/OpenSP-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1khpasr6l0a8nfz6kcf3s81vgdab8fm2dj291n5r2s53k228kx2p"))))
+    (outputs '("out" "doc"))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)             ;for XML_CATALOG_DIR
+       ("xmlto" ,xmlto)
+       ;; Dependencies to regenerate the 'configure' script.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)))
+    (arguments
+     `( ;; Note: we cannot use '--enable-full-doc-build' as this would require
+       ;; Openjade, which in turn requires this package.
+
+       ;; Skip the tests that are known to fail (see:
+       ;; https://sourceforge.net/p/openjade/mailman/message/6182316/)
+       #:make-flags '("TESTS_THAT_FAIL=")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* (find-files "docsrc" "\\.xml$")
+                 (("/usr/share/sgml/docbook/xml-dtd-4.1.2") xmldoc)
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t)))
+         (add-after 'patch-docbook-paths 'delete-configure
+           ;; The configure script in the release was made with an older
+           ;; Autoconf and lacks support for the `--docdir' option.
+           (lambda _
+             (delete-file "configure")
+             #t))
+         (add-after 'delete-configure 'honor-docdir
+           ;; docdir is not honored due to being hardcoded in the various
+           ;; Makefile.am (see: https://sourceforge.net/p/openjade/bugs/147/).
+           (lambda _
+             (substitute* '("Makefile.am" "doc/Makefile.am" "docsrc/Makefile.am")
+               (("^docdir = .*") "docdir = @docdir@\n"))
+             #t))
+         (add-after 'delete-configure 'fix-tests-makefile.am
+           ;; Remove the trailing $(SHELL) from the TESTS_ENVIRONMENT variable
+           ;; definition. Otherwise, when targets are built using
+           ;; "$(am__check_pre) $(LOG_DRIVER) [...]", there would be two
+           ;; $(SHELL) expansion which fails the build.
+           (lambda _
+             (substitute* "tests/Makefile.am"
+               (("^\tOSGMLNORM=`echo osgmlnorm\\|sed '\\$\\(transform\\)'`\\\\")
+                "\tOSGMLNORM=`echo osgmlnorm|sed '$(transform)'`")
+               (("^\t\\$\\(SHELL\\)\n") ""))
+             #t)))))
+    ;; $SGML_CATALOG_FILES lists 'catalog' or 'CATALOG' or '*.cat' files found
+    ;; under the 'sgml' sub-directory of any given package.
+    (native-search-paths (list (search-path-specification
+                                (variable "SGML_CATALOG_FILES")
+                                (separator ":")
+                                (files '("sgml"))
+                                (file-pattern "^catalog$|^CATALOG$|^.*\\.cat$")
+                                (file-type 'regular))))
+    (home-page "http://openjade.sourceforge.net/")
+    (synopsis "Suite of SGML/XML processing tools")
+    (description "OpenSP is an object-oriented toolkit for SGML parsing and
+entity management.  It is a fork of James Clark's SP suite.  The tools it
+contains can be used to parse, validate, and normalize SGML and XML files.
+The central program included in this package is @code{onsgmls}, which replaces
+@code{sgmls}, @code{ospam}, @code{ospent}, @code{osgmlnorm}, and @code{osx}.")
+    (license
+     ;; expat license with added clause regarding advertising
+     (license:non-copyleft
+      "file://COPYING"
+      "See COPYING in the distribution."))))
 
 (define-public python-elementpath
   (package

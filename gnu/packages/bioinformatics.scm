@@ -4,14 +4,14 @@
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2019, 2020, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -57,6 +57,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix deprecation)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
@@ -142,6 +143,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
 (define-public aragorn
@@ -3563,61 +3565,60 @@ comment or quality sections.")
 (define-public gemma
   (package
     (name "gemma")
-    (version "0.98")
+    (version "0.98.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/xiangzhou/GEMMA")
-                    (commit (string-append "v" version))))
+                    (url "https://github.com/genetics-statistics/GEMMA")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s3ncnbn45r2hh1cvrqky1kbqq6546biypr4f5mkw1kqlrgyh0yg"))))
+                "1p8a7kkfn1mmrg017aziy544aha8i9h6wd1x2dk3w2794wl33qb7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib")
+                  #t))))
+    (build-system gnu-build-system)
     (inputs
-     `(("eigen" ,eigen)
-       ("gfortran" ,gfortran "lib")
-       ("gsl" ,gsl)
-       ("lapack" ,lapack)
+     `(("gsl" ,gsl)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
-    (build-system gnu-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework2-1)
+       ("perl" ,perl)
+       ("shunit2" ,shunit2)
+       ("which" ,which)))
     (arguments
-     `(#:make-flags
-       '(,@(match (%current-system)
-         ("x86_64-linux"
-          '("FORCE_DYNAMIC=1"))
-         ("i686-linux"
-          '("FORCE_DYNAMIC=1" "FORCE_32BIT=1"))
-         (_
-          '("FORCE_DYNAMIC=1" "NO_INTEL_COMPAT=1"))))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'find-eigen
+         (add-after 'unpack 'prepare-build
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Ensure that Eigen headers can be found
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
+             (mkdir-p "bin")
+             (substitute* "Makefile"
+               (("/usr/local/opt/openblas")
+                (assoc-ref inputs "openblas")))
              #t))
-         (add-before 'build 'bin-mkdir
-          (lambda _
-            (mkdir-p "bin")
-            #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; 'make slow-check' expects shunit2-2.0.3.
+               (with-directory-excursion "test"
+                 (invoke "./test_suite.sh"))
+               #t)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "bin/gemma"
-                             (string-append
-                              out "/bin")))
-             #t)))
-       #:tests? #f)) ; no tests included yet
-    (home-page "https://github.com/xiangzhou/GEMMA")
+             (install-file "bin/gemma"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/genetics-statistics/GEMMA")
     (synopsis "Tool for genome-wide efficient mixed model association")
     (description
-     "Genome-wide Efficient Mixed Model Association (GEMMA) provides a
-standard linear mixed model resolver with application in genome-wide
-association studies (GWAS).")
+     "@acronym{GEMMA, Genome-wide Efficient Mixed Model Association} provides a
+standard linear mixed model resolver with application in @acronym{GWAS,
+genome-wide association studies}.")
     (license license:gpl3)))
 
 (define-public grit
@@ -4687,7 +4688,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.471")
+    (version "7.475")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4696,7 +4697,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0r1973fx2scq4712zdqfy67wkzqj0c0bhrdy4jxhvq40mdxyry30"))))
+                "0i2i2m3blh2xkbkdk48hxfssks30ny0v381gdl7zwhcvp0axs26r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -7073,6 +7074,55 @@ sequence.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
+(define-public r-snapatac
+  (package
+    (name "r-snapatac")
+    (version "2.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/r3fang/SnapATAC")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "037jzlbl436fi7lkpq7d83i2vd1crnrik3vac2x6xj75dbikb2av"))))
+    (properties `((upstream-name . "SnapATAC")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-bigmemory" ,r-bigmemory)
+        ("r-doparallel" ,r-doparallel)
+        ("r-dosnow" ,r-dosnow)
+        ("r-edger" ,r-edger)
+        ("r-foreach" ,r-foreach)
+        ("r-genomicranges" ,r-genomicranges)
+        ("r-igraph" ,r-igraph)
+        ("r-iranges" ,r-iranges)
+        ("r-irlba" ,r-irlba)
+        ("r-matrix" ,r-matrix)
+        ("r-plyr" ,r-plyr)
+        ("r-plot3d" ,r-plot3d)
+        ("r-rann" ,r-rann)
+        ("r-raster" ,r-raster)
+        ("r-rcolorbrewer" ,r-rcolorbrewer)
+        ("r-rhdf5" ,r-rhdf5)
+        ("r-rtsne" ,r-rtsne)
+        ("r-scales" ,r-scales)
+        ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/r3fang/SnapATAC")
+    (synopsis "Single nucleus analysis package for ATAC-Seq")
+    (description
+      "This package provides a fast and accurate analysis toolkit for single
+cell ATAC-seq (Assay for transposase-accessible chromatin using sequencing).
+Single cell ATAC-seq can resolve the heterogeneity of a complex tissue and
+reveal cell-type specific regulatory landscapes.  However, the exceeding data
+sparsity has posed unique challenges for the data analysis.  This package
+@code{r-snapatac} is an end-to-end bioinformatics pipeline for analyzing large-
+scale single cell ATAC-seq data which includes quality control, normalization,
+clustering analysis, differential analysis, motif inference and exploration of
+single cell ATAC-seq sequencing data.")
+    (license license:gpl3)))
+
 (define-public r-scde
   (package
     (name "r-scde")
@@ -7725,6 +7775,31 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; Code is released under Ruby license, except for setup
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
+
+(define-public bio-vcf
+  (package
+    (name "bio-vcf")
+    (version "0.9.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "bio-vcf" version))
+        (sha256
+         (base32
+          "1glw5pn9s8z13spxk6yyfqaz80n9lga67f33w35nkpq9dwi2vg6g"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-cucumber" ,ruby-cucumber)))
+    (synopsis "Smart VCF parser DSL")
+    (description
+     "Bio-vcf provides a @acronym{DSL, domain specific language} for processing
+the VCF format.  Record named fields can be queried with regular expressions.
+Bio-vcf is a new generation VCF parser, filter and converter.  Bio-vcf is not
+only very fast for genome-wide (WGS) data, it also comes with a filtering,
+evaluation and rewrite language and can output any type of textual data,
+including VCF header and contents in RDF and JSON.")
+    (home-page "https://github.com/vcflib/bio-vcf")
+    (license license:expat)))
 
 (define-public r-biocviews
   (package
@@ -9386,8 +9461,9 @@ group or two ChIP groups run under different conditions.")
            (delete 'configure) ; There is no configure phase.
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "filevercmp" bin)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "filevercmp" (string-append out "/bin"))
+                 (install-file "filevercmp.h" (string-append out "/include"))
                  #t))))))
       (home-page "https://github.com/ekg/filevercmp")
       (synopsis "This program compares version strings")
@@ -10514,41 +10590,20 @@ explore and perform basic analysis of single cell sequencing data coming from
 droplet sequencing.  It has been particularly tailored for Drop-seq.")
       (license license:gpl3))))
 
-(define htslib-for-sambamba
-  (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
-    (package
-      (inherit htslib)
-      (name "htslib-for-sambamba")
-      (version (string-append "1.3.1-1." (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/lomereiter/htslib")
-               (commit commit)))
-         (file-name (string-append "htslib-" version "-checkout"))
-         (sha256
-          (base32
-           "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ,@(package-native-inputs htslib))))))
-
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.7.1")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lomereiter/sambamba")
+             (url "https://github.com/biod/sambamba")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "111h05b60pj8dxbidiamy4imc92x2962b3lmb7wgysl6lx064qis"))))
+         "07dznzl6m8k7sw84jxw2kx6i3ymrapbmcmyh0fxz8wrybhw8fmwc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -10558,52 +10613,30 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (delete 'configure)
          (add-after 'unpack 'fix-ldc-version
            (lambda _
-             (substitute* "gen_ldc_version_info.py"
-               (("/usr/bin/env.*") (which "python3")))
              (substitute* "Makefile"
                ;; We use ldc2 instead of ldmd2 to compile sambamba.
                (("\\$\\(shell which ldmd2\\)") (which "ldc2")))
              #t))
-         (add-after 'unpack 'place-biod-and-undead
-           (lambda* (#:key inputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "biod") "BioD")
-             #t))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
              (substitute* "Makefile"
-               (("htslib/libhts.a lz4/lib/liblz4.a")
-                "-L-lhts -L-llz4")
-               ((" lz4-static htslib-static") ""))
+               (("= lz4/lib/liblz4.a") "= -L-llz4")
+               (("ldc_version_info lz4-static") "ldc_version_info"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (bin   (string-append out "/bin")))
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
                (copy-file (string-append "bin/sambamba-" ,version)
                           (string-append bin "/sambamba"))
                #t))))))
     (native-inputs
-     `(("ldc" ,ldc)
-       ("rdmd" ,rdmd)
-       ("python" ,python)
-       ("biod"
-        ,(let ((commit "7969eb0a847b05874e83ffddead26e193ece8101"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/biod/BioD")
-                   (commit commit)))
-             (file-name (string-append "biod-"
-                                       (string-take commit 9)
-                                       "-checkout"))
-             (sha256
-              (base32
-               "0mjxsmbmv0jxl3pq21p8j5r829d648if8q58ka50b2956lc6qkpm")))))))
+     `(("python" ,python)))
     (inputs
-     `(("lz4" ,lz4)
-       ("htslib" ,htslib-for-sambamba)))
-    (home-page "https://lomereiter.github.io/sambamba/")
+     `(("ldc" ,ldc)
+       ("lz4" ,lz4)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/biod/sambamba")
     (synopsis "Tools for working with SAM/BAM data")
     (description "Sambamba is a high performance modern robust and
 fast tool (and library), written in the D programming language, for
@@ -14855,10 +14888,14 @@ some of the details of opening and jumping in tabix-indexed files.")
          (delete 'configure) ; There is no configure phase.
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (include (string-append out "/include")))
                ;; TODO: There are Python modules for these programs too.
                (install-file "multichoose" bin)
-               (install-file "multipermute" bin))
+               (install-file "multipermute" bin)
+               (install-file "multichoose.h" include)
+               (install-file "multipermute.h" include))
              #t)))))
     (home-page "https://github.com/ekg/multichoose")
     (synopsis "Efficient loopless multiset combination generation algorithm")
@@ -14967,32 +15004,44 @@ library automatically handles index file generation and use.")
 (define-public vcflib
   (package
     (name "vcflib")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vcflib/vcflib/releases/"
-                           "download/v" version
-                           "/vcflib-" version "-src.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/vcflib/vcflib")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14zzrg8hg8cq9cvq2wdvp21j7nmxxkjrbagw2apd2yqv2kyx42lm"))
-       (patches (search-patches "vcflib-use-shared-libraries.patch"))
+        (base32 "1k1z3876kbzifj1sqfzsf3lgb4rw779hvkg6ryxbyq5bc2paj9kh"))
        (modules '((guix build utils)))
        (snippet
-        `(begin
+        '(begin
+           (substitute* "CMakeLists.txt"
+             ((".*fastahack.*") "")
+             ((".*smithwaterman.*") "")
+             (("(pkg_check_modules\\(TABIXPP)" text)
+              (string-append
+                "pkg_check_modules(FASTAHACK REQUIRED fastahack)\n"
+                "pkg_check_modules(SMITHWATERMAN REQUIRED smithwaterman)\n"
+                text))
+             (("\\$\\{TABIXPP_LIBRARIES\\}" text)
+              (string-append "${FASTAHACK_LIBRARIES} "
+                             "${SMITHWATERMAN_LIBRARIES} "
+                             text)))
            (substitute* (find-files "." "\\.(h|c)(pp)?$")
              (("\"SmithWatermanGotoh.h\"") "<smithwaterman/SmithWatermanGotoh.h>")
              (("\"convert.h\"") "<smithwaterman/convert.h>")
              (("\"disorder.h\"") "<smithwaterman/disorder.h>")
-             (("\"tabix.hpp\"") "<tabix.hpp>")
-             (("\"Fasta.h\"") "<fastahack/Fasta.h>"))
+             (("Fasta.h") "fastahack/Fasta.h"))
            (for-each delete-file-recursively
                      '("fastahack" "filevercmp" "fsom" "googletest" "intervaltree"
-                       "libVCFH" "multichoose" "smithwaterman" "tabixpp"))
+                       "libVCFH" "multichoose" "smithwaterman"))
            #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (inputs
-     `(("htslib" ,htslib)
+     `(("bzip2" ,bzip2)
+       ("htslib" ,htslib)
        ("fastahack" ,fastahack)
        ("perl" ,perl)
        ("python" ,python)
@@ -15005,22 +15054,20 @@ library automatically handles index file generation and use.")
        ;; Submodules.
        ;; This package builds against the .o files so we need to extract the source.
        ("filevercmp-src" ,(package-source filevercmp))
+       ("fsom-src" ,(package-source fsom))
        ("intervaltree-src" ,(package-source intervaltree))
        ("multichoose-src" ,(package-source multichoose))))
     (arguments
      `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-flags
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("LDFLAGS =")
-                (string-append "LDFLAGS = -Wl,-rpath="
-                               (assoc-ref outputs "out") "/lib ")))
-             (substitute* "filevercmp/Makefile"
-               (("-c") "-c -fPIC"))
+         (add-after 'unpack 'build-shared-library
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("vcflib STATIC") "vcflib SHARED"))
+             (substitute* "test/Makefile"
+               (("libvcflib.a") "libvcflib.so"))
              #t))
-         (delete 'configure)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((unpack (lambda (source target)
@@ -15033,39 +15080,31 @@ library automatically handles index file generation and use.")
                                            "--strip-components=1"))))))
                (and
                 (unpack "filevercmp-src" "filevercmp")
+                (unpack "fsom-src" "fsom")
                 (unpack "intervaltree-src" "intervaltree")
-                (unpack "multichoose-src" "multichoose")))))
-         (replace 'install
+                (unpack "multichoose-src" "multichoose"))
+               #t)))
+         ;; This pkg-config file is provided by other distributions.
+         (add-after 'install 'install-pkg-config-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (lib (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         (find-files "bin" ".*"))
-               (install-file "libvcflib.so" lib)
-               (install-file "libvcflib.a" lib)
-               (for-each
-                 (lambda (file)
-                   (install-file file (string-append out "/include")))
-                 (find-files "include" "\\.h(pp)?$"))
-               (mkdir-p (string-append lib "/pkgconfig"))
-               (with-output-to-file (string-append lib "/pkgconfig/vcflib.pc")
+                    (pkgconfig (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkgconfig)
+               (with-output-to-file (string-append pkgconfig "/libvcflib.pc")
                  (lambda _
                    (format #t "prefix=~a~@
                            exec_prefix=${prefix}~@
                            libdir=${exec_prefix}/lib~@
                            includedir=${prefix}/include~@
                            ~@
-                           ~@
                            Name: libvcflib~@
                            Version: ~a~@
                            Requires: smithwaterman, fastahack~@
                            Description: C++ library for parsing and manipulating VCF files~@
-                           Libs: -L${libdir} -lvcflib~@
+                           Libs: -L${libdir} -llibvcflib~@
                            Cflags: -I${includedir}~%"
-                           out ,version))))
-             #t)))))
+                           out ,version)))
+                 #t))))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")
     (description "Vcflib provides methods to manipulate and interpret
@@ -15076,125 +15115,94 @@ manipulations on VCF files.")
     (license license:expat)))
 
 (define-public freebayes
-  (let ((commit "3ce827d8ebf89bb3bdc097ee0fe7f46f9f30d5fb")
-        (revision "1")
-        (version "1.0.2"))
-    (package
-      (name "freebayes")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ekg/freebayes")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "1sbzwmcbn78ybymjnhwk7qc5r912azy5vqz2y7y81616yc3ba2a2"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("bamtools" ,bamtools)
-         ("htslib" ,htslib)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("bc" ,bc)                     ; Needed for running tests.
-         ("samtools" ,samtools)         ; Needed for running tests.
-         ("parallel" ,parallel)         ; Needed for running tests.
-         ("perl" ,perl)                 ; Needed for running tests.
-         ("procps" ,procps)             ; Needed for running tests.
-         ("python" ,python-2)           ; Needed for running tests.
-         ("vcflib-src" ,(package-source vcflib))
-         ;; These are submodules for the vcflib version used in freebayes.
-         ;; This package builds against the .o files so we need to extract the source.
-         ("tabixpp-src" ,(package-source tabixpp))
-         ("smithwaterman-src" ,(package-source smithwaterman))
-         ("multichoose-src" ,(package-source multichoose))
-         ("fsom-src" ,(package-source fsom))
-         ("filevercmp-src" ,(package-source filevercmp))
-         ("fastahack-src" ,(package-source fastahack))
-         ("intervaltree-src" ,(package-source intervaltree))
-         ;; These submodules are needed to run the tests.
-         ("bash-tap-src" ,(package-source bash-tap))
-         ("test-simple-bash-src"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ingydotnet/test-simple-bash/")
-                   (commit "124673ff204b01c8e96b7fc9f9b32ee35d898acc")))
-             (file-name "test-simple-bash-src-checkout")
-             (sha256
-              (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
-      (arguments
-       `(#:make-flags
-         (list "CC=gcc"
-               (string-append "BAMTOOLS_ROOT="
-                              (assoc-ref %build-inputs "bamtools")))
-         #:test-target "test"
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'fix-tests
-             (lambda _
-               (substitute* "test/t/01_call_variants.t"
-                 (("grep -P \"\\(\\\\t500\\$\\|\\\\t11000\\$\\|\\\\t1000\\$\\)\"")
-                  "grep -E '	(500|11000|1000)$'"))
-               #t))
-           (add-after 'unpack 'unpack-submodule-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (if (file-is-directory? (assoc-ref inputs source))
-                                     (copy-recursively (assoc-ref inputs source) ".")
-                                     (invoke "tar" "xvf"
-                                             (assoc-ref inputs source)
-                                             "--strip-components=1"))))))
-                 (and
-                  (unpack "vcflib-src" "vcflib")
-                  (unpack "fastahack-src" "vcflib/fastahack")
-                  (unpack "filevercmp-src" "vcflib/filevercmp")
-                  (unpack "fsom-src" "vcflib/fsom")
-                  (unpack "intervaltree-src" "vcflib/intervaltree")
-                  (unpack "multichoose-src" "vcflib/multichoose")
-                  (unpack "smithwaterman-src" "vcflib/smithwaterman")
-                  (unpack "tabixpp-src" "vcflib/tabixpp")
-                  (unpack "test-simple-bash-src" "test/test-simple-bash")
-                  (unpack "bash-tap-src" "test/bash-tap")))))
-           (add-after 'unpack-submodule-sources 'fix-makefiles
-             (lambda _
-               ;; We don't have the .git folder to get the version tag from.
-               (substitute* "vcflib/Makefile"
-                 (("^GIT_VERSION.*")
-                  (string-append "GIT_VERSION = v" ,version)))
-               (substitute* "src/Makefile"
-                 (("-I\\$\\(BAMTOOLS_ROOT\\)/src")
-                  "-I$(BAMTOOLS_ROOT)/include/bamtools"))
-               #t))
-           (add-before 'build 'build-tabixpp-and-vcflib
-             (lambda* (#:key inputs make-flags #:allow-other-keys)
-               (with-directory-excursion "vcflib"
-                 (with-directory-excursion "tabixpp"
-                   (apply invoke "make"
-                          (string-append "HTS_LIB="
-                                         (assoc-ref inputs "htslib")
-                                         "/lib/libhts.a")
-                          make-flags))
-                 (apply invoke "make"
-                        (string-append "CFLAGS=-Itabixpp")
-                        "all"
-                        make-flags))))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "bin/freebayes" bin)
-                 (install-file "bin/bamleftalign" bin))
-               #t)))))
-      (home-page "https://github.com/ekg/freebayes")
-      (synopsis "Haplotype-based variant detector")
-      (description "FreeBayes is a Bayesian genetic variant detector designed to
+  (package
+    (name "freebayes")
+    (version "1.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/freebayes/freebayes")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0myz3giad7jqp6ricdfnig9ymlcps2h67mlivadvx97ngagm85z8"))
+              (patches (search-patches "freebayes-devendor-deps.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib/htslib")
+                  #t))))
+    (build-system meson-build-system)
+    (inputs
+     `(("fastahack" ,fastahack)
+       ("htslib" ,htslib)
+       ("smithwaterman" ,smithwaterman)
+       ("tabixpp" ,tabixpp)
+       ("vcflib" ,vcflib)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bash-tap" ,bash-tap)
+       ("bc" ,bc)
+       ("grep" ,grep)   ; Built with perl support.
+       ("parallel" ,parallel)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("samtools" ,samtools)
+       ("simde" ,simde)
+       ;; This submodule is needed to run the tests.
+       ("test-simple-bash-src"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/ingydotnet/test-simple-bash/")
+                 (commit "124673ff204b01c8e96b7fc9f9b32ee35d898acc")))
+           (file-name "test-simple-bash-src-checkout")
+           (sha256
+            (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash-tap (assoc-ref inputs "bash-tap")))
+               (substitute* (find-files "test/t")
+                 (("BASH_TAP_ROOT=bash-tap")
+                  (string-append "BASH_TAP_ROOT=" bash-tap "/bin"))
+                 (("bash-tap/bash-tap-bootstrap")
+                  (string-append bash-tap "/bin/bash-tap-bootstrap"))
+                 (("source.*bash-tap-bootstrap")
+                  (string-append "source " bash-tap "/bin/bash-tap-bootstrap")))
+               (substitute* "meson.build"
+                  ;; Some inputs aren't actually needed.
+                 ((".*bamtools/src.*") "")
+                 ((".*multichoose.*") ""))
+               (substitute* '("src/BedReader.cpp"
+                              "src/BedReader.h")
+                 (("../intervaltree/IntervalTree.h") "IntervalTree.h"))
+               #t)))
+         (add-after 'unpack 'unpack-submodule-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "test/test-simple-bash")
+             (copy-recursively (assoc-ref inputs "test-simple-bash-src")
+                               "test/test-simple-bash")
+             #t))
+        ;; The slow tests take longer than the specified timeout.
+        ,@(if (any (cute string=? <> (%current-system))
+                   '("armhf-linux" "aarch64-linux"))
+            '((replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                (when tests?
+                  (invoke "meson" "test" "--timeout-multiplier" "5"))
+                #t)))
+            '()))))
+    (home-page "https://github.com/freebayes/freebayes")
+    (synopsis "Haplotype-based variant detector")
+    (description "FreeBayes is a Bayesian genetic variant detector designed to
 find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms),
 indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and
 complex events (composite insertion and substitution events) smaller than the
 length of a short-read sequencing alignment.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public samblaster
   (package

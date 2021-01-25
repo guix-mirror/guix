@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2019, 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
@@ -778,6 +778,55 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 
 (define-public numix-theme
   (deprecated-package "numix-theme" numix-gtk-theme))
+
+(define-public markets
+  (package
+    (name "markets")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/bitstower/markets")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1jzv74l2jkdiqy1hp0ww5yla50dmrvjw7fgkmb26ynblr1nb3rrb"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson/postinstall.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'unpack 'skip-update-desktop-database
+           ;; Don't update desktop file database.
+           (lambda _
+             (substitute* "build-aux/meson/postinstall.py"
+               (("update-desktop-database") "true"))
+             #t)))))
+    (inputs
+     `(("gtk3" ,gtk+)
+       ("gettext" ,gettext-minimal)
+       ("libgee" ,libgee)
+       ("libhandy0" ,libhandy-0.0)
+       ("libsoup" ,libsoup)
+       ("json-glib" ,json-glib)
+       ("vala" ,vala)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
+    (home-page "https://github.com/bitstower/markets")
+    (synopsis "Stock, currency and cryptocurrency tracker")
+    (description
+     "Markets is a GTK application that displays financial data, helping users
+track stocks, currencies and cryptocurrencies.")
+    (license license:gpl3)))
 
 (define-public vala-language-server
   (package

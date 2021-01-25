@@ -14,6 +14,7 @@
 ;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -824,6 +825,33 @@ originals.")
 (define-public texlive-fonts-cm-super
   (deprecated-package "texlive-fonts-cm-super" texlive-cm-super))
 
+(define-public texlive-courier
+  (package
+    (inherit (simple-texlive-package
+              "texlive-courier"
+              (list "/dvips/courier/"
+                    "/fonts/afm/adobe/courier/"
+                    "/fonts/afm/urw/courier/"
+                    "/fonts/map/dvips/courier/"
+                    "/fonts/tfm/adobe/courier/"
+                    "/fonts/tfm/urw35vf/courier/"
+                    "/fonts/type1/adobe/courier/"
+                    "/fonts/type1/urw/courier/"
+                    "/fonts/vf/adobe/courier/"
+                    "/fonts/vf/urw35vf/courier/"
+                    "/tex/latex/courier/"
+                    "/tex4ht/ht-fonts/alias/adobe/courier/"
+                    "/tex4ht/ht-fonts/unicode/adobe/courier/")
+              (base32
+               "1hfgisdi7mjf5156ax6d6zsbiq42zkmp1x5lg17rgzf61k6d6z1y")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description "This package provides a drop-in replacements for the Courier
+font from Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
 (define-public texlive-lm
   (package
     (inherit (simple-texlive-package
@@ -1290,6 +1318,32 @@ incorporates the e-TeX extensions.")
 described in the TeXbook, together with various supporting files (some also
 discussed in the book).")
     (license license:knuth)))
+
+(define-public texlive-helvetic
+  (package
+    (inherit (simple-texlive-package
+              "texlive-helvetic"
+              (list "/dvips/helvetic/"
+                    "/fonts/afm/adobe/helvetic/"
+                    "/fonts/afm/urw/helvetic/"
+                    "/fonts/map/dvips/helvetic/"
+                    "/fonts/tfm/adobe/helvetic/"
+                    "/fonts/tfm/monotype/helvetic/"
+                    "/fonts/tfm/urw35vf/helvetic/"
+                    "/fonts/type1/urw/helvetic/"
+                    "/fonts/vf/adobe/helvetic/"
+                    "/fonts/vf/monotype/helvetic/"
+                    "/fonts/vf/urw35vf/helvetic/"
+                    "/tex/latex/helvetic/")
+              (base32
+               "0c3f1ly7y6404z0akbfbbfql13sz717v0n0g69qjpr69hi4n0nsl")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description "This package provides a drop-in replacements for the Helvetica
+font from Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
 
 (define-public texlive-hyphen-afrikaans
   (package
@@ -3535,6 +3589,29 @@ distribution.")
     (description "This is a very limited subset of the TeX Live distribution.
 It includes little more than the required set of LaTeX packages.")))
 
+(define-public texlive-tipa
+  (package
+    (inherit (simple-texlive-package
+              "texlive-tipa"
+              (list "/tex4ht/ht-fonts/alias/tipa/"
+                    "/doc/fonts/tipa/"
+                    "/fonts/map/dvips/tipa/"
+                    "/fonts/source/public/tipa/"
+                    "/fonts/tfm/public/tipa/"
+                    "/fonts/type1/public/tipa/"
+                    "/tex/latex/tipa/")
+              (base32
+               "1h53dscv8z6fsa0ax5dys3x11b2f1g60l22hpdf7c88cvdhcs8sn")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/tipa")
+    (synopsis "Fonts and macros for IPA phonetics characters")
+    (description "These fonts are considered the \"ultimate answer\" to IPA
+typesetting.  The encoding of these 8-bit fonts has been registered as LaTeX
+standard encoding T3, and the set of addendum symbols as encoding
+TS3. \"Times-like\" Adobe Type 1 versions are provided for both the T3 and the
+TS3 fonts.")
+    (license license:lppl)))
+
 (define-public texlive-latex-amsrefs
   (package
     (name "texlive-latex-amsrefs")
@@ -5353,6 +5430,56 @@ alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
 
+(define-public texlive-jknappen
+  (package
+    (inherit (simple-texlive-package
+              "texlive-jknappen"
+              (list "/fonts/source/jknappen/"
+                    "/fonts/tfm/jknappen/"
+                    "/fonts/source/jknappen/"
+                    "/fonts/tfm/jknappen/"
+                    "/tex4ht/ht-fonts/alias/jknappen/"
+                    "/tex4ht/ht-fonts/unicode/jknappen/")
+              (base32
+               "1v5wk5il41bddzr81h5636h3cjz0w1qann5g9garsb7qfch9fhws")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/jknappen")
+    (synopsis "Miscellaneous packages by Jörg Knappen")
+    (description
+     "This package contains a collection of macros by Jörg Knappen:
+@table @code
+@item greekctr
+New counterstyles @code{\\greek} and @code{\\Greek}.
+@item holtpolt
+Non-commutative fractions
+@item latin1jk
+@itemx latin2jk
+@itemx latin3jk
+Inputenc definition files that allow verbatim input in the respective ISO
+Latin codes.
+@item mathbol
+Blackboard bold fonts for use in maths.
+@item mathrsfs
+Mathematical script letters, as traditionally used in physics for Lagrangian,
+Hamiltonian, path integral measures, etc.
+@item parboxx
+New alignment options for parboxen at top and bottom of the box.
+@item sans
+Interchanges the roles of sans serif and roman fonts throughout the document.
+@item semtrans
+Support for special latin letters and diacritics used in transliteration of
+semitic languages
+@item smartmn
+Intelligent hyphen/minus, which guesses whether to render as hyphen or minus.
+@item sgmlcmpt
+Commands replacing the characters <, >, and &.
+@item tccompat
+A compatibility package for users of the older versions of the textcomp package.
+@item young
+Simple Young tableaux.
+@end table")
+    (license license:gpl2)))                    ;per the 00readme_txt file.
+
 (define-public texlive-libertine
   (package
     (inherit (simple-texlive-package
@@ -5504,6 +5631,32 @@ CM-Super family of fonts.  The package also offers its own LaTeX support for
 OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
     (license license:lppl)))
 
+(define-public texlive-marvosym
+  (package
+    (inherit (simple-texlive-package
+              "texlive-marvosym"
+              (list "/doc/fonts/marvosym/"
+                    "/fonts/afm/public/marvosym/"
+                    "/fonts/map/dvips/marvosym/"
+                    "/fonts/tfm/public/marvosym/"
+                    "/fonts/truetype/public/marvosym/"
+                    "/fonts/type1/public/marvosym/"
+                    "/tex/latex/marvosym/")
+              (base32
+               "0m3bbg06cia8ni86fjhvb7x4a5qcxgnpqcvicfms91w2px9ysc46")
+              #:trivial? #t))
+    (home-page "https://martinvogel.de/blog/index.php?\
+/archives/131-Marvosym.ttf.html")
+    (synopsis "Martin Vogel's Symbols (marvosym) font")
+    (description "The Martin Vogel’s Symbols fonts (marvosym) contains the
+Euro currency symbol as defined by the European commission, along with symbols
+for structural engineering, symbols for steel cross-sections, astronomy
+signs (sun, moon, planets), the 12 signs of the zodiac, scissor symbols, CE
+sign and others.  This package contains both the original TrueType font and
+the derived Type 1 font, together with support files for TeX (LaTeX).")
+    (license (list license:lppl          ;for TeX support files
+                   license:silofl1.1)))) ;for fonts
+
 (define-public texlive-metapost
   (package
     (name "texlive-metapost")
@@ -5592,6 +5745,24 @@ Association for Computing Machinery (ACM).")
 get a narrower “natural” width.")
     (license license:lppl)))
 
+(define-public texlive-wasy
+  (package
+    (inherit (simple-texlive-package
+              "texlive-wasy"
+              (list "/fonts/source/public/wasy/"
+                    "/fonts/tfm/public/wasy/"
+                    "/tex/plain/wasy/"
+                    "/doc/fonts/wasy/")
+              (base32
+               "10dxbqgv42niybj65hj6y47x8lsl83m48rgw2v2s50k05wbghwbm")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/wasy")
+    (synopsis "Waldi symbol fonts")
+    (description "This package provides the @code{wasy} (Waldi symbol) fonts,
+in the Metafont and Adobe Type 1 formats.  Support under LaTeX is provided by
+the @code{wasysym} package.")
+    (license license:public-domain)))
+
 (define-public texlive-latex-wasysym
   (package
     (name "texlive-latex-wasysym")
@@ -5606,12 +5777,12 @@ get a narrower “natural” width.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/wasysym"))
     (home-page "https://www.ctan.org/pkg/wasysym")
-    (synopsis "LaTeX support file to use the WASY2 fonts")
+    (synopsis "LaTeX support file to use the @code{wasy} fonts")
     (description
-     "The wasy2WASY2 (Waldi Symbol) font by Roland Waldi provides many glyphs
-like male and female symbols and astronomical symbols, as well as the complete
-lasy font set and other odds and ends.  The wasysym package implements an easy
-to use interface for these symbols.")
+     "The @code{wasy} (Waldi Symbol) font by Roland Waldi provides many glyphs like
+male and female symbols and astronomical symbols, as well as the complete
+@code{lasy} font set and other odds and ends.  The @code{wasysym} package
+implements an easy to use interface for these symbols.")
     (license license:lppl)))
 
 (define-public texlive-latex-wrapfig

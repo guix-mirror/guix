@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "db42ee65bd657bae9b1a598cbdbe86079dc85f81")
-        (revision 9))
+        (commit "d4a562ba7ac4549cc2d57eff7f440026a2045f45")
+        (revision 11))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kizkw6cxh6mhc8kal2fglnhyp1i668b4ilqbxq72slbmf9jr9jl"))
+                  "05gkymzfl0fdb2zjyvvn7w15arfnn7fgpbn3bch9r5yc7ldxg868"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -301,6 +301,7 @@ $(prefix)/etc/init.d\n")))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (zlib   (assoc-ref inputs "guile-zlib"))
                                (lzlib  (assoc-ref inputs "guile-lzlib"))
+                               (zstd   (assoc-ref inputs "guile-zstd"))
                                (git    (assoc-ref inputs "guile-git"))
                                (bs     (assoc-ref inputs
                                                   "guile-bytestructures"))
@@ -308,7 +309,7 @@ $(prefix)/etc/init.d\n")))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
-                                             bs ssh zlib lzlib))
+                                             bs ssh zlib lzlib zstd))
                                (deps*  ,@(if (%current-target-system)
                                              '(deps)
                                              '((cons avahi deps))))
@@ -362,6 +363,7 @@ $(prefix)/etc/init.d\n")))
                        ("guile-sqlite3" ,guile-sqlite3)
                        ("guile-zlib" ,guile-zlib)
                        ("guile-lzlib" ,guile-lzlib)
+                       ("guile-zstd" ,guile-zstd)
                        ("guile-ssh" ,guile-ssh)
                        ("guile-git" ,guile-git)
 
@@ -417,11 +419,19 @@ $(prefix)/etc/init.d\n")))
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
-         ("guile-lzlib" ,guile-lzlib)))
+         ("guile-lzlib" ,guile-lzlib)
+         ("guile-zstd" ,guile-zstd)))
       (native-search-paths
        (list (search-path-specification
               (variable "GUIX_EXTENSIONS_PATH")
-              (files '("share/guix/extensions")))))
+              (files '("share/guix/extensions")))
+
+             ;; (guix git) and (guix build download) honor this variable whose
+             ;; name comes from OpenSSL.
+             (search-path-specification
+              (variable "SSL_CERT_DIR")
+              (separator #f)                      ;single entry
+              (files '("etc/ssl/certs")))))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")
@@ -1130,7 +1140,7 @@ outputs of those builds.")
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
-    (version "0.1.0")
+    (version "0.2.1")
     (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
     (source (origin
               (method git-fetch)
@@ -1138,24 +1148,7 @@ outputs of those builds.")
                                   (commit (string-append "v" version))))
               (sha256
                (base32
-                "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2])\n"))
-
-                  ;; Avoid name clash and build failure now that
-                  ;; 'define-json-mapping' is also provided by Guile-JSON, as
-                  ;; of version 4.3.
-                  (substitute* (find-files "." "\\.scm$")
-                    (("define-json-mapping")
-                     "define-json-mapping*")
-                    (("<=>")
-                     "<->"))
-                  #t))
+                "1kqwfp5h95s6mirq5nbydsbmlhsinn32grz1ld5mbxvhl6sn2i0j"))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
@@ -1348,14 +1341,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.8.2")
+   (version "1.10.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                          version "/flatpak-" version ".tar.xz"))
      (sha256
-      (base32 "1c45a0k7wx685n5b3ihv7dk0mm2kmwbw7cx8w5g2la62yxfn49kr"))))
+      (base32 "1dywvfpmszvp2wy5hvpzy8z6gz2gzmi9p302njp52p9vpx14ydf1"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.

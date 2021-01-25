@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Google LLC
@@ -76,7 +76,10 @@ from OS that are needed on the bare metal and not in a container."
 doing anything.")
            (provision '(loopback networking))
            (start #~(const #t))))
-   #f))
+   #f
+   (description "Provide loopback and networking without actually doing
+anything.  This service is used by guest systems running in containers, where
+networking support is provided by the host.")))
 
 (define %nscd-container-caches
   ;; Similar to %nscd-default-caches but with smaller cache sizes. This allows

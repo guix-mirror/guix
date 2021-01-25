@@ -8260,14 +8260,14 @@ PEP 8.")
 (define-public python-pep517
   (package
     (name "python-pep517")
-    (version "0.8.2")
+    (version "0.9.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pep517" version))
         (sha256
          (base32
-          "17m2bcabx3sr5wjalgzppfx5xahqrwm12zq58h68mm482b7rjqcf"))))
+          "0zqidxah03qpnp6zkg3zd1kmd5f79hhdsfmlc0cldaniy80qddxf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -18762,14 +18762,14 @@ implemented using @code{ctypes}.")
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "userspacefs" version))
         (sha256
          (base32
-          "0ayfcz9pjwq7h3ws0qas71842s1wm7dxlmg8dccxl2j6yavpv83f"))))
+          "1v6saf62ml3j63adalvlkj4iavxjbsbapl20b21mn73p7kvn4ayf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-fusepyng" ,python-fusepyng)))

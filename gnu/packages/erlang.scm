@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
+;;; Copyright © 2021 Oskar Köök <oskar@maatriks.ee>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "21.3.8.13")
+    (version "23.2.1")
     (source (origin
               (method git-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -52,7 +53,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dj37vk712dx76y25g13na24wbpn7a5ddmlpf4n51gm10sib54wj"))
+                "1p3lw4bcm2dph3pf1h4i0d9pzrcfr83r0iadqanxkwbmm1bl11pm"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -68,7 +69,7 @@
                                (version-major+minor version) ".tar.gz"))
            (sha256
             (base32
-             "0wm1dg1psv1n3gpiwyms06yhsryrnr28p455fp0l1ak8hdf4nipm"))))))
+             "0rq0rw68f02vckgdiwmvx8bvyv00l81s27cq59i3h79j9prfal2n"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -179,6 +180,14 @@
          (add-after 'patch-source-env 'autoconf
            (lambda _
              (invoke "./otp_build" "autoconf")
+             #t))
+         (add-after 'autoconf 'patch-configure-script-shell
+           (lambda _
+             (substitute* "configure"
+               (("cmd_str=\"./configure")
+                (string-append "cmd_str=\""
+                               (which "sh")
+                               " ./configure")))
              #t))
          (add-after 'install 'patch-erl
            ;; This only works after install.

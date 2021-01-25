@@ -11141,6 +11141,39 @@ package takes some liberties with the SDL API, and attempts to adhere to the
 spirit of both the SDL and Perl.")
     (license license:lgpl2.1)))
 
+(define-public perl-sgmls
+  (package
+    (name "perl-sgmls")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RA/RAAB/SGMLSpm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gdjf3mcz2bxir0l9iljxiz6qqqg3a9gg23y5wjg538w552r432m"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-script
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (site (string-append out "/lib/perl5/site_perl")))
+                        (with-directory-excursion out
+                          (rename-file "bin/sgmlspl.pl" "bin/sgmlspl")
+                          (wrap-program "bin/sgmlspl"
+                            `("PERL5LIB" suffix (,site))))
+                        #t))))))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "https://metacpan.org/release/RAAB/SGMLSpm-1.1")
+    (synopsis "Perl module for processing SGML parser output")
+    (description "This package contains @code{SGMLS.pm}, a perl5 class library
+for parsing the output from an SGML parser such as OpenSP.  It also includes
+the @command{sgmlspl} command, an Perl script showcasing how the library can
+be used.")
+    (license license:gpl2+)))
+
 (define-public perl-shell-command
   (package
     (name "perl-shell-command")

@@ -19,6 +19,7 @@
 
 (define-module (test-substitute)
   #:use-module (guix scripts substitute)
+  #:use-module (guix narinfo)
   #:use-module (guix base64)
   #:use-module (gcrypt hash)
   #:use-module (guix serialization)

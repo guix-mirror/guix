@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +30,13 @@
 (define-public nano
   (package
     (name "nano")
-    (version "5.4")
+    (version "5.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/nano/nano-" version ".tar.xz"))
       (sha256
-       (base32 "1sc6xl9935k9s9clkv83hapijka4qknfnj6f15c3b1i2n84396gy"))))
+       (base32 "0jkyd3yzcidnvnj1k9bmplzlbd303x6xxblpp5np7zs1kfzq22rr"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)

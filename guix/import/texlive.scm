@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (web uri)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (guix http-client)
   #:use-module (gcrypt hash)
   #:use-module (guix memoization)
@@ -149,19 +152,24 @@ expression describing it."
            (home-page  (string-append "http://www.ctan.org/pkg/" id))
            (ref        (texlive-ref component id))
            (checkout   (download-svn-to-store store ref)))
+      (unless checkout
+        (warning (G_ "Could not determine source location.  \
+Please manually specify the source field.~%")))
       `(package
          (name ,(guix-name component id))
          (version ,version)
-         (source (origin
-                   (method svn-fetch)
-                   (uri (texlive-ref ,component ,id))
-                   (sha256
-                    (base32
-                     ,(bytevector->nix-base32-string
-                       (let-values (((port get-hash) (open-sha256-port)))
-                         (write-file checkout port)
-                         (force-output port)
-                         (get-hash)))))))
+         (source ,(if checkout
+                      `(origin
+                         (method svn-fetch)
+                         (uri (texlive-ref ,component ,id))
+                         (sha256
+                          (base32
+                           ,(bytevector->nix-base32-string
+                             (let-values (((port get-hash) (open-sha256-port)))
+                               (write-file checkout port)
+                               (force-output port)
+                               (get-hash))))))
+                      #f))
          (build-system texlive-build-system)
          (arguments ,`(,'quote (#:tex-directory ,(string-join (list component id) "/"))))
          (home-page ,home-page)

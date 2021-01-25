@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -200,6 +200,17 @@
 ;;          (build-derivations %store (list d1))
 ;;          (valid-path? %store p1)
 ;;          (member (pk p2) (live-paths %store)))))
+
+(test-assert "add-indirect-root and find-roots"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (let* ((item (add-text-to-store %store "something" (random-text)))
+            (root (string-append directory "/gc-root")))
+       (symlink item root)
+       (add-indirect-root %store root)
+       (let ((result (member (cons root item) (find-roots %store))))
+         (delete-file root)
+         result)))))
 
 (test-assert "permanent root"
   (let* ((p  (with-store store

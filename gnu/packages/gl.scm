@@ -770,7 +770,7 @@ OpenGL.")
 (define-public glfw
   (package
     (name "glfw")
-    (version "3.2.1")
+    (version "3.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/glfw/glfw"
@@ -778,7 +778,7 @@ OpenGL.")
                                   "/glfw-" version ".zip"))
               (sha256
                (base32
-                "09kk5yc1zhss9add8ryqrngrr16hdmc94rszgng135bhw09mxmdp"))))
+                "1izgc4r0ypxwwklfzj98ab4xqsjpb1wbsfdbivvxpmr95x8km8q8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no test target
@@ -792,6 +792,7 @@ OpenGL.")
        ;; These are in 'Requires.private' of 'glfw3.pc'.
        ("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
+       ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("libxcursor" ,libxcursor)
        ("libxxf86vm" ,libxxf86vm)))

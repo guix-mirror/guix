@@ -296,7 +296,7 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
@@ -305,7 +305,7 @@ your images.  Among its features are:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g9ywbgy162wiam9hc3yqpq5q4gyxa8fj4jskr3fdz8z8jjaabzz"))))
+        (base32 "0a2dswbv4xddb2l2d55hc43lzvjwrjs5z9am7v6i0p0mi2fmc89s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

@@ -103,6 +103,7 @@ MODULES =					\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
+  guix/narinfo.scm				\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/repl.scm					\
@@ -987,7 +988,7 @@ download-po.$(1):
 	fi ;									\
 	for lang in $$$$LINGUAS; do						\
 	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
-	     "https://translationproject.org/latest/$(1)/$$$$lang.po" ;		\
+	     "https://translate.fedoraproject.org/api/translations/guix/$(1)/$$$$lang/file/" ; \
 	  then									\
 	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp,} ;			\
 	  else									\
@@ -999,11 +1000,12 @@ download-po.$(1):
 
 endef
 
+$(eval $(call make-download-po-rule,documentation-cookbook,po/doc,guix-cookbook.))
+$(eval $(call make-download-po-rule,documentation-manual,po/doc,guix-manual.))
 $(eval $(call make-download-po-rule,guix,po/guix))
-$(eval $(call make-download-po-rule,guix-packages,po/packages))
-$(eval $(call make-download-po-rule,guix-manual,po/doc,guix-manual.))
+$(eval $(call make-download-po-rule,packages,po/packages))
 
-download-po: $(foreach domain,guix guix-packages guix-manual,download-po.$(domain))
+download-po: $(foreach domain,guix packages documentation-manual documentation-cookbook,download-po.$(domain))
 .PHONY: download-po
 
 ## -------------- ##

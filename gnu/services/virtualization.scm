@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
 ;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020,2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -717,7 +717,7 @@ potential infinite waits blocking libvirt."))
   (platforms   qemu-binfmt-configuration-platforms
                (default '()))                     ;safest default
   (guix-support? qemu-binfmt-configuration-guix-support?
-                 (default #f)))
+                 (default #t)))
 
 (define (qemu-platform->binfmt qemu platform)
   "Return a gexp that evaluates to a binfmt string for PLATFORM, using the
@@ -917,7 +917,9 @@ is added to the OS specified in CONFIG."
          (disk-size (hurd-vm-configuration-disk-size config))
          (type      (lookup-image-type-by-name 'hurd-qcow2))
          (os->image (image-type-constructor type)))
-    (system-image (os->image os))))
+    (system-image
+     (image (inherit (os->image os))
+            (size disk-size)))))
 
 (define (hurd-vm-port config base)
   "Return the forwarded vm port for this childhurd config."

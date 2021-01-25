@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,7 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix git)
+  #:use-module (guix upstream)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
@@ -395,6 +396,22 @@
                                   (origin-patches (package-source tar))))
               (map local-file-file
                    (origin-patches (package-source dep)))))))))
+
+(test-equal "options->transformation, with-latest"
+  "42.0"
+  (mock ((guix upstream) %updaters
+         (delay (list (upstream-updater
+                       (name 'dummy)
+                       (pred (const #t))
+                       (description "")
+                       (latest (const (upstream-source
+                                       (package "foo")
+                                       (version "42.0")
+                                       (urls '("http://example.org")))))))))
+        (let* ((p (dummy-package "foo" (version "1.0")))
+               (t (options->transformation
+                   `((with-latest . "foo")))))
+          (package-version (t p)))))
 
 (test-end)
 

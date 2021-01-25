@@ -267,7 +267,8 @@ and provides a \"top-like\" mode (monitoring).")
                 "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")))
+     '(#:configure-flags '("--localstatedir=/var")
+       #:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
 
@@ -297,7 +298,8 @@ interface and is based on GNU Guile.")
      `(("pkg-config" ,pkg-config)
        ("guile" ,guile-2.2)))
     (inputs
-     `(("guile" ,guile-2.2)))))
+     `(("guile" ,guile-2.2)
+       ("guile2.2-readline" ,guile2.2-readline)))))
 
 (define-public guile3.0-shepherd
   (deprecated-package "guile3.0-shepherd" shepherd))
@@ -307,10 +309,21 @@ interface and is based on GNU Guile.")
     (inherit shepherd)
     (name "guile2.0-shepherd")
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)
        ("guile" ,guile-2.0)))
     (inputs
-     `(("guile" ,guile-2.0)))))
+     `(("guile" ,guile-2.0)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; (ice-9 threads) isn't available in guile-2.0
+             (substitute* "modules/shepherd.scm"
+               ((".*\\(ice-9 threads\\).*") ""))
+             #t)))
+       ,@(package-arguments shepherd)))))
 
 (define-public cloud-utils
   (package
@@ -445,7 +458,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.47")
+    (version "4.0.49")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -454,7 +467,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zz5kk3ad1jj8y939369dfvjh7zqwpkcqzzad7yb6wp01rc5sf88"))))
+                "0l7gic5ql5xiy5s6rb0j9ydyaal5bcxl10bx45khcgdr9zg16pb1"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -516,7 +529,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
        (method git-fetch)
@@ -524,7 +537,7 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "1fckfv96vzqjs3lzy0cgwsqv5vh1sxca3fhvgskmnkvr5bq6cia9"))
+        (base32 "10lp6cbfvigzp6pq5nwj3s3l4vs7cv92krz2r08nwrz8vl6rqdzp"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -1402,7 +1415,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.4p2")
+    (version "1.9.5p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1412,7 +1425,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0r0g8z289ipw0zpkhmm33cpfm42j01jds2q1wilhh3flg7xg2jn3"))
+                "10kqdfbfpf3vk5ihz5gwynv4pxdf1lg6ircrlanyygb549yg7pad"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1862,7 +1875,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20201217")
+    (version "20210105")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1870,7 +1883,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "06rdpfjmij5nni1x2wi1gnalhsza5yxq1viskjm9r11wmsjnxm2a"))))
+                "1gi7qzfywg118g5nlqn5lawxk25pg2sz01gmbz40vvmikks4ri9r"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2611,14 +2624,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.91")
+    (version "7.80")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
+                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2696,7 +2709,7 @@ advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
-    (license (list license:npsl license:bsd-3))))
+    (license (list license:nmap license:bsd-3))))
 
 (define-public dstat
   (package
@@ -3617,7 +3630,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.2.01-1")
+      (version "3.2.02-2")
       (source
        (origin
          (method git-fetch)
@@ -3626,7 +3639,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "15bakrv3jzj5h88c3bd0cfhh6hb8b4hm79924k1ygn29sqzgyw65"))))
+          (base32 "0fwx798v9kwiwkgbj97w6rjdanwf7ap65vvq1fqy7gd9x78xcxsq"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4306,3 +4319,30 @@ This program allows you to view and manipulate this EEPROM list.")
     (home-page "https://github.com/xobs/novena-eeprom/")
     (supported-systems '("armhf-linux"))
     (license license:bsd-3)))
+
+(define-public lrzsz
+  (package
+    (name "lrzsz")
+    (version "0.12.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ohse.de/uwe/releases/lrzsz-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1wcgfa9fsigf1gri74gq0pa7pyajk12m4z69x7ci9c6x9fqkd2y2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (which "bash"))
+             (invoke "./configure"
+              (string-append "--prefix="
+                             (assoc-ref outputs "out"))))))))
+    (synopsis "Implementation of XMODEM/YMODEM/ZMODEM transfer protocols")
+    (description "This package provides programs that transfer files using
+the XMODEM/YMODEM/ZMODEM file transfer protocols.")
+    (home-page "https://ohse.de/uwe/software/lrzsz.html")
+    (license license:gpl2+)))

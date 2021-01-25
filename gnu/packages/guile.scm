@@ -310,16 +310,19 @@ without requiring the source code to be rewritten.")
 
 (define-public guile-3.0-latest
   ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
-  (package
-    (inherit guile-3.0)
-    (version "3.0.5")
-    (source (origin
-              (inherit (package-source guile-3.0))
-              (uri (string-append "mirror://gnu/guile/guile-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1wah6fq1h8vmbpdadjych1mq8hyqkd7p015cbxm14ri37l1gnxid"))))))
+  (package-with-extra-patches
+   (package
+     (inherit guile-3.0)
+     (version "3.0.5")
+     (source (origin
+               (inherit (package-source guile-3.0))
+               (uri (string-append "mirror://gnu/guile/guile-"
+                                   version ".tar.xz"))
+               (sha256
+                (base32
+                 "1wah6fq1h8vmbpdadjych1mq8hyqkd7p015cbxm14ri37l1gnxid")))))
+   ;; Remove on the next rebuild cycle.
+   (search-patches "guile-2.2-skip-so-test.patch")))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-3.0))
@@ -578,14 +581,14 @@ specification.  These are the main features:
   (package
     (inherit guile-json-3)
     (name "guile-json")
-    (version "4.4.1")
+    (version "4.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xq4f59rdk28xy4sdn6amy07aa19ikrk48iily3kfhwpkbg6v9jj"))))))
+                "0iigada80cg7dl10z6ligiykci0cv9b88zmncz47nsz5g9gacdpc"))))))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json-4))

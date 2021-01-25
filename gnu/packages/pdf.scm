@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -648,15 +648,14 @@ interaction.")
 (define-public podofo
   (package
     (name "podofo")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/podofo/podofo/" version
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
-              (patches (search-patches "podofo-cmake-3.12.patch"))))
+                "1f0yvkx6nf99fp741w2y706d8bs9824x1z2gqm3rdy5fv8bfgwkw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -671,8 +670,8 @@ interaction.")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
-                           "-DPODOFO_BUILD_STATIC=ON")
+     `(#:configure-flags
+       (list "-DPODOFO_BUILD_SHARED=ON")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch

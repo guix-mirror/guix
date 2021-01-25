@@ -2,7 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
-;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -538,7 +538,7 @@ to the fix block above.
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.13.5")
+    (version "2.14.4")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ to the fix block above.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "168wjad5g0ka555hwsciwbj7fqx1c89q59hq1yxj8aiyp5kfcahx"))))
+        (base32 "0m4ncydihz4n4i80c252vk3c5v672yab1jv85n6ndn7a92xv3ilq"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1057,7 +1057,7 @@ their position, altitude, speed, etc.")
 (define-public rtl-433
   (package
     (name "rtl-433")
-    (version "20.02")
+    (version "20.11")
     (source
      (origin
        (method git-fetch)
@@ -1066,7 +1066,7 @@ their position, altitude, speed, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11991xky9gawkragdyg27qsf7kw5bhlg7ygvf3fn7ng00x4xbh1z"))))
+        (base32 "093bxjxkg7yf78wqj5gpijbfa2p05ny09qqsj84kzi1svnzsa369"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1117,3 +1117,33 @@ modes:
 @item X10
 @end itemize")
     (license license:gpl2+)))
+
+(define-public nanovna-saver
+  (package
+    (name "nanovna-saver")
+    (version "0.3.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NanoVNA-Saver/nanovna-saver")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0z83rwpnbbs1n74mx8dgh1d1crp90mannj9vfy161dmy4wzc5kpv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyserial" ,python-pyserial)
+       ("python-scipy" ,python-scipy)))
+    (arguments
+     '(#:tests? #f))
+    (home-page "https://github.com/NanoVNA-Saver/nanovna-saver")
+    (synopsis "GUI for NanoVNA devices")
+    (description
+     "NanoVNA-Saver is a tool for reading, displaying and saving data from the
+NanoVNA vector network analyzers.")
+    (license license:gpl3+)))

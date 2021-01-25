@@ -808,3 +808,25 @@ code will be mixed in with the actual programming logic.  This implementation
 provides a number of utilities to make coding with expected cleaner.")
     (home-page "https://tl.tartanllama.xyz/")
     (license license:cc0)))
+
+(define-public magic-enum
+  (package
+    (name "magic-enum")
+    (version "0.7.2")
+    (home-page "https://github.com/Neargye/magic_enum")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07j5zdf3vkliwrcv6k663k35akn7qp23794sz2mnvkj9hbv9s8cx"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gcc" ,gcc-9)))
+    (synopsis "C++17 header only library for compile time reflection of enums")
+    (description "Magic Enum offers static reflection of enums, with
+conversions to and from strings, iteration and related functionality.")
+    (license license:expat)))

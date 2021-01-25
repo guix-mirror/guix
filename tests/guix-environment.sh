@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -120,6 +120,12 @@ guix environment --bootstrap -r "$gcroot" --ad-hoc guile-bootstrap \
      -- guile -c 1
 test `readlink "$gcroot"` = "$expected"
 rm "$gcroot"
+
+# Try '-r' with a relative file name.
+(cd "$tmpdir"; mkdir "gc-root";
+ guix environment --bootstrap -r "gc-root/r" --ad-hoc guile-bootstrap \
+      -- guile -c 1;
+ rm "gc-root/r"; rmdir "gc-root")
 
 # Same with an absolute file name.
 guix environment --bootstrap -r "$PWD/$gcroot" --ad-hoc guile-bootstrap \

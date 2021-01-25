@@ -45,7 +45,7 @@
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1478,7 +1478,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.29")
+    (version "0.8.32")
     (source
      (origin
        (method git-fetch)
@@ -1487,7 +1487,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "142gc21aaqmx0d01vmqsg7zi85pjgi3higr4ba0m52qf3mvxd6as"))
+        (base32 "17aa269dq0gsm4nlhh1q2mj6k8mw6v8ig3nygwk3s07l2xl5gqvn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3995,7 +3995,7 @@ is limited to http and https.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.19")
+    (version "6.20")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -4003,7 +4003,7 @@ is limited to http and https.")
                    "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "1i1gbcwdzx74whn5vn6xbr2cp7frldfz2rfrcjp2qljr770nxdsj"))))
+               "07lzfycza7qqxli18xgsnqwiwxapl0b64z33wfw62aai4hm7nllj"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)

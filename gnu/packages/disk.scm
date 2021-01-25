@@ -304,14 +304,14 @@ tables, and it understands a variety of different formats.")
 (define-public gptfdisk
   (package
     (name "gptfdisk")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gptfdisk/gptfdisk/"
                           version "/gptfdisk-" version ".tar.gz"))
       (sha256
-       (base32 "0bybgp30pqxb6x5krxazkq4drca0gz4inxj89fpyr204rn3kjz8f"))))
+       (base32 "1a4c2ss6n2s6x8v11h79jykh96y46apd6i838ka0ngx58gb53ifx"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -860,7 +860,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.24")
+    (version "2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
@@ -868,7 +868,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "0wq7624pnprvfzrf39bq1cybd9lqwawbdg5bm0cchlpgvdq7q86w"))))
+                "0s0nazkpzpn4an00qghjkk9n7gdm5a8dqfr5hfnlk5mk5lma8njm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

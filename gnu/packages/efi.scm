@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,44 @@ environment presented by Intel's EFI.")
     (home-page "https://directory.fsf.org/wiki/GNU_EFI")
     ;; Distribution is allowed only when accepting all those licenses.
     (license (list license:bsd-2 license:bsd-3 license:bsd-4 license:expat))))
+
+(define-public efi-analyzer
+  (let ((commit "77c9e3a67cd7c2fca48a4292dad25a5429872f95")
+        (revision "0"))
+    (package
+      (name "efi-analyzer")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/xypron/efi_analyzer")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1izdkzybqyvzpzqz6kx4j7y47j6aa2dsdrychzgs65466x1a4br1"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "prefix=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'support-cross-compilation
+             (lambda _
+               (substitute* "Makefile"
+                 (("gcc") ,(cc-for-target)))
+               #t))
+           (delete 'configure))))       ; no configure script
+      (home-page "https://github.com/xypron/efi_analyzer")
+      (synopsis "Analyze EFI binaries")
+      (description
+       "The EFI Analyzer checks EFI binaries and prints out header and section
+information.")
+      (license license:bsd-2))))
+
+(define-public efi_analyzer
+  ;; For a short while the package name contained an underscore.
+  (deprecated-package "efi_analyzer" efi-analyzer))
 
 (define-public sbsigntools
   (package

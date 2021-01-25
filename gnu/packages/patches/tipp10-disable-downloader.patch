@@ -1,0 +1,165 @@
+https://salsa.debian.org/debian/tipp10/-/raw/debian/2.1.0-5/debian/patches/disable_downloaders.patch
+
+Author: Reiner Herrmann <reiner@reiner-h.de>
+Description: Disable downloaders
+ This makes porting to Qt5 much easier, as QHttp is no longer available.
+ But the functionality was not enabled anyway or is no longer useful.
+ .
+ - checkversion.h/.cpp:
+   At startup (while loading settings), Tipp10 "phones home" to do an
+   update check (www.tipp10.com/update/version.tipp10v210).
+   For a packaged software and one that is no longer being developed,
+   this does not make much sense.
+ - updatedialog.h/.cpp:
+   Can download newer sqlite database (www.tipp10.com/update/sql.tipp10v210.utf),
+   but this file is no longer available on the server (404).
+   The update action has also not been enabled in the menu, so the update
+   functionality was currently not active:
+     widget/mainwindow.cpp:143:  //fileMenu->addAction(updateAction);
+ - downloaddialog.h/.cpp:
+   Allows downloading lessons from user-specified location.
+   But the action (widget/startwidget.cpp -> lessonDownload) has not been part
+   of any menu, so it was also not in use.
+
+--- a/tipp10.pro
++++ b/tipp10.pro
+@@ -15,7 +15,6 @@
+ INCLUDEPATH     += 	.
+ CONFIG          += 	qt
+ QT              += 	sql
+-QT              += 	network
+ RC_FILE         += 	tipp10.rc
+ RESOURCES       += 	tipp10.qrc
+ HEADERS         += 	def/defines.h \
+@@ -36,15 +35,12 @@
+                     widget/settingspages.h \
+                     widget/lessondialog.h \
+                     widget/regexpdialog.h \
+-                    widget/downloaddialog.h \
+                     widget/lessonprintdialog.h \
+                     widget/lessonresult.h \
+-                    widget/updatedialog.h \
+                     widget/helpbrowser.h \
+                     widget/companylogo.h \
+                     widget/errormessage.h \
+                     widget/txtmessagedialog.h \
+-                    widget/checkversion.h \
+                     sql/connection.h \
+                     sql/lessontablesql.h \
+                     sql/chartablesql.h \
+@@ -70,15 +66,12 @@
+                     widget/settingspages.cpp \
+                     widget/lessondialog.cpp \
+                     widget/regexpdialog.cpp \
+-                    widget/downloaddialog.cpp \
+                     widget/lessonprintdialog.cpp \
+                     widget/lessonresult.cpp \
+-                    widget/updatedialog.cpp \
+                     widget/helpbrowser.cpp \
+                     widget/companylogo.cpp \
+                     widget/errormessage.cpp \
+                     widget/txtmessagedialog.cpp \
+-                    widget/checkversion.cpp \
+                     sql/lessontablesql.cpp \
+                     sql/chartablesql.cpp \
+                     sql/trainingsql.cpp \
+--- a/widget/mainwindow.cpp
++++ b/widget/mainwindow.cpp
+@@ -41,11 +41,9 @@
+ 
+ #include "mainwindow.h"
+ #include "settingsdialog.h"
+-#include "updatedialog.h"
+ #include "def/defines.h"
+ #include "def/errordefines.h"
+ #include "errormessage.h"
+-#include "checkversion.h"
+ 
+ MainWindow::MainWindow() {
+ 	trainingStarted = false;
+@@ -214,8 +212,8 @@
+ }
+ 
+ void MainWindow::showUpdate() {
+-	UpdateDialog updateDialog(this);
+-	updateDialog.exec();
++	//UpdateDialog updateDialog(this);
++	//updateDialog.exec();
+ 	// Fill lesson list after online update
+ 	startWidget->fillLessonList(false);
+ }
+@@ -486,6 +484,7 @@
+ 	settings.endGroup();
+ 
+     settings.beginGroup("general");
++#if 0
+     if (settings.value("check_new_version", true).toBool()) {
+ 
+         QDate lastVersionCheck = settings.value("last_version_check").toDate();
+@@ -499,6 +498,7 @@
+         }
+         settings.setValue("last_version_check", today);
+     }
++#endif
+     settings.endGroup();
+ }
+ 
+--- a/widget/settingspages.cpp
++++ b/widget/settingspages.cpp
+@@ -581,7 +581,7 @@
+ 
+ 	// Layout of group box vertical
+ 	QVBoxLayout *layout = new QVBoxLayout;
+-    layout->addWidget(checkNewVersion);
++    //layout->addWidget(checkNewVersion);
+     layout->addSpacing(1);
+     layout->addWidget(checkNativeStyle);
+     layout->setMargin(16);
+@@ -610,7 +610,6 @@
+     checkIntelligence->setChecked(settings.value("check_toggle_intelligence", true).toBool());
+ 	checkLimitLesson->setChecked(settings.value("check_limit_lesson", true).toBool());
+ 	checkLessonPublish->setChecked(settings.value("check_lesson_publish", true).toBool());
+-    checkNewVersion->setChecked(settings.value("check_new_version", true).toBool());
+     checkNativeStyle->setChecked(settings.value("check_native_style", false).toBool());
+ 	settings.endGroup();
+ }
+@@ -636,7 +635,6 @@
+ 	settings.setValue("check_limit_lesson", checkLimitLesson->isChecked());
+ 	settings.setValue("check_lesson_publish", checkLessonPublish->isChecked());
+ 	settings.setValue("check_native_style", checkNativeStyle->isChecked());
+-    settings.setValue("check_new_version", checkNewVersion->isChecked());
+     settings.endGroup();
+ 
+ 	return requireRestart;
+--- a/widget/startwidget.cpp
++++ b/widget/startwidget.cpp
+@@ -43,12 +43,10 @@
+ 
+ #include "startwidget.h"
+ #include "sql/startsql.h"
+-#include "updatedialog.h"
+ #include "def/defines.h"
+ #include "def/errordefines.h"
+ #include "errormessage.h"
+ #include "lessondialog.h"
+-#include "downloaddialog.h"
+ #include "illustrationdialog.h"
+ #include "txtmessagedialog.h"
+ 
+@@ -1048,7 +1046,7 @@
+ }
+ 
+ void StartWidget::clickDownloadLesson() {
+-
++#if 0
+ 	QStringList lessonData;
+ 
+ 	DownloadDialog downloadDialog(&lessonData, this);
+@@ -1083,6 +1081,7 @@
+ 			}
+ 		}
+ 	}
++#endif
+ }
+ 
+ void StartWidget::clickEditLesson() {

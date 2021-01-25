@@ -51,13 +51,15 @@
                               (extra-options '("-L")) ; no carrier detect
                               (baud-rate "115200")
                               (term "vt100")
-                              (tty "ttyS0")))
+                              (tty "ttyS2")))
                     %base-services))))
 
 (define pinebook-pro-image-type
   (image-type
    (name 'pinebook-pro-raw)
-   (constructor (cut image-with-os arm64-disk-image <>))))
+   (constructor (cut image-with-os
+                     (arm64-disk-image (* 9 (expt 2 20))) ;9MiB
+                     <>))))
 
 (define pinebook-pro-barebones-raw-image
   (image

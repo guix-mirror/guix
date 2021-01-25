@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
@@ -26,6 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages assembly)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -147,6 +148,38 @@ abstracts over the target CPU by exposing a standardized RISC instruction set
 to the clients.")
     (home-page "https://www.gnu.org/software/lightning/")
     (license license:gpl3+)))
+
+(define-public simde
+  (package
+    (name "simde")
+    (version "0.7.0")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/simd-everywhere/simde")
+                    (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1xf5xfzkk9rj47cichgz5ni8xs9hbpz5p6fmxr4ij721ffd002k3"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Fix the version string
+                 (substitute* "meson.build"
+                   (("0.7.0-rc2") "0.7.0"))
+                 #t))))
+    (build-system meson-build-system)
+    ;; We really want this for the headers, and the tests require a bundled library.
+    (arguments '(#:configure-flags '("-Dtests=false")))
+    (synopsis "Implementations of SIMD instruction sets for foreign systems")
+    (description "The SIMDe header-only library provides fast, portable
+implementations of SIMD intrinsics on hardware which doesn't natively support
+them, such as calling SSE functions on ARM.  There is no performance penalty if
+the hardware supports the native implementation (e.g., SSE/AVX runs at full
+speed on x86, NEON on ARM, etc.).")
+    (home-page "https://simd-everywhere.github.io/blog/")
+    (license license:expat)))
 
 (define-public fasm
   (package

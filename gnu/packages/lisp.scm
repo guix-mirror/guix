@@ -17,6 +17,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1083,7 +1084,7 @@ assembler, PEG) is less than 1MB.")
 (define-public lisp-repl-core-dumper
   (package
     (name "lisp-repl-core-dumper")
-    (version "0.3.0")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -1092,7 +1093,7 @@ assembler, PEG) is less than 1MB.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w7x7d7bnrdj0bd04vnjy7d7sngvcx1yjr4iw429hdd9lzlg8rbg"))))
+        (base32 "1hrilm9lxy7zdidn4wac4yfqryg3hfw0371nanhd7g9bcfjx7n1q"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -1102,12 +1103,14 @@ assembler, PEG) is less than 1MB.")
          (add-before 'install 'fix-utils-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((coreutils (string-append (assoc-ref inputs "coreutils") "/bin/"))
+                    (cat (string-append coreutils "cat"))
                     (paste (string-append coreutils "paste"))
                     (sort (string-append coreutils "sort"))
                     (basename (string-append coreutils "basename"))
                     (sed (string-append (assoc-ref inputs "sed") "/bin/sed")))
                (substitute* "lisp-repl-core-dumper"
                  (("\\$\\(basename") (string-append "$(" basename))
+                 (("\\<cat\\>") cat)
                  (("\\<paste\\>") paste)
                  (("\\<sed\\>") sed)
                  (("\\<sort\\>") sort))))))))
@@ -1126,3 +1129,43 @@ and make for REPLs that start blazing fast.
 @item It allows you to include arbitrary libraries.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public buildapp
+  (package
+    (name "buildapp")
+    (version "1.5.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/buildapp")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "020ipjfqa3l8skd97cj5kq837wgpj28ygfxnkv64cnjrlbnzh161"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("sbcl" ,sbcl)))
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-before 'install 'create-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               #t))))))
+    (home-page "https://www.xach.com/lisp/buildapp/")
+    (synopsis "Makes easy to build application executables with SBCL")
+    (description
+     "Buildapp is an application for SBCL or CCL that configures and saves an
+executable Common Lisp image.  It is similar to cl-launch and hu.dwim.build. ")
+    (license license:bsd-2)))

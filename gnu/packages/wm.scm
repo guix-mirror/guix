@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -1301,14 +1301,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.5.3")
+    (version "3.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar.gz"))
        (sha256
-        (base32 "1016g4b981c4hl2pr0m09b4wy0ln1zf3mfp09wrxs73zgfdbngyj"))))
+        (base32 "0awwjp3l0y9yhmrl914710ipawp2xr43jxrvmnanahlznblg8fhk"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the

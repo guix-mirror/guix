@@ -198,7 +198,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.8.1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -206,7 +206,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1fxqjf7g30ix4qxi6366rrax27s3maxq43z2vakwnhz4mp49m9h4"))
+                "0v74858yvrrfy0l2pq7yn6izvqhpkb9gw2jpd3a3khjwv8kw6frz"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
@@ -217,10 +217,11 @@ removable devices or support for multimedia.")
                   #t))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags (list "-Dtests=true"
-                               (string-append "-Dedje-cc="
-                                              (assoc-ref %build-inputs "efl")
-                                              "/bin/edje_cc"))
+     `(#:configure-flags
+       (let ((efl (assoc-ref %build-inputs "efl")))
+         (list "-Dtests=true"
+               (string-append "-Dedje-cc=" efl "/bin/edje_cc")
+               (string-append "-Deet=" efl "/bin/eet")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory

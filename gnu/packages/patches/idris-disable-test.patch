@@ -1,0 +1,19 @@
+The "pkg010" test output depends on the version of optparse-applicative being
+used.  The expected output requires optparse-applicative >= 0.15.1.0.  Skip
+the test for now.
+
+--- idris-1.3.3/test/TestData.hs	2021-01-19 23:05:24.238958262 -0600
++++ idris-1.3.3/test/TestData.hs	2021-01-19 23:10:33.314390997 -0600
+@@ -212,8 +212,10 @@
+       (  5, ANY  ),
+       (  6, ANY  ),
+       (  7, ANY  ),
+-      (  8, ANY  ),
+-      ( 10, ANY  )]),
++      (  8, ANY  )]),
++--      FIXME: Expected output depends on optparse-applicative version.
++--      See https://github.com/idris-lang/Idris-dev/issues/4896
++--      ( 10, ANY  )]),
+   ("prelude",         "Prelude",
+     [ (  1, ANY  )]),
+   ("primitives",      "Primitive types",

@@ -68,8 +68,7 @@
    (listen-on '("127.0.0.1" "::1"))
    (sensor '("udcf0 correction 70000"))
    (constraint-from '("www.gnu.org"))
-   (constraints-from '("https://www.google.com/"))
-   (allow-large-adjustment? #t)))
+   (constraints-from '("https://www.google.com/"))))
 
 (test-assert "openntpd configuration generation sanity check"
 

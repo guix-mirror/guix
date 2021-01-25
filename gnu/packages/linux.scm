@@ -353,7 +353,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.10-version "5.10.6")
+(define-public linux-libre-5.10-version "5.10.10")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
    linux-libre-5.10-version
@@ -361,7 +361,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hh27ccqimagr3aij7ygwikxw66y63sqwd0xlf49bhpjd090r9a7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "02v91afra3pcwfws74wxdsm8pfc57vws659b7j6jmsxm3hnd0rvp")))
+        (hash (base32 "06fvgkrn9127xw9kly6l4ws3yv80q8xfqdzaam92lljim5pqdvb0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
@@ -369,7 +369,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.4-version "5.4.88")
+(define-public linux-libre-5.4-version "5.4.92")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    linux-libre-5.4-version
@@ -377,12 +377,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1xghbbnaisjd0k1klbyn1p7r6r4x5a1bpmkm56a3gh2zvw4s7mj8")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1ci432xanm7glgg05012kh43pfi4k771kzih0816y5674v0hg02b")))
+        (hash (base32 "1zcl4dadyfrgmx6rh0ncy403rsqb1qs092m6zr6b3i14i3wpz4y0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.166")
+(define-public linux-libre-4.19-version "4.19.170")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
    linux-libre-4.19-version
@@ -390,12 +390,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "03l86ykdjs5wa0n4wknpgy9dv2r6l92qfsyak373jkhs684z53mr")))
+        (hash (base32 "0jjvwbxpfvmzj4z6gkd2mh3kz9vh8hsgsm0013866hzgz1j043fx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.214")
+(define-public linux-libre-4.14-version "4.14.217")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
    linux-libre-4.14-version
@@ -403,12 +403,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "07ir4yw7s5c6yb3gjbgjvcqqdgpbsjxrvapgh6zs22ffd8hrchpm")))
+        (hash (base32 "04adj8x7p1has4mh8ygxhqgwb1i08fz9izqw1y6xj5hh8cjnm8v2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.250")
+(define-public linux-libre-4.9-version "4.9.253")
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
    linux-libre-4.9-version
@@ -416,12 +416,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "15vizxd2i2311skjank406ny3bc30c5rz2p9jvh5xz1yv12vzgcy")))
+        (hash (base32 "065w35vb0qp4fvnwmcx7f92inmx64f9r04zzwcwbs0826nl52nws")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.250")
+(define-public linux-libre-4.4-version "4.4.253")
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
    linux-libre-4.4-version
@@ -429,7 +429,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "12m14j8654rawj2znkyhvcnwnf53x10zlghxd0mpl8dfzwvn2f5b")))
+        (hash (base32 "0nlqnfhrkaj2s582kc0wxqi0881hgp6l9z85qx4ckflc8jwrh7k6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -641,6 +641,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     ("CONFIG_MEMCG_KMEM" . #t)
     ("CONFIG_CPUSETS" . #t)
     ("CONFIG_PROC_PID_CPUSET" . #t)
+    ;; Allow disk encryption by default
+    ("CONFIG_DM_CRYPT" . m)
     ;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
@@ -850,7 +852,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
 It has been modified to remove all non-free binary blobs.")
-    (license license:gpl2)))
+    (license license:gpl2)
+    (properties '((max-silent-time . 3600))))) ;don't timeout on blob scan.
 
 
 ;;;
@@ -2215,7 +2218,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.8.6")
+    (version "1.8.7")
     (source
      (origin
        (method url-fetch)
@@ -2224,7 +2227,7 @@ external rate conversion.")
                   (string-append "https://www.netfilter.org/projects/iptables/"
                                  "files/iptables-" version ".tar.bz2")))
        (sha256
-        (base32 "0rvp0k8a72h2snrdx48cfn75bfa0ycrd2xl3kjysbymq7q6gxx50"))))
+        (base32 "1w6qx3sxzkv80shk21f63rq41c84irpx68k62m2cv629n1mwj2f1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -5631,7 +5634,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.10")
+    (version "6.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -5639,7 +5642,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hbml37yxs0fs69g7f2x4ixq61z0029swy99rn7ykma9mi6b7ni9"))))
+                "0wwvi8a8k2ahhmwln4w970b8gd3in3g13jkbsapkpnspwmlqj5xa"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Disable support for various hardware entropy sources as they need
@@ -5916,29 +5919,29 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "173")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
-                                  "mcelog.git/snapshot/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1a1j4lsvql3aiqbkdn10hhpvmhavhlr9qkh2scxcv1kn7rvvclih"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               `(begin
-                  ;; The snapshots lack a .git directory,
-                  ;; breaking ‘git describe’.
-                  (substitute* "Makefile"
-                    (("\"unknown\"") (string-append "\"v" ,version "\"")))
-                  #t))))
+    (version "175")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/utils/cpu/mce/mcelog.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vvrnjkh1jp7f6295syydg7lplqmcm8msdls3xyk8xfiz69xqdjz"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; The checkout lack a .git directory, breaking ‘git describe’.
+           (substitute* "Makefile"
+             (("\"unknown\"") (string-append "\"v" ,version "\"")))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
        #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list (string-append "CC=" ,(cc-for-target))
                             (string-append "prefix=" out)
                             (string-append "DOCDIR=" out "/share/doc/"
                                            ,name "-" ,version)
@@ -6439,14 +6442,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "04dp797llg3cqzivwrql30wg9mfr0ngnp0v5gs7jcdmp11dzm8q4"))))
+        (base32 "16jbp4fs5dz2yf4c3bl1sb48x9x9wi1chv39zwmfgya1k9pimcp9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -6463,7 +6466,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
      (origin
        (method url-fetch)
@@ -6472,7 +6475,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "1c1c2475nifncv0ng8z77h2dpanlsx0bhqm15k00jb3a6a68lszy"))))
+        (base32 "1r4g22grhd4s1918wws9vggb8821sv4kkj8197ygxr6sar301z30"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -7862,7 +7865,7 @@ kernel side implementation.")
 (define-public erofs-utils
   (package
     (name "erofs-utils")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -7871,7 +7874,7 @@ kernel side implementation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07hvijq2hsn3gg1kb8abrfk23n83j57yx8kyv4wqgwhhvd30myjc"))))
+        (base32 "1vb4mxsb59g29x7l22cffsqa8x743sra4j5zbmx89hjwpwm9vvcg"))))
     (build-system gnu-build-system)
     (inputs
      `(("lz4" ,lz4)

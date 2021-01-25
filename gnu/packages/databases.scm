@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,15 +86,16 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages time)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -110,8 +112,8 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
-  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-science)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
@@ -124,6 +126,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages web)
@@ -1278,6 +1281,89 @@ pictures, sounds, or video.")
 
 (define-public postgresql postgresql-13)
 
+(define-public pgloader
+  (package
+    (name "pgloader")
+    (version "3.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dimitri/pgloader")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "06i1jd2za3ih5caj2b4vzlzags5j65vv8dfdbz0ggdrp40wfd5lh"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; NOTE: (Sharlatan-20210119T211511+0000) Tests are disabled due to being
+     ;; dependent on Quicklisp, main build target is `pgloader-standalone' which
+     ;; does not require Quicklisp workarounds. There is no `install' target
+     ;; configured in Makefile.
+     `(#:tests? #f
+       #:strip-binaries? #f
+       #:make-flags
+       (list "pgloader-standalone" "BUILDAPP_SBCL=buildapp")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("--sbcl.*") "--sbcl $(CL) --asdf-path . \\\n"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "build/bin/pgloader"  bin))
+             #t)))))
+    (native-inputs
+     `(("buildapp" ,buildapp)
+       ("sbcl" ,sbcl)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-abnf" ,sbcl-cl-abnf)
+       ("cl-base64" ,sbcl-cl-base64)
+       ("cl-csv" ,sbcl-cl-csv)
+       ("cl-fad" ,sbcl-cl-fad)
+       ("cl-log" ,sbcl-cl-log)
+       ("cl-markdown" ,sbcl-cl-markdown)
+       ("cl-mustache" ,sbcl-cl-mustache)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("cl-sqlite" ,sbcl-cl-sqlite)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("command-line-arguments" ,sbcl-command-line-arguments)
+       ("db3" ,sbcl-db3)
+       ("drakma" ,sbcl-drakma)
+       ("esrap" ,sbcl-esrap)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("ixf" ,sbcl-ixf)
+       ("local-time" ,sbcl-local-time)
+       ("lparallel" ,sbcl-lparallel)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("mssql" ,sbcl-mssql)
+       ("postmodern" ,sbcl-postmodern)
+       ("py-configparser" ,sbcl-py-configparser)
+       ("qmynd" ,sbcl-qmynd)
+       ("quri" ,sbcl-quri)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("trivial-backtrace" ,sbcl-trivial-backtrace)
+       ("usocket" ,sbcl-usocket)
+       ("uuid" ,sbcl-uuid)
+       ("yason" ,sbcl-yason)
+       ("zs3" ,sbcl-zs3)))
+    (home-page "https://pgloader.io/")
+    (synopsis "Tool to migrate data to PostgreSQL")
+    (description
+     "@code{pgloader} is a program that can load data or migrate databases from
+CSV, DB3, iXF, SQLite, MS-SQL or MySQL to PostgreSQL.")
+    (license (license:x11-style "file://LICENSE"))))
+
 (define-public python-pymysql
   (package
     (name "python-pymysql")
@@ -2163,14 +2249,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "6.0.9")
+    (version "6.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "1pc6gyiylrcazlc559dp5mxqj733pk9qabnirw4ry3k23kwdqayw"))
+                "1gc529nfh8frk4pynyjlnmzvwa0j9r5cmqwyd7537sywz6abifvr"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled jemalloc, as the package will use the libc one
@@ -2215,14 +2301,14 @@ sets, bitmaps and hyperloglogs.")
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
-    (version "1.2.78")
+    (version "1.2.79")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://fallabs.com/kyotocabinet/pkg/"
                                   "kyotocabinet-" version ".tar.gz"))
               (sha256
                (base32
-                "1bxkf9kmcavq9rqridb8mvmrk3hj4447ffi24m2admsbm61n6k29"))))
+                "079ymsahlrijswgwfr2la9yw5h57l752cprhp5dz31iamsj1vyv7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3986,3 +4072,26 @@ The drivers officially supported by @code{libdbi} are:
 PostreSQL, SQLite, ODBC and MySQL.")
     (home-page "http://soci.sourceforge.net/")
     (license license:boost1.0)))
+
+(define-public freetds
+  (package
+    (name "freetds")
+    (version "1.2.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freetds.org/files/stable/"
+                           "freetds-" version ".tar.gz"))
+       (sha256
+        (base32 "1hspvwxwdd1apadsy2b40dpjik8kfwcvdamvhpg3lnm15n02fb50"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; NOTE: (Sharlatan-20210110213908+0000) some tests require DB connection,
+     ;; disabled for now.
+     `(#:tests? #f))
+    (home-page "https://www.freetds.org/")
+    (synopsis "Client libraries for MS SQL and Sybase servers")
+    (description
+     "FreeTDS is an implementation of the Tabular DataStream protocol, used for
+connecting to MS SQL and Sybase servers over TCP/IP.")
+    (license license:lgpl2.0+)))

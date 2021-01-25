@@ -21,7 +21,7 @@
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1242,7 +1242,7 @@ made by suckless.")
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-parking-lot" ,rust-parking-lot-0.9)
         ("rust-urlocator" ,rust-urlocator-0.1)
-        ("rust-xdg" ,rust-xdg-2.2)
+        ("rust-xdg" ,rust-xdg-2)
         ("rust-image" ,rust-image-0.22)
         ("rust-dirs" ,rust-dirs-2.0)
         ("rust-x11-dl" ,rust-x11-dl-2)

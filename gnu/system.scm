@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -858,8 +858,8 @@ syntactically correct."
                        (copy-file #$file #$output)))))
 
 (define* (operating-system-etc-service os)
-  "Return a <service> that builds containing the static part of the /etc
-directory."
+  "Return a <service> that builds a directory containing the static part of
+the /etc directory."
   (let* ((login.defs
           (plain-file "login.defs"
                       (string-append
