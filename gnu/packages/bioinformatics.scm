@@ -2822,6 +2822,30 @@ sequencing data.  It uses paired-ends and split-reads to sensitively and
 accurately delineate genomic rearrangements throughout the genome.")
     (license license:gpl3+)))
 
+(define-public trf
+  (package
+    (name "trf")
+    (version "4.09.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Benson-Genomics-Lab/TRF")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0fhwr4s1mf8nw8fr5imwjvjr42b59p97zr961ifm8xl1bajz4wpg"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/Benson-Genomics-Lab/TRF")
+    (synopsis "Tandem Repeats Finder: a program to analyze DNA sequences")
+    (description "A tandem repeat in DNA is two or more adjacent, approximate
+copies of a pattern of nucleotides.  Tandem Repeats Finder is a program to
+locate and display tandem repeats in DNA sequences.  In order to use the
+program, the user submits a sequence in FASTA format.  The output consists of
+two files: a repeat table file and an alignment file.  Submitted sequences may
+be of arbitrary length. Repeats with pattern size in the range from 1 to 2000
+bases are detected.")
+    (license license:agpl3+)))
+
 (define-public diamond
   (package
     (name "diamond")
