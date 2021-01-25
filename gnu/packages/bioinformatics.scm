@@ -2846,6 +2846,62 @@ be of arbitrary length. Repeats with pattern size in the range from 1 to 2000
 bases are detected.")
     (license license:agpl3+)))
 
+(define-public repeat-masker
+  (package
+    (name "repeat-masker")
+    (version "4.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.repeatmasker.org/"
+                                  "RepeatMasker/RepeatMasker-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "03144sl9kh5ni2i33phi7x2pjndzbm5bjw3r4kqvmm6hxyb4k4x2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #false ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/RepeatMasker")))
+               (mkdir-p share)
+               (copy-recursively "." share)
+               (with-directory-excursion share
+                 (invoke "perl" "configure"
+                         "--trf_prgm" (which "trf")
+                         "--hmmer_dir"
+                         (string-append (assoc-ref inputs "hmmer")
+                                        "/bin"))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share/RepeatMasker"))
+                    (bin   (string-append out "/bin"))
+                    (path  (getenv "PERL5LIB")))
+               (install-file (string-append share "/RepeatMasker") bin)
+               (wrap-program (string-append bin "/RepeatMasker")
+                 `("PERL5LIB" ":" prefix (,path ,share)))))))))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-text-soundex" ,perl-text-soundex)
+       ("python" ,python)
+       ("python-h5py" ,python-h5py)
+       ("hmmer" ,hmmer)
+       ("trf" ,trf)))
+    (home-page "https://github.com/Benson-Genomics-Lab/TRF")
+    (synopsis "Tandem Repeats Finder: a program to analyze DNA sequences")
+    (description "A tandem repeat in DNA is two or more adjacent, approximate
+copies of a pattern of nucleotides.  Tandem Repeats Finder is a program to
+locate and display tandem repeats in DNA sequences.  In order to use the
+program, the user submits a sequence in FASTA format.  The output consists of
+two files: a repeat table file and an alignment file.  Submitted sequences may
+be of arbitrary length. Repeats with pattern size in the range from 1 to 2000
+bases are detected.")
+    (license license:osl2.1)))
+
 (define-public diamond
   (package
     (name "diamond")
