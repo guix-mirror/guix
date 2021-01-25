@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2019, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
@@ -11454,6 +11454,33 @@ to open the source file it is called from, and does so directly either by
 lookup in %INC or by assuming it is $0 if the caller is @code{main}
 (or it can't find %INC{caller()}).")
     (license license:artistic2.0)))
+
+(define-public perl-text-soundex
+  (package
+    (name "perl-text-soundex")
+    (version "3.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/Text-Soundex-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vb0vg1109gfzaak74ynw5s00ml28f33j612g2lxw98b52s5bpgn"))))
+    (build-system perl-build-system)
+    (home-page
+     "https://metacpan.org/release/Text-Soundex")
+    (synopsis "Implementation of the soundex algorithm.")
+    (description "Soundex is a phonetic algorithm for indexing names by sound,
+as pronounced in English.  The goal is for names with the same pronunciation to
+be encoded to the same representation so that they can be matched despite
+minor differences in spelling.
+
+This module implements the original soundex algorithm developed by Robert
+Russell and Margaret Odell, patented in 1918 and 1922, as well as a variation
+called \"American Soundex\" used for US census data, and current maintained by
+the National Archives and Records Administration (NARA).")
+    (license license:perl-license)))
 
 (define-public perl-regexp-pattern
   (package
