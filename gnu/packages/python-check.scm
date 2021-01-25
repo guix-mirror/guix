@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -1095,6 +1095,25 @@ any Python VM with basically no runtime overhead.")
     ;; Foundation License version 2: stdlib-samples/*, mypyc/lib-rt/pythonsupport.h and
     ;; mypyc/lib-rt/getargs.c
     (license (list license:expat license:psfl))))
+
+(define-public python-eradicate
+  (package
+    (name "python-eradicate")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "eradicate" version))
+       (sha256
+        (base32
+         "1j30g9jfmbfki383qxwrfds8b23yiwywj40lng4lqcf5yab4ahr7"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/myint/eradicate")
+    (synopsis "Remove commented-out code from Python sources")
+    (description "The @command{eradicate} command removes commented-out code
+from Python files.  It does this by detecting block comments that contain
+valid Python syntax that are likely to be commented out code.")
+    (license license:expat)))
 
 (define-public python-robber
   (package
