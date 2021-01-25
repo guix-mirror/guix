@@ -54,6 +54,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
@@ -30571,11 +30572,11 @@ sub-processes using a fork-like interface.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-nix" ,rust-nix-0.18)
         ("rust-scopeguard" ,rust-scopeguard-1)
-        ("rust-skim" ,rust-skim-0.7)
         ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-utf8parse" ,rust-utf8parse-0.2)
-        ("rust-winapi" ,rust-winapi-0.3))
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("skim" ,skim-0.7))
        #:cargo-development-inputs
        (("rust-assert-matches" ,rust-assert-matches-1.3)
         ("rust-doc-comment" ,rust-doc-comment-0.3)
@@ -33517,42 +33518,7 @@ variants in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-skim-0.7
-  (package
-    (name "rust-skim")
-    (version "0.7.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "skim" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1yiyd6fml5hd2l811sckkzmiiq9bd7018ajk4qk3ai4wyvqnw8mv"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-clap" ,rust-clap-2)
-        ("rust-derive-builder" ,rust-derive-builder-0.9)
-        ("rust-env-logger" ,rust-env-logger-0.6)
-        ("rust-fuzzy-matcher" ,rust-fuzzy-matcher-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-nix" ,rust-nix-0.14)
-        ("rust-rayon" ,rust-rayon-1)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-shlex" ,rust-shlex-0.1)
-        ("rust-time" ,rust-time-0.1)
-        ("rust-timer" ,rust-timer-0.2)
-        ("rust-tuikit" ,rust-tuikit-0.2)
-        ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-vte" ,rust-vte-0.3))))
-    (home-page "https://github.com/lotabout/skim")
-    (synopsis "Fuzzy Finder in Rust")
-    (description "This package provides a fuzzy finder in Rust.")
-    (license license:expat)))
+  (deprecated-package "rust-skim-0.7" skim-0.7))
 
 (define-public rust-slab-0.4
   (package

@@ -9,6 +9,7 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -501,6 +502,124 @@ gitignore rules.")
         (sha256
          (base32
           "13jzbmjz1bmmfr0i80hw6ar484mgabx3hbpb2ynhk0ddqi0yr58m"))))))
+
+(define-public skim
+  (package
+    (name "skim")
+    (version "0.9.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "skim" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0qir6m4cpd63bnp0lqq4si1ccgd6rbv4m1662v771fkyynrdrj0s"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-beef" ,rust-beef-0.4)
+         ("rust-bitflags" ,rust-bitflags-1)
+         ("rust-chrono" ,rust-chrono-0.4)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-crossbeam" ,rust-crossbeam-0.7)
+         ("rust-defer-drop" ,rust-defer-drop-1)
+         ("rust-derive-builder" ,rust-derive-builder-0.9)
+         ("rust-env-logger" ,rust-env-logger-0.6)
+         ("rust-fuzzy-matcher" ,rust-fuzzy-matcher-0.3)
+         ("rust-lazy-static" ,rust-lazy-static-1)
+         ("rust-log" ,rust-log-0.4)
+         ("rust-nix" ,rust-nix-0.14)
+         ("rust-rayon" ,rust-rayon-1)
+         ("rust-regex" ,rust-regex-1)
+         ("rust-shlex" ,rust-shlex-0.1)
+         ("rust-time" ,rust-time-0.1)
+         ("rust-timer" ,rust-timer-0.2)
+         ("rust-tuikit" ,rust-tuikit-0.4)
+         ("rust-unicode-width" ,rust-unicode-width-0.1)
+         ("rust-vte" ,rust-vte-0.3))
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'install-extras
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (share (string-append out "/share"))
+                     (man (string-append out "/share/man"))
+                     (vimfiles (string-append share "/vim/vimfiles/plugin"))
+                     (bash-completion
+                      (string-append share "/bash-completions/completions"))
+                     (zsh-site (string-append share "/zsh/site-functions"))
+                     (fish-vendor
+                      (string-append share "/fish/vendor-completions.d")))
+                ;; Binaries
+                (for-each
+                 (lambda (binary) (install-file binary bin))
+                 (find-files "bin"))
+                (mkdir-p share)
+                ;; Manpages
+                (copy-recursively "man" man)
+                ;; Vim plugins
+                (mkdir-p vimfiles)
+                (copy-recursively "plugin" vimfiles)
+                ;; Completions
+                (mkdir-p bash-completion)
+                (copy-file
+                 "shell/completion.bash"
+                 (string-append bash-completion "/skim"))
+                (copy-file
+                 "shell/key-bindings.bash"
+                 (string-append bash-completion "/skim-bindings"))
+                (mkdir-p zsh-site)
+                (copy-file
+                 "shell/completion.zsh"
+                 (string-append zsh-site "/_skim"))
+                (copy-file
+                 "shell/key-bindings.zsh"
+                 (string-append zsh-site "/_skim-bindings"))
+                (mkdir-p fish-vendor)
+                (copy-file
+                 "shell/key-bindings.fish"
+                 (string-append fish-vendor "/skim-bindings.fish"))))))))
+    (home-page "https://github.com/lotabout/skim")
+    (synopsis "Fuzzy Finder in Rust")
+    (description "This package provides a fuzzy finder in Rust.")
+    (license license:expat)))
+
+(define-public skim-0.7
+  (package
+    (inherit skim)
+    (name "skim")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "skim" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1yiyd6fml5hd2l811sckkzmiiq9bd7018ajk4qk3ai4wyvqnw8mv"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-derive-builder" ,rust-derive-builder-0.9)
+        ("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-fuzzy-matcher" ,rust-fuzzy-matcher-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-shlex" ,rust-shlex-0.1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-timer" ,rust-timer-0.2)
+        ("rust-tuikit" ,rust-tuikit-0.2)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-vte" ,rust-vte-0.3))))))
 
 (define-public tectonic
   (package
