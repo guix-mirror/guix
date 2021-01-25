@@ -1097,7 +1097,7 @@ shell command executions.")
            (assoc-ref %standard-phases 'check)))))
     (inputs `(("lua" ,lua)))
     (home-page "https://fennel-lang.org/")
-    (synopsis "A Lisp that compiles to Lua")
+    (synopsis "Lisp that compiles to Lua")
     (description
      "Fennel is a programming language that brings together the speed,
 simplicity, and reach of Lua with the flexibility of a Lisp syntax and macro
