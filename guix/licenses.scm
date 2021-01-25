@@ -61,7 +61,7 @@
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
             fdl1.1+ fdl1.2+ fdl1.3+
-            opl1.0+
+            opl1.0+ osl2.1
             isc
             ijg
             ibmpl1.0
@@ -370,6 +370,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Open Publication License 1.0 or later"
            "http://opencontent.org/openpub/"
            "https://www.gnu.org/licenses/license-list#OpenPublicationL"))
+
+(define osl2.1
+  (license "The Open Software License 2.1"
+           "https://opensource.org/licenses/osl-2.1.php"
+           "https://www.gnu.org/licenses/license-list#OSL"))
 
 (define isc
   (license "ISC"
