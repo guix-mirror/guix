@@ -48,7 +48,7 @@ Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
-Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
+Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
@@ -2734,8 +2734,8 @@ you should add them to @file{~/.bash_profile} (or equivalent file if you
 do not use Bash) so that environment variables are set next time you
 spawn a shell.  You only need to do this once and other search paths
 environment variables will be taken care of similarly---e.g., if you
-eventually install @code{python} and Python libraries, @code{PYTHONPATH}
-will be defined.
+eventually install @code{python} and Python libraries,
+@env{GUIX_PYTHONPATH} will be defined.
 
 You can go on installing packages at your will.  To list installed
 packages, run:
@@ -3471,23 +3471,25 @@ Show details about @var{package}, taken from the list of available packages, in
 recutils manual}).
 
 @example
-$ guix package --show=python | recsel -p name,version
-name: python
-version: 2.7.6
+$ guix package --show=guile | recsel -p name,version
+name: guile
+version: 3.0.5
 
-name: python
-version: 3.3.5
+name: guile
+version: 3.0.2
+
+name: guile
+version: 2.2.7
+@dots{}
 @end example
 
 You may also specify the full name of a package to only get details about a
 specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix show python@@3.4 | recsel -p name,version
-name: python
-version: 3.4.3
+$ guix show guile@@3.0.5 | recsel -p name,version
+name: guile
+version: 3.0.5
 @end example
-
-
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
@@ -5493,11 +5495,11 @@ guix environment guile -- make -j4
 
 In other situations, it is more convenient to specify the list of
 packages needed in the environment.  For example, the following command
-runs @command{python} from an environment containing Python@tie{}2.7 and
+runs @command{python} from an environment containing Python@tie{}3 and
 NumPy:
 
 @example
-guix environment --ad-hoc python2-numpy python-2.7 -- python
+guix environment --ad-hoc python-numpy python -- python3
 @end example
 
 Furthermore, one might want the dependencies of a package and also some
@@ -7739,8 +7741,9 @@ packages, which consists in running @code{python setup.py build} and
 then @code{python setup.py install --prefix=/gnu/store/@dots{}}.
 
 For packages that install stand-alone Python programs under @code{bin/},
-it takes care of wrapping these programs so that their @env{PYTHONPATH}
-environment variable points to all the Python libraries they depend on.
+it takes care of wrapping these programs so that their
+@env{GUIX_PYTHONPATH} environment variable points to all the Python
+libraries they depend on.
 
 Which Python package is used to perform the build can be specified with
 the @code{#:python} parameter.  This is a useful way to force a package
