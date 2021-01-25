@@ -3562,11 +3562,8 @@ module @code{batman-adv}, for Layer 2.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man")))
-               (invoke "make"
-                       (string-append "PYTHONPATH=" (getenv "PYTHONPATH"))
-                       "doc/pagekite.1")
-               (install-file "doc/pagekite.1" (string-append man "/man1"))
-               #t))))))
+               (invoke "make" "doc/pagekite.1")
+               (install-file "doc/pagekite.1" (string-append man "/man1"))))))))
     (inputs
      `(("python-six" ,python-six)
        ("python-socksipychain" ,python-socksipychain)))
