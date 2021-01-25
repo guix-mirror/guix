@@ -1094,7 +1094,13 @@ shell command executions.")
              #t))
          (delete 'check)
          (add-after 'install 'check
-           (assoc-ref %standard-phases 'check)))))
+           (assoc-ref %standard-phases 'check))
+         (add-after 'install 'install-manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "fennel.1"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/man/man1"))
+             #t)))))
     (inputs `(("lua" ,lua)))
     (home-page "https://fennel-lang.org/")
     (synopsis "Lisp that compiles to Lua")
