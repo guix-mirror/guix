@@ -9207,6 +9207,30 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
      "Decimal floating point arithmetic for Rust.")
     (license license:asl2.0)))
 
+(define-public rust-defer-drop-1
+  (package
+    (name "rust-defer-drop")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "defer-drop" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d3pmmn5k2ir3yv8z8fnv4jprs5aijkz5pbdyl8x8kp18m90bbhq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
+        ("rust-once-cell" ,rust-once-cell-1))))
+    (home-page "https://github.com/Lucretiel/defer-drop")
+    (synopsis "Defer dropping large types to a background thread")
+    (description
+     "This package provides a defer dropping large types to a background
+thread.")
+    (license license:mpl2.0)))
+
 (define-public rust-deflate-0.8
   (package
     (name "rust-deflate")
