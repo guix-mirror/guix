@@ -38,7 +38,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -52,6 +51,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mingw)
   #:use-module (gnu packages openldap)
@@ -60,7 +60,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages mp3)
-  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
@@ -76,7 +75,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "5.21")
+    (version "6.0")
     (source
      (origin
        (method url-fetch)
@@ -88,7 +87,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "0h185lfpid6cw1sz8rmkpky2l11izpb0w8j0cq6ww6yi94jmq6js"))))
+        (base32 "0micb3l54cc2cl3v5q92hzvkxxiwi9lmiv72caf45vl35xghd4xl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -104,7 +103,6 @@
        ("faudio" ,faudio)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("glu" ,glu)
        ("gnutls" ,gnutls)
        ("gst-plugins-base" ,gst-plugins-base)
        ("lcms" ,lcms)
@@ -118,6 +116,7 @@
        ("libpcap" ,libpcap)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)
+       ("libusb" ,libusb)
        ("libtiff" ,libtiff)
        ("libICE" ,libice)
        ("libX11" ,libx11)
@@ -130,15 +129,13 @@
        ("libXxf86vm" ,libxxf86vm)
        ("libXcomposite" ,libxcomposite)
        ("mit-krb5" ,mit-krb5)
-       ("ncurses" ,ncurses)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("sdl2" ,sdl2)
        ("unixodbc" ,unixodbc)
        ("v4l-utils" ,v4l-utils)
        ("vkd3d" ,vkd3d)
-       ("vulkan-loader" ,vulkan-loader)
-       ("zlib" ,zlib)))
+       ("vulkan-loader" ,vulkan-loader)))
     (arguments
      `(;; Force a 32-bit build targeting a similar architecture, i.e.:
        ;; armhf for armhf/aarch64, i686 for i686/x86_64.
