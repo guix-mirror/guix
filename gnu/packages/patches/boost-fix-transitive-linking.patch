@@ -1,0 +1,16 @@
+Patch from https://github.com/boostorg/boost_install/issues/47
+which should be included in the Boost 1.76 release.
+
+This patch prevents CMake from explicitly linking against Boost dependencies
+when building against the shared Boost libraries.
+--- a/tools/boost_install/boost-install.jam
++++ b/tools/boost_install/boost-install.jam
+@@ -483,7 +483,7 @@ rule generate-cmake-variant- ( target : sources * : properties * )
+ 
+     .info "  deps3=" $(deps3) ;
+ 
+-    if $(deps3)
++    if $(deps3) && $(link) = static
+     {
+         print.text
+ 

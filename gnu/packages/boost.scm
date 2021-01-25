@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,8 @@
               (uri (string-append "https://dl.bintray.com/boostorg/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
+              ; Should be included in next Boost update
+              (patches (search-patches "boost-fix-transitive-linking.patch"))
               (sha256
                (base32
                 "1js9zpij58l60kx46s3lxdp5207igppjnhqigwhbpdvd04gb6gcm"))))
