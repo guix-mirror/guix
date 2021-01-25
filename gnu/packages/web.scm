@@ -8015,3 +8015,41 @@ handling library written in C89 (\"ANSI C\").  uriparser is fast and supports
 Unicode.")
       (home-page "https://uriparser.github.io/")
       (license license:bsd-3))))
+
+(define-public quark
+  ;; No releases yet
+  (let ((revision "0")
+        (commit "c6a9055e5a30be570e30da8d216c39662c3a3f99"))
+    (package
+      (name "quark")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.suckless.org/quark/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1znvnr30xi5vgd6n3wvgv9pwj992zpzzjk0fmq28ydf1l6kqvkm7"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; no configure script
+      (home-page "https://tools.suckless.org/quark/")
+      (synopsis "Small and simple HTTP GET/HEAD-only web server for static
+content")
+      (description "Quark is an extremely small and simple HTTP GET/HEAD only
+web server for static content.  TLS is not natively supported and should be
+provided by a TLS reverse proxy (e.g. tlstunnel, hitch or stunnel).")
+      (license license:isc)
+
+      ;; XXX: Ignore this CVE to work around a name clash with the unrelated
+      ;; "cpe:2.3:a:comelz:quark" package.  The proper fix is for (guix cve)
+      ;; to account for "vendor names".
+      (properties '((lint-hidden-cve . ("CVE-2019-15520")))))))
