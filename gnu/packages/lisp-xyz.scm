@@ -6081,8 +6081,8 @@ programming style and the efficiency of an iterative programming style.")
   (sbcl-package->ecl-package sbcl-series))
 
 (define-public sbcl-periods
-  (let ((commit "983d4a57325db3c8def942f163133cec5391ec28")
-        (revision "1"))
+  (let ((commit "60383dcef88a1ac11f82804ae7a33c361dcd2949")
+        (revision "2"))
     (package
       (name "sbcl-periods")
       (version (git-version "0.0.2" revision commit))
@@ -6095,7 +6095,7 @@ programming style and the efficiency of an iterative programming style.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0z30jr3lxz3cmi019fsl4lgcgwf0yqpn95v9zkkkwgymdrkd4lga"))))
+           "1ym2j4an9ig2hl210jg91gpf7xfnp6mlhkw3n9kkdnwiji3ipqlk"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("local-time" ,sbcl-local-time)
