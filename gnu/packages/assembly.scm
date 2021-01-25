@@ -420,19 +420,19 @@ sets, both THUMB and ARM mode.")
 (define-public intel-xed
   (package
     (name "intel-xed")
-    (version "11.2.0")
+    (version "12.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/intelxed/xed")
              (commit version)))
-       (sha256 (base32 "1jffayski2gpd54vaska7fmiwnnia8v3cka4nfyzjgl8xsky9v2s"))
+       (sha256 (base32 "07zfff8zf29c2n0wal87hiqfq3cwcjn80zz78mz0nyjfj09nd39f"))
        (file-name (git-file-name name version))
        (patches (search-patches "intel-xed-fix-nondeterminism.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python-wrapper" ,python-wrapper)
+     `(("python" ,python-wrapper)
        ("tcsh" ,tcsh)
        ;; As of the time of writing this comment, mbuild does not exist in the
        ;; Python Package Index and seems to only be used by intel-xed, so we
@@ -446,10 +446,10 @@ sets, both THUMB and ARM mode.")
              (method git-fetch)
              (uri (git-reference
                    (url "https://github.com/intelxed/mbuild")
-                   (commit "5304b94361fccd830c0e2417535a866b79c1c297")))
+                   (commit "3de3f0d753c11dbe634bec611d4cc13f74768e4f")))
              (sha256
               (base32
-               "0r3avc3035aklqxcnc14rlmmwpj3jp09vbcbwynhvvmcp8srl7dl"))
+               "0z8hdhpmk8y5c9429p2yns9daswnffbprni9czkq3vij8f58lkg4"))
              (file-name (git-file-name name version)))))))
     (outputs '("out" "lib"))
     (arguments
