@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,3 +139,64 @@ several new APIs such as DirectX and DDK, and 64-bit support.")
                   #:with-winpthreads? #t))
 
 (define-public mingw-w64 mingw-w64-i686)
+
+(define-public mingw-w64-tools
+  (package
+    (name "mingw-w64-tools")
+    (version "8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/mingw-w64/mingw-w64/"
+             "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
+       (sha256
+        (base32 "0qjpb9rviasfshk337j5r32ncmrwml8sv6qnmb1lp4mkdbm41is4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
+       (append
+        (modify-phases %standard-phases
+          (add-after 'unpack 'cd-gendef
+            (lambda _
+              (chdir "mingw-w64-tools/gendef"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genidl"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genlib"))))
+        (modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (chdir "../genpeimg"))))
+        (append-map
+         (lambda (target)
+           (modify-phases %standard-phases
+             (replace 'unpack
+               (lambda _
+                 (chdir "../widl")
+                 (false-if-exception
+                  (delete-file-recursively "../build"))
+                 #t))
+             (replace 'configure
+               (lambda args
+                 (apply (assoc-ref %standard-phases 'configure)
+                        (append args (list #:out-of-source? #t
+                                           #:configure-flags
+                                           `("--target" ,target
+                                             "--program-prefix"
+                                             ,(string-append target "-")))))))))
+         '("i686-w64-mingw32" "x86_64-w64-mingw32")))))
+    (home-page "https://mingw-w64.org")
+    (synopsis "Tools of Minimalist GNU for Windows")
+    (description "This package provides the tools of Minimalist GNU for
+Windows, a complete software development environment for creating native
+Microsoft Windows applications.")
+    (license (list license:gpl3+ ;gendef, genidl, genlib, genpeimg, genstubdll
+                   license:lgpl2.1+)))) ;widl
