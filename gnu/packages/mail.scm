@@ -445,7 +445,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -455,9 +455,8 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "1m4ig69qw4g3lhm4351snmy5i0ch65fqc9vqqdybr6jy21w7w225"))
-             (patches (search-patches "mutt-store-references.patch"
-                                      "mutt-CVE-2021-3181.patch"))))
+               "0k80s27sf7djb7zxj81ihksr8jkr71mfaa8976fzh41i1pn5l7g2"))
+             (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
