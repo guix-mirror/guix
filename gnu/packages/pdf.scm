@@ -93,6 +93,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -1081,6 +1082,29 @@ such as smooth alpha-blended slide transitions.  It provides additional tools
 such as zooming, highlighting an area of the screen, and a tool to navigate
 the PDF pages.")
     (license license:gpl2)))
+
+(define-public img2pdf
+  (package
+    (name "img2pdf")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "img2pdf" version))
+       (sha256
+        (base32 "1jdhmpzgj8815bhargb3xp3ydlqxwkz0mcadrflx2ga0p056kvpa"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pikepdf" ,python-pikepdf)
+       ("python-pillow" ,python-pillow)
+       ("python-tkinter" ,python "tk")))
+    (home-page "https://gitlab.mister-muffin.de/josch/img2pdf")
+    (synopsis "Convert images to PDF via direct JPEG inclusion")
+    (description
+     "img2pdf converts images to PDF via direct JPEG inclusion.  That
+conversion is lossless: the image embedded in the PDF has the exact same color
+information for every pixel as the input.")
+    (license license:lgpl3)))
 
 (define-public fbida
   (package
