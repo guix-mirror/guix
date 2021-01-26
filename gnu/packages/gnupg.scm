@@ -433,6 +433,10 @@ gpgpme starting with version 1.7.")
                 "0m29fg4pdfifnqqsa437zc5c1bhbfh62mc69ba25ak4x2cla41ll"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Work around <https://bugs.gnu.org/20272> to achieve reproducible
+     ;; builds.
+     '(#:parallel-build? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
