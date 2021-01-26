@@ -9821,6 +9821,41 @@ define and trigger hooks, which other modules can hook on to.")
 (define-public cl-modularize-hooks
   (sbcl-package->cl-source-package sbcl-modularize-hooks))
 
+(define-public sbcl-modularize-interfaces
+  (let ((commit "96353657afb8c7aeba7ef5b51eb04c5ed3bcb6ef")
+        (revision "1"))
+    (package
+      (name "sbcl-modularize-interfaces")
+      (version (git-version "0.9.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/modularize-interfaces")
+               (commit commit)))
+         (file-name (git-file-name "modularize-interfaces" version))
+         (sha256
+          (base32 "0bjf4wy39cwf75m7vh0r7mmcchs09yz2lrbyap98hnq8blq70fhc"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("modularize" ,sbcl-modularize)
+         ("trivial-arguments" ,sbcl-trivial-arguments)
+         ("trivial-indent" ,sbcl-trivial-indent)))
+      (home-page "https://shinmera.github.io/modularize-interfaces/")
+      (synopsis "Programmatical interfaces extension for Modularize")
+      (description
+       "This is an extension to @code{MODULARIZE} that allows your application
+to define interfaces in-code that serve both as a primary documentation and as
+compliance control.")
+      (license license:zlib))))
+
+(define-public ecl-modularize-interfaces
+  (sbcl-package->ecl-package sbcl-modularize-interfaces))
+
+(define-public cl-modularize-interfaces
+  (sbcl-package->cl-source-package sbcl-modularize-interfaces))
+
 (define-public sbcl-moptilities
   (let ((commit "a436f16b357c96b82397ec018ea469574c10dd41"))
     (package
