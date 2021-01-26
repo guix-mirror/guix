@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
@@ -433,26 +433,13 @@ gpgpme starting with version 1.7.")
                 "0m29fg4pdfifnqqsa437zc5c1bhbfh62mc69ba25ak4x2cla41ll"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
-    (arguments
-     ;; When cross-compiling, the bash script libgcrypt-config provided by
-     ;; libgcrypt must be accessible during configure phase.
-     `(,@(if (%current-target-system)
-             '(#:phases
-               (modify-phases %standard-phases
-                 (add-before 'configure 'add-libgrypt-config
-                   (lambda _
-                     (setenv "PATH" (string-append
-                                     (assoc-ref %build-inputs "libgcrypt")
-                                     "/bin:"
-                                     (getenv "PATH")))
-                     #t))))
-             '())))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-3.0)))
+       ("guile" ,guile-3.0)
+       ("libgcrypt" ,libgcrypt)))                 ;for 'libgcrypt-config'
     (inputs
      `(("guile" ,guile-3.0)
        ("libgcrypt" ,libgcrypt)))
