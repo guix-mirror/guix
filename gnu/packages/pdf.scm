@@ -17,7 +17,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -92,6 +92,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -1229,7 +1230,7 @@ python-pypdf2 instead.")
 (define-public pdfarranger
   (package
     (name "pdfarranger")
-    (version "1.3.1")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1238,10 +1239,10 @@ python-pypdf2 instead.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1f8m8r81322i97wkqpmf7a4kiwnq244n6cnbldh03jc49vwq2kxx"))))
+        (base32 "0dmgmvpghsm938iznalbg8h8k17a5h3q466yfc67mcll428n4nx3"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f                                ;no tests
+     '(#:tests? #f                      ;no tests
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-for-typelib
                     (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1257,9 +1258,10 @@ python-pypdf2 instead.")
     (propagated-inputs
      `(("gtk+" ,gtk+)
        ("poppler" ,poppler)
+       ("python-dateutil" ,python-dateutil)
+       ("python-pikepdf" ,python-pikepdf)
        ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pypdf2" ,python-pypdf2)))
+       ("python-pygobject" ,python-pygobject)))
     (home-page "https://github.com/jeromerobert/pdfarranger")
     (synopsis "Merge, split and re-arrange pages from PDF documents")
     (description
