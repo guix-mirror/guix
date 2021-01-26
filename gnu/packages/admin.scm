@@ -676,7 +676,10 @@ hostname.")
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
        ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
        #:configure-flags
-       '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
+       '(,@(if (hurd-target?)
+             '()
+             '("--with-libpam"))
+          "ac_cv_func_setpgrp_void=yes")
 
        #:phases
        (modify-phases %standard-phases
@@ -701,7 +704,10 @@ hostname.")
                (for-each delete-file (find-files man "^groups\\."))
                #t))))))
 
-    (inputs `(("linux-pam" ,linux-pam)))
+    (inputs
+     `(,@(if (hurd-target?)
+           '()
+           `(("linux-pam" ,linux-pam)))))
     (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
