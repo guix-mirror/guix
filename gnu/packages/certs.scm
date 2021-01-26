@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tls))
@@ -76,18 +78,8 @@
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version "3.59")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-join (string-split version #\.) "_")))
-                     (string-append
-                      "https://ftp.mozilla.org/pub/mozilla.org/security/nss/"
-                      "releases/NSS_" version-with-underscores "_RTM/src/"
-                      "nss-" version ".tar.gz")))
-              (sha256
-               (base32
-                "096fs3z21r171q24ca3rq53p1389xmvqz1f2rpm7nlm8r9s82ag6"))))
+    (version (package-version nss))
+    (source (package-source nss))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs
@@ -120,7 +112,7 @@
                        (cut display cert <>)))))
 
                (mkdir-p certsdir)
-               (with-directory-excursion "nss/lib/ckfw/builtins/"
+               (with-directory-excursion "lib/ckfw/builtins/"
                  ;; extract single certificates from blob
                  (invoke "certdata2pem.py" "certdata.txt")
                  ;; copy selected .pem files into the output
@@ -134,8 +126,7 @@
                  ;; "Usage error; try -help."
                  ;; This looks like a bug in openssl-1.0.2, but we can also
                  ;; switch into the target directory.
-                 (invoke "c_rehash" "."))
-               #t))))))
+                 (invoke "c_rehash" "."))))))))
 
     (synopsis "CA certificates from Mozilla")
     (description
