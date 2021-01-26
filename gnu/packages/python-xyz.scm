@@ -6533,6 +6533,18 @@ child application and control it as if a human were typing commands.")
 them as the version argument or in a SCM managed file.")
     (license license:expat)))
 
+;; TODO: Merge with 'python-setuptools-scm' on the next rebuild cycle.
+(define-public python-setuptools-scm/next
+  (package
+    (inherit python-setuptools-scm)
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools_scm" version))
+       (sha256
+        (base32 "0ahlrxxkx2xhmxskx57gc96w3bdndflxx30304ihvm7ds136nny8"))))))
+
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
