@@ -1279,9 +1279,11 @@ python-pypdf2 instead.")
     (native-inputs
      `(("intltool" ,intltool)
        ("python-distutils-extra" ,python-distutils-extra)))
-    (propagated-inputs
+    (inputs
      `(("gtk+" ,gtk+)
-       ("poppler" ,poppler)
+       ("poppler" ,poppler)))
+    (propagated-inputs
+     `(("img2pdf" ,img2pdf)
        ("python-dateutil" ,python-dateutil)
        ("python-pikepdf" ,python-pikepdf)
        ("python-pycairo" ,python-pycairo)
