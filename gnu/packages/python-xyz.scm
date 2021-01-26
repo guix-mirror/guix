@@ -5774,6 +5774,37 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python2-olefile
   (package-with-python2 python-olefile))
 
+(define-public python-pikepdf
+  (package
+    (name "python-pikepdf")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pikepdf" version))
+       (sha256
+        (base32 "0da5s9jpp9ll952drbc77yk4rhin2w87pi45x1bybj8kwlcvg27j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false))                ;require python-xmp-toolkit
+    (native-inputs
+     `(("pybind11" ,pybind11)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)
+       ("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (inputs
+     `(("qpdf" ,qpdf)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/pikepdf/pikepdf")
+    (synopsis "Read and write PDFs with Python")
+    (description
+     "pikepdf is a Python library for reading and writing PDF files.")
+    (license license:mpl2.0)))
+
 (define-public python-pillow
   (package
     (name "python-pillow")
