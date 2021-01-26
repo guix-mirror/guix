@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1576,14 +1577,14 @@ execution of any hook written in any language before every commit.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "5.5.1")
+    (version "5.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "0x08yjs26j88kh1bvl2g3r24lnfc023ry3i1cxfq6haray6sv5ag"))))
+               "1bgz8f1a7lnmh6lzcvwg6q1yx6i7yibhwy06l4k55i04957jap75"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1596,8 +1597,7 @@ execution of any hook written in any language before every commit.")
                             "tests/test-run-tests.t"
                             "tests/test-transplant.t")
                (("/bin/sh")
-                (which "sh")))
-             #t))
+                (which "sh")))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (with-directory-excursion "tests"
@@ -1608,9 +1608,10 @@ execution of any hook written in any language before every commit.")
                            ;; PATH from before (that's why we are building it!)?
                            "test-hghave.t"
 
-                           ;; FIXME: Why does this fail in the build container, but
-                           ;; not in 'guix environment -C' (even without /bin/sh)?
+                           ;; These tests fail because the program is not
+                           ;; connected to a TTY in the build container.
                            "test-nointerrupt.t"
+                           "test-transaction-rollback-on-sigpipe.t"
 
                            ;; FIXME: This gets killed but does not receive an interrupt.
                            "test-commandserver.t"
@@ -1639,8 +1640,7 @@ execution of any hook written in any language before every commit.")
                          "--slowtimeout" "86400"
                          ;; The test suite takes a long time and produces little
                          ;; output by default.  Prevent timeouts due to silence.
-                         "-v"))
-               #t))))))
+                         "-v"))))))))
     ;; The following inputs are only needed to run the tests.
     (native-inputs
      `(("python-nose" ,python-nose)
