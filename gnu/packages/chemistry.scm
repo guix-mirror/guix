@@ -522,19 +522,23 @@ usual algorithms you expect from a modern molecular dynamics implementation.")
 (define-public openbabel
   (package
     (name "openbabel")
-    (version "2.4.1")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/openbabel/openbabel/"
+                                  "releases/download/openbabel-"
+                                  (string-replace-substring version "." "-")
+                                  "/openbabel-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "1z3d6xm70dpfikhwdnbzc66j2l49vq105ch041wivrfz5ic3ch90"))
-              (patches
-               (search-patches "openbabel-fix-crash-on-nwchem-output.patch"))))
+                "0s0f4zib8vshfaywsr5bjjz55jwsg6yiz2qw4i5jm8wysn0q7v56"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
+     `(;; FIXME: Disable tests on i686 to work around
+       ;; https://github.com/openbabel/openbabel/issues/2041.
+       #:tests? ,(or (%current-target-system)
+                     (not (string=? "i686-linux" (%current-system))))
+       #:configure-flags
        (list "-DOPENBABEL_USE_SYSTEM_INCHI=ON"
              (string-append "-DINCHI_LIBRARY="
                             (assoc-ref %build-inputs "inchi")
