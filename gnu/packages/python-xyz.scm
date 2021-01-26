@@ -1123,14 +1123,14 @@ other machines, such as over the network.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "41.0.1")
+    (version "52.0.0")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "setuptools" version ".zip"))
+      (uri (pypi-uri "setuptools" version))
       (sha256
        (base32
-        "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
+        "15ibjdjhkwgj6qbmpsxikkqdfsb1550z46fly7dm15ah4bk1wfpv"))
       (modules '((guix build utils)))
       (snippet
        '(begin
