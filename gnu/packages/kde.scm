@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
@@ -456,7 +456,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.1")
+    (version "4.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -464,7 +464,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "05rq5hkh2lmk8hall2h9ccaav0nw8fj7vd4aff5fyp2fiq3aybbg"))))
+                "14lprcv7xw6r19bmylcz4c1p1jfazmza2b4m48f3x7vmdv2sx5ln"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
