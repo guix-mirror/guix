@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
@@ -33,7 +33,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.7.4")
+    (version "3.7.5")
     (source
      (origin
       (method url-fetch)
@@ -41,7 +41,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0460cfgw83j31vjrm1yr0xwmrhn0i39f8ikgy87587m190zq3dd3"))))
+        "1aridd55c3alxw9ryqh91gq57zcjr8qmxwnh49k66v9rpk2kpig8"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Building in parallel on many-core systems may cause an error such as
