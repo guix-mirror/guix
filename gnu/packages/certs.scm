@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,7 @@
       (source (origin
                 (method url-fetch)
                 (uri (string-append
-                      "https://github.com/sabotage-linux/sabotage/blob/"
+                      "https://raw.githubusercontent.com/sabotage-linux/sabotage/"
                       commit "/KEEP/certdata2pem.c"))
                 (sha256
                  (base32
