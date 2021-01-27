@@ -26,10 +26,12 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dejagnu)
@@ -52,6 +54,37 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph))
+
+(define-public rlottie
+  (package
+    (name "rlottie")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Samsung/rlottie.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "10bxr1zf9wxl55d4cw2j02r6sgqln7mbxplhhfvhw0z92fi40kr3"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "-Dlog=true"
+        "-Dtest=true")))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Lottie Animation Library")
+    (description "Rlottie is a platform independent standalone c++ library for
+rendering vector based animations and art in realtime.")
+    (home-page "https://github.com/Samsung/rlottie/")
+    (license license:expat)))
 
 ;; ETL, synfig, and Synfig Studio are updated in tandem.
 (define synfig-version "1.2.2")
