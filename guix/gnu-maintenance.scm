@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -361,7 +362,9 @@ return the corresponding signature URL, or #f it signatures are unavailable."
 
   (let loop ((directory directory)
              (result    #f))
-    (let* ((entries (ftp-list conn directory))
+    (let* ((entries (catch 'ftp-error
+                      (lambda _ (ftp-list conn directory))
+                      (const '())))
 
            ;; Filter out things like /gnupg/patches.  Filter out "w32"
            ;; directories as found on ftp.gnutls.org.
