@@ -895,7 +895,7 @@ cloud integration is offered through GNOME Online Accounts.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
                  `("GST_PLUGIN_SYSTEM_PATH" = (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
                  `("GRL_PLUGIN_PATH" = (,(getenv "GRL_PLUGIN_PATH")))
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))))
              #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -2670,7 +2670,7 @@ and how they are displayed (View).")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
@@ -6174,12 +6174,12 @@ which can read a large number of file formats.")
                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
                  (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
                  (grl-plugin-path   (getenv "GRL_PLUGIN_PATH"))
-                 (python-path       (getenv "PYTHONPATH")))
+                 (python-path       (getenv "GUIX_PYTHONPATH")))
              (wrap-program (string-append out "/bin/rhythmbox")
                `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
                `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))
-               `("PYTHONPATH"             ":" prefix (,python-path))))
+               `("GUIX_PYTHONPATH"             ":" prefix (,python-path))))
            #t)))))
    (propagated-inputs
     `(("dconf" ,dconf)))
@@ -6547,7 +6547,7 @@ almost all of them.")
                            ":")))
                (wrap-program (string-append out "/bin/eolie")
                  `("LD_LIBRARY_PATH" ":" prefix (,path))
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
              #t)))))
     (native-inputs
@@ -6691,7 +6691,7 @@ principles are simplicity and standards compliance.")
             (let ((prog (string-append (assoc-ref outputs "out")
                                        "/bin/d-feet")))
               (wrap-program prog
-                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
               #t))))))
     (native-inputs
@@ -7150,11 +7150,11 @@ javascript engine and the GObject introspection framework.")
              (let ((out               (assoc-ref outputs "out"))
                    (gtksourceview     (assoc-ref inputs "gtksourceview"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                   (python-path       (getenv "PYTHONPATH")))
+                   (python-path       (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/gedit")
                  ;; For plugins.
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                 `("PYTHONPATH" ":" prefix (,python-path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path))
                  ;; For language-specs.
                  `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
                                                                "/share")))))
@@ -7515,12 +7515,12 @@ Evolution (hence the name), but is now used by other packages as well.")
          (add-after 'install 'wrap-programs
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
-                   (python-path (getenv "PYTHONPATH"))
+                   (python-path (getenv "GUIX_PYTHONPATH"))
                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
               (for-each
                (lambda (prog)
                  (wrap-program prog
-                   `("PYTHONPATH"      ":" prefix (,python-path))
+                   `("GUIX_PYTHONPATH"      ":" prefix (,python-path))
                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
                (list (string-append out "/bin/caribou-preferences")
                      (string-append out "/libexec/antler-keyboard"))))
@@ -8422,7 +8422,7 @@ properties, screen resolution, and other GNOME parameters.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out              (assoc-ref outputs "out"))
                    (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
-                   (python-path      (getenv "PYTHONPATH")))
+                   (python-path      (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/gnome-shell")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
                  ;; FIXME: gnome-shell loads these libraries with unqualified
@@ -8436,7 +8436,7 @@ properties, screen resolution, and other GNOME parameters.")
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/bin/" prog)
-                    `("PYTHONPATH"      ":" prefix (,python-path))
+                    `("GUIX_PYTHONPATH"      ":" prefix (,python-path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
                 '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
                #t)))
@@ -9217,7 +9217,7 @@ specified duration and save it as a GIF encoded animated image file.")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
@@ -9428,13 +9428,13 @@ desktop.  It supports multiple calendars, month, week and year view.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out               (assoc-ref outputs "out"))
                             (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                            (python-path       (getenv "PYTHONPATH")))
+                            (python-path       (getenv "GUIX_PYTHONPATH")))
                         (wrap-program (string-append out "/bin/gnome-todo")
                           ;; XXX: gi plugins are broken.
                           ;; See https://bugzilla.gnome.org/show_bug.cgi?id=787212
                           ;; For plugins.
                           `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                          `("PYTHONPATH" ":" prefix (,python-path))))
+                          `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
                       #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -10037,8 +10037,8 @@ accessibility infrastructure.")
                    (,(getenv "GI_TYPELIB_PATH")))
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
                    (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
-                 `("PYTHONPATH" ":" prefix
-                   (,(getenv "PYTHONPATH")))))
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(getenv "GUIX_PYTHONPATH")))))
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
@@ -10370,7 +10370,7 @@ apply fancy special effects and lets you share the fun with others.")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
@@ -10790,7 +10790,7 @@ advanced image management tool")
                                           (package-version python))
                                         "/site-packages")))
               (wrap-program prog
-                `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
               #t)))
          (add-after 'wrap-program 'glib-or-gtk-wrap
@@ -11423,7 +11423,7 @@ and toolbars.")
                                            (package-version python))
                                          "/site-packages")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
@@ -11483,7 +11483,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
                     (pygo (string-append
                            (assoc-ref inputs "python-pygobject") site))
                     (python-wrap
-                     `("PYTHONPATH" = (,evdev ,pygo))))
+                     `("GUIX_PYTHONPATH" = (,evdev ,pygo))))
                (wrap-program (string-append out "/bin/" "ratbagctl")
                  python-wrap)
                #t))))))
@@ -11865,7 +11865,7 @@ integrated profiler via Sysprof, debugging support, and more.")
             (let ((prog (string-append (assoc-ref outputs "out")
                                        "/bin/komikku")))
               (wrap-program prog
-                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
               #t))))))
     (inputs

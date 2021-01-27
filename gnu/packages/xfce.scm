@@ -241,7 +241,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/catfish")
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))
        #:tests? #f))
     (native-inputs

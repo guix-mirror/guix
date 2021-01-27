@@ -1711,9 +1711,9 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'solfege' runs with the correct PYTHONPATH.
              (let* ((out (assoc-ref outputs "out"))
-                    (path (getenv "PYTHONPATH")))
+                    (path (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/solfege")
-                 `("PYTHONPATH" ":" prefix (,path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))))
              #t)))))
     (inputs
      `(("python" ,python-2)

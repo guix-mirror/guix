@@ -581,7 +581,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                                             out "/lib/python"
                                             (python:python-version python)
                                             "/site-packages")
-                                           (getenv "PYTHONPATH")
+                                           (getenv "GUIX_PYTHONPATH")
                                            bin target)))
                                (chmod file #o755)))
                   (find-files "." (lambda (file stat)

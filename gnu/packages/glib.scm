@@ -553,7 +553,7 @@ The intltool collection can be used to do these things:
              (let ((prog (string-append (assoc-ref outputs "out")
                                         "/bin/itstool")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (home-page "http://www.itstool.org")
     (synopsis "Tool to translate XML documents with PO files")

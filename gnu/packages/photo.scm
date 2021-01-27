@@ -156,13 +156,13 @@
                                               "/bin"))
                                        ":"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                   (python-path       (getenv "PYTHONPATH")))
+                   (python-path       (getenv "GUIX_PYTHONPATH")))
                (for-each
                 (lambda (program)
                   (wrap-program program
                     `("PATH" ":" prefix (,path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                    `("PYTHONPATH"             ":" prefix (,python-path))))
+                    `("GUIX_PYTHONPATH"             ":" prefix (,python-path))))
                 (map (lambda (name)
                        (string-append out "/bin/" name))
                      '("analyze-pv-structure"
@@ -655,10 +655,10 @@ such as Batch image processing.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                   (python-path       (getenv "PYTHONPATH")))
+                   (python-path       (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/entangle")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                 `("PYTHONPATH" ":" prefix (,python-path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
      `(("cmake" ,cmake)

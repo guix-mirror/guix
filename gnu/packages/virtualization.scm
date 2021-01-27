@@ -1335,9 +1335,9 @@ domains, their live performance and resource utilization statistics.")
                                          (string-take (string-take-right
                                                        (assoc-ref inputs "python") 5) 3)
                                          "/site-packages:"
-                                         (or (getenv "PYTHONPATH") ""))))
+                                         (or (getenv "GUIX_PYTHONPATH") ""))))
                (wrap-program (string-append out "/bin/crit")
-                 `("PYTHONPATH" ":" prefix (,path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))))
              #t)))))
     (inputs
      `(("protobuf" ,protobuf)

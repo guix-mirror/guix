@@ -300,7 +300,7 @@ buffers.")
            ;; Install 'sitecustomize.py' into gimp's python directory to
            ;; add pygobject and pygtk to pygimp's search path.
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((pythonpath (getenv "PYTHONPATH"))
+             (let* ((pythonpath (getenv "GUIX_PYTHONPATH"))
                     (out        (assoc-ref outputs "out"))
                     (sitecustomize.py
                      (string-append
@@ -579,7 +579,7 @@ transferring the style of an image.")
            ;; Install 'sitecustomize.py' into glimpse's python directory to
            ;; add pygobject and pygtk to pygimp's search path.
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((pythonpath (getenv "PYTHONPATH"))
+             (let* ((pythonpath (getenv "GUIX_PYTHONPATH"))
                     (out        (assoc-ref outputs "out"))
                     (sitecustomize.py
                      (string-append

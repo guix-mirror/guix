@@ -103,7 +103,7 @@
                            "fiologparser.py"))
                ;; Make sure numpy et.al is found.
                (wrap-program (string-append newbin "/fiologparser_hist.py")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (outputs '("out" "utils"))
     (inputs

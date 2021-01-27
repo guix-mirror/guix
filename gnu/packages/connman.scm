@@ -121,7 +121,7 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/econnman-bin")))
                (wrap-program bin
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs

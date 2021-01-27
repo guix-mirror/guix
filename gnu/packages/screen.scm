@@ -138,7 +138,7 @@ controlling terminal and attach to it later.")
                    (select (string-append out "/bin/byobu-select-session")))
               (wrap-program config
                 `("BYOBU_PYTHON" = (,python))
-                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
               (wrap-program select
                 `("BYOBU_PYTHON" = (,python)))
               #t))))))

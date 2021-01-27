@@ -170,7 +170,7 @@
                ;; the install directory is not on PYTHONPATH.
                (setenv "PYTHONPATH"
                        (string-append py3sitedir ":"
-                                      (getenv "PYTHONPATH")))
+                                      (getenv "GUIX_PYTHONPATH")))
                #t)))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -190,7 +190,7 @@
                                  (sitedir prettytable))))
                (for-each (lambda (executable)
                            (wrap-program (string-append out "/bin/" executable)
-                             `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
+                             `("GUIX_PYTHONPATH" ":" prefix (,PYTHONPATH))))
                          scripts)
                #t))))))
     (outputs

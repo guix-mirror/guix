@@ -401,9 +401,9 @@ other MPD frontends.")
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out         (assoc-ref outputs "out"))
-                   (python-path (getenv "PYTHONPATH")))
+                   (python-path (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/mpDris2")
-                 `("PYTHONPATH" ":" prefix (,python-path)))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path)))
                #t))))))
     (inputs
      `(("python-mpd2" ,python-mpd2)

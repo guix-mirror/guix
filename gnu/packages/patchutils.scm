@@ -348,7 +348,7 @@ you to figure out what is going on in that merge you keep avoiding.")
                  ;; as the python modules in this package in the wsgi.py file,
                  ;; as this will ensure they are available at runtime.
                  (define pythonpath
-                   (string-append (getenv "PYTHONPATH")
+                   (string-append (getenv "GUIX_PYTHONPATH")
                                   ":"
                                   (site-packages inputs outputs)))
                  (display

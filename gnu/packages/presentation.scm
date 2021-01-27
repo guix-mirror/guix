@@ -62,12 +62,12 @@
                      `("PATH" ":" prefix (,(dirname (which "cowsay"))
                                           ,(dirname (which "figlet"))
                                           ,(dirname (which "jp2a"))))
-                     `("PYTHONPATH" prefix
+                     `("GUIX_PYTHONPATH" prefix
                        ,(cons (string-append out "/lib/python"
                                              (python-version python)
                                              "/site-packages")
                               (search-path-as-string->list
-                                (or (getenv "PYTHONPATH") ""))))))
+                                (or (getenv "GUIX_PYTHONPATH") ""))))))
                  '("presentty" "presentty-console")))
              #t)))))
     (inputs

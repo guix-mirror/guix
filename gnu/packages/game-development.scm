@@ -1377,7 +1377,7 @@ if __name__ == \"__main__\":
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/renpy")
-               `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+               `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH"))))
              #t)))))
     (inputs
      `(("python2-tkinter" ,python-2 "tk")

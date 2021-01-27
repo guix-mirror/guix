@@ -2694,7 +2694,7 @@ done with the @code{auditctl} utility.")
                  "install-nping")
                (make ndiff "install-ndiff")
                (wrap-program (string-append ndiff "/bin/ndiff")
-                 `("PYTHONPATH" prefix
+                 `("GUIX_PYTHONPATH" prefix
                    (,(python-path ndiff)))))
              #t))
          ;; These are the tests that do not require network access.
@@ -2749,7 +2749,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/dstat")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (inputs
      `(("python" ,python-wrapper)

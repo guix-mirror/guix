@@ -1231,7 +1231,7 @@ Notmuch.")
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin/notifymuch")))
                  (wrap-program bin
-                   `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                   `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                    `("GI_TYPELIB_PATH" ":" prefix
                      (,(getenv "GI_TYPELIB_PATH")
                       ,(string-append out "/lib/girepository-1.0")))))

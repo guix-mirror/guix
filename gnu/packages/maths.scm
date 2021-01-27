@@ -326,8 +326,8 @@ programming language.")
                      (let* ((out (assoc-ref outputs "out"))
                             (bin (string-append out "/bin")))
                        (wrap-program (string-append bin "/units_cur")
-                         `("PYTHONPATH" ":" prefix
-                           ,(search-path-as-string->list (getenv "PYTHONPATH"))))
+                         `("GUIX_PYTHONPATH" ":" prefix
+                           ,(search-path-as-string->list (getenv "GUIX_PYTHONPATH"))))
                        #t))))))
    (synopsis "Conversion between thousands of scales")
    (description

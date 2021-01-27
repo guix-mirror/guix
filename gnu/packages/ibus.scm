@@ -130,7 +130,7 @@
              ;; GI_TYPELIB_PATH.
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/ibus-setup")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                  `("GI_TYPELIB_PATH" ":" prefix
                    (,(getenv "GI_TYPELIB_PATH")
                     ,(string-append out "/lib/girepository-1.0")))))
@@ -192,8 +192,8 @@ may also simplify input method development.")
              ;; PYTHONPATH and GI_TYPELIB_PATH.
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/libexec/ibus-setup-libpinyin")
-                 `("PYTHONPATH" ":" prefix
-                   (,(getenv "PYTHONPATH")
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(getenv "GUIX_PYTHONPATH")
                     ,(string-append (assoc-ref inputs "ibus")
                                     "/lib/girepository-1.0")))
                  `("GI_TYPELIB_PATH" ":" prefix
@@ -270,8 +270,8 @@ Chinese pinyin input methods.")
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/libexec/" prog)
-                    `("PYTHONPATH" ":" prefix
-                      (,(getenv "PYTHONPATH")))
+                    `("GUIX_PYTHONPATH" ":" prefix
+                      (,(getenv "GUIX_PYTHONPATH")))
                     `("GI_TYPELIB_PATH" ":" prefix
                       (,(getenv "GI_TYPELIB_PATH")
                        ,(string-append out "/lib/girepository-1.0")))))
@@ -733,7 +733,7 @@ hanja dictionary and small hangul character classification.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/libexec/ibus-setup-hangul")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("LD_LIBRARY_PATH" ":" prefix
                  (,(string-append (assoc-ref inputs "libhangul") "/lib")))
                `("GI_TYPELIB_PATH" ":" prefix

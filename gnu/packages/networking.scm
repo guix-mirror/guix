@@ -621,7 +621,7 @@ systems with no further dependencies.")
                (for-each
                 (lambda (program)
                   (wrap-program program
-                    `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,lib))
+                    `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,lib))
                     `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
                 (append
                  (map (lambda (prog) (string-append bin prog))

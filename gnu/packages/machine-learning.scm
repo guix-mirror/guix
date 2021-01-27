@@ -1372,7 +1372,7 @@ automatically.")
                  (let* ((server (string-append bin "/kaldi-gst-server"))
                         (client (string-append bin "/kaldi-gst-client"))
                         (worker (string-append bin "/kaldi-gst-worker"))
-                        (PYTHONPATH (getenv "PYTHONPATH"))
+                        (PYTHONPATH (getenv "GUIX_PYTHONPATH"))
                         (GST_PLUGIN_PATH (string-append
                                           (assoc-ref inputs "gst-kaldi-nnet2-online")
                                           "/lib/gstreamer-1.0:${GST_PLUGIN_PATH}"))

@@ -482,12 +482,12 @@ following formats:
                     (libmagic-path     (string-append
                                         (assoc-ref %build-inputs "file")
                                         "/lib"))
-                    (python-path     (getenv "PYTHONPATH")))
+                    (python-path     (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/cozy")
                  `("LD_LIBRARY_PATH" ":" prefix (,libmagic-path))
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("PYTHONPATH" ":" prefix (,python-path ,pylib))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path ,pylib))))
              #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)

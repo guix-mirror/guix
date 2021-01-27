@@ -4052,7 +4052,7 @@ tools for styling them, including a built-in real-time video preview.")
               (let ((prog (string-append (assoc-ref outputs "out")
                                          "/bin/pitivi")))
                 (wrap-program prog
-                  `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                  `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
                   `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
                   ;; We've only added inputs for what Pitivi deems either
                   ;; necessary or optional.  Let the user's packages take

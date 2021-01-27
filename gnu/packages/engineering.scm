@@ -929,9 +929,9 @@ Emacs).")
                            ,(version-major+minor
                              (package-version python))
                            "/site-packages:"
-                           (getenv "PYTHONPATH"))))
+                           (getenv "GUIX_PYTHONPATH"))))
                (wrap-program file
-                 `("PYTHONPATH" ":" prefix (,path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))
                  `("PATH" ":" prefix
                    (,(string-append python "/bin:")))))
              #t)))))
@@ -1192,9 +1192,9 @@ the 'showing the effect of'-style of operation.")
                            ,(version-major+minor
                              (package-version python))
                            "/site-packages:"
-                           (getenv "PYTHONPATH"))))
+                           (getenv "GUIX_PYTHONPATH"))))
                (wrap-program file
-                 `("PYTHONPATH" ":" prefix (,path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))
                  `("PATH" ":" prefix
                    (,(string-append python "/bin:")))))
              #t)))))
@@ -2601,7 +2601,7 @@ full programmatic control over your models.")
                (let ((out (assoc-ref outputs "out")))
                  (wrap-program (string-append out "/bin/FreeCAD")
                    (list "PYTHONPATH"
-                         'prefix (list (getenv "PYTHONPATH")))))
+                         'prefix (list (getenv "GUIX_PYTHONPATH")))))
                #t)))))
       (home-page "https://www.freecadweb.org/")
       (synopsis "Your Own 3D Parametric Modeler")

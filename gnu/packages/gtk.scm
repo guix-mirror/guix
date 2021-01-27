@@ -1766,7 +1766,7 @@ information.")
              (let ((out (assoc-ref outputs "out")))
                (for-each (lambda (prog)
                            (wrap-program prog
-                             `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+                             `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
                          (find-files (string-append out "/bin")))
                #t))))
        #:configure-flags

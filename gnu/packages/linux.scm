@@ -7701,7 +7701,7 @@ headers.")
                 (lambda (python-executable)
                   (format #t "Wrapping: ~A.~%" python-executable)
                   (wrap-program python-executable
-                    `("PYTHONPATH" ":" prefix
+                    `("GUIX_PYTHONPATH" ":" prefix
                       (,(string-append lib
                                        "/python"
                                        ,(version-major+minor

@@ -192,7 +192,7 @@ Guix's logo.  Based on Arch linux's archlinux-simplyblack theme.")
            ;; Run test-suite under a dbus session.
            (lambda* (#:key inputs #:allow-other-keys)
              (wrap-program "tests/src/test-python-greeter"
-               `("PYTHONPATH"      ":" prefix (,(getenv "PYTHONPATH")))
+               `("GUIX_PYTHONPATH"      ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
 
              ;; Avoid printing locale warnings, which trip up the text

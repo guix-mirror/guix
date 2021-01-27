@@ -107,9 +107,9 @@
                         ,(version-major+minor
                            (package-version python))
                         "/site-packages:"
-                        (getenv "PYTHONPATH")))
+                        (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/avogadro")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
              #t)))))
     (native-inputs
      `(("doxygen" ,doxygen)

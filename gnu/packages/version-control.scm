@@ -619,12 +619,12 @@ everything from small to very large projects with speed and efficiency.")
                    (git (assoc-ref inputs "git")))
                (wrap-program (string-append out "/bin/gl")
                  `("PATH" ":" prefix (,(string-append git "/bin")))
-                 `("PYTHONPATH" ":" =
+                 `("GUIX_PYTHONPATH" ":" =
                    (,(string-append out "/lib/python"
                                     ,(version-major+minor
                                       (package-version python))
                                     "/site-packages:")
-                    ,(getenv "PYTHONPATH"))))
+                    ,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (native-inputs
      `(("git-for-tests" ,git-minimal)))
@@ -925,7 +925,7 @@ collaboration using typical untrusted file hosts or services.")
               (lambda (file)
                 (wrap-program (string-append (assoc-ref outputs "out")
                                              "/lib/cgit/filters/" file)
-                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+                  `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
               '("syntax-highlighting.py"
                 "html-converters/md2html"))
              #t)))))
@@ -2604,7 +2604,7 @@ directory full of HOWTOs.")
              (lambda* (#:key outputs #:allow-other-keys)
                (wrap-program (string-append (assoc-ref outputs "out")
                                             "/bin/git-when-merged")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t)))))
       (inputs
        `(("git" ,git)
@@ -2649,7 +2649,7 @@ how information about the merge is displayed.")
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/git-imerge")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
              #t)))))
     (inputs
      `(("git" ,git)

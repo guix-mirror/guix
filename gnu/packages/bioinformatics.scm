@@ -2263,9 +2263,9 @@ gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'couger' runs with the correct PYTHONPATH.
             (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
+                   (path (getenv "GUIX_PYTHONPATH")))
               (wrap-program (string-append out "/bin/couger")
-                `("PYTHONPATH" ":" prefix (,path))))
+                `("GUIX_PYTHONPATH" ":" prefix (,path))))
             #t)))))
     (inputs
      `(("python" ,python-2)
@@ -10696,7 +10696,7 @@ matplotlib.use('Agg')
 " line)))
                ;; Make sure GESS has all modules in its path
                (wrap-script (string-append target "GESS.py")
-                 `("PYTHONPATH" ":" = (,target ,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" = (,target ,(getenv "GUIX_PYTHONPATH"))))
                (mkdir-p bin)
                (symlink (string-append target "GESS.py")
                         (string-append bin "GESS.py"))
@@ -12871,11 +12871,11 @@ conversions, region filtering, FASTA sequence extraction and more.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
-                      (path (getenv "PYTHONPATH")))
+                      (path (getenv "GUIX_PYTHONPATH")))
                  (for-each (lambda (script)
                              (install-file script bin)
                              (wrap-program (string-append bin "/" script)
-                               `("PYTHONPATH" ":" prefix (,path))))
+                               `("GUIX_PYTHONPATH" ":" prefix (,path))))
                            '("cmp_bed.py"
                              "find_circ.py"
                              "maxlength.py"
@@ -13817,10 +13817,10 @@ datasets.")
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (path (getenv "PYTHONPATH")))
+                      (path (getenv "GUIX_PYTHONPATH")))
                  (wrap-program (string-append out
                                               "/share/filtlong/scripts/histogram.py")
-                   `("PYTHONPATH" ":" prefix (,path))))
+                   `("GUIX_PYTHONPATH" ":" prefix (,path))))
                #t))
            (add-before 'check 'patch-tests
              (lambda _
@@ -13894,7 +13894,7 @@ choosing which reads pass the filter.")
            (add-after 'install 'wrap-programs
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each (lambda (file)
-                           (wrap-program file `("PYTHONPATH" ":" prefix (,path))))
+                           (wrap-program file `("GUIX_PYTHONPATH" ":" prefix (,path))))
                          (find-files "/share/nanopolish/scripts" "\\.py"))
                (for-each (lambda (file)
                            (wrap-program file `("PERL5LIB" ":" prefix (,path))))

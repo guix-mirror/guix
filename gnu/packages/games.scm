@@ -2102,7 +2102,7 @@ utilizing the art assets from the @code{SuperTux} project.")
 #!~a
 export PYTHONPATH=~a/LIB:~a
 exec -a \"~a\" ~a \"$@\"\n"
-                           (which "bash") data (getenv "PYTHONPATH")
+                           (which "bash") data (getenv "GUIX_PYTHONPATH")
                            (which "python3")
                            (string-append lib "/main.py"))))
                (chmod roguebox-adventures #o555))
@@ -2178,7 +2178,7 @@ can be explored and changed freely.")
                              "#!~a~@
                               export PYTHONPATH=~a:~a~@
                               exec -a \"~a\" ~a \"$@\"~%"
-                             (which "bash") data (getenv "PYTHONPATH")
+                             (which "bash") data (getenv "GUIX_PYTHONPATH")
                              (which "python3")
                              (string-append data "/run_game.py"))))
                  (chmod executable #o555))
@@ -10118,7 +10118,7 @@ This package is part of the KDE games module.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/kajongg")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

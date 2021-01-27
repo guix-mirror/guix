@@ -798,7 +798,7 @@ adjust the level of difficulty.")
                              `("PATH" prefix (,(string-append
                                                 (assoc-ref inputs "mpv")
                                                 "/bin")))
-                             `("PYTHONPATH" = ,site-packages)))
+                             `("GUIX_PYTHONPATH" = ,site-packages)))
                          (find-files bin ".")))
              #t)))))
     (native-inputs

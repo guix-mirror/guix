@@ -280,7 +280,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
                                              ":")))
                (for-each (lambda (script)
                            (wrap-program (string-append out "/bin/" script)
-                             `("PYTHONPATH" ":" prefix (,pythonpath))))
+                             `("GUIX_PYTHONPATH" ":" prefix (,pythonpath))))
                          '("gegps" "gpscat" "gpsfake" "gpsprof"
                            "ubxtool" "xgps" "xgpsspeed" "zerk")))
              #t)))))

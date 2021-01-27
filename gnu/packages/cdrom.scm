@@ -1039,7 +1039,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
              (let ((prog (string-append (assoc-ref outputs "out")
                                         "/bin/cdemu")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
     (home-page "https://cdemu.sourceforge.io/")
     (synopsis "Command-line client for controlling cdemu-daemon")
