@@ -29,6 +29,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages tls))
 
 (define certdata2pem
