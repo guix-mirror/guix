@@ -18,7 +18,9 @@
 
 (define-module (gnu packages telegram)
   #:use-module (gnu packages)
+  #:use-module (gnu packages animation)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
@@ -31,7 +33,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
-  #:use-module (guix build-system cmake))
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson))
 
 (define-public webrtc-for-telegram-desktop
   (let ((commit "fa86fcc00c218813d61a272a56feab55c76a1ab9")
@@ -142,3 +145,37 @@ Telegram project, for its use in telegram desktop client.")
          license:gpl3
          ;; LibSRTP, LibVPx, UsrSCTP and Others
          license:bsd-3))))))
+
+(define-public rlottie-for-telegram-desktop
+  (let ((commit "cbd43984ebdf783e94c8303c41385bf82aa36d5b")
+        (revision "671"))
+    (hidden-package
+     (package
+       (inherit rlottie)
+       (version
+        (git-version "0.0.1" revision commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri
+           (git-reference
+            (url "https://github.com/desktop-app/rlottie.git")
+            (commit commit)))
+          (file-name
+           (git-file-name "rlottie-for-telegram-desktop" version))
+          (sha256
+           (base32 "1lxpbgbhps9rmck036mgmiknqrzpjxpas8n7qxykv6pwzn0c8n0c"))))
+       (arguments
+        `(#:configure-flags
+          (list
+           "-Dlog=true"
+           "-Ddumptree=true"
+           "-Dtest=true")
+          #:phases
+          (modify-phases %standard-phases
+            (add-after 'unpack 'patch-cxx-flags
+              (lambda _
+                (substitute* "meson.build"
+                  (("werror=true")
+                   "werror=false"))
+                #t)))))))))
