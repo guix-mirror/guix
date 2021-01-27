@@ -442,10 +442,6 @@ random passwords that pass the checks.")
                #t)))
          (add-after 'install 'manpage
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Without this substitution, it fails with
-             ;; ImportError: No module named 'gpg'
-             (substitute* "Makefile"
-               (("PYTHONPATH=.") ""))
              (invoke "make" "assword.1")
              (install-file
               "assword.1"
