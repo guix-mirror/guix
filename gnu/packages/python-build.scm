@@ -37,14 +37,14 @@
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.33.6")
+    (version "0.36.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0ii6f34rvpjg3nmw4bc2h7fhdsy38y1h93hghncfs5akfrldmj8h"))))
+          "0pi4w0brz7a86ddk6pm8p6j0w6d7jgacgxm0c2dab3k5cb8yy7p1"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
