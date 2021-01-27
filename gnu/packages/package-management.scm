@@ -154,6 +154,13 @@
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags (list
+
+                            ;; Provide channel metadata for 'guix describe'.
+                            ;; Don't pass '--with-channel-url' and
+                            ;; '--with-channel-introduction' and instead use
+                            ;; the defaults.
+                            ,(string-append "--with-channel-commit=" commit)
+
                             "--localstatedir=/var"
                             "--sysconfdir=/etc"
                             (string-append "--with-bash-completion-dir="
