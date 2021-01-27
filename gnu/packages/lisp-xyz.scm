@@ -832,40 +832,11 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (commit commit)))
          (sha256
           (base32 "0vv185gz3rkfng5y79dijfnc11p92qdz2kdza05avjbpqfs6l0zn"))
-         (file-name (git-file-name "slynk" version))
-         (modules '((guix build utils)
-                    (ice-9 ftw)))
-         (snippet
-          '(begin
-             ;; Move the contribs into the main source directory for easier
-             ;; access
-             (substitute* "slynk/slynk.asd"
-               (("\\.\\./contrib")
-                "contrib"))
-             (rename-file "contrib" "slynk/contrib")
-             ;; Move slynk's contents into the base directory for easier
-             ;; access
-             (for-each (lambda (file)
-                         (unless (string-prefix? "." file)
-                           (rename-file (string-append "slynk/" file)
-                                        (string-append "./" (basename file)))))
-                       (scandir "slynk"))
-             #t))))
+         (file-name (git-file-name "slynk" version))))
       (build-system asdf-build-system/sbcl)
       (outputs '("out" "image"))
       (arguments
-       `(#:tests? #f                    ; No test suite
-         #:asd-systems '("slynk"
-                         "slynk/arglists"
-                         "slynk/fancy-inspector"
-                         "slynk/package-fu"
-                         "slynk/mrepl"
-                         "slynk/trace-dialog"
-                         "slynk/profiler"
-                         "slynk/stickers"
-                         "slynk/indentation"
-                         "slynk/retro")
-         #:phases
+       `(#:phases
          (modify-phases %standard-phases
            (add-after 'create-asdf-configuration 'build-image
              (lambda* (#:key outputs #:allow-other-keys)
