@@ -877,8 +877,8 @@ passphrase when @code{gpg} is run and needs it.")))
      `(("efl" ,efl)
        ,@(package-inputs pinentry-tty)))
     (description
-   "Pinentry provides a console and a graphical interface for the
-@dfn{Enlightenment Foundation Libraries} (EFL) that allows users to enter a
+   "Pinentry provides a console and a graphical interface for @acronym{EFL,
+the Enlightenment Foundation Libraries} that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry-rofi
