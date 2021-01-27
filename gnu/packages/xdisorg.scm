@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1248,15 +1249,12 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
          (add-after 'split-outputs 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((gtk (assoc-ref outputs "gtk"))
-                    (python-version
-                     (@ (guix build python-build-system) python-version))
-                    (python (assoc-ref inputs "python"))
-                    (sitedir (string-append gtk "/lib/python"
-                                            (python-version python)
-                                            "/site-packages")))
+                    (site-packages (@ (guix build python-build-system)
+                                      site-packages))
+                    (site (site-packages inputs outputs)))
                (wrap-program (string-append gtk "/bin/redshift-gtk")
-                 `("PYTHONPATH" ":" prefix
-                   (,(string-append sitedir ":" (getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(string-append site ":" (getenv "GUIX_PYTHONPATH"))))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (outputs '("out" "gtk"))
