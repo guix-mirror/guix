@@ -20,7 +20,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
@@ -64,7 +64,6 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -702,7 +701,7 @@ eye-candy, customizable, and reasonably lightweight.")
 (define-public foot
   (package
     (name "foot")
-    (version "1.5.4")
+    (version "1.6.2")
     (home-page "https://codeberg.org/dnkl/foot")
     (source (origin
               (method git-fetch)
@@ -710,7 +709,7 @@ eye-candy, customizable, and reasonably lightweight.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0y6xfsldz5lwy6kp5dy9s27pnii7n5zj754wglvz9d9fp5lkl6id"))))
+                "08i3jmjky5s2nnc0c95c009cym91rs4sj4876sr4xnlkb7ab4812"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.55
@@ -720,10 +719,7 @@ eye-candy, customizable, and reasonably lightweight.")
        ;; Enable LTO as recommended by INSTALL.md.
        #:configure-flags '("-Db_lto=true")))
     (native-inputs
-     `(;; Foot makes use of modern C features and needs a newer compiler.
-       ;; Remove when the default compiler is > GCC 7.
-       ("gcc" ,gcc-10)
-       ("ncurses" ,ncurses)             ;for 'tic'
+     `(("ncurses" ,ncurses)             ;for 'tic'
        ("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)
        ("wayland-protocols" ,wayland-protocols)))
