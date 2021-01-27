@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 dnl
@@ -398,3 +398,31 @@ that of the existing installation '$guix_cv_current_localstatedir'])
       esac
     fi
   fi])
+
+dnl GUIX_CHANNEL_METADATA
+dnl
+dnl Provide the channel metadata for this build.  This allows 'guix describe'
+dnl to return meaningful data, as it would for a 'guix pull'-provided 'guix'.
+dnl The default URL and introduction are taken from (guix channels).
+AC_DEFUN([GUIX_CHANNEL_METADATA], [
+  AC_ARG_WITH([channel-url], [AS_HELP_STRING([--with-channel-url=URL],
+    [assert that this is built from the Git repository at URL])],
+    [guix_channel_url="\"$withval\""],
+    [guix_channel_url="\"https://git.savannah.gnu.org/git/guix.git\""])
+  AC_ARG_WITH([channel-commit], [AS_HELP_STRING([--with-channel-commit=COMMIT],
+    [assert that this is built from COMMIT])],
+    [guix_channel_commit="\"$withval\""],
+    [guix_channel_commit="#f"])
+  AC_ARG_WITH([channel-introduction], [AS_HELP_STRING([--with-channel-introduction=COMMIT:FINGERPRINT],
+    [specify COMMIT and FINGERPRINT as the introduction of this channel])],
+    [guix_channel_introduction="'(\"`echo $withval | cut -f1 -d:`\" \"`echo $withval | cut -f2 -d:`\")"],
+    [guix_channel_introduction="'(\"9edb3f66fd807b096b48283debdcddccfea34bad\" . \"BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA\")"])
+
+  GUIX_CHANNEL_URL="$guix_channel_url"
+  GUIX_CHANNEL_COMMIT="$guix_channel_commit"
+  GUIX_CHANNEL_INTRODUCTION="$guix_channel_introduction"
+
+  AC_SUBST([GUIX_CHANNEL_URL])
+  AC_SUBST([GUIX_CHANNEL_COMMIT])
+  AC_SUBST([GUIX_CHANNEL_INTRODUCTION])
+])

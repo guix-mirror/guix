@@ -61,9 +61,23 @@
 (define %channel-metadata
   ;; When true, this is an sexp containing metadata for the 'guix' channel
   ;; this file was built from.  This is used by (guix describe).
-
-  ;; TODO: Implement 'configure.ac' machinery to initialize it.
-  #f)
+  (let ((url    @GUIX_CHANNEL_URL@)
+        (commit @GUIX_CHANNEL_COMMIT@)
+        (intro  @GUIX_CHANNEL_INTRODUCTION@))
+    (and url commit
+         `(repository
+           (version 0)
+           (url ,url)
+           (branch "master")                      ;XXX: doesn't really matter
+           (commit ,commit)
+           (name guix)
+           ,@(if intro
+                 `((introduction
+                    (channel-introduction
+                     (version 0)
+                     (commit ,(car intro))
+                     (signer ,(cdr intro)))))
+                 '())))))
 
 (define %storedir
   "@storedir@")
