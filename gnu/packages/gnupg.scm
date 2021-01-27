@@ -436,14 +436,24 @@ gpgpme starting with version 1.7.")
     (arguments
      ;; Work around <https://bugs.gnu.org/20272> to achieve reproducible
      ;; builds.
-     '(#:parallel-build? #f))
+     '(#:parallel-build? #f
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-libgrypt-config
+           (lambda* (#:key inputs target #:allow-other-keys)
+             (when target
+               ;; When cross-compiling, the bash script 'libgcrypt-config'
+               ;; must be accessible during the configure phase.
+               (setenv "PATH"
+                       (string-append (assoc-ref inputs "libgcrypt")
+                                      "/bin:" (getenv "PATH")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-3.0)
-       ("libgcrypt" ,libgcrypt)))                 ;for 'libgcrypt-config'
+       ("guile" ,guile-3.0)))
     (inputs
      `(("guile" ,guile-3.0)
        ("libgcrypt" ,libgcrypt)))
