@@ -20,6 +20,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages animation)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -27,6 +28,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -34,6 +36,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson))
 
 (define-public webrtc-for-telegram-desktop
@@ -179,3 +182,47 @@ Telegram project, for its use in telegram desktop client.")
                   (("werror=true")
                    "werror=false"))
                 #t)))))))))
+
+(define-public libtgvoip-for-telegram-desktop
+  (let ((commit "37d98e984fd6fa389262307db826d52ab86c8241")
+        (revision "87"))
+    (hidden-package
+     (package
+       (inherit libtgvoip)
+       (version
+        (git-version "2.4.4" revision commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri
+           (git-reference
+            (url "https://github.com/telegramdesktop/libtgvoip.git")
+            (commit commit)))
+          (file-name
+           (git-file-name "libtgvoip-for-telegram-desktop" version))
+          (sha256
+           (base32 "13dzvyq8p20nlhjihv18aj6y97czk07qdl0k6v81vp6mbwcldg7h"))))
+       (arguments
+        `(#:configure-flags
+          (list
+           "--disable-static"
+           "--disable-dsp"              ; FIXME
+           "--enable-audio-callback"
+           "--with-alsa"
+           "--with-pulse")
+          #:phases
+          (modify-phases %standard-phases
+            (add-after 'unpack 'patch-linkers
+              (lambda _
+                (substitute* "Makefile.am"
+                  (("\\$\\(CRYPTO_LIBS\\) \\$\\(OPUS_LIBS\\)")
+                   "$(CRYPTO_LIBS) $(OPUS_LIBS) $(ALSA_LIBS) $(PULSE_LIBS)"))
+                (substitute* "tgvoip.pc.in"
+                  (("libcrypto opus")
+                   "libcrypto opus alsa libpulse"))
+                #t)))))
+       (native-inputs
+        `(("autoconf" ,autoconf)
+          ("automake" ,automake)
+          ("libtool" ,libtool)
+          ("pkg-config" ,pkg-config)))))))
