@@ -642,29 +642,45 @@ failing when GUIX is too old and lacks the 'guix repl' command."
 
 (define* (inferior-package->manifest-entry package
                                            #:optional (output "out")
-                                           #:key (parent (delay #f))
-                                           (properties '()))
+                                           #:key (properties '()))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
-  ;; For each dependency, keep a promise pointing to its "parent" entry.
-  (letrec* ((deps  (map (match-lambda
-                          ((label package)
-                           (inferior-package->manifest-entry package
-                                                             #:parent (delay entry)))
-                          ((label package output)
-                           (inferior-package->manifest-entry package output
-                                                             #:parent (delay entry))))
-                        (inferior-package-propagated-inputs package)))
-            (entry (manifest-entry
-                     (name (inferior-package-name package))
-                     (version (inferior-package-version package))
-                     (output output)
-                     (item package)
-                     (dependencies (delete-duplicates deps))
-                     (search-paths
-                      (inferior-package-transitive-native-search-paths package))
-                     (parent parent)
-                     (properties properties))))
-    entry))
+  (define cache
+    (make-hash-table))
+
+  (define-syntax-rule (memoized package output exp)
+    ;; Memoize the entry returned by EXP for PACKAGE/OUTPUT.  This is
+    ;; important as the same package may be traversed many times through
+    ;; propagated inputs, and querying the inferior is costly.  Use
+    ;; 'hash'/'equal?', which is okay since <inferior-package> is simple.
+    (let ((compute (lambda () exp))
+          (key     (cons package output)))
+      (or (hash-ref cache key)
+          (let ((result (compute)))
+            (hash-set! cache key result)
+            result))))
+
+  (let loop ((package package)
+             (output  output)
+             (parent  (delay #f)))
+    (memoized package output
+      ;; For each dependency, keep a promise pointing to its "parent" entry.
+      (letrec* ((deps  (map (match-lambda
+                              ((label package)
+                               (loop package "out" (delay entry)))
+                              ((label package output)
+                               (loop package output (delay entry))))
+                            (inferior-package-propagated-inputs package)))
+                (entry (manifest-entry
+                         (name (inferior-package-name package))
+                         (version (inferior-package-version package))
+                         (output output)
+                         (item package)
+                         (dependencies (delete-duplicates deps))
+                         (search-paths
+                          (inferior-package-transitive-native-search-paths package))
+                         (parent parent)
+                         (properties properties))))
+        entry))))
 
 
 ;;;
@@ -750,3 +766,7 @@ This is a convenience procedure that people may use in manifests passed to
                                #:cache-directory cache-directory
                                #:ttl ttl)))
   (open-inferior cached))
+
+;;; Local Variables:
+;;; eval: (put 'memoized 'scheme-indent-function 1)
+;;; End:
