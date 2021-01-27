@@ -182,20 +182,18 @@ string is ~a.~%")
                           (current-output-port))))
     (display-package-search-path fmt)))
 
-(define (display-profile-info profile fmt)
+(define* (display-profile-info profile fmt
+                               #:optional
+                               (channels (profile-channels profile)))
   "Display information about PROFILE, a profile as created by (guix channels),
-in the format specified by FMT."
+in the format specified by FMT.  PROFILE can be #f, in which case CHANNELS is
+what matters."
   (define number
-    (generation-number profile))
-
-  (define channels
-    (profile-channels (if (zero? number)
-                          profile
-                          (generation-file-name profile number))))
+    (and profile (generation-number profile)))
 
   (match fmt
     ('human
-     (display-profile-content profile number))
+     (display-profile-content profile number channels))
     ('channels
      (pretty-print `(list ,@(map channel->code channels))))
     ('channels-sans-intro
@@ -213,33 +211,29 @@ in the format specified by FMT."
                   channels))))
   (display-package-search-path fmt))
 
-(define (display-profile-content profile number)
-  "Display the packages in PROFILE, generation NUMBER, in a human-readable
-way and displaying details about the channel's source code."
-  (display-generation profile number)
-  (for-each (lambda (entry)
-              (format #t "  ~a ~a~%"
-                      (manifest-entry-name entry)
-                      (manifest-entry-version entry))
-              (match (manifest-entry-channel entry)
-                ((? channel? channel)
-                 (format #t (G_ "    repository URL: ~a~%")
-                         (channel-url channel))
-                 (when (channel-branch channel)
-                   (format #t (G_ "    branch: ~a~%")
-                           (channel-branch channel)))
-                 (format #t (G_ "    commit: ~a~%")
-                         (if (supports-hyperlinks?)
-                             (channel-commit-hyperlink channel)
-                             (channel-commit channel))))
-                (_ #f)))
+(define* (display-profile-content profile number
+                                  #:optional
+                                  (channels (profile-channels profile)))
+  "Display CHANNELS along with PROFILE info, generation NUMBER, in a
+human-readable way and displaying details about the channel's source code.
+PROFILE and NUMBER "
+  (when (and number profile)
+    (display-generation profile number))
 
-            ;; Show most recently installed packages last.
-            (reverse
-             (manifest-entries
-              (profile-manifest (if (zero? number)
-                                    profile
-                                    (generation-file-name profile number)))))))
+  (for-each (lambda (channel)
+              (format #t "  ~a ~a~%"
+                      (channel-name channel)
+                      (string-take (channel-commit channel) 7))
+              (format #t (G_ "    repository URL: ~a~%")
+                      (channel-url channel))
+              (when (channel-branch channel)
+                (format #t (G_ "    branch: ~a~%")
+                        (channel-branch channel)))
+              (format #t (G_ "    commit: ~a~%")
+                      (if (supports-hyperlinks?)
+                          (channel-commit-hyperlink channel)
+                          (channel-commit channel))))
+            channels))
 
 (define %vcs-web-views
   ;; Hard-coded list of host names and corresponding web view URL templates.
@@ -295,6 +289,10 @@ text.  The hyperlink links to a web view of COMMIT, when available."
     (with-error-handling
       (match profile
         (#f
-         (display-checkout-info format))
+         (match (current-channels)
+           (()
+            (display-checkout-info format))
+           (channels
+            (display-profile-info #f format channels))))
         (profile
          (display-profile-info (canonicalize-profile profile) format))))))

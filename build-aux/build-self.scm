@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,7 +241,7 @@ interface (FFI) of Guile.")
 
 (define* (build-program source version
                         #:optional (guile-version (effective-version))
-                        #:key (pull-version 0))
+                        #:key (pull-version 0) (channel-metadata #f))
   "Return a program that computes the derivation to build Guix from SOURCE."
   (define select?
     ;; Select every module but (guix config) and non-Guix modules.
@@ -359,6 +359,8 @@ interface (FFI) of Guile.")
                              (run-with-store store
                                (guix-derivation source version
                                                 #$guile-version
+                                                #:channel-metadata
+                                                '#$channel-metadata
                                                 #:pull-version
                                                 #$pull-version)
                                #:system system)
@@ -380,7 +382,9 @@ interface (FFI) of Guile.")
 
 ;; The procedure below is our return value.
 (define* (build source
-                #:key verbose? (version (date-version-string)) system
+                #:key verbose?
+                (version (date-version-string)) channel-metadata
+                system
                 (pull-version 0)
 
                 ;; For the standalone Guix, default to Guile 3.0.  For old
@@ -397,6 +401,7 @@ files."
   ;; Build the build program and then use it as a trampoline to build from
   ;; SOURCE.
   (mlet %store-monad ((build  (build-program source version guile-version
+                                             #:channel-metadata channel-metadata
                                              #:pull-version pull-version))
                       (system (if system (return system) (current-system)))
                       (home -> (getenv "HOME"))
