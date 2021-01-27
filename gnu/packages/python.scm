@@ -775,9 +775,6 @@ ease from the desktop to a microcontroller or embedded system.")
                                 "targetpypystandalone"))
                       ;; Build c modules and package everything, so tests work.
                       (with-directory-excursion "pypy/tool/release"
-                        (unsetenv "PYTHONPATH") ; Do not use the system’s python libs:
-                                        ; AttributeError: module 'enum' has no
-                                        ; attribute 'IntFlag'
                         (invoke "python2" "package.py"
                                 "--archive-name" "pypy-dist"
                                 "--builddir" (getcwd)))))
