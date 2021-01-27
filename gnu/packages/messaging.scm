@@ -18,7 +18,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
@@ -2227,7 +2227,7 @@ QMatrixClient project.")
 (define-public mtxclient
   (package
     (name "mtxclient")
-    (version "0.3.1")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
@@ -2236,7 +2236,7 @@ QMatrixClient project.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dg4dq20g0ah62j5s3gpsxqq4ny7lxkxdxa9q6g54hdwkrb9ms7x"))))
+        (base32 "1xznfx2bhw0ahwmkxm0rs05vz05ijk5k4190rj6qp3bvb9byiajh"))))
     (arguments
      `(#:configure-flags
        (list
@@ -2249,12 +2249,6 @@ QMatrixClient project.")
              (substitute* "CMakeLists.txt"
                (("add_test\\((BasicConnectivity|ClientAPI|MediaAPI|Encryption|Pushrules)")
                 "# add_test"))
-             #t))
-         (add-before 'configure 'set-home
-           (lambda _
-             ;; Tries to create package registry file
-             ;; So, set HOME.
-             (setenv "HOME" "/tmp")
              #t)))))
     (build-system cmake-build-system)
     (inputs
@@ -2277,7 +2271,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 (define-public nheko
   (package
     (name "nheko")
-    (version "0.7.2")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -2286,30 +2280,60 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1cbhgaf9klgxdirrxj571fqwspm0byl75c1xc40l727a6qswvp7s"))))
+        (base32 "0362hkbprc6jqlgmvzwxyvify4b1ldjakyqdz55m25xsypbpv2f3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "third_party")))))
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
-       (list
-        "-DCMAKE_BUILD_TYPE=Release"
-        "-DCMAKE_CXX_FLAGS=-fpermissive")
+       '("-DCMAKE_BUILD_TYPE=Release"
+         "-DBUILD_DOCS=ON"
+         ;; Fix required because we are using a static SingleApplication
+         "-DCMAKE_CXX_FLAGS= \"-DQAPPLICATION_CLASS=QApplication\" "
+         ;; Compile Qml will make Nheko faster, but you will need to recompile
+         ;; it, when you update Qt.  That's fine for us.
+         "-DCOMPILE_QML=ON")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-Werror
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("-Werror") ""))
-             #t))
+         (add-after 'unpack 'unbundle-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((single-app (assoc-ref inputs "single-application")))
+               (substitute* "CMakeLists.txt"
+                 ;; Remove include and source dirs,replace with the correct one
+                 (("third_party/blurhash/blurhash.cpp") "")
+                 (("third_party/cpp-httplib-0.5.12")
+                  (string-append "\"" single-app "/include\""))
+                 (("add_subdirectory.*third_party/SingleApplication.*") "")
+                 ;; Link using the correct static/shared libs
+                 (("SingleApplication::SingleApplication")
+                  (string-append
+                   ;; Dynamic libraries
+                   "httplib" "\n" "blurhash" "\n"
+                   ;; Static library
+                   single-app "/lib/libSingleApplication.a"))))))
          (add-after 'unpack 'fix-determinism
            (lambda _
              ;; Make Qt deterministic.
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-             #t)))))
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/nheko")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))))))))
     (build-system qt-build-system)
     (inputs
      `(("boost" ,boost)
+       ("blurhash" ,blurhash)
+       ("cpp-httplib" ,cpp-httplib)
        ("cmark" ,cmark)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-bad" ,gst-plugins-bad)   ; sdp & webrtc for voip
+       ("gst-plugins-good" ,gst-plugins-good) ; rtpmanager for voip
        ("json-modern-cxx" ,json-modern-cxx)
+       ("libnice" ,libnice)                   ; for voip
        ("libolm" ,libolm)
        ("lmdb" ,lmdb)
        ("lmdbxx" ,lmdbxx)
@@ -2317,15 +2341,18 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("openssl" ,openssl)
        ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtkeychain" ,qtkeychain)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("spdlog" ,spdlog)
-       ("tweeny" ,tweeny)
+       ("single-application" ,single-application-qt5)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
        ("qtlinguist" ,qttools)))
     (home-page "https://github.com/Nheko-Reborn/nheko")
     (synopsis "Desktop client for Matrix using Qt and C++14")
@@ -2333,22 +2360,8 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 Matrix protocol that feels more like a mainstream chat app and less like an IRC
 client.
 
-There is support for:
-@itemize
-@item E2E encryption (text messages only: attachments are currently sent unencrypted).
-@item User registration.
-@item Creating, joining & leaving rooms.
-@item Sending & receiving invites.
-@item Sending & receiving files and emoji.
-@item Typing notifications.
-@item Username auto-completion.
-@item Message & mention notifications.
-@item Redacting messages.
-@item Read receipts.
-@item Basic communities support.
-@item Room switcher (@key{ctrl-K}).
-@item Light, Dark & System themes.
-@end itemize")
+Many matrix features are supported, including user registration, rooms, typing
+notification, emojis, E2E encryption, and voip calls.")
     (license license:gpl3+)))
 
 (define-public quaternion
