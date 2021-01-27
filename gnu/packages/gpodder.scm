@@ -76,9 +76,6 @@
                #t)))
          (replace 'check
            (lambda _
-             ; The `unittest' target overrides the PYTHONPATH variable.
-             (substitute* "makefile"
-               (("PYTHONPATH=src/") "PYTHONPATH=${PYTHONPATH}:src/"))
              (invoke "make" "unittest")))
          ;; 'msgmerge' introduces non-determinism by resetting the
          ;; POT-Creation-Date in .po files.
