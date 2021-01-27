@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,8 +18,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import gnu)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix gnu-maintenance)
   #:use-module (guix import utils)
+  #:use-module (guix i18n)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (gcrypt hash)
@@ -113,15 +116,14 @@ details.)"
      (let ((version (upstream-source-version release)))
        (match (find-package name)
          (#f
-          (raise (condition
-                  (&message
-                   (message "couldn't find meta-data for GNU package")))))
+          (raise (formatted-message
+                  (G_ "couldn't find meta-data for GNU ~a")
+                  name)))
          (info
           (gnu-package->sexp info release #:key-download key-download)))))
     (_
-     (raise (condition
-             (&message
-              (message
-               "failed to determine latest release of GNU package")))))))
+     (raise (formatted-message
+             (G_ "failed to determine latest release of GNU ~a")
+             name)))))
 
 ;;; gnu.scm ends here
