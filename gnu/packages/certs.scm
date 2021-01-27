@@ -25,6 +25,7 @@
 (define-module (gnu packages certs)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -53,7 +54,8 @@
                     (delete 'configure)
                     (replace 'build
                       (lambda _
-                        (invoke "gcc" "certdata2pem.c" "-o" "certdata2pem")))
+                        (invoke ,(cc-for-target) "certdata2pem.c"
+                                "-o" "certdata2pem")))
                     (delete 'check)     ;no test suite
                     (replace 'install
                       (lambda* (#:key outputs #:allow-other-keys)
