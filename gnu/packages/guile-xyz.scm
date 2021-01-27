@@ -2443,6 +2443,8 @@ interface for reading articles in any format.")
                (base32
                 "1zk2x37lw6ygf7rwy71svnsian8lj51axpxmm66ah7dazn69swlm"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
