@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Evgeny Pisemsky <evgeny@pisemsky.com>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,15 +30,18 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -129,6 +133,47 @@ calibrated, and restored when the calibration is applied.")
       (description "edid-decode decodes @dfn{EDID} monitor description data in
 human-readable format and checks if it conforms to the standards.")
       (license license:expat))))
+
+(define-public libsmbios
+  (package
+    (name "libsmbios")
+    (version "2.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url (string-append "https://github.com/dell/" name))
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0krwwydyvb9224r884y1mlmzyxhlfrcqw73vi1j8787rl0gl5a2i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("python" ,python)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (synopsis "Library for interacting with Dell SMBIOS tables")
+    (description
+     "libsmbios provides a library to interface with the SMBIOS tables.  It
+also provides extensions for proprietary methods of interfacing with Dell
+specific SMBIOS tables.")
+    (home-page "https://github.com/dell/libsmbios")
+    (license
+     (list (license:non-copyleft "file://COPYING-OSL"
+                                 "Open Software License version 2.1")
+           license:gpl2+ license:bsd-3 license:boost1.0))))
 
 ;; Distinct from memtest86, which is obsolete.
 (define-public memtest86+
