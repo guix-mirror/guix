@@ -9809,7 +9809,7 @@ tie modules together in functionality, hook into each other and so on.")
          ("modularize" ,sbcl-modularize)
          ("trivial-arguments" ,sbcl-trivial-arguments)))
       (home-page "https://shinmera.github.io/modularize-hooks/")
-      (synopsis "Programmatical interfaces extension for Modularize")
+      (synopsis "Generic hooks and triggers extension for Modularize")
       (description
        "This is a simple extension to @code{MODULARIZE} that allows modules to
 define and trigger hooks, which other modules can hook on to.")
