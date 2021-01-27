@@ -9366,6 +9366,28 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (home-page "http://web-mode.org/")
     (license license:gpl3+)))
 
+(define-public emacs-templatel
+  (package
+    (name "emacs-templatel")
+    (version "0.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clarete/templatel")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k33h503038l2bcr8gs020z2cjxfs94lamkdgv52cvd9i20d0kqq"))))
+    (build-system emacs-build-system)
+    (home-page "https://clarete.li/templatel")
+    (synopsis "Jinja inspired template language for Emacs Lisp")
+    (description
+     "templatel is the modern templating language.  It provides variable
+substitution and control flow through a clean and powerful language inspired
+by Python's Jinja.")
+    (license license:gpl3+)))
+
 (define-public emacs-wgrep
   (package
     (name "emacs-wgrep")
