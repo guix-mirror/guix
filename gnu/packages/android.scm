@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Andreas Enge <andreas@enge.fr>
@@ -1026,13 +1026,6 @@ connected devices via ADB.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'enjarify-wrapper-inherit-pythonpath
-           ;; enjarify sets PYTHONPATH from a shell script, overwriting
-           ;; PYTHONPATH set from guix. Comment out this line.
-           (lambda _
-             (substitute* "enjarify.sh"
-               (("export PYTHONPATH") "# export PYTHONPATH"))
-             #t))
          (add-before 'check 'fixup-expected-test-results
            ;; Upstream adjusted this test in commit:
            ;; 3ae884a6485af82d300515813f537685b08dd800
