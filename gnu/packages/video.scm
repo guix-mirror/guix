@@ -1773,7 +1773,6 @@ videoformats depend on the configuration flags of ffmpeg.")
                     "https://download.videolan.org/pub/videolan/vlc/"
                     (car (string-split version #\-))
                     "/vlc-" version ".tar.xz"))
-              (patches (search-patches "vlc-qt-5.15.patch"))
               (sha256
                (base32
                 "0ygqihw2c5vvzv8950dlf7rdwz1cpz1668jgyja604ljibrmix7g"))))
