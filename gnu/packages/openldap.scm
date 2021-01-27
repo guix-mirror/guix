@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,7 +229,7 @@ servers from Python programs.")
      `(#:modules ((srfi srfi-1)
                   (guix build gnu-build-system)
                   ((guix build python-build-system)
-                   #:select (python-version))
+                   #:select (add-installed-pythonpath))
                   (guix build utils))
        #:imported-modules ((guix build python-build-system)
                            ,@%gnu-build-system-modules)
@@ -259,8 +260,8 @@ servers from Python programs.")
                (("'/usr/bin/certutil'")
                 (string-append "'" (which "certutil") "'"))
                (("'/usr/bin/c_rehash'")
-                (string-append "'" (which "perl") "', '" (which "c_rehash") "'")))
-             #t))
+                (string-append "'" (which "perl") "', '"
+                               (which "c_rehash") "'")))))
          (add-after 'unpack 'overwrite-default-locations
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -278,28 +279,21 @@ servers from Python programs.")
                (substitute* '("src/lib389/lib389/instance/setup.py"
                               "src/lib389/lib389/instance/remove.py")
                  (("etc_dirsrv_path = .*")
-                  "etc_dirsrv_path = '/etc/dirsrv/'\n"))
-               #t)))
+                  "etc_dirsrv_path = '/etc/dirsrv/'\n")))))
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (pythondir (string-append
-                                out "/lib/python"
-                                (python-version (assoc-ref inputs "python"))
-                                "/site-packages/")))
+             (let* ((out (assoc-ref outputs "out")))
                ;; Install directory must be on PYTHONPATH.
-               (setenv "PYTHONPATH"
-                       (string-append (getenv "PYTHONPATH")
-                                      ":" pythondir))
+               (add-installed-pythonpath inputs outputs)
                ;; Install directory must exist.
                (mkdir-p pythondir)
                (substitute* "src/lib389/setup.py"
                  (("/usr") out))
                (substitute* "Makefile.am"
                  (("setup.py install --skip-build" m)
-                  (string-append m " --prefix=" out
-                                 " --root=/ --single-version-externally-managed"))))
-             #t))
+                  (string-append
+                   m " --prefix=" out
+                   " --root=/ --single-version-externally-managed"))))))
          (add-after 'build 'build-python-tools
            (lambda* (#:key make-flags #:allow-other-keys)
              ;; Set DETERMINISTIC_BUILD to override the embedded mtime in pyc
@@ -308,27 +302,24 @@ servers from Python programs.")
              ;; Use deterministic hashes for strings, bytes, and datetime
              ;; objects.
              (setenv "PYTHONHASHSEED" "0")
-             (apply invoke "make" "lib389" make-flags)
-             #t))
+             (apply invoke "make" "lib389" make-flags)))
          (add-after 'install 'install-python-tools
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "lib389-install" make-flags)
-             #t))
+             (apply invoke "make" "lib389-install" make-flags)))
          (add-after 'install-python-tools 'wrap-python-tools
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
-                    (path (getenv "PYTHONPATH")))
+                    (pythonpath (getenv "GUIX_PYTHONPATH")))
                (for-each (lambda (file)
                            (wrap-program (string-append out file)
-                             `("PYTHONPATH" ":" prefix (,path))))
+                             `("GUIX_PYTHONPATH" ":" prefix (,pythonpath))))
                          '("/sbin/dsconf"
                            "/sbin/dscreate"
                            "/sbin/dsctl"
                            "/sbin/dsidm"
                            "/bin/ds-logpipe.py"
                            "/bin/ds-replcheck"
-                           "/bin/readnsstate")))
-             #t)))))
+                           "/bin/readnsstate"))))))))
     (inputs
      `(("bdb" ,bdb)
        ("cracklib" ,cracklib)
@@ -343,7 +334,7 @@ servers from Python programs.")
        ("net-snmp" ,net-snmp)
        ("nspr" ,nspr)
        ("nss" ,nss)
-       ("nss:bin" ,nss "bin") ; for certutil
+       ("nss:bin" ,nss "bin")           ; for certutil
        ("openldap" ,openldap)
        ("openssl" ,openssl)             ; #included by net-snmp
        ("pcre" ,pcre)
