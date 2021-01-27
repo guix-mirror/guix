@@ -66,6 +66,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
@@ -1147,3 +1148,43 @@ modes:
      "NanoVNA-Saver is a tool for reading, displaying and saving data from the
 NanoVNA vector network analyzers.")
     (license license:gpl3+)))
+
+(define-public qsstv
+  (package
+    (name "qsstv")
+    (version "9.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://users.telenet.be/on4qz/qsstv/downloads/"
+                           "qsstv_" version ".tar.gz"))
+       (sha256
+        (base32 "0f9hx6sy418cb23fadll298pqbc5l2lxsdivi4vgqbkvx7sw58zi"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("hamlib" ,hamlib)
+       ("openjpeg" ,openjpeg)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("v4l-utils" ,v4l-utils)))
+    (arguments
+     `(#:tests? #f  ; No test suite.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     (string-append "PREFIX=" (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://users.telenet.be/on4qz/qsstv/")
+    (synopsis "Program for receiving and transmitting SSTV and HAMDRM")
+    (description
+     "QSSTV is a program for receiving and transmitting SSTV and HAMDRM
+(sometimes called DSSTV).  It is compatible with most of MMSSTV and EasyPal.")
+    (license (list license:gpl2+
+                   license:qwt1.0))))
