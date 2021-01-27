@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -70,7 +72,9 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -78,6 +82,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
@@ -1024,6 +1029,41 @@ smaller than those produced by @code{Xdelta}.")
     (description "Extracts files out of Microsoft Cabinet (.cab) archives")
     ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.
     (license license:gpl3+)))
+
+(define-public libjcat
+  (package
+    (name "libjcat")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hughsie/libjcat")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rxyqikdhkh2nq1y0hy05df2kkxf3d2cp6lm5x1s5i717k6y3zy5"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("git" ,git)
+       ("glib" ,glib)
+       ("gnupg" ,gnupg)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("json-glib" ,json-glib)
+       ("vala" ,vala)))
+    (home-page "https://github.com/hughsie/libjcat")
+    (synopsis "Library for reading and writing Jcat files")
+    (description
+     "This library allows reading and writing gzip-compressed JSON catalog
+files, which can be used to store GPG, PKCS-7 and SHA-256 checksums for each
+file.")
+    (license license:lgpl2.1+)))
 
 (define-public xdelta
   (package
