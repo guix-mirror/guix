@@ -16053,8 +16053,8 @@ navigate and display hierarchy structures.")
     (license license:gpl3+)))
 
 (define-public emacs-pulseaudio-control
-  (let ((commit "7e1a87068379075a5e9ce36c64c686c03d20d379")
-        (revision "3"))
+  (let ((commit "a931533140547510decdc368f39b2d2b97ca725f")
+        (revision "4"))
     (package
       (name "emacs-pulseaudio-control")
       (version (git-version "0.0.1" revision commit))
@@ -16067,7 +16067,7 @@ navigate and display hierarchy structures.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0wcaqyh15x56255rrj350089z15pnwixa2vf0ly6dv0hjmzmh3mr"))))
+           "1jvjn9jszjjapi167an49jxcvr88cvgjwykglhp4b8lwhbjfqw76"))))
       (build-system emacs-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
