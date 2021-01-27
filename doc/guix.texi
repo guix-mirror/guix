@@ -14066,7 +14066,7 @@ be declared as follows:
 @lisp
 (mapped-device
   (source "vg0")
-  (target (list "vg0-alpha" "vg0-beta"))
+  (targets (list "vg0-alpha" "vg0-beta"))
   (type lvm-device-mapping))
 @end lisp
 
