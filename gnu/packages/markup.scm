@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -277,3 +278,25 @@ Smu was started as a rewrite of Markdown but became something more
 lightweight and consistent.  The biggest difference between Markdown
 and smu is that smu doesn't support reference style links.")
     (license x11)))
+
+(define-public md4c
+  (package
+    (name "md4c")
+    (version "0.4.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mity/md4c/")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m3202zzjvw4k7jw66z1qi3cbisxzvplq5alkygpifvhzm81gwwx"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/mity/md4c/")
+    (synopsis "C Markdown parser compliant to CommonMark")
+    (description "MD4C is a C Markdown parser with a
+SAX-like interface.  It is compliant to the CommonMark specification,
+with a few extensions.")
+    (license expat)))
