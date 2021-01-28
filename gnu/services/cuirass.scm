@@ -243,11 +243,16 @@
 
 (define (cuirass-activation config)
   "Return the activation code for CONFIG."
-  (let ((cache (cuirass-configuration-cache-directory config))
-        (db    (dirname (cuirass-configuration-database config)))
-        (user  (cuirass-configuration-user config))
-        (log   "/var/log/cuirass")
-        (group (cuirass-configuration-group config)))
+  (let* ((cache          (cuirass-configuration-cache-directory config))
+         (remote-server  (cuirass-configuration-remote-server config))
+         (remote-cache   (and remote-server
+                              (cuirass-remote-server-configuration-cache
+                               remote-server)))
+         (db             (dirname
+                          (cuirass-configuration-database config)))
+         (user           (cuirass-configuration-user config))
+         (log            "/var/log/cuirass")
+         (group          (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
           (use-modules (guix build utils))
@@ -256,11 +261,17 @@
           (mkdir-p #$db)
           (mkdir-p #$log)
 
+          (when #$remote-cache
+            (mkdir-p #$remote-cache))
+
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
             (chown #$db uid gid)
-            (chown #$log uid gid))))))
+            (chown #$log uid gid)
+
+            (when #$remote-cache
+              (chown #$remote-cache uid gid)))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
