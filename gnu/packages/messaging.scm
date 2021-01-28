@@ -1021,7 +1021,7 @@ of xmpppy.")
          "share/gajim/plugins")))
       ;; Gajim needs to use the propagated inputs of its plugins.
       (search-path-specification
-       (variable "PYTHONPATH")
+       (variable "GUIX_PYTHONPATH")
        (files
         (list
          (string-append
