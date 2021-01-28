@@ -94,13 +94,12 @@
                                "/lib/python"
                                ,(version-major+minor
                                   (package-version python))
-                               "/site-packages\")")))
-             #t))
+                               "/site-packages\")")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'avogadro' runs with the correct PYTHONPATH.
              (let* ((out (assoc-ref outputs "out")))
-               (setenv "PYTHONPATH"
+               (setenv "GUIX_PYTHONPATH"
                        (string-append
                         (assoc-ref outputs "out")
                         "/lib/python"
@@ -109,8 +108,8 @@
                         "/site-packages:"
                         (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/avogadro")
-                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
-             #t)))))
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(getenv "GUIX_PYTHONPATH"))))))))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
