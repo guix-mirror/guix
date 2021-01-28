@@ -400,7 +400,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
             (variable "GRC_BLOCKS_PATH")
             (files '("share/gnuradio/grc/blocks")))
            (search-path-specification
-            (variable "PYTHONPATH")
+            (variable "GUIX_PYTHONPATH")
             (files (list (string-append "lib/python"
                                         (version-major+minor
                                          (package-version python))
