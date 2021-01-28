@@ -4769,7 +4769,7 @@ for Flow files.")
            (lambda* (#:key inputs #:allow-other-keys)
              (make-file-writable "flycheck-grammalecte.el")
              (emacs-substitute-variables "flycheck-grammalecte.el"
-               ("flycheck-grammalecte--grammalecte-directory"
+               ("flycheck-grammalecte-grammalecte-directory"
                 (string-append (assoc-ref inputs "grammalecte")
                                "/lib/python"
                                ,(version-major+minor (package-version python))
