@@ -76,7 +76,7 @@
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
-;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
@@ -724,6 +724,50 @@ built-in elements.  The biggest difference to similar packages is that
 this one is much simpler and much more consistent.  When using this package,
 then only the color of the mode line changes when a window becomes in-/active.")
     (license license:gpl3+)))
+
+(define-public emacs-theme-magic
+  ;; No tagged release upstream, but the commit below correspond to the 0.2.3
+  ;; release.
+  (let ((commit "844c4311bd26ebafd4b6a1d72ddcc65d87f074e3")
+        (revision "0"))
+    (package
+      (name "emacs-theme-magic")
+      (version "0.2.3")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jcaw/theme-magic")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10gkg7jh1s1484gm66a87zr7x8vmv00s7gfd0w2pj47nqf98g8hz"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(
+         ;; Include Pywal interaction scripts.
+         #:include (cons "^python/" %default-include)
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((files '("theme-magic.el" "python/wal_change_colors.py"))
+                     (python (assoc-ref inputs "python"))
+                     (python-pywal (assoc-ref inputs "python-pywal")))
+                 (substitute* files
+                   (("\"python\"") (string-append "\"" python "/bin/python3\""))
+                   (("\"wal\"") (string-append "\"" python-pywal "/bin/wal\""))))
+               #t)))))
+      (inputs
+       `(("python" ,python)
+         ("python-pywal" ,python-pywal)))
+      (home-page "https://github.com/jcaw/theme-magic")
+      (synopsis "Generate and apply color palettes based on your Emacs theme")
+      (description
+       "This package provides a command to extract the colors from your Emacs
+theme and apply them to the rest of Linux with Pywal.  Pywal only applies your
+theme to the current session.")
+      (license license:gpl3+))))
 
 (define-public emacs-treepy
   (package
