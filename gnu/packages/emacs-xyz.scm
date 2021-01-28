@@ -4747,7 +4747,7 @@ for Flow files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1f1gapvs9j89qr474103dqgsiyb96phlnsmq5hiv4ba242blg9lb"))))
+        (base32 "0ih0nakal36is0dci82gx4ijrvnpz9jpw1adprfara2cf8dx4rk6"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons "\\.py$" %default-include)
