@@ -313,7 +313,8 @@ CONFIG."
            (requirement '(avahi-daemon guix-daemon networking))
            (start #~(make-forkexec-constructor
                      (list (string-append #$cuirass "/bin/remote-worker")
-                           (string-append "--workers" #$workers)
+                           (string-append "--workers="
+                                          #$(number->string workers))
                            #$@(if systems
                                   (list (string-append
                                          "--systems="
