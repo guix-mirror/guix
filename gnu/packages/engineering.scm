@@ -2591,18 +2591,12 @@ full programmatic control over your models.")
                          "/include/shiboken2"))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'restore-pythonpath
-             (lambda _
-               (substitute* "src/Main/MainGui.cpp"
-                 (("_?putenv\\(\"PYTHONPATH=\"\\);") ""))
-               #t))
            (add-after 'install 'wrap-pythonpath
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  (wrap-program (string-append out "/bin/FreeCAD")
-                   (list "PYTHONPATH"
-                         'prefix (list (getenv "GUIX_PYTHONPATH")))))
-               #t)))))
+                   (list "GUIX_PYTHONPATH"
+                         'prefix (list (getenv "GUIX_PYTHONPATH"))))))))))
       (home-page "https://www.freecadweb.org/")
       (synopsis "Your Own 3D Parametric Modeler")
       (description
