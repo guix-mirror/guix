@@ -1217,6 +1217,12 @@ developed in C/C++ to MariaDB and MySQL databases.")
                                       "src/bin/psql/command.c")
                          (("/bin/sh") (which "sh")))
                        #t))
+         (add-before 'configure 'set-socket-dir
+           (lambda _
+             (substitute* '("src/include/pg_config_manual.h")
+               (("DEFAULT_PGSOCKET_DIR[^\n]*")
+                "DEFAULT_PGSOCKET_DIR \"/var/run/postgresql\""))
+             #t))
          (add-after 'build 'build-contrib
            (lambda _
              (invoke "make" "-C" "contrib")))
