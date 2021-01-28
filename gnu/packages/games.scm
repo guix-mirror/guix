@@ -2100,7 +2100,7 @@ utilizing the art assets from the @code{SuperTux} project.")
                  (lambda (p)
                    (format p "\
 #!~a
-export PYTHONPATH=~a/LIB:~a
+export GUIX_PYTHONPATH=~a/LIB:~a
 exec -a \"~a\" ~a \"$@\"\n"
                            (which "bash") data (getenv "GUIX_PYTHONPATH")
                            (which "python3")
