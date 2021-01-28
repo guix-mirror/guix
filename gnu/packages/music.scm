@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 nikita <nikita@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4434,7 +4434,7 @@ standalone JACK client and an LV2 plugin is also available.")
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.6")
+    (version "3.6.1")
     (source
      (origin
        (method git-fetch)
@@ -4443,7 +4443,7 @@ standalone JACK client and an LV2 plugin is also available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c9yf8irkism3ffzzpkx636wa6b1r1lgpsb2x63pr0gbi5ss5kyh"))
+        (base32 "087j474sdm8vcjczfqlbb1hpcvgvdghjsd132db9dlqwpgk4hmnv"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove unused libraries.
