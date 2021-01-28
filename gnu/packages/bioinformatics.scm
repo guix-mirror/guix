@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -7268,6 +7268,45 @@ factor.  CENTIPEDE is an unsupervised learning algorithm that discriminates
 between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-demultiplex
+  (let ((commit "6e2a1422c8e6f418cfb271997eebc91f9195f299")
+        (revision "1"))
+    (package
+      (name "r-demultiplex")
+      (version (git-version "1.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chris-mcginnis-ucsf/MULTI-seq")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01kv88wp8vdaq07sjk0d3d1cb553mq1xqg0war81pgmg63bgi38w"))))
+      (properties `((upstream-name . "deMULTIplex")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-kernsmooth" ,r-kernsmooth)
+         ("r-reshape2" ,r-reshape2)
+         ("r-rtsne" ,r-rtsne)
+         ("r-shortread" ,r-shortread)
+         ("r-stringdist" ,r-stringdist)))
+      (home-page "https://github.com/chris-mcginnis-ucsf/MULTI-seq")
+      (synopsis "MULTI-seq pre-processing and classification tools")
+      (description
+       "deMULTIplex is an R package for analyzing single-cell RNA sequencing
+data generated with the MULTI-seq sample multiplexing method.  The package
+includes software to
+
+@enumerate
+@item Convert raw MULTI-seq sample barcode library FASTQs into a sample
+  barcode UMI count matrix, and
+@item Classify cell barcodes into sample barcode groups.
+@end enumerate
+")
+      (license license:cc0))))
 
 (define-public r-genefilter
   (package
