@@ -32,7 +32,7 @@
        (uri (git-reference
              (url "https://github.com/JuliaLang/Compat.jl")
              (commit (string-append "v" version))))
-       (file-name "Compat")
+       (file-name (git-file-name name version))
        (sha256
         (base32 "01vwjr2134bzgnaxwd67knbibbhnfgnqjw7gxrp29s6y2a6j3882"))))
     (build-system julia-build-system)
