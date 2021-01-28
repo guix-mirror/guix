@@ -7618,8 +7618,9 @@ julia} packages, which essentially is similar to running @samp{julia -e
 @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
 Tests are run by calling @code{/test/runtests.jl}.
 
-Julia packages require the source @code{file-name} to be the real name of the
-package, correctly capitalized.
+The Julia package name is read from the file @file{Project.toml}.  This
+value can be overridden by passing the argument @code{#:julia-file-name}
+(which must be correctly capitalized).
 
 For packages requiring shared library dependencies, you may need to write the
 @file{/deps/deps.jl} file manually.  It's usually a line of @code{const

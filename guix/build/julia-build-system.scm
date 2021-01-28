@@ -21,6 +21,8 @@
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 rdelim)
   #:export (%standard-phases
             julia-create-package-toml
             julia-build))
@@ -37,18 +39,34 @@
 ;; subpath where we store the package content
 (define %package-path "/share/julia/packages/")
 
-(define* (install #:key source inputs outputs #:allow-other-keys)
+(define (project.toml->name file)
+  "Look for Julia package name in the TOML file FILE (usually named
+Project.toml)."
+  (call-with-input-file file
+    (lambda (in)
+      (let loop ((line (read-line in 'concat)))
+        (if (eof-object? line)
+            #f
+            (let ((m (string-match "name\\s*=\\s*\"(.*)\"" line)))
+              (if m (match:substring m 1)
+                  (loop (read-line in 'concat)))))))))
+
+(define* (install #:key source inputs outputs julia-package-name
+                  #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (package-dir (string-append out %package-path
-                                     (strip-store-file-name source))))
+                                     (or
+                                      julia-package-name
+                                      (project.toml->name "Project.toml")))))
     (mkdir-p package-dir)
     (copy-recursively (getcwd) package-dir))
   #t)
 
-(define* (precompile #:key source inputs outputs #:allow-other-keys)
+(define* (precompile #:key source inputs outputs julia-package-name
+                     #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (builddir (string-append out "/share/julia/"))
-         (package (strip-store-file-name source)))
+         (package (or julia-package-name (project.toml->name "Project.toml"))))
     (mkdir-p builddir)
     ;; With a patch, SOURCE_DATE_EPOCH is honored
     (setenv "SOURCE_DATE_EPOCH" "1")
@@ -69,10 +87,11 @@
      (string-append "pushfirst!(DEPOT_PATH, pop!(DEPOT_PATH)); using " package)))
   #t)
 
-(define* (check #:key tests? source inputs outputs #:allow-other-keys)
+(define* (check #:key tests? source inputs outputs julia-package-name
+                #:allow-other-keys)
   (when tests?
     (let* ((out (assoc-ref outputs "out"))
-           (package (strip-store-file-name source))
+           (package (or julia-package-name (project.toml->name "Project.toml")))
            (builddir (string-append out "/share/julia/")))
       ;; With a patch, SOURCE_DATE_EPOCH is honored
       (setenv "SOURCE_DATE_EPOCH" "1")
@@ -127,9 +146,11 @@ version = \"" version "\"
     (delete 'patch-usr-bin-file)
     (delete 'build)))
 
-(define* (julia-build #:key inputs (phases %standard-phases)
+(define* (julia-build #:key inputs julia-package-name
+                      (phases %standard-phases)
                       #:allow-other-keys #:rest args)
   "Build the given Julia package, applying all of PHASES in order."
   (apply gnu:gnu-build
          #:inputs inputs #:phases phases
+         #:julia-package-name julia-package-name
          args))
