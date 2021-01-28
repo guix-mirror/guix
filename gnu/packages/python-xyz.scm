@@ -94,6 +94,7 @@
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -6055,6 +6057,38 @@ mathematical basis functions that are localized in both time and frequency.
 Wavelet transforms are time-frequency transforms employing wavelets.  They are
 similar to Fourier transforms, the difference being that Fourier transforms are
 localized only in frequency instead of in time and frequency.")
+    (license license:expat)))
+
+(define-public python-pywal
+  (package
+    (name "python-pywal")
+    (version "3.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dylanaraps/pywal")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "039m7dch479hlwddynacdrr0klz6a5bdly5swqbs94hfimficiyf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-home-directory
+           (lambda _
+             ;; Tests fail with "Permission denied: '/homeless-shelter'".
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://github.com/dylanaraps/pywal")
+    (synopsis "Color palette generator and applicator")
+    (description
+     "Pywal is a tool that generates a color palette from the dominant colors
+in an image.  It then applies the colors system-wide and on-the-fly in all of
+your favourite programs.")
     (license license:expat)))
 
 (define-public python-pywinrm
