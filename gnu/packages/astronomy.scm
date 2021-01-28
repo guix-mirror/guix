@@ -306,6 +306,27 @@ can be used to control telescopes over a serial port for tracking celestial
 objects.")
     (license license:gpl2+)))
 
+(define-public stuff
+  (package
+    (name "stuff")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/stuff/"
+                           "stuff-" version ".tar.gz"))
+       (sha256
+        (base32 "1syibi3b86z9pikhicvkkmgxm916j732fdiw0agw0lq6z13fdcjm"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/stuff")
+    (synopsis "Astronomical catalogue simulation")
+    (description
+     "Stuff is a program that simulates \"perfect\" astronomical catalogues.
+It generates object lists in ASCII which can read by the SkyMaker program to
+produce realistic astronomical fields.  Stuff is part of the EFIGI development
+project.")
+    (license license:gpl3+)))
+
 (define-public celestia
   (let ((commit "9dbdf29c4ac3d20afb2d9a80d3dff241ecf81dce"))
     (package
