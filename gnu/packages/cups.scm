@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -445,8 +446,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                     (("^dat2drvdir =.*")
                      "dat2drvdir = $(pkglibexecdir)\n")
                     (("^locatedriverdir =.*")
-                     "locatedriverdir = $(pkglibexecdir)\n"))
-                  #t))))
+                     "locatedriverdir = $(pkglibexecdir)\n"))))))
     (build-system gnu-build-system)
     (outputs (list "out" "ppd"))
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
@@ -534,8 +534,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (string-append "rulessystemdir = " out
                                  "/lib/systemd/system"))
                  (("/etc/sane.d")
-                  (string-append out "/etc/sane.d")))
-               #t)))
+                  (string-append out "/etc/sane.d"))))))
          (add-before 'configure 'fix-build-with-python-3.8
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python (assoc-ref inputs "python")))
@@ -546,15 +545,13 @@ should only be used as part of the Guix cups-pk-helper service.")
                  (setenv "C_INCLUDE_PATH"
                          (string-append python "/include/python"
                                         (python:python-version python)
-                                        ":" (getenv "C_INCLUDE_PATH"))))
-               #t)))
+                                        ":" (getenv "C_INCLUDE_PATH")))))))
          (add-after 'install 'install-models-dat
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (models-dir (string-append out
                                                "/share/hplip/data/models")))
-               (install-file "data/models/models.dat" models-dir))
-             #t))
+               (install-file "data/models/models.dat" models-dir))))
          (add-after 'install 'wrap-binaries
            ;; Scripts in /bin are all symlinks to .py files in /share/hplip.
            ;; Symlinks are immune to the Python build system's 'WRAP phase,
@@ -565,7 +562,7 @@ should only be used as part of the Guix cups-pk-helper service.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
-                    (python (assoc-ref inputs "python")))
+                    (site (python:site-packages inputs outputs)))
                (with-directory-excursion bin
                  (for-each (lambda (file)
                              (let ((target (readlink file)))
@@ -574,19 +571,15 @@ should only be used as part of the Guix cups-pk-helper service.")
                                  (lambda _
                                    (format #t
                                            "#!~a~@
-                                           export PYTHONPATH=\"~a:~a\"~@
+                                           export GUIX_PYTHONPATH=\"~a:~a\"~@
                                            exec -a \"$0\" \"~a/~a\" \"$@\"~%"
                                            (which "bash")
-                                           (string-append
-                                            out "/lib/python"
-                                            (python:python-version python)
-                                            "/site-packages")
+                                           site
                                            (getenv "GUIX_PYTHONPATH")
                                            bin target)))
                                (chmod file #o755)))
                   (find-files "." (lambda (file stat)
-                                    (eq? 'symlink (stat:type stat)))))
-                 #t)))))))
+                                    (eq? 'symlink (stat:type stat))))))))))))
 
     ;; Note that the error messages printed by the tools in the case of
     ;; missing dependencies are often downright misleading.
