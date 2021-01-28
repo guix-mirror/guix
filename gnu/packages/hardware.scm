@@ -28,6 +28,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -42,6 +43,8 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -541,3 +544,31 @@ screens.  It displays various patterns and allows you to estimate the quality
 of your CRT/LCD monitor.")
     (home-page "https://github.com/TobiX/screentest")
     (license license:gpl2)))
+
+(define-public tpm2-tss
+  (package
+    (name "tpm2-tss")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tpm2-software/tpm2-tss"
+                           "/releases/download/" version "/tpm2-tss-" version
+                           ".tar.gz"))
+       (sha256
+        (base32 "05xynpwq851fp8f5fy7ac0blvz8mr5m5cbqj3gslgbwv63kjnfbq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("json-c" ,json-c)
+       ("openssl" ,openssl)))
+    (home-page "https://tpm2-software.github.io/")
+    (synopsis "OSS Implementation of the TCG TPM2 Software Stack (TSS2)")
+    (description
+     "This package provides the @acronym{TCG, Trusted Computing Group}
+@acronym{TSS2, TPM2 Software Stack}.  The stack contains libtss2-fapi,
+libtss2-esys, libtss2-sys, libtss2-mu, libtss2-tcti-device, libtss2-tcti-swtpm
+and libtss2-tcti-mssim.")
+    (license license:bsd-2)))
