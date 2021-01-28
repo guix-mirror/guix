@@ -894,7 +894,7 @@ passphrase when @code{gpg} is run and needs it.")))
 (define-public pinentry-rofi
   (package
     (name "pinentry-rofi")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -902,7 +902,7 @@ passphrase when @code{gpg} is run and needs it.")))
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "044bnldz7k74s873jwsjgff176l1jsvpbaka7d1wcj8b5pwqv2av"))))
+               (base32 "14rbz32ykc8pz7gglbvxm3pcgabr7xdnddar6k24icd5xk9mr4rp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
@@ -914,38 +914,15 @@ passphrase when @code{gpg} is run and needs it.")))
            %standard-phases
          (add-after 'install 'hall-wrap-binaries
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((compiled-dir
-                     (lambda (out version)
-                       (string-append out "/lib/guile/" version "/site-ccache")))
-                    (uncompiled-dir
-                     (lambda (out version)
-                       (string-append
-                        out
-                        "/share/guile/site"
-                        (if (string-null? version) "" "/")
-                        version)))
-                    (dep-path
-                     (lambda (env path)
-                       (list env ":" 'prefix (list path))))
-                    (out (assoc-ref outputs "out"))
+             (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/"))
-                    (site (uncompiled-dir out "")))
+                    (site (string-append out "/share/guile/site"))
+                    (rofi-bin (string-append (assoc-ref inputs "rofi") "/bin")))
                (match (scandir site)
                  (("." ".." version)
-                  (for-each
-                   (lambda (file)
-                     (wrap-program
-                         (string-append bin file)
-                       (dep-path
-                        "PATH"
-                        (string-append (assoc-ref inputs "rofi") "/bin"))
-                       (dep-path
-                        "GUILE_LOAD_PATH"
-                        (uncompiled-dir out version))
-                       (dep-path
-                        "GUILE_LOAD_COMPILED_PATH"
-                        (compiled-dir out version))))
-                   ,''("pinentry-rofi"))
+                  (wrap-program
+                      (string-append bin "pinentry-rofi")
+                    (list "PATH" ":" 'prefix `(,rofi-bin)))
                   #t))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
