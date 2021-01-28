@@ -19262,20 +19262,11 @@ pure-Python.")
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'do-not-override-PYTHONPATH
-                    (lambda _
-                      ;; Append to PYTHONPATH instead of overriding it so
-                      ;; that dependencies from Guix can be found.
-                      (substitute* "tests/testutils.py"
-                        (("env\\['PYTHONPATH'\\] = pythonpath")
-                         "env['PYTHONPATH'] += os.pathsep + pythonpath"))
-                      #t))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
                           (invoke "pytest" "-s" "-vv")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+                          (format #t "test suite not run~%")))))))
     (native-inputs
      `(;; For tests.
        ("python-psutil" ,python-psutil)
