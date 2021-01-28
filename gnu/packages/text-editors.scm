@@ -650,7 +650,8 @@ environment with Markdown markup.")
                (let ((bin (string-append out "/bin"))
                      (executable (string-append share "/bin/manuskript")))
                  (wrap-program executable
-                   (list "PYTHONPATH" 'prefix (list (getenv "GUIX_PYTHONPATH"))))
+                   (list "GUIX_PYTHONPATH" 'prefix
+                         (list (getenv "GUIX_PYTHONPATH"))))
                  (mkdir-p bin)
                  (with-directory-excursion bin
                    (symlink (string-append share "/bin/manuskript")
