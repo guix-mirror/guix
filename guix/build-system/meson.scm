@@ -55,7 +55,7 @@
   "Return the default meson package."
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((module (resolve-interface '(gnu packages build-tools))))
-    (module-ref module 'meson-for-build)))
+    (module-ref module 'meson)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

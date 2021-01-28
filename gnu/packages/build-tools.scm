@@ -263,16 +263,6 @@ resembles Python.")
                (base32
                 "19cjy24mfaswxyvqmns6rd7hx05ybqb663zlgklspfr8l4jjmvbb"))))))
 
-(define-public meson-for-build
-  (package
-    (inherit meson)
-    (name "meson-for-build")
-    (source (origin
-              (inherit (package-source meson))))
-
-    ;; People should probably install "meson", not "meson-for-build".
-    (properties `((hidden? . #t)))))
-
 (define-public premake4
   (package
     (name "premake")

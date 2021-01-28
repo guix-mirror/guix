@@ -7969,9 +7969,7 @@ implements the build procedure for packages that use
 
 It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set
 of inputs, and they can be changed with the parameters @code{#:meson}
-and @code{#:ninja} if needed.  The default Meson is
-@code{meson-for-build}, which is special because it doesn't clear the
-@code{RUNPATH} of binaries and libraries when they are installed.
+and @code{#:ninja} if needed.
 
 This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed to some specific for Meson:
@@ -8002,11 +8000,11 @@ Apart from that, the build system also adds the following phases:
 
 @item fix-runpath
 This phase ensures that all binaries can find the libraries they need.
-It searches for required libraries in subdirectories of the package being
-built, and adds those to @code{RUNPATH} where needed.  It also removes
-references to libraries left over from the build phase by
-@code{meson-for-build}, such as test dependencies, that aren't actually
-required for the program to run.
+It searches for required libraries in subdirectories of the package
+being built, and adds those to @code{RUNPATH} where needed.  It also
+removes references to libraries left over from the build phase by
+@code{meson}, such as test dependencies, that aren't actually required
+for the program to run.
 
 @item glib-or-gtk-wrap
 This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
