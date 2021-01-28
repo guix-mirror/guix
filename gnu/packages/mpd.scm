@@ -409,7 +409,7 @@ other MPD frontends.")
      `(("python-mpd2" ,python-mpd2)
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)
-       ("python" ,python)))             ; Sets PYTHONPATH.
+       ("python" ,python)))             ; Sets GUIX_PYTHONPATH.
     ;; For bootstrapping.
     (native-inputs
      `(("autoconf" ,autoconf)
