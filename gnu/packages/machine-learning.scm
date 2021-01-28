@@ -1381,7 +1381,7 @@ automatically.")
                                   (lambda _
                                     (format #t
                                             "#!~a
-export PYTHONPATH=~a
+export GUIX_PYTHONPATH=~a
 export GST_PLUGIN_PATH=~a
 exec ~a ~a/~a \"$@\"~%"
                                             (which "bash") PYTHONPATH GST_PLUGIN_PATH
