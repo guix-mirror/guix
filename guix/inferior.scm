@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +40,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix profiles)
   #:use-module (guix channels)
+  #:use-module ((guix git) #:select (update-cached-checkout))
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix derivations)
@@ -51,6 +52,7 @@
   #:autoload   (guix build utils) (mkdir-p)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-71)
   #:autoload   (ice-9 ftw) (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -691,6 +693,21 @@ failing when GUIX is too old and lacks the 'guix repl' command."
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/inferiors")))
 
+(define (channel-full-commit channel)
+  "Return the commit designated by CHANNEL as quickly as possible.  If
+CHANNEL's 'commit' field is a full SHA1, return it as-is; if it's a SHA1
+prefix, resolve it; and if 'commit' is unset, fetch CHANNEL's branch tip."
+  (let ((commit (channel-commit channel))
+        (branch (channel-branch channel)))
+    (if (and commit (= (string-length commit) 40))
+        commit
+        (let* ((ref (if commit `(commit . ,commit) `(branch . ,branch)))
+               (cache commit relation
+                     (update-cached-checkout (channel-url channel)
+                                             #:ref ref
+                                             #:check-out? #f)))
+          commit))))
+
 (define* (cached-channel-instance store
                                   channels
                                   #:key
@@ -701,15 +718,16 @@ failing when GUIX is too old and lacks the 'guix repl' command."
 The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
 This procedure opens a new connection to the build daemon.  AUTHENTICATE?
 determines whether CHANNELS are authenticated."
-  (define instances
-    (latest-channel-instances store channels
-                              #:authenticate? authenticate?))
+  (define commits
+    ;; Since computing the instances of CHANNELS is I/O-intensive, use a
+    ;; cheaper way to get the commit list of CHANNELS.  This limits overhead
+    ;; to the minimum in case of a cache hit.
+    (map channel-full-commit channels))
 
   (define key
     (bytevector->base32-string
      (sha256
-      (string->utf8
-       (string-concatenate (map channel-instance-commit instances))))))
+      (string->utf8 (string-concatenate commits)))))
 
   (define cached
     (string-append cache-directory "/" key))
@@ -737,8 +755,12 @@ determines whether CHANNELS are authenticated."
   (if (file-exists? cached)
       cached
       (run-with-store store
-        (mlet %store-monad ((profile
-                             (channel-instances->derivation instances)))
+        (mlet* %store-monad ((instances
+                              -> (latest-channel-instances store channels
+                                                           #:authenticate?
+                                                           authenticate?))
+                             (profile
+                              (channel-instances->derivation instances)))
           (mbegin %store-monad
             (show-what-to-build* (list profile))
             (built-derivations (list profile))
