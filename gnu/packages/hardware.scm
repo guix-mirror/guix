@@ -171,9 +171,7 @@ also provides extensions for proprietary methods of interfacing with Dell
 specific SMBIOS tables.")
     (home-page "https://github.com/dell/libsmbios")
     (license
-     (list (license:non-copyleft "file://COPYING-OSL"
-                                 "Open Software License version 2.1")
-           license:gpl2+ license:bsd-3 license:boost1.0))))
+     (list license:osl2.1 license:gpl2+ license:bsd-3 license:boost1.0))))
 
 ;; Distinct from memtest86, which is obsolete.
 (define-public memtest86+
