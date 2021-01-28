@@ -2176,7 +2176,7 @@ can be explored and changed freely.")
                    (lambda (p)
                      (format p
                              "#!~a~@
-                              export PYTHONPATH=~a:~a~@
+                              export GUIX_PYTHONPATH=~a:~a~@
                               exec -a \"~a\" ~a \"$@\"~%"
                              (which "bash") data (getenv "GUIX_PYTHONPATH")
                              (which "python3")
