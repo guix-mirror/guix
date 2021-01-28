@@ -306,7 +306,7 @@
   "Return a <shepherd-service> for the Cuirass remote worker service with
 CONFIG."
   (match-record config <cuirass-remote-worker-configuration>
-    (cuirass workers systems publish-port public-key private-key)
+    (cuirass workers systems log-file publish-port public-key private-key)
     (list (shepherd-service
            (documentation "Run Cuirass remote build worker.")
            (provision '(cuirass-remote-worker))
@@ -334,7 +334,8 @@ CONFIG."
                                   (list
                                    (string-append "--private-key="
                                                   private-key))
-                                  '()))))
+                                  '()))
+                    #:log-file #$log-file))
            (stop #~(make-kill-destructor))))))
 
 (define cuirass-remote-worker-service-type
