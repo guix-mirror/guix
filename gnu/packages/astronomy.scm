@@ -150,6 +150,26 @@ coordinate systems in a @dfn{FITS} (Flexible Image Transport System) image
 header.")
     (license license:lgpl3+)))
 
+(define-public weightwatcher
+  (package
+    (name "weightwatcher")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/weightwatcher/"
+                           "weightwatcher-" version ".tar.gz"))
+       (sha256
+        (base32 "1zaqd8d9rpgcwjsp92q3lkfaa22i20gppb91dz34ym54swisjc2p"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/weightwatcher")
+    (synopsis "Weight-map/flag-map multiplexer and rasteriser")
+    (description
+     "Weightwatcher is a program hat combines weight-maps, flag-maps and
+polygon data in order to produce control maps which can directly be used in
+astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
+    (license license:gpl3+)))
+
 (define-public gnuastro
   (package
     (name "gnuastro")
