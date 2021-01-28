@@ -24,6 +24,7 @@
 (define-module (gnu services cuirass)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ci)
   #:use-module (gnu packages version-control)
@@ -292,7 +293,7 @@
   (workers          cuirass-remote-worker-workers ;int
                     (default 1))
   (systems          cuirass-remote-worker-systems ;list
-                    (list (%current-system)))
+                    (default (list (%current-system))))
   (log-file         cuirass-remote-worker-log-file ;string
                     (default "/var/log/cuirass-remote-worker.log"))
   (publish-port     cuirass-remote-worker-configuration-publish-port ;int
