@@ -404,8 +404,7 @@ server and embedded PowerPC, and S390 guests.")
                                        "ganeti-drbd-compat.patch"
                                        "ganeti-os-disk-size.patch"
                                        "ganeti-haskell-pythondir.patch"
-                                       "ganeti-disable-version-symlinks.patch"
-                                       "ganeti-preserve-PYTHONPATH.patch"))))
+                                       "ganeti-disable-version-symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:imported-modules (,@%gnu-build-system-modules
