@@ -421,29 +421,29 @@ for computer graphics.")
 (define-public rust-core-video-sys-0.1
   (package
     (name "rust-core-video-sys")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "core-video-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1l59cg88482hkl95ssb30ac9x65hpbdsmxz9s5r6y222jlhnbh4d"))))
+        (base32 "0a1qbn50jrb5hxrfshyb7y0f3pbf4ily6i6nciv7bn8ac4isvv1l"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t     ; only for macOS
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
-        ("rust-core-graphics" ,rust-core-graphics-0.17)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.7)
+        ("rust-core-graphics" ,rust-core-graphics-0.19)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-metal" ,rust-metal-0.14)
+        ("rust-metal" ,rust-metal-0.18)
         ("rust-objc" ,rust-objc-0.2))))
     (home-page "https://github.com/luozijun/rust-core-video-sys")
     (synopsis "Bindings to CoreVideo.framework for macOS and iOS")
-    (description "Bindings to CoreVideo.framework for macOS and iOS.")
+    (description
+     "This package provides bindings to CoreVideo.framework for macOS
+and iOS.")
     (license license:expat)))
 
 (define-public rust-dav1d-sys-0.3
