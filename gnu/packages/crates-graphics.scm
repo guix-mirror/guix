@@ -2232,8 +2232,36 @@ extensions.")
         ("rust-wayland-sys" ,rust-wayland-sys-0.21)
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))))))
 
+(define-public rust-wayland-scanner-0.28
+  (package
+    (name "rust-wayland-scanner")
+    (version "0.28.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-scanner" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0g8ky63qk27in7zajycj3fyydsxlj19hanfcvr8d7z5kcxbvl43h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis "Generate Rust APIs from XML Wayland protocol files")
+    (description
+     "Wayland Scanner generates Rust APIs from XML Wayland protocol files.
+It is intended for use with wayland-sys.  You should only need this crate if
+you are working on custom Wayland protocol extensions.  Look at the
+wayland-client crate for usable bindings.")
+    (license license:expat)))
+
 (define-public rust-wayland-scanner-0.23
   (package
+    (inherit rust-wayland-scanner-0.28)
     (name "rust-wayland-scanner")
     (version "0.23.6")
     (source
@@ -2245,20 +2273,11 @@ extensions.")
        (sha256
         (base32
          "0g8wcphykjrcpslznyi3qccx1pckw97rckq5b295nfbg6r3j5c4k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
-        ("rust-xml-rs" ,rust-xml-rs-0.8))))
-    (home-page "https://github.com/smithay/wayland-rs")
-    (synopsis "Generate Rust APIs from XML Wayland protocol files")
-    (description
-     "Wayland Scanner generates Rust APIs from XML Wayland protocol files.
-It is intended for use with wayland-sys.  You should only need this crate if
-you are working on custom Wayland protocol extensions.
-Look at the wayland-client crate for usable bindings.")
-    (license license:expat)))
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))))
 
 (define-public rust-wayland-scanner-0.21
   (package
