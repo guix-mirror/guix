@@ -371,17 +371,17 @@ for computer graphics.")
        (;("rust-glium" ,rust-glium-0.19)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
-(define-public rust-core-graphics-0.21
+(define-public rust-core-graphics-0.22
   (package
     (name "rust-core-graphics")
-    (version "0.21.1")
+    (version "0.22.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "core-graphics" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1i9gwzkil9k276317by0mi1pxz036h412dmcp1bzmlq4adj5anha"))))
+        (base32 "11lx6xw8nc9fpd552g60qa0cxh0maah8j2m26vkq0aslkgv3b7r6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -396,6 +396,27 @@ for computer graphics.")
     (description
      "This package provides bindings to Core Graphics for macOS.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-core-graphics-0.21
+  (package
+    (inherit rust-core-graphics-0.22)
+    (name "rust-core-graphics")
+    (version "0.21.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-graphics" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i9gwzkil9k276317by0mi1pxz036h412dmcp1bzmlq4adj5anha"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-graphics-types" ,rust-core-graphics-types-0.1)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-core-graphics-0.19
   (package
