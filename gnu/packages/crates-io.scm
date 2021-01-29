@@ -11153,7 +11153,7 @@ blocking data structures.")
 @code{?} in @code{main}.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-expat-sys-2.1
+(define-public rust-expat-sys-2
   (package
     (name "rust-expat-sys")
     (version "2.1.6")
@@ -31847,7 +31847,7 @@ functionality and without weak references.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-expat-sys" ,rust-expat-sys-2.1)
+       (("rust-expat-sys" ,rust-expat-sys-2)
         ("rust-servo-freetype-sys" ,rust-servo-freetype-sys-4)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
