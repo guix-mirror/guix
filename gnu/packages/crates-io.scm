@@ -31888,8 +31888,31 @@ functionality and without weak references.")
     (description "Serialising Rust tests")
     (license license:expat)))
 
+(define-public rust-servo-fontconfig-0.5
+  (package
+    (name "rust-servo-fontconfig")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "servo-fontconfig" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z11bjndkp87dnqqmqww6raswgpy7sfh9ahdpx7d0wzxwlpy5qy7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-servo-fontconfig-sys" ,rust-servo-fontconfig-sys-5))))
+    (home-page "https://github.com/servo/rust-fontconfig/")
+    (synopsis "Rust bindings for fontconfig")
+    (description "This package provides Rust bindings for fontconfig.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-servo-fontconfig-0.4
   (package
+    (inherit rust-servo-fontconfig-0.5)
     (name "rust-servo-fontconfig")
     (version "0.4.0")
     (source
@@ -31901,7 +31924,6 @@ functionality and without weak references.")
        (sha256
         (base32
          "1nach6s4hdf86jz5hlm4p5r7vin91cs7gg89mr533id5fpbzi250"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
@@ -31909,11 +31931,7 @@ functionality and without weak references.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("fontconfig" ,fontconfig)))
-    (home-page "https://github.com/servo/rust-fontconfig/")
-    (synopsis "Rust bindings for fontconfig")
-    (description "This package provides Rust bindings for fontconfig.")
-    (license (list license:expat license:asl2.0))))
+     `(("fontconfig" ,fontconfig)))))
 
 (define-public rust-servo-fontconfig-sys-5
   (package
