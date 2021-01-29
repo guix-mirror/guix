@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,58 +190,66 @@ Protocol.")
     (license mpl2.0)))
 
 (define-public syncthing-gtk
-  (package
-    (name "syncthing-gtk")
-    (version "0.9.4.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/syncthing/syncthing-gtk")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0nc0wd7qvyri7841c3dd9in5d7367hys0isyw8znv5fj4c0a6v1f"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'hardcode-dependencies
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((psmisc (assoc-ref inputs "psmisc"))
-                   (syncthing (assoc-ref inputs "syncthing")))
-               ;; Hardcode dependencies paths to avoid propagation.
-               (substitute* "syncthing_gtk/tools.py"
-                 (("killall") (string-append psmisc "/bin/killall")))
-               (substitute* "syncthing_gtk/configuration.py"
-                 (("/usr/bin/syncthing") (string-append syncthing
-                                                        "/bin/syncthing"))))
-             #t))
-         (add-after 'wrap 'wrap-libs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/syncthing-gtk")
-                 `("GI_TYPELIB_PATH" ":" prefix
-                   (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("libappindicator" ,libappindicator)
-       ("libnotify" ,libnotify)
-       ("librsvg" ,librsvg)
-       ("python2-bcrypt" ,python2-bcrypt)
-       ("python2-dateutil" ,python2-dateutil)
-       ("python2-pycairo" ,python2-pycairo)
-       ("python2-pygobject" ,python2-pygobject)
-       ("python-nautilus" ,python-nautilus)
-       ("psmisc" ,psmisc)
-       ("syncthing" ,syncthing)))
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
-    (home-page "https://github.com/syncthing/syncthing-gtk")
-    (synopsis "GTK3 based GUI and notification area icon for Syncthing")
-    (description "@code{syncthing-gtk} is a GTK3 Python based GUI and
+  ;; The commit used below corresponds to the latest commit of the
+  ;; python3-port branch maintained by Debian.  Upstream hasn't bothered
+  ;; porting to Python 3 (see:
+  ;; https://github.com/kozec/syncthing-gtk/issues/487).
+  (let ((revision "1")
+        (commit "c46fbd8ad1d12d409da8942702a2f119cf45514a"))
+    (package
+      (name "syncthing-gtk")
+      (version (git-version "0.9.4.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://salsa.debian.org/debian/syncthing-gtk.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1x1c8snf0jpgjmyyidjw0015ksk5ishqn817wx8vs9i0lfgnnbbg"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'hardcode-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((psmisc (assoc-ref inputs "psmisc"))
+                     (syncthing (assoc-ref inputs "syncthing")))
+                 ;; Hardcode dependencies paths to avoid propagation.
+                 (substitute* "syncthing_gtk/tools.py"
+                   (("killall") (string-append psmisc "/bin/killall")))
+                 (substitute* "syncthing_gtk/configuration.py"
+                   (("/usr/bin/syncthing") (string-append syncthing
+                                                          "/bin/syncthing"))))))
+           (add-after 'unpack 'remove-windows.py
+             (lambda _
+               ;; A Windows-specific module that fails to load with
+               ;; "ModuleNotFoundError: No module named 'msvcrt'.
+               (delete-file "syncthing_gtk/windows.py")))
+           (add-after 'wrap 'wrap-libs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/syncthing-gtk")
+                   `("GI_TYPELIB_PATH" ":" prefix
+                     (,(getenv "GI_TYPELIB_PATH"))))))))))
+      (inputs
+       `(("gtk+" ,gtk+)
+         ("libappindicator" ,libappindicator)
+         ("libnotify" ,libnotify)
+         ("librsvg" ,librsvg)
+         ("python-bcrypt" ,python-bcrypt)
+         ("python-dateutil" ,python-dateutil)
+         ("python-pycairo" ,python-pycairo)
+         ("python-pygobject" ,python-pygobject)
+         ("python-nautilus" ,python-nautilus)
+         ("psmisc" ,psmisc)
+         ("syncthing" ,syncthing)))
+      ;; (native-inputs
+      ;;  `(("python2-setuptools" ,python2-setuptools)))
+      (home-page "https://github.com/syncthing/syncthing-gtk")
+      (synopsis "GTK3 based GUI and notification area icon for Syncthing")
+      (description "@code{syncthing-gtk} is a GTK3 Python based GUI and
 notification area icon for Syncthing.  Supported Syncthing features:
 
 @itemize
@@ -250,7 +259,7 @@ notification area icon for Syncthing.  Supported Syncthing features:
 @item Restart, shutdown server
 @item Editing daemon settings
 @end itemize\n")
-    (license gpl2)))
+      (license gpl2))))
 
 (define-public go-github-com-jackpal-go-nat-pmp
   (package
