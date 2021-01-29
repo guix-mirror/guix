@@ -19686,8 +19686,35 @@ based on Rustls and Ring.")
     (description "Run pkg-config from declarative dependencies in Cargo.toml.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-metal-0.18
+  (package
+    (name "rust-metal")
+    (version "0.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "metal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08n3kfv78jm3pf7fafwfv67n40lgcdg7w9lqn9g4sdvfwdk90vrf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-block" ,rust-block-0.1)
+        ("rust-cocoa" ,rust-cocoa-0.22)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-objc" ,rust-objc-0.2))))
+    (home-page "https://github.com/gfx-rs/metal-rs")
+    (synopsis "Rust bindings for Metal")
+    (description "This package provides Rust bindings for Metal.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-metal-0.14
   (package
+    (inherit rust-metal-0.18)
     (name "rust-metal")
     (version "0.14.0")
     (source
@@ -19699,7 +19726,6 @@ based on Rustls and Ring.")
        (sha256
         (base32
          "0my1xwlv562i80y3jbk0nygayi383j5skdwk48clb286b7922gyd"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -19715,11 +19741,7 @@ based on Rustls and Ring.")
         ("rust-objc-id" ,rust-objc-id-0.1))
        #:cargo-development-inputs
        (("rust-sema" ,rust-sema-0.1)
-        ("rust-winit" ,rust-winit-0.19)))) ; 0.17?
-    (home-page "https://github.com/gfx-rs/metal-rs")
-    (synopsis "Rust bindings for Metal")
-    (description "Rust bindings for Metal.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-winit" ,rust-winit-0.19)))))) ; 0.17?
 
 (define-public rust-mimalloc-0.1
   (package
