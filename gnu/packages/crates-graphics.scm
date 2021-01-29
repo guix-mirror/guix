@@ -2134,8 +2134,36 @@ WlSurface, which can then play the role of the base surface for
 initializing an OpenGL or Vulkan context.")
     (license license:expat)))
 
+(define-public rust-wayland-protocols-0.28
+  (package
+    (name "rust-wayland-protocols")
+    (version "0.28.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-protocols" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c0sw13qssrvf3jgygwqpiimpaagz3haxn9jridd4k85sfs856ii"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-wayland-client" ,rust-wayland-client-0.28)
+        ("rust-wayland-commons" ,rust-wayland-commons-0.28)
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.28)
+        ("rust-wayland-server" ,rust-wayland-server-0.28))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis "Generated API for the officials Wayland protocol extensions")
+    (description
+     "This package provides a generated API for the officials Wayland protocol
+extensions.")
+    (license license:expat)))
+
 (define-public rust-wayland-protocols-0.23
   (package
+    (inherit rust-wayland-protocols-0.28)
     (name "rust-wayland-protocols")
     (version "0.23.6")
     (source
@@ -2147,20 +2175,13 @@ initializing an OpenGL or Vulkan context.")
        (sha256
         (base32
          "1ygwbzqlnks5xzafka3c8ag6k92g2h6ygj2xsmvjfx2n6rj8dhkc"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-wayland-client" ,rust-wayland-client-0.23)
         ("rust-wayland-commons" ,rust-wayland-commons-0.23)
         ("rust-wayland-server" ,rust-wayland-server-0.23)
-        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))
-    (home-page "https://github.com/smithay/wayland-rs")
-    (synopsis
-     "Generated API for the officials wayland protocol extensions")
-    (description
-     "Generated API for the officials wayland protocol extensions.")
-    (license license:expat)))
+        ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))))))
 
 (define-public rust-wayland-protocols-0.21
   (package
