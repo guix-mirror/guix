@@ -376,6 +376,26 @@ for computer graphics.")
      "This package provides bindings to Core Graphics for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-graphics-0.19
+  (package
+    (inherit rust-core-graphics-0.21)
+    (name "rust-core-graphics")
+    (version "0.19.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-graphics" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08z9pgwfc0wb5v3ns7rnb2010q9g42b5vfwhp9fv4spawrs9725k"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.7)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))))
+
 (define-public rust-core-graphics-0.17
   (package
     (inherit rust-core-graphics-0.21)
