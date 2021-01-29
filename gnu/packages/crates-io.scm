@@ -10190,8 +10190,36 @@ floating-point primitives to an @code{io::Write}.")
     (description "Clone trait that is object-safe")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dwrote-0.11
+  (package
+    (name "rust-dwrote")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dwrote" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nx6d9ddqjv0gfi1if3zbsnc9sfj6qfm900jfgnx66k1llmir6j3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-wio" ,rust-wio-0.2))))
+    (home-page "https://github.com/servo/dwrote-rs")
+    (synopsis "Lightweight binding to DirectWrite")
+    (description
+     "This package provides lightweight binding to DirectWrite.")
+    (license license:mpl2.0)))
+
 (define-public rust-dwrote-0.9
   (package
+    (inherit rust-dwrote-0.11)
     (name "rust-dwrote")
     (version "0.9.0")
     (source
@@ -10203,7 +10231,6 @@ floating-point primitives to an @code{io::Write}.")
        (sha256
         (base32
          "03gzl5pd90nlkmwqmbmjmyz47h7wlblbqrwv5a29npnv0ag3dl8b"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -10212,12 +10239,7 @@ floating-point primitives to an @code{io::Write}.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ;("rust-wio" ,rust-wio-0.2)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/servo/dwrote-rs")
-    (synopsis "Lightweight binding to DirectWrite")
-    (description
-     "This package provides lightweight binding to DirectWrite.")
-    (license license:mpl2.0)))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-easy-parallel-3
   (package
