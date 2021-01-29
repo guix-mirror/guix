@@ -1926,8 +1926,33 @@ first-class Rust objects.")
         ("rust-image" ,rust-image-0.20)
         ("rust-wayland-client" ,rust-wayland-client-0.21))))))
 
+(define-public rust-smithay-clipboard-0.6
+  (package
+    (name "rust-smithay-clipboard")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smithay-clipboard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14dwisd56cbr80zf719l3fh0n8pm1fjmvry9lsbhdbccf8cv525b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.12)
+        ("rust-wayland-client" ,rust-wayland-client-0.28))))
+    (home-page "https://github.com/smithay/smithay-clipboard")
+    (synopsis "Access to the Wayland clipboard for client applications")
+    (description
+     "This package provides access to the Wayland clipboard for client
+applications.")
+    (license license:expat)))
+
 (define-public rust-smithay-clipboard-0.3
   (package
+    (inherit rust-smithay-clipboard-0.6)
     (name "rust-smithay-clipboard")
     (version "0.3.6")
     (source
@@ -1939,7 +1964,6 @@ first-class Rust objects.")
        (sha256
         (base32
          "1h7qhcx44cgwncgpn5llky0c56vgsg9mqrkybb2z37vsxxia4rwn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-nix" ,rust-nix-0.14)
@@ -1947,13 +1971,7 @@ first-class Rust objects.")
        #:cargo-development-inputs
        (("rust-andrew" ,rust-andrew-0.2))))
     (inputs
-     `(("wayland" ,wayland)))
-    (home-page "https://github.com/smithay/smithay-clipboard")
-    (synopsis
-     "Provides access to the wayland clipboard for client applications")
-    (description
-     "This package provides access to the wayland clipboard for client applications.")
-    (license license:expat)))
+     `(("wayland" ,wayland)))))
 
 (define-public rust-tiff-0.5
   (package
