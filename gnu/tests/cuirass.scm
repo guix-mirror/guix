@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
+;;; Copyright © 2020, 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,11 +30,13 @@
   #:use-module (gnu services cuirass)
   #:use-module (gnu services databases)
   #:use-module (gnu services networking)
+  #:use-module (gnu system nss)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:export (%cuirass-test))
+  #:export (%cuirass-test
+            %cuirass-remote-test))
 
-(define (run-cuirass-test)
+(define* (run-cuirass-test name #:key remote-build?)
   (define %cuirass-specs
     #~(list
        '((#:name . "test")
@@ -93,6 +95,8 @@
       (service cuirass-service-type
                (cuirass-configuration
                 (specifications %cuirass-specs)
+                (remote-server (and remote-build?
+                                    (cuirass-remote-server-configuration)))
                 (host "0.0.0.0")
                 (use-substitutes? #t)))
       (service dhcp-client-service-type)
@@ -135,12 +139,25 @@
                           (guix build syscalls)
                           (guix build utils))))
 
+  (define os*
+    (operating-system
+      (inherit os)
+      (name-service-switch %mdns-host-lookup-nss)
+      (services
+       (append (if remote-build?
+                   (list
+                    (service avahi-service-type)
+                    (service cuirass-remote-worker-service-type
+                             (cuirass-remote-worker-configuration)))
+                   '())
+               (operating-system-user-services os)))))
+
   (define cuirass-web-port 8081)
   (define forward-port 5000)
 
   (define vm
     (virtual-machine
-     (operating-system os)
+     (operating-system os*)
      (memory-size 1024)
      (port-forwardings `((,forward-port . ,cuirass-web-port)))))
 
@@ -169,13 +186,13 @@
               (let loop ((attempt 1))
                 (let ((result (f)))
                   (cond
-                    (result result)
-                    (else
-                     (if (>= attempt times)
-                         #f
-                         (begin
-                           (sleep delay)
-                           (loop (+ 1 attempt)))))))))
+                   (result result)
+                   (else
+                    (if (>= attempt times)
+                        #f
+                        (begin
+                          (sleep delay)
+                          (loop (+ 1 attempt)))))))))
 
             (mkdir #$output)
             (chdir #$output)
@@ -205,12 +222,18 @@
             (test-equal "cuirass-web evaluation"
               "test"
               (begin
-                (let-values (((response text)
-                              (query "/api/evaluation?id=1")))
-                  (let ((result
-                         (json-string->scm
-                          (utf8->string text))))
-                    (assoc-ref result "specification")))))
+                (retry
+                 (lambda ()
+                   (let-values (((response text)
+                                 (query "/api/evaluation?id=1")))
+                     (let ((result
+                            (false-if-exception
+                             (json-string->scm
+                              (utf8->string text)))))
+                       (and result
+                            (assoc-ref result "specification")))))
+                 #:times 5
+                 #:delay 5)))
 
             ;; Even though there's a store overlay, the Guix database is not
             ;; initialized, meaning that we won't be able to perform the
@@ -226,8 +249,11 @@
                              (utf8->string text))))
                        (match (vector->list result)
                          ((build)
-                          (string=? (assoc-ref build "job")
-                                    "test-job"))
+                          (and (string=? (assoc-ref build "job")
+                                         "test-job")
+                               (or (not #$remote-build?)
+                                   ;; Check if the build is started.
+                                   (= (assoc-ref build "buildstatus") -1))))
                          (else #f)))))
                  #:times 5
                  #:delay 5)))
@@ -235,10 +261,16 @@
             (test-end)
             (exit (= (test-runner-fail-count (test-runner-current)) 0))))))
 
-  (gexp->derivation "cuirass-test" test))
+  (gexp->derivation name test))
 
 (define %cuirass-test
   (system-test
    (name "cuirass")
    (description "Connect to a Cuirass server.")
-   (value (run-cuirass-test))))
+   (value (run-cuirass-test name))))
+
+(define %cuirass-remote-test
+  (system-test
+   (name "cuirass-remote")
+   (description "Connect to a Cuirass server with remote build.")
+   (value (run-cuirass-test name #:remote-build? #t))))
