@@ -31915,8 +31915,33 @@ functionality and without weak references.")
     (description "This package provides Rust bindings for fontconfig.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-servo-fontconfig-sys-5
+  (package
+    (name "rust-servo-fontconfig-sys")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "servo-fontconfig-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "125k4hydb4w08568rgazh95n6haxhf5c78axz50glbc9p6fqfsz3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-expat-sys" ,rust-expat-sys-2)
+        ("rust-freetype-sys" ,rust-freetype-sys-0.13)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://crates.io/crates/servo-fontconfig-sys")
+    (synopsis "Rust wrapper around Fontconfig")
+    (description
+     "This package provides a Rust wrapper around Fontxonfig.")
+    (license license:expat)))
+
 (define-public rust-servo-fontconfig-sys-4
   (package
+    (inherit rust-servo-fontconfig-sys-5)
     (name "rust-servo-fontconfig-sys")
     (version "4.0.9")
     (source
@@ -31934,7 +31959,6 @@ functionality and without weak references.")
             (for-each delete-file-recursively
                       (find-files "." "[^Cargo.toml,^build\\.rs]"))
             #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-expat-sys" ,rust-expat-sys-2)
@@ -31943,12 +31967,7 @@ functionality and without weak references.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("fontconfig" ,fontconfig)))
-    (home-page "https://crates.io/crates/servo-fontconfig-sys")
-    (synopsis "Rust wrapper around Fontconfig")
-    (description
-     "This package provides a Rust wrapper around Fontxonfig.")
-    (license license:mpl2.0)))  ; build.rs is mpl2.0
+     `(("fontconfig" ,fontconfig)))))
 
 (define-public rust-servo-freetype-sys-4
   (package
