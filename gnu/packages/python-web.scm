@@ -2517,16 +2517,7 @@ library.")
     (description
       "This module provides a building block to stub out the HTTP requests
 portions of your testing code.")
-    (properties `((python2-variant . ,(delay python2-requests-mock))))
     (license license:asl2.0)))
-
-(define-public python2-requests-mock
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-requests-mock)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
 
 (define-public python-requests-toolbelt
   (package
