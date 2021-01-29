@@ -7800,6 +7800,41 @@ message passing.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-crossfont-0.2
+  (package
+    (name "rust-crossfont")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossfont" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04p8k0yn19n2pdbiqzwkknakz9c7kdii0i2nf3s3p298ab7ld28h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cocoa" ,rust-cocoa-0.24)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.8)
+        ("rust-core-graphics" ,rust-core-graphics-0.22)
+        ("rust-core-text" ,rust-core-text-19)
+        ("rust-dwrote" ,rust-dwrote-0.11)
+        ("rust-foreign-types" ,rust-foreign-types-0.5)
+        ("rust-freetype-rs" ,rust-freetype-rs-0.26)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-servo-fontconfig" ,rust-servo-fontconfig-0.5)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/alacritty/crossfont")
+    (synopsis "Native font loading and rasterization")
+    (description
+     "Crossfont is a cross-platform Rust library for loading fonts and
+rasterizing glyphs, using native font engines whenever possible.")
+    (license license:asl2.0)))
+
 (define-public rust-crossterm-0.13
   (package
     (name "rust-crossterm")
