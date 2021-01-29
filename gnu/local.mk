@@ -823,9 +823,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/audiofile-function-signature.patch	\
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-localstatedir.patch		\
-  %D%/packages/patches/avogadro-boost148.patch			\
-  %D%/packages/patches/avogadro-eigen3-update.patch		\
-  %D%/packages/patches/avogadro-python-eigen-lib.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/aws-c-event-stream-cmake-prefix.patch  \
