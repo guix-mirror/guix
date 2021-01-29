@@ -6472,9 +6472,6 @@ The output of all running processes is collected by honcho and
 displayed.")
     (license license:expat)))
 
-(define-public python2-honcho
-  (package-with-python2 python-honcho))
-
 (define-public python-pexpect
   (package
     (name "python-pexpect")
