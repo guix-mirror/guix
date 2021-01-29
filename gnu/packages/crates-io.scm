@@ -23176,6 +23176,28 @@ under its new name.")
      "Utility to activate escape codes in Windows' CMD and PowerShell.")
     (license license:expat)))
 
+(define-public rust-owned-ttf-parser-0.6
+  (package
+    (name "rust-owned-ttf-parser")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "owned_ttf_parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qydjksjcllf0pnm0jkjvbg4n52wfcwv59dl5b06cqn40sw3z4lz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ttf-parser" ,rust-ttf-parser-0.6))))
+    (home-page "https://github.com/alexheretic/owned-ttf-parser")
+    (synopsis "TTF-parser plus support for owned data")
+    (description
+     "This package provides a TTF-parser plus support for owned data.")
+    (license license:asl2.0)))
+
 (define-public rust-owning-ref-0.4
   (package
     (name "rust-owning-ref")
