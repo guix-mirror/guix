@@ -42,8 +42,36 @@
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
 
+(define-public rust-andrew-0.3
+  (package
+    (name "rust-andrew")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "andrew" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kx79z6mh7wwp4pz683bdya54h7w7wpzjcwf834fwbv4vl4znjlc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-rusttype" ,rust-rusttype-0.9)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-xdg" ,rust-xdg-2)
+        ("rust-xml-rs" ,rust-xml-rs-0.8))))
+    (home-page "https://github.com/trimental/andrew")
+    (synopsis "Provides convenient drawing of objects to buffers")
+    (description
+     "The @code{andrew} crate provides convenient drawing of objects such as
+shapes, lines and text to buffers.")
+    (license license:expat)))
+
 (define-public rust-andrew-0.2
   (package
+    (inherit rust-andrew-0.3)
     (name "rust-andrew")
     (version "0.2.1")
     (source
@@ -55,7 +83,6 @@
        (sha256
         (base32
          "0pmklwcwy8g1jras46fz8xcny779zfqpg4riksrbdhkjk3w0jzwv"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -67,13 +94,7 @@
        #:cargo-development-inputs
        (("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.4))))
     (inputs
-     `(("wayland" ,wayland)))
-    (home-page "https://github.com/trimental/andrew")
-    (synopsis "Provides convenient drawing of objects to buffers")
-    (description
-     "The @code{andrew} crate provides convenient drawing of objects such as
-shapes, lines and text to buffers.")
-    (license license:expat)))
+     `(("wayland" ,wayland)))))
 
 (define-public rust-ansi-colours-1
   (package
