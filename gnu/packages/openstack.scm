@@ -135,17 +135,7 @@ formatters, and other extensions.")
       "This package provides a collection of Python deprecation patterns and
 strategies that help you collect your technical debt in a non-destructive
 manner.")
-    (properties `((python2-variant . ,(delay python2-debtcollector))))
     (license asl2.0)))
-
-(define-public python2-debtcollector
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-debtcollector))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-funcsigs" ,python2-funcsigs)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-hacking
   (package
