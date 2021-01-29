@@ -1504,9 +1504,6 @@ style tests.")))
 testresources package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-testresources-bootstrap
-  (package-with-python2 python-testresources-bootstrap))
-
 (define-public python-testresources
   (package
     (inherit python-testresources-bootstrap)
@@ -1520,9 +1517,6 @@ testresources package instead.")
     (description
      "Testresources is an extension to Python's unittest to allow declarative
 use of resources by test cases.")))
-
-(define-public python2-testresources
-  (package-with-python2 python-testresources))
 
 (define-public python-subunit-bootstrap
   (package
