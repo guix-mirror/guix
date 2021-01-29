@@ -658,9 +658,6 @@ documentation from the OpenStack project.")
 for debugging, and better support for mocking results.")
     (license asl2.0)))
 
-(define-public python2-oslotest
-  (package-with-python2 python-oslotest))
-
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
