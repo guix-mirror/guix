@@ -1405,9 +1405,6 @@ subprocess and see the output as well as any file modifications.")
      "This package is only for bootstrapping.  Do not use this.")
     (license license:psfl)))
 
-(define-public python2-testtools-bootstrap
-  (package-with-python2 python-testtools-bootstrap))
-
 (define-public python-testtools
   (package
     (inherit python-testtools-bootstrap)
@@ -1432,9 +1429,6 @@ subprocess and see the output as well as any file modifications.")
      "Testtools extends the Python standard library unit testing framework to
 provide matchers, more debugging information, and cross-Python
 compatibility.")))
-
-(define-public python2-testtools
-  (package-with-python2 python-testtools))
 
 (define-public python-testscenarios-bootstrap
   (package
