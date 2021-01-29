@@ -40663,8 +40663,34 @@ updated when the crate version changes.")
      "This package provides a pure FFI to Jon Blow's VS discovery script.")
     (license license:expat)))
 
+(define-public rust-vte-0.10
+  (package
+    (name "rust-vte")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vte" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mnjw3f071xbvapdgdf8mcdglw60dadcc5hhvz5zpljm53nmzwid"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-utf8parse" ,rust-utf8parse-0.2)
+        ("rust-vte-generate-state-changes"
+         ,rust-vte-generate-state-changes-0.1))))
+    (home-page "https://github.com/jwilm/vte")
+    (synopsis "Parser for implementing terminal emulators")
+    (description
+     "This package provides a parser for implementing terminal emulators.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-vte-0.3
   (package
+    (inherit rust-vte-0.10)
     (name "rust-vte")
     (version "0.3.3")
     (source
@@ -40676,16 +40702,10 @@ updated when the crate version changes.")
        (sha256
         (base32
          "1kz8svnqnxclllsgh0ck20rplw3qzp46b5v30yscnzrgw8vgahjg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; tests not included in release
        #:cargo-inputs
-       (("rust-utf8parse" ,rust-utf8parse-0.1))))
-    (home-page "https://github.com/jwilm/vte")
-    (synopsis "Parser for implementing terminal emulators")
-    (description
-     "This package provides a parser for implementing terminal emulators.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-utf8parse" ,rust-utf8parse-0.1))))))
 
 (define-public rust-vte-generate-state-changes-0.1
   (package
