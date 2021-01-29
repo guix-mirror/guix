@@ -828,6 +828,3 @@ permanence.")
      "Git-review is a command-line tool that helps submitting Git branches to
 Gerrit for review, or fetching existing ones.")
     (license asl2.0)))
-
-(define-public python2-git-review
-  (package-with-python2 python-git-review))
