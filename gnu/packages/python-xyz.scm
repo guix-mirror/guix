@@ -15774,9 +15774,6 @@ exception message with a traceback that points to the culprit.")
     (description "This package provides a MediaWiki API client.")
     (license license:expat)))
 
-(define-public python2-mwclient
-  (package-with-python2 python-mwclient))
-
 (define-public python-utils
   (package
     (name "python-utils")
