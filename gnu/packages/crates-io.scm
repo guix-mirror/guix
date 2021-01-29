@@ -9879,7 +9879,7 @@ from macros.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-strsim" ,rust-strsim-0.5))))))
 
-(define-public rust-downcast-rs-1.2
+(define-public rust-downcast-rs-1
   (package
     (name "rust-downcast-rs")
     (version "1.2.0")
