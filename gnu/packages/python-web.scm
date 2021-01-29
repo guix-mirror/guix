@@ -533,9 +533,6 @@ CORS object to the incoming requests, enabling the ability to serve resources
 over a different origin than that of the web application.")
     (license license:asl2.0)))
 
-(define-public python2-falcon-cors
-  (package-with-python2 python-falcon-cors))
-
 (define-public python-furl
   (package
     (name "python-furl")
