@@ -69,6 +69,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -10459,6 +10460,66 @@ online linear classification written in Common Lisp.")
 
 (define-public ecl-cl-online-learning
   (sbcl-package->ecl-package sbcl-cl-online-learning))
+
+(define-public sbcl-cl-out123
+  (let ((commit "6b58d3f8c2a28ad09059ac4c60fb3c781b9b421b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-out123")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/cl-out123")
+               (commit commit)))
+         (file-name (git-file-name "cl-out123" version))
+         (sha256
+          (base32 "0mdwgfax6sq68wvdgjjp78i40ah7wqkpqnvaq8a1c509k7ghdgv1"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove bundled pre-compiled libraries.
+             (delete-file-recursively "static")
+             #t))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "low-level.lisp"
+                 (("libout123.so" all)
+                  (string-append (assoc-ref inputs "libout123")
+                                 "/lib/" all)))))
+           ;; NOTE: (Sharlatan-20210129T134529+0000): ECL package `ext' has no
+           ;; exported macro `without-interrupts' it's moved to `mp' package
+           ;; https://github.com/Shirakumo/cl-out123/issues/2
+           ;; https://gitlab.com/embeddable-common-lisp/ecl/-/blob/develop/src/lsp/mp.lsp
+           (add-after 'unpack 'fix-ecl-package-name
+             (lambda _
+               (substitute* "wrapper.lisp"
+                 (("ext:without-interrupts.*") "mp:without-interrupts\n"))
+               #t)))))
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("libout123" ,mpg123)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "https://shirakumo.github.io/cl-out123/")
+      (synopsis "Common Lisp bindings to libout123")
+      (description
+       "This is a bindings library to @code{libout123} which allows easy
+cross-platform audio playback.")
+      (license license:zlib))))
+
+(define-public ecl-cl-out123
+  (sbcl-package->ecl-package sbcl-cl-out123))
+
+(define-public cl-out123
+  (sbcl-package->cl-source-package sbcl-cl-out123))
 
 (define-public sbcl-cl-random-forest
   (let ((commit "fedb36ce99bb6f4d7e3a7dd6d8b058f331308f91")
