@@ -9879,27 +9879,6 @@ from macros.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-strsim" ,rust-strsim-0.5))))))
 
-(define-public rust-downcast-rs-1.1
-  (package
-    (name "rust-downcast-rs")
-    (version "1.1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "downcast-rs" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1xhs2qj02k9m4mm5fgh19y88850y9jsnwwlblf2ffc91gjs6xfjj"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/marcianx/downcast-rs")
-    (synopsis "Trait object downcasting support using only safe Rust")
-    (description
-     "Trait object downcasting support using only safe Rust.  It supports type
-parameters, associated types, and type constraints.")
-    (license (list license:expat license:asl2.0))))
-
 (define-public rust-downcast-rs-1.2
   (package
     (name "rust-downcast-rs")
