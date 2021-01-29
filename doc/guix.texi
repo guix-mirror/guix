@@ -40,7 +40,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
-Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@*
+Copyright @copyright{} 2017, 2018, 2020, 2021 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
@@ -245,6 +245,7 @@ Channels
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
+* Channels with Substitutes::   Using channels with available substitutes.
 
 Development
 
@@ -4919,6 +4920,7 @@ updates.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
 * Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
+* Channels with Substitutes::   Using channels with available substitutes.
 @end menu
 
 @node Specifying Additional Channels
@@ -5390,6 +5392,30 @@ xgettext -o news.po -l scheme -ken etc/news.txt
 To sum up, yes, you could use your channel as a blog.  But beware, this
 is @emph{not quite} what your users might expect.
 
+@node Channels with Substitutes
+@section Channels with Substitutes
+
+When running @command{guix pull}, Guix will first compile the
+definitions of every available package.  This is an expensive operation
+for which substitutes (@pxref{Substitutes}) may be available.  The
+following snippet in @file{channels.scm} will ensure that @command{guix
+pull} uses the latest commit with available substitutes for the package
+definitions: this is done by querying the continuous integration
+server at @url{https://ci.guix.gnu.org}.
+
+@lisp
+(use-modules (guix ci))
+
+(list (channel-with-substitutes-available
+       %default-guix-channel
+       "https://ci.guix.gnu.org"))
+@end lisp
+
+Note that this does not mean that all the packages that you will
+install after running @command{guix pull} will have available
+substitutes.  It only ensures that @command{guix pull} will not try to
+compile package definitions.  This is particularly useful when using
+machines with limited resources.
 
 @c *********************************************************************
 @node Development
