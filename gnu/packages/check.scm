@@ -1463,9 +1463,6 @@ compatibility.")))
      "This package is only for bootstrapping.  Don't use this.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-testscenarios-bootstrap
-  (package-with-python2 python-testscenarios-bootstrap))
-
 (define-public python-testscenarios
   (package
     (inherit python-testscenarios-bootstrap)
@@ -1476,9 +1473,6 @@ compatibility.")))
     (description
      "Testscenarios provides clean dependency injection for Python unittest
 style tests.")))
-
-(define-public python2-testscenarios
-  (package-with-python2 python-testscenarios))
 
 ;; Testresources requires python-pbr at runtime, but pbr needs it for its
 ;; own tests.  Hence this bootstrap variant.
