@@ -29928,8 +29928,41 @@ native certificate store.")
     (license
      (list license:asl2.0 license:isc license:expat))))
 
+(define-public rust-rusttype-0.9
+  (package
+    (name "rust-rusttype")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusttype" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ngcwn7d2dybjrylga3gpxm3k3mcw3m405hcp32iignhvrx74z6w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ab-glyph-rasterizer" ,rust-ab-glyph-rasterizer-0.1)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-libm" ,rust-libm-0.2)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-owned-ttf-parser" ,rust-owned-ttf-parser-0.6)
+        ("rust-rustc-hash" ,rust-rustc-hash-1))))
+    (home-page "https://gitlab.redox-os.org/redox-os/rusttype")
+    (synopsis "Pure Rust alternative to libraries like FreeType")
+    (description
+     "This package provides a pure Rust alternative to libraries like FreeType.
+RustType provides an API for loading, querying and rasterising TrueType fonts.
+It also provides an implementation of a dynamic GPU glyph cache for hardware
+font rendering.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rusttype-0.8
   (package
+    (inherit rust-rusttype-0.9)
     (name "rust-rusttype")
     (version "0.8.2")
     (source
@@ -29941,7 +29974,6 @@ native certificate store.")
        (sha256
         (base32
          "12hwfg85iii7sbgsyyr23yw862dzp7f8zwn9xv5iqydm5w1i3a8l"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Artifacts for tests not included.
        #:cargo-inputs
@@ -29954,15 +29986,7 @@ native certificate store.")
         ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-ordered-float" ,rust-ordered-float-1.0)
         ("rust-rustc-hash" ,rust-rustc-hash-1)
-        ("rust-stb-truetype" ,rust-stb-truetype-0.3))))
-    (home-page "https://gitlab.redox-os.org/redox-os/rusttype")
-    (synopsis "Pure Rust alternative to libraries like FreeType")
-    (description
-     "This package provides a pure Rust alternative to libraries like FreeType.
-RustType provides an API for loading, querying and rasterising TrueType fonts.
-It also provides an implementation of a dynamic GPU glyph cache for hardware
-font rendering.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-stb-truetype" ,rust-stb-truetype-0.3))))))
 
 (define-public rust-rusttype-0.7
   (package
