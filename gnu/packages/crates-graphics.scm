@@ -1835,8 +1835,41 @@ implements standard Rust traits to make `RGB`/`RGBA` pixels and slices
 first-class Rust objects.")
     (license license:expat)))
 
+(define-public rust-smithay-client-toolkit-0.12
+  (package
+    (name "rust-smithay-client-toolkit")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smithay-client-toolkit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rjdszpf8pns99gyy8f5axf01ckc33f30dddfazyfg45xfii6vii"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-andrew" ,rust-andrew-0.3)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-calloop" ,rust-calloop-0.6)
+        ("rust-dlib" ,rust-dlib-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memmap2" ,rust-memmap2-0.1)
+        ("rust-nix" ,rust-nix-0.18)
+        ("rust-wayland-client" ,rust-wayland-client-0.28)
+        ("rust-wayland-cursor" ,rust-wayland-cursor-0.28)
+        ("rust-wayland-protocols" ,rust-wayland-protocols-0.28))))
+    (home-page "https://github.com/smithay/client-toolkit")
+    (synopsis "Toolkit for making client Wayland applications")
+    (description
+     "This package provides a toolkit for making client Wayland applications.")
+    (license license:expat)))
+
 (define-public rust-smithay-client-toolkit-0.6
   (package
+    (inherit rust-smithay-client-toolkit-0.12)
     (name "rust-smithay-client-toolkit")
     (version "0.6.4")
     (source
@@ -1848,7 +1881,6 @@ first-class Rust objects.")
        (sha256
         (base32
          "0m20687zs36l6xak2s5k9s7qp78ly8xfjpbmrhacp7whfn4hx5lk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-andrew" ,rust-andrew-0.2)
@@ -1862,12 +1894,7 @@ first-class Rust objects.")
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1)
         ("rust-image" ,rust-image-0.21)
-        ("rust-wayland-client" ,rust-wayland-client-0.23))))
-    (home-page "https://github.com/smithay/client-toolkit")
-    (synopsis "Toolkit for making client wayland applications")
-    (description
-     "Toolkit for making client wayland applications.")
-    (license license:expat)))
+        ("rust-wayland-client" ,rust-wayland-client-0.23))))))
 
 (define-public rust-smithay-client-toolkit-0.4
   (package
