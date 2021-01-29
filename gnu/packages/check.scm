@@ -2423,9 +2423,6 @@ tests written in a natural language style, backed up by Python code.")
 JSON APIs with Behave.")
     (license license:expat)))
 
-(define-public python2-behave-web-api
-  (package-with-python2 python-behave-web-api))
-
 (define-public python-rednose
   (package
     (name "python-rednose")
