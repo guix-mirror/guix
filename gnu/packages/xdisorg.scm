@@ -42,7 +42,7 @@
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
-;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -327,6 +327,34 @@ tabs.  Saved clipboard can be later copied and pasted directly into any
 application.")
   (home-page "https://hluk.github.io/CopyQ/")
   (license license:gpl3+)))
+
+(define-public xkeysnail
+  (package
+    (name "xkeysnail")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xkeysnail" version))
+       (sha256
+        (base32
+         "1xyqp6yqxcwmxaqj86qcsiz0ly7bwr0a2w835myz909irhip3ngf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;tests need /dev/uinput
+    (inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-evdev" ,python-evdev)
+       ("python-inotify-simple" ,python-inotify-simple)
+       ("python-xlib" ,python-xlib)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/mooz/xkeysnail")
+    (synopsis "Keyboard remapping tool for the X11 environment")
+    (description
+     "Xkeysnail is an X environment keyboard remapping tool, featuring
+high-level and flexible remapping mechanisms.  It affects the low-level
+layers (evdev and uinput), making remapping work in almost all the places.")
+    (license license:gpl3+)))           ; see README.md (no licence headers)
 
 (define-public xclip
   (package
