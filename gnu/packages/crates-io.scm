@@ -1196,6 +1196,30 @@ using AES-NI for high performance.")
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-alacritty-config-derive-0.1
+  (package
+    (name "rust-alacritty-config-derive")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alacritty_config_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dn3cg233jyi06xz8q1vfgjikdpcjdid36kqnl0yawdqpm2lq13p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/alacritty/alacritty")
+    (synopsis "Failure resistant deserialization derive")
+    (description
+     "This package provides a failure resistant deserialization derive.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-alga-0.9
   (package
     (name "rust-alga")
