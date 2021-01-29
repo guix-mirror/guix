@@ -3111,9 +3111,6 @@ concurrent HTTP client library for python using @code{gevent}.")
 provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients.")
     (license license:isc)))
 
-(define-public python2-requests-oauthlib
-  (package-with-python2 python-requests-oauthlib))
-
 (define-public python-url
   (package
     (name "python-url")
