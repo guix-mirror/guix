@@ -1544,9 +1544,6 @@ use of resources by test cases.")))
 python-subunit package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-subunit-bootstrap
-  (package-with-python2 python-subunit-bootstrap))
-
 (define-public python-subunit
   (package
     (inherit python-subunit-bootstrap)
@@ -1561,9 +1558,6 @@ python-subunit package instead.")
     (description
      "Python-subunit is a Python implementation of the subunit test streaming
 protocol.")))
-
-(define-public python2-subunit
-  (package-with-python2 python-subunit))
 
 ;; Fixtures requires python-pbr at runtime, but pbr uses fixtures for its
 ;; own tests.  Hence this bootstrap variant.
