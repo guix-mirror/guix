@@ -881,24 +881,23 @@ and iOS.")
 (define-public rust-glutin-gles2-sys-0.1
   (package
     (name "rust-glutin-gles2-sys")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "glutin_gles2_sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1pswvl5zyqmqwzjr674yzslj0al2xbqsp2ai9ggb9qbshlq6r6c9"))))
+        (base32 "00wisv3a7818bpw5nnqwibmh1bw032izix2l3657q2kkidq4w2g8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-objc" ,rust-objc-0.2)
-        ("rust-gl-generator" ,rust-gl-generator-0.11))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gl-generator" ,rust-gl-generator-0.14)
+        ("rust-objc" ,rust-objc-0.2))))
     (home-page "https://github.com/tomaka/glutin")
-    (synopsis "The gles2 bindings for glutin")
-    (description "The gles2 bindings for glutin.")
+    (synopsis "Gles2 bindings for glutin")
+    (description "This package provides gles2 bindings for glutin.")
     (license license:asl2.0)))
 
 (define-public rust-glutin-glx-sys-0.1
