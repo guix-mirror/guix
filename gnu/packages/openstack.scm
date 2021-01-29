@@ -262,9 +262,6 @@ to docs.openstack.org and developer.openstack.org.")
   comprehensive manner.")
     (license asl2.0)))
 
-(define-public python2-os-client-config
-  (package-with-python2 python-os-client-config))
-
 (define-public python-os-testr
   (package
     (name "python-os-testr")
