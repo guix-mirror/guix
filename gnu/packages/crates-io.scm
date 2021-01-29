@@ -5062,8 +5062,31 @@ cached data.")
 directories and @code{CACHEDIR.TAG} files.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-calloop-0.6
+  (package
+    (name "rust-calloop")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "calloop" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z3jlsv3g28097dhsmi2l8nzkd3p937jhb4pg52njhb0wxkn20qb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.18))))
+    (home-page "https://github.com/Smithay/calloop")
+    (synopsis "Callback-based event loop")
+    (description "This package provides a callback-based event loop.")
+    (license license:expat)))
+
 (define-public rust-calloop-0.4
   (package
+    (inherit rust-calloop-0.6)
     (name "rust-calloop")
     (version "0.4.4")
     (source
@@ -5081,19 +5104,13 @@ directories and @code{CACHEDIR.TAG} files.")
             (substitute* "Cargo.toml"
               (("=1.0.0") "^1.0.0"))
             #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-mio" ,rust-mio-0.6)
         ("rust-mio-extras" ,rust-mio-extras-2)
         ("rust-nix" ,rust-nix-0.14))
        #:cargo-development-inputs
-       (("rust-lazycell" ,rust-lazycell-1))))
-    (home-page "https://github.com/Smithay/calloop")
-    (synopsis "Callback-based event loop")
-    (description
-     "This package provides a callback-based event loop")
-    (license license:expat)))
+       (("rust-lazycell" ,rust-lazycell-1))))))
 
 (define-public rust-capnp-0.13
   (package
