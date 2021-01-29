@@ -6060,6 +6060,34 @@ CMAKE environmental variable is set.")
         (base32
          "0m6fgdr4d2fp8jhkqvwr23hrqqqjv72g0j9vdgijc58k05j9j1hp"))))))
 
+(define-public rust-cocoa-foundation-0.1
+  (package
+    (name "rust-cocoa-foundation")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cocoa-foundation" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0633ipbd28z35rsdmsl505f1aasrjsrrnirs826aa32nbnv4kpks"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-block" ,rust-block-0.1)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-graphics-types" ,rust-core-graphics-types-0.1)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-objc" ,rust-objc-0.2))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Cocoa Foundation for macOS")
+    (description
+     "This package provides bindings to Cocoa Foundation for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-codespan-reporting-0.9
   (package
     (name "rust-codespan-reporting")
