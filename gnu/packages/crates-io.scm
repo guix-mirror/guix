@@ -7099,8 +7099,33 @@ intrinsics.")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))))))
 
+(define-public rust-core-text-19
+  (package
+    (name "rust-core-text")
+    (version "19.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-text" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0q1sr55v8zq82y0dwnwwksz1radh515i0a45nbsda3w2idpg9iyj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-graphics" ,rust-core-graphics-0.22)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to the Core Text framework")
+    (description "This package provides bindings to the Core Text framework.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-text-13
   (package
+    (inherit rust-core-text-19)
     (name "rust-core-text")
     (version "13.3.2")
     (source
@@ -7112,19 +7137,13 @@ intrinsics.")
        (sha256
         (base32
          "0v9lxn277p39cf81pb45r7k0lzf17pwgd5cpry1c04ajv556b16v"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t     ; only for macOS
        #:cargo-inputs
        (("rust-core-foundation" ,rust-core-foundation-0.6)
         ("rust-core-graphics" ,rust-core-graphics-0.17)
         ("rust-foreign-types" ,rust-foreign-types-0.3)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/servo/core-foundation-rs")
-    (synopsis "Bindings to the Core Text framework")
-    (description
-     "Bindings to the Core Text framework.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-cpp-demangle-0.2
   (package
