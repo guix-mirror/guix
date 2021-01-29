@@ -40687,6 +40687,29 @@ updated when the crate version changes.")
      "This package provides a parser for implementing terminal emulators.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-vte-generate-state-changes-0.1
+  (package
+    (name "rust-vte-generate-state-changes")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vte_generate_state_changes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zs5q766q7jmc80c5c80gpzy4qpg5lnydf94mgdzrpy7h5q82myj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1))))
+    (home-page "https://github.com/jwilm/vte")
+    (synopsis "Proc macro for generating VTE state changes")
+    (description
+     "This package provides a proc macro for generating VTE state changes.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-wait-timeout-0.2
   (package
     (name "rust-wait-timeout")
