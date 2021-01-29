@@ -1536,16 +1536,14 @@ interactive applications.")
 (define-public rust-png-0.16
   (package
     (name "rust-png")
-    (version "0.16.6")
+    (version "0.16.8")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "png" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1393s3v3kg4bxnn86d7yn2vyz8xj6g64ighdfkc3vzpsg5sbyl61"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "png" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ipl44q3vy4kvx6j296vk7d4v8gvcg203lrkvvixwixq1j98fciw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1553,19 +1551,11 @@ interactive applications.")
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-deflate" ,rust-deflate-0.8)
-        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))
-       #:cargo-development-inputs
-       (("rust-criterion" ,rust-criterion-0.3)
-        ("rust-getopts" ,rust-getopts-0.2)
-        ;; TODO: glium has many cyclic dependencies with other packages
-        ;; ("rust-glium" ,rust-glium-0.24)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-rand" ,rust-rand-0.7)
-        ("rust-term" ,rust-term-0.6))))
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
     (home-page "https://github.com/image-rs/image-png.git")
     (synopsis "PNG decoding and encoding library in pure Rust")
     (description
-     "PNG decoding and encoding library in pure Rust.")
+     "This package is a PNG decoding and encoding library in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-png-0.15
