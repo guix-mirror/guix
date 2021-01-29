@@ -1571,9 +1571,6 @@ protocol.")))
 python-fixtures package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
-(define-public python2-fixtures-bootstrap
-  (package-with-python2 python-fixtures-bootstrap))
-
 (define-public python-fixtures
   (package
     (inherit python-fixtures-bootstrap)
@@ -1595,9 +1592,6 @@ python-fixtures package instead.")
     (description
      "Fixtures provides a way to create reusable state, useful when writing
 Python tests.")))
-
-(define-public python2-fixtures
-  (package-with-python2 python-fixtures))
 
 (define-public python-testrepository-bootstrap
   (package
