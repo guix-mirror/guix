@@ -927,23 +927,22 @@ and iOS.")
 (define-public rust-glutin-wgl-sys-0.1
   (package
     (name "rust-glutin-wgl-sys")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "glutin-wgl-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (uri (crate-uri "glutin_wgl_sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "08chlfzpj59q36qm212i4k879gvjzha7i90q90fds8pw3v4vn0gq"))))
+        (base32 "15hns8b3i7iy366m61dg7jlr7wgzz8z8cakgbj3apnv92ld9b99x"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-gl-generator" ,rust-gl-generator-0.11))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gl-generator" ,rust-gl-generator-0.14))))
     (home-page "https://github.com/tomaka/glutin")
     (synopsis "Wgl bindings for glutin")
-    (description "The wgl bindings for glutin.")
+    (description "This package provides wgl bindings for glutin.")
     (license license:asl2.0)))
 
 (define-public rust-image-0.23
