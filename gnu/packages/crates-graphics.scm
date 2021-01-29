@@ -2476,8 +2476,30 @@ the platform-specific getters provided by winit, or another library.")
     (description "This crate provides X11 library bindings for Rust.")
     (license license:expat)))
 
+(define-public rust-x11-clipboard-0.5
+  (package
+    (name "rust-x11-clipboard")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x11-clipboard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17c5yxxhknrp7y9mc7mp85ra8q4jw12c174m9yzbfr1vs2pkgsg5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-xcb" ,rust-xcb-0.9))))
+    (home-page "https://github.com/quininer/x11-clipboard")
+    (synopsis "x11 clipboard support for Rust")
+    (description "This package provides x11 clipboard support for Rust.")
+    (license license:expat)))
+
 (define-public rust-x11-clipboard-0.4
   (package
+    (inherit rust-x11-clipboard-0.5)
     (name "rust-x11-clipboard")
     (version "0.4.0")
     (source
@@ -2489,16 +2511,11 @@ the platform-specific getters provided by winit, or another library.")
        (sha256
         (base32
          "0nqdnswiyj28b1izjp5rzbc67cxpb5c8p4vh1xyndkirzs84vqqk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Tests require display server.
        #:cargo-inputs (("rust-xcb" ,rust-xcb-0.9))))
     (native-inputs
-     `(("python" ,python)))
-    (home-page "https://github.com/quininer/x11-clipboard")
-    (synopsis "x11 clipboard support for Rust")
-    (description "This package provides x11 clipboard support for Rust.")
-    (license license:expat)))
+     `(("python" ,python)))))
 
 (define-public rust-x11-dl-2
   (package
