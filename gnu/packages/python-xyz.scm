@@ -11240,9 +11240,6 @@ supported environment, or act as a frontend to continuous integration
 servers.")
     (license license:expat)))
 
-(define-public python2-tox
-  (package-with-python2 python-tox))
-
 (define-public python-jmespath
   (package
    (name "python-jmespath")
