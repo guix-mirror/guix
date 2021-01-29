@@ -510,13 +510,6 @@ classes
     (properties `((python2-variant . ,(delay python2-falcon))))
     (license license:asl2.0)))
 
-(define-public python2-falcon
-  (let ((falcon (package-with-python2 (strip-python2-variant python-falcon))))
-    (package
-      (inherit falcon)
-      (native-inputs
-       (alist-delete "python-rapidjson" (package-native-inputs falcon))))))
-
 (define-public python-falcon-cors
   (package
     (name "python-falcon-cors")
