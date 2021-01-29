@@ -16832,9 +16832,6 @@ class ShellOutSSHClientTests"))
 many of the popular cloud service providers using a unified API.")
     (license license:asl2.0)))
 
-(define-public python2-apache-libcloud
-  (package-with-python2 python-apache-libcloud))
-
 (define-public python-smmap
   (package
     (name "python-smmap")
