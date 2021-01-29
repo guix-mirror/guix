@@ -1037,9 +1037,6 @@ conventions and aliases in the same expression.")
 API for locking files.")
     (license license:expat)))
 
-(define-public python2-lockfile
-  (package-with-python2 python-lockfile))
-
 (define-public python-filelock
   (package
     (name "python-filelock")
