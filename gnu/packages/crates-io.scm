@@ -12314,8 +12314,33 @@ values to other threads.")
     (description "This package provides bindings for FreeType font library.")
     (license license:expat)))
 
+(define-public rust-freetype-sys-0.13
+  (package
+    (name "rust-freetype-sys")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "freetype-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06kkds31s6b1i39dyanwmzbnic7laia1kk3gfvx8sqncq08l0zd3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cmake" ,rust-cmake-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/PistonDevelopers/freetype-sys")
+    (synopsis "Low level binding for FreeType font library")
+    (description
+     "This package provides low level binding for FreeType font library.")
+    (license license:expat)))
+
 (define-public rust-freetype-sys-0.9
   (package
+    (inherit rust-freetype-sys-0.13)
     (name "rust-freetype-sys")
     (version "0.9.0")
     (source
@@ -12327,7 +12352,6 @@ values to other threads.")
        (sha256
         (base32
          "1i309xc6gcsgdfiim3j5f0sk08imr4frlzfa185iaxqciysqgikx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
@@ -12335,12 +12359,7 @@ values to other threads.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
      `(("freetype" ,freetype)
-       ("zlib" ,zlib)))
-    (home-page "https://github.com/PistonDevelopers/freetype-sys")
-    (synopsis "Low level binding for FreeType font library")
-    (description
-     "This package provides low level binding for FreeType font library.")
-    (license license:expat)))
+       ("zlib" ,zlib)))))
 
 (define-public rust-fs2-0.4
   (package
