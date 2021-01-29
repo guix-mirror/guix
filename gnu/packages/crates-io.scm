@@ -10291,7 +10291,7 @@ signing, and verification in pure Rust.")
 @code{Right} is a general purpose sum type with two cases.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-embed-resource-1.3
+(define-public rust-embed-resource-1
   (package
     (name "rust-embed-resource")
     (version "1.3.3")

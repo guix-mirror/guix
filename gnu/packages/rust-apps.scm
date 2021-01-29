@@ -654,7 +654,7 @@ blanks grouped by language.")
                (install-file "README.md" doc)
                #t))))
        #:cargo-inputs
-       (("rust-embed-resource" ,rust-embed-resource-1.3)
+       (("rust-embed-resource" ,rust-embed-resource-1)
         ("rust-derive-builder" ,rust-derive-builder-0.9)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-glob" ,rust-glob-0.3)
