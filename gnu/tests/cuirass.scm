@@ -256,7 +256,7 @@
                                    (= (assoc-ref build "buildstatus") -1))))
                          (else #f)))))
                  #:times 5
-                 #:delay 5)))
+                 #:delay 10)))
 
             (test-end)
             (exit (= (test-runner-fail-count (test-runner-current)) 0))))))
