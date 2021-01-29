@@ -1642,9 +1642,6 @@ Python tests.")))
      "Bootstrap package for python-testrepository.  Don't use this.")
     (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
-(define-public python2-testrepository-bootstrap
-  (package-with-python2 python-testrepository-bootstrap))
-
 (define-public python-testrepository
   (package
     (inherit python-testrepository-bootstrap)
@@ -1661,9 +1658,6 @@ Python tests.")))
     (description "Testrepository provides a database of test results which can
 be used as part of a developer's workflow to check things such as what tests
 have failed since the last commit or what tests are currently failing.")))
-
-(define-public python2-testrepository
-  (package-with-python2 python-testrepository))
 
 (define-public python-coverage
   (package
