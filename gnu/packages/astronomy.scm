@@ -327,6 +327,25 @@ produce realistic astronomical fields.  Stuff is part of the EFIGI development
 project.")
     (license license:gpl3+)))
 
+(define-public swarp
+  (package
+    (name "swarp")
+    (version "2.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/swarp/"
+                           "swarp-" version ".tar.gz"))
+       (sha256
+        (base32 "1i670waqp54vin1cn08mqckcggm9zqd69nk7yya2vvqpdizn6jpm"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/swarp")
+    (synopsis "FITS image resampling and co-addition")
+    (description
+     "SWarp is a program that resamples and co-adds together FITS images using
+any arbitrary astrometric projection defined in the WCS standard.")
+    (license license:gpl3+)))
+
 (define-public celestia
   (let ((commit "9dbdf29c4ac3d20afb2d9a80d3dff241ecf81dce"))
     (package
