@@ -336,9 +336,6 @@ classes for implementing common patterns for using dynamically loaded
 extensions.")
     (license asl2.0)))
 
-(define-public python2-stevedore
-  (package-with-python2 python-stevedore))
-
 (define-public python-tempest-lib
   (package
     (name "python-tempest-lib")
