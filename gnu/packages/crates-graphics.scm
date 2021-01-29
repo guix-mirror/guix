@@ -904,24 +904,23 @@ and iOS.")
 (define-public rust-glutin-glx-sys-0.1
   (package
     (name "rust-glutin-glx-sys")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "glutin-glx-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (uri (crate-uri "glutin_glx_sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0mxs3mil68xqqb49466n5rpwpcllj6fwqjgrcrzzmz26bv5ab40j"))))
+        (base32 "0l8kk60kq5v6hl1qr6ym2arzvbsgkh71aa8485cp901bq27kqfby"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-x11-dl" ,rust-x11-dl-2)
-        ("rust-gl-generator" ,rust-gl-generator-0.11))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gl-generator" ,rust-gl-generator-0.14)
+        ("rust-x11-dl" ,rust-x11-dl-2))))
     (home-page "https://github.com/tomaka/glutin")
     (synopsis "Glx bindings for glutin")
-    (description "The glx bindings for glutin.")
+    (description "This package provides glx bindings for glutin.")
     (license license:asl2.0)))
 
 (define-public rust-glutin-wgl-sys-0.1
