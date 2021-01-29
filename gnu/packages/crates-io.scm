@@ -1220,6 +1220,46 @@ using AES-NI for high performance.")
      "This package provides a failure resistant deserialization derive.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-alacritty-terminal-0.12
+  (package
+    (name "rust-alacritty-terminal")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alacritty_terminal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q7sm7rm5yny4lka8w4vji2v2crkkbwj3y8l5qnq01qlwmkjmkfd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.1)
+        ("rust-base64" ,rust-base64-0.12)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-dirs" ,rust-dirs-2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-anonymous-pipes" ,rust-mio-anonymous-pipes-0.1)
+        ("rust-mio-extras" ,rust-mio-extras-2)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-nix" ,rust-nix-0.18)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-regex-automata" ,rust-regex-automata-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-vte" ,rust-vte-0.10)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/alacritty/alacritty")
+    (synopsis "Library for writing terminal emulators")
+    (description
+     "This package provides a library for writing terminal emulators.")
+    (license license:asl2.0)))
+
 (define-public rust-alga-0.9
   (package
     (name "rust-alga")
