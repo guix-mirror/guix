@@ -2033,6 +2033,32 @@ the wayland protocol, client side.")
        (("rust-nix" ,rust-nix-0.14)
         ("rust-wayland-sys" ,rust-wayland-sys-0.21))))))
 
+(define-public rust-wayland-egl-0.28
+  (package
+    (name "rust-wayland-egl")
+    (version "0.28.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-egl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xd7iap0x4sidmy9dv02cdnxjhnbk9li7r7f39x9cg0i8xs50ly6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-wayland-client" ,rust-wayland-client-0.28)
+        ("rust-wayland-sys" ,rust-wayland-sys-0.28))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis "Bindings to libwayland-egl")
+    (description
+     "This crate provides bindings for OpenGL/Vulkan support for
+Wayland client apps.  It allows to create an EGLSurface from any
+WlSurface, which can then play the role of the base surface for
+initializing an OpenGL or Vulkan context.")
+    (license license:expat)))
+
 (define-public rust-wayland-protocols-0.23
   (package
     (name "rust-wayland-protocols")
