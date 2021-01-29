@@ -2521,9 +2521,6 @@ code introspection, and logging.")
      "Used only for bootstrapping python2-pbr, you should not need this.")
     (license license:asl2.0)))
 
-(define-public python2-pbr-minimal
-  (package-with-python2 python-pbr-minimal))
-
 (define-public python-pbr
   (package
     (inherit python-pbr-minimal)
@@ -2550,9 +2547,6 @@ and sensible default behaviors into your setuptools run.  It will set
 versions, process requirements files and generate AUTHORS and ChangeLog file
 from git information.
 ")))
-
-(define-public python2-pbr
-  (package-with-python2 python-pbr))
 
 (define-public python-pyrsistent
   (package
