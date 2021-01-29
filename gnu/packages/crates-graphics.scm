@@ -2379,8 +2379,37 @@ the wayland protocol, server side.")
         ("rust-wayland-sys" ,rust-wayland-sys-0.21)
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))))))
 
+(define-public rust-wayland-sys-0.28
+  (package
+    (name "rust-wayland-sys")
+    (version "0.28.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wayland-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16f03jsy7q6p2wpaazc4w4kycyyk0fz7lacpdbcizl9m1i7874v7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dlib" ,rust-dlib-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/smithay/wayland-rs")
+    (synopsis "FFI bindings to the various @file{libwayland-*.so} libraries")
+    (description
+     "This package provides FFI bindings to the various
+@file{libwayland-*.so} libraries.  You should only need this crate if
+you are working on custom Wayland protocol extensions.  Look at the
+crate @code{rust-wayland-client} for usable bindings.")
+    (license license:expat)))
+
 (define-public rust-wayland-sys-0.23
   (package
+    (inherit rust-wayland-sys-0.28)
     (name "rust-wayland-sys")
     (version "0.23.6")
     (source
@@ -2392,19 +2421,11 @@ the wayland protocol, server side.")
        (sha256
         (base32
          "1x2qafvj8hd2x5qfaan2dfpw9amg0f5g9sqrkdy7qvbddsl8jknr"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-dlib" ,rust-dlib-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/smithay/wayland-rs")
-    (synopsis "FFI bindings to the various libwayland-*.so libraries")
-    (description
-     "FFI bindings to the various libwayland-*.so libraries.
-You should only need this crate if you are working on custom wayland
-protocol extensions.  Look at the crate wayland-client for usable bindings.")
-    (license license:expat)))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-wayland-sys-0.21
   (package
