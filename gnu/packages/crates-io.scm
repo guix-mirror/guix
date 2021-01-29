@@ -65,6 +65,29 @@
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
 
+(define-public rust-ab-glyph-rasterizer-0.1
+  (package
+    (name "rust-ab-glyph-rasterizer")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ab_glyph_rasterizer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zzz78231w849xslz9s0pwjj6gp02wfbbxdpysqhwwq1vqr5xznr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libm" ,rust-libm-0.2))))
+    (home-page "https://github.com/alexheretic/ab-glyph")
+    (synopsis "Coverage rasterization for lines, quadratic & cubic beziers")
+    (description
+     "This package provides coverage rasterization for lines, quadratic and
+cubic beziers.")
+    (license license:asl2.0)))
+
 (define-public rust-abomonation-0.7
   (package
     (name "rust-abomonation")
