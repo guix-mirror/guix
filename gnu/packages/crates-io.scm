@@ -41913,6 +41913,28 @@ extended attributes.")
      "This package provides Rust bindings and wrappers for XCB.")
     (license license:expat)))
 
+(define-public rust-xcursor-0.3
+  (package
+    (name "rust-xcursor")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xcursor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "022x7jm71dyqrxwsjkqfgj8bx57y7g8yyz318qb80y5ffhaj76is"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nom" ,rust-nom-6))))
+    (home-page "https://crates.io/crates/xcursor")
+    (synopsis "Library for loading XCursor themes")
+    (description
+     "This package provides a library for loading XCursor themes.")
+    (license license:expat)))
+
 (define-public rust-xdg-2
   (package
     (name "rust-xdg")
