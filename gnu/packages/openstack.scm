@@ -305,9 +305,6 @@ to docs.openstack.org and developer.openstack.org.")
   for subunit.")
     (license asl2.0)))
 
-(define-public python2-os-testr
-  (package-with-python2 python-os-testr))
-
 (define-public python-stevedore
   (package
     (name "python-stevedore")
