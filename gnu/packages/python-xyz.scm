@@ -17035,9 +17035,6 @@ will fail (i.e.  it will exit with a non-zero exit code) when any of these
 requirements is not met.")
     (license license:expat)))
 
-(define-public python2-xenon
-  (package-with-python2 python-xenon))
-
 (define-public python-pysocks
   (package
     (name "python-pysocks")
