@@ -41677,6 +41677,30 @@ API.")
      "A simple library wrapping a handful of useful winapi functions.")
     (license license:expat)))
 
+(define-public rust-wio-0.2
+  (package
+    (name "rust-wio")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "199p404fp96w1f1c93bf1jrvaqwypxf3hmmldhww4jk4yhr9j4jx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/retep998/wio-rs")
+    (synopsis "Windows IO wrapper")
+    (description
+     "Wio is a middle-level wrapper around various things in Windows API.  It
+is designed to be a very thin layer around Windows API to provide a safe Rusty
+API but without hiding any functionality.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ws2-32-sys-0.2
   (package
     (name "rust-ws2-32-sys")
