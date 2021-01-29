@@ -6846,9 +6846,6 @@ releases.")
 common operations on files to be invoked on those path objects directly.")
     (license license:expat)))
 
-(define-public python2-pathpy
-  (package-with-python2 python-pathpy))
-
 (define-public python-simplegeneric
   (package
     (name "python-simplegeneric")
