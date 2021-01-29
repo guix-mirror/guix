@@ -3175,9 +3175,6 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 @code{httplib2} for use with @code{requests} session objects.")
     (license license:asl2.0)))
 
-(define-public python2-cachecontrol
-  (package-with-python2 python-cachecontrol))
-
 (define-public python-cachecontrol-0.11
   (package
     (inherit python-cachecontrol)
