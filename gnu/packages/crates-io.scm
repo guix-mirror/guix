@@ -9558,7 +9558,7 @@ Directory guidelines on macOS.")
 standard locations of directories for config, cache and other data.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-dirs-2.0
+(define-public rust-dirs-2
   (package
     (inherit rust-dirs-3)
     (name "rust-dirs")
@@ -9577,7 +9577,7 @@ standard locations of directories for config, cache and other data.")
 
 (define-public rust-dirs-1.0
   (package
-    (inherit rust-dirs-2.0)
+    (inherit rust-dirs-2)
     (name "rust-dirs")
     (version "1.0.5")
     (source
@@ -35219,7 +35219,7 @@ template language.")
    (build-system cargo-build-system)
    (arguments
     `(#:cargo-inputs
-      (("rust-dirs" ,rust-dirs-2.0)
+      (("rust-dirs" ,rust-dirs-2)
        ("rust-winapi" ,rust-winapi-0.3))))
    (home-page "https://github.com/Stebalien/term")
    (synopsis "Terminal formatting library")

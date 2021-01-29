@@ -30,7 +30,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -6521,7 +6521,7 @@ collection creation and deletion, and locking operations.")
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-parser" ,rust-ansi-parser-0.6)
-        ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-dirs" ,rust-dirs-2)
         ("rust-gdk" ,rust-gdk-0.13)
         ("rust-gtk" ,rust-gtk-0.8)
         ("rust-linkify" ,rust-linkify-0.4)
