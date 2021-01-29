@@ -350,8 +350,35 @@ for computer graphics.")
        (;("rust-glium" ,rust-glium-0.19)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-core-graphics-0.21
+  (package
+    (name "rust-core-graphics")
+    (version "0.21.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-graphics" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i9gwzkil9k276317by0mi1pxz036h412dmcp1bzmlq4adj5anha"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-graphics-types" ,rust-core-graphics-types-0.1)
+        ("rust-foreign-types" ,rust-foreign-types-0.3)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/servo/core-graphics-rs")
+    (synopsis "Bindings to Core Graphics for macOS")
+    (description
+     "This package provides bindings to Core Graphics for macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-graphics-0.17
   (package
+    (inherit rust-core-graphics-0.21)
     (name "rust-core-graphics")
     (version "0.17.3")
     (source
@@ -363,19 +390,13 @@ for computer graphics.")
        (sha256
         (base32
          "1acm3vygngnilzlr6klym5ywh7kfzh2xxrh2l41152hwmdl0jyan"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t     ; only for macOS
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-core-foundation" ,rust-core-foundation-0.6)
         ("rust-foreign-types" ,rust-foreign-types-0.3)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/servo/core-graphics-rs")
-    (synopsis "Bindings to Core Graphics for macOS")
-    (description
-     "Bindings to Core Graphics for macOS.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-core-video-sys-0.1
   (package
