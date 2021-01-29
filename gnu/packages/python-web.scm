@@ -507,7 +507,6 @@ classes
 @item Compatible with both CPython and PyPy
 @item Cython support for better performance when used with CPython
 @end itemize")
-    (properties `((python2-variant . ,(delay python2-falcon))))
     (license license:asl2.0)))
 
 (define-public python-falcon-cors

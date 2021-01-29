@@ -18969,16 +18969,7 @@ inferring type information using compile-time introspection.")
 @item Inter-process locks
 @item Generic helpers
 @end itemize\n")
-    (properties `((python2-variant . ,(delay python2-fasteners))))
     (license license:asl2.0)))
-
-(define-public python2-fasteners
-  (let ((base (package-with-python2 (strip-python2-variant python-fasteners))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-requests-file
   (package
