@@ -211,11 +211,10 @@ by managing a queue of pending work.")
                (base32
                 "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
 
-
 (define-public slurm-19.05
   (package
     (inherit slurm)
-    (version "19.05.3-2")
+    (version "19.05.8")
     (source (origin
               (inherit (package-source slurm))
               (method url-fetch)
@@ -224,7 +223,7 @@ by managing a queue of pending work.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
+                "10c9j4a9a6d4ibpf75006mn03p8xgpaprc247x2idakysjf2fw43"))))))
 
 ;; Same as Debian 10
 (define-public slurm-18.08
