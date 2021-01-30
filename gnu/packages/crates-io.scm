@@ -18176,18 +18176,11 @@ library.")
        (uri (crate-uri "libloading" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1ygliqa518jjxwa5ih4b2f8m984ib596vxmjb28pa5lb8zqdhhr4"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Enable unstable features
-           (substitute* "src/lib.rs"
-             (("//! A memory" all)
-              (string-append "#![feature(non_exhaustive)]\n" all)))))))
+        (base32 "1ygliqa518jjxwa5ih4b2f8m984ib596vxmjb28pa5lb8zqdhhr4"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #true
+       #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
