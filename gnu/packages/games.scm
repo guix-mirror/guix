@@ -6104,11 +6104,13 @@ small robot living in the nano world, repair its maker.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/teeworlds/teeworlds")
-                    (commit version)))
+                    (commit version)
+                    ;; There are two submodules in datasrc/{languages,maps}
+                    (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "169dl83q08zl4h813az8hjs4rs3dms9yjn6bnsld4fjcj0imvvc6"))
+                "1l19ksmimg6b8zzjy0skyhh7z11ql7n5gvilkv7ay5x2b9ndbqwz"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -6121,15 +6123,12 @@ small robot living in the nano world, repair its maker.")
                             (remove (cut string-match "(^.)|(^md5$)" <>)
                                     (scandir base-dir)))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
+         (add-after 'unpack 'patch-paths
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
@@ -6138,51 +6137,7 @@ small robot living in the nano world, repair its maker.")
                                (assoc-ref outputs "out")
                                "/share/teeworlds/data"
                                "\"")))
-
-             ;; Bam expects all files to have a recent time stamp.
-             (for-each (cut utime <> 1 1)
-                       (find-files "."))
-
-             ;; Do not use bundled libraries.
-             (substitute* "bam.lua"
-               (("local json = Compile.+$")
-                "local json = nil
-settings.link.libs:Add(\"jsonparser\")")
-               (("local png = Compile.+$")
-                "local png = nil
-settings.link.libs:Add(\"pnglite\")")
-               (("local wavpack = Compile.+$")
-                "local wavpack = nil
-settings.link.libs:Add(\"wavpack\")")
-               (("if config\\.zlib\\.value == 1")
-                "if config.zlib.value"))
-             (substitute* "src/engine/client/graphics_threaded.cpp"
-               (("engine/external/pnglite/pnglite\\.h")
-                "pnglite.h"))
-             (substitute* "src/engine/client/sound.cpp"
-               (("engine/external/wavpack/wavpack\\.h")
-                "wavpack/wavpack.h"))
-             #t))
-         (replace 'build
-           (lambda _
-             (invoke "bam" "-a" "-v" "conf=release")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((arch ,(system->linux-architecture
-                            (or (%current-target-system)
-                                (%current-system))))
-                    (build (string-append "build/" (if (string=? arch "i386")
-                                                       "x86" arch)
-                                          "/release/"))
-                    (data-built (string-append build "data/"))
-                    (out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin/"))
-                    (data (string-append out "/share/teeworlds/data/")))
-               (for-each (cut install-file <> bin)
-                         (map (cut string-append build <>)
-                              '("teeworlds" "teeworlds_srv")))
-               (copy-recursively data-built data)
-               #t))))))
+             #t)))))
     (inputs
      `(("freetype" ,freetype)
        ("glu" ,glu)
@@ -6193,17 +6148,17 @@ settings.link.libs:Add(\"wavpack\")")
        ("sdl2-image" ,sdl2-image)
        ("sdl2-mixer" ,sdl2-mixer)
        ("wavpack" ,wavpack)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("bam" ,bam)
-       ("python" ,python-wrapper)
+     `(("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
     (description "Teeworlds is an online multiplayer game.  Battle with up to
 16 players in a variety of game modes, including Team Deathmatch and Capture
 The Flag.  You can even design your own maps!")
-    (license license:bsd-3)))
+    (license (list license:bsd-3 license:cc-by-sa3.0)))) ; game+maps&languages
 
 (define-public enigma
   (package
