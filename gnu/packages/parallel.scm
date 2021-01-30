@@ -229,7 +229,7 @@ by managing a queue of pending work.")
 (define-public slurm-18.08
   (package
     (inherit slurm)
-    (version "18.08.5-2")
+    (version "18.08.9")
     (source
       (origin
         (inherit (package-source slurm))
@@ -238,7 +238,7 @@ by managing a queue of pending work.")
                version ".tar.bz2"))
         (sha256
          (base32
-          "0xrj12nmkhvhzi7cyh4yvdm8qa51ji3j82mgpq7sx87g30f9spn4"))))))
+          "1bgrpz75m7l4xhirsd0fvnkzlkrl8v2qpmjcz60barc5qm2kn457"))))))
 
 (define-public slurm-drmaa
   (package
