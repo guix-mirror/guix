@@ -19,7 +19,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
@@ -84,6 +84,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages plotutils)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages pulseaudio)  ; libsndfile, libsamplerate
   #:use-module (gnu packages python)
@@ -538,6 +539,7 @@ applications.")
        ("freetype" ,freetype)
        ("glew" ,glew)
        ("openal" ,openal)
+       ("pugixml" ,pugixml)
        ("python" ,python)
        ("python-numpy" ,python-numpy)
        ("tbb" ,tbb)
@@ -1088,7 +1090,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "2.0.13")
+    (version "2.2.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1097,23 +1099,26 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0czcls82v71wkw1syib16ncg7463hx0py0xclycsiv4w6i3wlkzz"))))
+                "0wzh5n527l7ia1754cf9xmbvv4ya6hj34dy6cbq9xk9372h8gd9q"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
-    ;; https://github.com/OpenImageIO/oiio/blob/master/INSTALL
+    ;; <https://github.com/OpenImageIO/oiio/blob/master/INSTALL.md>
     (arguments
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:configure-flags (list "-DUSE_EXTERNAL_PUGIXML=1")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
+       ("fmt" ,fmt)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
+       ("pugixml" ,pugixml)
        ("python" ,python-wrapper)
        ("pybind11" ,pybind11)
        ("robin-map" ,robin-map)
