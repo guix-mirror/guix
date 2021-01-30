@@ -108,7 +108,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "20.11.2")
+   (version "20.11.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -116,7 +116,7 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "15h2vs58apgdz02ijgr46090vjyaa81qcm76mm6fxlvkkfd4pyxp"))
+              "1s70x6yh60sx63dgmp5rlhq8jcz7kxv9pk8gbs9v1jg8zps5h5bk"))
             (modules '((guix build utils)))
             (snippet
              '(begin
