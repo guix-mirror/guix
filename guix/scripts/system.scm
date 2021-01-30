@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -363,11 +364,14 @@ connection to the store."
   "Switch the system profile to the generation specified by SPEC, and
 re-install bootloader with a configuration file that uses the specified system
 generation as its default entry.  STORE is an open connection to the store."
-  (let ((number (relative-generation-spec->number %system-profile spec)))
+  (let* ((number (relative-generation-spec->number %system-profile spec))
+         (generation (generation-file-name %system-profile number))
+         (activate (string-append generation "/activate")))
     (if number
         (begin
           (reinstall-bootloader store number)
-          (switch-to-generation* %system-profile number))
+          (switch-to-generation* %system-profile number)
+          (unless-file-not-found (primitive-load activate)))
         (leave (G_ "cannot switch to system generation '~a'~%") spec))))
 
 (define* (system-bootloader-name #:optional (system %system-profile))
