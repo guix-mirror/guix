@@ -44,6 +44,28 @@ acts like @code{convert(T, x)}, but without the restriction of returning a
 be GPU compatible without throwing away the wrapper.")
     (license license:expat)))
 
+(define-public julia-benchmarktools
+  (package
+    (name "julia-benchmarktools")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaCI/BenchmarkTools.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nsx21m3i5h22lkgyrmfj6r085va6ag40khwssqs8y7l0wz98lvp"))))
+    (build-system julia-build-system)
+    (propagated-inputs `(("julia-json" ,julia-json)))
+    (home-page "https://github.com/JuliaCI/BenchmarkTools.jl")
+    (synopsis "Benchmarking framework for the Julia language")
+    (description "@code{BenchmarkTools.jl} makes performance tracking of Julia
+code easy by supplying a framework for writing and running groups of
+benchmarks as well as comparing benchmark results.")
+    (license license:expat)))
+
 (define-public julia-compat
   (package
     (name "julia-compat")
