@@ -266,6 +266,10 @@ drv1="`guix system image -t iso9660 "$tmpfile" -d`"
 drv2="`guix system image -t iso9660 "$tmpfile" -d`"
 test "$drv1" = "$drv2"
 
+# Check whether the graph commands work as expected.
+guix system extension-graph "$tmpfile" | grep 'label = "file-systems"'
+guix system shepherd-graph "$tmpfile" | grep 'label = "guix-daemon"'
+
 make_user_config "group-that-does-not-exist" "users"
 if guix system build "$tmpfile" -n 2> "$errorfile"
 then false
