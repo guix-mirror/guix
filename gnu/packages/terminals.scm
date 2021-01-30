@@ -401,7 +401,7 @@ combining, and so on, with a simple interface.")
                 "1vvjydqf0ax47nvdyyl67jafw5b3sfsav00xid6qpgia1gs2r72n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
