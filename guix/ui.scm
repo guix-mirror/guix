@@ -1968,7 +1968,7 @@ way."
     display-generation-change))
 
 (define (switch-to-generation* profile number)
-  "Like 'switch-generation', but display what is happening."
+  "Like 'switch-to-generation', but display what is happening."
   (let ((previous (switch-to-generation profile number)))
     (display-generation-change previous number)))
 
