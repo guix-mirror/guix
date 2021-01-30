@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,14 +20,22 @@
 (define-module (gnu packages mastodon)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages time)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages time))
 
 (define-public toot
   (package
@@ -66,6 +74,67 @@ Features include:
 @item Simple switching between authenticated in Mastodon accounts
 @end itemize")
     (license license:gpl3)))
+
+(define-public tootle
+  (package
+    (name "tootle")
+    (version "1.0-alpha2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/bleakgrey/tootle")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "16xz58xasprza89j3ljrfpgvn05yc00p1ch96nyia99r1dyms9rx"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson/post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "src/Dialogs/NewAccount.vala"
+               (("xdg-mime") (which "xdg-mime")))
+             ;; Patch for building on glib < 2.64
+             (substitute* "src/Build.vala"
+               (("(os_name = ).*" _ first) (string-append first "\"GNU\";\n"))
+               (("(os_ver = ).*" _ first) (string-append first "\"Guix\";\n"))
+               (("GLib.Environment.get_os_info.*") "\"unknown\";\n"))
+             #t))
+         (add-after 'install 'symlink-package
+           (lambda* (#:key outputs #:allow-other-keys)
+             (symlink "com.github.bleakgrey.tootle"
+                      (string-append (assoc-ref outputs "out") "/bin/tootle"))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")     ; for glib-compile-resources
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
+       ("libsoup" ,libsoup)
+       ("vala" ,vala-0.50)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://github.com/bleakgrey/tootle")
+    (synopsis "GTK3 client for Mastodon")
+    (description "Tootle is a GTK client for Mastodon.  It provides a clean,
+native interface that allows you to integrate Mastodon's social experience
+seamlessly with your desktop environment.")
+    (license license:gpl3+)))
 
 (define-public python-mastodon-py
   (package
