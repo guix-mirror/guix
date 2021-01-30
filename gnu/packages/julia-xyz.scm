@@ -32,7 +32,7 @@
        (uri (git-reference
              (url "https://github.com/JuliaGPU/Adapt.jl")
              (commit (string-append "v" version))))
-       (file-name "Adapt")
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1lks6k3a1gvwlplld47nh6xfy3nnlpc0vhkzg6zg0qn33qdmavrg"))))
     (build-system julia-build-system)
