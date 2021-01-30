@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -105,10 +105,11 @@ scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
-(define-public autoconf-2.70
+;; This is the renaissance version, which is not widely supported yet.
+(define-public autoconf-2.71
   (package
     (inherit autoconf-2.69)
-    (version "2.70")
+    (version "2.71")
     (source
      (origin
        (method url-fetch)
@@ -116,7 +117,7 @@ know anything about Autoconf or M4.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1ipckz0wr2mvhj9n3ys54fmf2aksin6bhqvzl304bn6rc1w257ps"))))
+         "197sl23irn6s9pd54rxj5vcp5y8dv65jb9yfqgr2g56cxg7q6k7i"))))
     (arguments
      (substitute-keyword-arguments (package-arguments autoconf-2.69)
        ((#:tests? _ #f)
