@@ -1881,7 +1881,7 @@ in small sizes, the text looks crisper.")
 (define-public font-juliamono
   (package
     (name "font-juliamono")
-    (version "0.025")
+    (version "0.031")
     (source
      (origin
        (method git-fetch)
@@ -1890,7 +1890,7 @@ in small sizes, the text looks crisper.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w8mpl9zc1y4j1f26ikbz5g9dqsszhikp4r9p1d3ch3b5ayb5c3m"))))
+        (base32 "0pcz2qaw0g0gak4plvhgg3m76h4gamffa373r52dzx0qwn1i1cf1"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
