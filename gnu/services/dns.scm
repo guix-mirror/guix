@@ -256,9 +256,9 @@
   (let ((id (knot-key-configuration-id key)))
     (unless (and (string? id) (not (equal? id "")))
       (error-out "key id must be a non empty string.")))
-  (unless (memq '(#f hmac-md5 hmac-sha1 hmac-sha224 hmac-sha256 hmac-sha384 hmac-sha512)
-                (knot-key-configuration-algorithm key))
-          (error-out "algorithm must be one of: #f, 'hmac-md5, 'hmac-sha1,
+  (unless (memq (knot-key-configuration-algorithm key)
+                '(#f hmac-md5 hmac-sha1 hmac-sha224 hmac-sha256 hmac-sha384 hmac-sha512))
+    (error-out "algorithm must be one of: #f, 'hmac-md5, 'hmac-sha1,
 'hmac-sha224, 'hmac-sha256, 'hmac-sha384 or 'hmac-sha512")))
 
 (define (verify-knot-keystore-configuration keystore)
@@ -267,9 +267,9 @@
   (let ((id (knot-keystore-configuration-id keystore)))
     (unless (and (string? id) (not (equal? id "")))
       (error-out "keystore id must be a non empty string.")))
-  (unless (memq '(pem pkcs11)
-                (knot-keystore-configuration-backend keystore))
-          (error-out "backend must be one of: 'pem or 'pkcs11")))
+  (unless (memq (knot-keystore-configuration-backend keystore)
+                '(pem pkcs11))
+    (error-out "backend must be one of: 'pem or 'pkcs11")))
 
 (define (verify-knot-policy-configuration policy)
   (unless (knot-policy-configuration? policy)
@@ -288,7 +288,7 @@
     (unless (and (string? id) (not (equal? id "")))
       (error-out "acl id must be a non empty string."))
     (unless (and (list? address)
-                 (fold (lambda (x1 x2) (and (string? x1) (string? x2))) "" address))
+                 (every string? address))
       (error-out "acl address must be a list of strings.")))
   (unless (boolean? (knot-acl-configuration-deny? acl))
     (error-out "deny? must be #t or #f.")))
