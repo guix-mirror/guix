@@ -26,7 +26,7 @@
 ;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2020 Robert Karszniewicz <avoidr@posteo.de>
+;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1430,7 +1430,7 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.18.0")
+   (version "0.18.1")
    (source
     (origin
      (method git-fetch)
@@ -1441,7 +1441,7 @@ messenger protocol.")
      (file-name (string-append name "-" version "-checkout"))
      (sha256
       (base32
-       "0d0mwgxffg4nhai62irf8lyhd1whp9s4k892rsmqz1sra3pbjcg9"))))
+       "01rvlf94d4rkrygnnjak3cg16hrrqyi1rn9nx65y17qk2nbyh68g"))))
    (build-system cmake-build-system)
    (arguments
     `(#:configure-flags '("-DENABLE_TESTS=on")
@@ -1466,7 +1466,6 @@ messenger protocol.")
       ("filteraudio" ,filteraudio)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
-      ("libsodium" ,libsodium)
       ("c-toxcore" ,c-toxcore)
       ("gtk+" ,gtk+)
       ("libvpx" ,libvpx)
