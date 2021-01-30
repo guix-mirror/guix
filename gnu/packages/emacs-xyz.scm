@@ -2610,29 +2610,32 @@ using the DOT syntax, and use Graphviz to convert these files to diagrams.")
     (license license:gpl2+)))
 
 (define-public emacs-imenu-list
-  (package
-    (name "emacs-imenu-list")
-    (version "0.8")
-    (source
-     (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/bmag/imenu-list")
-         (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "13xh9bdl3k6ccfq83wjmkpi4269qahv4davki4wq18dr4amrzhlx"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/bmag/imenu-list")
-    (synopsis
-     "Automatically tracks the current buffer's imenu entries")
-    (description
-     "This Emacs minor mode creates an automatically updated buffer called
+  (let ((commit "46008738f8fef578a763c308cf6695e5b4d4aa77")
+        (revision "0")
+        (version "0.8"))
+    (package
+      (name "emacs-imenu-list")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/bmag/imenu-list")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "14l3yw9y1nk103s7z5i1fmd6kvlb2p6ayi6sf9l1x1ydg9glrpl8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/bmag/imenu-list")
+      (synopsis
+       "Automatically tracks the current buffer's imenu entries")
+      (description
+       "This Emacs minor mode creates an automatically updated buffer called
 @code{*Ilist*} that is populated with the current buffer's imenu entries.
 This buffer is typically shown as a sidebar (Emacs vertically splits the
 window).")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-mmm-mode
   (package
