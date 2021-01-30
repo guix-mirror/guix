@@ -29,7 +29,6 @@
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -665,9 +664,8 @@ key URIs using the standard otpauth:// scheme.")
                (install-file "qtpass.1" man)
                #t)))
          (add-after 'install 'wrap-qt
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program "qtpass" #:output out #:inputs inputs))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "qtpass")
              #t))
          (add-before 'check 'check-setup
            ;; Make Qt render "offscreen", required for tests.

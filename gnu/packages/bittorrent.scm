@@ -10,7 +10,6 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -448,9 +447,8 @@ desktops.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-qt
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program "qbittorrent" #:output out #:inputs inputs))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "qbittorrent")
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
