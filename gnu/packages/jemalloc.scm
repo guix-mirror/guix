@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2021 Ryan Sundberg <ryan@arctype.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,10 +31,10 @@
   #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu))
 
-(define-public jemalloc
+(define-public jemalloc-4.5.0
   (package
     (name "jemalloc")
-    (version "5.2.1")
+    (version "4.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +42,7 @@
                     version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1xl7z0vwbn5iycg7amka9jd6hxd8nmfk7nahi4p9w2bnw9f0wcrl"))))
+                "10373xhpc10pgmai9fkc1z0rs029qlcb3c0qfnvkbwdlcibdh2cl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -61,7 +62,6 @@
               (list "--disable-thp" "CPPFLAGS=-maltivec"))
              (_
               (list "--disable-thp"))))))
-    (inputs `(("perl" ,perl)))
     ;; Install the scripts to a separate output to avoid referencing Perl and
     ;; Bash in the default output, saving ~75 MiB on the closure.
     (outputs '("out" "bin"))
@@ -72,10 +72,10 @@
 fragmentation avoidance and scalable concurrency support.")
     (license bsd-2)))
 
-(define-public jemalloc-4.5.0
+(define-public jemalloc
   (package
-    (inherit jemalloc)
-    (version "4.5.0")
+    (inherit jemalloc-4.5.0)
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,5 +83,12 @@ fragmentation avoidance and scalable concurrency support.")
                     version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "10373xhpc10pgmai9fkc1z0rs029qlcb3c0qfnvkbwdlcibdh2cl"))))
-    (inputs '())))
+                "1xl7z0vwbn5iycg7amka9jd6hxd8nmfk7nahi4p9w2bnw9f0wcrl"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments jemalloc-4.5.0)
+        ;; Disable the thread local storage model in jemalloc 5 to prevent
+        ;; shared libraries linked to libjemalloc from crashing on dlopen()
+        ;; https://github.com/jemalloc/jemalloc/issues/937
+        ((#:configure-flags base-configure-flags '())
+         `(cons "--disable-initial-exec-tls" ,base-configure-flags))))
+    (inputs `(("perl" ,perl)))))
