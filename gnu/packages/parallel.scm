@@ -194,6 +194,8 @@ by managing a queue of pending work.")
 ;; in incompatible ways, as noted in
 ;; <https://slurm.schedmd.com/troubleshoot.html#network>.  Thus, keep older
 ;; releases here.  See also <https://issues.guix.gnu.org/44387>.
+;; As noted in the link, YY.MM is the release scheme, and the 'maintenance'
+;; digit does not introduce incompatibilities.
 
 (define-public slurm-20.02
   (package
