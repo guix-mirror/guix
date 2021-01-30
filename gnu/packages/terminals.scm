@@ -1206,142 +1206,71 @@ made by suckless.")
 (define-public alacritty
   (package
     (name "alacritty")
-    (version "0.4.1")
+    (version "0.7.1")
     (source
      (origin
+       ;; XXX: The crate at "crates.io" has limited contents.  In particular,
+       ;; it does not contain "extra" directory with completions, icon, etc.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/jwilm/alacritty")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05jcg33ifngpzw2hdhgb614j87ihhhlqgar0kky183rywg0dxikg"))
-       (modules '((guix build utils)))
-       (snippet
-         ;; Don't use a custom location for winit-0.20-alpha6.
-         '(begin (substitute* "Cargo.toml"
-                   (("winit .*") ""))
-                 #t))))
+        (base32 "1b9hy3ya72hhpl8nkayc7dy4f97xp75np48dm5na5pgyv8b45agi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-clap" ,rust-clap-2)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-time" ,rust-time-0.1)
-        ("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-serde" ,rust-serde-1)
-        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
-        ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-glutin" ,rust-glutin-0.22) ; adjust 'patch-glutin-libgl-path as needed
-        ("rust-notify" ,rust-notify-4)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-parking-lot" ,rust-parking-lot-0.9)
-        ("rust-urlocator" ,rust-urlocator-0.1)
-        ("rust-xdg" ,rust-xdg-2)
-        ("rust-image" ,rust-image-0.22)
+     `(#:cargo-test-flags '("--release" "--" "--skip=config_read_eof")
+       #:cargo-inputs
+       (("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.1)
+        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.12)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-cocoa" ,rust-cocoa-0.24)
+        ("rust-copypasta" ,rust-copypasta-0.7)
+        ("rust-crossfont" ,rust-crossfont-0.2)
         ("rust-dirs" ,rust-dirs-2)
-        ("rust-x11-dl" ,rust-x11-dl-2)
-        ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-base64" ,rust-base64-0.11)
-        ("rust-bigflags" ,rust-bitflags-1)
-        ("rust-fnv" ,rust-fnv-1)
-        ("rust-mio" ,rust-mio-0.6)
-        ("rust-mio-extras" ,rust-mio-extras-2)
-        ("rust-terminfo" ,rust-terminfo-0.6)
-        ("rust-url" ,rust-url-2)
-        ("rust-vte" ,rust-vte-0.3)
-        ("rust-nix" ,rust-nix-0.15)
-        ("rust-miow" ,rust-miow-0.3)
-        ("rust-mio-anonymous-pipes" ,rust-mio-anonymous-pipes-0.1)
-        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
-        ("rust-signal-hook" ,rust-signal-hook-0.1)
-        ("rust-clipboard-win" ,rust-clipboard-win-2.1)
-        ("rust-objc" ,rust-objc-0.2)
-        ("rust-objc-id" ,rust-objc-id-0.1)
-        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
-        ("rust-x11-clipboard" ,rust-x11-clipboard-0.4)
-        ("rust-smithay-clipboard" ,rust-smithay-clipboard-0.3)
-        ("rust-wayland-client" ,rust-wayland-client-0.23)
-        ("rust-euclid" ,rust-euclid-0.20)
-        ("rust-foreign-types" ,rust-foreign-types-0.5)
-        ("rust-servo-fontconfig" ,rust-servo-fontconfig-0.4)
-        ("rust-freetype-rs" ,rust-freetype-rs-0.23)
-        ("rust-core-foundation" ,rust-core-foundation-0.6)
-        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
-        ("rust-core-text" ,rust-core-text-13)
-        ("rust-core-graphics" ,rust-core-graphics-0.17)
-        ("rust-dwrote" ,rust-dwrote-0.9)
-        ("rust-winpty-sys" ,rust-winpty-sys-0.4))
-       #:cargo-development-inputs
-       (("rust-rustc-tools-util" ,rust-rustc-tools-util-0.2)
-        ("rust-gl-generator" ,rust-gl-generator-0.14)
-        ("rust-andrew" ,rust-andrew-0.2)
-        ("rust-smithay-client-toolkit" ,rust-smithay-client-toolkit-0.6)
         ("rust-embed-resource" ,rust-embed-resource-1)
-        ("rust-http-req" ,rust-http-req-0.5)
-        ("rust-zip" ,rust-zip-0.5)
-        ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-named-pipe" ,rust-named-pipe-0.4)
-        ("rust-winapi" ,rust-winapi-0.3))
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-gl-generator" ,rust-gl-generator-0.14)
+        ;; XXX: Adjust `add-absolute-library-references' phase when updating
+        ;; glutin input.
+        ("rust-glutin" ,rust-glutin-0.26)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-notify" ,rust-notify-4)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-png" ,rust-png-0.16)
+        ("rust-raw-window-handle" ,rust-raw-window-handle-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-urlocator" ,rust-urlocator-0.1)
+        ("rust-wayland-client" ,rust-wayland-client-0.28)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11-dl" ,rust-x11-dl-2)
+        ("rust-xdg" ,rust-xdg-2))
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'add-absolute-library-references
            (lambda* (#:key inputs cargo-inputs vendor-dir #:allow-other-keys)
-             (let* ((glutin-name ,(package-name rust-glutin-0.22))
-                    (glutin-version ,(package-version rust-glutin-0.22))
+             (let* ((glutin-name ,(package-name rust-glutin-0.26))
+                    (glutin-version ,(package-version rust-glutin-0.26))
                     (glutin-api (string-append glutin-name "-" glutin-version
                                                ".tar.gz/src/api/"))
-                    (smithay-client-toolkit-name
-                     ,(package-name rust-smithay-client-toolkit-0.6))
-                    (smithay-client-toolkit-version
-                     ,(package-version rust-smithay-client-toolkit-0.6))
-                    (smithay-client-toolkit-src
-                     (string-append smithay-client-toolkit-name "-"
-                                    smithay-client-toolkit-version ".tar.gz/src"))
-                    (wayland-sys-name ,(package-name rust-wayland-sys-0.23))
-                    (wayland-sys-version ,(package-version rust-wayland-sys-0.23))
-                    (wayland-sys-src (string-append wayland-sys-name "-"
-                                                    wayland-sys-version
-                                                    ".tar.gz/src"))
-                    (libxkbcommon (assoc-ref inputs "libxkbcommon"))
-                    (libwayland (assoc-ref inputs "wayland"))
                     (mesa (assoc-ref inputs "mesa")))
-              (substitute* (string-append vendor-dir "/" glutin-api "glx/mod.rs")
-                (("libGL.so") (string-append mesa "/lib/libGL.so")))
-              (substitute* (string-append vendor-dir "/" glutin-api "egl/mod.rs")
-                (("libEGL.so") (string-append mesa "/lib/libEGL.so")))
-              (substitute* (string-append vendor-dir "/"
-                                          smithay-client-toolkit-src
-                                          "/keyboard/ffi.rs")
-                (("libxkbcommon\\.so")
-                 (string-append libxkbcommon "/lib/libxkbcommon.so")))
-              (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                          "/server.rs")
-                (("libwayland-server\\.so")
-                 (string-append libwayland "/lib/libwayland-server.so")))
-              (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                          "/cursor.rs")
-                (("libwayland-cursor\\.so")
-                 (string-append libwayland "/lib/libwayland-cursor.so")))
-              (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                          "/egl.rs")
-                (("libwayland-egl\\.so")
-                 (string-append libwayland "/lib/libwayland-egl.so")))
-              (substitute* (string-append vendor-dir "/" wayland-sys-src
-                                          "/client.rs")
-                (("libwayland-client\\.so")
-                 (string-append libwayland "/lib/libwayland-client.so")))
-              #t)))
-         (add-after 'configure 'remove-alacritty-vendor
-           (lambda* (#:key vendor-dir #:allow-other-keys)
-              ;; We don't want Alacritty to be a dependency of itself
-              ;; If we don't delete it from guix-vendor then build will fail
-              ;; because Alacritty has a virtual workspace Cargo.toml.
-              (delete-file-recursively
-                (string-append vendor-dir "/alacritty-" ,version ".tar.xz"))
-              #t))
+               (substitute*
+                   (string-append vendor-dir "/" glutin-api "glx/mod.rs")
+                 (("libGL.so") (string-append mesa "/lib/libGL.so")))
+               (substitute*
+                   (string-append vendor-dir "/" glutin-api "egl/mod.rs")
+                 (("libEGL.so") (string-append mesa "/lib/libEGL.so")))
+               #t)))
          (replace 'install
+           ;; Upstream install script only takes care of executable.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin"))
@@ -1350,24 +1279,19 @@ made by suckless.")
                     (tic   (string-append (assoc-ref inputs "ncurses") "/bin/tic"))
                     (man   (string-append share "/man/man1"))
                     (alacritty-bin "target/release/alacritty"))
-
                ;; Install the executable.
                (install-file alacritty-bin bin)
-
                ;; Install man pages.
                (mkdir-p man)
                (copy-file "extra/alacritty.man"
                           (string-append man "/alacritty.1"))
-
                ;; Install desktop file.
-               (install-file "extra/linux/alacritty.desktop"
+               (install-file "extra/linux/Alacritty.desktop"
                              (string-append share "/applications"))
-
-               ;; Install icon
+               ;; Install icon.
                (mkdir-p icons)
                (copy-file "extra/logo/alacritty-term.svg"
                           (string-append icons "/Alacritty.svg"))
-
                ;; Install terminfo.
                (mkdir-p (string-append share "/terminfo"))
                ;; We don't compile alacritty-common entry because
@@ -1375,18 +1299,19 @@ made by suckless.")
                (invoke tic "-x" "-e" "alacritty,alacritty-direct"
                        "-o" (string-append share "/terminfo/")
                        "extra/alacritty.info")
-
                ;; Install completions.
-               (install-file
-                 "extra/completions/alacritty.bash"
-                 (string-append out "/etc/bash_completion.d"))
-               (install-file
-                 "extra/completions/_alacritty"
-                 (string-append share "/zsh/site-functions"))
-               (install-file
-                 "extra/completions/alacritty.fish"
-                 (string-append share "/fish/vendor_completions.d"))
+               (install-file "extra/completions/alacritty.bash"
+                             (string-append out "/etc/bash_completion.d"))
+               (install-file "extra/completions/_alacritty"
+                             (string-append share "/zsh/site-functions"))
+               (install-file "extra/completions/alacritty.fish"
+                             (string-append share "/fish/vendor_completions.d"))
                #t))))))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("ncurses" ,ncurses)
+       ("pkg-config" ,pkg-config)
+       ("python3" ,python)))
     (inputs
      `(("expat" ,expat)
        ("fontconfig" ,fontconfig)
@@ -1400,11 +1325,6 @@ made by suckless.")
        ("libxxf86vm" ,libxxf86vm)
        ("wayland" ,wayland)
        ("mesa" ,mesa)))
-    (native-inputs
-     `(("cmake" ,cmake)
-       ("ncurses" ,ncurses)
-       ("pkg-config" ,pkg-config)
-       ("python3" ,python)))
     (native-search-paths
      ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
      ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
