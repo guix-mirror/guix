@@ -2408,8 +2408,8 @@ tester module.")
   (sbcl-package->ecl-package sbcl-ptester))
 
 (define-public sbcl-puri
-  (let ((commit "ef5afb9e5286c8e952d4344f019c1a636a717b97")
-        (revision "1"))
+  (let ((commit "4bbab89d9ccbb26346899d1f496c97604fec567b")
+        (revision "2"))
     (package
       (name "sbcl-puri")
       (version (git-version "1.5.7" revision commit))
@@ -2419,13 +2419,13 @@ tester module.")
          (uri (git-reference
                (url "http://git.kpe.io/puri.git")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "puri" version))
          (sha256
-          (base32 "1vm25pdl92laj72p5vyd538kf3cjy2655z6bdc99h20ana2p231s"))))
+          (base32 "0gq2rsr0aihs0z20v4zqvmdl4szq53b52rh97pvnmwrlbn4mapmd"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("ptester" ,sbcl-ptester)))
-      (home-page "http://quickdocs.org/puri/")
+      (home-page "http://puri.kpe.io/")
       (synopsis "Portable URI Library")
       (description
        "This is a portable Universal Resource Identifier library for Common
