@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages netpbm)
@@ -630,3 +632,63 @@ Gpredict can also predict the time of future passes for a satellite, and
 provide you with detailed information about each pass.")
     (home-page "http://gpredict.oz9aec.net/index.php")
     (license license:gpl2+)))
+
+(define-public indi
+  (package
+    (name "indi")
+    (version "1.8.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/indilib/indi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19gm7rbnm3295g2i8mdzfslpz0vrcgfmbl59311qpszvlxbmyd2r"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list
+          "-DINDI_BUILD_UNITTESTS=ON"
+          "-DCMAKE_BUILD_TYPE=Release"
+          (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+          (string-append "-DUDEVRULES_INSTALL_DIR=" out "/lib/udev/rules.d")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace  'check
+           (lambda _
+             (chdir "test")
+             (invoke "ctest")
+             (chdir "..")
+             #t))
+         (add-before 'install 'set-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/udev/rules.d")))
+             #t)))))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (inputs
+     `(("cfitsio" ,cfitsio)
+       ("curl" ,curl)
+       ("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libnova" ,libnova)
+       ("libtiff" ,libtiff)
+       ("libusb" ,libusb)
+       ("zlib" ,zlib)))
+    (home-page "https://www.indilib.org")
+    (synopsis "Library for astronimical intrumentation control")
+    (description
+     "INDI (Instrument-Neutral Device Interface) is a distributed XML-based
+control protocol designed to operate astronomical instrumentation.  INDI is
+small, flexible, easy to parse, scalable, and stateless.  It supports common
+DCS functions such as remote control, data acquisition, monitoring, and a lot
+more.")
+    (license (list license:bsd-3
+                   license:gpl2+
+                   license:lgpl2.0+
+                   license:lgpl2.1+))))
