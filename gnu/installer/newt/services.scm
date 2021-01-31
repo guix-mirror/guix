@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,9 +35,9 @@
 environments."
   (let ((items (filter desktop-system-service? %system-services)))
     (run-checkbox-tree-page
-     #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
-install. If you select multiple desktops environments, you will be able to \
-choose the one to use on the log-in screen.")
+     #:info-text (G_ "Please select the desktop environment(s) you wish to \
+install.  If you select multiple desktop environments here, you will be able \
+to choose from them later when you log in.")
      #:title (G_ "Desktop environment")
      #:items items
      #:selection (map system-service-recommended? items)
