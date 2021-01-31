@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -241,11 +241,25 @@ identifier.  Otherwise, return #f."
   "INSERT INTO ValidPaths (path, hash, registrationTime, deriver, narSize)
 VALUES (:path, :hash, :time, :deriver, :size)")
 
+(define-inlinable (assert-integer proc in-range? key number)
+  (unless (integer? number)
+    (throw 'wrong-type-arg proc
+           "Wrong type argument ~A: ~S" (list key number)
+           (list number)))
+  (unless (in-range? number)
+    (throw 'out-of-range proc
+           "Integer ~A out of range: ~S" (list key number)
+           (list number))))
+
 (define* (update-or-insert db #:key path deriver hash nar-size time)
   "The classic update-if-exists and insert-if-doesn't feature that sqlite
 doesn't exactly have... they've got something close, but it involves deleting
 and re-inserting instead of updating, which causes problems with foreign keys,
 of course. Returns the row id of the row that was modified or inserted."
+
+  ;; Make sure NAR-SIZE is valid.
+  (assert-integer "update-or-insert" positive? #:nar-size nar-size)
+  (assert-integer "update-or-insert" (cut >= <> 0) #:time time)
 
   ;; It's important that querying the path-id and the insert/update operation
   ;; take place in the same transaction, as otherwise some other
