@@ -412,8 +412,7 @@ all its dependencies, and ready to be installed on \"foreign\" distributions.")
 
 (define job-name
   ;; Return the name of a package's job.
-  (compose string->symbol
-           (cut package-full-name <> "-")))
+  (compose string->symbol package-name))
 
 (define package->job
   (let ((base-packages
