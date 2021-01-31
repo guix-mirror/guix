@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,8 @@
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
+  #:use-module (guix i18n)
+  #:use-module (guix diagnostics)
   #:autoload   (guix channels) (channel)
   #:export (build-product?
             build-product-id

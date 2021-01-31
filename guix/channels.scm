@@ -20,7 +20,6 @@
 
 (define-module (guix channels)
   #:use-module (git)
-  #:use-module (guix ci)
   #:use-module (guix git)
   #:use-module (guix git-authenticate)
   #:use-module ((guix openpgp)
