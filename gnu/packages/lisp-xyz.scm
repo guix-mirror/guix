@@ -4702,6 +4702,41 @@ various levels and mix text with expressions.")
 (define-public ecl-log4cl
   (sbcl-package->ecl-package sbcl-log4cl))
 
+(define-public sbcl-verbose
+  (let ((commit "c5b7ecd465be61b35af17ef57564697b88397174")
+        (revision "1"))
+    (package
+      (name "sbcl-verbose")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/verbose/")
+               (commit commit)))
+         (file-name (git-file-name "verbose" version))
+         (sha256
+          (base32 "0r51ydj5v7afi2jrlscbhxprv13d9vzg5316g1yzwaxc1kzsdsw6"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("dissect" ,sbcl-dissect)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("local-time" ,sbcl-local-time)
+         ("piping" ,sbcl-piping)))
+      (home-page "https://shinmera.github.io/verbose/")
+      (synopsis "Logging framework using the piping library")
+      (description
+       "This is a Common Lisp library providing logging faciltiy similar to
+@code{CL-LOG} and @code{LOG4CL}.")
+      (license license:zlib))))
+
+(define-public ecl-verbose
+  (sbcl-package->ecl-package sbcl-verbose))
+
+(define-public cl-verbose
+  (sbcl-package->cl-source-package sbcl-verbose))
+
 (define-public sbcl-find-port
   (let ((commit "00c96a25af93a0f8681d34ec548861f2d7485478")
         (revision "1"))
