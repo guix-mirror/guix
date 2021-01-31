@@ -32895,6 +32895,25 @@ mechanism instead (@pxref{Shepherd Services}).
 @end table
 @end deftp
 
+The following example specifies the Shepherd package for the operating
+system:
+
+@lisp
+(operating-system
+  ;; ...
+  (services (append (list openssh-service-type))
+            ;; ...
+            %desktop-services)
+  ;; ...
+  ;; Use own Shepherd package.
+  (essential-services
+   (modify-services (operating-system-default-essential-services
+                     this-operating-system)
+     (shepherd-root-service-type config => (shepherd-configuration
+                                            (inherit config)
+                                            (shepherd my-shepherd))))))
+@end lisp
+
 @defvr {Scheme Variable} %shepherd-root-service
 This service represents PID@tie{}1.
 @end defvr
