@@ -12390,9 +12390,8 @@ predictable cross-platform behavior and some utilities useful for versioning.")
   (sbcl-package->ecl-package sbcl-defpackage-plus))
 
 (define-public sbcl-deploy
-  ;; tagged branch is outdated
-  (let ((revision "1")
-        (commit "59fd49719ef651a8fc11750bcfb337f132cff75f"))
+  (let ((commit "9b20e64fe924b9e31832304d87a3a72c383dc6d8")
+        (revision "2"))
     (package
       (name "sbcl-deploy")
       (version (git-version "1.0.0" revision commit))
@@ -12402,15 +12401,21 @@ predictable cross-platform behavior and some utilities useful for versioning.")
          (uri (git-reference
                (url "https://github.com/Shinmera/deploy")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "deploy" version))
          (sha256
-          (base32 "1vl2116z4kw2pd3qd3n6mmg8g0mnwxr9dgddk86g7j1bis1z8k9a"))))
+          (base32 "07pfkibaridihg8lbq2czwa4iqifqk24n6rx7bfnv7i49p1ppja1"))))
       (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "deploy-test.asd"
+         #:asd-files '("deploy.asd"
+                       "deploy-test.asd")))
+      (native-inputs
+       `(("cl-mpg123" ,sbcl-cl-mpg123)
+         ("cl-out123" ,sbcl-cl-out123)))
       (inputs
        `(("cffi" ,sbcl-cffi)
-         ("documentation-utils" ,sbcl-documentation-utils)))
-      (arguments
-       '(#:asd-files '("deploy.asd")))
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("trivial-features" ,sbcl-trivial-features)))
       (home-page "https://shinmera.github.io/deploy/")
       (synopsis "Deployment tools for standalone Common Lisp application")
       (description
