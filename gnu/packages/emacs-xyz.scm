@@ -11774,7 +11774,7 @@ information via a consistent and well-integrated user interface.")
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "adaptive-wrap-" version ".el"))
+                           "adaptive-wrap-" version ".tar"))
        (sha256
         (base32 "1gs1pqzywvvw4prj63vpj8abh8h14pjky11xfl23pgpk9l3ldrb0"))))
     (build-system emacs-build-system)
