@@ -287,7 +287,9 @@ Random Cage Fighting Birds, Cool Music etc.")
         (base32 "04d09w6xdd08v6laj9y4qmqsijw5i2jvshcilhh4vg6cfnfgl2my"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; test-easy-symbol and test-fullshape fail with multiple cores.
+       #:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
            (lambda _
