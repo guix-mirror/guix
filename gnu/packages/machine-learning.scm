@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -870,6 +870,36 @@ data analysis.")
                 (sha256
                  (base32
                   "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
+
+(define-public python-threadpoolctl
+  (package
+    (name "python-threadpoolctl")
+    (version "2.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "threadpoolctl" version))
+        (sha256
+         (base32
+          "0szsxcm2fbxrn83iynn42bnvrdh7mfsmkhfn8pdn7swblfb7rifx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest"))
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/joblib/threadpoolctl")
+    (synopsis "Python helpers for common threading libraries")
+    (description "Thread-pool Controls provides Python helpers to limit the
+number of threads used in the threadpool-backed of common native libraries used
+for scientific computing and data science (e.g. BLAS and OpenMP).")
+    (license license:bsd-3)))
 
 (define-public python-pynndescent
   (package
