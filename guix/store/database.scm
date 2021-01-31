@@ -53,20 +53,6 @@
   ;; Name of the file containing the SQL scheme or #f.
   (make-parameter #f))
 
-(define sqlite-exec
-  ;; XXX: This is was missing from guile-sqlite3 until
-  ;; <https://notabug.org/guile-sqlite3/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
-  (let ((exec (pointer->procedure
-               int
-               (dynamic-func "sqlite3_exec" (@@ (sqlite3) libsqlite3))
-               '(* * * * *))))
-    (lambda (db text)
-      (let ((ret (exec ((@@ (sqlite3) db-pointer) db)
-                       (string->pointer text)
-                       %null-pointer %null-pointer %null-pointer)))
-        (unless (zero? ret)
-          ((@@ (sqlite3) sqlite-error) db "sqlite-exec" ret))))))
-
 (define* (store-database-directory #:key prefix state-directory)
   "Return the store database directory, taking PREFIX and STATE-DIRECTORY into
 account when provided."
@@ -126,7 +112,7 @@ set journal_mode=WAL."
                   (lambda ()
                     (sqlite-close db)))))
 
-;; XXX: missing in guile-sqlite3@0.1.0
+;; XXX: missing in guile-sqlite3@0.1.2
 (define SQLITE_BUSY 5)
 
 (define (call-with-SQLITE_BUSY-retrying thunk)
@@ -138,8 +124,6 @@ errors."
       (if (= code SQLITE_BUSY)
           (call-with-SQLITE_BUSY-retrying thunk)
           (throw key who code errmsg)))))
-
-
 
 (define* (call-with-transaction db proc #:key restartable?)
   "Start a transaction with DB and run PROC.  If PROC exits abnormally, abort
@@ -213,17 +197,6 @@ If FILE doesn't exist, create it and initialize it as a new database.  Pass
      (call-with-database file (lambda (db) exp ...) #:wal-mode? wal-mode?))
     ((_ file db exp ...)
      (call-with-database file (lambda (db) exp ...)))))
-
-(define (sqlite-finalize stmt)
-  ;; As of guile-sqlite3 0.1.0, cached statements aren't reset when
-  ;; sqlite-finalize is invoked on them (see
-  ;; https://notabug.org/guile-sqlite3/guile-sqlite3/issues/12).  This can
-  ;; cause problems with automatically-started transactions, so we work around
-  ;; it by wrapping sqlite-finalize so that sqlite-reset is always called.
-  ;; This always works, because resetting a statement twice has no adverse
-  ;; effects.  We can remove this once the fixed guile-sqlite3 is widespread.
-  (sqlite-reset stmt)
-  ((@ (sqlite3) sqlite-finalize) stmt))
 
 (define (call-with-statement db sql proc)
   (let ((stmt (sqlite-prepare db sql #:cache? #t)))
