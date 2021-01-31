@@ -1512,7 +1512,7 @@ commands and their arguments.")
 (define-public opendoas
   (package
     (name "opendoas")
-    (version "6.8")
+    (version "6.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1521,7 +1521,7 @@ commands and their arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dlwnvy8r6slxcy260gfkximp1ms510wdslpfq9y6xvd2qi5izcb"))))
+                "0gfcssm21vdfg6kcrcc7hz1h4jmhy2zv29rfqyrrj3a6r9b5ah8p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
