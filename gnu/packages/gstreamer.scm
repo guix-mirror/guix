@@ -591,6 +591,7 @@ for the GStreamer multimedia library.")
         (string-append
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
+       (patches (search-patches "gst-plugins-good-fix-test.patch"))
        (sha256
         (base32 "1929nhjsvbl4bw37nfagnfsnxz737cm2x3ayz9ayrn9lwkfm45zp"))))
     (build-system meson-build-system)
