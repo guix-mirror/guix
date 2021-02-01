@@ -18,6 +18,45 @@
 (channel-news
  (version 0)
 
+ (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
+        (title
+         (en "Create a manifest with @command{guix package --export-manifest}")
+         (fr "Créer un manifeste avec @command{guix package --export-manifest}"))
+        (body
+         (en "The @command{guix package --export-manifest} command outputs a
+@dfn{manifest} from your profile.  This manifest is a code snippet that can
+then be passed to @command{guix package --manifest} (or any other command that
+accepts the @option{--manifest} option) to deploy these packages.
+
+The goal of this new @option{--export-manifest} option is to make it easier to
+migrate from an ``imperative'' style where you repeatedly invoke @command{guix
+install} and similar commands, to the declarative style where you write in a
+manifest file the list of packages you want to have.
+
+Similarly, the new @option{--export-channels} option outputs a @dfn{channel
+specification} suitable for @command{guix pull --channels} from your profile.
+This allows you to ``pin'' Guix to the revision that was used to build the
+profile.
+
+Run @command{info \"(guix) Invoking guix package\"} for more info.")
+         (fr "La commande @command{guix package --export-manifest} affiche un
+@dfn{manifeste} pour le profil choisi.  Ce manifeste est un bout de code qu'on
+peut passer à @command{guix package --manifest} (ou n'importe qu'elle commande
+qui accepte l'option @option{--manifest}) pour déployer ces paquets.
+
+L'objectif de cette nouvelle option @option{--export-manifest} est de
+faciliter la migration du modèle ``impératif'', où on utilise @command{guix
+install} et les commandes de ce genre, au modèle déclaratif où on écrit dans
+un fichier la liste des paquets que l'on veut avoir.
+
+De même, la nouvelle option @option{--export-channels} produit une
+@dfn{spécification de canaux} pour @command{guix pull --channels} à partir du
+profil.  Cela permet de ``figer'' Guix à la révision qui a été utilisée pour
+produire le profil.
+
+Voir @command{info \"(guix.fr) Invoquer guix package\"} pour plus
+d'informations.")))
+
  (entry (commit "9ab817b2a4601b4a6755983590ed7d93ebdc8d09")
         (title (en "New @option{--with-latest} package transformation option")
                (de "Neue Paketumwandlungsoption @option{--with-latest}")
