@@ -17291,8 +17291,14 @@ design and layout.")
             "1d1xn1xmfvz0jr3pj8irdwnwby3r13g0r2gwklr1q5y68p5p16h2"))))
     (build-system python-build-system)
     (arguments
-     ;; The tests are broken upstream.
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute* "pkginfo/tests/test_installed.py"
+               (("test_ctor_w_package_no_PKG_INFO")
+                "_test_ctor_w_package_no_PKG_INFO"))
+             #t)))))
     (home-page
       "https://code.launchpad.net/~tseaver/pkginfo/trunk")
     (synopsis
