@@ -9,6 +9,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2818,7 +2819,8 @@ exec " gcc "/bin/" program
                            "--disable-shared"
                            "--enable-languages=c,c++"
 
-                           ,@(if (equal? "powerpc64le-linux-gnu" (boot-triplet))
+                           ;; boot-triplet inserts "guix" in the triplet.
+                           ,@(if (equal? "powerpc64le-guix-linux-gnu" (boot-triplet))
                                  ;; On POWER9 (little endian) glibc needs the
                                  ;; 128-bit long double type.
                                  '("--with-long-double-128")
