@@ -5528,14 +5528,7 @@ The package provides additional NTFS tools.")
                                (string-append "-DRST2MAN_EXECUTABLE="
                                               (assoc-ref %build-inputs
                                                          "python-docutils")
-                                              "/bin/rst2man.py")
-
-                               ;; On some configurations, the
-                               ;; IB_USER_MAD_REGISTER_AGENT ioctl, which is
-                               ;; used by default, would return ENODEV.  To
-                               ;; avoid that, use 'write' instead of ioctls,
-                               ;; as suggested in 'CMakeList.txt'.
-                               "-DIOCTL_MODE=write")
+                                              "/bin/rst2man.py"))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
