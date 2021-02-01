@@ -5520,9 +5520,7 @@ The package provides additional NTFS tools.")
     (arguments
      `(#:tests? #f ; no tests
        ;; Upstream uses the "ninja" build system and encourage distros
-       ;; to do the same for consistency. They also recommend using the
-       ;; "Release" build type.
-       #:build-type "Release"
+       ;; to do the same for consistency.
        #:configure-flags (list "-GNinja"
 
                                (string-append "-DRST2MAN_EXECUTABLE="
