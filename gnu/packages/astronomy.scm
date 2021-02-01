@@ -48,12 +48,14 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -692,3 +694,35 @@ more.")
                    license:gpl2+
                    license:lgpl2.0+
                    license:lgpl2.1+))))
+
+(define-public python-jplephem
+  (package
+    (name "python-jplephem")
+    (version "2.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jplephem" version))
+       (sha256
+        (base32 "1ca3dswsslij79qg6dcijjz4l0fj6nzmxld8z93v45ahlkhps0g0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PYTHONPATH"
+                       (string-append "./build/lib:"
+                                      (getenv "PYTHONPATH")))
+               (setenv "PATH" (string-append out "/bin:"
+                                             (getenv "PATH")))
+               (invoke "python" "-m" "unittest" "discover" "-s" "test")))))))
+    (inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/brandon-rhodes/python-jplephem")
+    (synopsis "Python version of NASA DE4xx ephemerides")
+    (description
+     "The package is a Python implementation of the mathematics that standard
+JPL ephemerides use to predict raw (x,y,z) planetary positions.")
+    (license license:expat)))
