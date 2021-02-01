@@ -8063,7 +8063,7 @@ falling into the Python interpreter.")
 (define-public python-xlib
   (package
     (name "python-xlib")
-    (version "0.27")
+    (version "0.29")
     (source
      (origin
        (method git-fetch)
@@ -8072,7 +8072,7 @@ falling into the Python interpreter.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09kimic8rhprx3q8nzalc4aggg42ahqm4v5qcj8dm68yvxfdk986"))))
+        (base32 "17cwd2knqm2vwrii3kqii9abwsnydhpg4byqx1vy7rjs6i1vbqfc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -8088,8 +8088,9 @@ falling into the Python interpreter.")
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-six" ,python-six)
        ("xorg-server" ,xorg-server)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "https://github.com/python-xlib/python-xlib")
     (synopsis "Python X11 client library")
     (description
