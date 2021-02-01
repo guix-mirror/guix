@@ -20417,13 +20417,18 @@ time-or-computationally-expensive properties quick and easy and works in Python
 (define-public python-folium
   (package
     (name "python-folium")
-    (version "0.11.0")
+    (version "0.12.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "folium" version))
+       ;; PyPI has a ".whl" file but not a proper source release.
+       ;; Thus, fetch code from Git.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-visualization/folium")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "19sclsq3xcjfa7bavzjpyn6rl9b15jbc76n5aag4cwhqqamqj1sl"))))
+        (base32 "0yi5y9pfpbc4bc4ibr8cblif8ls1wf3k0zawyx86r2qwxxkkyd6k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)
