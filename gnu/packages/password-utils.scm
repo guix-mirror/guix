@@ -12,7 +12,7 @@
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -123,7 +123,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.6.3")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
@@ -131,7 +131,7 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "1lgp20597dzj8qn8a71x3a6b549rvqybqx4haywwb09qiznvdq77"))))
+        (base32 "0azq20rqsx7axrigha4qh81ipvhqnnlb27w3xdjg5z4h3jky4dp5"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
