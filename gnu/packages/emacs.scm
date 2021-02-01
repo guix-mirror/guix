@@ -308,8 +308,8 @@ languages.")
               (files '("share/info"))))))))
 
 (define-public emacs-next-pgtk
-  (let ((commit "d46a223d8595e8edb67c6361033625797503cacf")
-        (revision "0"))
+  (let ((commit "ae18c8ec4f0ef37c8c9cda473770ff47e41291e2")
+        (revision "1"))
     (package/inherit emacs-next
       (name "emacs-next-pgtk")
       (version (git-version "28.0.50" revision commit))
@@ -322,7 +322,7 @@ languages.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1fhkgqsdpy3qkf8wyjvavnfyh8byxh0h80n0448rkg9k0lrkl4wf"))))
+           "07hgfqh965zmra0rbmnf63p3lsinpv5hn5payqcrjx25pl75xnaf"))))
       (arguments
        (substitute-keyword-arguments (package-arguments emacs-next)
          ((#:configure-flags flags ''())
