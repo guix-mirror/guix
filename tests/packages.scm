@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,6 +42,7 @@
   #:use-module (guix memoization)
   #:use-module (guix profiles)
   #:use-module (guix scripts package)
+  #:use-module (guix sets)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
@@ -54,6 +55,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
+  #:use-module (srfi srfi-71)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 vlist)
@@ -1549,17 +1551,27 @@
                                                       result))
                                               '()))))))
 
-    (define (find-duplicates l)
-      (match l
-        (() '())
-        ((head . tail)
-         (if (member head tail)
-             (cons head (find-duplicates tail))
-             (find-duplicates tail)))))
+    (define (list->set* lst)
+      ;; Return two values: LST represented as a set and the list of
+      ;; duplicates in LST.
+      (let loop ((lst        lst)
+                 (duplicates '())
+                 (seen       (set)))
+        (match lst
+          (()
+           (values seen duplicates))
+          ((head . tail)
+           (if (set-contains? seen head)
+               (loop tail (cons head duplicates) seen)
+               (loop tail duplicates (set-insert head seen)))))))
 
-    (pk (find-duplicates from-cache))
-    (and (equal? (delete-duplicates from-cache) from-cache)
-         (lset= equal? no-cache from-cache))))
+    ;; Compare FROM-CACHE and NO-CACHE but avoid 'lset=', which exhibits
+    ;; exponential behavior.
+    (let ((set1 duplicates1 (list->set* from-cache))
+          (set2 duplicates2 (list->set* no-cache)))
+      (and (null? duplicates1) (null? duplicates2)
+           (every (cut set-contains? set1 <>) no-cache)
+           (every (cut set-contains? set2 <>) from-cache)))))
 
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
