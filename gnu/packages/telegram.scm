@@ -43,14 +43,19 @@
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lxqt)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
@@ -680,3 +685,95 @@ a part of telegram-cli, but now being maintained separately.")
       (description "TGL is the telegram library for telegram-cli.")
       (home-page "https://github.com/vysheng/tgl")
       (license license:lgpl2.1+))))
+
+(define-public telegram-cli
+  (let ((commit "6547c0b21b977b327b3c5e8142963f4bc246187a")
+        (revision "324"))
+    (package
+      (name "telegram-cli")
+      (version
+       (git-version "1.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/vysheng/tg.git")
+           (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "0c1w7jgska71jjbvg1y09v52549pwa4zkdjly18yxywn7gayd2p6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:imported-modules
+         ((guix build copy-build-system)
+          ,@%gnu-build-system-modules)
+         #:modules
+         (((guix build copy-build-system)
+           #:prefix copy:)
+          (guix build gnu-build-system)
+          (guix build utils))
+         #:configure-flags
+         (list
+          ;; Use gcrypt instead of openssl.
+          "--disable-openssl")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'trigger-bootstrap
+             (lambda _
+               (delete-file "configure")
+               #t))
+           (add-after 'trigger-bootstrap 'patch-tgl-and-tlparser
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each delete-file
+                         (list
+                          "Makefile.tgl"
+                          "Makefile.tl-parser"))
+               (substitute* "Makefile.in"
+                 (("include \\$\\{srcdir\\}/Makefile\\.tl-parser")
+                  "")
+                 (("include \\$\\{srcdir\\}/Makefile\\.tgl")
+                  "")
+                 (("-I\\$\\{srcdir\\}/tgl")
+                  (string-append "-I" (assoc-ref inputs "tgl")
+                                 "/include/tgl"))
+                 (("AUTO=auto")
+                  (string-append "AUTO=" (assoc-ref inputs "tgl")
+                                 "/include/tgl/auto"))
+                 (("LIB=libs")
+                  (string-append "LIB=" (assoc-ref inputs "tgl")
+                                 "/lib/tgl")))
+               #t))
+           (replace 'install
+             (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("bin" "bin")
+                        ("." "etc/telegram-cli"
+                         #:include-regexp ("\\.pub$")
+                         #:exclude ("tg-server.pub")))
+                      args))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("jansson" ,jansson)
+         ("libconfig" ,libconfig)
+         ("libevent" ,libevent)
+         ("libgcrypt" ,libgcrypt)
+         ("lua" ,lua)
+         ("openssl" ,openssl)
+         ("perl" ,perl)
+         ("python" ,python)
+         ("readline" ,readline)
+         ("tgl" ,tgl)
+         ("tl-parser" ,tl-parser)
+         ("zlib" ,zlib)))
+      (synopsis "Telegram Messenger CLI")
+      (description "TG is the command-line interface for Telegram Messenger.")
+      (home-page "https://github.com/vysheng/tg")
+      (license license:gpl2+))))
