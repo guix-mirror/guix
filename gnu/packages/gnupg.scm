@@ -894,7 +894,7 @@ passphrase when @code{gpg} is run and needs it.")))
 (define-public pinentry-rofi
   (package
     (name "pinentry-rofi")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -902,7 +902,7 @@ passphrase when @code{gpg} is run and needs it.")))
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "14rbz32ykc8pz7gglbvxm3pcgabr7xdnddar6k24icd5xk9mr4rp"))))
+               (base32 "0kjzvgni9srl8h5c52pqrvgdxs6avv0nhgk19apd97sx10qdwdhk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
@@ -923,9 +923,13 @@ passphrase when @code{gpg} is run and needs it.")))
                   (wrap-program
                       (string-append bin "pinentry-rofi")
                     (list "PATH" ":" 'prefix `(,rofi-bin)))
-                  #t))))))))
+                  #t)))))
+         (add-after 'compress-documentation 'installcheck
+           (lambda* rest
+             (invoke "make" "installcheck"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
