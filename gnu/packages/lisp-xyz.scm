@@ -11017,8 +11017,8 @@ than a few Kb.")
   (sbcl-package->ecl-package sbcl-mmap))
 
 (define-public sbcl-3bz
-  (let ((commit "d6119083b5e0b0a6dd3abc2877936c51f3f3deed")
-        (revision "0"))
+  (let ((commit "569614c40408f3aefc77ba233e0e4bd66d3850ad")
+        (revision "1"))
     (package
       (name "sbcl-3bz")
       (version (git-version "0.0.0" revision commit))
@@ -11030,7 +11030,7 @@ than a few Kb.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0fyxzyf2b6sc0w8d9g4nlva861565z6f3xszj0lw29x526dd9rhj"))))
+          (base32 "0kvvlvf50jhhw1s510f3clpr1a68632bq6d698yxcrx722igcrg4"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -11040,7 +11040,7 @@ than a few Kb.")
          ("nibbles" ,sbcl-nibbles)
          ("trivial-features" ,sbcl-trivial-features)))
       (arguments
-       ;; FIXME: Without the following line, the build fails (see issue 41437).
+       ;; FIXME: #41437 - Build fails when package name starts from a digit
        `(#:asd-systems '("3bz")))
       (home-page "https://github.com/3b/3bz")
       (synopsis "Deflate decompression for Common Lisp")
