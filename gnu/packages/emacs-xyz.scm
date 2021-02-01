@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018, 2019, 2020 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -3851,19 +3851,18 @@ result.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'hardcode-rg-path
-           ;; Hardcode the path to ripgrep.
+         (add-after 'unpack 'remove-rg-path
+           ;; Remove the path to ripgrep so that it works on remote systems.
            (lambda _
              (let ((file "rg.el"))
                (chmod file #o644)
                (emacs-substitute-sexps file
-                 ("(defcustom rg-executable" (which "rg")))))))))
+                 ("(defcustom rg-executable" "rg"))))))))
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
        ("emacs-transient" ,emacs-transient)
-       ("emacs-wgrep" ,emacs-wgrep)))
-    (inputs
-     `(("ripgrep" ,ripgrep)))
+       ("emacs-wgrep" ,emacs-wgrep)
+       ("ripgrep" ,ripgrep)))
     (home-page "https://rgel.readthedocs.io/en/latest/")
     (synopsis "Search tool based on @code{ripgrep}")
     (description
