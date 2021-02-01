@@ -55,6 +55,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -555,3 +556,49 @@ Telegram instant messager.")
       license:lgpl2.1+
       ;; Others
       license:gpl3+))))
+
+(define-public tl-parser
+  (let ((commit "1933e76f8f4fb74311be723b432e4c56e3a5ec06")
+        (revision "21"))
+    (package
+      (name "tl-parser")
+      (version
+       (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/vysheng/tl-parser.git")
+           (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "13cwi247kajzpkbl86hnwmn1sn2h6rqndz6khajbqj0mlw9mv4hq"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:imported-modules
+         ((guix build copy-build-system)
+          ,@%cmake-build-system-modules)
+         #:modules
+         (((guix build copy-build-system)
+           #:prefix copy:)
+          (guix build cmake-build-system)
+          (guix build utils))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'install
+             (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("." "bin"
+                         #:include ("tl-parser"))
+                        ("../source" "include/tl-parser"
+                         #:include-regexp ("\\.h$")))
+                      args))))))
+      (synopsis "Parse tl scheme to tlo")
+      (description "TL-Parser is a tl scheme to tlo file parser.  It was formely
+a part of telegram-cli, but now being maintained separately.")
+      (home-page "https://github.com/vysheng/tl-parser")
+      (license license:gpl2+))))
