@@ -34,6 +34,8 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +83,8 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
@@ -194,7 +198,8 @@ as well as the classic centralized workflow.")
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
-      ("xmlto" ,xmlto)))
+      ("xmlto" ,xmlto)
+      ("pkg-config" ,pkg-config)))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -220,11 +225,16 @@ as well as the classic centralized workflow.")
 
       ;; For 'git gui', 'gitk', and 'git citool'.
       ("tcl" ,tcl)
-      ("tk" ,tk)))
+      ("tk" ,tk)
+
+      ;; For 'git-credential-libsecret'
+      ("glib" ,glib)
+      ("libsecret" ,libsecret)))
    (outputs '("out"                               ; the core
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
               "credential-netrc"                  ; git-credential-netrc
+              "credential-libsecret"              ; git-credential-libsecret
               "subtree"                           ; git-subtree
               "gui"))                             ; gitk, git gui
    (arguments
@@ -262,6 +272,7 @@ as well as the classic centralized workflow.")
 
       #:modules ((srfi srfi-1)
                  (srfi srfi-26)
+                 ((guix build gnu-build-system) #:prefix gnu:)
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
@@ -389,6 +400,14 @@ as well as the classic centralized workflow.")
                 `("PERL5LIB" ":" prefix
                   (,(string-append (assoc-ref outputs "out") "/share/perl5"))))
               #t)))
+        (add-after 'install 'install-credential-libsecret
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((libsecret (assoc-ref outputs "credential-libsecret")))
+              (with-directory-excursion "contrib/credential/libsecret"
+                ((assoc-ref gnu:%standard-phases 'build))
+                (install-file "git-credential-libsecret"
+                              (string-append libsecret "/bin"))
+                #t))))
         (add-after 'install 'install-subtree
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((subtree (assoc-ref outputs "subtree")))
@@ -535,6 +554,7 @@ everything from small to very large projects with speed and efficiency.")
            (delete 'install-man-pages)
            (delete 'install-subtree)
            (delete 'install-credential-netrc)
+           (delete 'install-credential-libsecret)
            (add-after 'install 'remove-unusable-perl-commands
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
