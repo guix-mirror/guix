@@ -15209,18 +15209,18 @@ library automatically handles index file generation and use.")
              (let* ((out (assoc-ref outputs "out"))
                     (pkgconfig (string-append out "/lib/pkgconfig")))
                (mkdir-p pkgconfig)
-               (with-output-to-file (string-append pkgconfig "/libvcflib.pc")
+               (with-output-to-file (string-append pkgconfig "/vcflib.pc")
                  (lambda _
                    (format #t "prefix=~a~@
                            exec_prefix=${prefix}~@
                            libdir=${exec_prefix}/lib~@
                            includedir=${prefix}/include~@
                            ~@
-                           Name: libvcflib~@
+                           Name: vcflib~@
                            Version: ~a~@
-                           Requires: smithwaterman, fastahack~@
+                           Requires: smithwaterman, fastahack, tabixpp~@
                            Description: C++ library for parsing and manipulating VCF files~@
-                           Libs: -L${libdir} -llibvcflib~@
+                           Libs: -L${libdir} -lvcflib~@
                            Cflags: -I${includedir}~%"
                            out ,version)))
                  #t))))))

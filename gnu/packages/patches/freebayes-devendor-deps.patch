@@ -23,7 +23,7 @@ index f6bf242..bded4af 100644
 +tabixpp_dep = dependency('tabixpp', required : false)
 +fastahack_dep = dependency('fastahack', required : false)
 +smithwaterman_dep = dependency('smithwaterman', required : false)
-+vcflib_dep = dependency('libvcflib', required: false)
++vcflib_dep = dependency('vcflib', required: false)
  thread_dep = dependency('threads')
  
  if htslib_dep.found()
