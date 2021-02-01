@@ -17281,14 +17281,14 @@ design and layout.")
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
-    (version "1.4.2")
+    (version "1.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkginfo" version))
         (sha256
           (base32
-            "0x6lm17p1ks031mj6pajyp4rkq74vpqq8qwjb7ikgwmkli1day2q"))))
+            "1d1xn1xmfvz0jr3pj8irdwnwby3r13g0r2gwklr1q5y68p5p16h2"))))
     (build-system python-build-system)
     (arguments
      ;; The tests are broken upstream.
