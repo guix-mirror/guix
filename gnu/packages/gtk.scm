@@ -357,7 +357,18 @@ used throughout the world.")
               (base32
                "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
    (build-system gnu-build-system)
-   (arguments '())))
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-after 'configure 'disable-layout-test
+                   (lambda _
+                     ;; This test requires that fontconfig uses bitmap fonts
+                     ;; such as "gs-fonts"; however providing such a package
+                     ;; alone is not enough, as the requirement comes from
+                     ;; deeper in the font stack.  Since this version of Pango
+                     ;; is only used for librsvg, simply disable the test.
+                     (substitute* "tests/Makefile"
+                       (("test-layout\\$\\(EXEEXT\\)") ""))
+                     #t)))))))
 
 (define-public pangox-compat
   (package
@@ -830,7 +841,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.23")
+   (version "3.24.24")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -838,7 +849,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1cg2vbwbcp7bc84ky0b69ipgdr9djhspnf5k8lajb8jphcj4v1jx"))
+              "12ipk1d376bai9v820qzhxba93kkh5abi6mhyqr4hwjvqmkl77fc"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs

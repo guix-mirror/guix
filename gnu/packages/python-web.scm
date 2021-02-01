@@ -2421,13 +2421,13 @@ APIs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.24.0")
+    (version "2.25.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "06r3017hz0hzxv42gpg73l8xvdjbzw7q904ljvp36b5p3l9rlmdk"))))
+               "1y6mb8c0ipd64d5axq2p368yxndp3f966hmabjka2q2a5y9hn6kz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -2650,14 +2650,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.25.9")
+    (version "1.26.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "09rmjqm5syhhc8fx3v06h3yv6cqy0b1081jg8wm5grpwpr72j61h"))))
+          "024yldjwjavps39yb77sc422z8fa9bn20wcqrcncjwrqjab8y60r"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs

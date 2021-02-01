@@ -118,14 +118,14 @@ expressions.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2019.1")
+    (version "2020.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "0hg1r2c41gnmljdsdmdgy6kb1zkfmxsf49imd96g8znp4cyxsiyp"))))
+        "0s72lz9q7rm2xgl2in0nvhn5cp0cyrxa257fpj2919g0s797ssry"))))
     (build-system python-build-system)
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
@@ -328,15 +328,20 @@ ISO 8601 dates, time and duration.")
 (define-public python-iso8601
   (package
     (name "python-iso8601")
-    (version "0.1.12")
+    (version "0.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iso8601" version))
        (sha256
         (base32
-         "10nyvvnrhw2w3p09v1ica4lgj6f4g9j3kkfx17qmraiq3w7b5i29"))))
+         "1cgfj91khil4ii5gb8s6nxwm73vx7hqc2k79dd9d8990ylmc5ppp"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv" "iso8601"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/micktwomey/pyiso8601")

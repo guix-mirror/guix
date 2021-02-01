@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -3905,27 +3905,25 @@ alternative implementations like XRandR or TwinView.")
     (license license:x11)))
 
 
-(define xkbcomp-intermediate ; used as input for xkeyboard-config
+(define xkbcomp-intermediate            ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xkbcomp-"
-               version
-               ".tar.bz2"))
-        (sha256
-         (base32
-          "0dflr250nlj6rrnv658f6dm8qx37sj0xfimc3ihay761kwb2q906"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xkbcomp-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0zpjkbap9160pdd6jpgb5f0yg5281w0rkkx1l0i7g887lq1ydk2r"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxkbfile" ,libxkbfile)
-        ("libx11" ,libx11)))
+     `(("xorgproto" ,xorgproto)
+       ("libxkbfile" ,libxkbfile)
+       ("libx11" ,libx11)))
     (native-inputs
-        `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Compile XKB keyboard description")
     (description
@@ -4324,23 +4322,21 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xprop-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0lzp7kyhpwd5hm83j2zm6j3w3z1z5i4ykgg2nwr01ij6dq4znxwc"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xprop-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "18ckr8g1z50zkc01hprkpm1npwbq32yqib4b3l98c95z2q1yv4lv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+     `(("libx11" ,libx11)
+       ("xorgproto" ,xorgproto)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display X server properties")
     (description
@@ -5436,19 +5432,10 @@ draggable titlebars and borders.")
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
-;; TODO: Inherit source from xorg-server in a future rebuild cycle.
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.9")
-     (source (origin
-               (inherit (package-source xorg-server))
-               (uri (string-append "mirror://xorg/individual/xserver/"
-                                   "xorg-server-" version ".tar.bz2"))
-               (sha256
-                (base32
-                 "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package/inherit xorg-server
@@ -5473,8 +5460,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.9")
-    (replacement libx11/fixed)
+    (version "1.6.10")
     (source
       (origin
         (method url-fetch)
@@ -5484,7 +5470,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1ldyn9c6pyx54sxzaw120n3q42rqi7b503aqmyjky6fn038fiiww"))))
+            "09k2pqmqbn2m1bpgl7jfxyqxaaxsnzbnp2bp8ycmqldqi5ln4j5g"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5511,19 +5497,6 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
-
-(define libx11/fixed  ; Fixes CVE-2020-14344
-  (package
-    (inherit libx11)
-    (version "1.6.A")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libX11-1.6.10.tar.bz2"))
-        (sha256
-          (base32
-            "09k2pqmqbn2m1bpgl7jfxyqxaaxsnzbnp2bp8ycmqldqi5ln4j5g"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 

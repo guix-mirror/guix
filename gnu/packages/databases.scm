@@ -902,7 +902,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.5.6")
+    (version "10.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -910,7 +910,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i257h0zdypdfj5wkg6ck9pxlkph0jvjs92k22pjr6gnx5lxs1gz"))
+                "1s3vfm73911cddjhgpcbkya6nz7ag2zygg56qqzwscn5ybv28j7b"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -960,6 +960,10 @@ Language.")
          "-DDEFAULT_COLLATION=utf8_general_ci"
          "-DMYSQL_DATADIR=/var/lib/mysql"
          "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+
+         ;; Do not install the benchmark suite.
+         "-DINSTALL_SQLBENCHDIR=false"
+
          (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
          (string-append "-DCMAKE_INSTALL_RPATH=" (assoc-ref %outputs "lib")
                         "/lib")
@@ -989,14 +993,26 @@ Language.")
              ;; to other variables such as $INSTALL_INCLUDEDIR, which does
              ;; not work when the latter uses an absolute file name.
              (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
-               (("@CMAKE_INSTALL_PREFIX@/@INSTALL_INCLUDEDIR@")
-                "@INSTALL_INCLUDEDIR@"))
+               (("%s/@INSTALL_INCLUDEDIR@")
+                (string-append "@INSTALL_INCLUDEDIR@"))
+               ;; As of 10.5.8, the mariadb_config program tries to be
+               ;; clever and computes the installation directory relative
+               ;; to /proc/self/exe when running on Linux.  Make it fall
+               ;; back to the old behaviour.
+               (("defined\\(__linux__\\)")
+                "0"))
              (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
                (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
                 "@INSTALL_INCLUDEDIR@"))
+             (substitute* "support-files/mariadb.pc.in"
+               (("^(include|bin|script|doc|man)dir=\\$\\{prefix\\}/" _ dir)
+                (string-append dir "dir=")))
              (substitute* "include/CMakeLists.txt"
                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
                 "${INSTALL_INCLUDEDIR}"))
+             (substitute* "cmake/mariadb_connector_c.cmake"
+               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
+                "${INSTALL_BINDIR}"))
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
@@ -1009,7 +1025,20 @@ Language.")
                       "main.explain_non_select"
                       "main.stat_tables"
                       "main.stat_tables_innodb"
+                      "main.upgrade_MDEV-19650"
                       "roles.acl_statistics"
+
+                      ;; FIXME: This test checks various table encodings and
+                      ;; fails because Guix defaults to UTF8 instead of the
+                      ;; upstream default latin1_swedish_ci.  It's not easily
+                      ;; substitutable because several encodings are tested.
+                      "main.sp2"
+
+                      ;; XXX: This test occasionally fails on i686-linux:
+                      ;; <https://jira.mariadb.org/browse/MDEV-24458>
+                      ,@(if (string-prefix? "i686" (%current-system))
+                            '("main.myisampack")
+                            '())
 
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
@@ -1081,12 +1110,12 @@ Language.")
                 (("\\$basedir/share/mysql")
                  (string-append lib "/share/mysql")))
 
-              ;; Remove unneeded files for testing.
               (with-directory-excursion lib
-                (for-each delete-file-recursively
-                          '("mysql-test" "sql-bench"))
-                ;; And static libraries.
+                ;; Remove tests.
+                (delete-file-recursively "mysql-test")
+                ;; Remove static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
+
               (with-directory-excursion out
                 (delete-file "share/man/man1/mysql-test-run.pl.1")
                 ;; Delete huge and unnecessary executables.
@@ -1162,21 +1191,26 @@ developed in C/C++ to MariaDB and MySQL databases.")
     (license license:lgpl2.1+)))
 
 ;; Don't forget to update the other postgresql packages when upgrading this one.
-(define-public postgresql
+(define-public postgresql-13
   (package
     (name "postgresql")
-    (version "10.13")
+    (version "13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))
+                "07z6zwr58dckaa97yl9ml240z83d1lhgaxw9aq49i8lsp21mqd0j"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl")
+     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl"
+                           ;; PostgreSQL installs its own Makefile (should it?).
+                           ;; Prevent it from retaining needless references to
+                           ;; the build tools in order to save size.
+                           "MKDIR_P=mkdir -p" "INSTALL_BIN=install -c"
+                           "LD=ld" "TAR=tar")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
@@ -1208,45 +1242,44 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
-(define-public postgresql-10 postgresql)
-
-(define-public postgresql-13
-  (package
-    (inherit postgresql)
-    (version "13.1")
-    (source (origin
-              (inherit (package-source postgresql))
-              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
-                                  version "/postgresql-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "07z6zwr58dckaa97yl9ml240z83d1lhgaxw9aq49i8lsp21mqd0j"))))))
-
 (define-public postgresql-11
   (package
-    (inherit postgresql)
+    (inherit postgresql-13)
     (name "postgresql")
     (version "11.6")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "0w1iq488kpzfgfnlw4k32lz5by695mpnkq461jrgsr99z5zlz4j9"))))))
 
+(define-public postgresql-10
+  (package
+    (inherit postgresql-11)
+    (version "10.13")
+    (source (origin
+              (inherit (package-source postgresql-11))
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))))))
+
 (define-public postgresql-9.6
   (package
-    (inherit postgresql)
-    (name "postgresql")
+    (inherit postgresql-10)
     (version "9.6.16")
     (source (origin
-              (method url-fetch)
+              (inherit (package-source postgresql-10))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
                 "1rr2dgv4ams8r2lp13w85c77rkmzpb88fjlc28mvlw6zq2fblv2w"))))))
+
+(define-public postgresql postgresql-13)
 
 (define-public pgloader
   (package

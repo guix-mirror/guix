@@ -902,7 +902,6 @@ data.")
 
 (define-public json-c
   (package
-    (replacement json-c/fixed)
     (name "json-c")
     (version "0.14")
     (source (origin
@@ -912,7 +911,8 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))))
+               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))
+              (patches (search-patches "json-c-CVE-2020-12762.patch"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
@@ -922,15 +922,6 @@ easily construct JSON objects in C, output them as JSON-formatted strings and
 parse JSON-formatted strings back into the C representation of JSON objects.
 It aims to conform to RFC 7159.")
     (license license:x11)))
-
-(define json-c/fixed
-  (package
-    (inherit json-c)
-    (name "json-c")
-    (version "0.14")
-    (source (origin
-              (inherit (package-source json-c))
-              (patches (search-patches "json-c-CVE-2020-12762.patch"))))))
 
 ;; TODO: Remove these old versions when all dependents have been updated.
 (define-public json-c-0.13
@@ -7449,8 +7440,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.40.0")
-    (replacement nghttp2-1.41)
+    (version "1.41.0")
     (source
      (origin
        (method url-fetch)
@@ -7459,7 +7449,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
-         "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))
+         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
@@ -7532,20 +7522,6 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license license:expat)))
-
-(define-public nghttp2-1.41                       ;fixes CVE-2020-11080
-  (package
-    (inherit nghttp2)
-    (version "1.41.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nghttp2/nghttp2/"
-                           "releases/download/v" version "/"
-                           "nghttp2-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))))
 
 (define-public hpcguix-web
   (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")

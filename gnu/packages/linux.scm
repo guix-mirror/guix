@@ -1316,7 +1316,7 @@ application by hooking GStreamer into the loopback device.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.4.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1325,7 +1325,7 @@ application by hooking GStreamer into the loopback device.")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "0d6hvz6lpkac08hw5wnlhfdm0fhqd0n6jf6v7fz3jhg6a6694vfd"))
+         "1z4jayf69qyyxln1gl6ch4qxfd66ib1g42garnrv2d8i1drl0790"))
        (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
@@ -2068,7 +2068,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.3.2")
+    (version "1.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2076,7 +2076,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "05dyk856ppvqymazyk1cmpln53g88cq1wjpnsygqrvnamyvwa7z8"))))
+               "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -2092,14 +2092,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1ai1z4kf91b1m3qrpwqkc1af5vm2fkdkknqv95xdwf19q94aw6gz"))))
+               "09m4dnn4kplawprd2bl15nwa0b4r1brab3x44ga7f1fyk7aw5zwq"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -2162,6 +2162,11 @@ MIDI functionality to the Linux-based operating system.")
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
     (outputs '("out" "pulseaudio" "jack"))
+    (native-search-paths
+      (list (search-path-specification
+              (variable "ALSA_PLUGIN_DIR")
+              (files '("lib/alsa-lib"))
+              (separator #f))))
     (arguments
      `(#:configure-flags '(;; Do not install a "local" configuration targeted
                            ;; for /etc/alsa.  On Guix System plugins are loaded from
@@ -2534,7 +2539,7 @@ Linux-based operating systems.")
 (define-public libcap
   (package
     (inherit libcap-2.31)
-    (version "2.44")
+    (version "2.45")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2542,7 +2547,7 @@ Linux-based operating systems.")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "1qf80lifygbnxwvqjf8jz5j24n6fqqx4ixnkbf76xs2vrmcq664j"))))
+                "11ijmi7jik9iw6pdszc6bylhggghr8cza03bcrbhbqf0cpvkjrnn"))))
     (arguments
      (substitute-keyword-arguments (package-arguments libcap-2.31)
        ((#:phases phases)
@@ -4715,14 +4720,15 @@ event traces from the kernel (via the relaying through the debug file system).")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
+              (patches (search-patches "sbc-fix-build-non-x86.patch"))
               (sha256
                (base32
-                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
+                "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))

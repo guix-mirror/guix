@@ -50,14 +50,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.20.0")
+    (version "10.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "0cvjwnl0wkcsyw3kannbdv01s235wrnp11n2s6swzjx95gpichfi"))
+                "0pr569qiabr4m7k38s7rwi3iyzrc5jmx19z2z0k7n4xfvhjlfzzl"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -210,24 +210,6 @@ devices.")
     (license expat)
     (properties '((max-silent-time . 7200)     ;2h, needed on ARM
                   (timeout . 21600)))))        ;6h
-
-;; TODO: Make this the default node on core-updates.  This cannot be done on
-;; master since this version of node requires a newer nghttp2 library at link
-;; time.
-(define-public node-10.22
-  (package
-    (inherit node)
-    (version "10.22.1")
-    (source (origin
-              (inherit (package-source node))
-              (uri (string-append "https://nodejs.org/dist/v" version
-                                  "/node-v" version ".tar.xz"))
-              (sha256
-               (base32
-                "0pr569qiabr4m7k38s7rwi3iyzrc5jmx19z2z0k7n4xfvhjlfzzl"))))
-    (inputs
-     (alist-replace "nghttp2" (list nghttp2-1.41 "lib")
-                    (package-inputs node)))))
 
 (define-public libnode
   (package

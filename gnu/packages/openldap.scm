@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -61,25 +61,23 @@
 (define-public openldap
   (package
    (name "openldap")
-   (replacement openldap-2.4.50)
-   (version "2.4.49")
+   (version "2.4.50")
    (source (origin
-            (method url-fetch)
-
-            ;; See <http://www.openldap.org/software/download/> for a list of
-            ;; mirrors.
-            (uri (list (string-append
-                        "ftp://mirror.switch.ch/mirror/OpenLDAP/"
-                        "openldap-release/openldap-" version ".tgz")
-                       (string-append
-                        "https://www.openldap.org/software/download/OpenLDAP/"
-                        "openldap-release/openldap-" version ".tgz")
-                       (string-append
-                        "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
-                        "openldap-release/openldap-" version ".tgz")))
-            (sha256
-             (base32
-              "0vp524rsngdcykf6ki7vprsyg7gj8z7hszg8xwxz50219fa1gcg3"))))
+             (method url-fetch)
+             ;; See <http://www.openldap.org/software/download/> for a list of
+             ;; mirrors.
+             (uri (list (string-append
+                         "ftp://mirror.switch.ch/mirror/OpenLDAP/"
+                         "openldap-release/openldap-" version ".tgz")
+                        (string-append
+                         "https://www.openldap.org/software/download/OpenLDAP/"
+                         "openldap-release/openldap-" version ".tgz")
+                        (string-append
+                         "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
+                         "openldap-release/openldap-" version ".tgz")))
+             (sha256
+              (base32
+               "1f46nlfwmys110j36sifm7ah8m8f3s10c3vaiikmmigmifapvdaw"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
@@ -126,19 +124,6 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "https://www.openldap.org/")))
-
-(define openldap-2.4.50
-  (package
-    (inherit openldap)
-    (version "2.4.50")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.openldap.org/software/download/"
-                                  "OpenLDAP/openldap-release/openldap-" version
-                                  ".tgz"))
-              (sha256
-               (base32
-                "1f46nlfwmys110j36sifm7ah8m8f3s10c3vaiikmmigmifapvdaw"))))))
 
 (define-public nss-pam-ldapd
   (package

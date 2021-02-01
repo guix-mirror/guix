@@ -1,0 +1,17 @@
+Don't refer to x86-specific function on other architectures to avoid linker error.
+
+Submitted upstream at <https://marc.info/?l=linux-bluetooth&m=160857625608440&w=2>
+
+diff --git a/sbc/sbc_primitives.c b/sbc/sbc_primitives.c
+--- a/sbc/sbc_primitives.c
++++ b/sbc/sbc_primitives.c
+@@ -593,7 +593,9 @@ static int sbc_calc_scalefactors_j(
+ 
+ static void sbc_init_primitives_x86(struct sbc_encoder_state *state)
+ {
++#if defined(__x86_64__) || defined(__i386__)
+ 	__builtin_cpu_init();
++#endif
+ 
+ #ifdef SBC_BUILD_WITH_MMX_SUPPORT
+ 	if (__builtin_cpu_supports("mmx"))

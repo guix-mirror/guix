@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
@@ -165,7 +166,8 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "1zfsz9nldakfz61d2j70pk29zlmj7w2vv46s9l3x2prhcgaqpyym"))))
+              "1zfsz9nldakfz61d2j70pk29zlmj7w2vv46s9l3x2prhcgaqpyym"))
+            (patches (search-patches "libssh2-CVE-2019-17498.patch"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
@@ -199,7 +201,9 @@ a server that supports the SSH-2 protocol.")
                     ("pkg-config" ,pkg-config)))
    (inputs `(("libedit" ,libedit)
              ("openssl" ,openssl)
-             ("pam" ,linux-pam)
+             ,@(if (hurd-target?)
+                 '()
+                 `(("pam" ,linux-pam)))
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
              ("xauth" ,xauth)))        ; for 'ssh -X' and 'ssh -Y'
@@ -222,7 +226,9 @@ a server that supports the SSH-2 protocol.")
                           "--with-libedit"
 
                           ;; Enable PAM support in sshd.
-                          "--with-pam"
+                          ,,@(if (hurd-target?)
+                               '()
+                               '("--with-pam"))
 
                           ;; "make install" runs "install -s" by default,
                           ;; which doesn't work for cross-compiled binaries

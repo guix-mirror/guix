@@ -111,13 +111,13 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.14.0")
+    (version "1.14.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1dn279gw5ql8i5n3s5v4rnv96rhhjjfn7xq729qbl5bs2954yf1d"))))
+       (base32 "0v080s7vlrjz9z823x2yh36yc8drwpvvir6w8wfkkzd7k2z5qihs"))))
     (build-system python-build-system)
     (inputs
      `(("libffi" ,libffi)))

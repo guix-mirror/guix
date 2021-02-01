@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -91,7 +91,6 @@
   (package
     (name "dbus")
     (version "1.12.16")
-    (replacement dbus/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -100,7 +99,8 @@
               (sha256
                (base32
                 "107ckxaff1cv4q6kmfdi2fb1nlsv03312a7kf6lb4biglhpjv8jl"))
-              (patches (search-patches "dbus-helper-search-path.patch"))))
+              (patches (search-patches "dbus-CVE-2020-12049.patch"
+                                       "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -168,20 +168,10 @@ or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
 
-;; Replacement package to fix CVE-2020-12049.
-(define dbus/fixed
-  (package
-    (inherit dbus)
-    (source (origin
-              (inherit (package-source dbus))
-              (patches (append (search-patches "dbus-CVE-2020-12049.patch")
-                               (origin-patches (package-source dbus))))))))
-
 (define glib
   (package
    (name "glib")
    (version "2.62.6")
-   (replacement glib-with-gio-patch)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -190,7 +180,8 @@ shared NFS home directories.")
             (sha256
              (base32
               "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
-            (patches (search-patches "glib-tests-timer.patch"))
+            (patches (search-patches "glib-appinfo-watch.patch"
+                                     "glib-tests-timer.patch"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -236,6 +227,17 @@ shared NFS home directories.")
                (("gio-launch-desktop")
                 (string-append out "/libexec/gio-launch-desktop")))
               #t)))
+        ;; TODO: Remove the conditional in the next core-updates cycle.
+        ;; Needed to build glib on slower ARM nodes.
+        ,@(if (string-prefix? "arm" (%current-system))
+              `((add-after 'unpack 'increase-test-timeout
+                  (lambda _
+                    (substitute* "meson.build"
+                      (("test_timeout = 60")
+                       "test_timeout = 90")
+                      (("test_timeout_slow = 120")
+                       "test_timeout_slow = 180")))))
+              '())
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
@@ -387,16 +389,6 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
    (license license:lgpl2.1+)))
-
-(define glib-with-gio-patch
-  ;; GLib with a fix for <https://bugs.gnu.org/35594>.
-  ;; TODO: Fold into 'glib' above in the next rebuild cycle.
-  (package
-    (inherit glib)
-    (source (origin
-              (inherit (package-source glib))
-              (patches (cons (search-patch "glib-appinfo-watch.patch")
-                             (origin-patches (package-source glib))))))))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,

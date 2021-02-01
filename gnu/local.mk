@@ -1064,6 +1064,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
   %D%/packages/patches/ghc-pandoc-fix-html-tests.patch		\
   %D%/packages/patches/ghc-pandoc-fix-latex-test.patch		\
+  %D%/packages/patches/ghostscript-CVE-2020-15900.patch		\
+  %D%/packages/patches/ghostscript-freetype-compat.patch	\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
@@ -1127,6 +1129,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-setup-root.patch			\
   %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
   %D%/packages/patches/gspell-dash-test.patch			\
+  %D%/packages/patches/gst-plugins-good-fix-test.patch		\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-2.2-skip-so-test.patch             \
@@ -1292,6 +1295,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libquicktime-ffmpeg.patch 		\
+  %D%/packages/patches/libssh2-CVE-2019-17498.patch 		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
@@ -1351,7 +1355,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmemcached-build-with-gcc7.patch	\
   %D%/packages/patches/libmhash-hmac-fix-uaf.patch		\
   %D%/packages/patches/mediastreamer2-srtp2.patch		\
-  %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
+  %D%/packages/patches/mesa-skip-tests.patch			\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
@@ -1525,6 +1529,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-3.9-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
+  %D%/packages/patches/python-CVE-2020-26116.patch		\
   %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
@@ -1561,7 +1566,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-absolute-runpath.patch		\
-  %D%/packages/patches/qtbase-fix-krita-deadlock.patch		\
   %D%/packages/patches/qtbase-moc-ignore-gcc-macro.patch	\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1609,6 +1613,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
+  %D%/packages/patches/sbc-fix-build-non-x86.patch		\
   %D%/packages/patches/sbcl-clml-fix-types.patch		\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
   %D%/packages/patches/scheme48-tests.patch			\

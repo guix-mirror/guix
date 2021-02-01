@@ -309,7 +309,7 @@ zabbix||{}
           (service dhcp-client-service-type)
           (service postgresql-service-type
                    (postgresql-configuration
-                    (postgresql postgresql-10)
+                    (postgresql postgresql)
                    ;; XXX: Remove when postgresql default socket directory is
                     ;; changed to /var/run/postgresql.
                     (config-file

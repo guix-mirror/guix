@@ -1317,8 +1317,70 @@ move around."
                  #t)))))))))
 
 (define-public rust-1.46
-  (rust-bootstrapped-package rust-1.45 "1.46.0"
-    "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.45 "1.46.0"
+           "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid")))
+    (package
+      (inherit base-rust)
+      (outputs (cons "rustfmt" (package-outputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda* _
+                 (invoke "./x.py" "build")
+                 (invoke "./x.py" "build" "src/tools/cargo")
+                 (invoke "./x.py" "build" "src/tools/rustfmt")))
+             (replace 'check
+               (lambda* _
+                 ;; Test rustfmt.
+                 (let ((parallel-job-spec
+                        (string-append "-j" (number->string
+                                             (min 4
+                                                  (parallel-job-count))))))
+                   (invoke "./x.py" parallel-job-spec "test" "-vv")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/cargo")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/rustfmt"))))
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "./x.py" "install")
+                 (substitute* "config.toml"
+                   ;; replace prefix to specific output
+                   (("prefix = \"[^\"]*\"")
+                    (string-append "prefix = \"" (assoc-ref outputs "cargo") "\"")))
+                 (invoke "./x.py" "install" "cargo")
+                 (substitute* "config.toml"
+                   ;; replace prefix to specific output
+                   (("prefix = \"[^\"]*\"")
+                    (string-append "prefix = \"" (assoc-ref outputs "rustfmt") "\"")))
+                 (invoke "./x.py" "install" "rustfmt")))
+             (replace 'delete-install-logs
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (define (delete-manifest-file out-path file)
+                   (delete-file (string-append out-path "/lib/rustlib/" file)))
+
+                 (let ((out (assoc-ref outputs "out"))
+                       (cargo-out (assoc-ref outputs "cargo"))
+                       (rustfmt-out (assoc-ref outputs "rustfmt")))
+                   (for-each
+                     (lambda (file) (delete-manifest-file out file))
+                     '("install.log"
+                       "manifest-rust-docs"
+                       ,(string-append "manifest-rust-std-"
+                                       (nix-system->gnu-triplet-for-rust))
+                       "manifest-rustc"))
+                   (for-each
+                     (lambda (file) (delete-manifest-file cargo-out file))
+                     '("install.log"
+                       "manifest-cargo"))
+                   (for-each
+                     (lambda (file) (delete-manifest-file rustfmt-out file))
+                     '("install.log"
+                       "manifest-rustfmt-preview"))
+                   #t))))))))))
 
 (define-public rust-1.47
   (let ((base-rust

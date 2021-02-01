@@ -358,14 +358,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13bcdf2xpjxwbghas0cr448z89qqki2ssgfgswc257y9859v4s5b"))))
+               "0lmwglj16anhpaq0h830xsl1ivknv75i4lir9bk88aq73s2jy852"))))
     (build-system meson-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -539,7 +539,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.102")
+    (version "2.4.103")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -547,7 +547,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0nx0bd9dhymdsd99v4ifib77yjirkvkxf5hzdkbr7qr8dhrzkjwb"))))
+                "08h2nnf4w96b4ql7485mvjgbbsb8rwc0qa93fdm1cq34pbyszq1z"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

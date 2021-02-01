@@ -2956,19 +2956,31 @@ configuring CUPS.")
 (define-public libnotify
   (package
     (name "libnotify")
-    (version "0.7.7")
+    (version "0.7.9")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/" name "/"
-                          (version-major+minor version)  "/"
-                          name "-" version ".tar.xz"))
-      (sha256
-       (base32
-        "017wgq9n00hx39n0hm784zn18hl721hbaijda868cm96bcqwxd4w"))))
-    (build-system gnu-build-system)
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0qa7cx6ra5hwqnxw95b9svgjg5q6ynm8y843iqjszxvds5z53h36"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Don't attempt to download XSL schema.
+             (substitute* "meson.build"
+               (("http://docbook.sourceforge.net/release/xsl-ns/current\
+/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
     (propagated-inputs
      `(;; In Requires of libnotify.pc.
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -2977,9 +2989,14 @@ configuring CUPS.")
      `(("gtk+" ,gtk+)
        ("libpng" ,libpng)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")
-        ("gobject-introspection" ,gobject-introspection)))
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+
+       ;; For the documentation.
+       ("gtk-doc" ,gtk-doc)
+       ("xsltproc" ,libxslt)
+       ("docbook-xsl" ,docbook-xsl)))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
