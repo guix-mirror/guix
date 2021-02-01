@@ -34,10 +34,12 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages language)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lxqt)
@@ -602,3 +604,79 @@ Telegram instant messager.")
 a part of telegram-cli, but now being maintained separately.")
       (home-page "https://github.com/vysheng/tl-parser")
       (license license:gpl2+))))
+
+(define-public tgl
+  (let ((commit "ffb04caca71de0cddf28cd33a4575922900a59ed")
+        (revision "181"))
+    (package
+      (name "tgl")
+      (version
+       (git-version "2.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/vysheng/tgl.git")
+           (commit commit)))
+         (file-name
+          (git-file-name name version))
+         (sha256
+          (base32 "0cf5s7ygslb5klg1qv9qdc3hivhspmvh3zkacyyhd2yyikb5p0f9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; No target
+         #:imported-modules
+         ((guix build copy-build-system)
+          ,@%gnu-build-system-modules)
+         #:modules
+         (((guix build copy-build-system)
+           #:prefix copy:)
+          (guix build gnu-build-system)
+          (guix build utils))
+         #:configure-flags
+         (list
+          ;; Use gcrypt instead of openssl.
+          "--disable-openssl"
+          ;; Enable extended queries system.
+          "--enable-extf"
+          ;; Include libevent-based net and timers.
+          "--enable-libevent")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'trigger-bootstrap
+             (lambda _
+               (delete-file "configure")
+               #t))
+           (add-after 'trigger-bootstrap 'patch-tl-parser
+             (lambda _
+               (delete-file "Makefile.tl-parser")
+               (substitute* "Makefile.in"
+                 (("include \\$\\{srcdir\\}/Makefile\\.tl-parser")
+                  "")
+                 (("\\$\\{EXE\\}/tl-parser")
+                  "tl-parser"))
+               #t))
+           (replace 'install
+             (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("bin" "bin")
+                        ("." "include/tgl"
+                         #:include-regexp ("\\.h$"))
+                        ("libs" "lib/tgl"))
+                      args))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libevent" ,libevent)
+         ("libgcrypt" ,libgcrypt)
+         ("tl-parser" ,tl-parser)
+         ("zlib" ,zlib)))
+      (synopsis "Telegram Library")
+      (description "TGL is the telegram library for telegram-cli.")
+      (home-page "https://github.com/vysheng/tgl")
+      (license license:lgpl2.1+))))
