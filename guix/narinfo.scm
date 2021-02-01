@@ -50,6 +50,7 @@
             narinfo-deriver
             narinfo-system
             narinfo-signature
+            narinfo-contents
 
             narinfo-hash-algorithm+value
 
