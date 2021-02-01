@@ -678,7 +678,7 @@ point and then, after each tween step, plugging back the result.")
 (define-public abseil-cpp
   (package
     (name "abseil-cpp")
-    (version "20200225.2")
+    (version "20200923.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -687,11 +687,14 @@ point and then, after each tween step, plugging back the result.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dwxg54pv6ihphbia0iw65r64whd7v8nm4wwhcz219642cgpv54y"))))
+                "1p4djhm1f011ficbjjxx3n8428p8481p20j4glpaawnpsi362hkl"))
+              ;; Remove after next googletest release and update.
+              (patches (search-patches "abseil-cpp-fix.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
                                "-DABSL_RUN_TESTS=ON"
+                               "-DABSL_USE_EXTERNAL_GOOGLETEST=ON"
                                ;; Needed, else we get errors like:
                                ;;
                                ;; ld: CMakeFiles/absl_periodic_sampler_test.dir/internal/periodic_sampler_test.cc.o:

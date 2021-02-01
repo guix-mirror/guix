@@ -786,6 +786,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/abcl-fix-build-xml.patch	\
   %D%/packages/patches/ableton-link-system-libraries-debian.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
+  %D%/packages/patches/abseil-cpp-fix.patch			\
   %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
