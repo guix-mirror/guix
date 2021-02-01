@@ -134,7 +134,7 @@
 
 ;;; Rust 1.29 is special in that it is built with mrustc, which shortens the
 ;;; bootstrap path.  Note: the build is non-deterministic.
-(define-public rust-1.29
+(define rust-1.29
   (package
     (name "rust")
     (version "1.29.2")
@@ -148,9 +148,7 @@
                            '("src/jemalloc"
                              "src/llvm"
                              "src/llvm-emscripten")))
-       (patches (search-patches
-                 "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                 "rust-reproducible-builds.patch"))))
+       (patches (search-patches "rust-reproducible-builds.patch"))))
     (outputs '("out" "cargo"))
     (properties '((timeout . 72000)           ;20 hours
                   (max-silent-time . 18000))) ;5 hours (for armel)
@@ -292,7 +290,7 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-1.30
+(define rust-1.30
   (package
     (name "rust")
     (version "1.30.1")
@@ -307,12 +305,14 @@ safety and thread safety guarantees.")
                                     "src/llvm-emscripten"
                                     "src/tools/clang"
                                     "src/tools/lldb")))))
-    (outputs '("out" "cargo" "doc"))
+    (outputs '("out" "cargo"))
     (properties '((timeout . 72000)           ;20 hours
                   (max-silent-time . 18000))) ;5 hours (for armel)
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #t
+     ;; Only the final Rust is tested, not the intermediate bootstrap ones,
+     ;; for performance and simplicity.
+     `(#:tests? #f
        #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
        #:modules ((guix build utils)
                   (guix build gnu-build-system)
@@ -322,67 +322,12 @@ safety and thread safety guarantees.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Disable test for cross compilation support.
-             (setenv "CFG_DISABLE_CROSS_TESTS" "1")
              (setenv "SHELL" (which "sh"))
              (setenv "CONFIG_SHELL" (which "sh"))
              (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
              ;; The Guix LLVM package installs only shared libraries.
              (setenv "LLVM_LINK_SHARED" "1")))
-         (add-after 'unpack 'relax-gdb-auto-load-safe-path
-           ;; Allow GDB to load binaries from any location, otherwise the
-           ;; GDB tests fail.
-           (lambda _
-             (setenv "HOME" (getcwd))
-             (with-output-to-file (string-append (getenv "HOME") "/.gdbinit")
-               (lambda _
-                 (format #t "set auto-load safe-path /~%")))
-             ;; Do not launch gdb with '-nx' which causes it to not execute
-             ;; any init file.
-             (substitute* "src/tools/compiletest/src/runtest.rs"
-               (("\"-nx\".(to_owned|as_ref)\\(\\),")
-                ""))
-             ;; Patch the wrapper scripts to refer to the (not yet) built
-             ;; rustc sysroot rather than the earlier one used as a bootstrap.
-             (substitute* '("src/etc/rust-gdb"
-                            "src/etc/rust-gdbgui"
-                            "src/etc/rust-lldb")
-               (("^RUSTC_SYSROOT.*")
-                (string-append "RUSTC_SYSROOT=" (getcwd) "/build/"
-                               ,(nix-system->gnu-triplet-for-rust)
-                               "/stage2")))))
-         (add-after 'unpack 'patch-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((bash (assoc-ref inputs "bash")))
-               (substitute* "src/libstd/process.rs"
-                 (("\"/bin/sh\"")
-                  (format #f "~s" (which "sh"))))
-               (substitute* "src/libstd/net/tcp.rs"
-                 ;; There is no network in build environment
-                 (("fn connect_timeout_unroutable")
-                  "#[ignore]\nfn connect_timeout_unroutable"))
-               ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
-               (substitute* "src/libstd/sys/unix/process/process_common.rs"
-                 (("fn test_process_mask") "#[allow(unused_attributes)]
-    #[ignore]
-    fn test_process_mask"))
-               ;; This test is known to be flaky (see:
-               ;; https://github.com/rust-lang/rust/issues/55503).
-               (substitute* "src/libstd/process.rs"
-                 (("fn test_inherit_env")
-                  "#[ignore]\nfn test_inherit_env"))
-               ;; This one also (see:
-               ;; https://github.com/rust-lang/rust/commit/
-               ;; a1580e72daee5fa9b7a61a74a20326b8c5741177)
-               (substitute* "src/libstd/net/tcp.rs"
-                 (("fn fast_rebind")
-                  "#[ignore]\nfn fast_rebind")))))
-         (add-after 'unpack 'remove-flaky-test
-           (lambda _
-             ;; See <https://github.com/rust-lang/rust/issues/43402>.
-             (when (file-exists? "src/test/run-make/issue-26092")
-               (delete-file-recursively "src/test/run-make/issue-26092"))))
-         (add-after 'patch-tests 'neuter-tidy
+         (add-after 'unpack 'neuter-tidy
            ;; We often need to patch tests with various Guix-specific paths.
            ;; This often increases the line length and makes tidy, rustc's
            ;; style checker, complain.  We could insert additional newlines or
@@ -395,85 +340,6 @@ safety and thread safety guarantees.")
              (substitute* "src/bootstrap/builder.rs"
                ((".*::Tidy,.*")
                 ""))))
-         (add-after 'patch-tests 'disable-debuginfo-test
-           (lambda _
-             ;; The GDB tests fail.
-             (substitute* "src/bootstrap/builder.rs"
-               ((".*test::Debuginfo,.*")
-                ""))))
-         (add-after 'patch-tests 'patch-cargo-index-update
-           (lambda* _
-             (substitute* "src/tools/cargo/tests/testsuite/generate_lockfile.rs"
-               ;; This test wants to update the crate index.
-               (("fn no_index_update") "#[ignore]\nfn no_index_update"))))
-         (add-after 'patch-tests 'patch-aarch64-test
-           (lambda* _
-             (substitute* "src/librustc_metadata/dynamic_lib.rs"
-               ;; This test is known to fail on aarch64 and powerpc64le:
-               ;; https://github.com/rust-lang/rust/issues/45410
-               (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
-             ;; This test fails on aarch64 with llvm@6.0:
-             ;; https://github.com/rust-lang/rust/issues/49807
-             ;; other possible solution:
-             ;; https://github.com/rust-lang/rust/pull/47688
-             (delete-file
-              "src/test/debuginfo/by-value-self-argument-in-trait-impl.rs")))
-         (add-after 'patch-tests 'remove-unsupported-tests
-           (lambda* _
-             ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
-             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
-             (delete-file-recursively
-              "src/test/run-make-fulldeps/linker-output-non-utf8")))
-         (add-after 'patch-tests 'disable-amd64-avx-test
-           (lambda _
-             (substitute* (match (find-files "." "^issue-44056.rs$")
-                            ((file) file))
-               (("only-x86_64") "ignore-test"))))
-         (add-after 'patch-tests 'patch-cargo-tests
-           (lambda _
-             (substitute* '("src/tools/cargo/tests/testsuite/build.rs"
-                            "src/tools/cargo/tests/testsuite/fix.rs")
-               (("/usr/bin/env")
-                (which "env")))
-             (substitute* "src/tools/cargo/tests/testsuite/death.rs"
-               ;; This is stuck when built in container.
-               (("fn ctrl_c_kills_everyone")
-                "#[ignore]\nfn ctrl_c_kills_everyone"))
-             ;; Prints test output in the wrong order when built on
-             ;; i686-linux.
-             (substitute* "src/tools/cargo/tests/testsuite/test.rs"
-               (("fn cargo_test_env")
-                "#[ignore]\nfn cargo_test_env"))
-
-             ;; These tests pull in a dependency on "git", which changes
-             ;; too frequently take part in the Rust toolchain.
-             (substitute* "src/tools/cargo/tests/testsuite/new.rs"
-               (("fn author_prefers_cargo")
-                "#[ignore]\nfn author_prefers_cargo")
-               (("fn finds_author_git")
-                "#[ignore]\nfn finds_author_git")
-               (("fn finds_local_author_git")
-                "#[ignore]\nfn finds_local_author_git"))))
-         (add-after 'patch-cargo-tests 'patch-cargo-env-shebang
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((coreutils (assoc-ref inputs "coreutils")))
-               (substitute* "src/tools/cargo/tests/testsuite/fix.rs"
-                 ;; Cargo has a test which explicitly sets a
-                 ;; RUSTC_WRAPPER environment variable which points
-                 ;; to /usr/bin/env. Since it's not a shebang, it
-                 ;; needs to be manually patched
-                 (("\"/usr/bin/env\"")
-                  (string-append "\"" coreutils "/bin/env\""))))))
-         (add-after 'patch-cargo-env-shebang 'ignore-cargo-package-tests
-           (lambda* _
-             (substitute* "src/tools/cargo/tests/testsuite/package.rs"
-               ;; These tests largely check that cargo outputs warning/error
-               ;; messages as expected. It seems that cargo outputs an
-               ;; absolute path to something in the store instead of the
-               ;; expected relative path (e.g. `[..]`) so we'll ignore
-               ;; these for now
-               (("fn include") "#[ignore]\nfn include")
-               (("fn exclude") "#[ignore]\nfn exclude"))))
          (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums
            (lambda* _
              (use-modules (guix build cargo-utils))
@@ -484,11 +350,9 @@ safety and thread safety guarantees.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
                     (gcc (assoc-ref inputs "gcc"))
-                    (gdb (assoc-ref inputs "gdb"))
-                    (binutils (assoc-ref inputs "binutils"))
                     (python (assoc-ref inputs "python"))
+                    (binutils (assoc-ref inputs "binutils"))
                     (rustc (assoc-ref inputs "rustc-bootstrap"))
                     (cargo (assoc-ref inputs "cargo-bootstrap"))
                     (llvm (assoc-ref inputs "llvm"))
@@ -501,13 +365,11 @@ safety and thread safety guarantees.")
 cargo = \"" cargo "/bin/cargo" "\"
 rustc = \"" rustc "/bin/rustc" "\"
 docs = false
-python = \"" python "/bin/python2" "\"
-gdb = \"" gdb "/bin/gdb" "\"
+python = \"" python "/bin/python" "\"
 vendor = true
 submodules = false
 [install]
 prefix = \"" out "\"
-docdir = \"" doc "/share/doc/rust" "\"
 sysconfdir = \"etc\"
 [rust]
 default-linker = \"" gcc "/bin/gcc" "\"
@@ -529,15 +391,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                        "1"))))
                (invoke "./x.py" job-spec "build")
                (invoke "./x.py" job-spec "build" "src/tools/cargo"))))
-         (replace 'check
-           (lambda* (#:key tests? parallel-build? #:allow-other-keys)
-             (when tests?
-               (let ((job-spec (string-append
-                                "-j" (if parallel-build?
-                                         (number->string (parallel-job-count))
-                                         "1"))))
-                 (invoke "./x.py" job-spec "test" "-vv")
-                 (invoke "./x.py" job-spec "test" "src/tools/cargo")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -570,13 +423,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  `("LIBRARY_PATH" ":"
                    suffix (,(string-append libc "/lib"))))))))))
     (native-inputs
-     `(("bison" ,bison)                 ; For the tests
-       ("cmake" ,cmake-minimal)
-       ("flex" ,flex)                   ; For the tests
-       ("gdb" ,gdb-9.2)                 ; For the tests
+     `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)       ; For "cargo"
-       ("procps" ,procps)               ; For the tests
-       ("python" ,python-2)             ; For the tests
+       ("python" ,python-wrapper)
        ("rustc-bootstrap" ,rust-1.29)
        ("cargo-bootstrap" ,rust-1.29 "cargo")
        ("which" ,which)))
@@ -607,46 +456,11 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-1.31
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.30 "1.31.1"
-                    "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli")))
-    (package
-      (inherit base-rust)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'disable-debuginfo-test)
-             (add-after 'configure 'enable-docs
-               ;; Docs are disabled in 1.30 as the doc tests fail.  Re-enable
-               ;; them here.
-               (lambda* _
-                 (substitute* "config.toml"
-                   (("docs = false")
-                    "docs = true"))))
-             (add-after 'patch-tests 'patch-command-exec-tests
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((coreutils (assoc-ref inputs "coreutils")))
-                   (substitute* (match (find-files "." "^command-exec.rs$")
-                                  ((file) file))
-                     ;; This test suite includes some tests that the stdlib's
-                     ;; `Command` execution properly handles in situations
-                     ;; where the environment or PATH variable are empty, but
-                     ;; this fails since we don't have `echo` available at its
-                     ;; usual FHS location.
-                     (("Command::new\\(\"echo\"\\)")
-                      (string-append "Command::new(\""
-                                     coreutils "/bin/echo\")"))))))
-             (add-after 'patch-tests 'patch-process-docs-rev-cmd
-               (lambda* _
-                 ;; Disable some doc tests which depend on the "rev" command
-                 ;; https://github.com/rust-lang/rust/pull/58746
-                 (substitute* "src/libstd/process.rs"
-                   (("```rust")
-                    "```rust,no_run")))))))))))
+(define rust-1.31
+  (rust-bootstrapped-package
+   rust-1.30 "1.31.1" "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"))
 
-(define-public rust-1.32
+(define rust-1.32
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.31 "1.32.0"
                     "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac")))
@@ -661,7 +475,6 @@ safety and thread safety guarantees.")
                                "src/tools/clang"
                                "src/tools/lldb"
                                "vendor/jemalloc-sys/jemalloc")))
-         (patches (search-patches "rust-reproducible-builds.patch"))
           ;; the vendor directory has moved to the root of
           ;; the tarball, so we have to strip an extra prefix
          (patch-flags '("-p2"))))
@@ -692,14 +505,11 @@ safety and thread safety guarantees.")
                  (substitute* "config.toml"
                    (("^jemalloc =.*$") "")
                    (("[[]rust[]]") "\n[rust]\njemalloc=true\n"))
-                 (setenv "JEMALLOC_OVERRIDE" (string-append
-                                              (assoc-ref inputs "jemalloc")
-                                              "/lib/libjemalloc_pic.a"))))
-             ;; Remove no longer relevant steps
-             (delete 'remove-flaky-test)
-             (delete 'patch-aarch64-test))))))))
+                 (setenv "JEMALLOC_OVERRIDE"
+                         (string-append (assoc-ref inputs "jemalloc")
+                                        "/lib/libjemalloc_pic.a")))))))))))
 
-(define-public rust-1.33
+(define rust-1.33
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.32 "1.33.0"
                     "152x91mg7bz4ygligwjb05fgm1blwy2i70s2j03zc9jiwvbsh0as")))
@@ -711,31 +521,10 @@ safety and thread safety guarantees.")
          (patches '())
          (patch-flags '("-p1"))))
       (inputs
-       ;; Upgrade to jemalloc@5.1.0
-       (alist-replace "jemalloc" (list jemalloc) (package-inputs base-rust)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:tests? _ #f)
-          #t)
-         ((#:phases phases)
-             `(modify-phases ,phases
-                (delete 'ignore-cargo-package-tests)
-                (add-after 'configure 'configure-test-threads
-                  ;; Several rustc and cargo tests will fail if run on one core
-                  ;; https://github.com/rust-lang/rust/issues/59122
-                  ;; https://github.com/rust-lang/cargo/issues/6746
-                  ;; https://github.com/rust-lang/rust/issues/58907
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (setenv "RUST_TEST_THREADS" "2")))
-                (add-after 'configure 'disable-codegen-tests
-                  ;; The codegen tests fail in this version due to using LLVM
-                  ;; 7.
-                  (lambda _
-                    (substitute* "config.toml"
-                      (("rpath = .*" all)
-                       (string-append all "codegen-tests = false\n"))))))))))))
+       ;; Upgrade jemalloc.
+       (alist-replace "jemalloc" (list jemalloc) (package-inputs base-rust))))))
 
-(define-public rust-1.34
+(define rust-1.34
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.33 "1.34.1"
                     "19s09k7y5j6g3y4d2rk6kg9pvq6ml94c49w6b72dmq8p9lk8bixh")))
@@ -749,7 +538,7 @@ safety and thread safety guarantees.")
                                "src/llvm-project"
                                "vendor/jemalloc-sys/jemalloc"))))))))
 
-(define-public rust-1.35
+(define rust-1.35
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.34 "1.35.0"
                     "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
@@ -763,19 +552,11 @@ safety and thread safety guarantees.")
           `(modify-phases ,phases
              (delete 'disable-codegen-tests))))))))
 
-(define-public rust-1.36
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.35 "1.36.0"
-                    "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04")))
-    (package
-      (inherit base-rust)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'patch-process-docs-rev-cmd))))))))
+(define rust-1.36
+  (rust-bootstrapped-package
+   rust-1.35 "1.36.0" "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04"))
 
-(define-public rust-1.37
+(define rust-1.37
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.36 "1.37.0"
                     "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
@@ -791,25 +572,16 @@ safety and thread safety guarantees.")
                    (mkdir-p cargo-home)
                    (setenv "CARGO_HOME" cargo-home)))))))))))
 
-(define-public rust-1.38
+(define rust-1.38
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.37 "1.38.0"
                     "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
     (package
       (inherit base-rust)
       (inputs
-       (alist-replace "llvm" (list llvm-9) (package-inputs base-rust)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'patch-tests 'patch-command-uid-gid-test
-               (lambda _
-                 (substitute* "src/test/ui/command-uid-gid.rs"
-                   (("/bin/sh")
-                    (which "sh"))))))))))))
+       (alist-replace "llvm" (list llvm-9) (package-inputs base-rust))))))
 
-(define-public rust-1.39
+(define rust-1.39
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.38 "1.39.0"
                     "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl")))
@@ -828,7 +600,7 @@ safety and thread safety guarantees.")
                     (string-append name "\"" ,%cargo-reference-hash "\"")))
                  (generate-all-checksums "vendor"))))))))))
 
-(define-public rust-1.40
+(define rust-1.40
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.39 "1.40.0"
                     "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
@@ -842,34 +614,21 @@ safety and thread safety guarantees.")
          (snippet '(for-each delete-file-recursively
                              '("src/llvm-project"
                                "vendor/jemalloc-sys/jemalloc")))))
-      (arguments
-       ;; Rust 1.40 does not ship rustc-internal libraries by default
-       ;; (see rustc-dev-split). This means that librustc_driver.so is no
-       ;; longer available in lib/rustlib/$target/lib, which is the directory
-       ;; included in the runpath of librustc_codegen_llvm-llvm.so.
-       ;; This is detected by our validate-runpath phase as an error, but it
-       ;; is harmless as the codegen backend is loaded by librustc_driver.so
-       ;; itself, which must at that point have been already loaded.
-       ;; As such, we skip validating the runpath for Rust 1.40.
-       ;; Rust 1.41 stopped putting the codegen backend in a separate library,
-       ;; which makes this workaround only necessary for this release.
-       (substitute-keyword-arguments (package-arguments base-rust)
+       ;; Rust 1.40 does not ship rustc-internal libraries by default (see
+       ;; rustc-dev-split). This means that librustc_driver.so is no longer
+       ;; available in lib/rustlib/$target/lib, which is the directory
+       ;; included in the runpath of librustc_codegen_llvm-llvm.so.  This is
+       ;; detected by our validate-runpath phase as an error, but it is
+       ;; harmless as the codegen backend is loaded by librustc_driver.so
+       ;; itself, which must at that point have been already loaded.  As such,
+       ;; we skip validating the runpath for Rust 1.40.  Rust 1.41 stopped
+       ;; putting the codegen backend in a separate library, which makes this
+       ;; workaround only necessary for this release.
+      (arguments (substitute-keyword-arguments (package-arguments base-rust)
          ((#:validate-runpath? _ #f)
-          #f)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'patch-command-uid-gid-test
-               (lambda _
-                 (substitute* (match (find-files "src/test"
-                                                 "^command-uid-gid\\.rs$")
-                                ((file) file))
-                   (("/bin/sh")
-                    (which "sh")))))
-             ;; The test got removed in commit 000fe63b6fc57b09828930cacbab20c2ee6e6d15
-             ;; "Remove painful test that is not pulling its weight"
-             (delete 'remove-unsupported-tests))))))))
+          #f))))))
 
-(define-public rust-1.41
+(define rust-1.41
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.40 "1.41.1"
                     "0ws5x0fxv57fyllsa6025h3q6j9v3m8nb3syl4x0hgkddq0kvj9q")))
@@ -880,33 +639,19 @@ safety and thread safety guarantees.")
          ((#:validate-runpath? _ #t)
           #t))))))
 
-(define-public rust-1.42
+(define rust-1.42
   (rust-bootstrapped-package
    rust-1.41 "1.42.0" "0x9lxs82may6c0iln0b908cxyn1cv7h03n5cmbx3j1bas4qzks6j"))
 
-(define-public rust-1.43
+(define rust-1.43
   (rust-bootstrapped-package
    rust-1.42 "1.43.0" "18akhk0wz1my6y9vhardriy2ysc482z0fnjdcgs9gy59kmnarxkm"))
 
-(define-public rust-1.44
-  (let ((base-rust (rust-bootstrapped-package
-                    rust-1.43 "1.44.1"
-                    "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky")))
-    (package
-      (inherit base-rust)
-      ;; Rust 1.44 gained support to use Python 3 for testing.
-      (native-inputs
-       (alist-replace "python" (list python-wrapper) (package-native-inputs base-rust)))
-      (arguments (substitute-keyword-arguments (package-arguments base-rust)
-                   ((#:phases phases)
-                    `(modify-phases ,phases
-                       (add-after 'configure 'use-python3
-                         (lambda _
-                           (substitute* "config.toml"
-                             (("/bin/python2")
-                              "/bin/python")))))))))))
+(define rust-1.44
+  (rust-bootstrapped-package
+   rust-1.43 "1.44.1" "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
 
-(define-public rust-1.45
+(define rust-1.45
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.44 "1.45.2"
                     "0273a1g3f59plyi1n0azf21qjzwml1yqdnj5z472crz37qggr8xp")))
@@ -922,26 +667,9 @@ safety and thread safety guarantees.")
                (lambda _
                  (substitute* (find-files "." "^linker.rs$")
                    (("linker.env\\(\"LC_ALL\", \"C\"\\);")
-                    "linker.env(\"LC_ALL\", \"en_US.UTF-8\");"))))
-             ;; These tests make sure that the parser behaves properly when
-             ;; a source file starts with a shebang. Unfortunately,
-             ;; the patch-shebangs phase changes the meaning of these edge-cases.
-             ;; We skip the test since it's drastically unlikely Guix's packaging
-             ;; will introduce a bug here.
-             (add-after 'patch-tests 'skip-shebang-tests
-               (lambda _
-                 (with-directory-excursion "src/test/ui/parser/shebang"
-                   (delete-file "shebang-doc-comment.rs")
-                   (delete-file "sneaky-attrib.rs"))))
-             ;; This test case synchronizes itself by starting a localhost TCP
-             ;; server. This doesn't work as networking is not available.
-             (add-after 'patch-tests 'skip-networking-test
-               (lambda _
-                 (substitute* "src/tools/cargo/tests/testsuite/freshness.rs"
-                   (("fn linking_interrupted" all)
-                    (string-append "#[ignore] " all))))))))))))
+                    "linker.env(\"LC_ALL\", \"en_US.UTF-8\");")))))))))))
 
-(define-public rust-1.46
+(define rust-1.46
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.45 "1.46.0"
                     "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid")))
@@ -988,43 +716,95 @@ safety and thread safety guarantees.")
                     (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
                  (invoke "./x.py" "install" "rustfmt"))))))))))
 
-(define-public rust-1.47
+(define rust-1.47
   (let ((base-rust (rust-bootstrapped-package
                     rust-1.46 "1.47.0"
                     "07fqd2vp7cf1ka3hr207dnnz93ymxml4935vp74g4is79h3dz19i")))
     (package
       (inherit base-rust)
       (inputs
-       (alist-replace "llvm" (list llvm-11) (package-inputs base-rust)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             ;; The source code got rearranged: libstd is now in the newly created library folder.
-             (replace 'patch-tests
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((bash (assoc-ref inputs "bash")))
-                   (substitute* "library/std/src/process.rs"
-                     (("\"/bin/sh\"") (string-append "\"" bash "/bin/sh\"")))
-                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
-                   (substitute* "library/std/src/sys/unix/process/process_common.rs"
-                     (("fn test_process_mask")
-                      "#[allow(unused_attributes)]
-    #[ignore]
-    fn test_process_mask"))))))))))))
+       (alist-replace "llvm" (list llvm-11) (package-inputs base-rust))))))
 
-(define-public rust-1.48
+(define rust-1.48
+  (rust-bootstrapped-package
+   rust-1.47 "1.48.0" "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf"))
+
+;;; Note: Only the current version of rust is supported and tested.  The
+;;; other, intermediate rusts built for bootstrapping purposes should be
+;;; private and stripped from any test fixing patches or phases.  This is to
+;;; ease maintenance and reduce the time required to build the full Rust
+;;; bootstrap chain.
+(define-public rust
   (let ((base-rust (rust-bootstrapped-package
-                    rust-1.47 "1.48.0"
-                    "0fz4gbb5hp5qalrl9lcl8yw4kk7ai7wx511jb28nypbxninkwxhf")))
+                    rust-1.48 "1.49.0"
+                    "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm")))
     (package
       (inherit base-rust)
+      (outputs (cons "doc" (package-outputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:tests? _ #f)
+          #t)
          ((#:phases phases)
           `(modify-phases ,phases
-             ;; Some tests got split out into separate files.
-             (replace 'patch-tests
+             (add-after 'unpack 'relax-gdb-auto-load-safe-path
+               ;; Allow GDB to load binaries from any location, otherwise the
+               ;; gdbinfo tests fail.  This is only useful when testing with a
+               ;; GDB version newer than 8.2.
+               (lambda _
+                 (setenv "HOME" (getcwd))
+                 (with-output-to-file (string-append (getenv "HOME") "/.gdbinit")
+                   (lambda _
+                     (format #t "set auto-load safe-path /~%")))
+                 ;; Do not launch gdb with '-nx' which causes it to not execute
+                 ;; any init file.
+                 (substitute* "src/tools/compiletest/src/runtest.rs"
+                   (("\"-nx\".as_ref\\(\\), ")
+                    ""))))
+             (add-after 'unpack 'patch-cargo-env-shebang
+               (lambda _
+                 (substitute* '("src/tools/cargo/tests/testsuite/build.rs"
+                                "src/tools/cargo/tests/testsuite/fix.rs")
+                   ;; The cargo *_wrapper tests set RUSTC.*WRAPPER environment
+                   ;; variable which points to /usr/bin/env.  Since it's not a
+                   ;; shebang, it needs to be manually patched.
+                   (("/usr/bin/env")
+                    (which "env")))))
+             (add-after 'unpack 'disable-tests-requiring-git
+               (lambda _
+                 (substitute* "src/tools/cargo/tests/testsuite/new.rs"
+                   (("fn author_prefers_cargo")
+                    "#[ignore]\nfn author_prefers_cargo")
+                   (("fn finds_author_git")
+                    "#[ignore]\nfn finds_author_git")
+                   (("fn finds_local_author_git")
+                    "#[ignore]\nfn finds_local_author_git"))))
+             (add-after 'unpack 'patch-command-exec-tests
+               ;; This test suite includes some tests that the stdlib's
+               ;; `Command` execution properly handles in situations where
+               ;; the environment or PATH variable are empty, but this fails
+               ;; since we don't have `echo` available at its usual FHS
+               ;; location.
+               (lambda _
+                 (substitute* (match (find-files "." "^command-exec.rs$")
+                                ((file) file))
+                   (("Command::new\\(\"echo\"\\)")
+                    (format #f "Command::new(~s)" (which "echo"))))))
+             (add-after 'unpack 'patch-command-uid-gid-test
+               (lambda _
+                 (substitute* (match (find-files "." "^command-uid-gid.rs$")
+                                ((file) file))
+                   (("/bin/sh")
+                    (which "sh")))))
+             (add-after 'unpack 'skip-shebang-tests
+               ;; This test make sure that the parser behaves properly when a
+               ;; source file starts with a shebang. Unfortunately, the
+               ;; patch-shebangs phase changes the meaning of these edge-cases.
+               ;; We skip the test since it's drastically unlikely Guix's
+               ;; packaging will introduce a bug here.
+               (lambda _
+                 (delete-file "src/test/ui/parser/shebang/sneaky-attrib.rs")))
+             (add-after 'unpack 'patch-process-tests
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((bash (assoc-ref inputs "bash")))
                    (substitute* "library/std/src/process/tests.rs"
@@ -1034,10 +814,35 @@ safety and thread safety guarantees.")
                      (("fn test_process_mask")
                       "#[allow(unused_attributes)]
     #[ignore]
-    fn test_process_mask"))))))))))))
-
-(define-public rust-1.49
-  (rust-bootstrapped-package
-   rust-1.48 "1.49.0" "0yf7kll517398dgqsr7m3gldzj0iwsp3ggzxrayckpqzvylfy2mm"))
-
-(define-public rust rust-1.49)
+    fn test_process_mask")))))
+             (add-after 'unpack 'disable-interrupt-tests
+               (lambda _
+                 ;; This test hangs in the build container; disable it.
+                 (substitute* (match (find-files "." "^freshness.rs$")
+                                ((file) file))
+                   (("fn linking_interrupted")
+                    "#[ignore]\nfn linking_interrupted"))
+                 ;; Likewise for the ctrl_c_kills_everyone test.
+                 (substitute* (match (find-files "." "^death.rs$")
+                                ((file) file))
+                   (("fn ctrl_c_kills_everyone")
+                    "#[ignore]\nfn ctrl_c_kills_everyone"))))
+             (add-after 'configure 'enable-docs
+               (lambda _
+                 (substitute* "config.toml"
+                   (("docs = false")
+                    "docs = true"))))
+             (add-after 'configure 'add-gdb-to-config
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((gdb (assoc-ref inputs "gdb")))
+                   (substitute* "config.toml"
+                     (("^python =.*" all)
+                      (string-append all
+                                     "gdb = \"" gdb "/bin/gdb\"\n"))))))))))
+      ;; Add test inputs.
+      (native-inputs (cons*
+                      ;; The tests fail when using GDB 10 (see:
+                      ;; https://github.com/rust-lang/rust/issues/79009).
+                      `("gdb" ,gdb-9.2)
+                      `("procps" ,procps)
+                      (package-native-inputs base-rust))))))
