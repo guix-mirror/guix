@@ -105,6 +105,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages)
@@ -954,11 +955,23 @@ transparent text on your screen.")
                (base32
                 "1wl2vc5alisiwyk8m07y1ryq8w3ll9ym83j27g4apm4ixjl8d6x2"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'sanitise-shebang
+           ;; This wish script uses a strange double shebang that escapes our
+           ;; patch-shebangs phase.  Assume that it's unnecessary & replace it.
+           (lambda _
+             (substitute* "xbindkeys_show"
+               (("^#!.*|^exec wish.*") "")
+               (("^# \\\\") (string-append "#!" (which "wish"))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)
-       ("libx11" ,libx11)))
+       ("libx11" ,libx11)
+       ("tk" ,tk)))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
