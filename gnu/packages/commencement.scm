@@ -3516,14 +3516,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        #:implicit-inputs? #f
        #:allowed-references
        ,@(match (%current-system)
-         ("powerpc-linux"
+         ((? target-powerpc?)
           `(("out" ,glibc-final ,static-bash-for-glibc)))
          (_
           `(("out" ,glibc-final))))
        ,@(package-arguments binutils)))
     (inputs
      (match (%current-system)
-       ("powerpc-linux"
+       ((? target-powerpc?)
         `(("bash" ,static-bash-for-glibc)
           ,@(%boot2-inputs)))
        (_ (%boot2-inputs))))))
