@@ -19913,6 +19913,37 @@ Features:
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-pre-commit
+  (package
+    (name "python-pre-commit")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pre_commit" version))
+       (sha256
+        (base32 "1ycf6wpxrhxhdzz0vpryhbdxlwik5khgcvp3hxwvfr447a6k84zl"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests fail with "AttributeError: module 'pre_commit.resources' has no
+     ;; attribute 'empty_template_setup'".
+     `(#:tests? #false))
+    (propagated-inputs
+     `(("python-cfgv" ,python-cfgv)
+       ("python-identify" ,python-identify)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-importlib-resources" ,python-importlib-resources)
+       ("python-nodeenv" ,python-nodeenv)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-toml" ,python-toml)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/pre-commit/pre-commit")
+    (synopsis "Framework for managing multi-language pre-commit hooks")
+    (description
+     "This package provides a framework for managing and maintaining
+multi-language pre-commit hooks.")
+    (license license:expat)))
+
 (define-public python-precis-i18n
   (package
     (name "python-precis-i18n")
