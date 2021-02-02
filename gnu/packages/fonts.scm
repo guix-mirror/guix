@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1029,6 +1030,27 @@ Sans Pro family.")
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
+    (license license:silofl1.1)))
+
+(define-public font-fira-go
+  (package
+    (name "font-fira-go")
+    (version "1.000")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bBoxType/FiraGO")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10rcfg1fijv00yxv5n9l3lm0axhafa1irkg42zpmasd70flgg655"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/bBoxType/FiraGO")
+    (synopsis "Multilingual extension of the Fira Sans font family")
+    (description "FiraGO is a multilingual extension of the Fira Sans font
+family.  Based on the Fira Sans 4.3 glyph set, FiraGO adds support for the
+Arabic, Devanagari, Georgian, Hebrew and Thai scripts.")
     (license license:silofl1.1)))
 
 (define-public font-fira-code
