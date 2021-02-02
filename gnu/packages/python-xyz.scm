@@ -3609,6 +3609,29 @@ text styles of documentation.")
                  (base32
                   "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q")))))))
 
+(define-public python-bump2version
+  (package
+    (name "python-bump2version")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bump2version" version))
+       (sha256
+        (base32 "1rinm4gv1fyh7xjv3v6r1p3zh5kl4ry2qifz5f7frx31mnzv4b3n"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests fail with "bumpversion: error: the following arguments are
+     ;; required: --new-version".
+     `(#:tests? #false))
+    (home-page "https://github.com/c4urself/bump2version")
+    (synopsis "Version-bump your software with a single command!")
+    (description
+     "This package provides a small command line tool to simplify releasing
+software by updating all version strings in your source code by the correct
+increment.  It also creates commits and tags.")
+    (license license:expat)))
+
 (define-public python-bumpversion
   (package
     (name "python-bumpversion")
