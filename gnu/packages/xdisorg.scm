@@ -957,8 +957,8 @@ transparent text on your screen.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libx11" ,libx11)
-       ("guile" ,guile-2.2)))
+     `(("guile" ,guile-2.2)
+       ("libx11" ,libx11)))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
