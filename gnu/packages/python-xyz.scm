@@ -17798,6 +17798,29 @@ user's @file{~/Trash} directory.")
      "@code{pyfavicon} is an async favicon fetcher.")
     (license license:expat)))
 
+(define-public python-yamllint
+  (package
+    (name "python-yamllint")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yamllint" version))
+       (sha256
+        (base32 "11qhs1jk9pwvyk5k3q5blh9sq42dh1ywdf1f3i2zixf7hncwir5h"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathspec" ,python-pathspec)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/adrienverge/yamllint")
+    (synopsis "Linter for YAML files")
+    (description
+     "Yamllint is a linter for YAML files.  yamllint does not only check for
+syntax validity, but for weirdnesses like key repetition and cosmetic problems
+such as lines length, trailing spaces, indentation, etc.")
+    (license license:gpl3+)))
+
 (define-public python-yapf
   (package
     (name "python-yapf")
