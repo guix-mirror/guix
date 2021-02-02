@@ -14126,3 +14126,70 @@ building Jupyter kernels, based on Maxima-Jupyter which was based on
 
 (define-public cl-common-lisp-jupyter
   (sbcl-package->cl-source-package sbcl-common-lisp-jupyter))
+
+(define-public sbcl-radiance
+  (let ((commit "5ffbe1f157edd17a13194495099efd81e052df85")
+        (revision "1"))
+    (package
+      (name "sbcl-radiance")
+      (version (git-version "2.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shirakumo/radiance")
+               (commit commit)))
+         (file-name (git-file-name "radiance" version))
+         (sha256
+          (base32 "0hbkcnmnlj1cqzbv18zmla2iwbl65kxilz9764hndf8x8as1539c"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:tests? #f  ; TODO: The tests require some configuration.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-quicklisp
+             (lambda _
+               ;; Disable the automatic installation of systems by Quicklisp.
+               ;; (Maybe there would be a way to package Quicklisp and make it
+               ;; install things in the user's directory instead of
+               ;; /gnu/store/...).
+               (substitute* "interfaces.lisp"
+                 (("\\(unless \\(asdf:find-system configured-implementation NIL\\)"
+                   all)
+                  (string-append "#+quicklisp " all))))))))
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("dexador" ,sbcl-dexador)
+         ("parachute" ,sbcl-parachute)
+         ("verbose" ,sbcl-verbose)))
+      (inputs
+       `(("babel" ,sbcl-babel)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("deploy" ,sbcl-deploy)
+         ("form-fiddle" ,sbcl-form-fiddle)
+         ("lambda-fiddle" ,sbcl-lambda-fiddle)
+         ("local-time" ,sbcl-local-time)
+         ("modularize-hooks" ,sbcl-modularize-hooks)
+         ("modularize-interfaces" ,sbcl-modularize-interfaces)
+         ("puri" ,sbcl-puri)
+         ("trivial-indent" ,sbcl-trivial-indent)
+         ("trivial-mimes" ,sbcl-trivial-mimes)
+         ("ubiquitous-concurrent" ,sbcl-ubiquitous)))
+      (home-page "https://shirakumo.github.io/radiance/")
+      (synopsis "Common Lisp web application environment")
+      (description
+       "Radiance is a web application environment, which is sort of like a web
+framework, but more general, more flexible.  It should let you write personal
+websites and generally deployable applications easily and in such a way that
+they can be used on practically any setup without having to undergo special
+adaptations.")
+      (license license:zlib))))
+
+(define-public ecl-radiance
+  (sbcl-package->ecl-package sbcl-radiance))
+
+(define-public cl-radiance
+  (sbcl-package->cl-source-package sbcl-radiance))
