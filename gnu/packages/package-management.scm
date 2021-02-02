@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -132,8 +132,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.2.0")
-        (commit "d4a562ba7ac4549cc2d57eff7f440026a2045f45")
-        (revision 11))
+        (commit "dffc918af6cf6e1ce942dd329d210271ced1205d")
+        (revision 12))
     (package
       (name "guix")
 
@@ -149,7 +149,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "05gkymzfl0fdb2zjyvvn7w15arfnn7fgpbn3bch9r5yc7ldxg868"))
+                  "0wcwb09iy4svky5kmxwch7fymmkx78h8haam6p8ix110mm88in8k"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
