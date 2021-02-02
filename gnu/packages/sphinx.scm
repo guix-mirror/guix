@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -438,6 +438,30 @@ theme for the Sphinx documentation system.  It's the default theme of Sphinx.")
 
 (define-public python2-sphinx-alabaster-theme
   (package-with-python2 python-sphinx-alabaster-theme))
+
+(define-public python-sphinx-argparse
+  (package
+    (name "python-sphinx-argparse")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-argparse" version))
+       (sha256
+        (base32 "05wc8f5hb3jsg2vh2jf7jsyan8d4i09ifrz2c8fp6f7x1zw9iav0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (native-inputs
+     `(("python-commonmark" ,python-commonmark)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+    (home-page "https://github.com/ribozz/sphinx-argparse")
+    (synopsis "Sphinx extension for documenting argparse commands and options")
+    (description
+     "This package is a sphinx extension that automatically documents
+argparse commands and options")
+    (license license:expat)))
 
 (define-public python-sphinx-cloud-sptheme
   (package
