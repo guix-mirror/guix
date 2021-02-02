@@ -8745,6 +8745,48 @@ respectively.")
 (define-public ecl-png-read
   (sbcl-package->ecl-package sbcl-png-read))
 
+(define-public sbcl-3b-bmfont
+  (let ((commit "d1b5bec0de580c2d08ec947a93c56b1400f2a37a")
+        (revision "1"))
+    (package
+      (name "sbcl-3b-bmfont")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/3b-bmfont/")
+               (commit commit)))
+         (file-name (git-file-name "3b-bmfont" version))
+         (sha256
+          (base32 "12sgf7m0h6fqzhvkas7vmci6mprj3j3fnz778jlbqbsydln6v2yc"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems
+         '("3b-bmfont"
+           "3b-bmfont/text"
+           "3b-bmfont/common"
+           "3b-bmfont/xml"
+           "3b-bmfont/json")))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cxml" ,sbcl-cxml)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("jsown" ,sbcl-jsown)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (home-page "https://github.com/3b/3b-bmfont/")
+      (synopsis "Read/write bmfont metadata files")
+      (description
+       "This is a Common Lisp library which provides functionality to
+read/write Bit Map Font (BMF) into text, JSON and XML.")
+      (license license:expat))))
+
+(define-public ecl-3b-bmfont
+  (sbcl-package->ecl-package sbcl-3b-bmfont))
+
+(define-public cl-3b-bmfont
+  (sbcl-package->cl-source-package sbcl-3b-bmfont))
+
 (define-public sbcl-zpng
   (package
     (name "sbcl-zpng")
