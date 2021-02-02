@@ -23577,6 +23577,32 @@ YAML.  It takes care of defaults, overrides, type checking, command-line
 integration, human-readable errors, and standard OS-specific locations.")
     (license license:expat)))
 
+(define-public python-reflink
+  (package
+    (name "python-reflink")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "reflink" version))
+       (sha256
+        (base32
+         "0fkf3sd958g9hvr3jwlhnhqqzrwxljrc3grsf3yknh94vf13a9f9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false)) ; almost all tests want to run mkfs.btrfs
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://gitlab.com/rubdos/pyreflink")
+    (synopsis "Python wrapper around reflink system call")
+    (description
+     "Python reflink wraps around platform specific @code{reflink}
+implementations.")
+    (license license:expat)))
+
 (define-public python-pivy
   (package
     (name "python-pivy")
