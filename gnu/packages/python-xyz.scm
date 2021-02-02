@@ -23555,6 +23555,28 @@ Qt applications.")
  of binary data.")
     (license license:expat)))
 
+(define-public python-confuse
+  (package
+    (name "python-confuse")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "confuse" version))
+       (sha256
+        (base32
+         "0r74djc8r6lfx6ldsqnhpvfsn256gsfzbl33qcm77hp2qr8h9z4j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathlib" ,python-pathlib)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/beetbox/confuse")
+    (synopsis "Painless YAML configuration.")
+    (description "Confuse is a configuration library for Python that uses
+YAML.  It takes care of defaults, overrides, type checking, command-line
+integration, human-readable errors, and standard OS-specific locations.")
+    (license license:expat)))
+
 (define-public python-pivy
   (package
     (name "python-pivy")
