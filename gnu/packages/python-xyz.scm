@@ -8444,6 +8444,31 @@ design problems in your program.  It contains warnings that don't belong
 in pyflakes and pycodestyle.")
     (license license:expat)))
 
+(define-public python-flake8-implicit-str-concat
+  (package
+    (name "python-flake8-implicit-str-concat")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8_implicit_str_concat" version))
+       (sha256
+        (base32 "1v0y29xlmbr2q12a4nnpm1dm9aw1mjiys1x8jif4z8c90d63cqm6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-more-itertools" ,python-more-itertools)))
+    (home-page "https://github.com/keisheiled/flake8-implicit-str-concat")
+    (synopsis "Flake8 plugin to encourage correct string literal concatenation")
+    (description
+     "This is a plugin for the Python code checking tool Flake8 to encourage
+correct string literal concatenation.
+
+It looks for style problems like implicitly concatenated string literals on
+the same line (which can be introduced by the code formating tool Black), or
+unnecessary plus operators for explicit string literal concatenation.")
+    (license license:expat)))
+
 (define-public python-flake8-polyfill
   (package
     (name "python-flake8-polyfill")
