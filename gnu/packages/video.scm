@@ -3152,6 +3152,11 @@ and JACK.")
               (url "https://github.com/univrsal/spectralizer")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
+
+        ;; Remove bundled Windows DLLs.
+        (snippet '(delete-file-recursively "fftw3"))
+        (modules '((guix build utils)))
+
         (sha256
          (base32
           "0q75cnyqydpvfda51zm9gxqj3wqr99ad0lxzjhw0ld67qvj1ag6i"))))
