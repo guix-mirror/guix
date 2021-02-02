@@ -48,7 +48,7 @@ Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@*
 Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@*
-Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
+Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
@@ -940,6 +940,14 @@ Automake makefile variable, as in:
 
 @example
 make check SCM_LOG_DRIVER_FLAGS="--brief=no --errors-only=yes" VERBOSE=1
+@end example
+
+The @option{--show-duration=yes} option can be used to print the
+duration of the individual test cases, when used in combination with
+@option{--brief=no}:
+
+@example
+make check SCM_LOG_DRIVER_FLAGS="--brief=no --show-duration=yes"
 @end example
 
 @xref{Parallel Test Harness,,,automake,GNU Automake} for more

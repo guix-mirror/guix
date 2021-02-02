@@ -3,7 +3,7 @@ exec guile --no-auto-compile -e main -s "$0" "$@"
 !#
 ;;;; test-driver.scm - Guile test driver for Automake testsuite harness
 
-(define script-version "2021-01-26.20") ;UTC
+(define script-version "2021-02-02.05") ;UTC
 
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -28,10 +28,12 @@ exec guile --no-auto-compile -e main -s "$0" "$@"
 ;;;
 ;;;; Code:
 
-(use-modules (ice-9 getopt-long)
+(use-modules (ice-9 format)
+             (ice-9 getopt-long)
              (ice-9 pretty-print)
              (ice-9 regex)
              (srfi srfi-1)
+             (srfi srfi-19)
              (srfi srfi-26)
              (srfi srfi-64))
 
@@ -40,14 +42,16 @@ exec guile --no-auto-compile -e main -s "$0" "$@"
    test-driver --test-name=NAME --log-file=PATH --trs-file=PATH
                [--expect-failure={yes|no}] [--color-tests={yes|no}]
                [--select=REGEXP] [--exclude=REGEXP] [--errors-only={yes|no}]
-               [--enable-hard-errors={yes|no}] [--brief={yes|no}}] [--]
+               [--enable-hard-errors={yes|no}] [--brief={yes|no}}]
+               [--show-duration={yes|no}] [--]
                TEST-SCRIPT [TEST-SCRIPT-ARGUMENTS]
 The '--test-name' option is mandatory.  The '--select' and '--exclude' options
 allow selecting or excluding individual test cases via a regexp, respectively.
 The '--errors-only' option can be set to \"yes\" to limit the logged test case
 metadata to only those test cases that failed.  When set to \"yes\", the
 '--brief' option disables printing the individual test case result to the
-console.\n"))
+console.  When '--show-duration' is set to \"yes\", the time elapsed per test
+case is shown.\n"))
 
 (define %options
   '((test-name                 (value #t))
@@ -60,6 +64,7 @@ console.\n"))
     (expect-failure            (value #t)) ;XXX: not implemented yet
     (enable-hard-errors        (value #t)) ;not implemented in SRFI-64
     (brief                     (value #t))
+    (show-duration             (value #t))
     (help    (single-char #\h) (value #f))
     (version (single-char #\V) (value #f))))
 
@@ -96,6 +101,7 @@ console.\n"))
 ;;;
 
 (define* (test-runner-gnu test-name #:key color? brief? errors-only?
+                          show-duration?
                           (out-port (current-output-port))
                           (trs-port (%make-void-port "w"))
                           select exclude)
@@ -109,6 +115,15 @@ defaults to a void port, which means no TRS output is logged.  SELECT and
 EXCLUDE may take a regular expression to select or exclude individual test
 cases based on their names."
 
+  (define test-cases-start-time (make-hash-table))
+
+  (define (test-on-test-begin-gnu runner)
+    ;; Procedure called at the start of an individual test case, before the
+    ;; test expression (and expected value) are evaluated.
+    (let ((test-case-name (test-runner-test-name runner))
+          (start-time     (current-time time-monotonic)))
+      (hash-set! test-cases-start-time test-case-name start-time)))
+
   (define (test-skipped? runner)
     (eq? 'skip (test-result-kind runner)))
 
@@ -121,12 +136,19 @@ cases based on their names."
     ;; of the test is available.
     (let* ((results (test-result-alist runner))
            (result? (cut assq <> results))
-           (result  (cut assq-ref results <>)))
+           (result  (cut assq-ref results <>))
+           (test-case-name (test-runner-test-name runner))
+           (start (hash-ref test-cases-start-time test-case-name))
+           (end (current-time time-monotonic))
+           (time-elapsed (time-difference end start))
+           (time-elapsed-seconds (+ (time-second time-elapsed)
+                                    (* 1e-9 (time-nanosecond time-elapsed)))))
       (unless (or brief? (and errors-only? (test-skipped? runner)))
         ;; Display the result of each test case on the console.
-        (format out-port "~A: ~A - ~A~%"
+        (format out-port "~a: ~a - ~a ~@[[~,3fs]~]~%"
                 (result->string (test-result-kind runner) #:colorize? color?)
-                test-name (test-runner-test-name runner)))
+                test-name test-case-name
+                (and show-duration? time-elapsed-seconds)))
 
       (unless (and errors-only? (not (test-failed? runner)))
         (format #t "test-name: ~A~%" (result 'test-name))
@@ -145,9 +167,9 @@ cases based on their names."
         (format #t "result: ~a~%" (result->string (result 'result-kind)))
         (newline))
 
-      (format trs-port ":test-result: ~A ~A~%"
+      (format trs-port ":test-result: ~A ~A [~,3fs]~%"
               (result->string (test-result-kind runner))
-              (test-runner-test-name runner))))
+              (test-runner-test-name runner) time-elapsed-seconds)))
 
   (define (test-on-group-end-gnu runner)
     ;; Procedure called by a 'test-end', including at the end of a test-group.
@@ -171,6 +193,7 @@ cases based on their names."
       #f))
 
   (let ((runner (test-runner-null)))
+    (test-runner-on-test-begin! runner test-on-test-begin-gnu)
     (test-runner-on-test-end! runner test-on-test-end-gnu)
     (test-runner-on-group-end! runner test-on-group-end-gnu)
     (test-runner-on-bad-end-name! runner test-on-bad-end-name-simple)
@@ -239,6 +262,8 @@ cases based on their names."
                              #:color? color-tests
                              #:brief? (option->boolean opts 'brief)
                              #:errors-only? (option->boolean opts 'errors-only)
+                             #:show-duration? (option->boolean
+                                               opts 'show-duration)
                              #:out-port out #:trs-port trs)
           (test-apply test-specifier
                       (lambda _
