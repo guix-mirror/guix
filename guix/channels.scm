@@ -47,6 +47,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:autoload   (guix describe) (current-channels) ;XXX: circular dep
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:autoload   (guix quirks) (%quirks %patches applicable-patch? apply-patch)
@@ -344,6 +345,18 @@ commits)...~%")
 
     (progress-reporter/bar (length commits)))
 
+  (define authentic-commits
+    ;; Consider the currently-used commit of CHANNEL as authentic so
+    ;; authentication can skip it and all its closure.
+    (match (find (lambda (candidate)
+                   (eq? (channel-name candidate) (channel-name channel)))
+                 (current-channels))
+      (#f '())
+      (channel
+       (if (channel-commit channel)
+           (list (channel-commit channel))
+           '()))))
+
   ;; XXX: Too bad we need to re-open CHECKOUT.
   (with-repository checkout repository
     (authenticate-repository repository
@@ -354,6 +367,7 @@ commits)...~%")
                              #:keyring-reference
                              (string-append keyring-reference-prefix
                                             keyring-reference)
+                             #:authentic-commits authentic-commits
                              #:make-reporter make-reporter
                              #:cache-key cache-key)))
 

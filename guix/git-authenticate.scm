@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -376,12 +376,14 @@ instead of '~a'")
                                   (cache-key (repository-cache-key repository))
                                   (end (reference-target
                                         (repository-head repository)))
+                                  (authentic-commits '())
                                   (historical-authorizations '())
                                   (make-reporter
                                    (const progress-reporter/silent)))
   "Authenticate REPOSITORY up to commit END, an OID.  Authentication starts
 with commit START, an OID, which must be signed by SIGNER; an exception is
-raised if that is not the case.  Return an alist mapping OpenPGP public keys
+raised if that is not the case.  Commits listed in AUTHENTIC-COMMITS and their
+closure are considered authentic.  Return an alist mapping OpenPGP public keys
 to the number of commits signed by that key that have been traversed.
 
 The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY, where
@@ -404,7 +406,8 @@ denoting the authorized keys for commits whose parent lack the
     (filter-map (lambda (id)
                   (false-if-git-not-found
                    (commit-lookup repository (string->oid id))))
-                (previously-authenticated-commits cache-key)))
+                (append (previously-authenticated-commits cache-key)
+                        authentic-commits)))
 
   (define commits
     ;; Commits to authenticate, excluding the closure of
