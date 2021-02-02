@@ -2399,7 +2399,9 @@ inspired by the SCSH regular expression system.")
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     ;; Depend on the latest Guile to avoid bytecode compatibility issues when
+     ;; using modules built against the latest version.
+     `(("guile" ,guile-3.0-latest)))
     (propagated-inputs
      `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile-commonmark)))
