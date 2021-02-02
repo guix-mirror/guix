@@ -2251,13 +2251,13 @@ syntax.")
 (define-public python-polib
   (package
     (name "python-polib")
-    (version "1.0.8")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "polib" version))
                (sha256
                 (base32
-                  "1pq2hbm3m2q0cjdszk8mc4qa1vl3wcblh5nfyirlfnzb2pcy7zss"))))
+                  "0aikb8gcarhifn3sadrbbs5czagih9hjv250gsrgy9v1d49pvn7s"))))
     (build-system python-build-system)
     (home-page "https://bitbucket.org/izi/polib/wiki/Home")
     (synopsis "Manipulate, create and modify gettext files")

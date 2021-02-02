@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Miguel <rosen644835@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gettext)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ bsd-3))
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages hurd)
@@ -42,6 +45,8 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (guix utils))
 
 (define-public gettext-minimal
@@ -182,6 +187,41 @@ to programs that produce output to a console or terminal emulator window.  It
 allows applications to emit text annotated with styling information, such as
 color, font attributes (weight, posture), or underlining.")
     (license gpl3+)))
+
+(define-public mdpo
+  (package
+    (name "mdpo")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mdpo" version))
+       (sha256
+        (base32 "0kgbm0af7jwpfspa2xxiy9nc2l1r2s1rhbhz4r229zcqv49ak6sq"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-bump2version" ,python-bump2version)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-implicit-str-concat" ,python-flake8-implicit-str-concat)
+       ("python-flake8-print" ,python-flake8-print)
+       ("python-isort" ,python-isort)
+       ("python-pre-commit" ,python-pre-commit)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-argparse" ,python-sphinx-argparse)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-twine" ,python-twine)
+       ("python-yamllint" ,python-yamllint)))
+    (propagated-inputs
+     `(("python-polib" ,python-polib)
+       ("python-pymd4c" ,python-pymd4c)))
+    (home-page "https://github.com/mondeja/mdpo")
+    (synopsis "Markdown file translation utilities using pofiles")
+    (description
+     "The mdpo utility creates pofiles, the format stabilished by GNU Gettext,
+from Markdown files.")
+    (license bsd-3)))
 
 (define-public po4a
   (package
