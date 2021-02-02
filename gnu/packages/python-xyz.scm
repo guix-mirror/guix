@@ -8512,6 +8512,28 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 (define-public python2-flake8-polyfill
   (package-with-python2 python-flake8-polyfill))
 
+(define-public python-flake8-print
+  (package
+    (name "python-flake8-print")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-print" version))
+       (sha256
+        (base32 "05k5kkvyk6fdmvnacxfzypk74vbl3pmva13dqg1aljfwnxsc7yjs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jbkahn/flake8-print")
+    (synopsis "Print statement checker plugin for Flake8")
+    (description
+     "This plugin for Flake8 checks for @code{print} statements in Python
+files.")
+    (license license:expat)))
+
 (define-public python-flake8-pyi
   (package
     (name "python-flake8-pyi")
