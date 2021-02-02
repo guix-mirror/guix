@@ -95,6 +95,7 @@
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
 ;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,6 +155,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages monitoring)
   #:use-module (gnu packages multiprecision)
@@ -474,6 +476,30 @@ programming in Python.  EasyGUI is different from other GUI generators in that
 EasyGUI is NOT event-driven.  Instead, all GUI interactions are invoked by
 simple function calls.")
     (license license:bsd-3)))
+
+(define-public python-pymd4c
+  (package
+    (name "python-pymd4c")
+    (version "0.4.6.0b1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pymd4c" version))
+       (sha256
+        (base32 "07s3arn85ri92im6x3ipljdmrxmpik7irs06i6lm17j1x6j9841d"))))
+    (build-system python-build-system)
+    (inputs
+     `(("md4c" ,md4c)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/dominickpastore/pymd4c")
+    (synopsis "Python bindings for MD4C")
+    (description
+     "PyMD4C provides Python bindings for MD4c, a C Markdown parser, compliant
+to CommonMark.")
+    (license license:expat)))
 
 (define-public python-pymediainfo
   (package
