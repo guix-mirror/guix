@@ -8798,7 +8798,7 @@ and tooling.")
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "3.3.0")
+    (version "3.4.0")
     (source
      (origin
        (method git-fetch)
@@ -8807,7 +8807,7 @@ and tooling.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j8a94val4ml7g1vcjgzk1w89h55sxfdrwnncmz6qbh1y2xsz8c5"))))
+        (base32 "1y95410hrcp23zc84sn79bxla9xr2fqh7wwagza05iaprv7zbbw0"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
