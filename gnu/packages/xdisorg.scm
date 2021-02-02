@@ -965,7 +965,14 @@ transparent text on your screen.")
              (substitute* "xbindkeys_show"
                (("^#!.*|^exec wish.*") "")
                (("^# \\\\") (string-append "#!" (which "wish"))))
-             #t)))))
+             #t))
+         (add-after 'unpack 'patch-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "xbindkeys_show"
+                 (("\"(xbindkeys)\"" _ command)
+                  (format #f "\"~a/bin/~a\"" out command)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
