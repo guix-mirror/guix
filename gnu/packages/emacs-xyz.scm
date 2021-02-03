@@ -6424,6 +6424,29 @@ Cucumber tool) user stories.  Also known by the name @code{cucumber.el}.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-appear
+  (let ((commit "19ea96e6e2ce01b8583b25a6e5579f1be207a119")
+        (revision "1"))
+    (package
+      (name "emacs-org-appear")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/awth13/org-appear")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "064kdb3z4zr9sa7qi5921cqh8vj226ifl8x1bkc59qd9a1p34ghd"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/awth13/org-appear")
+      (synopsis "Make invisible parts of Org fragments appear visible")
+      (description "This package enables automatic visibility toggling of
+org-mode elements depending on cursor position.  Hidden fragment parts appear
+when the cursor enters a fragment and disappear when it leaves.")
+      (license license:expat))))
+
 (define-public emacs-org-drill
   (package
     (name "emacs-org-drill")
