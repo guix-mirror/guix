@@ -92,13 +92,23 @@
                              ;; for native toolchain
                              (setenv env-name
                                      (filter-delimited-string env-val (negate mingw-path?)))
-                             ;; Add the removed paths back into
-                             ;; CROSS_-prefixed version of env vars
+                             ;; Add the removed paths back into CROSS_-prefixed
+                             ;; version of env vars
                              (setenv (string-append "CROSS_" env-name)
                                      (filter-delimited-string env-val mingw-path?))))
-                         '("CPATH" "LIBRARY_PATH"))
+                         '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH" "LIBRARY_PATH"))
                         ;; Hack to place mingw-w64 path at the end of search
                         ;; paths.  Could probably use a specfile and dirafter
+                        (setenv "CROSS_C_INCLUDE_PATH"
+                                (string-join
+                                 `(,@(map (cut string-append
+                                               (assoc-ref %build-inputs "xgcc")
+                                               "/lib/gcc/" ,triplet "/"
+                                               ,(package-version xgcc) <>)
+                                          '("/include"
+                                            "/include-fixed"))
+                                   ,(getenv "CROSS_C_INCLUDE_PATH"))
+                                 ":"))
                         (setenv "CROSS_CPLUS_INCLUDE_PATH"
                                 (string-join
                                  `(,@(map (cut string-append (assoc-ref %build-inputs "xgcc") <>)
@@ -108,21 +118,20 @@
                                             ,@(map (cut string-append "/lib/gcc/" ,triplet "/" ,(package-version xgcc) <>)
                                                    '("/include"
                                                      "/include-fixed"))))
-                                   ,(getenv "CROSS_CPATH"))
+                                   ,(getenv "CROSS_CPLUS_INCLUDE_PATH"))
                                  ":"))))
                     (add-before 'build 'fix-target-detection
                       (lambda _
-                        ;; NSIS target detection is screwed up, manually
-                        ;; change it ourselves
+                        ;; NSIS target detection is screwed up, manually change
+                        ;; it ourselves
                         (substitute* "Source/build.cpp" (("m_target_type=TARGET_X86ANSI")
                                                          (string-append "m_target_type=" ,nsis-target-type))))))))
       (home-page "http://nsis.sourceforge.net/")
       (synopsis "A professional open source system to create Windows installers")
       (description
-       "NSIS (Nullsoft Scriptable Install System) is a professional open
-source system to create Windows installers. It is designed to be as small and
-flexible as possible and is therefore very suitable for internet
-distribution.")
+       "NSIS (Nullsoft Scriptable Install System) is a professional open source
+system to create Windows installers. It is designed to be as small and flexible
+as possible and is therefore very suitable for internet distribution.")
       (license (license:non-copyleft "file://COPYING"
                                      "See COPYING in the distribution.")))))
 
