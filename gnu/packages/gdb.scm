@@ -5,7 +5,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,18 +136,18 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
 ;; This version of GDB is required by some of the Rust compilers, see
-;; <https://bugs.gnu.org/37810>.
-(define-public gdb-8.2
+;; <https://github.com/rust-lang/rust/issues/79009>.
+(define-public gdb-9.2
   (package
     (inherit gdb-10)
-    (version "8.2.1")
+    (version "9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))
+                "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))
     (inputs
      (alist-replace "guile" (list guile-2.0)
                     (package-inputs gdb-10)))))
