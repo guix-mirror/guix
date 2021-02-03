@@ -184,6 +184,7 @@
 defconfig.  Return the appropriate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
+        ((string-prefix? "powerpc64-" system) "ppc64_defconfig")
         ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
         (else "defconfig")))
 
