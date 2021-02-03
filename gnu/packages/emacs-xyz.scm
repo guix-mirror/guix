@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018, 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
@@ -13851,8 +13851,8 @@ through them using @key{C-c C-SPC}.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "a6d9f49bc6161f12c594d25254e77eedf4a67666")
-        (revision "8"))
+  (let ((commit "1f6a40faec0d8d9c9de51c444508d05a3e995ccd")
+        (revision "9"))
     (package
       (name "emacs-slack")
       (version (git-version "0.0.2" revision commit))
@@ -13864,7 +13864,7 @@ through them using @key{C-c C-SPC}.")
                 (file-name (git-file-name name commit))
                 (sha256
                  (base32
-                  "0crjjankqi4bqjk5pdz4r2ixf56n1nnq8ab1gz3sbl3v6as6262w"))))
+                  "19lan9nd8qfw2ws7mx814vrin04c892yn5c8g3nad7lpnzszgr1r"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
