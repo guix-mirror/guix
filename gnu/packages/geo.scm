@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -1602,7 +1602,7 @@ using the dataset of topographical information collected by
 (define-public qmapshack
   (package
     (name "qmapshack")
-    (version "1.14.0")
+    (version "1.15.2")
     (source
      (origin
        (method git-fetch)
@@ -1611,8 +1611,7 @@ using the dataset of topographical information collected by
              (commit (string-append "V_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07c2hrq9sn456w7l3gdr599rmjfv2k6mh159zza7p1py8r7ywksa"))))
+        (base32 "1l1j2axf94pdqwirwwhwy3y6k8v1aix78ifqbv6j8sv131h2j7y7"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
