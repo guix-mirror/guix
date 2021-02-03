@@ -115,6 +115,36 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
+(define-public sbcl-golden-utils
+  (let ((commit "9424419d867d5c2f819196ee41667a818a5058e7")
+        (revision "1"))
+    (package
+      (name "sbcl-golden-utils")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/golden-utils")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15x0phm6820yj3h37ibi06gjyh6z45sd2nz2n8lcbfflwm086q0h"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://git.mfiano.net/mfiano/golden-utils")
+      (synopsis "Common Lisp utility library")
+      (description
+       "This is a Common Lisp library providing various utilities.")
+      (license license:expat))))
+
+(define-public ecl-golden-utils
+  (sbcl-package->ecl-package sbcl-golden-utils))
+
+(define-public cl-golden-utils
+  (sbcl-package->cl-source-package sbcl-golden-utils))
+
 (define-public sbcl-asdf-finalizers
   (let ((commit "7f537f6c598b662ae987c6acc268dd27c25977e0")
         (revision "1"))
