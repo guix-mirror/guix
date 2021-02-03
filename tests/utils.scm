@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -77,6 +77,12 @@
        (version-prefix? "4.1" "4.1")
        (not (version-prefix? "4.1" "4.16.2"))
        (not (version-prefix? "4.1" "4"))))
+
+(test-equal "version-unique-prefix"
+  '("2" "2.2" "")
+  (list (version-unique-prefix "2.0" '("3.0" "2.0"))
+        (version-unique-prefix "2.2" '("3.0.5" "2.0.9" "2.2.7"))
+        (version-unique-prefix "27.1" '("27.1"))))
 
 (test-equal "string-tokenize*"
   '(("foo")
@@ -182,19 +188,34 @@ skip these tests."
                        method)
     (let ((data (call-with-input-file (search-path %load-path "guix.scm")
                   get-bytevector-all)))
-      (let*-values (((compressed pids1)
-                     (compressed-port method (open-bytevector-input-port data)))
-                    ((decompressed pids2)
-                     (decompressed-port method compressed)))
-        (and (every (compose zero? cdr waitpid)
-                    (pk 'pids method (append pids1 pids2)))
-             (let ((result (get-bytevector-all decompressed)))
-               (pk 'len method
-                   (if (bytevector? result)
-                       (bytevector-length result)
-                       result)
-                   (bytevector-length data))
-               (equal? result data))))))
+      (call-with-temporary-output-file
+       (lambda (output port)
+         (close-port port)
+         (let*-values (((compressed pids)
+                        ;; Note: 'compressed-output-port' only supports file
+                        ;; ports.
+                        (compressed-output-port method
+                                                (open-file output "w0"))))
+           (put-bytevector compressed data)
+           (close-port compressed)
+           (and (every (compose zero? cdr waitpid)
+                       (pk 'pids method pids))
+                (let*-values (((decompressed pids)
+                               (decompressed-port method
+                                                  (open-bytevector-input-port
+                                                   (call-with-input-file output
+                                                     get-bytevector-all))))
+                              ((result)
+                               (get-bytevector-all decompressed)))
+                  (close-port decompressed)
+                  (pk 'len method
+                      (if (bytevector? result)
+                          (bytevector-length result)
+                          result)
+                      (bytevector-length data))
+                  (and (every (compose zero? cdr waitpid)
+                              (pk 'pids method pids))
+                       (equal? result data)))))))))
 
   (false-if-exception (delete-file temp-file))
   (unless (run?) (test-skip 1))
@@ -213,8 +234,10 @@ skip these tests."
                       get-bytevector-all)))))
 
 (for-each test-compression/decompression
-          '(gzip xz lzip)
-          (list (const #t) (const #t) (const #t)))
+          `(gzip xz lzip zstd)
+          (list (const #t) (const #t) (const #t)
+                (lambda ()
+                  (resolve-module '(zstd) #t #f #:ensure #f))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"

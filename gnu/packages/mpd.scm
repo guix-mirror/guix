@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2021 Noah Evans <noah@nevans.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,7 +105,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.22.3")
+    (version "0.22.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -113,7 +114,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1kvcarqijyw07bdqszjsn62plmncaid5az0q542p6rsygc1i501k"))))
+                "1l4x2jrv04hp4q9gyfg79g78bk68lrd6wd3hysl6y91rln9sj7l9"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=enabled")))
@@ -228,7 +229,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -236,7 +237,7 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "0x35nd4v31sma8fliqdbn1nxpjyi8hv472318sfb3xbmr4wlm0fb"))))
+                "06rs734n120jp51hr0fkkhxrm7zscbhpdwls0m5b5cccghazdazs"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
@@ -284,20 +285,22 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
 (define-public python-mpd2
   (package
     (name "python-mpd2")
-    (version "0.5.5")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "python-mpd2" version))
               (sha256
                (base32
-                "0laypd7h1j14b4vrmiayqlzdsh2j5hc3zv4l0fqvbrbw9y6763ii"))))
+                "0fxssbmnv44m03shjyvbqslc69b0160702j2s0flgvdxjggrnbjj"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "python" "mpd_test.py"))))))
-    (native-inputs `(("python-mock" ,python-mock)))
+           (lambda _ (invoke "python" "-m" "pytest" "mpd/tests.py"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/Mic92/python-mpd2")
     (synopsis "Python MPD client library")
     (description "Python-mpd2 is a Python library which provides a client
@@ -310,7 +313,7 @@ interface for the Music Player Daemon.")
 (define-public sonata
   (package
     (name "sonata")
-    (version "1.7b1")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -319,7 +322,7 @@ interface for the Music Player Daemon.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1npbxlrg6k154qybfd250nq2p96kxdsdkj9wwnp93gljnii3g8wh"))))
+                "0rl8w7s2asff626clzfvyz987l2k4ml5dg417mqp9v8a962q0v2x"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -459,4 +462,57 @@ supporting multiple collections, ratings, and dynamic playlists.  A local cache
 of the music library will be created to provide a hierarchy of albums and
 artists along with albumart.")
     (home-page "https://github.com/cdrummond/cantata")
+    (license license:gpl3+)))
+
+(define-public mcg
+  (package
+    (name "mcg")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.com/coderkun/mcg")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "01iqxydssxyi4s644dwl64vm7xhn0szd99hdpywbipvb7kwp5196"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("dconf" ,dconf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)))
+    (arguments
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/mcg")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t)))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (synopsis "Covergrid for the MPD")
+    (description
+     "mcg (CoverGrid) is a client for the Music Player Daemon (MPD), focusing
+on albums instead of single tracks.  It is not intended to be a replacement
+for your favorite MPD client but an addition to get a better
+album-experience.")
+    (home-page "https://gitlab.com/coderkun/mcg")
     (license license:gpl3+)))

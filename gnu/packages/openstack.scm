@@ -135,17 +135,7 @@ formatters, and other extensions.")
       "This package provides a collection of Python deprecation patterns and
 strategies that help you collect your technical debt in a non-destructive
 manner.")
-    (properties `((python2-variant . ,(delay python2-debtcollector))))
     (license asl2.0)))
-
-(define-public python2-debtcollector
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-debtcollector))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-funcsigs" ,python2-funcsigs)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-hacking
   (package
@@ -272,9 +262,6 @@ to docs.openstack.org and developer.openstack.org.")
   comprehensive manner.")
     (license asl2.0)))
 
-(define-public python2-os-client-config
-  (package-with-python2 python-os-client-config))
-
 (define-public python-os-testr
   (package
     (name "python-os-testr")
@@ -304,9 +291,6 @@ to docs.openstack.org and developer.openstack.org.")
       "Os-testr provides developers with a testr wrapper and an output filter
   for subunit.")
     (license asl2.0)))
-
-(define-public python2-os-testr
-  (package-with-python2 python-os-testr))
 
 (define-public python-stevedore
   (package
@@ -338,9 +322,6 @@ entry points tends to be repetitive, though, so stevedore provides manager
 classes for implementing common patterns for using dynamically loaded
 extensions.")
     (license asl2.0)))
-
-(define-public python2-stevedore
-  (package-with-python2 python-stevedore))
 
 (define-public python-tempest-lib
   (package
@@ -664,9 +645,6 @@ documentation from the OpenStack project.")
 for debugging, and better support for mocking results.")
     (license asl2.0)))
 
-(define-public python2-oslotest
-  (package-with-python2 python-oslotest))
-
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
@@ -850,6 +828,3 @@ permanence.")
      "Git-review is a command-line tool that helps submitting Git branches to
 Gerrit for review, or fetching existing ones.")
     (license asl2.0)))
-
-(define-public python2-git-review
-  (package-with-python2 python-git-review))

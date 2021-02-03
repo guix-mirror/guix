@@ -32,7 +32,7 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:select (append-map))
+  #:use-module ((srfi srfi-1) #:select (append-map find))
   #:export (cups-service-type
             cups-configuration
             opaque-cups-configuration
@@ -50,7 +50,13 @@
 ;;; Code:
 
 (define %cups-accounts
-  (list (user-group (name "lp") (system? #t))
+  (list (or
+         ;; The "lp" group should already exist; try to reuse it.
+         (find (lambda (group)
+                 (and (user-group? group)
+                      (string=? (user-group-name group) "lp")))
+               %base-groups)
+         (user-group (name "lp") (system? #t)))
         (user-group (name "lpadmin") (system? #t))
         (user-account
          (name "lp")
@@ -482,7 +488,7 @@ programs.")
    (package cups)
    "The CUPS package.")
   (extensions
-   (package-list (list cups-filters epson-inkjet-printer-escpr
+   (package-list (list brlaser cups-filters epson-inkjet-printer-escpr
                        foomatic-filters hplip-minimal splix))
    "Drivers and other extensions to the CUPS package.")
   (files-configuration

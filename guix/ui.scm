@@ -2124,24 +2124,20 @@ Run COMMAND with ARGS.\n"))
   "Run COMMAND with the given ARGS.  Report an error when COMMAND is not
 found."
   (define module
-    (catch 'misc-error
-      (lambda ()
-        (resolve-interface `(guix scripts ,command)))
-      (lambda _
-        ;; Check if there is a matching extension.
-        (catch 'misc-error
-          (lambda ()
-            (match (search-path (extension-directories)
-                                (format #f "~a.scm" command))
-              (#f
-               (throw 'misc-error))
-              (file
-                (load file)
-                (resolve-interface `(guix extensions ,command)))))
-          (lambda _
-            (format (current-error-port)
-                    (G_ "guix: ~a: command not found~%") command)
-            (show-guix-usage))))))
+    ;; Check if there is a matching extension.
+    (match (search-path (extension-directories)
+                        (format #f "~a.scm" command))
+      (#f
+       (catch 'misc-error
+         (lambda ()
+           (resolve-interface `(guix scripts ,command)))
+         (lambda _
+           (format (current-error-port)
+                   (G_ "guix: ~a: command not found~%") command)
+           (show-guix-usage))))
+      (file
+       (load file)
+       (resolve-interface `(guix extensions ,command)))))
 
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))

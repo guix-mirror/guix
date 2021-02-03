@@ -1236,7 +1236,9 @@ processing and analysis library that puts its main emphasis on customizable
 algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
-   (home-page "https://ukoethe.github.io/vigra/")))
+   (home-page "https://ukoethe.github.io/vigra/")
+   (properties '((max-silent-time . 7200))))) ;2 hours, to avoid timing out
+
 
 (define-public vigra-c
   (let* ((commit "66ff4fa5a7d4a77415caa676a45c2c6ea16562e7")

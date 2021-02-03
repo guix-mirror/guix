@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -204,7 +204,8 @@ cat > "$tmpfile" <<EOF
       (shepherd-service
         (provision '(buggy!))
         (requirement '(does-not-exist))
-        (start #t)))))
+        (start #t)))
+    (description "Buggy.")))
 
 (operating-system
   $OS_BASE
@@ -261,9 +262,13 @@ guix system vm "$tmpfile" -d | grep '\.drv$'
 drv1="`guix system vm "$tmpfile" -d`"
 drv2="`guix system vm "$tmpfile" -d`"
 test "$drv1" = "$drv2"
-drv1="`guix system disk-image -t iso9660 "$tmpfile" -d`"
-drv2="`guix system disk-image -t iso9660 "$tmpfile" -d`"
+drv1="`guix system image -t iso9660 "$tmpfile" -d`"
+drv2="`guix system image -t iso9660 "$tmpfile" -d`"
 test "$drv1" = "$drv2"
+
+# Check whether the graph commands work as expected.
+guix system extension-graph "$tmpfile" | grep 'label = "file-systems"'
+guix system shepherd-graph "$tmpfile" | grep 'label = "guix-daemon"'
 
 make_user_config "group-that-does-not-exist" "users"
 if guix system build "$tmpfile" -n 2> "$errorfile"

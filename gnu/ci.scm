@@ -234,7 +234,7 @@ passing the PERIOD argument."
 system.")
       (license . ,(license-name gpl3+))
       (period . ,(hours 48))
-      (max-silent-time . 600)
+      (max-silent-time . 3600)
       (timeout . 3600)
       (home-page . ,%guix-home-page-url)
       (maintainers . ("bug-guix@gnu.org"))))
@@ -349,7 +349,7 @@ system.")
         (long-description . ,(system-test-description test))
         (license . ,(license-name gpl3+))
         (period . ,(hours 48))
-        (max-silent-time . 600)
+        (max-silent-time . 3600)
         (timeout . 3600)
         (home-page . ,%guix-home-page-url)
         (maintainers . ("bug-guix@gnu.org")))))
@@ -412,8 +412,7 @@ all its dependencies, and ready to be installed on \"foreign\" distributions.")
 
 (define job-name
   ;; Return the name of a package's job.
-  (compose string->symbol
-           (cut package-full-name <> "-")))
+  (compose string->symbol package-name))
 
 (define package->job
   (let ((base-packages

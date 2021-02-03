@@ -61,7 +61,7 @@
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
             fdl1.1+ fdl1.2+ fdl1.3+
-            opl1.0+
+            opl1.0+ osl2.1
             isc
             ijg
             ibmpl1.0
@@ -78,7 +78,7 @@
             mpl1.0 mpl1.1 mpl2.0
             ms-pl
             ncsa
-            npsl
+            nmap
             ogl-psi1.0
             openldap2.8 openssl
             perl-license
@@ -371,6 +371,11 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://opencontent.org/openpub/"
            "https://www.gnu.org/licenses/license-list#OpenPublicationL"))
 
+(define osl2.1
+  (license "The Open Software License 2.1"
+           "https://opensource.org/licenses/osl-2.1.php"
+           "https://www.gnu.org/licenses/license-list#OSL"))
+
 (define isc
   (license "ISC"
            "http://directory.fsf.org/wiki/License:ISC"
@@ -531,10 +536,10 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:IllinoisNCSA"
            "https://www.gnu.org/licenses/license-list#NCSA"))
 
-(define npsl
-  (license "Nmap Public Source License"
-           "https://svn.nmap.org/nmap/LICENSE"
-           "https://nmap.org/npsl/"))
+(define nmap
+  (license "Nmap license"
+           "https://svn.nmap.org/nmap/COPYING"
+           "https://fedoraproject.org/wiki/Licensing/Nmap"))
 
 (define ogl-psi1.0
   (license "Open Government Licence for Public Sector Information"

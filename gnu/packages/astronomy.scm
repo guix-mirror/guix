@@ -1,10 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
@@ -39,6 +41,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages netpbm)
@@ -51,6 +54,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public cfitsio
@@ -85,6 +89,29 @@ provides many advanced features for manipulating and filtering the information
 in FITS files.")
     (license (license:non-copyleft "file://License.txt"
                           "See License.txt in the distribution."))))
+
+(define-public eye
+  (package
+    (name "eye")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/eye/"
+                           "eye-" version ".tar.gz"))
+       (sha256
+        (base32 "092qhzcbrkcfidbx4bv9wz42w297n80jk7a6kwyi9a3fjfz81d7k"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/eye")
+    (synopsis "Small image feature detector using machine learning")
+    (description
+     "In EyE (Enhance Your Extraction) an artificial neural network connected to
+pixels of a moving window (retina) is trained to associate these input stimuli
+to the corresponding response in one or several output image(s).  The resulting
+filter can be loaded in SExtractor to operate complex, wildly non-linear filters
+on astronomical images.  Typical applications of EyE include adaptive filtering,
+feature detection and cosmetic corrections.")
+    (license license:cecill)))
 
 (define-public wcslib
   (package
@@ -125,10 +152,30 @@ coordinate systems in a @dfn{FITS} (Flexible Image Transport System) image
 header.")
     (license license:lgpl3+)))
 
+(define-public weightwatcher
+  (package
+    (name "weightwatcher")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/weightwatcher/"
+                           "weightwatcher-" version ".tar.gz"))
+       (sha256
+        (base32 "1zaqd8d9rpgcwjsp92q3lkfaa22i20gppb91dz34ym54swisjc2p"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/weightwatcher")
+    (synopsis "Weight-map/flag-map multiplexer and rasteriser")
+    (description
+     "Weightwatcher is a program hat combines weight-maps, flag-maps and
+polygon data in order to produce control maps which can directly be used in
+astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
+    (license license:gpl3+)))
+
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -136,13 +183,15 @@ header.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "07di6zx2irc5q0zyymx2951ydzxdfjmzd3az5qnk67ncf3hknvj5"))))
+         "1xp6n42qxv0x6yigi2w2l5k8006smv27lhrcssysgsvzbydghzg5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
      `(("cfitsio" ,cfitsio)
+       ("curl" ,curl-minimal)
        ("gsl" ,gsl)
+       ("libgit2" ,libgit2)
        ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("wcslib" ,wcslib)
@@ -154,6 +203,82 @@ header.")
     (synopsis "Astronomy utilities")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
 programs for the manipulation and analysis of astronomical data.")
+    (license license:gpl3+)))
+
+(define-public sextractor
+  (package
+    (name "sextractor")
+    (version "2.25.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astromatic/sextractor")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q69n3nyal57h3ik2xirwzrxzljrwy9ivwraxzv9566vi3n4z5mw"))))
+    (build-system gnu-build-system)
+    ;; NOTE: (Sharlatan-20210124T103117+0000): Building with `atlas' is failing
+    ;; due to missing shared library which required on configure phase. Switch
+    ;; build to use `openblas' instead. It requires FFTW with single precision
+    ;; `fftwf'.
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-openblas"
+        (string-append
+         "--with-openblas-libdir=" (assoc-ref %build-inputs "openblas") "/lib")
+        (string-append
+         "--with-openblas-incdir=" (assoc-ref %build-inputs "openblas") "/include")
+        (string-append
+         "--with-fftw-libdir=" (assoc-ref %build-inputs "fftw") "/lib")
+        (string-append
+         "--with-fftw-incdir=" (assoc-ref %build-inputs "fftw") "/include"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("openblas" ,openblas)
+       ("fftw" ,fftwf)))
+    (home-page "http://www.astromatic.net/software/sextractor")
+    (synopsis "Extract catalogs of sources from astronomical images")
+    (description
+     "SExtractor is a program that builds a catalogue of objects from an
+astronomical image.  Although it is particularly oriented towards reduction of
+large scale galaxy-survey data, it can perform reasonably well on moderately
+crowded star fields.")
+    (license license:gpl3+)))
+
+(define-public skymaker
+  (package
+    (name "skymaker")
+    (version "3.10.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/skymaker/"
+                           "skymaker-" version ".tar.gz"))
+       (sha256
+        (base32 "03zvx7c89plp9559niqv5532r233kza3ir992rg3nxjksqmrqvx1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append
+         "--with-fftw-libdir=" (assoc-ref %build-inputs "fftw") "/lib")
+        (string-append
+         "--with-fftw-incdir=" (assoc-ref %build-inputs "fftw") "/include"))))
+    (inputs
+     `(("fftw" ,fftwf)))
+    (home-page "https://www.astromatic.net/software/skymaker")
+    (synopsis "Astronomical image simulator")
+    (description
+     "SkyMaker is a program that simulates astronomical images.  It accepts
+object lists in ASCII generated by the Stuff program to produce realistic
+astronomical fields.  SkyMaker is part of the EFIGI
+(@url{https://www.astromatic.net/projects/efigi}) development project.")
     (license license:gpl3+)))
 
 (define-public stellarium
@@ -202,6 +327,46 @@ programs for the manipulation and analysis of astronomical data.")
 can be used to control telescopes over a serial port for tracking celestial
 objects.")
     (license license:gpl2+)))
+
+(define-public stuff
+  (package
+    (name "stuff")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/stuff/"
+                           "stuff-" version ".tar.gz"))
+       (sha256
+        (base32 "1syibi3b86z9pikhicvkkmgxm916j732fdiw0agw0lq6z13fdcjm"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/stuff")
+    (synopsis "Astronomical catalogue simulation")
+    (description
+     "Stuff is a program that simulates \"perfect\" astronomical catalogues.
+It generates object lists in ASCII which can read by the SkyMaker program to
+produce realistic astronomical fields.  Stuff is part of the EFIGI development
+project.")
+    (license license:gpl3+)))
+
+(define-public swarp
+  (package
+    (name "swarp")
+    (version "2.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/swarp/"
+                           "swarp-" version ".tar.gz"))
+       (sha256
+        (base32 "1i670waqp54vin1cn08mqckcggm9zqd69nk7yya2vvqpdizn6jpm"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/swarp")
+    (synopsis "FITS image resampling and co-addition")
+    (description
+     "SWarp is a program that resamples and co-adds together FITS images using
+any arbitrary astrometric projection defined in the WCS standard.")
+    (license license:gpl3+)))
 
 (define-public celestia
   (let ((commit "9dbdf29c4ac3d20afb2d9a80d3dff241ecf81dce"))
@@ -299,6 +464,82 @@ Mechanics, Astrometry and Astrodynamics library.")
     (license (list license:lgpl2.0+
                    license:gpl2+)))) ; examples/transforms.c & lntest/*.c
 
+(define-public libpasastro
+  ;; NOTE: (Sharlatan-20210122T215921+0000): the version tag has a build
+  ;; error on spice which is resolved with the latest commit.
+  (let ((commit "e3c218d1502a18cae858c83a9a8812ab197fcb60")
+        (revision "1"))
+    (package
+      (name "libpasastro")
+      (version (git-version "1.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pchev/libpasastro")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0asp2sn34nds5va2ghppwc41vb6j3d1mf049j949rgrll817kx47"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:make-flags
+         (list
+          ,(match (or (%current-target-system) (%current-system))
+             ((or "aarch64-linux" "armhf-linux" "i686-linux" "x86_64-linux")
+              "OS_TARGET=linux")
+             (_ #f))
+          ,(match (or (%current-target-system) (%current-system))
+             ("i686-linux" "CPU_TARGET=i386")
+             ("x86_64-linux" "CPU_TARGET=x86_64")
+             ((or "armhf-linux" "aarch64-linux") "CPU_TARGET=armv7l")
+             (_ #f))
+          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/pchev/libpasastro")
+      (synopsis "Interface to astronomy library for use from Pascal program")
+      (description
+       "This package provides shared libraries to interface Pascal program with
+standard astronomy libraries:
+
+@itemize
+@item @code{libpasgetdss.so}: Interface with GetDSS to work with DSS images.
+@item @code{libpasplan404.so}: Interface with Plan404 to compute planets position.
+@item @code{libpaswcs.so}: Interface with libwcs to work with FITS WCS.
+@item @code{libpasspice.so}: To work with NAIF/SPICE kernel.
+@end itemize\n")
+      (license license:gpl2+))))
+
+(define-public missfits
+  (package
+    (name "missfits")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.astromatic.net/download/missfits/"
+                           "missfits-" version ".tar.gz"))
+       (sha256
+        (base32 "04jrd7fsvzr14vdmwgj2f6v97gdcfyjyz6jppml3ghr9xh12jxv5"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.astromatic.net/software/missfits")
+    (synopsis "FITS files Maintenance program")
+    (description
+     "MissFITS is a program that performs basic maintenance and packaging tasks
+on FITS files:
+
+@itemize
+@item add/edit FITS header keywords
+@item split/join Multi-Extension-FITS (MEF) files
+@item unpack/pack FITS data-cubes
+@item create/check/update FITS checksums, using R. Seaman's protocol
+      (see http://www.adass.org/adass/proceedings/adass94/seamanr.html)
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public xplanet
   (package
     (name "xplanet")
@@ -391,3 +632,63 @@ Gpredict can also predict the time of future passes for a satellite, and
 provide you with detailed information about each pass.")
     (home-page "http://gpredict.oz9aec.net/index.php")
     (license license:gpl2+)))
+
+(define-public indi
+  (package
+    (name "indi")
+    (version "1.8.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/indilib/indi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19gm7rbnm3295g2i8mdzfslpz0vrcgfmbl59311qpszvlxbmyd2r"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list
+          "-DINDI_BUILD_UNITTESTS=ON"
+          "-DCMAKE_BUILD_TYPE=Release"
+          (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+          (string-append "-DUDEVRULES_INSTALL_DIR=" out "/lib/udev/rules.d")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace  'check
+           (lambda _
+             (chdir "test")
+             (invoke "ctest")
+             (chdir "..")
+             #t))
+         (add-before 'install 'set-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/udev/rules.d")))
+             #t)))))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (inputs
+     `(("cfitsio" ,cfitsio)
+       ("curl" ,curl)
+       ("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libnova" ,libnova)
+       ("libtiff" ,libtiff)
+       ("libusb" ,libusb)
+       ("zlib" ,zlib)))
+    (home-page "https://www.indilib.org")
+    (synopsis "Library for astronimical intrumentation control")
+    (description
+     "INDI (Instrument-Neutral Device Interface) is a distributed XML-based
+control protocol designed to operate astronomical instrumentation.  INDI is
+small, flexible, easy to parse, scalable, and stateless.  It supports common
+DCS functions such as remote control, data acquisition, monitoring, and a lot
+more.")
+    (license (list license:bsd-3
+                   license:gpl2+
+                   license:lgpl2.0+
+                   license:lgpl2.1+))))

@@ -56,7 +56,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.22")
+    (version "2.22.1")
     (source
      (origin
        (method url-fetch)
@@ -64,7 +64,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "146p3j46hna1m8zlacb9q1ljnldwv6xrjbaplm94f2x0v4azi1jj"))))
+         "1476fmfw2hkrjwyr3f7k9316lzwnn2b1dbc51rybcxipqlfg8849"))))
     (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -191,11 +191,15 @@ file system, and many more features.")
        (uri (git-reference
              (url "https://github.com/lwindolf/liferea/")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1g9463bvswsm899j6dfhslcg6np70m5wq143mjicr24zy8d17bm7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list
+         "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
@@ -221,7 +225,8 @@ file system, and many more features.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("glib-networking" ,glib-networking)
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("gnome-keyring" ,gnome-keyring)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gstreamer" ,gstreamer)
@@ -229,11 +234,14 @@ file system, and many more features.")
        ("libnotify" ,libnotify)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
+       ("pango" ,pango)
        ("python" ,python)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
+       ("sqlite" ,sqlite)
        ("webkitgtk" ,webkitgtk)))
     (home-page "https://lzone.de/liferea/")
     (synopsis "News reader for GTK/GNOME")

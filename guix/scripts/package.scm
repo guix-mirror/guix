@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -43,11 +43,13 @@
   #:use-module (guix scripts build)
   #:use-module (guix transformations)
   #:use-module (guix describe)
+  #:autoload   (guix channels) (channel-name channel-commit channel->code)
   #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 pretty-print) (pretty-print)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
@@ -322,6 +324,96 @@ Alternately, see @command{guix package --search-paths -p ~s}.")
 
 
 ;;;
+;;; Export a manifest.
+;;;
+
+(define* (export-manifest manifest
+                          #:optional (port (current-output-port)))
+  "Write to PORT a manifest corresponding to MANIFEST."
+  (define (version-spec entry)
+    (let ((name (manifest-entry-name entry)))
+      (match (map package-version (find-packages-by-name name))
+        ((_)
+         ;; A single version of NAME is available, so do not specify the
+         ;; version number, even if the available version doesn't match ENTRY.
+         "")
+        (versions
+         ;; If ENTRY uses the latest version, don't specify any version.
+         ;; Otherwise return the shortest unique version prefix.  Note that
+         ;; this is based on the currently available packages, which could
+         ;; differ from the packages available in the revision that was used
+         ;; to build MANIFEST.
+         (let ((current (manifest-entry-version entry)))
+           (if (every (cut version>? current <>)
+                      (delete current versions))
+               ""
+               (version-unique-prefix (manifest-entry-version entry)
+                                      versions)))))))
+
+  (match (manifest->code manifest
+                         #:entry-package-version version-spec)
+    (('begin exp ...)
+     (format port (G_ "\
+;; This \"manifest\" file can be passed to 'guix package -m' to reproduce
+;; the content of your profile.  This is \"symbolic\": it only specifies
+;; package names.  To reproduce the exact same profile, you also need to
+;; capture the channels being used, as returned by \"guix describe\".
+;; See the \"Replicating Guix\" section in the manual.\n"))
+     (for-each (lambda (exp)
+                 (newline port)
+                 (pretty-print exp port))
+               exp))))
+
+(define (channel=? a b)
+  (and (channel-commit a) (channel-commit b)
+       (string=? (channel-commit a) (channel-commit b))))
+
+(define* (export-channels manifest
+                          #:optional (port (current-output-port)))
+  (define channels
+    (delete-duplicates
+     (append-map manifest-entry-provenance (manifest-entries manifest))
+     channel=?))
+
+  (define channel-names
+    (delete-duplicates (map channel-name channels)))
+
+  (define table
+    (fold (lambda (channel table)
+            (vhash-consq (channel-name channel) channel table))
+          vlist-null
+          channels))
+
+  (when (null? channels)
+    (leave (G_ "no provenance information for this profile~%")))
+
+  (format port (G_ "\
+;; This channel file can be passed to 'guix pull -C' or to
+;; 'guix time-machine -C' to obtain the Guix revision that was
+;; used to populate this profile.\n"))
+  (newline port)
+  (display "(list\n" port)
+  (for-each (lambda (name)
+              (define indent "     ")
+              (match (vhash-foldq* cons '() name table)
+                ((channel extra ...)
+                 (unless (null? extra)
+                   (display indent port)
+                   (format port (G_ "\
+;; Note: these other commits were also used to install \
+some of the packages in this profile:~%"))
+                   (for-each (lambda (channel)
+                               (format port "~a;;   ~s~%"
+                                       indent (channel-commit channel)))
+                             extra))
+                 (pretty-print (channel->code channel) port
+                               #:per-line-prefix indent))))
+            channel-names)
+  (display ")\n" port)
+  #t)
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -373,6 +465,10 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   (display (G_ "
   -S, --switch-generation=PATTERN
                          switch to a generation matching PATTERN"))
+  (display (G_ "
+      --export-manifest  print a manifest for the chosen profile"))
+  (display (G_ "
+      --export-channels  print channels for the chosen profile"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (display (G_ "
@@ -507,6 +603,14 @@ kind of search path~%")
                      (values (cons `(query search-paths ,kind)
                                    result)
                              #f))))
+         (option '("export-manifest") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query export-manifest) result)
+                           #f)))
+         (option '("export-channels") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query export-channels) result)
+                           #f)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
@@ -825,6 +929,18 @@ processed, #f otherwise."
                                                             (const #f)
                                                             #:kind kind)))
          (format #t "~{~a~%~}" settings)
+         #t))
+
+      (('export-manifest)
+       (let* ((manifest (concatenate-manifests
+                         (map profile-manifest profiles))))
+         (export-manifest manifest (current-output-port))
+         #t))
+
+      (('export-channels)
+       (let ((manifest (concatenate-manifests
+                        (map profile-manifest profiles))))
+         (export-channels manifest (current-output-port))
          #t))
 
       (_ #f))))

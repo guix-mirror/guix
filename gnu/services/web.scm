@@ -922,19 +922,20 @@ of index files."
 (define php-fpm-accounts
   (match-lambda
     (($ <php-fpm-configuration> php socket user group socket-user socket-group _ _ _ _ _ _)
-     (list
-      (user-group (name "php-fpm") (system? #t))
-      (user-group
-       (name group)
-       (system? #t))
-      (user-account
-       (name user)
-       (group group)
-       (supplementary-groups '("php-fpm"))
-       (system? #t)
-       (comment "php-fpm daemon user")
-       (home-directory "/var/empty")
-       (shell (file-append shadow "/sbin/nologin")))))))
+     `(,@(if (equal? group "php-fpm")
+             '()
+             (list (user-group (name "php-fpm") (system? #t))))
+       ,(user-group
+         (name group)
+         (system? #t))
+       ,(user-account
+         (name user)
+         (group group)
+         (supplementary-groups '("php-fpm"))
+         (system? #t)
+         (comment "php-fpm daemon user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))))
 
 (define (default-php-fpm-config socket user group socket-user socket-group
           pid-file log-file pm display-errors timezone workers-log-file)

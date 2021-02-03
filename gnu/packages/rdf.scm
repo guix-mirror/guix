@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -268,14 +268,14 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.30.6")
+    (version "0.30.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/serd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1vrprliknw9s0mz99dk7qf8i8xx38dd173q6b60332wxcm6cg8pm"))))
+               "11zs53yx40mv62vxsl15mvdh7s17y5v6lgcgahdvzxgnan7w8bk7"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -302,14 +302,14 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public sord
   (package
     (name "sord")
-    (version "0.16.6")
+    (version "0.16.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/sord-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0i4x49ckdi1d24kwp6rmnf2mz78sncdpq22xhv9kclq8frxg4yk6"))))
+               "052y7zllrg0bzyky2rmrrwnnf16p6bk7q40rq9mgm0mzm8p9sa3w"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target

@@ -93,7 +93,9 @@
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
-;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +147,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -152,6 +155,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages monitoring)
   #:use-module (gnu packages multiprecision)
@@ -467,6 +471,30 @@ programming in Python.  EasyGUI is different from other GUI generators in that
 EasyGUI is NOT event-driven.  Instead, all GUI interactions are invoked by
 simple function calls.")
     (license license:bsd-3)))
+
+(define-public python-pymd4c
+  (package
+    (name "python-pymd4c")
+    (version "0.4.6.0b1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pymd4c" version))
+       (sha256
+        (base32 "07s3arn85ri92im6x3ipljdmrxmpik7irs06i6lm17j1x6j9841d"))))
+    (build-system python-build-system)
+    (inputs
+     `(("md4c" ,md4c)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/dominickpastore/pymd4c")
+    (synopsis "Python bindings for MD4C")
+    (description
+     "PyMD4C provides Python bindings for MD4c, a C Markdown parser, compliant
+to CommonMark.")
+    (license license:expat)))
 
 (define-public python-pymediainfo
   (package
@@ -1012,9 +1040,6 @@ conventions and aliases in the same expression.")
 API for locking files.")
     (license license:expat)))
 
-(define-public python2-lockfile
-  (package-with-python2 python-lockfile))
-
 (define-public python-filelock
   (package
     (name "python-filelock")
@@ -1101,14 +1126,14 @@ other machines, such as over the network.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "41.0.1")
+    (version "52.0.0")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "setuptools" version ".zip"))
+      (uri (pypi-uri "setuptools" version))
       (sha256
        (base32
-        "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
+        "15ibjdjhkwgj6qbmpsxikkqdfsb1550z46fly7dm15ah4bk1wfpv"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -2208,13 +2233,13 @@ syntax.")
 (define-public python-polib
   (package
     (name "python-polib")
-    (version "1.0.8")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "polib" version))
                (sha256
                 (base32
-                  "1pq2hbm3m2q0cjdszk8mc4qa1vl3wcblh5nfyirlfnzb2pcy7zss"))))
+                  "0aikb8gcarhifn3sadrbbs5czagih9hjv250gsrgy9v1d49pvn7s"))))
     (build-system python-build-system)
     (home-page "https://bitbucket.org/izi/polib/wiki/Home")
     (synopsis "Manipulate, create and modify gettext files")
@@ -2486,9 +2511,6 @@ code introspection, and logging.")
      "Used only for bootstrapping python2-pbr, you should not need this.")
     (license license:asl2.0)))
 
-(define-public python2-pbr-minimal
-  (package-with-python2 python-pbr-minimal))
-
 (define-public python-pbr
   (package
     (inherit python-pbr-minimal)
@@ -2515,9 +2537,6 @@ and sensible default behaviors into your setuptools run.  It will set
 versions, process requirements files and generate AUTHORS and ChangeLog file
 from git information.
 ")))
-
-(define-public python2-pbr
-  (package-with-python2 python-pbr))
 
 (define-public python-pyrsistent
   (package
@@ -3152,7 +3171,6 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (synopsis "Virtual Python environment builder")
     (description
      "Virtualenv is a tool to create isolated Python environments.")
-    (properties `((python2-variant . ,(delay python2-virtualenv))))
     (license license:expat)))
 
 (define-public python2-virtualenv
@@ -3160,7 +3178,28 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (package
       (inherit base)
       (arguments
-       `(#:python ,python-2))
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-paths 'adjust-PYTHONPATH
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((python (assoc-ref inputs "python"))
+                      (python-sitedir (string-append python "/lib/python2.7"
+                                                     "/site-packages")))
+                 ;; XXX: 'python2' always comes first on PYTHONPATH
+                 ;; and shadows the 'setuptools' input.  Move python2
+                 ;; last: this should be fixed in python-build-system
+                 ;; in a future rebuild cycle.
+                 (setenv "PYTHONPATH"
+                         (string-append (string-join (delete python-sitedir
+                                                             (string-split
+                                                              (getenv "PYTHONPATH")
+                                                              #\:))
+                                                     ":")
+                                        ":" python-sitedir))
+                 (format #t "environment variable `PYTHONPATH' changed to `~a'~%"
+                         (getenv "PYTHONPATH"))
+                 #t))))))
       (propagated-inputs
        `(("python-contextlib2" ,python2-contextlib2)
          ,@(package-propagated-inputs base))))))
@@ -3541,6 +3580,29 @@ text styles of documentation.")
                 (sha256
                  (base32
                   "1zmhnswy0wxfn0xprs9aqsvx2c3kmzfn2wx14q8cv3vpkxdamj4q")))))))
+
+(define-public python-bump2version
+  (package
+    (name "python-bump2version")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bump2version" version))
+       (sha256
+        (base32 "1rinm4gv1fyh7xjv3v6r1p3zh5kl4ry2qifz5f7frx31mnzv4b3n"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests fail with "bumpversion: error: the following arguments are
+     ;; required: --new-version".
+     `(#:tests? #false))
+    (home-page "https://github.com/c4urself/bump2version")
+    (synopsis "Version-bump your software with a single command!")
+    (description
+     "This package provides a small command line tool to simplify releasing
+software by updating all version strings in your source code by the correct
+increment.  It also creates commits and tags.")
+    (license license:expat)))
 
 (define-public python-bumpversion
   (package
@@ -5625,6 +5687,37 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python2-olefile
   (package-with-python2 python-olefile))
 
+(define-public python-pikepdf
+  (package
+    (name "python-pikepdf")
+    (version "2.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pikepdf" version))
+       (sha256
+        (base32 "1wwfspm912388a61lailbpjpqihq9ha8yz05mjqx9yys4ixykhwg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false))                ;require python-xmp-toolkit
+    (native-inputs
+     `(("pybind11" ,pybind11)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm/next)
+       ("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)
+       ("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (inputs
+     `(("qpdf" ,qpdf)))
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/pikepdf/pikepdf")
+    (synopsis "Read and write PDFs with Python")
+    (description
+     "pikepdf is a Python library for reading and writing PDF files.")
+    (license license:mpl2.0)))
+
 (define-public python-pillow
   (package
     (name "python-pillow")
@@ -5927,6 +6020,38 @@ mathematical basis functions that are localized in both time and frequency.
 Wavelet transforms are time-frequency transforms employing wavelets.  They are
 similar to Fourier transforms, the difference being that Fourier transforms are
 localized only in frequency instead of in time and frequency.")
+    (license license:expat)))
+
+(define-public python-pywal
+  (package
+    (name "python-pywal")
+    (version "3.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dylanaraps/pywal")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "039m7dch479hlwddynacdrr0klz6a5bdly5swqbs94hfimficiyf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-home-directory
+           (lambda _
+             ;; Tests fail with "Permission denied: '/homeless-shelter'".
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (inputs
+     `(("imagemagick" ,imagemagick)))
+    (home-page "https://github.com/dylanaraps/pywal")
+    (synopsis "Color palette generator and applicator")
+    (description
+     "Pywal is a tool that generates a color palette from the dominant colors
+in an image.  It then applies the colors system-wide and on-the-fly in all of
+your favourite programs.")
     (license license:expat)))
 
 (define-public python-pywinrm
@@ -6310,9 +6435,6 @@ The output of all running processes is collected by honcho and
 displayed.")
     (license license:expat)))
 
-(define-public python2-honcho
-  (package-with-python2 python-honcho))
-
 (define-public python-pexpect
   (package
     (name "python-pexpect")
@@ -6383,6 +6505,18 @@ child application and control it as if a human were typing commands.")
 @dfn{software configuration management} (SCM) metadata instead of declaring
 them as the version argument or in a SCM managed file.")
     (license license:expat)))
+
+;; TODO: Merge with 'python-setuptools-scm' on the next rebuild cycle.
+(define-public python-setuptools-scm/next
+  (package
+    (inherit python-setuptools-scm)
+    (version "5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools_scm" version))
+       (sha256
+        (base32 "0ahlrxxkx2xhmxskx57gc96w3bdndflxx30304ihvm7ds136nny8"))))))
 
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
@@ -6577,6 +6711,27 @@ need to use the older and less efficient @code{pkg_resources} package.")
 finding unresolved symbols in Python code and their corresponding imports.")
     (license license:bsd-3)))
 
+(define-public python-inotify-simple
+  (package
+    (name "python-inotify-simple")
+    (version "1.3.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrisjbillington/inotify_simple")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dv9svrcz31acyq9smjlnw75xv3x5wpn5h6s8j8h0vrqyl3d7l05"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/chrisjbillington/inotify_simple")
+    (synopsis "Simple wrapper around inotify library")
+    (description
+     "@code{inotify-simple} is a simple wrapper around inotify library.")
+    (license license:bsd-3)))
+
 (define-public python-jaraco-packaging
   (package
     (name "python-jaraco-packaging")
@@ -6656,9 +6811,6 @@ releases.")
      "@code{path.py} implements path objects as first-class entities, allowing
 common operations on files to be invoked on those path objects directly.")
     (license license:expat)))
-
-(define-public python2-pathpy
-  (package-with-python2 python-pathpy))
 
 (define-public python-simplegeneric
   (package
@@ -7810,13 +7962,13 @@ multiprecision arithmetic.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "1.6.2")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sympy" version))
        (sha256
-        (base32 "0247skhkxanczpqqdz6n9k1axgpwl665b25hyn9vgr060p4dryhw"))))
+        (base32 "0bkb4jf24yv5i4kjpsmg1xjjccfhqyi0syv0p0xvhdbmx5hr5pm3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -7873,7 +8025,7 @@ falling into the Python interpreter.")
 (define-public python-xlib
   (package
     (name "python-xlib")
-    (version "0.27")
+    (version "0.29")
     (source
      (origin
        (method git-fetch)
@@ -7882,7 +8034,7 @@ falling into the Python interpreter.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09kimic8rhprx3q8nzalc4aggg42ahqm4v5qcj8dm68yvxfdk986"))))
+        (base32 "17cwd2knqm2vwrii3kqii9abwsnydhpg4byqx1vy7rjs6i1vbqfc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -7898,8 +8050,9 @@ falling into the Python interpreter.")
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-six" ,python-six)
        ("xorg-server" ,xorg-server)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "https://github.com/python-xlib/python-xlib")
     (synopsis "Python X11 client library")
     (description
@@ -8275,6 +8428,31 @@ design problems in your program.  It contains warnings that don't belong
 in pyflakes and pycodestyle.")
     (license license:expat)))
 
+(define-public python-flake8-implicit-str-concat
+  (package
+    (name "python-flake8-implicit-str-concat")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8_implicit_str_concat" version))
+       (sha256
+        (base32 "1v0y29xlmbr2q12a4nnpm1dm9aw1mjiys1x8jif4z8c90d63cqm6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-more-itertools" ,python-more-itertools)))
+    (home-page "https://github.com/keisheiled/flake8-implicit-str-concat")
+    (synopsis "Flake8 plugin to encourage correct string literal concatenation")
+    (description
+     "This is a plugin for the Python code checking tool Flake8 to encourage
+correct string literal concatenation.
+
+It looks for style problems like implicitly concatenated string literals on
+the same line (which can be introduced by the code formating tool Black), or
+unnecessary plus operators for explicit string literal concatenation.")
+    (license license:expat)))
+
 (define-public python-flake8-polyfill
   (package
     (name "python-flake8-polyfill")
@@ -8313,6 +8491,28 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 
 (define-public python2-flake8-polyfill
   (package-with-python2 python-flake8-polyfill))
+
+(define-public python-flake8-print
+  (package
+    (name "python-flake8-print")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-print" version))
+       (sha256
+        (base32 "05k5kkvyk6fdmvnacxfzypk74vbl3pmva13dqg1aljfwnxsc7yjs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jbkahn/flake8-print")
+    (synopsis "Print statement checker plugin for Flake8")
+    (description
+     "This plugin for Flake8 checks for @code{print} statements in Python
+files.")
+    (license license:expat)))
 
 (define-public python-flake8-pyi
   (package
@@ -11041,9 +11241,6 @@ different Python versions and interpreters, or run tests in each type of
 supported environment, or act as a frontend to continuous integration
 servers.")
     (license license:expat)))
-
-(define-public python2-tox
-  (package-with-python2 python-tox))
 
 (define-public python-jmespath
   (package
@@ -15554,9 +15751,6 @@ exception message with a traceback that points to the culprit.")
     (description "This package provides a MediaWiki API client.")
     (license license:expat)))
 
-(define-public python2-mwclient
-  (package-with-python2 python-mwclient))
-
 (define-public python-utils
   (package
     (name "python-utils")
@@ -16599,9 +16793,6 @@ class ShellOutSSHClientTests"))
 many of the popular cloud service providers using a unified API.")
     (license license:asl2.0)))
 
-(define-public python2-apache-libcloud
-  (package-with-python2 python-apache-libcloud))
-
 (define-public python-smmap
   (package
     (name "python-smmap")
@@ -16804,9 +16995,6 @@ line options, various thresholds can be set for the complexity of code.  It
 will fail (i.e.  it will exit with a non-zero exit code) when any of these
 requirements is not met.")
     (license license:expat)))
-
-(define-public python2-xenon
-  (package-with-python2 python-xenon))
 
 (define-public python-pysocks
   (package
@@ -17592,6 +17780,29 @@ user's @file{~/Trash} directory.")
      "@code{pyfavicon} is an async favicon fetcher.")
     (license license:expat)))
 
+(define-public python-yamllint
+  (package
+    (name "python-yamllint")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yamllint" version))
+       (sha256
+        (base32 "11qhs1jk9pwvyk5k3q5blh9sq42dh1ywdf1f3i2zixf7hncwir5h"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathspec" ,python-pathspec)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/adrienverge/yamllint")
+    (synopsis "Linter for YAML files")
+    (description
+     "Yamllint is a linter for YAML files.  yamllint does not only check for
+syntax validity, but for weirdnesses like key repetition and cosmetic problems
+such as lines length, trailing spaces, indentation, etc.")
+    (license license:gpl3+)))
+
 (define-public python-yapf
   (package
     (name "python-yapf")
@@ -17923,6 +18134,61 @@ based on the CPython 2.7 and 3.7 parsers.")
     (license (list license:psfl
                    license:asl2.0
                    license:expat))))    ;ast27/Parser/spark.py
+
+(define-public python-typer
+  (package
+    (name "python-typer")
+    (version "0.3.2")
+    (source
+     (origin
+       ;; Building `python-typer` from the git repository requires the `flit-core`
+       ;; Python package that is not installed by `python-flit`.
+       (method url-fetch)
+       (uri (pypi-uri "typer" version))
+       (sha256
+        (base32 "00v3h63dq8yxahp9vg3yb9r27l2niwv8gv0dbds9dzrc298dfmal"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             (substitute* "tests/test_completion/test_completion.py"
+               (("def test_show_completion")
+                "def _test_show_completion")
+               (("def test_install_completion")
+                "def _test_install_completion"))
+             (substitute* "tests/test_completion/test_completion_install.py"
+               (("def test_completion_install_bash")
+                "def _test_completion_install_bash")
+               (("def test_completion_install_zsh")
+                "def _test_completion_install_zsh")
+               (("def test_completion_install_fish")
+                "def _test_completion_install_fish")
+               (("def test_completion_install_powershell")
+                "def _test_completion_install_powershell"))
+             #t))
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":"
+                                    (getenv "PYTHONPATH")))
+             (invoke "python" "-m" "pytest" "tests/")
+             #t)))))
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-shellingham" ,python-shellingham)))
+    (home-page "https://github.com/tiangolo/typer")
+    (synopsis
+      "Typer builds CLI based on Python type hints")
+    (description
+      "Typer is a library for building CLI applications.  It's based on
+Python 3.6+ type hints.")
+    ;; MIT license
+    (license license:expat)))
 
 (define-public python-typing
   (package
@@ -18520,14 +18786,14 @@ implemented using @code{ctypes}.")
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "userspacefs" version))
         (sha256
          (base32
-          "0ayfcz9pjwq7h3ws0qas71842s1wm7dxlmg8dccxl2j6yavpv83f"))))
+          "1v6saf62ml3j63adalvlkj4iavxjbsbapl20b21mn73p7kvn4ayf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-fusepyng" ,python-fusepyng)))
@@ -18586,7 +18852,7 @@ user-space file systems in Python.")
 (define-public pybind11
   (package
     (name "pybind11")
-    (version "2.4.3")
+    (version "2.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18594,7 +18860,7 @@ user-space file systems in Python.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0k89w4bsfbpzw963ykg1cyszi3h3nk393qd31m6y46pcfxkqh4rd"))
+                "1wh5b1xnywzxwxkyac2wvyqwzmy1qxs341jjk820r7b825wn6yad"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
@@ -18660,16 +18926,7 @@ inferring type information using compile-time introspection.")
 @item Inter-process locks
 @item Generic helpers
 @end itemize\n")
-    (properties `((python2-variant . ,(delay python2-fasteners))))
     (license license:asl2.0)))
-
-(define-public python2-fasteners
-  (let ((base (package-with-python2 (strip-python2-variant python-fasteners))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs base))))))
 
 (define-public python-requests-file
   (package
@@ -19564,6 +19821,37 @@ Features:
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-pre-commit
+  (package
+    (name "python-pre-commit")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pre_commit" version))
+       (sha256
+        (base32 "1ycf6wpxrhxhdzz0vpryhbdxlwik5khgcvp3hxwvfr447a6k84zl"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests fail with "AttributeError: module 'pre_commit.resources' has no
+     ;; attribute 'empty_template_setup'".
+     `(#:tests? #false))
+    (propagated-inputs
+     `(("python-cfgv" ,python-cfgv)
+       ("python-identify" ,python-identify)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-importlib-resources" ,python-importlib-resources)
+       ("python-nodeenv" ,python-nodeenv)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-toml" ,python-toml)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/pre-commit/pre-commit")
+    (synopsis "Framework for managing multi-language pre-commit hooks")
+    (description
+     "This package provides a framework for managing and maintaining
+multi-language pre-commit hooks.")
+    (license license:expat)))
+
 (define-public python-precis-i18n
   (package
     (name "python-precis-i18n")
@@ -20164,13 +20452,18 @@ time-or-computationally-expensive properties quick and easy and works in Python
 (define-public python-folium
   (package
     (name "python-folium")
-    (version "0.11.0")
+    (version "0.12.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "folium" version))
+       ;; PyPI has a ".whl" file but not a proper source release.
+       ;; Thus, fetch code from Git.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-visualization/folium")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "19sclsq3xcjfa7bavzjpyn6rl9b15jbc76n5aag4cwhqqamqj1sl"))))
+        (base32 "0yi5y9pfpbc4bc4ibr8cblif8ls1wf3k0zawyx86r2qwxxkkyd6k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)
@@ -23140,6 +23433,54 @@ Qt applications.")
     (description
      "Bitstring is a library for simple construction, analysis and modification
  of binary data.")
+    (license license:expat)))
+
+(define-public python-confuse
+  (package
+    (name "python-confuse")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "confuse" version))
+       (sha256
+        (base32
+         "0r74djc8r6lfx6ldsqnhpvfsn256gsfzbl33qcm77hp2qr8h9z4j"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathlib" ,python-pathlib)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/beetbox/confuse")
+    (synopsis "Painless YAML configuration.")
+    (description "Confuse is a configuration library for Python that uses
+YAML.  It takes care of defaults, overrides, type checking, command-line
+integration, human-readable errors, and standard OS-specific locations.")
+    (license license:expat)))
+
+(define-public python-reflink
+  (package
+    (name "python-reflink")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "reflink" version))
+       (sha256
+        (base32
+         "0fkf3sd958g9hvr3jwlhnhqqzrwxljrc3grsf3yknh94vf13a9f9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #false)) ; almost all tests want to run mkfs.btrfs
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://gitlab.com/rubdos/pyreflink")
+    (synopsis "Python wrapper around reflink system call")
+    (description
+     "Python reflink wraps around platform specific @code{reflink}
+implementations.")
     (license license:expat)))
 
 (define-public python-pivy

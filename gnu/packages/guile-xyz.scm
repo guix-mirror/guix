@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2016, 2019, 2020 Eraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020, 2021 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mes)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -101,6 +103,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -2428,7 +2431,7 @@ interface for reading articles in any format.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "1.3.0")
+    (version "2.0.0")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method git-fetch)
@@ -2438,8 +2441,10 @@ interface for reading articles in any format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14izs8daxh7pb7vwpxi5g427qa31137jkaxrb1cy5rpjkwchy723"))))
+                "1zk2x37lw6ygf7rwy71svnsian8lj51axpxmm66ah7dazn69swlm"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2462,6 +2467,18 @@ key-value cache and store.")
   (package
     (inherit guile-redis)
     (name "guile2.0-redis")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; put-string is in (rnrs io ports) in guile2.0,
+             ;; not in (ice-9 textual-ports)
+             (substitute* "redis/utils.scm"
+               (("\\(ice-9 textual-ports\\)")
+                "(rnrs io ports)"))
+             #t)))
+       ,@(package-arguments guile-redis)))
     (native-inputs `(("guile" ,guile-2.0)
                      ,@(alist-delete "guile"
                                      (package-native-inputs guile-redis))))))
@@ -2570,8 +2587,8 @@ format is also supported.")
   (deprecated-package "guile3.0-mcron" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "7e5982a2788bd79a45ad6f02db46f061f97b6e14")
-        (revision "3"))
+  (let ((commit "291a746a1d3b4784d38b05239bdd7b8e796ce761")
+        (revision "4"))
     (package
       (name "guile-picture-language")
       (version (git-version "0.0.1" revision commit))
@@ -2583,12 +2600,13 @@ format is also supported.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1y5f14cll4jx33hr43dpgrpd0yy6g0g7lim365kmgb0h0cvja80p"))))
+                  "0rnhf13ds92sbdicshy4sy4kl2kc431fy9vzm1divw974p7v57sd"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-3.0)))
       (propagated-inputs
-       `(("guile-rsvg" ,guile-rsvg)))
+       `(("guile-cairo" ,guile-cairo)
+         ("guile-rsvg" ,guile-rsvg)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -4428,6 +4446,74 @@ including parsing and code generation.")
     (description
      "Guile Shapefile is a Guile library for reading shapefiles.")
     (license license:expat)))
+
+(define-public guile-libyaml
+  (let ((commit "f5d33a6880e96571d3cb079ed7755ffc156cac46")
+        (revision "1"))
+    (package
+      (name "guile-libyaml")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mwette/guile-libyaml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "12x91983fh1j39zy7kbk19acc1rqdh8515ddx1mh7l26j04k9wgq"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules (((guix build guile-build-system)
+                     #:prefix guile:)
+                    ,@%gnu-build-system-modules)
+         #:imported-modules ((guix build guile-build-system)
+                             ,@%gnu-build-system-modules)
+         #:tests? #false ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'remove-unused-files
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each delete-file
+                         '("guix.scm" "demo1.yml" "demo1.scm"
+                           "yaml/libyaml.scm"
+                           ;; This file is mismatched with the generated FFI code.
+                           "yaml/ffi-help-rt.scm"))
+               (copy-file (string-append (assoc-ref inputs "nyacc")
+                                         "/share/guile/site/3.0/system/ffi-help-rt.scm")
+                          "yaml/ffi-help-rt.scm")
+               (substitute* "yaml/ffi-help-rt.scm"
+                 (("system ffi-help-rt") "yaml ffi-help-rt"))
+               #true))
+           (add-before 'build 'build-ffi
+             (lambda* (#:key inputs #:allow-other-keys)
+               (invoke "guild" "compile-ffi"
+                       "--no-exec" ; allow us to patch the generated file
+                       "yaml/libyaml.ffi")
+               (substitute* "yaml/libyaml.scm"
+                 (("system ffi-help-rt") "yaml ffi-help-rt")
+                 (("dynamic-link \"libyaml\"")
+                  (format #false "dynamic-link \"~a/lib/libyaml\""
+                          (assoc-ref inputs "libyaml"))))
+               #true))
+           (replace 'build
+             (assoc-ref guile:%standard-phases 'build))
+           (delete 'install))))
+      (inputs
+       `(("guile" ,guile-3.0)
+         ("libyaml" ,libyaml)))
+      (propagated-inputs
+       `(("guile-bytestructures" ,guile-bytestructures)))
+      (native-inputs
+       `(("nyacc" ,nyacc)))
+      (home-page "https://github.com/mwette/guile-libyaml")
+      (synopsis "Guile wrapper for libyaml")
+      (description
+       "This package provides a simple yaml module for Guile using the
+ffi-helper from nyacc.")
+      (license license:lgpl3+))))
 
 (define-public schmutz
   (let ((commit "add24588c59552537b8f1316df99a0cdd62c221e")

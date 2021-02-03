@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
@@ -1066,7 +1066,7 @@ shell command executions.")
 (define-public fennel
   (package
     (name "fennel")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1075,7 +1075,7 @@ shell command executions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17pdcwhfw754fblppw46qphnsvxrn3b7066cz54lv8c0c12iryim"))
+                "1jng33vmnk6mi37l3x2z0plng940jpj7kz1s493ki80z3mkaxjfg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1083,18 +1083,36 @@ shell command executions.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #t      ; even on cross-build
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'patch-lua-calls
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lua (string-append (assoc-ref inputs "lua") "/bin/lua")))
+               (setenv "LUA" lua)
+               (substitute* "old/launcher.lua"
+                 (("/usr/bin/env lua") lua))
+               #t)))
          (add-after 'build 'patch-fennel
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "fennel"
-               (("/usr/bin/env lua") (which "lua")))
+               (("/usr/bin/env .*lua")
+                (string-append (assoc-ref inputs "lua") "/bin/lua")))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (assoc-ref %standard-phases 'check))
+         (add-after 'install 'install-manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "fennel.1"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/man/man1"))
              #t)))))
     (inputs `(("lua" ,lua)))
     (home-page "https://fennel-lang.org/")
-    (synopsis "A Lisp that compiles to Lua")
+    (synopsis "Lisp that compiles to Lua")
     (description
      "Fennel is a programming language that brings together the speed,
 simplicity, and reach of Lua with the flexibility of a Lisp syntax and macro

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -913,14 +913,14 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/zeromq/libzmq/releases"
-                                  "/download/v" version "/zeromq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
+    (version "4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/zeromq/libzmq/releases"
+                           "/download/v" version "/zeromq-" version ".tar.gz"))
+       (sha256
+        (base32 "1rf3jmi36ms8jh2g5cvi253h43l6xdfq0r7mvp95va7mi4d014y5"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://zeromq.org")
@@ -1349,14 +1349,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.4.2")
+    (version "3.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1i548w6zv6ni5n22rs90a12aakyq811493dxmadlcsj2krr6i66y"))))
+        (base32 "0ar6pxzrcpxdriz437d6ziwlhb8k5wlvrkalp3hgqwzwy1vwqrzl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1664,7 +1664,7 @@ reusing frequently-requested web pages.")
 (define-public bwm-ng
   (package
     (name "bwm-ng")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -1673,7 +1673,7 @@ reusing frequently-requested web pages.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k906wb4pw3dcqpcwnni78lahzi3bva483f8c17sjykic7as4y5n"))))
+        (base32 "1gpp2l3w479h1w5skjra5xy0gxd24kvmk6i4psbkafnv2399la4k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3753,14 +3753,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1qc7k83zpcq27hpjv1lmgrj4la2zy1gspwk5jas43j49siwr3xqx"))
+        (base32 "1vrxr8lgkw7q6ixaaili6ac7i0j0326194s498n2dxihdvkh1llq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3846,15 +3846,14 @@ stamps.")
 (define-public nbd
   (package
     (name "nbd")
-    (version "3.20")
+    (version "3.21")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://sourceforge/nbd/nbd/3.20/nbd-" version
-                            ".tar.xz"))
+        (uri (string-append "mirror://sourceforge/nbd/nbd/" version
+                            "/nbd-" version ".tar.xz"))
         (sha256
-         (base32
-          "1kfnyx52nna2mnw264njk1dl2zc8m78sz031yp65mbmpi99v7qg0"))))
+         (base32 "1ydylvvayi4w2d08flji9q03sl7y8hn0c26vsay3nwwikprqls77"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))

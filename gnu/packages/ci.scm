@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages docbook)
@@ -39,7 +40,6 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
@@ -47,29 +47,9 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu))
 
-;; Guile-Sqlite3 package adding SQL query logging support.
-;; Remove it when next Guile-Sqlite3 release is out.
-(define-public guile-sqlite3-dev
-  (let ((commit "22ef45d268de7707cbbb943c404f9b0c1668e2e1")
-        (revision "1"))
-    (package
-      (inherit guile-sqlite3)
-      (name "guile-sqlite3")
-      (version (git-version "0.1.2" revision commit))
-      (home-page "https://notabug.org/mothacehe/guile-sqlite3.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1q90f8zhw9n1c39szd2ba7aj5fi92m09pnlv0z7jbhnnjam5jwcd"))
-                (file-name (string-append name "-" version "-checkout")))))))
-
 (define-public cuirass
-  (let ((commit "697fa14584551d9595cd042f1ffeba240e45a127")
-        (revision "56"))
+  (let ((commit "6bd940fc24646533ed2c113d9b551d23fe4f030d")
+        (revision "65"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -81,43 +61,33 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0gw9cja8fiyra9vnn3y384gwanvsqdq6gwjcvmz91sy5lvfwv34m"))))
+                  "0nv8y6dm17m4z28aqr47ch4l4qaqr1zixdv7jajxdky9dqy085vm"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
-
          #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
-
+         #:tests? #f  ;requires a PostgreSQL database.
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'disable-repo-tests
-             (lambda _
-               ;; Disable tests that use a connection to the Guix daemon.
-               (substitute* "Makefile.am"
-                 (("tests/repo.scm \\\\") "\\"))
-               #t))
-           (add-after 'disable-repo-tests 'patch-/bin/sh
-             (lambda _
-               (substitute* "build-aux/git-version-gen"
-                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
-               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
                (let* ((out    (assoc-ref outputs "out"))
+                      (avahi  (assoc-ref inputs "guile-avahi"))
                       (gcrypt (assoc-ref inputs "guile-gcrypt"))
                       (json   (assoc-ref inputs "guile-json"))
-                      (sqlite (assoc-ref inputs "guile-sqlite3"))
+                      (zmq    (assoc-ref inputs "guile-simple-zmq"))
+                      (squee  (assoc-ref inputs "guile-squee"))
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (zlib   (assoc-ref inputs "guile-zlib"))
                       (guix   (assoc-ref inputs "guix"))
-                      (deps   (list gcrypt json sqlite git bytes fibers
-                                    zlib guix))
+                      (deps   (list avahi gcrypt json zmq squee git bytes
+                                    fibers zlib guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
@@ -137,17 +107,22 @@
                                1)))
                  ;; Make sure 'cuirass' can find the 'evaluate' command, as
                  ;; well as the relevant Guile modules.
-                 (wrap-program (string-append out "/bin/cuirass")
-                   `("PATH" ":" prefix (,(string-append out "/bin")))
-                   `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
+                 (for-each
+                  (lambda (name)
+                    (wrap-program (string-append out "/bin/" name)
+                      `("PATH" ":" prefix (,(string-append out "/bin")))
+                      `("GUILE_LOAD_PATH" ":" prefix (,mods))
+                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs))))
+                  '("cuirass" "remote-server" "remote-worker"))
                  #t))))))
       (inputs
        `(("guile" ,guile-3.0/libgc-7)
+         ("guile-avahi" ,guile-avahi)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
-         ("guile-sqlite3" ,guile-sqlite3-dev)
+         ("guile-simple-zmq" ,guile-simple-zmq)
+         ("guile-squee" ,guile-squee)
          ("guile-git" ,guile-git)
          ("guile-zlib" ,guile-zlib)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among

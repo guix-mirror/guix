@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,13 +170,13 @@ belonging to various licenses.")
 (define-public reuse
   (package
     (name "reuse")
-    (version "0.11.1")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "reuse" version))
        (sha256
-        (base32 "09qjb4f49vr0a7zrszab8g719ilg2p6b942mr0bgyvplrjikkid5"))))
+        (base32 "11i1xjbwbqjipzpbrbnp110zx1m49khn6dl5z3mjkjaz9kr6bl2f"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -205,3 +206,35 @@ tools that have a lot more features and functionality surrounding the analysis
 and inspection of copyright and licenses in software projects.  This one is
 designed to be simple.")
     (license (list asl2.0 gpl3+))))
+
+(define-public licenseheaders
+  (package
+    (name "licenseheaders")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "licenseheaders" version))
+       (sha256
+        (base32 "073xcm10gyg5kcxqmbsyaz9sr0slbdwgr0r9qanch0zl8i0z9259"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Reported upstream:
+         ;; <https://github.com/johann-petrak/licenseheaders/issues/47>.
+         (add-after 'unpack 'patch-code
+           (lambda _
+             (substitute* "licenseheaders.py"
+               (("\\\"filenames\\\": \\[\\\"CMakeLists.txt\\\"\\],")
+                "\"filenames\": [\"CMakeLists.txt\"], \n        \"extensions\": [],"))
+             #t)))))
+    (propagated-inputs
+     `(("python-regex" ,python-regex)))
+    (home-page "http://github.com/johann-petrak/licenseheaders")
+    (synopsis "Add or change license headers for all files in a directory")
+    (description
+     "Licenseheaders is a Python 3 tool to update, change or add license
+headers to all files of any of the supported types in or below some
+directory.")
+    (license expat)))

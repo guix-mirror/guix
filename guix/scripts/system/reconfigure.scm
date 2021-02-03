@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -177,9 +177,10 @@ canonical names (symbols)."
 upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
 services as defined by OS."
   (define target-services
-    (service-value
-     (fold-services (operating-system-services os)
-                    #:target-type shepherd-root-service-type)))
+    (shepherd-configuration-services
+     (service-value
+      (fold-services (operating-system-services os)
+                     #:target-type shepherd-root-service-type))))
 
   (mlet* %store-monad ((live-services (running-services eval)))
     (let*-values (((to-unload to-restart)

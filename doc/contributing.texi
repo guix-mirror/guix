@@ -593,8 +593,8 @@ such as @command{guix package --show} take care of rendering it
 appropriately.
 
 Synopses and descriptions are translated by volunteers
-@uref{https://translationproject.org/domain/guix-packages.html, at the
-Translation Project} so that as many users as possible can read them in
+@uref{https://translate.fedoraproject.org/projects/guix/packages, at
+Weblate} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
 
@@ -802,10 +802,10 @@ To prevent namespace collisions we prefix all other Rust packages with the
 dashes should remain in place.
 
 In the rust ecosystem it is common for multiple incompatible versions of a
-package to be used at any given time, so all packages should have a versioned
-suffix.  If a package has passed version 1.0.0 then just the major version
-number is sufficient (e.g.@: @code{rust-clap-2}), otherwise the version suffix
-should contain both the major and minor version (e.g.@: @code{rust-rand-0.6}).
+package to be used at any given time, so all package definitions should have a
+versioned suffix.  The versioned suffix is the left-most non-zero digit (and
+any leading zeros, of course).  This follows the ``caret'' version scheme
+intended by Cargo.  Examples@: @code{rust-clap-2}, @code{rust-rand-0.6}.
 
 Because of the difficulty in reusing rust packages as pre-compiled inputs for
 other packages the Cargo build system (@pxref{Build Systems,

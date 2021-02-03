@@ -164,7 +164,10 @@
                             "
 local	all	all			trust
 host	all	all	127.0.0.1/32 	trust
-host	all	all	::1/128 	trust"))))))
+host	all	all	::1/128 	trust"))
+               ;; XXX: Remove when postgresql default socket directory is
+               ;; changed to /var/run/postgresql.
+               (socket-directory #f)))))
    (service guix-data-service-type
             (guix-data-service-configuration
              (host "0.0.0.0")))

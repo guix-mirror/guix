@@ -19,10 +19,11 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
+;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages plotutils)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages pulseaudio)  ; libsndfile, libsamplerate
   #:use-module (gnu packages python)
@@ -428,17 +430,47 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
       (license (list license:gpl2+         ;for the utility itself
                      license:lgpl2.1+))))) ;for use as a library
 
+(define-public embree
+  (package
+    (name "embree")
+    (version "3.12.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/embree/embree")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0aznd16n7h8g3f6jcahzfp1dq4r7wayqvn03wsaskiq2dvsi4srd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no tests (apparently)
+       #:configure-flags
+         (list
+          "-DEMBREE_ISPC_SUPPORT=OFF")))
+    (inputs
+     `(("tbb" ,tbb)
+       ("glfw" ,glfw)))
+    (home-page "https://www.embree.org/")
+    (synopsis "High performance ray tracing kernels")
+    (description
+     "Embree is a collection of high-performance ray tracing kernels.
+Embree is meant to increase performance of photo-realistic rendering
+applications.")
+    (license license:asl2.0)))
+
 (define-public blender
   (package
     (name "blender")
-    (version "2.83.9")
+    (version "2.91.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "106w9vi6z0gi2nbr73g8pm40w3wn7dkjcibzvvzbc786yrnzvkhb"))))
+                "0x396lgmk0dq9115yrc36s8zwxzmjr490sr5n2y6w27y17yllyjm"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -507,10 +539,12 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
        ("freetype" ,freetype)
        ("glew" ,glew)
        ("openal" ,openal)
+       ("pugixml" ,pugixml)
        ("python" ,python)
        ("python-numpy" ,python-numpy)
        ("tbb" ,tbb)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("embree" ,embree)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
     (description
@@ -588,6 +622,7 @@ application can be customized via its API for Python scripting.")
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
        ("libx11" ,libx11)
+       ("opencolorio" ,opencolorio)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
@@ -602,6 +637,7 @@ application can be customized via its API for Python scripting.")
        ("freetype" ,freetype)
        ("glew" ,glew)
        ("openal" ,openal)
+       ("pugixml" ,pugixml)
        ("python" ,python)
        ("zlib" ,zlib)))
     (home-page "https://blender.org/")
@@ -1055,7 +1091,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "2.0.13")
+    (version "2.2.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1064,23 +1100,26 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0czcls82v71wkw1syib16ncg7463hx0py0xclycsiv4w6i3wlkzz"))))
+                "0wzh5n527l7ia1754cf9xmbvv4ya6hj34dy6cbq9xk9372h8gd9q"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
-    ;; https://github.com/OpenImageIO/oiio/blob/master/INSTALL
+    ;; <https://github.com/OpenImageIO/oiio/blob/master/INSTALL.md>
     (arguments
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:configure-flags (list "-DUSE_EXTERNAL_PUGIXML=1")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
+       ("fmt" ,fmt)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
+       ("pugixml" ,pugixml)
        ("python" ,python-wrapper)
        ("pybind11" ,pybind11)
        ("robin-map" ,robin-map)

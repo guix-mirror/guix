@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -24,19 +24,29 @@
 (define-module (gnu services cuirass)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages ci)
   #:use-module (gnu packages version-control)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services databases)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services admin)
   #:use-module (gnu system shadow)
-  #:export (<cuirass-configuration>
+  #:export (<cuirass-remote-server-configuration>
+            cuirass-remote-server-configuration
+            cuirass-remote-server-configuration?
+
+            <cuirass-configuration>
             cuirass-configuration
             cuirass-configuration?
+            cuirass-service-type
 
-            cuirass-service-type))
+            <cuirass-remote-worker-configuration>
+            cuirass-remote-worker-configuration
+            cuirass-remote-worker-configuration?
+            cuirass-remote-worker-service-type))
 
 ;;;; Commentary:
 ;;;
@@ -44,6 +54,27 @@
 ;;; continuous integration tool.
 ;;;
 ;;;; Code:
+
+(define %cuirass-default-database
+  "dbname=cuirass host=/var/run/postgresql")
+
+(define-record-type* <cuirass-remote-server-configuration>
+  cuirass-remote-server-configuration make-cuirass-remote-server-configuration
+  cuirass-remote-server-configuration?
+  (backend-port     cuirass-remote-server-configuration-backend-port ;int
+                    (default #f))
+  (publish-port     cuirass-remote-server-configuration-publish-port ;int
+                    (default #f))
+  (log-file         cuirass-remote-server-log-file ;string
+                    (default "/var/log/cuirass-remote-server.log"))
+  (cache            cuirass-remote-server-configuration-cache ;string
+                    (default "/var/cache/cuirass/remote/"))
+  (trigger-url      cuirass-remote-server-trigger-url ;string
+                    (default #f))
+  (public-key       cuirass-remote-server-configuration-public-key ;string
+                    (default #f))
+  (private-key      cuirass-remote-server-configuration-private-key ;string
+                    (default #f)))
 
 (define-record-type* <cuirass-configuration>
   cuirass-configuration make-cuirass-configuration
@@ -54,25 +85,18 @@
                     (default "/var/log/cuirass.log"))
   (web-log-file     cuirass-configuration-web-log-file ;string
                     (default "/var/log/cuirass-web.log"))
-  (queries-log-file cuirass-configuration-queries-log-file ;string
-                    (default #f))
-  (web-queries-log-file
-                    cuirass-configuration-web-queries-log-file ;string
-                    (default #f))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
                     (default "/var/cache/cuirass"))
-  (ttl              cuirass-configuration-ttl     ;integer
-                    (default (* 30 24 3600)))
   (user             cuirass-configuration-user ;string
                     (default "cuirass"))
   (group            cuirass-configuration-group ;string
                     (default "cuirass"))
   (interval         cuirass-configuration-interval ;integer (seconds)
                     (default 60))
-  (queue-size       cuirass-configuration-queue-size
-                    (default 1))
-  (database         cuirass-configuration-database ;string (file-name)
-                    (default "/var/lib/cuirass/cuirass.db"))
+  (remote-server    cuirass-configuration-remote-server
+                    (default #f))
+  (database         cuirass-configuration-database ;string
+                    (default %cuirass-default-database))
   (port             cuirass-configuration-port ;integer (port)
                     (default 8081))
   (host             cuirass-configuration-host ;string
@@ -94,15 +118,11 @@
         (cache-directory  (cuirass-configuration-cache-directory config))
         (web-log-file     (cuirass-configuration-web-log-file config))
         (log-file         (cuirass-configuration-log-file config))
-        (queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-                          (cuirass-configuration-web-queries-log-file config))
         (user             (cuirass-configuration-user config))
         (group            (cuirass-configuration-group config))
         (interval         (cuirass-configuration-interval config))
-        (queue-size       (cuirass-configuration-queue-size config))
+        (remote-server    (cuirass-configuration-remote-server config))
         (database         (cuirass-configuration-database config))
-        (ttl              (cuirass-configuration-ttl config))
         (port             (cuirass-configuration-port config))
         (host             (cuirass-configuration-host config))
         (specs            (cuirass-configuration-specifications config))
@@ -110,64 +130,95 @@
         (one-shot?        (cuirass-configuration-one-shot? config))
         (fallback?        (cuirass-configuration-fallback? config))
         (extra-options    (cuirass-configuration-extra-options config)))
-    (list (shepherd-service
-           (documentation "Run Cuirass.")
-           (provision '(cuirass))
-           (requirement '(guix-daemon networking))
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$cuirass "/bin/cuirass")
-                           "--cache-directory" #$cache-directory
-                           "--specifications"
-                           #$(scheme-file "cuirass-specs.scm" specs)
-                           "--database" #$database
-                           "--ttl" #$(string-append (number->string ttl) "s")
-                           "--interval" #$(number->string interval)
-                           "--queue-size" #$(number->string queue-size)
-                           #$@(if queries-log-file
-                                  (list (string-append "--log-queries="
-                                                       queries-log-file))
-                                  '())
-                           #$@(if use-substitutes? '("--use-substitutes") '())
-                           #$@(if one-shot? '("--one-shot") '())
-                           #$@(if fallback? '("--fallback") '())
-                           #$@extra-options)
+    `(,(shepherd-service
+        (documentation "Run Cuirass.")
+        (provision '(cuirass))
+        (requirement '(guix-daemon postgres networking))
+        (start #~(make-forkexec-constructor
+                  (list (string-append #$cuirass "/bin/cuirass")
+                        "--cache-directory" #$cache-directory
+                        "--specifications"
+                        #$(scheme-file "cuirass-specs.scm" specs)
+                        "--database" #$database
+                        "--interval" #$(number->string interval)
+                        #$@(if remote-server '("--build-remote") '())
+                        #$@(if use-substitutes? '("--use-substitutes") '())
+                        #$@(if one-shot? '("--one-shot") '())
+                        #$@(if fallback? '("--fallback") '())
+                        #$@extra-options)
 
-                     #:environment-variables
-                     (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
-                           (string-append "GIT_EXEC_PATH=" #$git
-                                          "/libexec/git-core"))
+                  #:environment-variables
+                  (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
+                        (string-append "GIT_EXEC_PATH=" #$git
+                                       "/libexec/git-core"))
 
-                     #:user #$user
-                     #:group #$group
-                     #:log-file #$log-file))
-           (stop #~(make-kill-destructor)))
-          (shepherd-service
-           (documentation "Run Cuirass web interface.")
-           (provision '(cuirass-web))
-           (requirement '(guix-daemon networking))
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$cuirass "/bin/cuirass")
-                           "--cache-directory" #$cache-directory
-                           "--specifications"
-                           #$(scheme-file "cuirass-specs.scm" specs)
-                           "--database" #$database
-                           "--ttl" #$(string-append (number->string ttl) "s")
-                           "--web"
-                           "--port" #$(number->string port)
-                           "--listen" #$host
-                           "--interval" #$(number->string interval)
-                           #$@(if web-queries-log-file
-                                  (list (string-append "--log-queries="
-                                                       web-queries-log-file))
-                                  '())
-                           #$@(if use-substitutes? '("--use-substitutes") '())
-                           #$@(if fallback? '("--fallback") '())
-                           #$@extra-options)
+                  #:user #$user
+                  #:group #$group
+                  #:log-file #$log-file))
+        (stop #~(make-kill-destructor)))
+      ,(shepherd-service
+        (documentation "Run Cuirass web interface.")
+        (provision '(cuirass-web))
+        (requirement '(guix-daemon postgres networking))
+        (start #~(make-forkexec-constructor
+                  (list (string-append #$cuirass "/bin/cuirass")
+                        "--cache-directory" #$cache-directory
+                        "--database" #$database
+                        "--web"
+                        "--port" #$(number->string port)
+                        "--listen" #$host
+                        "--interval" #$(number->string interval)
+                        #$@(if use-substitutes? '("--use-substitutes") '())
+                        #$@(if fallback? '("--fallback") '())
+                        #$@extra-options)
 
-                     #:user #$user
-                     #:group #$group
-                     #:log-file #$web-log-file))
-           (stop #~(make-kill-destructor))))))
+                  #:user #$user
+                  #:group #$group
+                  #:log-file #$web-log-file))
+        (stop #~(make-kill-destructor)))
+      ,@(if remote-server
+            (match-record remote-server <cuirass-remote-server-configuration>
+              (backend-port publish-port log-file cache trigger-url
+                            public-key private-key)
+              (list
+               (shepherd-service
+                (documentation "Run Cuirass remote build server.")
+                (provision '(cuirass-remote-server))
+                (requirement '(avahi-daemon cuirass guix-daemon networking))
+                (start #~(make-forkexec-constructor
+                          (list (string-append #$cuirass "/bin/remote-server")
+                                (string-append "--database=" #$database)
+                                (string-append "--cache=" #$cache)
+                                (string-append "--user=" #$user)
+                                #$@(if backend-port
+                                       (list (string-append
+                                              "--backend-port="
+                                              (number->string backend-port)))
+                                       '())
+                                #$@(if publish-port
+                                       (list (string-append
+                                              "--publish-port="
+                                              (number->string publish-port)))
+                                       '())
+                                #$@(if trigger-url
+                                       (list
+                                        (string-append
+                                         "--trigger-substitute-url="
+                                         trigger-url))
+                                       '())
+                                #$@(if public-key
+                                       (list
+                                        (string-append "--public-key="
+                                                       public-key))
+                                       '())
+                                #$@(if private-key
+                                       (list
+                                        (string-append "--private-key="
+                                                       private-key))
+                                       '()))
+                          #:log-file #$log-file))
+                (stop #~(make-kill-destructor)))))
+            '()))))
 
 (define (cuirass-account config)
   "Return the user accounts and user groups for CONFIG."
@@ -184,16 +235,24 @@
            (home-directory (string-append "/var/lib/" cuirass-user))
            (shell (file-append shadow "/sbin/nologin"))))))
 
+(define (cuirass-postgresql-role config)
+  (let ((user (cuirass-configuration-user config)))
+    (list (postgresql-role
+           (name user)
+           (create-database? #t)))))
+
 (define (cuirass-activation config)
   "Return the activation code for CONFIG."
-  (let ((cache (cuirass-configuration-cache-directory config))
-        (db    (dirname (cuirass-configuration-database config)))
-        (user  (cuirass-configuration-user config))
-        (log   "/var/log/cuirass")
-        (queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-         (cuirass-configuration-web-queries-log-file config))
-        (group (cuirass-configuration-group config)))
+  (let* ((cache          (cuirass-configuration-cache-directory config))
+         (remote-server  (cuirass-configuration-remote-server config))
+         (remote-cache   (and remote-server
+                              (cuirass-remote-server-configuration-cache
+                               remote-server)))
+         (db             (dirname
+                          (cuirass-configuration-database config)))
+         (user           (cuirass-configuration-user config))
+         (log            "/var/log/cuirass")
+         (group          (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
           (use-modules (guix build utils))
@@ -202,37 +261,24 @@
           (mkdir-p #$db)
           (mkdir-p #$log)
 
+          (when #$remote-cache
+            (mkdir-p #$remote-cache))
+
           (let ((uid (passwd:uid (getpw #$user)))
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
             (chown #$db uid gid)
             (chown #$log uid gid)
 
-            (let ((queries-log-file #$queries-log-file))
-              (when queries-log-file
-                (call-with-output-file queries-log-file (const #t))
-                (chown #$queries-log-file uid gid)))
-
-            (let ((web-queries-log-file #$web-queries-log-file))
-              (when web-queries-log-file
-                (call-with-output-file web-queries-log-file (const #t))
-                (chown web-queries-log-file uid gid))))))))
+            (when #$remote-cache
+              (chown #$remote-cache uid gid)))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
-  (let ((queries-log-file (cuirass-configuration-queries-log-file config))
-        (web-queries-log-file
-         (cuirass-configuration-web-queries-log-file config)))
-    (list (log-rotation
-           (files `(,(cuirass-configuration-log-file config)
-                    ,@(if queries-log-file
-                          (list queries-log-file)
-                          '())
-                    ,@(if web-queries-log-file
-                          (list web-queries-log-file)
-                          '())))
-           (frequency 'weekly)
-           (options '("rotate 40"))))))              ;worth keeping
+  (list (log-rotation
+         (files (list (cuirass-configuration-log-file config)))
+         (frequency 'weekly)
+         (options '("rotate 40")))))              ;worth keeping
 
 (define cuirass-service-type
   (service-type
@@ -244,7 +290,72 @@
      (service-extension rottlog-service-type cuirass-log-rotations)
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
-     (service-extension account-service-type cuirass-account)))
+     (service-extension account-service-type cuirass-account)
+     (service-extension postgresql-role-service-type
+                        cuirass-postgresql-role)))
    (description
     "Run the Cuirass continuous integration service.")))
 
+(define-record-type* <cuirass-remote-worker-configuration>
+  cuirass-remote-worker-configuration make-cuirass-remote-worker-configuration
+  cuirass-remote-worker-configuration?
+  (cuirass          cuirass-remote-worker-configuration-cuirass ;package
+                    (default cuirass))
+  (workers          cuirass-remote-worker-workers ;int
+                    (default 1))
+  (systems          cuirass-remote-worker-systems ;list
+                    (default (list (%current-system))))
+  (log-file         cuirass-remote-worker-log-file ;string
+                    (default "/var/log/cuirass-remote-worker.log"))
+  (publish-port     cuirass-remote-worker-configuration-publish-port ;int
+                    (default #f))
+  (public-key       cuirass-remote-worker-configuration-public-key ;string
+                    (default #f))
+  (private-key      cuirass-remote-worker-configuration-private-key ;string
+                    (default #f)))
+
+(define (cuirass-remote-worker-shepherd-service config)
+  "Return a <shepherd-service> for the Cuirass remote worker service with
+CONFIG."
+  (match-record config <cuirass-remote-worker-configuration>
+    (cuirass workers systems log-file publish-port public-key private-key)
+    (list (shepherd-service
+           (documentation "Run Cuirass remote build worker.")
+           (provision '(cuirass-remote-worker))
+           (requirement '(avahi-daemon guix-daemon networking))
+           (start #~(make-forkexec-constructor
+                     (list (string-append #$cuirass "/bin/remote-worker")
+                           (string-append "--workers="
+                                          #$(number->string workers))
+                           #$@(if systems
+                                  (list (string-append
+                                         "--systems="
+                                         (string-join systems ",")))
+                                  '())
+                           #$@(if publish-port
+                                  (list (string-append
+                                         "--publish-port="
+                                         (number->string publish-port)))
+                                  '())
+                           #$@(if public-key
+                                  (list
+                                   (string-append "--public-key="
+                                                  public-key))
+                                  '())
+                           #$@(if private-key
+                                  (list
+                                   (string-append "--private-key="
+                                                  private-key))
+                                  '()))
+                    #:log-file #$log-file))
+           (stop #~(make-kill-destructor))))))
+
+(define cuirass-remote-worker-service-type
+  (service-type
+   (name 'cuirass-remote-worker)
+   (extensions
+    (list
+     (service-extension shepherd-root-service-type
+                        cuirass-remote-worker-shepherd-service)))
+   (description
+    "Run the Cuirass remote build worker service.")))

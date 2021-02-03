@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;;
@@ -457,7 +457,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.1")
+    (version "4.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -465,7 +465,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "05rq5hkh2lmk8hall2h9ccaav0nw8fj7vd4aff5fyp2fiq3aybbg"))))
+                "14lprcv7xw6r19bmylcz4c1p1jfazmza2b4m48f3x7vmdv2sx5ln"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -714,6 +714,7 @@ different notification systems.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtwayland" ,qtwayland)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")
@@ -757,6 +758,40 @@ communicate with each other.  Here's a few things KDE Connect can do:
      "Kqtquickcharts is a QtQuick plugin to render beautiful and interactive
 charts.")
     (license license:lgpl2.1+)))
+
+(define-public kdf
+  (package
+    (name "kdf")
+    (version "20.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/"
+                                  version "/src/kdf-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ba67hs4vlb3qyvdzhnpmf8p62df12s8aqw4hzf9vnxff3qix5k1"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("kcmutils" ,kcmutils)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knotifications" ,knotifications)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/system/kdk")
+    (synopsis "View Disk Usage")
+    (description "KDiskFree displays the available file devices (hard drive
+partitions, floppy and CD drives, etc.) along with information on their
+capacity, free space, type and mount point.  It also allows you to mount and
+unmount drives and view them in a file manager.")
+    (license license:gpl2+)))
 
 (define-public kcachegrind
   (package
@@ -911,6 +946,33 @@ Python, PHP, and Perl.")
     (description
      "Okular is a document viewer developed for KDE.  It can display files in
 a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
+    (license license:gpl2+)))
+
+(define-public poxml
+  (package
+    (name "poxml")
+    (version "20.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://kde/stable/release-service/" version
+                              "/src/poxml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1smjvblx0jcv3afs2sr4qcmvhqd44iw24hvr9fppa3nxhrmjwmlk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
+    (inputs
+     `(("gettext" ,gettext-minimal)
+       ("qtbase" ,qtbase)))
+    (home-page "https://kde.org/applications/development")
+    (synopsis "Tools for translating DocBook XML files with Gettext")
+    (description "This is a collection of tools that facilitate translating
+DocBook XML files using Gettext message files (PO files).  Also included are
+several command-line utilities for manipulating DocBook XML files, PO files and
+PO template files.")
     (license license:gpl2+)))
 
 (define-public kdegraphics-mobipocket

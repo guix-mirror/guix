@@ -490,7 +490,7 @@ clone.")
 (define-public tsukundere
   (package
     (name "tsukundere")
-    (version "0.2.0")
+    (version "0.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -499,21 +499,47 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qmqch8hh7vsa8qaz853vwbkz0krb106955dnz8dsl7skbm5jpn6"))))
+                "05ckds2df810441wfavllx9lsw5jsc9h3nb7m31df01nsj56azdw"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-command
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (version (target-guile-effective-version))
+                    (scm (string-append out "/share/guile/site/"
+                                        version))
+                    (go (string-append out "/lib/guile/"
+                                       version "/site-ccache")))
+
+               (substitute* "bin/tsukundere"
+                 (("exec guile .*" all)
+                  (string-append
+                   (format #f "export GUILE_LOAD_PATH=~@?~%"
+                           "\"~a:~a\"" scm (getenv "GUILE_LOAD_PATH"))
+                   (format #f "export GUILE_LOAD_COMPILED_PATH=~@?~%"
+                           "\"~a:~a\"" go (getenv "GUILE_LOAD_COMPILED_PATH"))
+                   all)))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("guile" ,guile-3.0)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("guile-sdl2" ,guile3.0-sdl2)))
     (home-page "https://gitlab.com/leoprikler/tsukundere")
     (synopsis "Visual novel engine")
     (description "Tsukundere is a game engine geared heavily towards the
 development of visual novels, written on top of Guile-SDL2.  It is still
-experimental and at the time of writing contains little more than the Guile
-modules, that make up its runtime.")
+experimental.")
     (license license:lgpl3+)))
 
 (define-public sfml

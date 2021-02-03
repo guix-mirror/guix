@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -160,6 +160,7 @@
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/emoji-segmenter" ;ASL2.0
     "third_party/flatbuffers" ;ASL2.0
+    "third_party/fusejs" ;ASL2.0
     "third_party/glslang" ;BSD-3, Expat, ASL2.0
     "third_party/google_input_tools" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library" ;ASL2.0
@@ -277,6 +278,13 @@
     "third_party/woff2" ;ASL2.0
     "third_party/xcbproto" ;X11
     "third_party/xdg-utils" ;Expat
+
+    ;; These are forked components of the X11 keybinding code.
+    "third_party/libxcb-keysyms" ;X11
+    "third_party/libx11/src/KeyBind.c" ;X11
+    "third_party/libx11/src/xkb/XKBBind.c" ;X11
+    "third_party/x11proto/keysymdef.h" ;X11
+
     "third_party/zlib/google" ;BSD-3
     "third_party/zxcvbn-cpp" ;Expat
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
@@ -302,8 +310,8 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "87.0.4280.88")
-(define %ungoogled-revision "b78cb927fa8beaee0ddfb4385277edb96444c40f")
+(define %chromium-version "88.0.4324.104")
+(define %ungoogled-revision "4e2679ce15a53925b34a95aa3e1731751530dc22")
 (define %debian-revision "debian/84.0.4147.105-1")
 
 (define %debian-patches
@@ -321,7 +329,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0w2137w8hfcgl6f938hqnb4ffp33v5r8vdzxrvs814w7dszkiqgg"))))
+      "09x6kxd99a274mln3k3ckly6swyp5qdnkkp8p6grs9nr5jrgqqx5"))))
 
 (define %guix-patches
   (list (local-file
@@ -405,6 +413,22 @@
         `(cons "--enable-custom-modes"
                ,flags))))))
 
+;; WebRTC in Chromium 88 requires an unreleased version of libvpx.  Use the
+;; commit mentioned in "third_party/libvpx/README.chromium".
+(define libvpx/chromium
+  (package
+    (inherit libvpx)
+    (version "1.9.0-88-g12059d956")
+    (source (origin
+              (inherit (package-source libvpx))
+              (uri (git-reference
+                    (url "https://chromium.googlesource.com/webm/libvpx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "libvpx" version))
+              (sha256
+               (base32
+                "14knnvfaskfz97vs3lfqrdpcbcx22s6qp16213wdnvnsf4c1lx1b"))))))
+
 ;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
 ;; this trick to make it wrap 'lld'.
 (define (make-lld-wrapper lld)
@@ -443,7 +467,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1h09g9b2zxad85vd146ymvg3w2kpngpi78yig3dn1vrmhwr4aiiy"))
+                "0iq1rmfiqmxsj6skbi17g007zqgjsb50b59slfni2n4mz06xmgbx"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -579,6 +603,12 @@
              (substitute* (find-files "chrome" "\\.cc$")
                (("third_party/icu/source/(common|i18n)/")
                 ""))
+
+             ;; Fix faulty ICU call.  Likely fixed in M89.
+             (substitute*
+                 "third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc"
+               (("ideographicSpaceCharacter")
+                "kIdeographicSpaceCharacter"))
 
              ;; XXX: Should be unnecessary when use_system_lcms2=true.
              (substitute* "third_party/pdfium/core/fxcodec/icc/iccmodule.h"
@@ -805,14 +835,14 @@
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c-67)
+       ("icu4c" ,icu4c-68)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libva" ,libva)
-       ("libvpx" ,libvpx)
+       ("libvpx" ,libvpx/chromium)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)

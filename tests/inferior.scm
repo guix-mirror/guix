@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +71,18 @@
                     (match (inferior-exception-stack c)
                       (((_ (files lines columns)) ..1)
                        (member "guix/repl.scm" files)))
+                    (inferior-exception-arguments c))))
+      (inferior-eval '(throw 'a 'b 'c 'd) inferior)
+      'badness)))
+
+(test-equal "&inferior-exception, legacy mode"
+  '(a b c d)
+  ;; Omit #:command to open an inferior in "legacy" mode, where Guile runs
+  ;; directly.
+  (let ((inferior (open-inferior %top-builddir)))
+    (guard (c ((inferior-exception? c)
+               (close-inferior inferior)
+               (and (eq? inferior (inferior-exception-inferior c))
                     (inferior-exception-arguments c))))
       (inferior-eval '(throw 'a 'b 'c 'd) inferior)
       'badness)))
@@ -212,6 +224,26 @@
                                    (add-text-to-store store "we|rd/?!@"
                                                       "uh uh")))
       #f)))
+
+(test-equal "inferior-eval-with-store, exception"
+  '(the-answer = 42)
+  (let ((inferior (open-inferior %top-builddir
+                                 #:command "scripts/guix")))
+    (guard (c ((inferior-exception? c)
+               (close-inferior inferior)
+               (inferior-exception-arguments c)))
+      (inferior-eval-with-store inferior %store
+                                '(lambda (store)
+                                   (throw 'the-answer '= 42))))))
+
+(test-equal "inferior-eval-with-store, not a procedure"
+  'wrong-type-arg
+  (let ((inferior (open-inferior %top-builddir
+                                 #:command "scripts/guix")))
+    (guard (c ((inferior-exception? c)
+               (close-inferior inferior)
+               (car (inferior-exception-arguments c))))
+     (inferior-eval-with-store inferior %store '(+ 1 2)))))
 
 (test-equal "inferior-package-derivation"
   (map derivation-file-name

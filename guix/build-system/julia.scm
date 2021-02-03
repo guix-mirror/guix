@@ -75,13 +75,14 @@
 
 (define* (julia-build store name inputs
                       #:key source
-                      (tests? #f)
+                      (tests? #t)
                       (phases '(@ (guix build julia-build-system)
                                   %standard-phases))
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
                       (guile #f)
+                      (julia-package-name #f)
                       (imported-modules %julia-build-system-modules)
                       (modules '((guix build julia-build-system)
                                  (guix build utils))))
@@ -103,7 +104,8 @@
                     #:outputs %outputs
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
-                    #:inputs %build-inputs)))
+                    #:inputs %build-inputs
+                    #:julia-package-name ,julia-package-name)))
 
   (define guile-for-build
     (match guile

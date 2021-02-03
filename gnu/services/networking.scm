@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cluster)
   #:use-module (gnu packages connman)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
@@ -192,7 +194,11 @@
             yggdrasil-configuration-log-level
             yggdrasil-configuration-log-to
             yggdrasil-configuration-json-config
-            yggdrasil-configuration-package))
+            yggdrasil-configuration-package
+
+            keepalived-configuration
+            keepalived-configuration?
+            keepalived-service-type))
 
 ;;; Commentary:
 ;;;
@@ -277,7 +283,9 @@ fe80::1%lo0 apps.facebook.com\n")
                    (and (zero? (cdr (waitpid pid)))
                         (read-pid-file #$pid-file)))))
       (stop #~(make-kill-destructor))))
-   isc-dhcp))
+   isc-dhcp
+   (description "Run @command{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.")))
 
 (define-deprecated (dhcp-client-service #:key (dhcp isc-dhcp))
   dhcp-client-service-type
@@ -552,9 +560,7 @@ make an initial adjustment of more than 1,000 seconds."
   (constraint-from         openntpd-constraint-from
                            (default '()))
   (constraints-from        openntpd-constraints-from
-                           (default '()))
-  (allow-large-adjustment? openntpd-allow-large-adjustment?
-                           (default #f))) ; upstream default
+                           (default '())))
 
 (define (openntpd-configuration->string config)
 
@@ -586,8 +592,7 @@ make an initial adjustment of more than 1,000 seconds."
      "\n")))                              ;add a trailing newline
 
 (define (openntpd-shepherd-service config)
-  (let ((openntpd (openntpd-configuration-openntpd config))
-        (allow-large-adjustment? (openntpd-allow-large-adjustment? config)))
+  (let ((openntpd (openntpd-configuration-openntpd config)))
 
     (define ntpd.conf
       (plain-file "ntpd.conf" (openntpd-configuration->string config)))
@@ -599,10 +604,7 @@ make an initial adjustment of more than 1,000 seconds."
            (start #~(make-forkexec-constructor
                      (list (string-append #$openntpd "/sbin/ntpd")
                            "-f" #$ntpd.conf
-                           "-d" ;; don't daemonize
-                           #$@(if allow-large-adjustment?
-                                  '("-s")
-                                  '()))
+                           "-d") ;; don't daemonize
                      ;; When ntpd is daemonized it repeatedly tries to respawn
                      ;; while running, leading shepherd to disable it.  To
                      ;; prevent spamming stderr, redirect output to logfile.
@@ -1864,5 +1866,44 @@ See yggdrasil -genconf for config options.")
                              (const %yggdrasil-accounts))
           (service-extension profile-service-type
                              (compose list yggdrasil-configuration-package))))))
+
+
+;;;
+;;; Keepalived
+;;;
+
+(define-record-type* <keepalived-configuration>
+  keepalived-configuration make-keepalived-configuration
+  keepalived-configuration?
+  (keepalived  keepalived-configuration-keepalived  ;<package>
+               (default keepalived))
+  (config-file keepalived-configuration-config-file ;file-like
+               (default #f)))
+
+(define keepalived-shepherd-service
+  (match-lambda
+    (($ <keepalived-configuration> keepalived config-file)
+     (list
+      (shepherd-service
+       (provision '(keepalived))
+       (documentation "Run keepalived.")
+       (requirement '(loopback))
+       (start #~(make-forkexec-constructor
+                 (list (string-append #$keepalived "/sbin/keepalived")
+                       "--dont-fork" "--log-console" "--log-detail"
+                       "--pid=/var/run/keepalived.pid"
+                       (string-append "--use-file=" #$config-file))
+                 #:pid-file "/var/run/keepalived.pid"
+                 #:log-file "/var/log/keepalived.log"))
+       (respawn? #f)
+       (stop #~(make-kill-destructor)))))))
+
+(define keepalived-service-type
+  (service-type (name 'keepalived)
+                (extensions (list (service-extension shepherd-root-service-type
+                                                     keepalived-shepherd-service)))
+                (description
+                 "Run @uref{https://www.keepalived.org/, Keepalived}
+routing software.")))
 
 ;;; networking.scm ends here

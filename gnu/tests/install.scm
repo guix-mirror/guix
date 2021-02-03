@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
             %test-encrypted-root-not-boot-os
             %test-btrfs-root-os
             %test-btrfs-root-on-subvolume-os
+            %test-btrfs-raid-root-os
             %test-jfs-root-os
             %test-f2fs-root-os
             %test-lvm-separate-home-os
@@ -222,7 +224,7 @@ reboot\n")
                            #:imported-modules '((gnu services herd)
                                                 (gnu installer tests)
                                                 (guix combinators))))
-                      (installation-image-type 'raw)
+                      (installation-image-type 'efi-raw)
                       (install-size 'guess)
                       (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the system installation procedure) in
@@ -272,7 +274,7 @@ packages defined in installation-os."
                  "-no-reboot"
                  "-m" "1200"
                  #$@(cond
-                     ((eq? 'raw installation-image-type)
+                     ((eq? 'efi-raw installation-image-type)
                       #~("-drive"
                          ,(string-append "file=" #$image
                                          ",if=virtio,readonly")))
@@ -1058,6 +1060,74 @@ build (current-guix) and then store a couple of full system images.")
                                                %btrfs-root-installation-script))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %btrfs-root-os command "btrfs-root-os")))))
+
+
+
+;;;
+;;; Btrfs RAID-0 root file system.
+;;;
+(define-os-with-source (%btrfs-raid-root-os %btrfs-raid-root-os-source)
+  ;; An OS whose root partition is a RAID partition.
+  (use-modules (gnu) (gnu tests))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.utf8")
+
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+
+    (file-systems (cons (file-system
+                          (device (file-system-label "root-fs"))
+                          (mount-point "/")
+                          (type "btrfs"))
+                        %base-file-systems))
+    (users %base-user-accounts)
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %btrfs-raid-root-installation-script
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 1.4G \\
+  mkpart primary ext2 1.4G 2.8G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.btrfs -L root-fs -d raid0 -m raid0 /dev/vdb2 /dev/vdb3
+mount /dev/vdb2 /mnt
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-btrfs-raid-root-os
+  (system-test
+   (name "btrfs-raid-root-os")
+   (description "Test functionality of an OS installed with a Btrfs
+RAID-0 (stripe) root partition.")
+   (value
+    (mlet* %store-monad
+        ((image (run-install %btrfs-raid-root-os
+                             %btrfs-raid-root-os-source
+                             #:script %btrfs-raid-root-installation-script
+                             #:target-size (* 2800 MiB)))
+         (command (qemu-command/writable-image image)))
+      (run-basic-test %btrfs-raid-root-os `(,@command) "btrfs-raid-root-os")))))
 
 
 ;;;

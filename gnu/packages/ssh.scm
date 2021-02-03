@@ -2,9 +2,9 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
@@ -200,7 +201,9 @@ a server that supports the SSH-2 protocol.")
                     ("pkg-config" ,pkg-config)))
    (inputs `(("libedit" ,libedit)
              ("openssl" ,openssl)
-             ("pam" ,linux-pam)
+             ,@(if (hurd-target?)
+                 '()
+                 `(("pam" ,linux-pam)))
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
              ("xauth" ,xauth)))        ; for 'ssh -X' and 'ssh -Y'
@@ -223,7 +226,9 @@ a server that supports the SSH-2 protocol.")
                           "--with-libedit"
 
                           ;; Enable PAM support in sshd.
-                          "--with-pam"
+                          ,,@(if (hurd-target?)
+                               '()
+                               '("--with-pam"))
 
                           ;; "make install" runs "install -s" by default,
                           ;; which doesn't work for cross-compiled binaries
@@ -666,18 +671,17 @@ manipulating key files.")
 (define-public sshpass
   (package
     (name "sshpass")
-    (version "1.06")
-    (synopsis "Non-interactive password authentication with SSH")
-    (home-page "https://sourceforge.net/projects/sshpass/")
+    (version "1.09")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sshpass/sshpass/"
                            version "/sshpass-" version ".tar.gz"))
        (sha256
-        (base32
-         "0q7fblaczb7kwbsz0gdy9267z0sllzgmf0c7z5c9mf88wv74ycn6"))))
+        (base32 "1dwzqknpswa8vjlbwsx9rcq1j2a7px9h9i2anh09pzkz0mg6wx3i"))))
     (build-system gnu-build-system)
+    (home-page "https://sourceforge.net/projects/sshpass/")
+    (synopsis "Non-interactive password authentication with SSH")
     (description "sshpass is a tool for non-interactively performing password
 authentication with SSH's so-called @dfn{interactive keyboard password
 authentication}.")

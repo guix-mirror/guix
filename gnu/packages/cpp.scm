@@ -14,7 +14,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
-;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,6 +49,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -62,6 +63,74 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
+
+(define-public range-v3
+  (package
+    (name "range-v3")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ericniebler/range-v3.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "18230bg4rq9pmm5f8f65j444jpq56rld4fhmpham8q3vr1c1bdjh"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("perl" ,perl)))
+    (inputs
+     `(("boost" ,boost)))
+    (synopsis "Range library for C++14/17/20")
+    (description "Range-v3 is an extension of the Standard Template Library that
+makes its iterators and algorithms more powerful by making them composable.
+Unlike other range-like solutions which, seek to do away with iterators, in
+range-v3 ranges are an abstration layer on top of iterators.")
+    (home-page "https://github.com/ericniebler/range-v3/")
+    (license
+     (list
+      ;; Elements of Programming
+      (license:x11-style "file:///LICENSE.txt")
+      ;; SGI STL
+      license:sgifreeb2.0
+      ;;; LibC++ (dual-licensed)
+      license:expat
+      license:ncsa
+      ;; Others
+      license:boost1.0))))
+
+(define-public c++-gsl
+  (package
+    (name "c++-gsl")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/microsoft/GSL.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (patches
+        (search-patches
+         "c++-gsl-find-system-gtest.patch"))
+       (sha256
+        (base32 "0gbvr48f03830g3154bjhw92b8ggmg6wwh5xyb8nppk9v6w752l0"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guidelines Support Library")
+    (description "c++-gsl contains functions and types that are suggested for
+use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
+    (home-page "https://github.com/microsoft/GSL/")
+    (license license:expat)))
 
 (define-public libzen
   (package
@@ -689,7 +758,7 @@ standard GNU style syntax for options.")
 (define-public folly
   (package
     (name "folly")
-    (version "2020.10.05.00")
+    (version "2021.01.25.00")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -698,7 +767,7 @@ standard GNU style syntax for options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q4w4cvjxffc462hvs8h4zryq4965j7015zvkwagcm6cj6wmz3cn"))))
+                "14dl1g6vf7mc90mcync5h2lp14fwcx8n9h91pmiq6rfgv1fjjrwz"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests must be explicitly enabled
@@ -808,3 +877,25 @@ code will be mixed in with the actual programming logic.  This implementation
 provides a number of utilities to make coding with expected cleaner.")
     (home-page "https://tl.tartanllama.xyz/")
     (license license:cc0)))
+
+(define-public magic-enum
+  (package
+    (name "magic-enum")
+    (version "0.7.2")
+    (home-page "https://github.com/Neargye/magic_enum")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07j5zdf3vkliwrcv6k663k35akn7qp23794sz2mnvkj9hbv9s8cx"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gcc" ,gcc-9)))
+    (synopsis "C++17 header only library for compile time reflection of enums")
+    (description "Magic Enum offers static reflection of enums, with
+conversions to and from strings, iteration and related functionality.")
+    (license license:expat)))

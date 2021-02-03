@@ -30,7 +30,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -45,7 +45,7 @@
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
-;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -1479,7 +1479,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.29")
+    (version "0.8.37")
     (source
      (origin
        (method git-fetch)
@@ -1488,7 +1488,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "142gc21aaqmx0d01vmqsg7zi85pjgi3higr4ba0m52qf3mvxd6as"))
+        (base32 "0c98w2y4y9jaj2wv0334xwdbsvsi5hfh9jdkqr7ffz8lxhmh610f"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3994,7 +3994,7 @@ is limited to http and https.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.19")
+    (version "6.20")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -4002,7 +4002,7 @@ is limited to http and https.")
                    "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "1i1gbcwdzx74whn5vn6xbr2cp7frldfz2rfrcjp2qljr770nxdsj"))))
+               "07lzfycza7qqxli18xgsnqwiwxapl0b64z33wfw62aai4hm7nllj"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -4632,8 +4632,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "e3878fefb4184f3ad45a6e6f434767c0bf109db8")
-        (revision "23"))
+  (let ((commit "060df92557d5a32dbd3ae4a32c2c5725cd53e09b")
+        (revision "24"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4645,7 +4645,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0002ckayjnd6mw7a0m7q307jdwc9vsjgiidp72463xyp0yrnjdjf"))))
+                  "0ggwslwm041gkd0i45xhvnalxrhjaj4da27p5wrpknrhpa4ipf6v"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -6501,7 +6501,7 @@ collection creation and deletion, and locking operations.")
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-parser" ,rust-ansi-parser-0.6)
-        ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-dirs" ,rust-dirs-2)
         ("rust-gdk" ,rust-gdk-0.13)
         ("rust-gtk" ,rust-gtk-0.8)
         ("rust-linkify" ,rust-linkify-0.4)
@@ -8004,3 +8004,41 @@ handling library written in C89 (\"ANSI C\").  uriparser is fast and supports
 Unicode.")
       (home-page "https://uriparser.github.io/")
       (license license:bsd-3))))
+
+(define-public quark
+  ;; No releases yet
+  (let ((revision "0")
+        (commit "c6a9055e5a30be570e30da8d216c39662c3a3f99"))
+    (package
+      (name "quark")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.suckless.org/quark/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1znvnr30xi5vgd6n3wvgv9pwj992zpzzjk0fmq28ydf1l6kqvkm7"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; no configure script
+      (home-page "https://tools.suckless.org/quark/")
+      (synopsis "Small and simple HTTP GET/HEAD-only web server for static
+content")
+      (description "Quark is an extremely small and simple HTTP GET/HEAD only
+web server for static content.  TLS is not natively supported and should be
+provided by a TLS reverse proxy (e.g. tlstunnel, hitch or stunnel).")
+      (license license:isc)
+
+      ;; XXX: Ignore this CVE to work around a name clash with the unrelated
+      ;; "cpe:2.3:a:comelz:quark" package.  The proper fix is for (guix cve)
+      ;; to account for "vendor names".
+      (properties '((lint-hidden-cve . ("CVE-2019-15520")))))))

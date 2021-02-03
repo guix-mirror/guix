@@ -43,6 +43,7 @@
             postgresql-config-file-log-destination
             postgresql-config-file-hba-file
             postgresql-config-file-ident-file
+            postgresql-config-file-socket-directory
             postgresql-config-file-extra-config
 
             postgresql-configuration
@@ -51,10 +52,23 @@
             postgresql-configuration-port
             postgresql-configuration-locale
             postgresql-configuration-file
+            postgresql-configuration-log-directory
             postgresql-configuration-data-directory
 
             postgresql-service
             postgresql-service-type
+
+            postgresql-role
+            postgresql-role?
+            postgresql-role-name
+            postgresql-role-permissions
+            postgresql-role-create-database?
+            postgresql-role-configuration
+            postgresql-role-configuration?
+            postgresql-role-configuration-host
+            postgresql-role-configuration-roles
+
+            postgresql-role-service-type
 
             memcached-service-type
             memcached-configuration
@@ -101,36 +115,48 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-config-file>
   postgresql-config-file make-postgresql-config-file
   postgresql-config-file?
-  (log-destination postgresql-config-file-log-destination
-                   (default "syslog"))
-  (hba-file        postgresql-config-file-hba-file
-                   (default %default-postgres-hba))
-  (ident-file      postgresql-config-file-ident-file
-                   (default %default-postgres-ident))
-  (extra-config    postgresql-config-file-extra-config
-                   (default '())))
+  (log-destination   postgresql-config-file-log-destination
+                     (default "syslog"))
+  (hba-file          postgresql-config-file-hba-file
+                     (default %default-postgres-hba))
+  (ident-file        postgresql-config-file-ident-file
+                     (default %default-postgres-ident))
+  (socket-directory  postgresql-config-file-socket-directory
+                     (default "/var/run/postgresql"))
+  (extra-config      postgresql-config-file-extra-config
+                     (default '())))
 
 (define-gexp-compiler (postgresql-config-file-compiler
                        (file <postgresql-config-file>) system target)
   (match file
     (($ <postgresql-config-file> log-destination hba-file
-                                 ident-file extra-config)
-     (define (single-quote string)
-       (if string
-           (list "'" string "'")
-           '()))
+                                 ident-file socket-directory
+                                 extra-config)
+     ;; See: https://www.postgresql.org/docs/current/config-setting.html.
+    (define (format-value value)
+      (cond
+       ((boolean? value)
+        (list (if value "on" "off")))
+       ((number? value)
+        (list (number->string value)))
+       (else
+        (list "'" value "'"))))
 
-     (define contents
-       (append-map
-        (match-lambda
-          ((key) '())
-          ((key . #f) '())
-          ((key values ...) `(,key " = " ,@values "\n")))
+    (define contents
+      (append-map
+       (match-lambda
+         ((key) '())
+         ((key . #f) '())
+         ((key values ...)
+          `(,key " = " ,@(append-map format-value values) "\n")))
 
-        `(("log_destination" ,@(single-quote log-destination))
-          ("hba_file" ,@(single-quote hba-file))
-          ("ident_file" ,@(single-quote ident-file))
-          ,@extra-config)))
+       `(("log_destination" ,log-destination)
+         ("hba_file" ,hba-file)
+         ("ident_file" ,ident-file)
+         ,@(if socket-directory
+               `(("unix_socket_directories" ,socket-directory))
+               '())
+         ,@extra-config)))
 
      (gexp->derivation
       "postgresql.conf"
@@ -151,6 +177,8 @@ host	all	all	::1/128 	md5"))
                       (default "en_US.utf8"))
   (config-file        postgresql-configuration-file
                       (default (postgresql-config-file)))
+  (log-directory      postgresql-configuration-log-directory
+                      (default "/var/log/postgresql"))
   (data-directory     postgresql-configuration-data-directory
                       (default "/var/lib/postgresql/data"))
   (extension-packages postgresql-configuration-extension-packages
@@ -178,7 +206,9 @@ host	all	all	::1/128 	md5"))
          #:builder
          (begin
            (use-modules (guix build utils) (guix build union) (srfi srfi-26))
-           (union-build (assoc-ref %outputs "out") (map (lambda (input) (cdr input)) %build-inputs))
+           (union-build (assoc-ref %outputs "out")
+                        (map (lambda (input) (cdr input))
+                             %build-inputs))
            #t)))
       (inputs
        `(("postgresql" ,postgresql)
@@ -187,15 +217,18 @@ host	all	all	::1/128 	md5"))
 
 (define postgresql-activation
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory
-        extension-packages)
+    (($ <postgresql-configuration> postgresql port locale config-file
+                                   log-directory data-directory
+                                   extension-packages)
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match))
 
          (let ((user (getpwnam "postgres"))
-               (initdb (string-append #$(final-postgresql postgresql extension-packages)
-                                      "/bin/initdb"))
+               (initdb (string-append
+                        #$(final-postgresql postgresql
+                                            extension-packages)
+                        "/bin/initdb"))
                (initdb-args
                 (append
                  (if #$locale
@@ -204,6 +237,18 @@ host	all	all	::1/128 	md5"))
            ;; Create db state directory.
            (mkdir-p #$data-directory)
            (chown #$data-directory (passwd:uid user) (passwd:gid user))
+
+           ;; Create the socket directory.
+           (let ((socket-directory
+                  #$(postgresql-config-file-socket-directory config-file)))
+             (when (string? socket-directory)
+               (mkdir-p socket-directory)
+               (chown socket-directory (passwd:uid user) (passwd:gid user))))
+
+           ;; Create the log directory.
+           (when (string? #$log-directory)
+             (mkdir-p #$log-directory)
+             (chown #$log-directory (passwd:uid user) (passwd:gid user)))
 
            ;; Drop privileges and init state directory in a new
            ;; process.  Wait for it to finish before proceeding.
@@ -227,8 +272,9 @@ host	all	all	::1/128 	md5"))
 
 (define postgresql-shepherd-service
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory
-        extension-packages)
+    (($ <postgresql-configuration> postgresql port locale config-file
+                                   log-directory data-directory
+                                   extension-packages)
      (let* ((pg_ctl-wrapper
              ;; Wrapper script that switches to the 'postgres' user before
              ;; launching daemon.
@@ -240,13 +286,21 @@ host	all	all	::1/128 	md5"))
                   (match (command-line)
                     ((_ mode)
                      (let ((user (getpwnam "postgres"))
-                           (pg_ctl #$(file-append (final-postgresql postgresql extension-packages)
+                           (pg_ctl #$(file-append
+                                      (final-postgresql postgresql
+                                                        extension-packages)
                                                   "/bin/pg_ctl"))
                            (options (format #f "--config-file=~a -p ~d"
                                             #$config-file #$port)))
                        (setgid (passwd:gid user))
                        (setuid (passwd:uid user))
-                       (execl pg_ctl pg_ctl "-D" #$data-directory "-o" options
+                       (execl pg_ctl pg_ctl "-D" #$data-directory
+                              #$@(if (string? log-directory)
+                                     (list "-l"
+                                           (string-append log-directory
+                                                          "/pg_ctl.log"))
+                                     '())
+                              "-o" options
                               mode)))))))
             (pid-file (in-vicinity data-directory "postmaster.pid"))
             (action (lambda args
@@ -266,25 +320,29 @@ host	all	all	::1/128 	md5"))
               (stop (action "stop"))))))))
 
 (define postgresql-service-type
-  (service-type (name 'postgresql)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          postgresql-shepherd-service)
-                       (service-extension activation-service-type
-                                          postgresql-activation)
-                       (service-extension account-service-type
-                                          (const %postgresql-accounts))
-                       (service-extension profile-service-type
-                                          (compose list postgresql-configuration-postgresql))))))
+  (service-type
+   (name 'postgresql)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             postgresql-shepherd-service)
+          (service-extension activation-service-type
+                             postgresql-activation)
+          (service-extension account-service-type
+                             (const %postgresql-accounts))
+          (service-extension
+           profile-service-type
+           (compose list postgresql-configuration-postgresql))))))
 
 (define-deprecated (postgresql-service #:key (postgresql postgresql)
                                        (port 5432)
                                        (locale "en_US.utf8")
                                        (config-file (postgresql-config-file))
-                                       (data-directory "/var/lib/postgresql/data")
+                                       (data-directory
+                                        "/var/lib/postgresql/data")
                                        (extension-packages '()))
   postgresql-service-type
-  "Return a service that runs @var{postgresql}, the PostgreSQL database server.
+  "Return a service that runs @var{postgresql}, the PostgreSQL database
+server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}
 and stores the database cluster in @var{data-directory}."
@@ -296,6 +354,96 @@ and stores the database cluster in @var{data-directory}."
             (config-file config-file)
             (data-directory data-directory)
             (extension-packages extension-packages))))
+
+(define-record-type* <postgresql-role>
+  postgresql-role make-postgresql-role
+  postgresql-role?
+  (name             postgresql-role-name) ;string
+  (permissions      postgresql-role-permissions
+                    (default '(createdb login))) ;list
+  (create-database? postgresql-role-create-database?  ;boolean
+                    (default #f)))
+
+(define-record-type* <postgresql-role-configuration>
+  postgresql-role-configuration make-postgresql-role-configuration
+  postgresql-role-configuration?
+  (host             postgresql-role-configuration-host ;string
+                    (default "/var/run/postgresql"))
+  (log              postgresql-role-configuration-log ;string
+                    (default "/var/log/postgresql_roles.log"))
+  (roles            postgresql-role-configuration-roles
+                    (default '()))) ;list
+
+(define (postgresql-create-roles config)
+  ;; See: https://www.postgresql.org/docs/current/sql-createrole.html for the
+  ;; complete permissions list.
+  (define (format-permissions permissions)
+    (let ((dict '(bypassrls createdb createrole login replication superuser)))
+      (string-join (filter-map (lambda (permission)
+                                 (and (member permission dict)
+                                      (string-upcase
+                                       (symbol->string permission))))
+                               permissions)
+                   " ")))
+
+  (define (roles->queries roles)
+    (apply mixed-text-file "queries"
+           (append-map
+            (lambda (role)
+              (match-record role <postgresql-role>
+                (name permissions create-database?)
+                `("SELECT NOT(EXISTS(SELECT 1 FROM pg_catalog.pg_roles WHERE \
+rolname = '" ,name "')) as not_exists;\n"
+"\\gset\n"
+"\\if :not_exists\n"
+"CREATE ROLE " ,name
+" WITH " ,(format-permissions permissions)
+";\n"
+,@(if create-database?
+      `("CREATE DATABASE " ,name
+        " OWNER " ,name ";\n")
+      '())
+"\\endif\n")))
+            roles)))
+
+  (let ((host (postgresql-role-configuration-host config))
+        (roles (postgresql-role-configuration-roles config)))
+    (program-file
+     "postgresql-create-roles"
+     #~(begin
+         (let ((psql #$(file-append postgresql "/bin/psql")))
+           (execl psql psql "-a"
+                  "-h" #$host
+                  "-f" #$(roles->queries roles)))))))
+
+(define (postgresql-role-shepherd-service config)
+  (match-record config <postgresql-role-configuration>
+    (log)
+    (list (shepherd-service
+           (requirement '(postgres))
+           (provision '(postgres-roles))
+           (one-shot? #t)
+           (start #~(make-forkexec-constructor
+                     (list #$(postgresql-create-roles config))
+                     #:user "postgres" #:group "postgres"
+                     #:log-file #$log))
+           (documentation "Create PostgreSQL roles.")))))
+
+(define postgresql-role-service-type
+  (service-type (name 'postgresql-role)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          postgresql-role-shepherd-service)))
+                (compose concatenate)
+                (extend (lambda (config extended-roles)
+                          (match-record config <postgresql-role-configuration>
+                            (host roles)
+                            (postgresql-role-configuration
+                             (host host)
+                             (roles (append roles extended-roles))))))
+                (default-value (postgresql-role-configuration))
+                (description "Ensure the specified PostgreSQL roles are
+created after the PostgreSQL database is started.")))
 
 
 ;;;

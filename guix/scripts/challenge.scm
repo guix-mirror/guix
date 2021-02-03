@@ -28,6 +28,7 @@
   #:use-module ((guix progress) #:hide (dump-port*))
   #:use-module (guix serialization)
   #:use-module (guix scripts substitute)
+  #:use-module (guix narinfo)
   #:use-module (rnrs bytevectors)
   #:autoload   (guix http-client) (http-fetch)
   #:use-module ((guix build syscalls) #:select (terminal-columns))

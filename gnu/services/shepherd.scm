@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,12 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (shepherd-root-service-type
+  #:export (shepherd-configuration
+            shepherd-configuration?
+            shepherd-configuration-shepherd
+            shepherd-configuration-services
+
+            shepherd-root-service-type
             %shepherd-root-service
             shepherd-service-type
 
@@ -76,7 +82,18 @@
 ;;; Code:
 
 
-(define (shepherd-boot-gexp services)
+(define-record-type* <shepherd-configuration>
+  shepherd-configuration make-shepherd-configuration
+  shepherd-configuration?
+  (shepherd shepherd-configuration-shepherd
+            (default shepherd)) ; package
+  (services shepherd-configuration-services
+            (default '()))) ; list of <shepherd-service>
+
+(define (shepherd-boot-gexp config)
+  "Return a gexp starting the shepherd service."
+  (let ((shepherd (shepherd-configuration-shepherd config))
+        (services (shepherd-configuration-services config)))
   #~(begin
       ;; Keep track of the booted system.
       (false-if-exception (delete-file "/run/booted-system"))
@@ -95,7 +112,10 @@
       ;; Start shepherd.
       (execl #$(file-append shepherd "/bin/shepherd")
              "shepherd" "--config"
-             #$(shepherd-configuration-file services))))
+             #$(shepherd-configuration-file services shepherd)))))
+
+(define shepherd-packages
+  (compose list shepherd-configuration-shepherd))
 
 (define shepherd-root-service-type
   (service-type
@@ -103,39 +123,46 @@
    ;; Extending the root shepherd service (aka. PID 1) happens by
    ;; concatenating the list of services provided by the extensions.
    (compose concatenate)
-   (extend append)
+   (extend (lambda (config extra-services)
+             (shepherd-configuration
+               (inherit config)
+               (services (append (shepherd-configuration-services config)
+                                 extra-services)))))
    (extensions (list (service-extension boot-service-type
                                         shepherd-boot-gexp)
                      (service-extension profile-service-type
-                                        (const (list shepherd)))))
+                                        shepherd-packages)))
+   (default-value (shepherd-configuration))
    (description
     "Run the GNU Shepherd as PID 1---i.e., the operating system's first
 process.  The Shepherd takes care of managing services such as daemons by
 ensuring they are started and stopped in the right order.")))
 
 (define %shepherd-root-service
-  ;; The root shepherd service, aka. PID 1.  Its parameter is a list of
-  ;; <shepherd-service> objects.
-  (service shepherd-root-service-type '()))
+  ;; The root shepherd service, aka. PID 1.  Its parameter is a
+  ;; <shepherd-configuration>.
+  (service shepherd-root-service-type))
 
 (define-syntax shepherd-service-type
-  (syntax-rules ()
+  (syntax-rules (description)
     "Return a <service-type> denoting a simple shepherd service--i.e., the type
 for a service that extends SHEPHERD-ROOT-SERVICE-TYPE and nothing else.  When
 DEFAULT is given, use it as the service's default value."
-    ((_ service-name proc default)
+    ((_ service-name proc default (description text))
      (service-type
       (name service-name)
       (extensions
        (list (service-extension shepherd-root-service-type
                                 (compose list proc))))
-      (default-value default)))
-    ((_ service-name proc)
+      (default-value default)
+      (description text)))
+    ((_ service-name proc (description text))
      (service-type
       (name service-name)
       (extensions
        (list (service-extension shepherd-root-service-type
-                                (compose list proc))))))))
+                                (compose list proc))))
+      (description text)))))
 
 (define %default-imported-modules
   ;; Default set of modules imported for a service's consumption.
@@ -268,9 +295,9 @@ stored."
                                    #~(#$name #$doc #$proc)))
                                 (shepherd-service-actions service))))))))
 
-(define (scm->go file)
+(define (scm->go file shepherd)
   "Compile FILE, which contains code to be loaded by shepherd's config file,
-and return the resulting '.go' file."
+and return the resulting '.go' file. SHEPHERD is used as shepherd package."
   (let-system (system target)
     (with-extensions (list shepherd)
       (computed-file (string-append (basename (scheme-file-name file) ".scm")
@@ -292,11 +319,13 @@ and return the resulting '.go' file."
                      #:options '(#:local-build? #t
                                  #:substitutable? #f)))))
 
-(define (shepherd-configuration-file services)
-  "Return the shepherd configuration file for SERVICES."
+(define (shepherd-configuration-file services shepherd)
+  "Return the shepherd configuration file for SERVICES.  SHEPHERD is used
+as shepherd package."
   (assert-valid-graph services)
 
-  (let ((files (map shepherd-service-file services)))
+  (let ((files (map shepherd-service-file services))
+        (scm->go (cute scm->go <> shepherd)))
     (define config
       #~(begin
           (use-modules (srfi srfi-34)

@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Evgeny Pisemsky <evgeny@pisemsky.com>
+;;; Copyright © 2021 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,17 +28,23 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -129,6 +136,45 @@ calibrated, and restored when the calibration is applied.")
       (description "edid-decode decodes @dfn{EDID} monitor description data in
 human-readable format and checks if it conforms to the standards.")
       (license license:expat))))
+
+(define-public libsmbios
+  (package
+    (name "libsmbios")
+    (version "2.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url (string-append "https://github.com/dell/" name))
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0krwwydyvb9224r884y1mlmzyxhlfrcqw73vi1j8787rl0gl5a2i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("python" ,python)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (synopsis "Library for interacting with Dell SMBIOS tables")
+    (description
+     "libsmbios provides a library to interface with the SMBIOS tables.  It
+also provides extensions for proprietary methods of interfacing with Dell
+specific SMBIOS tables.")
+    (home-page "https://github.com/dell/libsmbios")
+    (license
+     (list license:osl2.1 license:gpl2+ license:bsd-3 license:boost1.0))))
 
 ;; Distinct from memtest86, which is obsolete.
 (define-public memtest86+
@@ -498,3 +544,31 @@ screens.  It displays various patterns and allows you to estimate the quality
 of your CRT/LCD monitor.")
     (home-page "https://github.com/TobiX/screentest")
     (license license:gpl2)))
+
+(define-public tpm2-tss
+  (package
+    (name "tpm2-tss")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tpm2-software/tpm2-tss"
+                           "/releases/download/" version "/tpm2-tss-" version
+                           ".tar.gz"))
+       (sha256
+        (base32 "05xynpwq851fp8f5fy7ac0blvz8mr5m5cbqj3gslgbwv63kjnfbq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("json-c" ,json-c)
+       ("openssl" ,openssl)))
+    (home-page "https://tpm2-software.github.io/")
+    (synopsis "OSS Implementation of the TCG TPM2 Software Stack (TSS2)")
+    (description
+     "This package provides the @acronym{TCG, Trusted Computing Group}
+@acronym{TSS2, TPM2 Software Stack}.  The stack contains libtss2-fapi,
+libtss2-esys, libtss2-sys, libtss2-mu, libtss2-tcti-device, libtss2-tcti-swtpm
+and libtss2-tcti-mssim.")
+    (license license:bsd-2)))

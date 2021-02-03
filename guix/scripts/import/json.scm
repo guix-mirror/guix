@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,8 +89,13 @@ Import and convert the JSON package definition in PACKAGE-FILE.\n"))
                            (reverse opts))))
     (match args
       ((file-name)
-       (or (json->code file-name)
-           (leave (G_ "invalid JSON in file '~a'~%") file-name)))
+       (catch 'system-error
+         (lambda ()
+           (or (json->code file-name)
+               (leave (G_ "invalid JSON in file '~a'~%") file-name)))
+         (lambda args
+           (leave (G_ "failed to access '~a': ~a~%")
+                  file-name (strerror (system-error-errno args))))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

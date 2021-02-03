@@ -83,7 +83,7 @@
         ("rust-colored" ,rust-colored-1.9.1)
         ("rust-crossterm" ,rust-crossterm-0.13)
         ("rust-ctor" ,rust-ctor-0.1)
-        ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-dirs" ,rust-dirs-2)
         ("rust-dyn-clone" ,rust-dyn-clone-1)
         ("rust-ed25519-dalek" ,rust-ed25519-dalek-1)
         ("rust-eax" ,rust-eax-0.3)

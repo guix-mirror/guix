@@ -51,7 +51,7 @@
 (define-public xcb-imdkit
   (package
     (name "xcb-imdkit")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -59,7 +59,7 @@
              "https://download.fcitx-im.org/fcitx5/xcb-imdkit/xcb-imdkit-"
              version ".tar.xz"))
        (sha256
-        (base32 "1qgbbp8y8ci7haz99vgbrgpjsbrwwyjianyhdvxcirnbm5bybvmz"))
+        (base32 "16f7jdnrr8lrll7qvnj0gh3gwzgn5idfsc9rwi1gp1n2mnjrs7w0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -86,7 +86,7 @@ client.")
 (define-public fcitx5
   (package
     (name "fcitx5")
-    (version "5.0.3")
+    (version "5.0.4")
     (source
      (origin
        (method url-fetch)
@@ -94,7 +94,7 @@ client.")
              "https://download.fcitx-im.org/fcitx5/fcitx5/fcitx5-"
              version "_dict.tar.xz"))
        (sha256
-        (base32 "06zkb33m2rnhg385iy79n3r4svz5jbav74di61xqa3lhbv7534s3"))))
+        (base32 "14pqbjbdc3b5xlycm92gs1rgkmpykfnyls3gfr608902lk2lw5as"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -146,7 +146,7 @@ client.")
 (define-public fcitx5-lua
   (package
     (name "fcitx5-lua")
-    (version "5.0.1")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
@@ -154,7 +154,7 @@ client.")
              "https://download.fcitx-im.org/fcitx5/fcitx5-lua/fcitx5-lua-"
              version ".tar.xz"))
        (sha256
-        (base32 "177mj56j8yrl79hvk7bbrifvm137np23pwalv83ibgk4l51z92hf"))))
+        (base32 "0y5yc9102bz681f4wj6xqjxmfdmrshz3fhf39pa61718hkyy9lih"))))
     (build-system cmake-build-system)
     (inputs
      `(("fcitx5" ,fcitx5)
@@ -171,14 +171,14 @@ client.")
 (define-public libime
   (package
     (name "libime")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.fcitx-im.org/fcitx5/libime/libime-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "006pncby7p6h3rnicckzjwi6jzsrqiqbj6p9bpic80lanlllgw31"))))
+        (base32 "1gi9ylqha9x3dhjsa2i7x9wh2g9vgqkkfr6s1facs2ky65vgvdrv"))))
     (build-system cmake-build-system)
     (inputs
      `(("fcitx5" ,fcitx5)
@@ -196,7 +196,7 @@ editors.")
 (define-public fcitx5-gtk
   (package
     (name "fcitx5-gtk")
-    (version "5.0.1")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
@@ -204,7 +204,7 @@ editors.")
                            "/fcitx5-gtk/fcitx5-gtk-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0h53liraqc5nz4nyi3ixdfdw3zzkdcsiff7j25acc3gmaa5gyij7"))))
+        (base32 "18bwwj9a5v82c6ssc8560hd8vwykakvg6sfijwdb5jswk9mafvgj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;No test
@@ -212,7 +212,9 @@ editors.")
        (list (string-append "-DGOBJECT_INTROSPECTION_GIRDIR="
                             %output "/share/gir-1.0")
              (string-append "-DGOBJECT_INTROSPECTION_TYPELIBDIR="
-                            %output "/lib/girepository-1.0"))
+                            %output "/lib/girepository-1.0")
+             ;; TODO: Enable it when Guix has GTK4.
+             "-DENABLE_GTK4_IM_MODULE=Off")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-install-prefix
@@ -247,7 +249,7 @@ for GTK+2/GTK+3 application.")
 (define-public fcitx5-qt
   (package
     (name "fcitx5-qt")
-    (version "5.0.1")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
@@ -255,7 +257,7 @@ for GTK+2/GTK+3 application.")
                            "/fcitx5-qt/fcitx5-qt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0ilhb4yw9k3m1c4fidnv3nd5dgm9xxds11dgdys6gswjjnmcgqqm"))))
+        (base32 "15rn111mrp6lcgm0ka3vb6a6qwkv6kqkqn563wsm49n16iy1dhqj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -282,7 +284,7 @@ for Qt based application.")
 (define-public fcitx5-chinese-addons
   (package
     (name "fcitx5-chinese-addons")
-    (version "5.0.2")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
@@ -290,7 +292,7 @@ for Qt based application.")
                            "/fcitx5-chinese-addons/fcitx5-chinese-addons-"
                            version "_dict.tar.xz"))
        (sha256
-        (base32 "0mf91gzwzhfci0jn6g3l516xjw8r4v40ginnbl70h1zx6vr24rfp"))))
+        (base32 "1kmzbllk0g86m2z3piwn9j84ihxixyxzv7rzj832xfvwqgk7gixk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -342,42 +344,42 @@ including input methods previous bundled inside Fcitx 4:
 
 (define-public fcitx5-configtool
   (package
-   (name "fcitx5-configtool")
-   (version "5.0.1")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (string-append
-           "https://download.fcitx-im.org/fcitx5"
-           "/fcitx5-configtool/fcitx5-configtool-" version ".tar.xz"))
-     (sha256
-      (base32 "0mrqhzvab41hkvhkz7vkb8d2mv5bgx4aqp9jpz4kf3kskwm1q14b"))))
-   (build-system cmake-build-system)
-   (arguments
-    `(#:configure-flags
-      ;; KDE is currently not working on Guix, KCM supports doesn't make sense.
-      '("-DENABLE_KCM=Off")))
-   (inputs
-    `(("fcitx5" ,fcitx5)
-      ("fcitx5-qt" ,fcitx5-qt)
-      ("qtbase" ,qtbase)
-      ("qtx11extras" ,qtx11extras)
-      ("kitemviews" ,kitemviews)
-      ("kwidgetsaddons" ,kwidgetsaddons)
-      ("libx11" ,libx11)
-      ("xkeyboard-config" ,xkeyboard-config)
-      ("libxkbfile" ,libxkbfile)
-      ("gettext" ,gettext-minimal)
-      ("iso-codes" ,iso-codes)))
-   (native-inputs
-    `(("gcc" ,gcc-9)
-      ("extra-cmake-modules" ,extra-cmake-modules)
-      ("pkg-config" ,pkg-config)))
-   (home-page "https://github.com/fcitx/fcitx5-configtool")
-   (synopsis "Graphical configuration tool for Fcitx 5")
-   (description "Fcitx5-configtool is a graphical configuration tool
+    (name "fcitx5-configtool")
+    (version "5.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://download.fcitx-im.org/fcitx5"
+             "/fcitx5-configtool/fcitx5-configtool-" version ".tar.xz"))
+       (sha256
+        (base32 "0rpk3yn572pcr29jak63x84g0qgj8hj011aw8gmxjah9311nxhpb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; KDE is currently not working on Guix, KCM supports doesn't make sense.
+       '("-DENABLE_KCM=Off")))
+    (inputs
+     `(("fcitx5" ,fcitx5)
+       ("fcitx5-qt" ,fcitx5-qt)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("kitemviews" ,kitemviews)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("libx11" ,libx11)
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("libxkbfile" ,libxkbfile)
+       ("gettext" ,gettext-minimal)
+       ("iso-codes" ,iso-codes)))
+    (native-inputs
+     `(("gcc" ,gcc-9)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/fcitx/fcitx5-configtool")
+    (synopsis "Graphical configuration tool for Fcitx 5")
+    (description "Fcitx5-configtool is a graphical configuration tool
 to manage different input methods in Fcitx 5.")
-   (license license:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fcitx5-material-color-theme
   (package

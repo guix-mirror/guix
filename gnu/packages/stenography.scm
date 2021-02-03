@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages check)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages python)
@@ -31,7 +33,7 @@
 (define-public plover
   (package
     (name "plover")
-    (version "3.1.1")
+    (version "4.0.0.dev8")
     (source
      (origin
        (method git-fetch)
@@ -40,21 +42,21 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "114rlxvq471fyifwcdcgdad79ak7q3w2lk8z9nqhz1i9fg05721c"))))
+        (base32 "1b2ys77bkjsdmyg97i7lq3lj45q56bycvsm06d4rs656kxhvc0a3"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2))
     (native-inputs
-     `(("python2-mock" ,python2-mock)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-setuptools-scm" ,python2-setuptools-scm)))
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
-     `(("python2-appdirs" ,python2-appdirs)
-       ("python2-dbus" ,python2-dbus)
-       ("python2-hidapi" ,python2-hidapi)
-       ("python2-pyserial" ,python2-pyserial)
-       ("python2-wxpython" ,python2-wxpython)
-       ("python2-xlib" ,python2-xlib)))
+     `(("python-appdirs" ,python-appdirs)
+       ("python-pyqt" ,python-pyqt)
+       ("python-babel" ,python-babel)
+       ("python-dbus" ,python-dbus)
+       ("python-hidapi" ,python-hidapi)
+       ("python-pyserial" ,python-pyserial)
+       ("python-wxpython" ,python-wxpython)
+       ("python-xlib" ,python-xlib)))
     (home-page "https://www.openstenoproject.org/plover/")
     (synopsis "Stenography engine")
     (description

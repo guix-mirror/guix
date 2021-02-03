@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,5 +122,22 @@
        (lambda args
          (pk 'welcome-exception! args)
          #t)))))
+
+(test-equal "sqlite-register with incorrect size"
+  'out-of-range
+  (call-with-temporary-output-file
+   (lambda (db-file port)
+     (delete-file db-file)
+     (catch #t
+       (lambda ()
+         (with-database db-file db
+           (sqlite-register db #:path "/gnu/foo"
+                            #:references '("/gnu/bar")
+                            #:deriver "/gnu/foo.drv"
+                            #:hash (string-append "sha256:" (make-string 64 #\e))
+                            #:nar-size -1234))
+         #f)
+       (lambda (key . _)
+         key)))))
 
 (test-end "store-database")

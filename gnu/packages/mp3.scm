@@ -82,6 +82,10 @@
             ;; remove option that is not supported by gcc any more
             (substitute* "configure" ((" -fforce-mem") ""))
             #t))
+        ;; Normally one should not add a pkg-config file if one is not provided
+        ;; by upstream developers, but Audacity expects a pkg-config file for
+        ;; this package, and other major GNU/Linux distributions already provide
+        ;; such a file.
         (add-after 'install 'install-pkg-config
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -127,6 +131,10 @@ This package contains the library.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
+        ;; Normally one should not add a pkg-config file if one is not provided
+        ;; by upstream developers, but Audacity expects a pkg-config file for
+        ;; this package, and other major GNU/Linux distributions already provide
+        ;; such a file.
         (add-after 'install 'install-pkg-config
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))

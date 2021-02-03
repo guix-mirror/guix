@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -52,20 +52,6 @@
 (define sql-schema
   ;; Name of the file containing the SQL scheme or #f.
   (make-parameter #f))
-
-(define sqlite-exec
-  ;; XXX: This is was missing from guile-sqlite3 until
-  ;; <https://notabug.org/guile-sqlite3/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
-  (let ((exec (pointer->procedure
-               int
-               (dynamic-func "sqlite3_exec" (@@ (sqlite3) libsqlite3))
-               '(* * * * *))))
-    (lambda (db text)
-      (let ((ret (exec ((@@ (sqlite3) db-pointer) db)
-                       (string->pointer text)
-                       %null-pointer %null-pointer %null-pointer)))
-        (unless (zero? ret)
-          ((@@ (sqlite3) sqlite-error) db "sqlite-exec" ret))))))
 
 (define* (store-database-directory #:key prefix state-directory)
   "Return the store database directory, taking PREFIX and STATE-DIRECTORY into
@@ -126,7 +112,7 @@ set journal_mode=WAL."
                   (lambda ()
                     (sqlite-close db)))))
 
-;; XXX: missing in guile-sqlite3@0.1.0
+;; XXX: missing in guile-sqlite3@0.1.2
 (define SQLITE_BUSY 5)
 
 (define (call-with-SQLITE_BUSY-retrying thunk)
@@ -138,8 +124,6 @@ errors."
       (if (= code SQLITE_BUSY)
           (call-with-SQLITE_BUSY-retrying thunk)
           (throw key who code errmsg)))))
-
-
 
 (define* (call-with-transaction db proc #:key restartable?)
   "Start a transaction with DB and run PROC.  If PROC exits abnormally, abort
@@ -214,17 +198,6 @@ If FILE doesn't exist, create it and initialize it as a new database.  Pass
     ((_ file db exp ...)
      (call-with-database file (lambda (db) exp ...)))))
 
-(define (sqlite-finalize stmt)
-  ;; As of guile-sqlite3 0.1.0, cached statements aren't reset when
-  ;; sqlite-finalize is invoked on them (see
-  ;; https://notabug.org/guile-sqlite3/guile-sqlite3/issues/12).  This can
-  ;; cause problems with automatically-started transactions, so we work around
-  ;; it by wrapping sqlite-finalize so that sqlite-reset is always called.
-  ;; This always works, because resetting a statement twice has no adverse
-  ;; effects.  We can remove this once the fixed guile-sqlite3 is widespread.
-  (sqlite-reset stmt)
-  ((@ (sqlite3) sqlite-finalize) stmt))
-
 (define (call-with-statement db sql proc)
   (let ((stmt (sqlite-prepare db sql #:cache? #t)))
     (dynamic-wind
@@ -268,11 +241,25 @@ identifier.  Otherwise, return #f."
   "INSERT INTO ValidPaths (path, hash, registrationTime, deriver, narSize)
 VALUES (:path, :hash, :time, :deriver, :size)")
 
+(define-inlinable (assert-integer proc in-range? key number)
+  (unless (integer? number)
+    (throw 'wrong-type-arg proc
+           "Wrong type argument ~A: ~S" (list key number)
+           (list number)))
+  (unless (in-range? number)
+    (throw 'out-of-range proc
+           "Integer ~A out of range: ~S" (list key number)
+           (list number))))
+
 (define* (update-or-insert db #:key path deriver hash nar-size time)
   "The classic update-if-exists and insert-if-doesn't feature that sqlite
 doesn't exactly have... they've got something close, but it involves deleting
 and re-inserting instead of updating, which causes problems with foreign keys,
 of course. Returns the row id of the row that was modified or inserted."
+
+  ;; Make sure NAR-SIZE is valid.
+  (assert-integer "update-or-insert" positive? #:nar-size nar-size)
+  (assert-integer "update-or-insert" (cut >= <> 0) #:time time)
 
   ;; It's important that querying the path-id and the insert/update operation
   ;; take place in the same transaction, as otherwise some other

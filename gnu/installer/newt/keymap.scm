@@ -56,7 +56,7 @@ different layout at any time from the parameters menu.")))
        (else (G_ "Exit")))
      #:button-callback-procedure
      (case context
-       ((param) (const #t))
+       ((param) (const #f))
        (else
         (lambda _
           (raise
@@ -183,7 +183,9 @@ options."
       (compute
        (lambda (result _)
          (let* ((layout (result-step result 'layout))
-                (variants (x11-keymap-layout-variants layout)))
+                (variants (if layout
+                              (x11-keymap-layout-variants layout)
+                              '())))
            ;; Return #f if the layout does not have any variant.
            (and (not (null? variants))
                 (run-variant-page
@@ -196,16 +198,19 @@ options."
                        (gettext (x11-keymap-layout-description layout)
                                 "xkeyboard-config")))))))))))
 
-  (define (format-result result)
-    (let ((layout (x11-keymap-layout-name
-                   (result-step result 'layout)))
-          (variant (and=> (result-step result 'variant)
+  (define (format-result layout variant)
+    (let ((layout (x11-keymap-layout-name layout))
+          (variant (and=> variant
                           (lambda (variant)
                             (gettext (x11-keymap-variant-name variant)
                                      "xkeyboard-config")))))
       (toggleable-latin-layout layout variant)))
-  (format-result
-   (run-installer-steps #:steps keymap-steps)))
+
+  (let* ((result (run-installer-steps #:steps keymap-steps))
+         (layout (result-step result 'layout))
+         (variant (result-step result 'variant)))
+    (and layout
+         (format-result layout variant))))
 
 (define (keyboard-layout->configuration keymap)
   "Return the operating system configuration snippet to install KEYMAP."

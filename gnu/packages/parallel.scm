@@ -55,14 +55,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20201222")
+    (version "20210122")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "13kxg2vmy20ciiv1gp96g33bmvma1nh5d66jdix1fqj6xjaizr5n"))))
+       (base32 "1wxkqz6ld1bp0ilvc04vhq99qjay1nl6pbk3qzvp3sjavv9vdwdl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -108,7 +108,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "20.11.2")
+   (version "20.11.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -116,7 +116,7 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "15h2vs58apgdz02ijgr46090vjyaa81qcm76mm6fxlvkkfd4pyxp"))
+              "1s70x6yh60sx63dgmp5rlhq8jcz7kxv9pk8gbs9v1jg8zps5h5bk"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -194,6 +194,8 @@ by managing a queue of pending work.")
 ;; in incompatible ways, as noted in
 ;; <https://slurm.schedmd.com/troubleshoot.html#network>.  Thus, keep older
 ;; releases here.  See also <https://issues.guix.gnu.org/44387>.
+;; As noted in the link, YY.MM is the release scheme, and the 'maintenance'
+;; digit does not introduce incompatibilities.
 
 (define-public slurm-20.02
   (package
@@ -209,11 +211,10 @@ by managing a queue of pending work.")
                (base32
                 "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
 
-
 (define-public slurm-19.05
   (package
     (inherit slurm)
-    (version "19.05.3-2")
+    (version "19.05.8")
     (source (origin
               (inherit (package-source slurm))
               (method url-fetch)
@@ -222,13 +223,13 @@ by managing a queue of pending work.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))))
+                "10c9j4a9a6d4ibpf75006mn03p8xgpaprc247x2idakysjf2fw43"))))))
 
 ;; Same as Debian 10
 (define-public slurm-18.08
   (package
     (inherit slurm)
-    (version "18.08.5-2")
+    (version "18.08.9")
     (source
       (origin
         (inherit (package-source slurm))
@@ -237,7 +238,7 @@ by managing a queue of pending work.")
                version ".tar.bz2"))
         (sha256
          (base32
-          "0xrj12nmkhvhzi7cyh4yvdm8qa51ji3j82mgpq7sx87g30f9spn4"))))))
+          "1bgrpz75m7l4xhirsd0fvnkzlkrl8v2qpmjcz60barc5qm2kn457"))))))
 
 (define-public slurm-drmaa
   (package

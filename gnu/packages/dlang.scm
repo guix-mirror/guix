@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,7 +84,7 @@ and freshness without requiring additional information from the user.")
 (define-public ldc-bootstrap
     (package
       (name "ldc")
-      (version "0.17.4")
+      (version "0.17.6")
       (source
        (origin
          (method git-fetch)
@@ -92,7 +93,7 @@ and freshness without requiring additional information from the user.")
                (commit (string-append "v" version))))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0nnrjavfmpfp7bib04isqlxvyzh6mlvsdan0gxysdz96hlg4hcq8"))))
+          (base32 "1q6hm4fkrcwys83x0p4kfg9xrc1b9g2qicqif2zy5z4nsfsb5vgs"))))
       (build-system cmake-build-system)
       (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
       (properties
@@ -117,14 +118,6 @@ and freshness without requiring additional information from the user.")
                  (unpack "druntime-src" "runtime/druntime")
                  (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")
                  #t)))
-           (add-after 'unpack-submodule-sources 'patch-dmd2
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "dmd2/root/port.c"
-                 ((" ::isnan") " isnan")
-                 ((" ::isinf") " isinf")
-                 (("#undef isnan") "")
-                 (("#undef isinf") ""))
-               #t))
            (add-after 'unpack-submodule-sources 'patch-phobos
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "runtime/phobos/std/process.d"
@@ -137,8 +130,6 @@ and freshness without requiring additional information from the user.")
                   "(tzName == \"+VERSION\" || std.algorithm.endsWith(tzName, \"/leapseconds\"))"))
                (substitute* "tests/d2/dmd-testsuite/Makefile"
                  (("/bin/bash") (which "bash")))
-               ;; FIXME: this test cannot be linked.
-               (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
                ;; the following two tests fail on i686
                (for-each delete-file '("tests/ir/attributes.d" "tests/ir/align.d")))))))
       (inputs
@@ -147,8 +138,8 @@ and freshness without requiring additional information from the user.")
          ("tzdata" ,tzdata)
          ("zlib" ,zlib)))
       (native-inputs
-       `(("llvm" ,llvm-3.8)
-         ("clang" ,clang-3.8)
+       `(("llvm" ,llvm-6)
+         ("clang" ,clang-6)
          ("python-lit" ,python-lit)
          ("python-wrapper" ,python-wrapper)
          ("unzip" ,unzip)
@@ -160,7 +151,7 @@ and freshness without requiring additional information from the user.")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "phobos" version))
              (sha256
-              (base32 "0i7gh99w4mi0hdv16261jcdiqyv1nkjdcwy9prw32s0lvplx8fdy"))
+              (base32 "15jzs38wanks2jfp2izzl7zqrp4c8ai54ppsgm8ws86p3sbbkmj8"))
              (patches (search-patches "ldc-bootstrap-disable-tests.patch"))))
          ("druntime-src"
           ,(origin
@@ -170,7 +161,7 @@ and freshness without requiring additional information from the user.")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "druntime" version))
              (sha256
-              (base32 "0alabm3bbvs94msvxz5psiwk4f51cw9h82z1p5hhsnf8ja6d0am7"))))
+              (base32 "00wr2kiggwnd8h7by51fhj1xc65hv1ysip5gbgdbkfar58p2d0bb"))))
          ("dmd-testsuite-src"
           ,(origin
              (method git-fetch)
@@ -179,7 +170,7 @@ and freshness without requiring additional information from the user.")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "dmd-testsuite" version))
              (sha256
-              (base32 "05qr4cgb4scfqzbw1l5pk72kil074mvj9d55b165ljyr51sgwgbl"))))))
+              (base32 "1d1c0979wbippldrkjf7szyj4n87hxz8dwqg1r5b3aai37g9kcky"))))))
       (home-page "http://wiki.dlang.org/LDC")
       (synopsis "LLVM-based compiler for the D programming language")
       (description

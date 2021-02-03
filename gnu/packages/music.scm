@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 nikita <nikita@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2287,7 +2287,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-3")
+    (version "0.51-4")
     (source (origin
               (method url-fetch)
               (uri
@@ -2295,7 +2295,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "10cqg387xdpiirak5v9y1lpvcds9bpqz61znx6d1m1hb45n513aw"))))
+                "1hgw1ciwr59f4f9s0h7c2l36wcsn3jsddhr1r9qj97vf64c1ynaj"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -3216,6 +3216,32 @@ streams on an individual packet/page level.")
 (define-public python2-mutagen
   (package-with-python2 python-mutagen))
 
+(define-public python-mediafile
+  (package
+    (name "python-mediafile")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mediafile" version))
+       (patches (search-patches "python-mediafile-wavpack.patch"))
+       (sha256
+        (base32
+         "0jmsp3f57xj35ayp8b6didk85nxgl3viw34s5px3l5dwgc055yx3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mutagen" ,python-mutagen)
+       ("python-six" ,python-six)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/beetbox/mediafile")
+    (synopsis "Read and write audio file tags")
+    (description
+     "MediaFile is a simple interface to the metadata tags for many audio file
+formats.  It wraps Mutagen, a high-quality library for low-level tag
+manipulation, with a high-level, format-independent interface for a common set
+of tags.")
+    (license license:expat)))
+
 (define-public python-musicbrainzngs
   (package
     (name "python-musicbrainzngs")
@@ -3449,6 +3475,59 @@ websites such as Libre.fm.")
     of tools for manipulating and accessing your music.")
     (license license:expat)))
 
+(define-public beets-next
+  (let ((commit "04ea754d00e2873ae9aa2d9e07c5cefd790eaee2")
+        (revision "1"))
+    (package
+      (inherit beets)
+      (name "beets-next")
+      (version (git-version (package-version beets) revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/beetbox/beets")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "092a9sss2shhcjmpgbwvscv8brpm5970i5hddkhi81xcff3bg1h4"))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; XXX: unclear why this fails
+           (add-after 'unpack 'disable-failing-tests
+             (lambda _
+               (substitute* "test/test_zero.py"
+                 (("def test_album_art") "def _test_album_art"))
+               #t))
+           (add-after 'unpack 'set-HOME
+             (lambda _
+               (setenv "HOME" (string-append (getcwd) "/tmp"))
+               #t))
+           (replace 'check
+             (lambda _
+               ;; Resources must be writable.
+               (for-each make-file-writable
+                         (find-files "test/rsrc" "."))
+               (invoke "nosetests" "-v")))
+           ;; Wrap the executable, so it can find python-gi (aka pygobject) and
+           ;; gstreamer plugins.
+           (add-after 'wrap 'wrap-typelib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((prog (string-append (assoc-ref outputs "out")
+                                          "/bin/beet"))
+                     (plugins (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                     (types (getenv "GI_TYPELIB_PATH")))
+                 (wrap-program prog
+                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,plugins))
+                   `("GI_TYPELIB_PATH" ":" prefix (,types)))
+                 #t))))))
+      (inputs
+       `(("python-confuse" ,python-confuse)
+         ("python-mediafile" ,python-mediafile)
+         ("python-reflink" ,python-reflink)
+         ("python-requests-oauthlib" ,python-requests-oauthlib)
+         ,@(package-inputs beets))))))
+
 (define-public beets-bandcamp
   (package
     (name "beets-bandcamp")
@@ -3472,8 +3551,8 @@ websites such as Libre.fm.")
     (synopsis "Bandcamp plugin for beets")
     (description
      "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
-                                                                      https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
-    using the beets FetchArt plugin.")
+https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+using the beets FetchArt plugin.")
     (license license:gpl2)))
 
 (define-public milkytracker
@@ -4425,7 +4504,7 @@ standalone JACK client and an LV2 plugin is also available.")
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.5.2")
+    (version "3.6.1")
     (source
      (origin
        (method git-fetch)
@@ -4434,7 +4513,7 @@ standalone JACK client and an LV2 plugin is also available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yzps5xxa50cr2i5iv2ycjdywd0mcrdd6hx93l4p8lfljag3w3al"))
+        (base32 "087j474sdm8vcjczfqlbb1hpcvgvdghjsd132db9dlqwpgk4hmnv"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove unused libraries.
@@ -5923,33 +6002,38 @@ hall reverb and a room reverb.  Both are available as LV2 plugins as well
 as JACK standalone applications.")
     (license license:gpl3+)))
 
-(define-public zlfo
+(define-public zplugins
   (package
-    (name "zlfo")
-    (version "0.1.3")
+    (name "zplugins")
+    (version "0.1.7")
     (source
      (origin
        (method git-fetch)
-       (uri (git-reference
-             (url "https://git.zrythm.org/git/ZLFO")
-             (commit (string-append "v" version))))
+       (uri
+        (git-reference
+         (url "https://git.zrythm.org/git/zplugins")
+         (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bm466ci5xyvxvq7l9p6xyh789lvk6i31b4zja1igqh13akbjnjz"))))
+         "1rkm2xajmyik6289b20rp5a5br9f3sh1xk8nb1bs6qpmcrfirgbs"))))
     (build-system meson-build-system)
     (inputs
-     `(("librsvg" ,librsvg)
-       ("lv2" ,lv2)
-       ("ztoolkit-rsvg" ,ztoolkit-rsvg)))
+      `(("guile" ,guile-2.2)
+        ("libsndfile" ,libsndfile)
+        ("lv2" ,lv2)
+        ("ztoolkit-rsvg" ,ztoolkit-rsvg)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (synopsis "Low frequency oscillator plugin")
-    (description "ZLFO is a fully featured
-@dfn{low frequency oscillator} (LFO) for @dfn{control voltage} (CV)-based
-automation that comes as an LV2 plugin bundle with a custom UI.")
-    (home-page "https://git.zrythm.org/cgit/ZLFO/")
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Audio plugin collection")
+    (description "ZPlugins is a collection of audio DSP plugins intended
+to be bundled with the Zrythm @dfn{digital audio workstation} (DAW).")
+    (home-page "https://www.zrythm.org/en/plugins.html")
     (license license:agpl3+)))
+
+(define-public zlfo
+  ;; The "zlfo" package is now included in zplugins
+  (deprecated-package "zlfo" zplugins))
 
 (define-public remid-lv2
   (package

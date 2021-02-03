@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,13 +47,14 @@
       (unless (= ENOENT (system-error-errno args))
         (apply throw args)))))
 
-(define (file-expiration-time ttl)
+(define* (file-expiration-time ttl #:optional (timestamp stat:atime))
   "Return a procedure that, when passed a file, returns its \"expiration
-time\" computed as its last-access time + TTL seconds."
+time\" computed as its timestamp + TTL seconds.  Call TIMESTAMP to obtain the
+relevant timestamp from the result of 'stat'."
   (lambda (file)
     (match (stat file #f)
       (#f 0)                       ;FILE may have been deleted in the meantime
-      (st (+ (stat:atime st) ttl)))))
+      (st (+ (timestamp st) ttl)))))
 
 (define* (remove-expired-cache-entries entries
                                        #:key

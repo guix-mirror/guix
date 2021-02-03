@@ -23,35 +23,312 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module ((guix licenses)
                 #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1))
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1 fdl1.2+))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
+
+(define-public nimf
+  (package
+    (name "nimf")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hamonikr/nimf.git")
+         (commit
+          (string-append "nimf-" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "01qi7flmaqrn2fk03sa42r0caks9d8lsv88s0bgxahhxwk1x76gc"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:imported-modules
+       (,@%glib-or-gtk-build-system-modules
+        (guix build cmake-build-system)
+        (guix build qt-build-system))
+       #:modules
+       ((guix build glib-or-gtk-build-system)
+        ((guix build qt-build-system)
+         #:prefix qt:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        "--with-im-config-data"
+        "--with-imsettings-data"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-flags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("-Werror")
+                "-Wno-error"))
+             #t))
+         (add-after 'patch-flags 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "nimf-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.3")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'patch-docbook-xml 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("/usr/share/anthy/anthy.dic")
+                (string-append (assoc-ref inputs "anthy")
+                               "/share/anthy/anthy.dic")))
+             (substitute* "configure.ac"
+               (("/usr/bin:\\$GTK3_LIBDIR/libgtk-3-0")
+                (string-append (assoc-ref inputs "gtk+:bin")
+                               "/bin:$GTK3_LIBDIR/libgtk-3-0"))
+               (("/usr/bin:\\$GTK2_LIBDIR/libgtk2.0-0")
+                (string-append (assoc-ref inputs "gtk+-2:bin")
+                               "/bin:$GTK2_LIBDIR/libgtk2.0-0")))
+             (substitute* "modules/clients/gtk/Makefile.am"
+               (("\\$\\(GTK3_LIBDIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib"))
+               (("\\$\\(GTK2_LIBDIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib")))
+             (substitute* "modules/clients/qt4/Makefile.am"
+               (("\\$\\(QT4_LIB_DIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib")))
+             (substitute* "modules/clients/qt5/Makefile.am"
+               (("\\$\\(QT5_IM_MODULE_DIR\\)")
+                (string-append (assoc-ref outputs "out")
+                               "/lib/qt5/plugins/inputmethods")))
+             (substitute* '("bin/nimf-settings/Makefile.am"
+                            "data/apparmor-abstractions/Makefile.am"
+                            "data/Makefile.am" "data/im-config/Makefile.am"
+                            "data/imsettings/Makefile.am")
+               (("/etc")
+                (string-append (assoc-ref outputs "out")
+                               "/etc"))
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out")
+                               "/share")))
+             #t))
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml-4.3" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+-2:bin" ,gtk+-2 "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("anthy" ,anthy)
+       ("appindicator" ,libappindicator)
+       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+)
+       ("hangul" ,libhangul)
+       ("m17n-db" ,m17n-db)
+       ("m17n-lib" ,m17n-lib)
+       ("qt-4" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("rime" ,librime)
+       ("rsvg" ,librsvg)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("x11" ,libx11)
+       ("xkbcommon" ,libxkbcommon)
+       ("xklavier" ,libxklavier)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Lightweight input method framework")
+    (description "Nimf is a lightweight, fast and extensible input method
+framework.  This package provides a fork of the original nimf project, that
+focusses especially on Korean input (Hangul, Hanja, ...).")
+    (home-page "https://github.com/hamonikr/nimf/")
+    (license lgpl3+)))
+
+(define-public hime
+  (package
+    (name "hime")
+    (version "0.9.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hime-ime/hime.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1wn0ici78x5qh6hvv50bf76ld7ds42hzzl4l5qz34hp8wyvrwakw"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:imported-modules
+       (,@%glib-or-gtk-build-system-modules
+        (guix build cmake-build-system)
+        (guix build qt-build-system))
+       #:modules
+       ((guix build glib-or-gtk-build-system)
+        ((guix build qt-build-system)
+         #:prefix qt:)
+        (guix build utils))
+       #:configure-flags
+       (list
+        ;; FIXME
+        ;; error: unknown type name ‘GtkStatusIcon’
+        "--disable-system-tray")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-std
+           (lambda _
+             (substitute* "configure"
+               (("gnu17")
+                "gnu11")
+               (("gnu++17")
+                "gnu++11"))
+             #t))
+         (add-after 'install 'qt-wrap
+           (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("whereis" ,util-linux)))
+    (inputs
+     `(("anthy" ,anthy)
+       ("appindicator" ,libappindicator)
+       ("chewing" ,libchewing)
+       ("gtk+" ,gtk+)
+       ("qtbase" ,qtbase)
+       ("xtst" ,libxtst)))
+    (synopsis "HIME Input Method Editor")
+    (description "Hime is an extremely easy-to-use input method framework.  It
+is lightweight, stable, powerful and supports many commonly used input methods,
+including Cangjie, Zhuyin, Dayi, Ranked, Shrimp, Greek, Anthy, Korean, Latin,
+Random Cage Fighting Birds, Cool Music etc.")
+    (home-page "http://hime-ime.github.io/")
+    (license
+     (list
+      gpl2+
+      lgpl2.1+
+      ;; Documentation
+      fdl1.2+))))
+
+(define-public libchewing
+  (package
+    (name "libchewing")
+    (version "0.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/chewing/libchewing.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "04d09w6xdd08v6laj9y4qmqsijw5i2jvshcilhh4vg6cfnfgl2my"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; test-easy-symbol and test-fullshape fail with multiple cores.
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "test/Makefile.am"
+               (("	test-bopomofo ")
+                "")
+               (("	test-config ")
+                "")
+               (("	test-reset ")
+                "")
+               (("	test-symbol ")
+                "")
+               (("	test-keyboardless ")
+                "")
+               (("	test-special-symbol ")
+                "")
+               (("	test-keyboard ")
+                "")
+               (("	test-regression ")
+                "")
+               (("	test-userphrase ")
+                ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("sqlite" ,sqlite)))
+    (synopsis "Chinese phonetic input method")
+    (description "Chewing is an intelligent phonetic (Zhuyin/Bopomofo) input
+method, one of the most popular choices for Traditional Chinese users.")
+    (home-page "http://chewing.im/")
+    (license lgpl2.1+)))
 
 (define-public liblouis
   (package

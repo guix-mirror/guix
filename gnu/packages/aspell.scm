@@ -476,14 +476,14 @@ under permissive licensing terms.  See the 'Copyright' file."))))
 (define-public ispell
   (package
     (name "ispell")
-    (version "3.4.01")
+    (version "3.4.02")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.cs.hmc.edu/~geoff/tars/ispell-"
                            version ".tar.gz"))
        (sha256
-        (base32 "103vscg4bc7x2q84y18x1l75k54yhkw8lpza3qh8xxhcz5b0w7jb"))))
+        (base32 "0b6rqzqjdhwf323sf1dv8qzx5pxa5asz618922r59zjp65660yb6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f

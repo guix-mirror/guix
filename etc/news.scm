@@ -1,11 +1,11 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
-;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
-;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;; Copyright © 2019, 2020, 2021 Florian Pelz <pelzflorian@pelzflorian.de>
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -17,6 +17,143 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
+        (title
+         (en "Create a manifest with @command{guix package --export-manifest}")
+         (fr "Créer un manifeste avec @command{guix package --export-manifest}"))
+        (body
+         (en "The @command{guix package --export-manifest} command outputs a
+@dfn{manifest} from your profile.  This manifest is a code snippet that can
+then be passed to @command{guix package --manifest} (or any other command that
+accepts the @option{--manifest} option) to deploy these packages.
+
+The goal of this new @option{--export-manifest} option is to make it easier to
+migrate from an ``imperative'' style where you repeatedly invoke @command{guix
+install} and similar commands, to the declarative style where you write in a
+manifest file the list of packages you want to have.
+
+Similarly, the new @option{--export-channels} option outputs a @dfn{channel
+specification} suitable for @command{guix pull --channels} from your profile.
+This allows you to ``pin'' Guix to the revision that was used to build the
+profile.
+
+Run @command{info \"(guix) Invoking guix package\"} for more info.")
+         (fr "La commande @command{guix package --export-manifest} affiche un
+@dfn{manifeste} pour le profil choisi.  Ce manifeste est un bout de code qu'on
+peut passer à @command{guix package --manifest} (ou n'importe qu'elle commande
+qui accepte l'option @option{--manifest}) pour déployer ces paquets.
+
+L'objectif de cette nouvelle option @option{--export-manifest} est de
+faciliter la migration du modèle ``impératif'', où on utilise @command{guix
+install} et les commandes de ce genre, au modèle déclaratif où on écrit dans
+un fichier la liste des paquets que l'on veut avoir.
+
+De même, la nouvelle option @option{--export-channels} produit une
+@dfn{spécification de canaux} pour @command{guix pull --channels} à partir du
+profil.  Cela permet de ``figer'' Guix à la révision qui a été utilisée pour
+produire le profil.
+
+Voir @command{info \"(guix.fr) Invoquer guix package\"} pour plus
+d'informations.")))
+
+ (entry (commit "9ab817b2a4601b4a6755983590ed7d93ebdc8d09")
+        (title (en "New @option{--with-latest} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-latest}")
+               (fr "Nouvelle option de transformation @option{--with-latest}"))
+        (body
+         (en "The new @option{--with-latest} package transformation option
+gets the latest release of a package, as would be identified by @command{guix
+refresh}, and uses it instead of the currently-packaged version.  For example,
+to install the latest release of GNOME Weather linked against the latest
+version of libgweather, run:
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Mit der neuen Paketumwandlungsoption @option{--with-latest} wird
+die neueste Veröffentlichung für ein Paket verwendet.  Diese wird wie bei
+@command{guix refresh} bestimmt und anstelle der zurzeit im Paket festgelegten
+Version verwendet.  Um zum Beispiel die neuste Veröffentlichung von GNOME
+Weather gebunden an die neuste Version von libgweather zu installieren, führen
+Sie dies aus:
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-latest} récupère la dernière version d'un logiciel telle
+qu'elle serait trouvée par @command{guix refresh} et l'utilise à la place la
+version actuellement fournie par le paquet.  Par exemple, pour installer la
+dernière version de GNOME Weather, elle-même compilée avec la dernière version
+de libgweather, on lancera :
+
+@example
+guix install gnome-weather \\
+  --with-latest=gnome-weather --with-latest=libgweather
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
+ (entry (commit "a879e35116043d5daf3d9d175b697d10b9177fd5")
+        (title (en "Substitutes can now be compressed with zstd")
+               (de "Substitute können nun mit zstd komprimiert werden")
+               (fr "Les substituts peuvent maintenant être compressés avec zstd"))
+        (body
+         (en "The @command{guix publish} command now supports substitute
+compression with zstd and @command{guix-daemon} can now fetch and decompress
+them.
+
+The advantage of zstd over the other options is its high compression and
+decompression throughput, with good compression ratios (not as good as lzip,
+but slightly better than gzip).  Its high decompression throughput makes it a
+good choice in situations where substitute downloads would otherwise be
+CPU-bound, typically when having a high-speed connection to the substitute
+server.  Run @command{info \"(guix) Invoking guix publish\"} for more info.
+
+To be able to fetch zstd-compressed substitutes (if the substitute servers you
+chose provide them), you need to upgrade your daemon.  Run @command{info
+\"(guix) Upgrading Guix\"} to learn how to do it.")
+         (de "Mit dem Befehl @command{guix publish} können Sie jetzt auch
+Substitute mit zstd komprimieren und @command{guix-daemon} kann sie laden und
+dekomprimieren.
+
+zstd bietet gegenüber den anderen Optionen einen hohen Durchsatz bei
+Kompression und Dekompression mit guten Kompressionsverhältnissen (nicht so
+gut wie lzip, aber etwas besser als gzip).  Wegen des hohen Durchsatzes bei
+der Dekompression ist zstd eine gute Wahl, wenn beim Herunterladen von
+Substituten ansonsten der Engpass bei der Prozessorleistung läge, etwa weil
+eine schnelle Netzwerkverbindung zum Substitutserver besteht.  Führen Sie für
+mehr Informationen @command{info \"(guix.de) Aufruf von guix publish\"} aus.
+
+Um zstd-komprimierte Substitute benutzen zu können (wenn der Substitutserver
+sie anbietet), müssen Sie Ihren Daemon aktualisieren.  Führen Sie
+@command{info \"(guix.de) Aktualisieren von Guix\"} aus, um zu erfahren, wie
+Sie ihn aktualisieren.")
+         (fr "La commande @command{guix publish} peut maintenant compresser
+les substituts avec zstd et @command{guix-daemon} est capable de les récupérer
+et de les décompresser.
+
+L'avantage de zstd par rapport aux autres méthodes est son haut débit en
+compression et décompression, avec un taux de compression correct (pas aussi
+bon que lzip, mais légèrement meilleur que gzip).  Sa vitesse de décompression
+en fait un bon choix dans les situations où le temps de téléchargement des
+substituts se retrouve sinon limité par le temps de calcul comme c'est le cas
+lorsqu'on bénéficie d'une connexion rapide au serveur de substitut.  Lancer
+@command{info \"(guix.fr) Invoquer guix publish\"} pour plus d'informations.
+
+Pour pouvoir télécharger des substituts compressés avec zstd (si les serveurs
+de substituts choisis les fournissent), il faudra d'abord mettre à jour le
+démon.  Lancer @command{info \"(guix.fr) Mettre à niveau Guix\"} pour voir
+comment faire.")))
 
  (entry (commit "e38d90d497e19e00263fa28961c688a433154386")
         (title (en "New @option{--with-patch} package transformation option")

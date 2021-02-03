@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +23,10 @@
   #:use-module (git submodule)
   #:use-module (guix i18n)
   #:use-module (guix base32)
+  #:use-module (guix cache)
   #:use-module (gcrypt hash)
-  #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module ((guix build utils)
+                #:select (mkdir-p delete-file-recursively))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix records)
@@ -35,6 +37,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
@@ -318,6 +321,24 @@ definitely available in REPOSITORY, false otherwise."
     (_
      #f)))
 
+(define cached-checkout-expiration
+  ;; Return the expiration time procedure for a cached checkout.
+  ;; TODO: Honor $GUIX_GIT_CACHE_EXPIRATION.
+
+  ;; Use the mtime rather than the atime to cope with file systems mounted
+  ;; with 'noatime'.
+  (file-expiration-time (* 90 24 3600) stat:mtime))
+
+(define %checkout-cache-cleanup-period
+  ;; Period for the removal of expired cached checkouts.
+  (* 5 24 3600))
+
+(define (delete-checkout directory)
+  "Delete DIRECTORY recursively, in an atomic fashion."
+  (let ((trashed (string-append directory ".trashed")))
+    (rename-file directory trashed)
+    (delete-file-recursively trashed)))
+
 (define* (update-cached-checkout url
                                  #:key
                                  (ref '(branch . "master"))
@@ -341,6 +362,14 @@ When RECURSIVE? is true, check out submodules as well, if any.
 
 When CHECK-OUT? is true, reset the cached working tree to REF; otherwise leave
 it unchanged."
+  (define (cache-entries directory)
+    (filter-map (match-lambda
+                  ((or "." "..")
+                   #f)
+                  (file
+                   (string-append directory "/" file)))
+                (or (scandir directory) '())))
+
   (define canonical-ref
     ;; We used to require callers to specify "origin/" for each branch, which
     ;; made little sense since the cache should be transparent to them.  So
@@ -386,6 +415,17 @@ it unchanged."
        ;; Reclaim file descriptors and memory mappings associated with
        ;; REPOSITORY as soon as possible.
        (repository-close! repository)
+
+       ;; When CACHE-DIRECTORY is a sub-directory of the default cache
+       ;; directory, remove expired checkouts that are next to it.
+       (let ((parent (dirname cache-directory)))
+         (when (string=? parent (%repository-cache-directory))
+           (maybe-remove-expired-cache-entries parent cache-entries
+                                               #:entry-expiration
+                                               cached-checkout-expiration
+                                               #:delete-entry delete-checkout
+                                               #:cleanup-period
+                                               %checkout-cache-cleanup-period)))
 
        (values cache-directory (oid->string oid) relation)))))
 

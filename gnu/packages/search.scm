@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11 perl-license))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -35,7 +37,9 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages python)
@@ -49,14 +53,14 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.17")
+    (version "1.4.18")
     ;; Note: When updating Xapian, remember to update xapian-bindings below.
     (source (origin
               (method url-fetch)
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "0bjpaavdckl4viznr8gbq476fvg648sj4rks2vacmc51vrb8bsxm"))))
+               (base32 "0xsb4ihf3p767f0zx9p4janwni6r9sg5j6lry0002i8hmnsdnv8r"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux "lib")))
@@ -94,7 +98,7 @@ rich set of boolean query operators.")
                                   "/xapian-bindings-" version ".tar.xz"))
               (sha256
                (base32
-                "1lzb739hjfy9ih2c0ircra50h4jr48wxq1fal7sai963w28mv9j8"))))
+                "13ziql8027glgihgvnbsa75vkcn82g83mbihj60zf0njj170clpy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-python3")
@@ -412,5 +416,60 @@ Think of it as your own personal document search engine, or a local cache of
 online libraries.  It provides fast search of document text and
 bibliographic data and simple document and bibtex retrieval.")
     (license gpl3+)))
+
+(define-public ugrep
+  (package
+    (name "ugrep")
+    (version "3.1.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Genivia/ugrep")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1ydnpdhn1mp2pnbqzvwabrp573626k89kbv97fax6y1bz2pamrg4"))
+              (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "bin")  ;; pre-build executables
+                  (for-each delete-file (find-files "tests" "^archive\\..*"))
+                  (for-each delete-file (find-files "tests" "^.*\\.pdf$"))
+                  (for-each delete-file (find-files "tests" "^.*\\.class$"))
+                  #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("less" ,less)
+       ("lz4" ,lz4)
+       ("lzip" ,lzip)  ;; lzma
+       ("pcre2" ,pcre2)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ;; No script for re-building the binary test input-files
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; unpatch shepengs in tests
+             (substitute* '("tests/Hello.bat"
+                            "tests/Hello.sh")
+               (("#!/gnu/store/.*/bin/sh") "#!/bin/sh")))))))
+    (home-page "https://github.com/Genivia/ugrep/")
+    (synopsis "Faster grep with an interactive query UI")
+    (description "Ugrep is a ultra fast searcher of file systems, text
+and binary files, source code, archives, compressed files, documents, and
+more.
+
+While still being compatible with the standard GNU/BSD grep command-line
+options, ugrep supports fuzzy search as well as structured and (adjustable)
+colored output, piped through \"less\" for pagination.  An interactive query
+UI allows refinement and has a built-in help (press F1).  Ugrep implements
+multi-threaded and other techniques to speed up search, pattern-matching and
+decompression.  Many pre-defined regexps ease searching e.g. C typdefs or XML
+attributes.  Results can be output in several structured or self-defined
+formats.")
+    (license bsd-3)))
 
 ;;; search.scm ends here

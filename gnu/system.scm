@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -858,8 +859,8 @@ syntactically correct."
                        (copy-file #$file #$output)))))
 
 (define* (operating-system-etc-service os)
-  "Return a <service> that builds containing the static part of the /etc
-directory."
+  "Return a <service> that builds a directory containing the static part of
+the /etc directory."
   (let* ((login.defs
           (plain-file "login.defs"
                       (string-append
@@ -1134,10 +1135,11 @@ we're running in the final root."
 (define (operating-system-shepherd-service-names os)
   "Return the list of Shepherd service names for OS."
   (append-map shepherd-service-provision
-              (service-value
-               (fold-services (operating-system-services os)
-                              #:target-type
-                              shepherd-root-service-type))))
+              (shepherd-configuration-services
+               (service-value
+                (fold-services (operating-system-services os)
+                               #:target-type
+                               shepherd-root-service-type)))))
 
 (define* (operating-system-derivation os)
   "Return a derivation that builds OS."

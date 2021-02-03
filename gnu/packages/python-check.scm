@@ -1148,6 +1148,25 @@ convenient wrapper above tools such as Pyflakes, pydocstyle, pycodestyle and
 McCabe, among others.")
     (license license:lgpl3+)))
 
+(define-public python-eradicate
+  (package
+    (name "python-eradicate")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "eradicate" version))
+       (sha256
+        (base32
+         "1j30g9jfmbfki383qxwrfds8b23yiwywj40lng4lqcf5yab4ahr7"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/myint/eradicate")
+    (synopsis "Remove commented-out code from Python sources")
+    (description "The @command{eradicate} command removes commented-out code
+from Python files.  It does this by detecting block comments that contain
+valid Python syntax that are likely to be commented out code.")
+    (license license:expat)))
+
 (define-public python-robber
   (package
     (name "python-robber")

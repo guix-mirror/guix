@@ -103,6 +103,7 @@ MODULES =					\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
+  guix/narinfo.scm				\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/repl.scm					\
@@ -988,9 +989,12 @@ download-po.$(1):
 	fi ;									\
 	for lang in $$$$LINGUAS; do						\
 	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
-	     "https://translationproject.org/latest/$(1)/$$$$lang.po" ;		\
+	     "https://translate.fedoraproject.org/api/translations/guix/$(1)/$$$$lang/file/" ; \
 	  then									\
-	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp,} ;			\
+	    msgfilter --no-wrap -i "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"	\
+	      cat > "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp2" ;			\
+	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
+	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp2,} ;			\
 	  else									\
 	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
 	  fi ;									\
@@ -1000,12 +1004,48 @@ download-po.$(1):
 
 endef
 
-$(eval $(call make-download-po-rule,guix,po/guix))
-$(eval $(call make-download-po-rule,guix-packages,po/packages))
-$(eval $(call make-download-po-rule,guix-manual,po/doc,guix-manual.))
+# Checking po files for issues.  This is useful to run after downloading new
+# po files.
 
-download-po: $(foreach domain,guix guix-packages guix-manual,download-po.$(domain))
+# make-check-po-rule DOMAIN DIRECTORY [FILE-NAME-PREFIX]
+define make-check-po-rule
+
+check-po.$(1):
+	if [ -f "$(top_srcdir)/$(2)/LINGUAS" ]; then				\
+	  LINGUAS="`grep -v '^[[:blank:]]*#' < $(top_srcdir)/$(2)/LINGUAS`" ;	\
+	else									\
+	  LINGUAS="`(cd $(top_srcdir)/$(2);					\
+	    for i in *.po; do echo $$$$i; done) | cut -d . -f 2`" ;		\
+	fi ;									\
+	for lang in $$$$LINGUAS; do						\
+	  if [ -f "$(top_srcdir)/$(2)/$(3)$$$$lang.po" ];			\
+	  then									\
+	    if ! msgfmt -c "$(top_srcdir)/$(2)/$(3)$$$$lang.po" ;		\
+		then								\
+		  exit 1 ;							\
+	    fi ;								\
+	  fi ;									\
+	done
+
+.PHONY: check-po.$(1)
+
+endef
+
+$(eval $(call make-download-po-rule,documentation-cookbook,po/doc,guix-cookbook.))
+$(eval $(call make-download-po-rule,documentation-manual,po/doc,guix-manual.))
+$(eval $(call make-download-po-rule,guix,po/guix))
+$(eval $(call make-download-po-rule,packages,po/packages))
+
+$(eval $(call make-check-po-rule,documentation-cookbook,po/doc,guix-cookbook.))
+$(eval $(call make-check-po-rule,documentation-manual,po/doc,guix-manual.))
+$(eval $(call make-check-po-rule,guix,po/guix))
+$(eval $(call make-check-po-rule,packages,po/packages))
+
+download-po: $(foreach domain,guix packages documentation-manual documentation-cookbook,download-po.$(domain))
 .PHONY: download-po
+
+check-po: $(foreach domain,guix packages documentation-manual documentation-cookbook,check-po.$(domain))
+.PHONY: check-po
 
 ## -------------- ##
 ## Silent rules.  ##

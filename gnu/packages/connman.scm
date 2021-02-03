@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -138,15 +138,15 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
 (define-public cmst
   (package
     (name "cmst")
-    (version "2019.01.13")
+    (version "2020.11.01")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
+             "https://github.com/andrew-bibb/cmst/releases/download/"
              version "/cmst-" version ".tar.xz"))
        (sha256
-        (base32 "1cn6xz2rpkf5kx5d6p2x2lh85zppjacp59l6gj3n6x12p90al1vl"))))
+        (base32 "0jn12wxwjznady6aniwmvahg1dj25p902sdwj0070biv6vx5c7dq"))))
     (inputs
      `(("qtbase" ,qtbase)))
     (native-inputs

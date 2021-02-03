@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
@@ -13,10 +13,11 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2017, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Fredrik Salomonsson <plattfot@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages tor)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -355,13 +357,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.15.0")
+    (version "1.15.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "0nqfipv5s4npfidsm1rs3kpq0r0av9bfqfd5r035jibx5k0jniqb"))))
+       (base32 "1bg13l5s8x9p1v0jyv29n84bay27pflindpzjsc9gj7i4wdkrg7f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
@@ -432,19 +434,20 @@ gpgpme starting with version 1.7.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     ;; When cross-compiling, the bash script libgcrypt-config provided by
-     ;; libgcrypt must be accessible during configure phase.
-     `(,@(if (%current-target-system)
-             '(#:phases
-               (modify-phases %standard-phases
-                 (add-before 'configure 'add-libgrypt-config
-                   (lambda _
-                     (setenv "PATH" (string-append
-                                     (assoc-ref %build-inputs "libgcrypt")
-                                     "/bin:"
-                                     (getenv "PATH")))
-                     #t))))
-             '())))
+     ;; Work around <https://bugs.gnu.org/20272> to achieve reproducible
+     ;; builds.
+     '(#:parallel-build? #f
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-libgrypt-config
+           (lambda* (#:key inputs target #:allow-other-keys)
+             (when target
+               ;; When cross-compiling, the bash script 'libgcrypt-config'
+               ;; must be accessible during the configure phase.
+               (setenv "PATH"
+                       (string-append (assoc-ref inputs "libgcrypt")
+                                      "/bin:" (getenv "PATH")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
@@ -782,14 +785,14 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry-tty
   (package
     (name "pinentry-tty")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0w35ypl960pczg5kp6km3dyr000m1hf0vpwwlh72jjkjza36c1v8"))))
+                "0zx5vg6wws2sp2yxwi01b8i1pnsqkydncpj7x0p8xl9y05ja04nd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-pinentry-tty")))
@@ -867,10 +870,6 @@ passphrase when @code{gpg} is run and needs it.")))
   (package
     (inherit pinentry-tty)
     (name "pinentry-efl")
-    (source
-      (origin
-        (inherit (package-source pinentry-tty))
-        (patches (search-patches "pinentry-efl.patch"))))
     (arguments
      '(#:configure-flags '("--enable-pinentry-efl"
                            "--enable-fallback-curses")
@@ -888,9 +887,61 @@ passphrase when @code{gpg} is run and needs it.")))
      `(("efl" ,efl)
        ,@(package-inputs pinentry-tty)))
     (description
-   "Pinentry provides a console and a graphical interface for the
-@dfn{Enlightenment Foundation Libraries} (EFL) that allows users to enter a
+   "Pinentry provides a console and a graphical interface for @acronym{EFL,
+the Enlightenment Foundation Libraries} that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
+
+(define-public pinentry-rofi
+  (package
+    (name "pinentry-rofi")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plattfot/pinentry-rofi/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0kjzvgni9srl8h5c52pqrvgdxs6avv0nhgk19apd97sx10qdwdhk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (ice-9 ftw)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases
+           %standard-phases
+         (add-after 'install 'hall-wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (site (string-append out "/share/guile/site"))
+                    (rofi-bin (string-append (assoc-ref inputs "rofi") "/bin")))
+               (match (scandir site)
+                 (("." ".." version)
+                  (wrap-program
+                      (string-append bin "pinentry-rofi")
+                    (list "PATH" ":" 'prefix `(,rofi-bin)))
+                  #t)))))
+         (add-after 'compress-documentation 'installcheck
+           (lambda* rest
+             (invoke "make" "installcheck"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-3.0)
+              ("rofi" ,rofi)))
+    (synopsis "Rofi GUI for GnuPG's passphrase input")
+    (description "Pinentry-rofi is a simple graphical user interface for
+passphrase or PIN when required by @code{gpg} or other software.  It is using
+the Rofi application launcher as the user interface.  Which makes it combined
+with @code{rofi-pass} a good front end for @code{password-store}.")
+    (home-page "https://github.com/plattfot/pinentry-rofi/")
+    (license license:gpl3+)))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)

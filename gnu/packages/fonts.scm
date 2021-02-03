@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1031,6 +1032,27 @@ Sans Pro family.")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
 
+(define-public font-fira-go
+  (package
+    (name "font-fira-go")
+    (version "1.000")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bBoxType/FiraGO")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10rcfg1fijv00yxv5n9l3lm0axhafa1irkg42zpmasd70flgg655"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/bBoxType/FiraGO")
+    (synopsis "Multilingual extension of the Fira Sans font family")
+    (description "FiraGO is a multilingual extension of the Fira Sans font
+family.  Based on the Fira Sans 4.3 glyph set, FiraGO adds support for the
+Arabic, Devanagari, Georgian, Hebrew and Thai scripts.")
+    (license license:silofl1.1)))
+
 (define-public font-fira-code
   (package
     (name "font-fira-code")
@@ -1370,6 +1392,43 @@ programming.  Iosevka is completely generated from its source code.")
     (description
      "Sarasa Gothic is a programming font based on Iosevka and Source Han Sans,
 most CJK characters are same height, and double width as ASCII characters.")))
+
+(define-public font-space-grotesk
+  (package
+    (name "font-space-grotesk")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/floriankarsten/space-grotesk")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1aiivn0rl7ydiyqvsr0fa2hx82h3br3x48w3100fcly23n0fdcby"))))
+    (build-system font-build-system)
+    ;; TODO: Package fontmake and gftools and build from source.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install-license-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "OFL.txt" doc)
+               #t))))))
+    (home-page "https://floriankarsten.github.io/space-grotesk/")
+    (synopsis "Proportional variant of the fixed-width Space Mono family")
+    (description
+     "Space Grotesk is a proportional sans-serif typeface variant based on Colophon
+Foundry's fixed-width Space Mono family.  It retains the monospace's idiosyncratic
+details while optimizing for improved readability at non-display sizes.
+
+Space Grotesk includes Latin Vietnamese, Pinyin, and all Western, Central, and
+South-Eastern European language support, as well as several OpenType features:
+old-style and tabular figures, superscript and subscript numerals, fractions,
+and stylistic alternates.")
+    (license license:silofl1.1)))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
@@ -1822,7 +1881,7 @@ in small sizes, the text looks crisper.")
 (define-public font-juliamono
   (package
     (name "font-juliamono")
-    (version "0.025")
+    (version "0.031")
     (source
      (origin
        (method git-fetch)
@@ -1831,7 +1890,7 @@ in small sizes, the text looks crisper.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w8mpl9zc1y4j1f26ikbz5g9dqsszhikp4r9p1d3ch3b5ayb5c3m"))))
+        (base32 "0pcz2qaw0g0gak4plvhgg3m76h4gamffa373r52dzx0qwn1i1cf1"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

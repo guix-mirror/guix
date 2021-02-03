@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +40,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix profiles)
   #:use-module (guix channels)
+  #:use-module ((guix git) #:select (update-cached-checkout))
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix derivations)
@@ -51,6 +52,7 @@
   #:autoload   (guix build utils) (mkdir-p)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-71)
   #:autoload   (ice-9 ftw) (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -311,8 +313,7 @@ Raise '&inferior-exception' when an exception is read from PORT."
   "Return the list of name/version pairs corresponding to the set of packages
 available in INFERIOR.
 
-This is faster and requires less resource-intensive than calling
-'inferior-packages'."
+This is faster and less resource-intensive than calling 'inferior-packages'."
   (if (inferior-eval '(defined? 'fold-available-packages)
                      inferior)
       (inferior-eval '(fold-available-packages
@@ -642,29 +643,45 @@ failing when GUIX is too old and lacks the 'guix repl' command."
 
 (define* (inferior-package->manifest-entry package
                                            #:optional (output "out")
-                                           #:key (parent (delay #f))
-                                           (properties '()))
+                                           #:key (properties '()))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
-  ;; For each dependency, keep a promise pointing to its "parent" entry.
-  (letrec* ((deps  (map (match-lambda
-                          ((label package)
-                           (inferior-package->manifest-entry package
-                                                             #:parent (delay entry)))
-                          ((label package output)
-                           (inferior-package->manifest-entry package output
-                                                             #:parent (delay entry))))
-                        (inferior-package-propagated-inputs package)))
-            (entry (manifest-entry
-                     (name (inferior-package-name package))
-                     (version (inferior-package-version package))
-                     (output output)
-                     (item package)
-                     (dependencies (delete-duplicates deps))
-                     (search-paths
-                      (inferior-package-transitive-native-search-paths package))
-                     (parent parent)
-                     (properties properties))))
-    entry))
+  (define cache
+    (make-hash-table))
+
+  (define-syntax-rule (memoized package output exp)
+    ;; Memoize the entry returned by EXP for PACKAGE/OUTPUT.  This is
+    ;; important as the same package may be traversed many times through
+    ;; propagated inputs, and querying the inferior is costly.  Use
+    ;; 'hash'/'equal?', which is okay since <inferior-package> is simple.
+    (let ((compute (lambda () exp))
+          (key     (cons package output)))
+      (or (hash-ref cache key)
+          (let ((result (compute)))
+            (hash-set! cache key result)
+            result))))
+
+  (let loop ((package package)
+             (output  output)
+             (parent  (delay #f)))
+    (memoized package output
+      ;; For each dependency, keep a promise pointing to its "parent" entry.
+      (letrec* ((deps  (map (match-lambda
+                              ((label package)
+                               (loop package "out" (delay entry)))
+                              ((label package output)
+                               (loop package output (delay entry))))
+                            (inferior-package-propagated-inputs package)))
+                (entry (manifest-entry
+                         (name (inferior-package-name package))
+                         (version (inferior-package-version package))
+                         (output output)
+                         (item package)
+                         (dependencies (delete-duplicates deps))
+                         (search-paths
+                          (inferior-package-transitive-native-search-paths package))
+                         (parent parent)
+                         (properties properties))))
+        entry))))
 
 
 ;;;
@@ -676,6 +693,21 @@ failing when GUIX is too old and lacks the 'guix repl' command."
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/inferiors")))
 
+(define (channel-full-commit channel)
+  "Return the commit designated by CHANNEL as quickly as possible.  If
+CHANNEL's 'commit' field is a full SHA1, return it as-is; if it's a SHA1
+prefix, resolve it; and if 'commit' is unset, fetch CHANNEL's branch tip."
+  (let ((commit (channel-commit channel))
+        (branch (channel-branch channel)))
+    (if (and commit (= (string-length commit) 40))
+        commit
+        (let* ((ref (if commit `(commit . ,commit) `(branch . ,branch)))
+               (cache commit relation
+                     (update-cached-checkout (channel-url channel)
+                                             #:ref ref
+                                             #:check-out? #f)))
+          commit))))
+
 (define* (cached-channel-instance store
                                   channels
                                   #:key
@@ -686,15 +718,16 @@ failing when GUIX is too old and lacks the 'guix repl' command."
 The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
 This procedure opens a new connection to the build daemon.  AUTHENTICATE?
 determines whether CHANNELS are authenticated."
-  (define instances
-    (latest-channel-instances store channels
-                              #:authenticate? authenticate?))
+  (define commits
+    ;; Since computing the instances of CHANNELS is I/O-intensive, use a
+    ;; cheaper way to get the commit list of CHANNELS.  This limits overhead
+    ;; to the minimum in case of a cache hit.
+    (map channel-full-commit channels))
 
   (define key
     (bytevector->base32-string
      (sha256
-      (string->utf8
-       (string-concatenate (map channel-instance-commit instances))))))
+      (string->utf8 (string-concatenate commits)))))
 
   (define cached
     (string-append cache-directory "/" key))
@@ -722,8 +755,12 @@ determines whether CHANNELS are authenticated."
   (if (file-exists? cached)
       cached
       (run-with-store store
-        (mlet %store-monad ((profile
-                             (channel-instances->derivation instances)))
+        (mlet* %store-monad ((instances
+                              -> (latest-channel-instances store channels
+                                                           #:authenticate?
+                                                           authenticate?))
+                             (profile
+                              (channel-instances->derivation instances)))
           (mbegin %store-monad
             (show-what-to-build* (list profile))
             (built-derivations (list profile))
@@ -750,3 +787,7 @@ This is a convenience procedure that people may use in manifests passed to
                                #:cache-directory cache-directory
                                #:ttl ttl)))
   (open-inferior cached))
+
+;;; Local Variables:
+;;; eval: (put 'memoized 'scheme-indent-function 1)
+;;; End:

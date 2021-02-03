@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -130,7 +130,8 @@ specifications to 'targets'."
        (documentation "Map a device node using Linux's device mapper.")
        (start #~(lambda () #$(open source targets)))
        (stop #~(lambda _ (not #$(close source targets))))
-       (respawn? #f))))))
+       (respawn? #f))))
+   (description "Map a device node using Linux's device mapper.")))
 
 (define (device-mapping-service mapped-device)
   "Return a service that sets up @var{mapped-device}."

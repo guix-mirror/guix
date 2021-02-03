@@ -56,6 +56,8 @@
   #:use-module (zlib)
   #:autoload   (lzlib) (call-with-lzip-output-port
                         make-lzip-output-port)
+  #:autoload   (zstd)  (call-with-zstd-output-port
+                        make-zstd-output-port)
   #:use-module (guix cache)
   #:use-module (guix ui)
   #:use-module (guix scripts)
@@ -588,23 +590,22 @@ requested using POOL."
   (define nar
     (nar-cache-file cache item #:compression compression))
 
+  (define (write-compressed-file call-with-compressed-output-port)
+    ;; Note: the file port gets closed along with the compressed port.
+    (call-with-compressed-output-port (open-output-file (string-append nar ".tmp"))
+      (lambda (port)
+        (write-file item port))
+      #:level (compression-level compression))
+    (rename-file (string-append nar ".tmp") nar))
+
   (mkdir-p (dirname nar))
   (match (compression-type compression)
     ('gzip
-     ;; Note: the file port gets closed along with the gzip port.
-     (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
-       (lambda (port)
-         (write-file item port))
-       #:level (compression-level compression)
-       #:buffer-size %default-buffer-size)
-     (rename-file (string-append nar ".tmp") nar))
+     (write-compressed-file call-with-gzip-output-port))
     ('lzip
-     ;; Note: the file port gets closed along with the lzip port.
-     (call-with-lzip-output-port (open-output-file (string-append nar ".tmp"))
-       (lambda (port)
-         (write-file item port))
-       #:level (compression-level compression))
-     (rename-file (string-append nar ".tmp") nar))
+     (write-compressed-file call-with-lzip-output-port))
+    ('zstd
+     (write-compressed-file call-with-zstd-output-port))
     ('none
      ;; Cache nars even when compression is disabled so that we can
      ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
@@ -871,6 +872,9 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
     (($ <compression> 'lzip level)
      (make-lzip-output-port (response-port response)
                             #:level level))
+    (($ <compression> 'zstd level)
+     (make-zstd-output-port (response-port response)
+                            #:level level))
     (($ <compression> 'none)
      (response-port response))
     (#f
@@ -953,6 +957,7 @@ blocking."
   (match string
     ("gzip" 'gzip)
     ("lzip" 'lzip)
+    ("zstd" 'zstd)
     (_      #f)))
 
 (define (effective-compression requested-type compressions)

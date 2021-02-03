@@ -120,7 +120,7 @@ as the native format.")
 (define-public inkscape-1.0
   (package
     (name "inkscape")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -129,7 +129,7 @@ as the native format.")
                            "inkscape-" version ".tar.xz"))
        (sha256
         (base32
-         "1hjp5nnyx2m3miji6q4lcb6zgbi498v641dc7apkqqvayknrb4ng"))
+         "12krl97a00gdcxxibsb7g2lgx5458mhx2437x0hvz350242j6gns"))
        (modules '((guix build utils)
                   (ice-9 format)))
        (snippet

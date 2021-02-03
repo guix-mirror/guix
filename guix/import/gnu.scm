@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,8 +19,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import gnu)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix gnu-maintenance)
   #:use-module (guix import utils)
+  #:use-module (guix i18n)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (gcrypt hash)
@@ -108,20 +112,17 @@ download policy (see 'download-tarball' for details.)"
   "Return the package declaration for NAME as an s-expression.  Use
 KEY-DOWNLOAD as the OpenPGP key download policy (see 'download-tarball' for
 details.)"
-  (match (latest-release name)
-    ((? upstream-source? release)
-     (let ((version (upstream-source-version release)))
-       (match (find-package name)
-         (#f
-          (raise (condition
-                  (&message
-                   (message "couldn't find meta-data for GNU package")))))
-         (info
-          (gnu-package->sexp info release #:key-download key-download)))))
-    (_
-     (raise (condition
-             (&message
-              (message
-               "failed to determine latest release of GNU package")))))))
+  (let ((package (find-package name)))
+    (unless package
+      (raise (formatted-message (G_ "no GNU package found for ~a") name)))
+
+    (match (latest-release name)
+      ((? upstream-source? release)
+       (let ((version (upstream-source-version release)))
+         (gnu-package->sexp package release #:key-download key-download)))
+      (_
+       (raise (formatted-message
+               (G_ "failed to determine latest release of GNU ~a")
+               name))))))
 
 ;;; gnu.scm ends here

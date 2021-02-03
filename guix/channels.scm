@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -91,6 +91,9 @@
             ensure-forward-channel-update
 
             profile-channels
+            manifest-entry-channel
+            sexp->channel
+            channel->code
 
             channel-news-entry?
             channel-news-entry-commit
@@ -802,13 +805,36 @@ derivation."
                           (derivation-input-derivation input))))
              (derivation-inputs drv))))
 
+(define (channel-instance->sexp instance)
+  "Return an sexp representation of INSTANCE, a channel instance."
+  (let* ((commit  (channel-instance-commit instance))
+         (channel (channel-instance-channel instance))
+         (intro   (channel-introduction channel)))
+    `(repository
+      (version 0)
+      (url ,(channel-url channel))
+      (branch ,(channel-branch channel))
+      (commit ,commit)
+      (name ,(channel-name channel))
+      ,@(if intro
+            `((introduction
+               (channel-introduction
+                (version 0)
+                (commit
+                 ,(channel-introduction-first-signed-commit
+                   intro))
+                (signer
+                 ,(openpgp-format-fingerprint
+                   (channel-introduction-first-commit-signer
+                    intro))))))
+            '()))))
+
 (define (channel-instances->manifest instances)
   "Return a profile manifest with entries for all of INSTANCES, a list of
 channel instances."
   (define (instance->entry instance drv)
-    (let* ((commit  (channel-instance-commit instance))
-           (channel (channel-instance-channel instance))
-           (intro   (channel-introduction channel)))
+    (let ((commit  (channel-instance-commit instance))
+          (channel (channel-instance-channel instance)))
       (manifest-entry
         (name (symbol->string (channel-name channel)))
         (version (string-take commit 7))
@@ -819,23 +845,7 @@ channel instances."
                       drv)
                   drv))
         (properties
-         `((source (repository
-                    (version 0)
-                    (url ,(channel-url channel))
-                    (branch ,(channel-branch channel))
-                    (commit ,commit)
-                    ,@(if intro
-                          `((introduction
-                             (channel-introduction
-                              (version 0)
-                              (commit
-                               ,(channel-introduction-first-signed-commit
-                                 intro))
-                              (signer
-                               ,(openpgp-format-fingerprint
-                                 (channel-introduction-first-commit-signer
-                                  intro))))))
-                          '()))))))))
+         `((source ,(channel-instance->sexp instance)))))))
 
   (mlet* %store-monad ((derivations (channel-instance-derivations instances))
                        (entries ->  (map instance->entry instances derivations)))
@@ -900,34 +910,72 @@ to 'latest-channel-instances'."
                                                   validate-pull)))
     (channel-instances->derivation instances)))
 
+(define* (sexp->channel sexp #:optional (name 'channel))
+  "Read SEXP, a provenance sexp as created by 'channel-instance->sexp'; use
+NAME as the channel name if SEXP does not specify it.  Return #f if the sexp
+does not have the expected structure."
+  (match sexp
+    (('repository ('version 0)
+                  ('url url)
+                  ('branch branch)
+                  ('commit commit)
+                  rest ...)
+     ;; Historically channel sexps did not include the channel name.  It's OK
+     ;; for channels created by 'channel-instances->manifest' because the
+     ;; entry name is the channel name, but it was missing for entries created
+     ;; by 'manifest-entry-with-provenance'.
+     (channel (name (match (assq 'name rest)
+                      (#f name)
+                      (('name name) name)))
+              (url url)
+              (commit commit)
+              (introduction
+               (match (assq 'introduction rest)
+                 (#f #f)
+                 (('introduction intro)
+                  (sexp->channel-introduction intro))))))
+
+    (_ #f)))
+
+(define (manifest-entry-channel entry)
+  "Return the channel ENTRY corresponds to, or #f if that information is
+missing or unreadable.  ENTRY must be an entry created by
+'channel-instances->manifest', with the 'source' property."
+  (let ((name (string->symbol (manifest-entry-name entry))))
+    (match (assq-ref (manifest-entry-properties entry) 'source)
+      ((sexp)
+       (sexp->channel sexp name))
+      (_
+       ;; No channel information for this manifest entry.
+       ;; XXX: Pre-0.15.0 Guix did not provide that information,
+       ;; but there's not much we can do in that case.
+       #f))))
+
 (define (profile-channels profile)
   "Return the list of channels corresponding to entries in PROFILE.  If
 PROFILE is not a profile created by 'guix pull', return the empty list."
-  (filter-map (lambda (entry)
-                (match (assq 'source (manifest-entry-properties entry))
-                  (('source ('repository ('version 0)
-                                         ('url url)
-                                         ('branch branch)
-                                         ('commit commit)
-                                         rest ...))
-                   (channel (name (string->symbol
-                                   (manifest-entry-name entry)))
-                            (url url)
-                            (commit commit)
-                            (introduction
-                             (match (assq 'introduction rest)
-                               (#f #f)
-                               (('introduction intro)
-                                (sexp->channel-introduction intro))))))
-
-                  ;; No channel information for this manifest entry.
-                  ;; XXX: Pre-0.15.0 Guix did not provide that information,
-                  ;; but there's not much we can do in that case.
-                  (_ #f)))
-
+  (filter-map manifest-entry-channel
               ;; Show most recently installed packages last.
               (reverse
                (manifest-entries (profile-manifest profile)))))
+
+(define* (channel->code channel #:key (include-introduction? #t))
+  "Return code (an sexp) to build CHANNEL.  When INCLUDE-INTRODUCTION? is
+true, include its introduction, if any."
+  (let ((intro (and include-introduction?
+                    (channel-introduction channel))))
+    `(channel
+      (name ',(channel-name channel))
+      (url ,(channel-url channel))
+      (commit ,(channel-commit channel))
+      ,@(if intro
+            `((introduction (make-channel-introduction
+                             ,(channel-introduction-first-signed-commit intro)
+                             (openpgp-fingerprint
+                              ,(openpgp-format-fingerprint
+                                (channel-introduction-first-commit-signer
+                                 intro))))))
+            '()))))
 
 
 ;;;

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -93,6 +93,7 @@
             version-major+minor+point
             version-major+minor
             version-major
+            version-unique-prefix
             guile-version>?
             version-prefix?
             string-replace-substring
@@ -114,7 +115,6 @@
             edit-expression
 
             filtered-port
-            compressed-port
             decompressed-port
             call-with-decompressed-port
             compressed-output-port
@@ -215,7 +215,13 @@ buffered data is lost."
   "Return the lzip port produced by calling PROC (a symbol) on PORT and ARGS.
 Raise an error if lzlib support is missing."
   (let ((make-port (module-ref (resolve-interface '(lzlib)) proc)))
-    (values (make-port port) '())))
+    (make-port port)))
+
+(define (zstd-port proc port . args)
+  "Return the zstd port produced by calling PROC (a symbol) on PORT and ARGS.
+Raise an error if zstd support is missing."
+  (let ((make-port (module-ref (resolve-interface '(zstd)) proc)))
+    (make-port port)))
 
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION,
@@ -226,6 +232,8 @@ a symbol such as 'xz."
     ('xz           (filtered-port `(,%xz "-dc" ,@(%xz-parallel-args)) input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
+                           '()))
+    ('zstd         (values (zstd-port 'make-zstd-input-port input)
                            '()))
     (_             (error "unsupported compression scheme" compression))))
 
@@ -298,6 +306,8 @@ program--e.g., '(\"--fast\")."
                                                 ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     ('lzip         (values (lzip-port 'make-lzip-output-port output)
+                           '()))
+    ('zstd         (values (zstd-port 'make-zstd-output-port output)
                            '()))
     (_             (error "unsupported compression scheme" compression))))
 
@@ -596,6 +606,38 @@ minor version numbers from version-string."
 (define (version-major version-string)
   "Return the major version number as string from the version-string."
   (version-prefix version-string 1))
+
+(define (version-unique-prefix version versions)
+  "Return the shortest version prefix to unambiguously identify VERSION among
+VERSIONS.  For example:
+
+  (version-unique-prefix \"2.0\" '(\"3.0\" \"2.0\"))
+  => \"2\"
+
+  (version-unique-prefix \"2.2\" '(\"3.0.5\" \"2.0.9\" \"2.2.7\"))
+  => \"2.2\"
+
+  (version-unique-prefix \"27.1\" '(\"27.1\"))
+  => \"\"
+"
+  (define not-dot
+    (char-set-complement (char-set #\.)))
+
+  (define other-versions
+    (delete version versions))
+
+  (let loop ((prefix     '())
+             (components (string-tokenize version not-dot)))
+    (define prefix-str
+      (string-join prefix "."))
+
+    (if (any (cut string-prefix? prefix-str <>) other-versions)
+        (match components
+          ((head . tail)
+           (loop `(,@prefix ,head) tail))
+          (()
+           version))
+        prefix-str)))
 
 (define (version>? a b)
   "Return #t when A denotes a version strictly newer than B."

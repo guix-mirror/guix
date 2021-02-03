@@ -214,11 +214,31 @@
 ;;; The PostgreSQL service.
 ;;;
 
+(define %postgresql-log-directory
+  "/var/log/postgresql")
+
+(define %role-log-file
+  "/var/log/postgresql_roles.log")
+
 (define %postgresql-os
   (simple-operating-system
    (service postgresql-service-type
             (postgresql-configuration
-             (postgresql postgresql-10)))))
+             (postgresql postgresql-10)
+             (config-file
+              (postgresql-config-file
+               (extra-config
+                '(("session_preload_libraries" "auto_explain")
+                  ("random_page_cost" 2)
+                  ("auto_explain.log_min_duration" "100 ms")
+                  ("work_mem" "500 MB")
+                  ("debug_print_plan" #t)))))))
+   (service postgresql-role-service-type
+            (postgresql-role-configuration
+             (roles
+              (list (postgresql-role
+                     (name "root")
+                     (create-database? #t))))))))
 
 (define (run-postgresql-test)
   "Run tests in %POSTGRESQL-OS."
@@ -252,6 +272,56 @@
              '(begin
                 (use-modules (gnu services herd))
                 (start-service 'postgres))
+             marionette))
+
+          (test-assert "log-file"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 ftw)
+                             (ice-9 match))
+                (current-output-port
+                 (open-file "/dev/console" "w0"))
+                (let ((server-log-file
+                       (string-append #$%postgresql-log-directory
+                                      "/pg_ctl.log")))
+                  (and (file-exists? server-log-file)
+                       (display
+                        (call-with-input-file server-log-file
+                          get-string-all)))
+                  #t))
+             marionette))
+
+          (test-assert "database ready"
+            (begin
+              (marionette-eval
+               '(begin
+                  (let loop ((i 10))
+                    (unless (or (zero? i)
+                                (and (file-exists? #$%role-log-file)
+                                     (string-contains
+                                      (call-with-input-file #$%role-log-file
+                                        get-string-all)
+                                      ";\nCREATE DATABASE")))
+                      (sleep 1)
+                      (loop (- i 1)))))
+               marionette)))
+
+          (test-assert "database creation"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (ice-9 popen))
+                (current-output-port
+                 (open-file "/dev/console" "w0"))
+                (let* ((port (open-pipe*
+                              OPEN_READ
+                              #$(file-append postgresql "/bin/psql")
+                              "-tAh" "/var/run/postgresql"
+                              "-c" "SELECT 1 FROM pg_database WHERE
+ datname='root'"))
+                       (output (get-string-all port)))
+                  (close-pipe port)
+                  (string-contains output "1")))
              marionette))
 
           (test-end)

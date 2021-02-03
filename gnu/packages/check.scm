@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -288,6 +288,55 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
+
+(define-public shunit2
+  (package
+    (name "shunit2")
+    (version "2.1.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kward/shunit2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08vs0jjl3pfh100sjlw31x4638xj7fghr0j2g1zfikba8n1f9491"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)    ; no configure script
+         (delete 'build)
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* "shunit2"
+               (("#! /bin/sh") (string-append "#! " (which "sh")))
+               (("/usr/bin/od") (which "od")))
+             (substitute* "test_runner"
+               (("/bin/sh") (which "sh"))
+               (("/bin/bash") (which "bash")))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; This test is buggy in the build container.
+               (delete-file "shunit2_misc_test.sh")
+               (invoke "sh" "test_runner"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "shunit2"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin"))
+             #t)))))
+    (home-page "https://github.com/kward/shunit2")
+    (synopsis "@code{xUnit} based unit testing for Unix shell scripts")
+    (description "@code{shUnit2} was originally developed to provide a
+consistent testing solution for @code{log4sh}, a shell based logging framework
+similar to @code{log4j}.  It is designed to work in a similar manner to JUnit,
+PyUnit and others.")
+    (license license:asl2.0)))
 
 ;; When dependent packages upgraded to use newer version of catch, this one should
 ;; be removed.
@@ -1316,9 +1365,6 @@ subprocess and see the output as well as any file modifications.")
      "This package is only for bootstrapping.  Do not use this.")
     (license license:psfl)))
 
-(define-public python2-testtools-bootstrap
-  (package-with-python2 python-testtools-bootstrap))
-
 (define-public python-testtools
   (package
     (inherit python-testtools-bootstrap)
@@ -1343,9 +1389,6 @@ subprocess and see the output as well as any file modifications.")
      "Testtools extends the Python standard library unit testing framework to
 provide matchers, more debugging information, and cross-Python
 compatibility.")))
-
-(define-public python2-testtools
-  (package-with-python2 python-testtools))
 
 (define-public python-testscenarios-bootstrap
   (package
@@ -1374,9 +1417,6 @@ compatibility.")))
      "This package is only for bootstrapping.  Don't use this.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-testscenarios-bootstrap
-  (package-with-python2 python-testscenarios-bootstrap))
-
 (define-public python-testscenarios
   (package
     (inherit python-testscenarios-bootstrap)
@@ -1387,9 +1427,6 @@ compatibility.")))
     (description
      "Testscenarios provides clean dependency injection for Python unittest
 style tests.")))
-
-(define-public python2-testscenarios
-  (package-with-python2 python-testscenarios))
 
 ;; Testresources requires python-pbr at runtime, but pbr needs it for its
 ;; own tests.  Hence this bootstrap variant.
@@ -1415,9 +1452,6 @@ style tests.")))
 testresources package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-testresources-bootstrap
-  (package-with-python2 python-testresources-bootstrap))
-
 (define-public python-testresources
   (package
     (inherit python-testresources-bootstrap)
@@ -1431,9 +1465,6 @@ testresources package instead.")
     (description
      "Testresources is an extension to Python's unittest to allow declarative
 use of resources by test cases.")))
-
-(define-public python2-testresources
-  (package-with-python2 python-testresources))
 
 (define-public python-subunit-bootstrap
   (package
@@ -1461,9 +1492,6 @@ use of resources by test cases.")))
 python-subunit package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
 
-(define-public python2-subunit-bootstrap
-  (package-with-python2 python-subunit-bootstrap))
-
 (define-public python-subunit
   (package
     (inherit python-subunit-bootstrap)
@@ -1478,9 +1506,6 @@ python-subunit package instead.")
     (description
      "Python-subunit is a Python implementation of the subunit test streaming
 protocol.")))
-
-(define-public python2-subunit
-  (package-with-python2 python-subunit))
 
 ;; Fixtures requires python-pbr at runtime, but pbr uses fixtures for its
 ;; own tests.  Hence this bootstrap variant.
@@ -1511,9 +1536,6 @@ protocol.")))
 python-fixtures package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
-(define-public python2-fixtures-bootstrap
-  (package-with-python2 python-fixtures-bootstrap))
-
 (define-public python-fixtures
   (package
     (inherit python-fixtures-bootstrap)
@@ -1535,9 +1557,6 @@ python-fixtures package instead.")
     (description
      "Fixtures provides a way to create reusable state, useful when writing
 Python tests.")))
-
-(define-public python2-fixtures
-  (package-with-python2 python-fixtures))
 
 (define-public python-testrepository-bootstrap
   (package
@@ -1564,9 +1583,6 @@ Python tests.")))
      "Bootstrap package for python-testrepository.  Don't use this.")
     (license (list license:bsd-3 license:asl2.0)))) ; at user's option
 
-(define-public python2-testrepository-bootstrap
-  (package-with-python2 python-testrepository-bootstrap))
-
 (define-public python-testrepository
   (package
     (inherit python-testrepository-bootstrap)
@@ -1583,9 +1599,6 @@ Python tests.")))
     (description "Testrepository provides a database of test results which can
 be used as part of a developer's workflow to check things such as what tests
 have failed since the last commit or what tests are currently failing.")))
-
-(define-public python2-testrepository
-  (package-with-python2 python-testrepository))
 
 (define-public python-coverage
   (package
@@ -2333,9 +2346,6 @@ tests written in a natural language style, backed up by Python code.")
     (description "This package provides testing utility modules for testing
 JSON APIs with Behave.")
     (license license:expat)))
-
-(define-public python2-behave-web-api
-  (package-with-python2 python-behave-web-api))
 
 (define-public python-rednose
   (package

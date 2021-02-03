@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -279,7 +279,9 @@ system objects.")))
 
 (define root-file-system-service-type
   (shepherd-service-type 'root-file-system
-                         (const %root-file-system-shepherd-service)))
+                         (const %root-file-system-shepherd-service)
+                         (description "Take care of syncing the root file
+system and of remounting it read-only when the system shuts down.")))
 
 (define (root-file-system-service)
   "Return a service whose sole purpose is to re-mount read-only the root file
@@ -570,7 +572,9 @@ down.")))
         (requirement '(udev))
         (provision '(trng))
         (start #~(make-forkexec-constructor '#$rngd-command))
-        (stop #~(make-kill-destructor))))))
+        (stop #~(make-kill-destructor))))
+    (description "Run the @command{rngd} random number generation daemon to
+supply entropy to the kernel's pool.")))
 
 (define* (rngd-service #:key
                        (rng-tools rng-tools)
@@ -597,7 +601,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
       (provision '(host-name))
       (start #~(lambda _
                  (sethostname #$name)))
-      (one-shot? #t)))))
+      (one-shot? #t)))
+   (description "Initialize the machine's host name.")))
 
 (define (host-name-service name)
   "Return a service that sets the host name to @var{name}."
@@ -626,7 +631,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                          (display 1 port))))
                    #t))
         (stop #~(const #f)))))
-   #t))                                           ;default to UTF-8
+   #t                                             ;default to UTF-8
+   (description "Ensure the Linux virtual terminals run in UTF-8 mode.")))
 
 (define console-keymap-service-type
   (shepherd-service-type
@@ -638,7 +644,10 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
       (start #~(lambda _
                  (zero? (system* #$(file-append kbd "/bin/loadkeys")
                                  #$@files))))
-      (respawn? #f)))))
+      (respawn? #f)))
+   (description "@emph{This service is deprecated in favor of the
+@code{keyboard-layout} field of @code{operating-system}.}  Load the given list
+of console keymaps with @command{loadkeys}.")))
 
 (define-deprecated (console-keymap-service #:rest files)
   #f
@@ -1341,7 +1350,9 @@ Service Switch}, for an example."
                          (pid  (spawn)))
                      (umask mask)
                      pid))))
-      (stop #~(make-kill-destructor))))))
+      (stop #~(make-kill-destructor))))
+   (description "Run the syslog daemon, @command{syslogd}, which is
+responsible for logging system messages.")))
 
 ;; Snippet adapted from the GNU inetutils manual.
 (define %default-syslog.conf
@@ -2207,7 +2218,8 @@ instance."
                     (when device
                       (restart-on-EINTR (swapoff device)))
                     #f)))
-        (respawn? #f))))))
+        (respawn? #f))))
+   (description "Turn on the virtual memory swap area.")))
 
 (define (swap-service device)
   "Return a service that uses @var{device} as a swap device."
@@ -2321,7 +2333,9 @@ This service is not part of @var{%base-services}."
         (requirement '(user-processes udev dbus-system))
         (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
         (start #~(make-forkexec-constructor #$kmscon-command))
-        (stop #~(make-kill-destructor)))))))
+        (stop #~(make-kill-destructor)))))
+   (description "Start the @command{kmscon} virtual terminal emulator for the
+Linux @dfn{kernel mode setting} (KMS).")))
 
 (define-record-type* <static-networking>
   static-networking make-static-networking

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -4134,6 +4134,63 @@ the following features:
 ")
     (license license:lgpl3+)))
 
+(define-public lv2-speech-denoiser
+  (let ((commit "04cfba929630404f8d4f4ca5bac8d9b09a99152f")
+        (revision "1"))
+    (package
+      (name "lv2-speech-denoiser")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lucianodato/speech-denoiser/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "189l6lz8sz5vr6bjyzgcsrvksl1w6crqsg0q65r94b5yjsmjnpr4"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:meson ,meson-0.55
+         ;; Using a "release" build is recommended for performance
+         #:build-type "release"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-meson-build
+             (lambda _
+               (substitute* "meson.build"
+                 (("install_folder = 'sdenoise.lv2'")
+                  "install_folder = 'lib/lv2/sdenoise.lv2'")
+                 (("build/manifest.ttl") "../build/manifest.ttl"))
+               #t))
+           (add-after 'unpack 'build-rnnoise
+             (lambda _
+               (with-directory-excursion "rnnoise"
+                 (let ((old-CFLAGS (getenv "CFLAGS")))
+                   (setenv "CFLAGS" "-fvisibility=hidden -fPIC -Wl,--exclude-libs,ALL")
+                   (setenv "CONFIG_SHELL" (which "bash"))
+                   (invoke "autoreconf" "-vif")
+                   (invoke "sh" "configure"
+                           "--disable-examples"
+                           "--disable-doc"
+                           "--disable-shared"
+                           "--enable-static")
+                   (invoke "make")
+                   (setenv "CFLAGS" old-CFLAGS))))))))
+      (inputs
+       `(("lv2" ,lv2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/werman/noise-suppression-for-voice")
+      (synopsis "Speech denoise LV2 plugin based on Xiph's RNNoise library")
+      (description "RNNoise is a library that uses deep learning to apply
+noise supression to audio sources with voice presence.  This package provides
+an LV2 audio plugin.")
+      (license license:lgpl3+))))
+
 (define-public cli-visualizer
   (package
     (name "cli-visualizer")
@@ -4772,11 +4829,13 @@ with the provided metadata and adhere to well-known best practices.")
         (base32
          "07xl3cmdaf7k9mm58m93cn8i1jvgimmiifdw1w7v2jl88nx60pm1"))))
     (build-system meson-build-system)
-    (inputs
-     `(("cairo" ,cairo)
-       ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    ;; These are listed as propagated inputs because they are dependencies
+    ;; in pkgconfig.
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)))
     (synopsis "GUI toolkit for LV2 plugins")
     (description "ZToolkit (Ztk) is a cross-platform GUI toolkit heavily
 inspired by GTK.  It handles events and low level drawing on behalf of
@@ -4825,9 +4884,9 @@ edited, converted, compressed and saved.")
     (name "ztoolkit-rsvg")
     (arguments
      `(#:configure-flags `("-Denable_rsvg=true")))
-    (inputs
+    (propagated-inputs
      `(("librsvg" ,librsvg)
-       ,@(package-inputs ztoolkit)))
+       ,@(package-propagated-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
 
 (define-public lsp-dsp-lib

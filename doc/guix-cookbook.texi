@@ -57,8 +57,9 @@ its API, and related concepts.
 @c how to join your own translation team and how to report issues with the
 @c translation.
 If you would like to translate this document in your native language, consider
-joining the @uref{https://translationproject.org/domain/guix-cookbook.html,
-Translation Project}.
+joining
+@uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook,
+Weblate}.
 
 @menu
 * Scheme tutorials::            Meet your new favorite language!
@@ -1353,6 +1354,7 @@ reference.
 
 @menu
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
+* Guix System Image API::        Customizing images to target specific platforms.
 * Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
 * Running Guix on a Linode Server:: Running Guix on a Linode Server
@@ -1600,6 +1602,217 @@ Left undiscussed however, is Guix's initrd and its customization.  It is
 likely that you'll need to modify the initrd on a machine using a custom
 kernel, since certain modules which are expected to be built may not be
 available for inclusion into the initrd.
+
+@node Guix System Image API
+@section Guix System Image API
+
+Historically, Guix System is centered around an @code{operating-system}
+structure.  This structure contains various fields ranging from the
+bootloader and kernel declaration to the services to install.
+
+Depending on the target machine, that can go from a standard
+@code{x86_64} machine to a small ARM single board computer such as the
+Pine64, the image constraints can vary a lot.  The hardware
+manufacturers will impose different image formats with various partition
+sizes and offsets.
+
+To create images suitable for all those machines, a new abstraction is
+necessary: that's the goal of the @code{image} record.  This record
+contains all the required information to be transformed into a
+standalone image, that can be directly booted on any target machine.
+
+@lisp
+(define-record-type* <image>
+  image make-image
+  image?
+  (name               image-name ;symbol
+                      (default #f))
+  (format             image-format) ;symbol
+  (target             image-target
+                      (default #f))
+  (size               image-size  ;size in bytes as integer
+                      (default 'guess))
+  (operating-system   image-operating-system  ;<operating-system>
+                      (default #f))
+  (partitions         image-partitions ;list of <partition>
+                      (default '()))
+  (compression?       image-compression? ;boolean
+                      (default #t))
+  (volatile-root?     image-volatile-root? ;boolean
+                      (default #t))
+  (substitutable?     image-substitutable? ;boolean
+                      (default #t)))
+@end lisp
+
+This record contains the operating-system to instantiate. The
+@code{format} field defines the image type and can be @code{efi-raw},
+@code{qcow2} or @code{iso9660} for instance. In the future, it could be
+extended to @code{docker} or other image types.
+
+A new directory in the Guix sources is dedicated to images definition. For now
+there are four files:
+
+@itemize @bullet
+@item @file{gnu/system/images/hurd.scm}
+@item @file{gnu/system/images/pine64.scm}
+@item @file{gnu/system/images/novena.scm}
+@item @file{gnu/system/images/pinebook-pro.scm}
+@end itemize
+
+Let's have a look to @file{pine64.scm}. It contains the
+@code{pine64-barebones-os} variable which is a minimal definition of an
+operating-system dedicated to the @b{Pine A64 LTS} board.
+
+@lisp
+(define pine64-barebones-os
+  (operating-system
+   (host-name "vignemale")
+   (timezone "Europe/Paris")
+   (locale "en_US.utf8")
+   (bootloader (bootloader-configuration
+                (bootloader u-boot-pine64-lts-bootloader)
+                (target "/dev/vda")))
+   (initrd-modules '())
+   (kernel linux-libre-arm64-generic)
+   (file-systems (cons (file-system
+                        (device (file-system-label "my-root"))
+                        (mount-point "/")
+                        (type "ext4"))
+                       %base-file-systems))
+   (services (cons (service agetty-service-type
+                            (agetty-configuration
+                             (extra-options '("-L")) ; no carrier detect
+                             (baud-rate "115200")
+                             (term "vt100")
+                             (tty "ttyS0")))
+                   %base-services))))
+@end lisp
+
+The @code{kernel} and @code{bootloader} fields are pointing to packages
+dedicated to this board.
+
+Right below, the @code{pine64-image-type} variable is also defined.
+
+@lisp
+(define pine64-image-type
+  (image-type
+   (name 'pine64-raw)
+   (constructor (cut image-with-os arm64-disk-image <>))))
+@end lisp
+
+It's using a record we haven't talked about yet, the @code{image-type} record,
+defined this way:
+
+@lisp
+(define-record-type* <image-type>
+  image-type make-image-type
+  image-type?
+  (name           image-type-name) ;symbol
+  (constructor    image-type-constructor)) ;<operating-system> -> <image>
+@end lisp
+
+The main purpose of this record is to associate a name to a procedure
+transforming an @code{operating-system} to an image.  To understand why
+it is necessary, let's have a look to the command producing an image
+from an @code{operating-system} configuration file:
+
+@example
+guix system image my-os.scm
+@end example
+
+This command expects an @code{operating-system} configuration but how
+should we indicate that we want an image targeting a Pine64 board?  We
+need to provide an extra information, the @code{image-type}, by passing
+the @code{--image-type} or @code{-t} flag, this way:
+
+@example
+guix system image --image-type=pine64-raw my-os.scm
+@end example
+
+This @code{image-type} parameter points to the @code{pine64-image-type}
+defined above. Hence, the @code{operating-system} declared in
+@code{my-os.scm} will be applied the @code{(cut image-with-os
+arm64-disk-image <>)} procedure to turn it into an image.
+
+The resulting image looks like:
+
+@lisp
+(image
+ (format 'disk-image)
+ (target "aarch64-linux-gnu")
+ (operating-system my-os)
+ (partitions
+  (list (partition
+         (inherit root-partition)
+         (offset root-offset)))))
+@end lisp
+
+which is the aggregation of the @code{operating-system} defined in
+ @code{my-os.scm} to the @code{arm64-disk-image} record.
+
+But enough Scheme madness. What does this image API bring to the Guix user?
+
+One can run:
+
+@example
+mathieu@@cervin:~$ guix system --list-image-types
+The available image types are:
+
+   - pinebook-pro-raw
+   - pine64-raw
+   - novena-raw
+   - hurd-raw
+   - hurd-qcow2
+   - qcow2
+   - uncompressed-iso9660
+   - efi-raw
+   - arm64-raw
+   - arm32-raw
+   - iso9660
+@end example
+
+and by writing an @code{operating-system} file based on
+@code{pine64-barebones-os}, you can customize your image to your
+preferences in a file (@file{my-pine-os.scm}) like this:
+
+@lisp
+(use-modules (gnu services linux)
+             (gnu system images pine64))
+
+(let ((base-os pine64-barebones-os))
+  (operating-system
+    (inherit base-os)
+    (timezone "America/Indiana/Indianapolis")
+    (services
+     (cons
+      (service earlyoom-service-type
+               (earlyoom-configuration
+                (prefer-regexp "icecat|chromium")))
+      (operating-system-user-services base-os)))))
+@end lisp
+
+run:
+
+@example
+guix system image --image-type=pine64-raw my-pine-os.scm
+@end example
+
+or,
+
+@example
+guix system image --image-type=hurd-raw my-hurd-os.scm
+@end example
+
+to get an image that can be written directly to a hard drive and booted
+from.
+
+Without changing anything to @code{my-hurd-os.scm}, calling:
+
+@example
+guix system image --image-type=hurd-qcow2 my-hurd-os.scm
+@end example
+
+will instead produce a Hurd QEMU image.
 
 @node Connecting to Wireguard VPN
 @section Connecting to Wireguard VPN

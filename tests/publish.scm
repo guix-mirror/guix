@@ -38,6 +38,7 @@
   #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
   #:use-module (zlib)
   #:use-module (lzlib)
+  #:autoload   (zstd) (call-with-zstd-input-port)
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
@@ -53,6 +54,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+(define (zstd-supported?)
+  (resolve-module '(zstd) #t #f #:ensure #f))
 
 (define %reference (add-text-to-store %store "ref" "foo"))
 
@@ -234,6 +238,18 @@ References: ~%"
                  (publish-uri
                   (string-append "/nar/lzip/" (basename %item))))))
        (call-with-lzip-input-port nar
+         (cut restore-file <> temp)))
+     (call-with-input-file temp read-string))))
+
+(unless (zstd-supported?) (test-skip 1))
+(test-equal "/nar/zstd/*"
+  "bar"
+  (call-with-temporary-output-file
+   (lambda (temp port)
+     (let ((nar (http-get-port
+                 (publish-uri
+                  (string-append "/nar/zstd/" (basename %item))))))
+       (call-with-zstd-input-port nar
          (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
 

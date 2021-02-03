@@ -51,7 +51,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -2252,6 +2252,16 @@ and keep up to date translations of documentation.")
            (lambda _
              (substitute* "meson-postinstall.sh"
                (("update-desktop-database") (which "true")))
+             #t))
+         (add-after 'install 'patch-thumbnailer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute*
+                   (string-append
+                    out
+                    "/share/thumbnailers/gnome-font-viewer.thumbnailer")
+                 (("gnome-thumbnail-font")
+                  (string-append out "/bin/gnome-thumbnail-font"))))
              #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2841,7 +2851,7 @@ database is translated at Transifex.")
 (define-public system-config-printer
   (package
     (name "system-config-printer")
-    (version "1.5.14")
+    (version "1.5.15")
     (source
      (origin
        (method url-fetch)
@@ -2850,7 +2860,7 @@ database is translated at Transifex.")
              "download/v" version
              "/system-config-printer-" version ".tar.xz"))
        (sha256
-        (base32 "1l79lj44kl079sk308m42x3py1yvcxk5x5bs2vqfmqv26zm8qyqf"))))
+        (base32 "12d6xx51vizc476zfnsga9q09nflp51ipn6y7lhi9w2v4772dlpv"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -6440,7 +6450,7 @@ DAV, and others.")
 (define-public gusb
   (package
     (name "gusb")
-    (version "0.3.0")
+    (version "0.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6449,7 +6459,7 @@ DAV, and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "002pg0p4qzzk5dkyiynm483ir26zxrn4k71c7f6j85mfsdzbgli7"))))
+                "0ifhdqhpyxwsg0z9s1anj7cf5pya5qsqyp5ksh9n7mqwa4lrjkl8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -6514,14 +6524,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.100")
+    (version "0.9.101")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://adishatz.org/eolie/eolie-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vzhfp8j1z3jvd5ndqfyn7nqrx3zdvx9mv1byjl36nnd9g63ji62"))))
+                "1v8n21y75abdzsnx5idyd0q6yfb6cd0sqbknlbkwh5fdgvjzyvwn"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -10799,13 +10809,13 @@ advanced image management tool")
     (synopsis "Store and run multiple GNOME terminals in one window")
     (description
      "Terminator allows you to run multiple GNOME terminals in a grid and
-+tabs, and it supports drag and drop re-ordering of terminals.")
+tabs, and it supports drag and drop re-ordering of terminals.")
     (license license:gpl2)))
 
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -10814,7 +10824,7 @@ advanced image management tool")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bmmkahshvlvpsnb7zp8bddv7i1h5k4p967n6kxh71g1vnj8x20m"))))
+        (base32 "0flgwlm921801i3ns0dwqpnxl89f3rzn4y9h723i13bmflch3in7"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -11398,7 +11408,7 @@ and toolbars.")
 (define-public setzer
   (package
     (name "setzer")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method git-fetch)
@@ -11407,7 +11417,7 @@ and toolbars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1f5qmkz4hzn54sh56z3hw8zrvg93xlz62ggzlzyg7vgsr83kpns9"))))
+        (base32 "1qmy2bxl8x6pijjaaj91v6rqdipha6iyy0b6b9y1lk3r2p3azd42"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -11832,7 +11842,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.24.0")
+    (version "0.25.1")
     (source
      (origin
        (method git-fetch)
@@ -11842,7 +11852,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "010p32zrim245y0l784yp0rasqcqlyr3lrxwl3r1876x83qhs6q3"))))
+         "03skci66y9qqiv4bqbbc0w6d6agilwmx95cw7sribj06zcykm7m3"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

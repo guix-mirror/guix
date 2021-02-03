@@ -245,8 +245,11 @@ interface (FFI) of Guile.")
   "Return a program that computes the derivation to build Guix from SOURCE."
   (define select?
     ;; Select every module but (guix config) and non-Guix modules.
+    ;; Also exclude (guix channels): it is autoloaded by (guix describe), but
+    ;; only for peripheral functionality.
     (match-lambda
       (('guix 'config) #f)
+      (('guix 'channels) #f)
       (('guix _ ...)   #t)
       (('gnu _ ...)    #t)
       (_               #f)))

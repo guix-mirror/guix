@@ -61,54 +61,55 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages xdisorg)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix hg-download)
-  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages documentation)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix hg-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages gtk)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages bison)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match))
 
 ;; packages outside the x.org system proper
@@ -959,11 +960,30 @@ transparent text on your screen.")
                (base32
                 "1wl2vc5alisiwyk8m07y1ryq8w3ll9ym83j27g4apm4ixjl8d6x2"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'sanitise-shebang
+           ;; This wish script uses a strange double shebang that escapes our
+           ;; patch-shebangs phase.  Assume that it's unnecessary & replace it.
+           (lambda _
+             (substitute* "xbindkeys_show"
+               (("^#!.*|^exec wish.*") "")
+               (("^# \\\\") (string-append "#!" (which "wish"))))
+             #t))
+         (add-after 'unpack 'patch-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "xbindkeys_show"
+                 (("\"(xbindkeys)\"" _ command)
+                  (format #f "\"~a/bin/~a\"" out command)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libx11" ,libx11)
-       ("guile" ,guile-2.2)))
+     `(("guile" ,guile-2.2)
+       ("libx11" ,libx11)
+       ("tk" ,tk)))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
@@ -2267,7 +2287,7 @@ Xwrits hides itself until you should take another break.")
 (define-public xsettingsd
   (package
     (name "xsettingsd")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
@@ -2276,8 +2296,7 @@ Xwrits hides itself until you should take another break.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05m4jlw0mgwp24cvyklncpziq1prr2lg0cq9c055sh4n9d93d07v"))))
+        (base32 "14gnkz18dipsa2v24f4nm9syxaa7g21iqjm7y65jn849ka2jr1h8"))))
     (build-system scons-build-system)
     (inputs
      `(("libx11" ,libx11)))

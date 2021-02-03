@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -327,9 +327,9 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (version "1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://gforge.inria.fr/frs/download.php/33497/cmh-"
-                  version ".tar.gz"))
+            ;; Git repo at <https://gitlab.inria.fr/cmh/cmh>.
+            (uri (string-append "http://www.multiprecision.org/downloads/cmh-"
+                                version ".tar.gz"))
             (sha256
              (base32
               "1a28xr9bs0igms0ik99x0w8lnb0jyfcmvyi26pbyh9ggcdivd33p"))))
@@ -349,13 +349,12 @@ varieties, i.e. Jacobians of hyperelliptic curves.
 It can also be used to compute theta constants at arbitrary
 precision.")
    (license license:gpl3+)
-   (home-page
-     "https://gitlab.inria.fr/cmh/cmh#cmh-computation-of-genus-2-class-polynomials")))
+   (home-page "http://www.multiprecision.org/cmh/home.html")))
 
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-41")
+    (version "1.6.0-47")
     (source
      (origin
        (method url-fetch)
@@ -367,7 +366,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1z5b3jm6ffxk3yvdqzwn9icbna68brkrz5kspgacq823d03jfklc"))))
+        (base32 "15sgsr8l6njp5spagbqclqkdy3x7ra23wi6wvpc8vzlbivy3v43k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -674,9 +673,11 @@ geometry and singularity theory.")
    (version "7.0.4")
    (source (origin
              (method url-fetch)
-             ;; Use the ‘Latest version’ link for a stable URI across releases.
-             (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                 "latestfile/160/ecm-" version ".tar.gz"))
+             (uri
+               (let ((hash "00c4c691a1ef8605b65bdf794a71539d"))
+                    (string-append "https://gitlab.inria.fr/zimmerma/ecm/"
+                                   "uploads/" hash "/ecm-" version
+                                   ".tar.gz")))
              (sha256 (base32
                       "0hxs24c2m3mh0nq1zz63z3sb7dhy1rilg2s1igwwcb26x3pb7xqc"))))
    (build-system gnu-build-system)

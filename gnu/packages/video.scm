@@ -41,12 +41,14 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,6 +75,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
@@ -885,14 +888,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "51.0.0")
+    (version "52.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "0w2crz6wnfw18m9m4zrij1yplcq5drzhz8n58w9kp51wl48a0yn1"))
+        (base32 "15y7ahlifsclnkl70wn5w34dil8nwcwcjnw3k2ydqc6dz4vb0j5s"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -914,6 +917,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("file" ,file)
        ("flac" ,flac)
        ("fmt" ,fmt)
+       ("libdvdread" ,libdvdread)
        ("libmatroska" ,libmatroska)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
@@ -1765,17 +1769,16 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.11.1")
+    (version "3.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://download.videolan.org/pub/videolan/vlc/"
                     (car (string-split version #\-))
                     "/vlc-" version ".tar.xz"))
-              (patches (search-patches "vlc-qt-5.15.patch"))
               (sha256
                (base32
-                "1f46h0hv7fk35zg4iczlp7ib7h2jmh8m4r5klw3g2558ib9134qq"))))
+                "0ygqihw2c5vvzv8950dlf7rdwz1cpz1668jgyja604ljibrmix7g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -2193,14 +2196,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.01.08")
+    (version "2021.01.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1k870v9xc7g16nvixa272sdjnmc7pl49ymmnn6rdz0mcj2548h3k"))
+                "1q8pvw5j45k8nvr3d9rvnhi6xaj1mdqlkrg7q7qq6zciq5r54fhi"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -3074,7 +3077,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "26.1.1")
+    (version "26.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3083,7 +3086,9 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18b40ayww5isjqnjz63l05fi5xwzrcc64jvwxwq8nqsydn0b14ng"))))
+                "1k1asqiqw757v59ayx0w029ril947hs0lcp8n91knzjl891fr4nc"))
+              (patches
+               (search-patches "obs-modules-location.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3098,6 +3103,15 @@ be used for realtime video capture via Linux-specific APIs.")
                (wrap-program (string-append out "/bin/obs")
                  `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OBS_PLUGINS_DIRECTORY")
+            (separator #f)                         ;single entry
+            (files '("lib/obs-plugins")))
+           (search-path-specification
+            (variable "OBS_PLUGINS_DATA_DIRECTORY")
+            (separator #f)                         ;single entry
+            (files '("share/obs/obs-plugins")))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)))
@@ -3128,6 +3142,67 @@ from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
     (license license:gpl2+)))
+
+(define-public obs-spectralizer
+  (package
+    (name "obs-spectralizer")
+    (version "1.3.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/univrsal/spectralizer")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+
+        ;; Remove bundled Windows DLLs.
+        (snippet '(delete-file-recursively "fftw3"))
+        (modules '((guix build utils)))
+
+        (sha256
+         (base32
+          "0q75cnyqydpvfda51zm9gxqj3wqr99ad0lxzjhw0ld67qvj1ag6i"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list "-DGLOBAL_INSTALLATION=ON" "-DUSE_CMAKE_LIBDIR=ON")))
+    (inputs `(("obs" ,obs)
+              ("fftw" ,fftw)))
+    (home-page "https://github.com/univrsal/spectralizer")
+    (synopsis "OBS plugin for audio visualization")
+    (description "This OBS plugins allows you to vizualize MPD and internal
+OBS audio sources.")
+    (license license:gpl2)))
+
+(define-public obs-wlrobs
+  (package
+    (name "obs-wlrobs")
+    (version "1.0")
+    (source
+      (origin
+        (method hg-fetch)
+        (uri (hg-reference
+              (url "https://hg.sr.ht/~scoopta/wlrobs")
+              (changeset (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1faiq2gdb7qis3m1hilm4pz8lkmkab75vzm608dbiazahhybf96p"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `() )
+    (inputs `(("obs" ,obs)
+              ("libx11" ,libx11 "out")
+              ("wayland" ,wayland)
+              ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://hg.sr.ht/~scoopta/wlrobs")
+    (synopsis "OBS plugin for Wayland (wlroots) screen capture")
+    (description
+     "This OBS plugin allows you to capture the screen on wlroots-based
+Wayland compositors.")
+    (license license:gpl3+)))
 
 (define-public libvdpau
   (package
@@ -4156,7 +4231,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.2.2")
+    (version "4.3.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method git-fetch)
@@ -4165,7 +4240,7 @@ It counts more than 100 plugins.")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "05c1gx75xy2hw49x6vkydvwxbr80kipsc3nr906k3hq8735svx6f"))
+                "09xs815jsivcilpmnrx2jkcxirj4lg5kp99fkr0p2sdxw03myi95"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4182,7 +4257,7 @@ It counts more than 100 plugins.")
      '(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
                     (lambda _
-                      (patch-shebang "version.sh")
+                      (patch-shebang "scripts/version.sh")
                       (invoke "autoreconf" "-vfi"))))
        #:configure-flags '("--sysconfdir=/etc")
        #:make-flags (list (string-append "sysconfdir="

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -395,6 +395,14 @@ EOF
 guix package --bootstrap -m "$module_dir/manifest.scm"
 guix package -I | grep guile
 test `guix package -I | wc -l` -eq 1
+
+# Export a manifest, instantiate it, and make sure we get the same profile.
+profile_directory="$(readlink -f "$default_profile")"
+guix package --export-manifest > "$tmpfile"
+guix package --rollback --bootstrap
+guix package --bootstrap -m "$tmpfile"
+test "$(readlink -f "$default_profile")" = "$profile_directory"
+
 guix package --rollback --bootstrap
 
 # Applying two manifests.
