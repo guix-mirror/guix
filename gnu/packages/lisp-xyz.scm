@@ -543,6 +543,9 @@ compatible with ANSI-compliant Common Lisp implementations.")
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (arguments
+       '(#:asd-systems '("ubiquitous"
+                         "ubiquitous-concurrent")))
       (home-page "https://shinmera.github.io/ubiquitous/")
       (synopsis "Application configuration mechanism for Common Lisp")
       (description
