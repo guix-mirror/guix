@@ -12389,11 +12389,11 @@ collecting values easier.")
           (base32
            "18r3wfarr7lgn78m6c66r0r9aazirv07gy7xgvqkl9pmrz1bc47m"))))
       (build-system asdf-build-system/sbcl)
-      (propagated-inputs
-       `(("alexandria" ,cl-alexandria)
-         ("anaphora" ,cl-anaphora)
-         ("collectors" ,cl-collectors)
-         ("optima" ,cl-optima)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("collectors" ,sbcl-collectors)
+         ("optima" ,sbcl-optima)))
       (native-inputs
        `(("prove" ,sbcl-prove)))
       (home-page "https://github.com/alex-gutev/cl-environments")
