@@ -61,7 +61,7 @@
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
-;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020, 2021 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
@@ -273,6 +273,40 @@ metadata.")
 using geiser.")
       (license license:bsd-3)
       (home-page "https://github.com/xiaohanyu/ac-geiser"))))
+
+(define-public emacs-geiser-gauche
+  (package
+    (name "emacs-geiser-gauche")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/emacs-geiser/gauche.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rxncnzx7qgcpvc8nz0sd8r0hwrplazzraahdwhbpq0q6z8ywqgg"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-scheme
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file
+              "geiser-gauche.scm"
+              (string-append
+               (assoc-ref outputs "out")
+               "/share/emacs/site-lisp"))
+             #t)))))
+    (native-inputs
+     `(("geiser" ,emacs-geiser)))
+    (home-page "https://gitlab.com/emacs-geiser/gauche")
+    (synopsis "Gauche Scheme support for Geiser")
+    (description
+     "This package adds support for the Gauche Scheme implementation to Geiser,
+a generic Scheme interaction mode for the GNU Emacs editor.")
+    (license license:expat)))
 
 (define-public emacs-hyperbole
   (package
