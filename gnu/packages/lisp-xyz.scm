@@ -12412,56 +12412,35 @@ CLTL2 environment access API.")
   (sbcl-package->ecl-package sbcl-cl-environments))
 
 (define-public sbcl-static-dispatch
-  (package
-    (name "sbcl-static-dispatch")
-    (version "0.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/alex-gutev/static-dispatch")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1wp5yz8liqqic3yifqf33qhccd755pd7ycvsq1j4i7k3f1wm18i0"))))
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     `(("agutil" ,sbcl-agutil)
-       ("alexandria" ,sbcl-alexandria)
-       ("anaphora" ,sbcl-anaphora)
-       ("arrows" ,sbcl-arrows)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("iterate" ,sbcl-iterate)
-       ("trivia" ,sbcl-trivia)))
-    (propagated-inputs
-     ;; FIXME: `sbcl-cl-environments' input fails with
-     ;;
-     ;; compiling #<CL-SOURCE-FILE "collectors" "collectors">
-     ;; Unhandled SB-INT:SIMPLE-FILE-ERROR in thread #<SB-THREAD:THREAD "main thread" RUNNING
-     ;; {1008238213}>:
-     ;; Error opening #P"/.../cl-environments/src/common/package-tmp5GEXGEG5.fasl":
-     ;; Permission denied
-     `(("cl-environments" ,cl-environments)))
-    (native-inputs
-     `(("prove" ,sbcl-prove)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Use `arrows' instead of cl-arrows which is abandoned and unlicensed.
-         ;; https://github.com/nightfly19/cl-arrows/issues/5
-         (add-after 'unpack 'use-arrows-instead-of-cl-arrows
-           (lambda _
-             (for-each
-              (lambda (file)
-                (substitute* file
-                  ((":cl-arrows") ":arrows")))
-              '("static-dispatch.asd"
-                "src/package.lisp"
-                "test/methods.lisp"
-                "test/test.lisp")))))))
-    (home-page "https://github.com/alex-gutev/static-dispatch")
-    (synopsis "Static generic function dispatch for Common Lisp")
-    (description "Static dispatch is a Common Lisp library, inspired by
+  (let ((commit "6243afcd152854c52ba33daef7394367b657d9c6")
+        (revision "1"))
+    (package
+      (name "sbcl-static-dispatch")
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alex-gutev/static-dispatch")
+               (commit commit)))
+         (file-name (git-file-name "static-dispatch" version))
+         (sha256
+          (base32 "1lli9ar1xbnhkgb5d01rlw4pvfylg2arrw68np2c07fpkkafimg7"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (inputs
+       `(("agutil" ,sbcl-agutil)
+         ("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("arrows" ,sbcl-arrows)
+         ("cl-environments" ,sbcl-cl-environments)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("iterate" ,sbcl-iterate)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://github.com/alex-gutev/static-dispatch")
+      (synopsis "Static generic function dispatch for Common Lisp")
+      (description "Static dispatch is a Common Lisp library, inspired by
 @code{inlined-generic-function}, which allows standard Common Lisp generic
 function dispatch to be performed statically (at compile time) rather than
 dynamically (runtime).  This is similar to what is known as \"overloading\" in
@@ -12473,7 +12452,7 @@ functions, such as adding/removing methods at runtime are not required.  An
 example of such a case is a generic equality comparison function.  Currently
 generic functions are considered far too slow to implement generic arithmetic
 and comparison operations when used heavily in numeric code.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public cl-static-dispatch
   (sbcl-package->cl-source-package sbcl-static-dispatch))
