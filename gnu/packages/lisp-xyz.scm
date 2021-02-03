@@ -12483,10 +12483,8 @@ and comparison operations when used heavily in numeric code.")
          ("anaphora" ,sbcl-anaphora)
          ("arrows" ,sbcl-arrows)
          ("cl-custom-hash-table" ,sbcl-custom-hash-table)
+         ("static-dispatch" ,sbcl-static-dispatch)
          ("trivia" ,sbcl-trivia)))
-      (propagated-inputs
-       ;; FIXME: Same error as for `sbcl-static-dispatch'.
-       `(("static-dispatch" ,cl-static-dispatch)))
       (native-inputs
        `(("prove" ,sbcl-prove)))
       (arguments
