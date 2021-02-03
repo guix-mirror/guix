@@ -45,7 +45,7 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
     (package
       (name (string-append "mingw-w64" "-" machine
                            (if with-winpthreads? "-winpthreads" "")))
-      (version "7.0.0")
+      (version "8.0.0")
       (source
        (origin
          (method url-fetch)
@@ -53,7 +53,7 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
                "mirror://sourceforge/mingw-w64/mingw-w64/"
                "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
          (sha256
-          (base32 "0a5njsa2zw2ssdz10jkb10mhrf3cb8qp9avs89zqmw4n6pzxy85a"))
+          (base32 "0qjpb9rviasfshk337j5r32ncmrwml8sv6qnmb1lp4mkdbm41is4"))
          (patches
           (search-patches "mingw-w64-6.0.0-gcc.patch"
                           "mingw-w64-dlltool-temp-prefix.patch"
