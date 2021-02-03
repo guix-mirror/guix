@@ -199,6 +199,25 @@ package provides the TrueType (TTF) files.")
 no copy of one or more of the Font Software typefaces may be sold by
 itself."))))
 
+(define-public font-canada1500
+  (package
+    (name "font-canada1500")
+    (version "1.101")
+    (source (origin
+              (method url-fetch)
+              (uri "https://typodermicfonts.com/wp-content/uploads/2017/06/canada1500.zip")
+              (sha256
+               (base32
+                "052rwhyfcz6q0g0nsr21bkbg2qb6sw7wzins5hv80qhdhi77sdaj"))))
+    (build-system font-build-system)
+    (home-page "https://typodermicfonts.com/canada1500/")
+    (synopsis "Canadian typeface that supports English, French and Aboriginal languages")
+    (description "Canada1500 is a display typeface originally created for the
+Canadian sesquicentennial with four weights, italics and space symbols which
+includes lining and old-style numerals, tabular and proportional.  Greek,
+Cyrillic, Canadian Syllabics and most Latin based languages are supported.")
+    (license license:cc0)))
+
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
