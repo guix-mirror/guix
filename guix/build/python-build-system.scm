@@ -302,10 +302,11 @@ by Cython."
     (replace 'build build)
     (delete 'check)                     ;moved after the install phase
     (replace 'install install)
-    (add-after 'install 'check check)
-    (add-after 'install 'wrap wrap)
-    (add-before 'check 'add-install-to-pythonpath add-install-to-pythonpath)
-    (add-before 'check 'add-install-to-path add-install-to-path)
+    (add-after 'install 'add-install-to-pythonpath add-install-to-pythonpath)
+    (add-after 'add-install-to-pythonpath 'add-install-to-path
+      add-install-to-path)
+    (add-after 'add-install-to-path 'wrap wrap)
+    (add-after 'wrap 'check check)
     (add-after 'check 'sanity-check sanity-check)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
