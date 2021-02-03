@@ -825,7 +825,6 @@
        ("cups" ,cups)
        ("curl" ,curl)
        ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
        ("expat" ,expat)
        ("flac" ,flac)
        ("ffmpeg" ,ffmpeg)
