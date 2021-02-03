@@ -127,7 +127,15 @@ Language (TOML) configuration files.")
                 "1d6m21lijwm04g50nwgsgj7x3vhblzw7jv05ah8psqgzk20bbch8"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;to tests in the PyPI release
+     `(#:tests? #f                      ;to tests in the PyPI release
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-requirements
+                    (lambda _
+                      (substitute* "setup.cfg"
+                        ;; Drop the requirement on python-packaging, which is
+                        ;; not required.
+                        ((".*packaging.*")
+                         "")))))))
     (propagated-inputs
      `(("python-pep517", python-pep517-bootstrap)
        ("python-toml" ,python-toml)))
