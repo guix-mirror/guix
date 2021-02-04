@@ -1478,7 +1478,7 @@ used to validate and fix HTML data.")
 (define-public esbuild
   (package
     (name "esbuild")
-    (version "0.8.37")
+    (version "0.8.43")
     (source
      (origin
        (method git-fetch)
@@ -1487,7 +1487,7 @@ used to validate and fix HTML data.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c98w2y4y9jaj2wv0334xwdbsvsi5hfh9jdkqr7ffz8lxhmh610f"))
+        (base32 "0ab8xpbh39nvrq1302qld692i4xy2mgynk6hjkwhlrziybj74njp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
