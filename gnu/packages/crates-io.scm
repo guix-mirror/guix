@@ -28946,6 +28946,29 @@ writers and readers for primitive values with direct mapping between binary
 MessagePack format.")
     (license license:expat)))
 
+(define-public rust-rmp-serde-0.14
+  (package
+    (name "rust-rmp-serde")
+    (version "0.14.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rmp-serde" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1n2jn3yj5zbjhz5lah98yylpzhfc1c0h5fcksjp75r3gj86dgrsc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-rmp" ,rust-rmp-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/3Hren/msgpack-rust")
+    (synopsis "Serde bindings for RMP")
+    (description "This crate provides Serde bindings for RMP.")
+    (license license:expat)))
+
 (define-public rust-ron-0.5
   (package
     (name "rust-ron")
