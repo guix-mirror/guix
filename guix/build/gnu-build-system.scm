@@ -170,7 +170,8 @@ working directory."
             (when command
               (invoke command "--decompress" name)))))
         ;; Attempt to change into child directory.
-        (and=> (first-subdirectory ".") chdir))))
+        (and=> (first-subdirectory ".") chdir)))
+  (for-each make-file-writable (find-files ".")))
 
 (define* (bootstrap #:key bootstrap-scripts
                     #:allow-other-keys)
