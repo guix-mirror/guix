@@ -67,6 +67,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -2092,7 +2093,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.5.3")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -2101,13 +2102,26 @@ statements in the module it tests.")
              (commit (string-append "pylint-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04cgbh2z1mygar63plzziyz34yg6bdr4i0g63jp256fgnqwb1bi3"))))
+        (base32 "0ws3dz3wm49brnhhfm7v75zq202pwlwfbi3njdd69aqxq912x15z"))))
     (build-system python-build-system)
-    ;; FIXME: Tests are failing since version 2.4.3, see:
-    ;; https://github.com/PyCQA/pylint/issues/3198.
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:tests? #t
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; The following failing tests are skipped (see:
+               ;; https://github.com/PyCQA/pylint/issues/4068).
+               (invoke "pytest" "-k"
+                       (string-append
+                        "not unused_typing_imports "
+                        "and not star_needs_assignment_target_py35 "
+                        "and not regression_property_no_member_2641 "
+                        "and not missing_kwoa_py3"))))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark" ,python-pytest-benchmark)
        ("python-pytest-runner" ,python-pytest-runner)
        ("python-tox" ,python-tox)))
     (propagated-inputs
