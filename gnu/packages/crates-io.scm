@@ -17411,6 +17411,33 @@ the jni-bindgen code generator for binding to JVM APIs from Rust.")
      "An implementation of the GNU make jobserver for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-jsonrpc-core-14
+  (package
+    (name "rust-jsonrpc-core")
+    (version "14.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jsonrpc-core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qkvgkr05sg0j25jqgw7zcw4r1agzg8gnfnrmw1rgyqz283p6x50"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/paritytech/jsonrpc")
+    (synopsis "Transport agnostic Rust implementation of JSON-RPC 2.0")
+    (description
+     "This package provides a transport agnostic Rust implementation of
+JSON-RPC 2.0 specification.")
+    (license license:expat)))
+
 (define-public rust-js-sys-0.3
   (package
     (name "rust-js-sys")
