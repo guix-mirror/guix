@@ -2628,7 +2628,10 @@ The picture values can directly be displayed in Geiser.")
   (package
     (inherit guile-picture-language)
     (name "guile2.2-picture-language")
-    (inputs `(("guile" ,guile-2.2)))))
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-cairo" ,guile2.2-cairo)
+       ("guile-rsvg" ,guile2.2-rsvg)))))
 
 (define-public guile3.0-picture-language
   (deprecated-package "guile3.0-picture-language"
