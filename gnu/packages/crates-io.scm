@@ -1614,8 +1614,37 @@ on every platform.")
      "The trait for generating structured data from unstructured data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-arc-swap-1
+  (package
+    (name "rust-arc-swap")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arc-swap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wwdvayqa07grw4ljvb6plbw0wdg78jcdg3hwnlq2yqljlrxdmyl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-adaptive-barrier" ,rust-adaptive-barrier-0.1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-proptest" ,rust-proptest-0.10))))
+    (home-page "https://github.com/vorner/arc-swap")
+    (synopsis "Atomically swappable Arc")
+    (description "This package provides an atomically swappable Arc.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-arc-swap-0.4
   (package
+    (inherit rust-arc-swap-1)
     (name "rust-arc-swap")
     (version "0.4.4")
     (source
@@ -1627,7 +1656,6 @@ on every platform.")
        (sha256
         (base32
          "1zwswfi9n7n3hiq51w1xv34572k2diazx680rrxlc9w07c9akf6p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
@@ -1636,11 +1664,7 @@ on every platform.")
         ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-proptest" ,rust-proptest-0.8)
-        ("rust-version-sync" ,rust-version-sync-0.8))))
-    (home-page "https://github.com/vorner/arc-swap")
-    (synopsis "Atomically swappable Arc")
-    (description "This package provides an atomically swappable Arc.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-version-sync" ,rust-version-sync-0.8))))))
 
 (define-public rust-arg-enum-proc-macro-0.3
   (package
