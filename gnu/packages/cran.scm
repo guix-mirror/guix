@@ -6526,6 +6526,31 @@ promises, but with a syntax that is idiomatic R.")
 using the @code{snow} package.")
     (license license:gpl2)))
 
+(define-public r-fst
+  (package
+    (name "r-fst")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fst" version))
+       (sha256
+        (base32
+         "0vwclzxww8mw9nnpyj29bn71mrr8jjg7ka03979h9rbzw6d9bjrr"))))
+    (properties `((upstream-name . "fst")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://www.fstpackage.org")
+    (synopsis "Fast serialization of data frames")
+    (description
+     "The fst package for R provides a fast, easy and flexible way to
+serialize data frames.  With access speeds of multiple GB/s, fst is
+specifically designed to unlock the potential of high speed solid state disks.
+Data frames stored in the fst format have full random access, both in column
+and rows.  The fst format allows for random access of stored data and
+compression with the LZ4 and ZSTD compressors.")
+    (license license:agpl3)))
+
 (define-public r-snowfall
   (package
    (name "r-snowfall")
