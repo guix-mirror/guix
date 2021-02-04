@@ -63,6 +63,7 @@
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -10856,6 +10857,33 @@ with p-value calculation based on Marsaglia's 2004 paper \"Evaluating the
 Anderson-Darling Distribution\".")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-sodium
+  (package
+    (name "r-sodium")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sodium" version))
+       (sha256
+        (base32
+         "1zxzi8xvxnhgcd5qrylf08nz1cdq3aslrswjas440qg63ypmbf6w"))))
+    (properties `((upstream-name . "sodium")))
+    (build-system r-build-system)
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jeroen/sodium")
+    (synopsis "R bindings to the libsodium crypto library")
+    (description
+     "This package provides bindings to libsodium: a library for encryption,
+decryption, signatures, password hashing and more.  Sodium uses curve25519, a
+Diffie-Hellman function by Daniel Bernstein, which has become very popular
+after it was discovered that the NSA had backdoored Dual EC DRBG.")
+    (license license:expat)))
 
 (define-public r-softimpute
   (package
