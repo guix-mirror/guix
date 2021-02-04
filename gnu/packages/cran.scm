@@ -6568,6 +6568,33 @@ user's computer should be used to save data, caches and logs.  It is a port of
 Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
     (license license:expat)))
 
+(define-public r-rentrez
+  (package
+    (name "r-rentrez")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rentrez" version))
+       (sha256
+        (base32
+         "0x1g2f6hvkqqlb39z8m5qxhcvsizddic5i7rpqw0wy77xfbna9gv"))))
+    (properties `((upstream-name . "rentrez")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/rentrez/")
+    (synopsis "Entrez in R")
+    (description
+     "This package provides an R interface to the NCBI's EUtils API,
+allowing users to search databases like GenBank PubMed, process the results of
+those searches and pull data into their R sessions.")
+    (license license:expat)))
+
 (define-public r-renv
   (package
     (name "r-renv")
