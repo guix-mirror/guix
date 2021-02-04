@@ -33480,6 +33480,30 @@ data type.")
             license:expat
             license:asl2.0))))
 
+(define-public rust-slog-async-2
+  (package
+    (name "rust-slog-async")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slog-async" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1p7v0jl82snmk1c7f6ch528ladzyprlk5gzaqkdqa342ky3i6266"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-take-mut" ,rust-take-mut-0.2)
+        ("rust-thread-local" ,rust-thread-local-1))))
+    (home-page "https://github.com/slog-rs/slog")
+    (synopsis "Asynchronous drain for @code{slog-rs}")
+    (description "This package provides an asynchronous drain for slog.")
+    (license (list license:mpl2.0 license:expat license:asl2.0))))
+
 (define-public rust-slug-0.1
   (package
     (name "rust-slug")
