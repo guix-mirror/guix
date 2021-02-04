@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,30 +41,23 @@
 (define-public taskwarrior
   (package
     (name "taskwarrior")
-    (version "2.5.1")
+    (version "2.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://taskwarrior.org/download/task-" version ".tar.gz"))
        (sha256 (base32
-                "059a9yc58wcicc6xxsjh1ph7k2yrag0spsahp1wqmsq6h7jwwyyq"))))
+                "0fwnxshhlha21hlgg5z1ad01w13zm1hlmncs274y5n8i15gdfhvj"))))
     (build-system cmake-build-system)
     (inputs
      `(("gnutls" ,gnutls)
-       ("lua" ,lua)
        ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No tests implemented.
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'patch-source-shebangs 'remove-broken-symlinks
-          (lambda _
-            ;; These files are broken symlinks - delete them.
-            (delete-file "src/cal")
-            (delete-file "src/calendar")
-            (delete-file "src/tw"))))))
+         (delete 'install-license-files)))) ; Already installed by package
      (home-page "https://taskwarrior.org")
     (synopsis "Command line task manager")
     (description
