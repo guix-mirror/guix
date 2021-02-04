@@ -55,6 +55,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -25959,4 +25960,80 @@ itself."))))
     (description
      "This package provides a set of fonts.  This is useful when you want to
 avoid system fonts to make sure your outputs are reproducible.")
+    (license license:gpl3)))
+
+(define-public r-freetypeharfbuzz
+  (package
+    (name "r-freetypeharfbuzz")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "freetypeharfbuzz" version))
+       (sha256
+        (base32
+         "0r3icgnq3jk4fm6z92cmhzdmflbk5df8zsmjg0dzpc4y48xafnk7"))))
+    (properties
+     `((upstream-name . "freetypeharfbuzz")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-static-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "src/target/include")
+             (let ((freetype (assoc-ref inputs "static-freetype"))
+                   (harfbuzz (assoc-ref inputs "static-harfbuzz")))
+               (substitute* "src/Makevars.in"
+                 (("include @MK_FILE@") "") ; do not build static libs
+                 (("^HB_STATIC_LIB =.*")
+                  (string-append "HB_STATIC_LIB = " harfbuzz "/lib/libharfbuzz.a\n"))
+                 (("^FT_STATIC_LIB =.*")
+                  (string-append "FT_STATIC_LIB = " freetype "/lib/libfreetype.a\n")))
+               (copy-recursively (string-append freetype "/include")
+                                 "src/target/include")
+               (copy-recursively (string-append harfbuzz "/include")
+                                 "src/target/include")))))))
+    (propagated-inputs
+     `(("r-fontquiver" ,r-fontquiver)))
+    ;; This may defeat the purpose of this package as our versions of freetype
+    ;; and harfbuzz obviously differ from the tarballs offered by this
+    ;; project.  On the other hand, Guix arguably does a better job at
+    ;; "ensur[ing] deterministic computation".
+    (native-inputs
+     `(("static-freetype"
+        ,(package
+           (inherit (static-package freetype))
+           (arguments
+            `(#:configure-flags
+              (list "--enable-static=yes"
+                    "--with-pic=yes"
+                    "--without-zlib"
+                    "--without-bzip2"
+                    "--without-png"
+                    "--without-harfbuzz")))))
+       ("static-harfbuzz"
+        ,(package
+           (inherit (static-package harfbuzz))
+           (arguments
+            `(#:tests? #false ; fail because shared library is disabled
+              #:configure-flags
+              (list "--enable-static=yes"
+		    "--enable-shared=no"
+		    "--with-pic=yes"
+		    "--with-freetype=yes"
+		    "--without-icu"
+		    "--without-cairo"
+		    "--without-fontconfig"
+		    "--without-glib")))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://cran.r-project.org/package=freetypeharfbuzz")
+    (synopsis "Deterministic computation of text box metrics")
+    (description
+     "Unlike other tools that dynamically link to the Cairo stack,
+freetypeharfbuzz is statically linked to specific versions of the FreeType and
+harfbuzz libraries.  This ensures deterministic computation of text box
+extents for situations where reproducible results are crucial (for instance
+unit tests of graphics).")
     (license license:gpl3)))
