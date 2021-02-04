@@ -1683,10 +1683,11 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
   (sbcl-package->ecl-package sbcl-colorize))
 
 (define-public sbcl-3bmd
-  (let ((commit "192ea13435b605a96ef607df51317056914cabbd"))
+  (let ((commit "6fc5759448f6f6df6f6df556e020a289a2643288")
+        (revision "2"))
     (package
       (name "sbcl-3bmd")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1694,24 +1695,29 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
                (url "https://github.com/3b/3bmd")
                (commit commit)))
          (sha256
-          (base32
-           "1rgv3gi7wf963ikmmpk132wgn0icddf226gq3bmcnk1fr3v9gf2f"))
+          (base32 "1avmbp8xdjlbqpqk7p3vmj7abiw5p3vb5mrxp4wlvgql4sf6z3p4"))
          (file-name (git-file-name "3bmd" version))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       ;; FIXME: We need to specify the name because the build-system thinks
-       ;; "3" is a version marker.
-       `(#:asd-systems '("3bmd"
-                         "3bmd-ext-code-blocks")))
+       ;; FIXME: #41437 - Build fails when package name starts from a digit
+       `(#:asd-systems
+         '("3bmd"
+           "3bmd-ext-definition-lists"
+           "3bmd-ext-math"
+           "3bmd-ext-tables"
+           "3bmd-ext-wiki-links"
+           "3bmd-youtube"
+           "3bmd-ext-code-blocks")))
       (inputs
-       `(("colorize" ,sbcl-colorize)
+       `(("alexandria" ,sbcl-alexandria)
+         ("colorize" ,sbcl-colorize)
          ("esrap" ,sbcl-esrap)
          ("split-sequence" ,sbcl-split-sequence)))
+      (home-page "https://github.com/3b/3bmd")
       (synopsis "Markdown processor in Command Lisp using esrap parser")
       (description
-       "Common Lisp Markdown -> HTML converter, using @command{esrap} for
-parsing, and grammar based on @command{peg-markdown}.")
-      (home-page "https://github.com/3b/3bmd")
+       "This is a Common Lisp Markdown to HTML converter, using @command{esrap}
+for parsing, and grammar based on @command{peg-markdown}.")
       (license license:expat))))
 
 (define-public cl-3bmd
