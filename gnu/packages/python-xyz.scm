@@ -8476,9 +8476,10 @@ unnecessary plus operators for explicit string literal concatenation.")
                (("\\[pytest\\]")
                 "[tool:pytest]"))
              (invoke "py.test" "-v"))))))
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
        ("python-pycodestyle" ,python-pycodestyle)
        ("python-pytest" ,python-pytest)))
