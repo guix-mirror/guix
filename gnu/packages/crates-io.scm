@@ -33577,6 +33577,37 @@ data type.")
     (description "This package provides logging scopes for slog.")
     (license (list license:mpl2.0 license:expat license:asl2.0))))
 
+(define-public rust-slog-stdlog-4
+  (package
+    (name "rust-slog-stdlog")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slog-stdlog" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nhg9mwaf5y1gs2f7nbz3r9fngq0g3d3qvz66z5lzgxd09rsna42"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-slog-scope" ,rust-slog-scope-4))
+       #:cargo-development-inputs
+       (("rust-slog-async" ,rust-slog-async-2)
+        ("rust-slog-term" ,rust-slog-term-2))))
+    (home-page "https://github.com/slog-rs/stdlog")
+    (synopsis "Log crate adapter for @code{slog-rs}")
+    (description
+     "This crate provides two ways compatibility with Rust standard @code{log}
+crate.")
+    (license
+     (list license:mpl2.0
+           license:expat
+           license:asl2.0))))
+
 (define-public rust-slog-term-2
   (package
     (name "rust-slog-term")
