@@ -33551,6 +33551,32 @@ data type.")
      "This is a key values and regex based filter drain for slog.")
     (license (list license:mpl2.0 license:expat license:asl2.0))))
 
+(define-public rust-slog-scope-4
+  (package
+    (name "rust-slog-scope")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slog-scope" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11n7nd0g3iab8ahcwnxzpmchi4ycgjsq5nj9jn3d4k17qfsa959g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arc-swap" ,rust-arc-swap-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-slog" ,rust-slog-2))
+       #:cargo-development-inputs
+       (("rust-slog-async" ,rust-slog-async-2)
+        ("rust-slog-term" ,rust-slog-term-2))))
+    (home-page "https://github.com/slog-rs/slog")
+    (synopsis "Logging scopes for @code{slog-rs}")
+    (description "This package provides logging scopes for slog.")
+    (license (list license:mpl2.0 license:expat license:asl2.0))))
+
 (define-public rust-slog-term-2
   (package
     (name "rust-slog-term")
