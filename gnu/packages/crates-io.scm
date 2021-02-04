@@ -33504,6 +33504,29 @@ data type.")
     (description "This package provides an asynchronous drain for slog.")
     (license (list license:mpl2.0 license:expat license:asl2.0))))
 
+(define-public rust-slog-kvfilter-0.7
+  (package
+    (name "rust-slog-kvfilter")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slog-kvfilter" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q3mq6a9aq8iscy9xh97zifxrxa6y10d8p2gkxlxkvk9s7brx4xf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-regex" ,rust-regex-1)
+        ("rust-slog" ,rust-slog-2))))
+    (home-page "https://github.com/slog-rs/slog")
+    (synopsis "Key values and regex based filter drain for @code{slog-rs}")
+    (description
+     "This is a key values and regex based filter drain for slog.")
+    (license (list license:mpl2.0 license:expat license:asl2.0))))
+
 (define-public rust-slog-term-2
   (package
     (name "rust-slog-term")
