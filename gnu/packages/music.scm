@@ -4395,7 +4395,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
 (define-public lmms
   (package
     (name "lmms")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -4405,7 +4405,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1gx730z361xx30iqbsm99aam1k2c8yf561gcay6sryyjksb4w1wy"))))
+         "11xgf461cnmq0jkgdgx5bddi87ammpik4whg1m4fcvd3i0d5i601"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -4473,7 +4473,8 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        ("libxft" ,libxft)
        ("freetype2" ,freetype)
        ("fftw3f" ,fftwf)
-       ("jack" ,jack-1)))
+       ("jack" ,jack-1)
+       ("carla" ,carla)))
     (home-page "https://lmms.io/")
     (synopsis "Music composition tool")
     (description "LMMS is a digital audio workstation.  It includes tools for sequencing
