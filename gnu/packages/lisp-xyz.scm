@@ -8756,6 +8756,40 @@ respectively.")
 (define-public ecl-salza2
   (sbcl-package->ecl-package sbcl-salza2))
 
+(define-public sbcl-origin
+  (let ((commit "d646134302456408d6d43580bb05299f1695ab8e")
+        (revision "1"))
+    (package
+      (name "sbcl-origin")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.mfiano.net/mfiano/origin")
+               (commit commit)))
+         (file-name (git-file-name "origin" version))
+         (sha256
+          (base32 "1n9aszaif3yh8prs5r8v51fbj4r5jd1a048mivd5yij3hplkm82b"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("parachute" ,sbcl-parachute)))
+      (inputs
+       `(("golden-utils" ,sbcl-golden-utils)
+         ("specialization-store" ,sbcl-specialization-store)))
+      (home-page "https://git.mfiano.net/mfiano/origin")
+      (synopsis "Common Lisp graphics math library")
+      (description
+       "This is a native Common Lisp graphics math library with an emphasis on
+performance and correctness.")
+      (license license:expat))))
+
+(define-public ecl-origin
+  (sbcl-package->ecl-package sbcl-origin))
+
+(define-public cl-origin
+  (sbcl-package->cl-source-package sbcl-origin))
+
 (define-public sbcl-png-read
   (let ((commit "ec29f38a689972b9f1373f13bbbcd6b05deada88")
         (revision "1"))
