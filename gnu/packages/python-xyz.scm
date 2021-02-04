@@ -16093,6 +16093,13 @@ for more filetypes can be easily added by creating plugins for them.")
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        ((".*'future'.*")
+                         "")
+                        (("colorama==0.4.1")
+                         "colorama>=0.4.1"))))
                   (replace 'check
                     (lambda _
                       (invoke "python" "radon/tests/run.py"))))))
