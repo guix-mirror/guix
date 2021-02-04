@@ -13600,6 +13600,49 @@ several common set, element and attribute related tasks.")
      "This package adds additional Twitter Bootstrap components to Shiny.")
     (license license:gpl3)))
 
+(define-public r-shinyjqui
+  (package
+    (name "r-shinyjqui")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyjqui" version))
+       (sha256
+        (base32
+         "0n4ijxmkp8x6dwrsxwvx0zgd8b5129cmn6q6rrav38v1q5k8889x"))
+       (snippet
+        '(begin
+           (delete-file "inst/www/shinyjqui.min.js")))))
+    (properties `((upstream-name . "shinyjqui")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/www/"
+               (let ((source "shinyjqui.js")
+                     (target "shinyjqui.min.js"))
+                 (format #true "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("esbuild" ,esbuild)))
+    (home-page "https://github.com/yang-tang/shinyjqui")
+    (synopsis "jQuery UI interactions and effects for Shiny")
+    (description
+     "This is an extension to Shiny that brings interactions and animation
+effects from the jQuery UI library.")
+    (license license:expat)))
+
 (define-public r-outliers
   (package
     (name "r-outliers")
