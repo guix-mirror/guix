@@ -41885,6 +41885,26 @@ Locate installed executable in cross platforms.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-whoami-0.8
+  (package
+    (name "rust-whoami")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "whoami" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z18m6w2q8a6rivd61sh3f00pdhyvxiwycs2j5088gvgdxb5bfqq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/libcala/whoami")
+    (synopsis "Retrieve the current user and environment")
+    (description
+     "This package provides simple functions to retrieve the current user and
+environment.")
+    (license (list license:expat license:boost1.0))))
+
 (define-public rust-wide-0.4
   (package
     (name "rust-wide")
