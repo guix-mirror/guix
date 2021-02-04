@@ -314,10 +314,11 @@ Additionally, various channel-specific options can be negotiated.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1xpxkvgj7wgcl450djkcrmrf957mcy2f36hfs5g6kpla1gax2d1g"))
-              (modules '((guix build utils)))))
+              (patches (search-patches "guile-ssh-fix-test-suite.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments

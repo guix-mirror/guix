@@ -1,0 +1,217 @@
+From f7942cded8b65341916a555186e2219efe174cd0 Mon Sep 17 00:00:00 2001
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Thu, 4 Feb 2021 14:38:25 -0500
+Subject: [PATCH] tests: Fix test suite for Guile 3.0.5.
+
+The test-runner object is now reset to #f when calling the 'test-end'
+procedure.  See the commit de5d1a7f99b8e952b115237ebc29633062f99bb9 in
+Guile (srfi-64: Reset test-runner-current if done) which introduced this
+change.
+
+* tests/client-server.scm (exit-status): New variable.  Use it when calling
+exit.
+* tests/dist.scm: Likewise.
+* tests/key.scm: Likewise.
+* tests/log.scm: Likewise.
+* tests/popen.scm: Likewise.
+* tests/server-client.scm: Likewise.
+* tests/server.scm: Likewise.
+* tests/session.scm: Likewise.
+* tests/shell.scm: Likewise.
+* tests/sssh-ssshd.scm: Likewise.
+* tests/tunnel.scm: Likewise.
+---
+ tests/client-server.scm | 4 +++-
+ tests/dist.scm          | 4 +++-
+ tests/key.scm           | 3 ++-
+ tests/log.scm           | 5 ++++-
+ tests/popen.scm         | 4 +++-
+ tests/server-client.scm | 4 +++-
+ tests/server.scm        | 4 +++-
+ tests/session.scm       | 4 +++-
+ tests/shell.scm         | 3 ++-
+ tests/sssh-ssshd.scm    | 4 +++-
+ tests/tunnel.scm        | 4 +++-
+ 11 files changed, 32 insertions(+), 11 deletions(-)
+
+diff --git a/tests/client-server.scm b/tests/client-server.scm
+index 432a48c..fc46140 100644
+--- a/tests/client-server.scm
++++ b/tests/client-server.scm
+@@ -743,8 +743,10 @@
+ 
+ ;;;
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "client-server")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; client-server.scm ends here.
+diff --git a/tests/dist.scm b/tests/dist.scm
+index 2a3a75f..79f9e23 100644
+--- a/tests/dist.scm
++++ b/tests/dist.scm
+@@ -269,8 +269,10 @@ $4 = #<session #<undefined>@#<undefined>:22 (disconnected) 453fff>"
+ ;;;
+ 
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "dist")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; dist.scm ends here.
+diff --git a/tests/key.scm b/tests/key.scm
+index be31378..e1678f4 100644
+--- a/tests/key.scm
++++ b/tests/key.scm
+@@ -170,9 +170,10 @@
+                    (eq? (get-key-type key) 'ecdsa-p256)))))))
+ 
+ ;;;
++(define exit-status (test-runner-fail-count (test-runner-current)))
+ 
+ (test-end "key")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; key.scm ends here.
+diff --git a/tests/log.scm b/tests/log.scm
+index f547202..d528251 100644
+--- a/tests/log.scm
++++ b/tests/log.scm
+@@ -64,8 +64,11 @@
+   (get-log-verbosity))
+ 
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "log")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
++
+ 
+ ;;; log.scm ends here
+diff --git a/tests/popen.scm b/tests/popen.scm
+index e063e0b..fe77108 100644
+--- a/tests/popen.scm
++++ b/tests/popen.scm
+@@ -129,8 +129,10 @@
+           (format-log/scm 'nolog "open-remote-output-pipe"  "channel: ~A" channel)
+           (output-only? channel)))))))
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "popen")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; popen.scm ends here.
+diff --git a/tests/server-client.scm b/tests/server-client.scm
+index 920aa22..b6ed3eb 100644
+--- a/tests/server-client.scm
++++ b/tests/server-client.scm
+@@ -148,8 +148,10 @@
+          (equal? x session))))))
+ 
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "server-client")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; server-client.scm ends here.
+diff --git a/tests/server.scm b/tests/server.scm
+index c7f8b6c..1a6daea 100644
+--- a/tests/server.scm
++++ b/tests/server.scm
+@@ -157,9 +157,11 @@
+     (server-listen server)
+     #t))
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "server")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; server.scm ends here.
+ 
+diff --git a/tests/session.scm b/tests/session.scm
+index 8caa039..7310647 100644
+--- a/tests/session.scm
++++ b/tests/session.scm
+@@ -210,8 +210,10 @@
+   (let ((session (%make-session)))
+     (not (connected? session))))
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "session")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; session.scm ends here.
+diff --git a/tests/shell.scm b/tests/shell.scm
+index 7d613fb..e36e661 100644
+--- a/tests/shell.scm
++++ b/tests/shell.scm
+@@ -113,9 +113,10 @@
+ 
+ 
+ ;;;
++(define exit-status (test-runner-fail-count (test-runner-current)))
+ 
+ (test-end "shell")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; shell.scm ends here.
+diff --git a/tests/sssh-ssshd.scm b/tests/sssh-ssshd.scm
+index 2fe23db..edb53fc 100644
+--- a/tests/sssh-ssshd.scm
++++ b/tests/sssh-ssshd.scm
+@@ -118,8 +118,10 @@
+       result)))
+ 
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "sssh-ssshd")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; sssh-ssshd.scm ends here.
+diff --git a/tests/tunnel.scm b/tests/tunnel.scm
+index ef5a568..d6453b7 100644
+--- a/tests/tunnel.scm
++++ b/tests/tunnel.scm
+@@ -191,8 +191,10 @@
+                   (= pnum portnum)))
+            (eq? (channel-cancel-forward session "localhost" portnum) 'ok))))))))
+ 
++(define exit-status (test-runner-fail-count (test-runner-current)))
++
+ (test-end "tunnel")
+ 
+-(exit (= (test-runner-fail-count (test-runner-current)) 0))
++(exit (= 0 exit-status))
+ 
+ ;;; tunnel.scm ends here.
+-- 
+2.30.0
+
