@@ -6664,6 +6664,33 @@ data-frames, visualize the graph on a web browser through gexf-js (a
 JavaScript library) and interact with the igraph package.")
     (license license:expat)))
 
+(define-public r-data-tree
+  (package
+    (name "r-data-tree")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "data.tree" version))
+       (sha256
+        (base32
+         "0pizmx2312zsym4m42b97q2184bg3hibvbdrblcga05xln84qrs0"))))
+    (properties `((upstream-name . "data.tree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r6" ,r-r6)
+       ("r-stringi" ,r-stringi)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://github.com/gluc/data.tree")
+    (synopsis "General purpose hierarchical data structure")
+    (description
+     "Create tree structures from hierarchical data, and traverse the tree in
+various orders.  Aggregate, cumulate, print, plot, convert to and from
+data.frame and more.  This is useful for decision trees, machine learning,
+finance, conversion from and to JSON, and many other applications.")
+    (license license:gpl2+)))
+
 (define-public r-rappdirs
   (package
     (name "r-rappdirs")
