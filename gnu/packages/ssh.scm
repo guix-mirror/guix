@@ -15,7 +15,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -314,7 +314,6 @@ Additionally, various channel-specific options can be negotiated.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1xpxkvgj7wgcl450djkcrmrf957mcy2f36hfs5g6kpla1gax2d1g"))
