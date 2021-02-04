@@ -23217,6 +23217,31 @@ multi-state models.")
 pies on a map.")
     (license license:artistic2.0)))
 
+(define-public r-scrypt
+  (package
+    (name "r-scrypt")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scrypt" version))
+       (sha256
+        (base32
+         "14iblgbp9v2by8fjbrpsd59iknp5babcz7j3yv1yxxzcwyb6wrrm"))))
+    (properties `((upstream-name . "scrypt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/rstudio/rscrypt")
+    (synopsis "Key derivation functions for R based on Scrypt")
+    (description
+     "This package provides functions for working with the scrypt key
+derivation functions.  Scrypt is a password-based key derivation function
+created by Colin Percival.  The algorithm was specifically designed to make it
+costly to perform large-scale custom hardware attacks by requiring large
+amounts of memory.")
+    (license license:bsd-2)))
+
 (define-public r-boruta
   (package
     (name "r-boruta")
