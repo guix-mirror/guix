@@ -25911,3 +25911,29 @@ for the fontquiver package.  This fontset covers the 12 combinations of
 families (sans, serif, mono) and faces (plain, bold, italic, bold italic)
 supported in R graphics devices.")
     (license license:silofl1.1)))
+
+(define-public r-fontbitstreamvera
+  (package
+    (name "r-fontbitstreamvera")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fontBitstreamVera" version))
+       (sha256
+        (base32
+         "0nipdlmhjv1wr3aidcl97nk6mppdkd65krgwqnhdsnv0jpfv761j"))))
+    (properties
+     `((upstream-name . "fontBitstreamVera")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=fontBitstreamVera")
+    (synopsis "Fonts for fontquiver")
+    (description
+     "This package is a placeholder for the Bitstream Vera font. It is
+intended for the fontquiver package.")
+    (license
+     (license:fsdg-compatible
+      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
+      "The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself."))))
