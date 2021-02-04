@@ -53,7 +53,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
-;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Lu hux <luhux@outlook.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2021 Olivier Rojon <o.rojon@posteo.net>
@@ -857,6 +857,52 @@ powerful monstrosities, from zombies to giant insects to killer robots and
 things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
     (license license:cc-by-sa3.0)))
+
+(define-public cockatrice
+  (let ((release-date "2021-01-26"))
+    (package
+      (name "cockatrice")
+      (version "2.8.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Cockatrice/Cockatrice")
+               (commit (string-append release-date "-Release-" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0q8ffcklb2b7hcqhy3d2f9kz9aw22pp04pc9y4sslyqmf17pwnz9"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Strip image URLs as they point towards non-free web services
+          '(substitute* "cockatrice/src/settings/downloadsettings.cpp"
+             (("downloadURLs.append\\(\".*\"\\);") "")))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DWITH_SERVER=1"
+                             "-DWITH_CLIENT=1"
+                             "-DWITH_ORACLE=1"
+                             "-DTEST=1")))
+      (native-inputs
+       `(("googletest" ,googletest)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("protobuf" ,protobuf)
+         ("qtbase" ,qtbase)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtsvg" ,qtsvg)
+         ("qttools" ,qttools)
+         ("qtwebsockets" ,qtwebsockets)
+         ("xz" ,xz)
+         ("zlib" ,zlib)))
+      (home-page "https://cockatrice.github.io")
+      (synopsis "Tabletop card game simulator")
+      (description "Cockatrice is a program for playing tabletop card games
+over a network.  Its server design prevents users from manipulating the game
+for unfair advantage.  The client also provides a single-player mode, which
+allows users to brew while offline.")
+      (license license:gpl2))))
 
 (define-public corsix-th
   (package
