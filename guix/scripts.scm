@@ -118,7 +118,12 @@ procedure, but both the category and synopsis are meant to be read (parsed) by
 according to'string-distance'."
   (define (options->long-names options)
     (filter string? (append-map option-names options)))
-  (string-closest guess (options->long-names options) #:threshold 3))
+  (match guess
+    ((? string?)
+     (match (string-split guess #\=)
+       ((name rest ...)
+        (string-closest name (options->long-names options) #:threshold 3))))
+    (_ #f)))
 
 (define (args-fold* args options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error
@@ -157,8 +162,7 @@ parameter of 'args-fold'."
     ;; Actual parsing takes place here.
     (apply args-fold* args options
            (lambda (opt name arg . rest)
-             (let ((hint (and (string? name)      ;not a short option
-                              (option-hint name options))))
+             (let ((hint (option-hint name options)))
                (report-error (G_ "~A: unrecognized option~%") name)
                (when hint
                  (display-hint
