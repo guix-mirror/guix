@@ -3535,6 +3535,7 @@ websites such as Libre.fm.")
          ("python-mediafile" ,python-mediafile)
          ("python-reflink" ,python-reflink)
          ("python-requests-oauthlib" ,python-requests-oauthlib)
+         ("opusfile" ,opusfile)
          ,@(package-inputs beets))))))
 
 (define-public beets-bandcamp
