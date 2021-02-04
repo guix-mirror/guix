@@ -1725,6 +1725,26 @@ in R and Shiny via the D3 visualization library.")
       ;; 3-clause BSD license.
       (license (list license:gpl3+ license:bsd-3)))))
 
+(define-public r-wesanderson
+  (package
+    (name "r-wesanderson")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "wesanderson" version))
+       (sha256
+        (base32
+         "09mr6p2jmqdjq27cz974w5hyxgn929zp9z3inhxqmmh1582fmdi2"))))
+    (properties `((upstream-name . "wesanderson")))
+    (build-system r-build-system)
+    (home-page "https://github.com/karthik/wesanderson")
+    (synopsis "Wes Anderson color palette generator")
+    (description
+     "This package provides color palettes that have been generated mostly
+from Wes Anderson movies.")
+    (license license:expat)))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
