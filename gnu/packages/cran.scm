@@ -18722,6 +18722,26 @@ the align-and-count method.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-filelock
+  (package
+    (name "r-filelock")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "filelock" version))
+       (sha256
+        (base32
+         "00ql5fw1hidpfnm0szaavf43ahmsnvdbi8i5lr1nrcc90yaiaadc"))))
+    (properties `((upstream-name . "filelock")))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/filelock")
+    (synopsis "Portable file locking")
+    (description
+     "This library lets you place an exclusive or shared lock on a file using
+the appropriate system call provided by the underlying operating system.")
+    (license license:expat)))
+
 (define-public r-filematrix
   (package
     (name "r-filematrix")
