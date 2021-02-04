@@ -38857,6 +38857,30 @@ application authors using tracing to instrument their applications.")
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-log" ,rust-tracing-log-0.1))))))
 
+(define-public rust-trackable-derive-1
+  (package
+    (name "rust-trackable-derive")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trackable_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bzqh11n1k29cghjmb4dn426hpqy3nbyn1qgzqngiqj7b1f27szb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/sile/trackable_derive")
+    (synopsis "Custom derive for @code{trackable} crate")
+    (description
+     "This crate provides @code{TrackableError} derive macro.  It should not
+be used directly.  See @code{rust-trackable} for more information.")
+    (license license:expat)))
+
 (define-public rust-traitobject-0.1
   (package
     (name "rust-traitobject")
