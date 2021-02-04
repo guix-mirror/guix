@@ -25888,3 +25888,26 @@ tuning, e.g. Grid Search, Random Search, or Simulated Annealing.  Various
 termination criteria can be set and combined.  The class @code{AutoTuner} provides a
 convenient way to perform nested resampling in combination with @code{mlr3}.")
     (license license:lgpl3)))
+
+(define-public r-fontliberation
+  (package
+    (name "r-fontliberation")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fontLiberation" version))
+       (sha256
+        (base32
+         "1w1rl0g4ayyp8lwppmz9yzj9cizg7i50g07216jkm1q5w0is9pmc"))))
+    (properties
+     `((upstream-name . "fontLiberation")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=fontLiberation")
+    (synopsis "Liberation fonts")
+    (description
+     "This package provides a placeholder for the Liberation fontset intended
+for the fontquiver package.  This fontset covers the 12 combinations of
+families (sans, serif, mono) and faces (plain, bold, italic, bold italic)
+supported in R graphics devices.")
+    (license license:silofl1.1)))
