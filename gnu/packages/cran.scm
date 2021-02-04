@@ -6691,6 +6691,58 @@ data.frame and more.  This is useful for decision trees, machine learning,
 finance, conversion from and to JSON, and many other applications.")
     (license license:gpl2+)))
 
+(define-public r-collapsibletree
+  (package
+    (name "r-collapsibletree")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "collapsibleTree" version))
+       (sha256
+        (base32
+         "0b65pbp1wnpsrayqi630ds4r98jvcvynnlp6wxdqrnnr9nzw5343"))
+       (snippet
+        '(begin
+           ;; Delete minified JavaScript file
+           (delete-file "inst/htmlwidgets/lib/d3-4.10.2/d3.min.js")
+           #true))))
+    (properties
+     `((upstream-name . "collapsibleTree")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/d3-4.10.2/"
+               (let ((source (assoc-ref inputs "d3.v4.js"))
+                     (target "d3.min.js"))
+                 (format #t "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
+    (propagated-inputs
+     `(("r-data-tree" ,r-data-tree)
+       ("r-htmlwidgets" ,r-htmlwidgets)))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("d3.v4.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v4.js")
+           (sha256
+            (base32
+             "0y7byf6kcinfz9ac59jxc4v6kppdazmnyqfav0dm4h550fzfqqlg"))))))
+    (home-page "https://github.com/AdeelK93/collapsibleTree")
+    (synopsis "Interactive collapsible tree diagrams using D3.js")
+    (description
+     "This is a package for interactive Reingold-Tilford tree diagrams created
+using D3.js, where every node can be expanded and collapsed by clicking on it.
+Tooltips and color gradients can be mapped to nodes using a numeric column in
+the source data frame.")
+    (license license:gpl3+)))
+
 (define-public r-rappdirs
   (package
     (name "r-rappdirs")
