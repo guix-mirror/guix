@@ -28922,6 +28922,35 @@ Rust Language Server.")
        (;("rust-serde-bytes" ,rust-serde-bytes-0.10)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-ropey-1
+  (package
+    (name "rust-ropey")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ropey" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10qsj7m6hz953ar68q7iqwwizrh89jaclgffzglb7nwzb0bfzwzh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))
+    (home-page "https://github.com/cessen/ropey")
+    (synopsis "Fast and robust text rope for Rust")
+    (description
+     "Ropey is a UTF-8 text rope for Rust, designed to be the backing
+text-buffer for applications such as text editors.  Ropey is fast, robust, and
+can handle huge texts and memory-incoherent edits with ease.")
+    (license license:expat)))
+
 (define-public rust-route-recognizer-0.2
   (package
     (name "rust-route-recognizer")
