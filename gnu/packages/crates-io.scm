@@ -759,6 +759,28 @@ Rust.")
     (description "This package provides Actix web proc macros.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-adaptive-barrier-0.1
+  (package
+    (name "rust-adaptive-barrier")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "adaptive-barrier" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "003ygsiqsd85v0p846q1ym23dbp4iagn89p7k6yrvbg9di1mbjqc"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/vorner/adaptive-barrier")
+    (synopsis "Barrier with adaptable number of thread subsciptions")
+    (description
+     "This is a Barrier synchronization primitive, similar to
+@code{std::sync::Barrier}, but one that adjusts the expected number of
+threads.  This makes it robust in face of panics (it won't make your program
+deadlock, like the standard Barrier).")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-addr2line-0.11
   (package
     (name "rust-addr2line")
