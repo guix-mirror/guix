@@ -156,7 +156,11 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t))
+                          #:keep-mtime? #t)
+        ;; Make the source checkout files writable, for convenience.
+        (for-each (lambda (f)
+                    (false-if-exception (make-file-writable f)))
+                  (find-files ".")))
       (begin
         (cond
          ((string-suffix? ".zip" source)
@@ -170,8 +174,7 @@ working directory."
             (when command
               (invoke command "--decompress" name)))))
         ;; Attempt to change into child directory.
-        (and=> (first-subdirectory ".") chdir)))
-  (for-each make-file-writable (find-files ".")))
+        (and=> (first-subdirectory ".") chdir))))
 
 (define* (bootstrap #:key bootstrap-scripts
                     #:allow-other-keys)
