@@ -22246,6 +22246,39 @@ a formula and @code{data.frame} plus some additional arguments for priors.")
 trend test.")
     (license license:gpl2+)))
 
+(define-public r-keyring
+  (package
+    (name "r-keyring")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "keyring" version))
+       (sha256
+        (base32
+         "1hpfd4hbx43i39l995rg86kfxi7wlyla1gv8mwcdr4xx7z122zzq"))))
+    (properties `((upstream-name . "keyring")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-filelock" ,r-filelock)
+       ("r-getpass" ,r-getpass)
+       ("r-openssl" ,r-openssl)
+       ("r-r6" ,r-r6)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-sodium" ,r-sodium)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/r-lib/keyring")
+    (synopsis "Access the system credential store from R")
+    (description
+     "This package provides a platform-independent API to access the operating
+system's credential store.  It currently supports Keychain on macOS,
+Credential Store on Windows, the Secret Service API on GNU/Linux, and a
+simple, platform independent store implemented with environment variables.
+Additional storage back-ends can be added easily.")
+    (license license:expat)))
+
 (define-public r-zyp
   (package
     (name "r-zyp")
