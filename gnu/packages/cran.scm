@@ -1820,6 +1820,36 @@ page dashboard or a multi-page template, where the navigation menu is
 contained in the navigation bar.")
     (license license:gpl2+)))
 
+(define-public r-spelling
+  (package
+    (name "r-spelling")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spelling" version))
+       (sha256
+        (base32
+         "179nj9w1v27qq9q5240ddvggp0795998sxyqjvbqjvq9dmach3bl"))))
+    (properties `((upstream-name . "spelling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-commonmark" ,r-commonmark)
+       ("r-hunspell" ,r-hunspell)
+       ("r-knitr" ,r-knitr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://docs.ropensci.org/spelling/")
+    (synopsis "Tools for spell checking in R")
+    (description
+     "This is an R package for spell checking common document formats
+including LaTeX, markdown, manual pages, and DESCRIPTION files.  It includes
+utilities to automate checking of documentation and vignettes as a unit test
+during @code{R CMD check}.  Both British and American English are supported
+out of the box and other languages can be added.  In addition, packages may
+define a wordlist to allow custom terminology without having to abuse
+punctuation.")
+    (license license:expat)))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
