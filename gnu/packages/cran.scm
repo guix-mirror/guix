@@ -1745,6 +1745,81 @@ in R and Shiny via the D3 visualization library.")
 from Wes Anderson movies.")
     (license license:expat)))
 
+(define-public r-tablerdash
+  (package
+    (name "r-tablerdash")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tablerDash" version))
+       (sha256
+        (base32
+         "1mnp6lxa7d669r325aynq1n3f35r9sy4v1fvdh4cymbf33s8mkmm"))
+       (snippet
+        '(begin
+           ;; Delete minified JavaScript
+           (for-each delete-file
+                     '("inst/tablerDash-0.1.0/require.min.js"
+                       "inst/bootstrap-4.0.0/bootstrap.bundle.min.js"))
+           #true))))
+    (properties `((upstream-name . "tablerDash")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "js-requirejs")
+                         "tablerDash-0.1.0/require.min.js")
+                        (,(assoc-ref inputs "js-bootstrap")
+                         "bootstrap-4.0.0/bootstrap.bundle.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("js-requirejs"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/requirejs/requirejs/2.3.5/require.js")
+           (sha256
+            (base32
+             "06w32mwqii9cx409ivda88z58qbkcdb4p6hf6jawchsgagaziyds"))))
+       ("js-bootstrap"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/twbs/bootstrap/\
+v4.0.0/dist/js/bootstrap.bundle.js")
+           (sha256
+            (base32
+             "0cvfqffn45vfbj3fk6wmrhkyndhk4id89vgydssbbzxjkfwprfrj"))))))
+    (home-page "https://rinterface.github.io/tablerDash/")
+    (synopsis "Tabler API for Shiny")
+    (description
+     "This package provides an R interface to the
+@url{https://tabler.io,Tabler} HTML template.  tablerDash is a light Bootstrap
+4 dashboard template.  There are different layouts available such as a one
+page dashboard or a multi-page template, where the navigation menu is
+contained in the navigation bar.")
+    (license license:gpl2+)))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
