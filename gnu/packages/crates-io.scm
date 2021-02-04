@@ -28920,6 +28920,32 @@ Rust Language Server.")
     (description "This package provides a typed key-value storage solution.")
     (license license:asl2.0)))
 
+(define-public rust-rmp-0.8
+  (package
+    (name "rust-rmp")
+    (version "0.8.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rmp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kqqq0m4bg1p1rsahbxqlhi0cb65qbxx595sqwdfxwacy5nv840g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/3Hren/msgpack-rust")
+    (synopsis "Pure Rust MessagePack serialization implementation")
+    (description
+     "RMP is a pure Rust MessagePack implementation of an efficient binary
+serialization format.  This crate provides low-level core functionality,
+writers and readers for primitive values with direct mapping between binary
+MessagePack format.")
+    (license license:expat)))
+
 (define-public rust-ron-0.5
   (package
     (name "rust-ron")
