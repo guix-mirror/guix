@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -331,8 +331,8 @@ from a mounted file system.")
     (license license:gpl2+)))
 
 (define-public bcachefs-tools
-  (let ((commit "db931a4571817d7d61be6bce306f1d42f7cd3398")
-        (revision "2"))
+  (let ((commit "612f6b9ab73c7f46e0254355b707d494a8ad9270")
+        (revision "3"))
     (package
       (name "bcachefs-tools")
       (version (git-version "0.1" revision commit))
@@ -344,7 +344,7 @@ from a mounted file system.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1zl8lda6ni6rhsmsng6smrcjihy2irjf03h1m7nvkqmkhq44j80s"))))
+          (base32 "1a62wkv1i6pg5k1cjw7fzn933cbz8cp8y40cdpfd8rxjx0wg2szb"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
