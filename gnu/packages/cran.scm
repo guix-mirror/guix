@@ -4975,6 +4975,41 @@ functions to compile LaTeX documents, and install missing LaTeX packages
 automatically.")
     (license license:expat)))
 
+(define-public r-tinytest
+  (package
+    (name "r-tinytest")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tinytest" version))
+       (sha256
+        (base32
+         "1asryjrah3fj39gg0c6yxgpr142j5bg2n990v7q8r0a5pb8gcr45"))))
+    (properties `((upstream-name . "tinytest")))
+    (build-system r-build-system)
+    (home-page "https://github.com/markvanderloo/tinytest")
+    (synopsis "Lightweight unit testing framework")
+    (description
+     "This package provides a lightweight unit testing framework.  Main
+features:
+
+@enumerate
+@item install tests with the package;
+@item test results are treated as data that can be stored and manipulated;
+@item test files are R scripts interspersed with test commands, that can be
+  programmed over;
+@item fully automated build-install-test sequence for packages;
+@item skip tests when not run locally (e.g. on CRAN);
+@item flexible and configurable output printing;
+@item compare computed output with output stored with the package;
+@item run tests in parallel;
+@item extensible by other packages;
+@item report side effects.
+@end enumerate
+")
+    (license license:gpl3)))
+
 (define-public r-network
   (package
     (name "r-network")
