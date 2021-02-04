@@ -6568,6 +6568,37 @@ user's computer should be used to save data, caches and logs.  It is a port of
 Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
     (license license:expat)))
 
+(define-public r-rastervis
+  (package
+    (name "r-rastervis")
+    (version "0.49")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rasterVis" version))
+       (sha256
+        (base32
+         "0d12h7xqcwy1wps6yya9nzfppbnsxpmbkqmy3a8pvxpg81l632kk"))))
+    (properties `((upstream-name . "rasterVis")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hexbin" ,r-hexbin)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-raster" ,r-raster)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-sp" ,r-sp)
+       ("r-viridislite" ,r-viridislite)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://oscarperpinan.github.io/rastervis/")
+    (synopsis "Visualization methods for raster data")
+    (description
+     "This package provides methods for enhanced visualization and interaction
+with raster data.  It implements visualization methods for quantitative data
+and categorical data, both for univariate and multivariate rasters.  It also
+provides methods to display spatiotemporal rasters, and vector fields.")
+    (license license:gpl3)))
+
 (define-public r-rentrez
   (package
     (name "r-rentrez")
