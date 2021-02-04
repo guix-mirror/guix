@@ -31989,6 +31989,32 @@ using nested parameters, similar to those used by @code{qs} for Node, and
 commonly used by Ruby on Rails via Rack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-repr-0.1
+  (package
+    (name "rust-serde-repr")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_repr" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xhwamlb1ax3w87mpq0awcphwchprh93y1hb47rm3c0p3favgiid"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/dtolnay/serde-repr")
+    (synopsis "Serialize and deserialize C-like enum as underlying repr")
+    (description
+     "This crate provides a derive macro to derive Serde's @code{Serialize}
+and @code{Deserialize} traits in a way that delegates to the underlying repr
+of a C-like enum.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-stacker-0.1
   (package
     (name "rust-serde-stacker")
