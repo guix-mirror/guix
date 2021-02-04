@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4293,6 +4294,24 @@ programs.")
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-parking" ,rust-parking-1)
         ("rust-waker-fn" ,rust-waker-fn-1))))))
+
+(define-public rust-boxfnonce-0.1
+  (package
+    (name "rust-boxfnonce")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "boxfnonce" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09ilf4zyx92hyhkxlsxksfyprzr9iwq5gqqb22aaqr32c8fwp22r"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/stbuehler/rust-boxfnonce")
+    (synopsis "Safe FnOnce boxing for Rust")
+    (description "This package provides a safe FnOnce boxing for Rust.")
+    (license license:expat)))
 
 (define-public rust-bresenham-0.1
   (package
