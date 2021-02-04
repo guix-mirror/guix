@@ -51,8 +51,10 @@ for dist in ws:
     # Try to load top level modules. This should not have any side-effects.
     try:
         metalines = dist.get_metadata_lines('top_level.txt')
-    except KeyError:
+    except (KeyError, FileNotFoundError):
         # distutils (i.e. #:use-setuptools? #f) will not install any metadata.
+        # This file is also missing for packages built using a PEP 517 builder
+        # such as poetry.
         print('WARNING: cannot determine top-level modules')
         continue
     for name in metalines:
@@ -70,7 +72,6 @@ for dist in ws:
             print('ERROR:')
             traceback.print_exc(file=sys.stdout)
             ret = 1
-            continue
 
     # Try to load entry points of console scripts too, making sure they
     # work. They should be removed if they don't. Other groups may not be
