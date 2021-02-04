@@ -6573,6 +6573,97 @@ to the cluster management tool @code{sfCluster}, but can also used without
 it.")
    (license license:gpl2+)))
 
+(define-public r-rgexf
+  (package
+    (name "r-rgexf")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rgexf" version))
+       (sha256
+        (base32
+         "1vj5ha1qx0xzflchxf25ycys6clfn9y32m1717afzkvhmkwisrra"))
+       (snippet
+        '(begin
+           ;; Delete minified JavaScript files
+           (for-each delete-file
+                     '("inst/gexf-js/js/jquery-2.0.2.min.js"
+                       "inst/gexf-js/js/jquery-ui-1.10.3.custom.min.js"
+                       "inst/gexf-js/js/jquery.mousewheel.min.js"))
+           #true))))
+    (properties `((upstream-name . "rgexf")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "unzip" "-d" "/tmp" (assoc-ref inputs "js-jquery-ui"))
+             (with-directory-excursion "inst/gexf-js/js/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "js-jquery")
+                         "jquery-2.0.2.min.js")
+                        ("/tmp/jquery-ui-1.10.3/ui/jquery-ui.js"
+                         "jquery-ui-1.10.3.custom.min.js")
+                        (,(assoc-ref inputs "js-jquery-mousewheel")
+                         "jquery.mousewheel.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #true "Processing ~a --> ~a~%"
+                                       source target)
+                               (invoke "esbuild" source "--minify"
+                                       (string-append "--outfile=" target)))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-servr" ,r-servr)
+       ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("esbuild" ,esbuild)
+       ("unzip" ,unzip)
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-2.0.2.js")
+           (sha256
+            (base32
+             "0v818bxpw48gdk8i95qqqij80r9jcgisi2r4ac6xnxca20h0gvfj"))))
+       ("js-jquery-ui"
+        ,(origin
+           (method url-fetch)
+           (uri "https://jqueryui.com/resources/download/jquery-ui-1.10.3.zip")
+           (sha256
+            (base32
+             "00xpfy0l69nj2yan4s8k65ldsrlfsjkmyw2dwcg93dc8mv454vxx"))))
+       ("js-jquery-mousewheel"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/jquery/jquery-mousewheel/\
+3.0.6/jquery.mousewheel.js")
+           (sha256
+            (base32
+             "19lk5xy2s47bx8hsa7j6bg012f8yw6d770g230bcnm559kf4nc6v"))))))
+    (home-page "https://gvegayon.github.io/rgexf")
+    (synopsis "Build, import and export GEXF graph files")
+    (description
+     "Create, read and write GEXF (Graph Exchange XML Format) graph
+files (used in Gephi and others).  It allows the user to easily build/read
+graph files including attributes, GEXF visual attributes (such as color, size,
+and position), network dynamics (for both edges and nodes) and edge weighting.
+Users can build/handle graphs element-by-element or massively through
+data-frames, visualize the graph on a web browser through gexf-js (a
+JavaScript library) and interact with the igraph package.")
+    (license license:expat)))
+
 (define-public r-rappdirs
   (package
     (name "r-rappdirs")
