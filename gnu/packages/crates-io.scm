@@ -33504,6 +33504,37 @@ data type.")
     (description "This package provides an asynchronous drain for slog.")
     (license (list license:mpl2.0 license:expat license:asl2.0))))
 
+(define-public rust-slog-term-2
+  (package
+    (name "rust-slog-term")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "slog-term" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dpmz5ksjkvz8p5h2qv8mznbvgvgpcflx49nrq2rn4kirw3xicds"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-erased-serde" ,rust-erased-serde-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-term" ,rust-term-0.6)
+        ("rust-thread-local" ,rust-thread-local-1))
+       #:cargo-development-inputs
+       (("rust-slog-async" ,rust-slog-async-2))))
+    (home-page "https://github.com/slog-rs/slog")
+    (synopsis "Unix terminal drain and formatter for @code{slog-rs}")
+    (description
+     "This package provides the Unix terminal drain and formatter for slog.")
+    (license (list license:mpl2.0 license:expat license:asl2.0))))
+
 (define-public rust-slug-0.1
   (package
     (name "rust-slug")
