@@ -26037,3 +26037,69 @@ harfbuzz libraries.  This ensures deterministic computation of text box
 extents for situations where reproducible results are crucial (for instance
 unit tests of graphics).")
     (license license:gpl3)))
+
+(define-public r-vdiffr
+  (package
+    (name "r-vdiffr")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vdiffr" version))
+       (sha256
+        (base32
+         "0i0xdr8dakbkkgrhp0zvlnv3rxhc8h5naqq416mr5zv9q8i4p8jc"))
+       (snippet
+        '(begin
+           (delete-file "inst/htmlwidgets/lib/jquery.min.js")))))
+    (properties `((upstream-name . "vdiffr")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/"
+               (let ((source (assoc-ref inputs "js-jquery"))
+                     (target "jquery.min.js"))
+                 (format #true "Processing ~a --> ~a~%"
+                         source target)
+                 (invoke "esbuild" source "--minify"
+                         (string-append "--outfile=" target)))))))))
+    (inputs
+     `(("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-devtools" ,r-devtools)
+       ("r-diffobj" ,r-diffobj)
+       ("r-fontquiver" ,r-fontquiver)
+       ("r-freetypeharfbuzz" ,r-freetypeharfbuzz)
+       ("r-gdtools" ,r-gdtools)
+       ("r-glue" ,r-glue)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-purrr" ,r-purrr)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-shiny" ,r-shiny)
+       ("r-testthat" ,r-testthat)
+       ("r-usethis" ,r-usethis)
+       ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-1.12.4.js")
+           (sha256
+            (base32
+             "0x9mrc1668icvhpwzvgafm8xm11x9lfai9nwr66aw6pjnpwkc3s3"))))))
+    (home-page "https://github.com/r-lib/vdiffr")
+    (synopsis "Visual regression testing and graphical diffing")
+    (description
+     "This package is an extension to the testthat package that makes it easy
+to add graphical unit tests.  It provides a Shiny application to manage the
+test cases.")
+    (license license:gpl3)))
