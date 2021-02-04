@@ -38857,6 +38857,31 @@ application authors using tracing to instrument their applications.")
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-log" ,rust-tracing-log-0.1))))))
 
+(define-public rust-trackable-1
+  (package
+    (name "rust-trackable")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trackable" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1c5xqp2k9yf5is3pwc7xwf2kd3khdkan93s5072r5p99s49nxyrh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-trackable-derive" ,rust-trackable-derive-1))))
+    (home-page "https://github.com/sile/trackable")
+    (synopsis "Track objects manually as an alternative to backtracing")
+    (description
+     "This library provides a way to track objects manually as an alternative
+to mechanisms like backtracing.")
+    (license license:expat)))
+
 (define-public rust-trackable-derive-1
   (package
     (name "rust-trackable-derive")
