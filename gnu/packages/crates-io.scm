@@ -8856,6 +8856,30 @@ crate (implementation detail).")
      "This package provides an implementation detail of the @code{cxx} crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-daemonize-0.4
+  (package
+    (name "rust-daemonize")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "daemonize" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05cqr2zjxrxyg23snykd03sgqwxn0pvwj2lzh50bclsgwc9lbhkh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-boxfnonce" ,rust-boxfnonce-0.1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/knsd/daemonize")
+    (synopsis "Library for writing system daemons")
+    (description "Daemonize is a Rust library for writing system deaemons.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-darling-0.10
   (package
     (name "rust-darling")
