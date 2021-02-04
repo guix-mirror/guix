@@ -25937,3 +25937,26 @@ intended for the fontquiver package.")
       "The Font Software may be sold as part of a larger software package but
 no copy of one or more of the Font Software typefaces may be sold by
 itself."))))
+
+(define-public r-fontquiver
+  (package
+    (name "r-fontquiver")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fontquiver" version))
+       (sha256
+        (base32
+         "0qv3i9hch7cygl9983s3w68wfh5qvym2jkm52pp06p6mq8a1i1wm"))))
+    (properties `((upstream-name . "fontquiver")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fontbitstreamvera" ,r-fontbitstreamvera)
+       ("r-fontliberation" ,r-fontliberation)))
+    (home-page "https://cran.r-project.org/package=fontquiver")
+    (synopsis "Set of installed fonts")
+    (description
+     "This package provides a set of fonts.  This is useful when you want to
+avoid system fonts to make sure your outputs are reproducible.")
+    (license license:gpl3)))
