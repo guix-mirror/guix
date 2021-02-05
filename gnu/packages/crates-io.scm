@@ -14261,7 +14261,7 @@ authenticated encryption cipher.")
         ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-test-assembler" ,rust-test-assembler-0.1)
-        ("rust-typed-arena" ,rust-typed-arena-1.4))))
+        ("rust-typed-arena" ,rust-typed-arena-1))))
     (home-page "https://github.com/gimli-rs/gimli")
     (synopsis "Reading and writing the DWARF debugging format")
     (description
@@ -15729,7 +15729,7 @@ Hash-based Message Authentication Code}.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-rustc-test" ,rust-rustc-test-0.3)
-        ("rust-typed-arena" ,rust-typed-arena-1.4))))
+        ("rust-typed-arena" ,rust-typed-arena-1))))
     (home-page "https://github.com/servo/html5ever")
     (synopsis "High-performance browser-grade HTML5 parser")
     (description
@@ -15759,7 +15759,7 @@ Hash-based Message Authentication Code}.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-rustc-test" ,rust-rustc-test-0.3)
-        ("rust-typed-arena" ,rust-typed-arena-1.4))))))
+        ("rust-typed-arena" ,rust-typed-arena-1))))))
 
 (define-public rust-http-0.2
   (package
@@ -39818,7 +39818,7 @@ parser.")
     (description "Exposes Typeable, for getting TypeIds at runtime.")
     (license license:expat)))
 
-(define-public rust-typed-arena-1.4
+(define-public rust-typed-arena-1
   (package
     (name "rust-typed-arena")
     (version "1.4.1")
