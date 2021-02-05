@@ -42460,7 +42460,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-wincolor-1.0
+(define-public rust-wincolor-1
   (package
     (name "rust-wincolor")
     (version "1.0.3")
