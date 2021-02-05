@@ -1335,7 +1335,7 @@ graphics and video games.")
      "The Piston game engine core libraries.")
     (license license:expat)))
 
-(define-public rust-piston-float-1.0
+(define-public rust-piston-float-1
   (package
     (name "rust-piston-float")
     (version "1.0.0")
@@ -1469,7 +1469,7 @@ nicely with Piston libraries.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-piston-float" ,rust-piston-float-1.0))))
+       (("rust-piston-float" ,rust-piston-float-1))))
     (home-page "https://github.com/PistonDevelopers/viewport")
     (synopsis "Library for storing viewport information")
     (description

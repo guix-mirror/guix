@@ -41055,7 +41055,7 @@ first byte.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-piston-float" ,rust-piston-float-1.0))))
+       (("rust-piston-float" ,rust-piston-float-1))))
     (home-page "https://github.com/pistondevelopers/vecmath")
     (synopsis "Library for vector math designed for reexporting")
     (description
