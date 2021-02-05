@@ -18099,7 +18099,7 @@ requires non-const function calls to be computed.")
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dtoa" ,rust-dtoa-0.4)
         ("rust-ryu" ,rust-ryu-1)
-        ("rust-stackvector" ,rust-stackvector-1.0)
+        ("rust-stackvector" ,rust-stackvector-1)
         ("rust-static-assertions" ,rust-static-assertions-0.3))
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
@@ -34237,7 +34237,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-stackvector-1.0
+(define-public rust-stackvector-1
   (package
     (name "rust-stackvector")
     (version "1.0.6")
