@@ -50,7 +50,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages dbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
@@ -214,14 +214,20 @@ rates.")
              (patches (search-patches
                        "pulseaudio-fix-mult-test.patch"
                        "pulseaudio-longer-test-timeout.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"
-                               "--disable-oss-output"
-                               "--enable-bluez5"
-                               (string-append "--with-udev-rules-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-Doss-output=disable"
+               "-Dbluez5=true"
+               "-Dlocalstatedir=/var"
+               (string-append "-Dudevrulesdir="
+                              out "/lib/udev/rules.d")
+               ;; Ensure the RUNPATH contains all installed library locations.
+               (string-append "-Dc_link_args=-Wl,-rpath="
+                              out "/lib/pulseaudio:"
+                              out "/lib:"
+                              out "/lib/pulse-" ,version "/modules")))
        #:phases (modify-phases %standard-phases
                  (add-before 'check 'pre-check
                    (lambda _
@@ -233,7 +239,6 @@ rates.")
                      (setenv "CK_DEFAULT_TIMEOUT" "120")
                      #t)))))
     (inputs
-     ;; TODO: Add optional inputs (GTK+?).
      `(("alsa-lib" ,alsa-lib)
        ("bluez" ,bluez)
        ("sbc" ,sbc)
@@ -263,9 +268,9 @@ rates.")
        ("perl-xml-parser" ,perl-xml-parser)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
+     ;; 'libpulse*.la' contain `-ltdb' and `-lcap', so propagate them.
      `(("libcap" ,libcap)
-       ("gdbm" ,gdbm)))
+       ("tdb" ,tdb)))
     (home-page "http://www.pulseaudio.org/")
     (synopsis "Sound server")
     (description
