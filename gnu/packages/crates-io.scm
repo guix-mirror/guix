@@ -23429,7 +23429,7 @@ system for OpenSSL.")
 PartialOrd types, like floats.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-ordered-float-1.0
+(define-public rust-ordered-float-1
   (package
     (name "rust-ordered-float")
     (version "1.0.2")
@@ -28931,7 +28931,7 @@ Rust Language Server.")
         ("rust-failure" ,rust-failure-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-lmdb-rkv" ,rust-lmdb-rkv-0.14)
-        ("rust-ordered-float" ,rust-ordered-float-1.0)
+        ("rust-ordered-float" ,rust-ordered-float-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-url" ,rust-url-2)
@@ -30403,7 +30403,7 @@ font rendering.")
         ("rust-libm" ,rust-libm-0.2)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-ordered-float" ,rust-ordered-float-1.0)
+        ("rust-ordered-float" ,rust-ordered-float-1)
         ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-stb-truetype" ,rust-stb-truetype-0.3))))))
 
