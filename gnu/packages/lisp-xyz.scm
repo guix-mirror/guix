@@ -11742,34 +11742,36 @@ hu.dwim systems.")
   (sbcl-package->ecl-package sbcl-hu.dwim.common))
 
 (define-public sbcl-hu.dwim.defclass-star
-  (package
-    (name "sbcl-hu.dwim.defclass-star")
-    (version "2015-07-09")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://beta.quicklisp.org/archive/hu.dwim.defclass-star/"
-             version "/hu.dwim.defclass-star-"
-             (string-replace-substring version "-" "")
-             "-darcs.tgz"))
-       (sha256
-        (base32 "032982lyp0hm0ssxlyh572whi2hr4j1nqkyqlllaj373v0dbs3vs"))))
-    (build-system asdf-build-system/sbcl)
-    (native-inputs
-     `(;; These 2 inputs are only needed tests which are disabled, see below.
-       ;; ("hu.dwim.common" ,sbcl-hu.dwim.common)
-       ;; Need cl- package for the :hu.dwim.stefil+hu.dwim.def+swank system.
-       ;; ("hu.dwim.stefil" ,cl-hu.dwim.stefil)
-       ("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
-    (arguments
-     `(#:test-asd-file "hu.dwim.defclass-star.test.asd"
-       ;; Tests require a circular dependency: hu.dwim.stefil -> hu.dwim.def
-       ;; -> hu.dwim.util -> hu.dwim.defclass-star.
-       #:tests? #f))
-    (home-page "http://dwim.hu/?_x=dfxn&_f=mRIMfonK")
-    (synopsis "Simplify definitions with defclass* and friends in Common Lisp")
-    (description "@code{defclass-star} provides defclass* and defcondition* to
+  (let ((commit "39d458f1b1bc830d1f5e18a6a35bf0e96a2cfd61"))
+    (package
+      (name "sbcl-hu.dwim.defclass-star")
+      ;; We used to set version from the date when it was a darcs repo, so we
+      ;; keep the year so that package gets updated on previous installs.
+      (version (git-version "2021" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hu-dwim/hu.dwim.defclass-star")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hfkq2wad98vkyxdg1wh18y86d9w9yqkm8lxkk96szvpwymm7lmq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `( ;; These 2 inputs are only needed tests which are disabled, see below.
+         ;; ("hu.dwim.common" ,sbcl-hu.dwim.common)
+         ;; Need cl- package for the :hu.dwim.stefil+hu.dwim.def+swank system.
+         ;; ("hu.dwim.stefil" ,cl-hu.dwim.stefil)
+         ("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+      (arguments
+       `(#:test-asd-file "hu.dwim.defclass-star.test.asd"
+         ;; Tests require a circular dependency: hu.dwim.stefil -> hu.dwim.def
+         ;; -> hu.dwim.util -> hu.dwim.defclass-star.
+         #:tests? #f))
+      (home-page "https://github.com/hu-dwim/hu.dwim.defclass-star")
+      (synopsis "Simplify definitions with defclass* and friends in Common Lisp")
+      (description "@code{defclass-star} provides defclass* and defcondition* to
 simplify class and condition declarations.  Features include:
 
 @itemize
@@ -11783,7 +11785,7 @@ simplify class and condition declarations.  Features include:
 See
 @url{https://common-lisp.net/project/defclass-star/configuration.lisp.html}
 for an example.")
-    (license license:public-domain)))
+      (license license:public-domain))))
 
 (define-public cl-hu.dwim.defclass-star
   (sbcl-package->cl-source-package sbcl-hu.dwim.defclass-star))
