@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -192,7 +193,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "14.0")
+    (version "14.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -200,7 +201,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0qf20rgg0ysrnvg3359j56ndls07qmfn5rsy9r85bc42jdfpfd58"))
+               "1wb6zyln49ca93rl9id8r873b2sb8l79122ck824kr0s5isgglvm"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
