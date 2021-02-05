@@ -4810,7 +4810,15 @@ for Flow files.")
                                "/lib/python"
                                ,(version-major+minor (package-version python))
                                "/site-packages/grammalecte")))
-             #t)))))
+             #t))
+         (add-after 'unpack 'do-not-phone-home
+           ;; The package wants to check upstream Grammalecte version to
+           ;; decide if an update is in order.  Always return version
+           ;; installed so it doesn't phone home and doesn't install anything.
+           (lambda _
+             (substitute* "flycheck-grammalecte.el"
+               (("\\(flycheck-grammalecte--grammalecte-upstream-version\\)")
+                ,(format #f "\"~a\"" (package-version grammalecte)))))))))
     (inputs
      `(("grammalecte" ,grammalecte)
        ("python" ,python)))
