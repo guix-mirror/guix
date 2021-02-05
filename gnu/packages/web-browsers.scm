@@ -585,6 +585,34 @@ vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
+;; Nyxt 2 pre-release 5 is incompatible with the new nickname "class*" of defclass-star.
+;; Use the older commit then.
+(define sbcl-hu.dwim.defclass-star--no-nickname
+  (let ((commit "2cf30b37006824ec912cf7732fe6c4f4b414597f"))
+    (package
+      (name "sbcl-hu.dwim.defclass-star")
+      ;; We used to set version from the date when it was a darcs repo, so we
+      ;; keep the year so that package gets updated on previous installs.
+      (version (git-version "2015-07-09" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hu-dwim/hu.dwim.defclass-star")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zmzvwgcp6lpkqxnfphd05v20xqsvz392mx1v98469kavh4zd7hf"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+      (arguments
+       '(#:tests? #f))
+      (home-page "https://github.com/hu-dwim/hu.dwim.defclass-star")
+      (synopsis "See sbcl-hu.dwim.defclass-star")
+      (description "See sbcl-hu.dwim.defclass-star.")
+      (license license:public-domain))))
+
 (define-public nyxt
   (package
     (name "nyxt")
@@ -671,7 +699,8 @@ driven and does not detract you from your daily work.")
        ("dexador" ,sbcl-dexador)
        ("enchant" ,sbcl-enchant)
        ("fset" ,sbcl-fset)
-       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
+       ;; TODO: Use latest upstream for 2 pre-release 6 onward.
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star--no-nickname)
        ("iolib" ,sbcl-iolib)
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
