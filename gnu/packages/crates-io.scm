@@ -12931,7 +12931,7 @@ macOS API for file changes notifications")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-utf8-ranges" ,rust-utf8-ranges-1.0))))
+       (("rust-utf8-ranges" ,rust-utf8-ranges-1))))
     (home-page "https://github.com/BurntSushi/fst")
     (synopsis "Represent sets or maps of large numbers of strings.")
     (description
@@ -28384,7 +28384,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-regex-syntax" ,rust-regex-syntax-0.5)
         ("rust-thread-local" ,rust-thread-local-0.3)
-        ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
+        ("rust-utf8-ranges" ,rust-utf8-ranges-1))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.6)
@@ -40768,7 +40768,7 @@ Unix users and groups.")
      "Incremental, zero-copy UTF-8 decoding with error handling.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-utf8-ranges-1.0
+(define-public rust-utf8-ranges-1
   (package
     (name "rust-utf8-ranges")
     (version "1.0.4")
@@ -40796,7 +40796,7 @@ Unix users and groups.")
 
 (define-public rust-utf8-ranges-0.1
   (package
-    (inherit rust-utf8-ranges-1.0)
+    (inherit rust-utf8-ranges-1)
     (name "rust-utf8-ranges")
     (version "0.1.3")
     (source
