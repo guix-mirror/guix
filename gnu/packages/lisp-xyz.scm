@@ -888,10 +888,10 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (let ((commit "dffdf3caa12e964127d6eb45ba92ac0442cc5a48"))
+  (let ((commit "602af24d22d4bffa23f6cb906cf86d1684545c2b"))
     (package
       (name "sbcl-slynk")
-      (version (git-version "1.0.43" "1" commit))
+      (version (git-version "1.0.43" "2" commit))
       (source
        (origin
          (method git-fetch)
