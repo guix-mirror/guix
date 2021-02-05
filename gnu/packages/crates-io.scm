@@ -36688,7 +36688,7 @@ different for every thread.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-thread-id-2.0
+(define-public rust-thread-id-2
   (package
     (inherit rust-thread-id-3)
     (name "rust-thread-id")
@@ -36762,7 +36762,7 @@ different for every thread.")
          "1mgxikqvhpsic6xk7pan95lvgsky1sdxzw2w5m2l35pgrazxnxl5"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-thread-id" ,rust-thread-id-2.0))))))
+       (("rust-thread-id" ,rust-thread-id-2))))))
 
 (define-public rust-threadpool-1
   (package
