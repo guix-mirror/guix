@@ -10104,7 +10104,7 @@ and @code{directories} crates.")
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/xdg-rs/dirs/tree/master/dirs-sys")))
 
-(define-public rust-discard-1.0
+(define-public rust-discard-1
   (package
     (name "rust-discard")
     (version "1.0.4")
@@ -34428,7 +34428,7 @@ codebase.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-discard" ,rust-discard-1.0)
+       (("rust-discard" ,rust-discard-1)
         ("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
         ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
         ("rust-futures-executor-preview" ,rust-futures-executor-preview-0.3)
