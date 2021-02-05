@@ -41061,7 +41061,6 @@ designed for reexporting.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-chrono" ,rust-chrono-0.4)
-        ("rust-chrono" ,rust-chrono-0.4)
         ("rust-bitflags" ,rust-bitflags-1))))
     (home-page "https://github.com/rustyhorde/vergen")
     (synopsis "Generate version related functions")
