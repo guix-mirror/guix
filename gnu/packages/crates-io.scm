@@ -30872,21 +30872,6 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-scopeguard-1
-  (package
-    (inherit rust-scopeguard-1)
-    (name "rust-scopeguard")
-    (version "1.0.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "scopeguard" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "03aay84r1f6w87ckbpj6cc4rnsxkxcfs13n5ynxjia0qkgjiabml"))))
-    (arguments '(#:skip-build? #t))))
-
 (define-public rust-scopeguard-0.3
   (package
     (inherit rust-scopeguard-1)
