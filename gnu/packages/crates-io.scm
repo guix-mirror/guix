@@ -8206,7 +8206,7 @@ Code} (MAC) algorithms.")
      `(#:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.12)
-        ("rust-subtle" ,rust-subtle-1.0))))))
+        ("rust-subtle" ,rust-subtle-1))))))
 
 (define-public rust-crypto-mac-0.4
   (package
@@ -24376,7 +24376,7 @@ in pure Rust.")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-sha2" ,rust-sha2-0.8)
-        ("rust-subtle" ,rust-subtle-1.0))
+        ("rust-subtle" ,rust-subtle-1))
        #:cargo-development-inputs
        (("rust-hmac" ,rust-hmac-0.7)
         ("rust-sha-1" ,rust-sha-1-0.8)
@@ -30991,7 +30991,7 @@ by multiple crates in a build graph and erased by @code{cargo clean}.")
         ("rust-pbkdf2" ,rust-pbkdf2-0.3)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-sha2" ,rust-sha2-0.8)
-        ("rust-subtle" ,rust-subtle-1.0))))))
+        ("rust-subtle" ,rust-subtle-1))))))
 
 (define-public rust-scroll-0.10
   (package
@@ -35015,7 +35015,7 @@ easier in Rust.")
 cryptographic implementations.")
     (license license:bsd-3)))
 
-(define-public rust-subtle-1.0
+(define-public rust-subtle-1
   (package
     (inherit rust-subtle-2)
     (name "rust-subtle")
