@@ -5991,7 +5991,7 @@ traits.")
 Command Line Argument Parser.")
     (license license:expat)))
 
-(define-public rust-clicolors-control-1.0
+(define-public rust-clicolors-control-1
   (package
     (name "rust-clicolors-control")
     (version "1.0.1")
@@ -6737,7 +6737,7 @@ queue.")
         ("rust-termios" ,rust-termios-0.3)
         ("rust-encode-unicode" ,rust-encode-unicode-0.3)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-clicolors-control" ,rust-clicolors-control-1.0)
+        ("rust-clicolors-control" ,rust-clicolors-control-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-lazy-static" ,rust-lazy-static-1))))))
 
@@ -6759,7 +6759,7 @@ queue.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
-        ("rust-clicolors-control" ,rust-clicolors-control-1.0)
+        ("rust-clicolors-control" ,rust-clicolors-control-1)
         ("rust-encode-unicode" ,rust-encode-unicode-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
