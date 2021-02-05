@@ -1476,7 +1476,7 @@ it outputs messages to Android's logcat.")
 escape codes.")
     (license license:mpl2.0)))
 
-(define-public rust-antidote-1.0
+(define-public rust-antidote-1
   (package
     (name "rust-antidote")
     (version "1.0.0")
