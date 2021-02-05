@@ -15124,7 +15124,7 @@ the template engine that renders the official Rust website")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/rust-lang/hashbrown")
     (synopsis "Rust port of Google's SwissTable hash map")
@@ -15158,7 +15158,7 @@ hash map.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-hashbrown-0.5
@@ -29855,7 +29855,7 @@ It is automatically published using the compiler repository at
      "This package provides a speedy, non-cryptographic hash used in rustc.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-rustc-hash-1.0
+(define-public rust-rustc-hash-1
   (package
     (inherit rust-rustc-hash-1)
     (name "rust-rustc-hash")
