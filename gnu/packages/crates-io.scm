@@ -21228,7 +21228,7 @@ IO of Windows's named pipes.")
      "This package provides a wrapper over a platform's native TLS implementation.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-natord-1.0
+(define-public rust-natord-1
   (package
     (name "rust-natord")
     (version "1.0.9")

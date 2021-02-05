@@ -94,7 +94,7 @@
         ("rust-cxx-build" ,rust-cxx-build-0.5)
         ("rust-gettext-rs" ,rust-gettext-rs-0.5)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-natord" ,rust-natord-1.0)
+        ("rust-natord" ,rust-natord-1)
         ("rust-nom" ,rust-nom-6)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-rand" ,rust-rand-0.7)
