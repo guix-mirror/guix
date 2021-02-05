@@ -1468,7 +1468,7 @@ it outputs messages to Android's logcat.")
     (arguments
      `(#:cargo-inputs
        (("rust-heapless" ,rust-heapless-0.5)
-        ("rust-nom" ,rust-nom-4.2))))
+        ("rust-nom" ,rust-nom-4))))
     (home-page "https://gitlab.com/DavidBittner/ansi-parser")
     (synopsis "Library using nom for parsing ANSI escape codes")
     (description
@@ -5633,7 +5633,7 @@ that need to represent UTF-16 data as 8-bit characters.")
          "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-nom" ,rust-nom-4.2))
+       (("rust-nom" ,rust-nom-4))
        #:cargo-development-inputs
        (("rust-clang-sys" ,rust-clang-sys-0.28))))))
 
@@ -21817,7 +21817,7 @@ combinators library.")
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))))
 
-(define-public rust-nom-4.2
+(define-public rust-nom-4
   (package
     (inherit rust-nom-5)
     (name "rust-nom")
@@ -21844,7 +21844,7 @@ combinators library.")
 
 (define-public rust-nom-3
   (package
-    (inherit rust-nom-4.2)
+    (inherit rust-nom-4)
     (name "rust-nom")
     (version "3.2.1")
     (source
@@ -21867,7 +21867,7 @@ combinators library.")
 
 (define-public rust-nom-2
   (package
-    (inherit rust-nom-4.2)
+    (inherit rust-nom-4)
     (name "rust-nom")
     (version "2.2.1")
     (source
@@ -21888,7 +21888,7 @@ combinators library.")
 
 (define-public rust-nom-1.2
   (package
-    (inherit rust-nom-4.2)
+    (inherit rust-nom-4)
     (name "rust-nom")
     (version "1.2.4")
     (source
@@ -36395,7 +36395,7 @@ writing colored text to a terminal.")
     (arguments
      `(#:cargo-inputs
        (("rust-fnv" ,rust-fnv-1)
-        ("rust-nom" ,rust-nom-4.2)
+        ("rust-nom" ,rust-nom-4)
         ("rust-phf" ,rust-phf-0.7)
         ("rust-phf-codegen" ,rust-phf-codegen-0.7))))
     (home-page "https://github.com/meh/rust-terminfo")
@@ -42117,7 +42117,7 @@ with webpki.")
          "0r0i2kllvkn9jil6cjzxdi1zsc6p1gjyk751w8lyclaii1q3zd1v"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-nom" ,rust-nom-4.2))))
+     `(#:cargo-inputs (("rust-nom" ,rust-nom-4))))
     (home-page "https://github.com/rustwasm/weedle")
     (synopsis "WebIDL Parser")
     (description
