@@ -16101,7 +16101,7 @@ SystemTime}}.")
         ("rust-language-tags" ,rust-language-tags-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-mime" ,rust-mime-0.3)
-        ("rust-percent-encoding" ,rust-percent-encoding-1.0)
+        ("rust-percent-encoding" ,rust-percent-encoding-1)
         ("rust-time" ,rust-time-0.1)
         ("rust-unicase" ,rust-unicase-2))))
     (home-page "https://hyper.rs")
@@ -24577,7 +24577,7 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-percent-encoding-1.0
+(define-public rust-percent-encoding-1
   (package
     (inherit rust-percent-encoding-2)
     (name "rust-percent-encoding")
@@ -40642,7 +40642,7 @@ untrusted inputs in Rust.")
         ("rust-heapsize" ,rust-heapsize-0.4)
         ("rust-idna" ,rust-idna-0.1)
         ("rust-matches" ,rust-matches-0.1)
-        ("rust-percent-encoding" ,rust-percent-encoding-1.0)
+        ("rust-percent-encoding" ,rust-percent-encoding-1)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
