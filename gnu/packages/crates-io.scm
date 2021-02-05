@@ -19936,7 +19936,7 @@ unstable -Z self-profile flag.")
 for searching bytes.")
     (license (list license:unlicense license:expat))))
 
-(define-public rust-memchr-1.0
+(define-public rust-memchr-1
   (package
     (inherit rust-memchr-2)
     (name "rust-memchr")
@@ -19953,7 +19953,7 @@ for searching bytes.")
 
 (define-public rust-memchr-0.1
   (package
-    (inherit rust-memchr-1.0)
+    (inherit rust-memchr-1)
     (name "rust-memchr")
     (version "0.1.11")
     (source
@@ -21862,7 +21862,7 @@ combinators library.")
        #:cargo-inputs
        (("rust-compiler-error" ,rust-compiler-error-0.1)
         ("rust-lazy-static" ,rust-lazy-static-0.2)
-        ("rust-memchr" ,rust-memchr-1.0)
+        ("rust-memchr" ,rust-memchr-1)
         ("rust-regex" ,rust-regex-0.2))))))
 
 (define-public rust-nom-2
