@@ -3229,7 +3229,7 @@ and no more (caveat: black_box is still missing!).")
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-console" ,rust-console-0.9)
-        ("rust-syntect" ,rust-syntect-3.3))))
+        ("rust-syntect" ,rust-syntect-3))))
     (home-page "https://github.com/mitsuhiko/better-panic")
     (synopsis "Pretty backtraces inspired by Python's tracebacks")
     (description
@@ -35553,7 +35553,7 @@ a syntax tree of Rust source code.")
 intelligence using Sublime Text's grammars.")
     (license license:expat)))
 
-(define-public rust-syntect-3.3
+(define-public rust-syntect-3
   (package
     (inherit rust-syntect-4)
     (name "rust-syntect")
