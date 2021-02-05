@@ -1335,7 +1335,7 @@ code that is generic with regard to the algebraic entity types.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-edit-distance" ,rust-edit-distance-2.1)
+       (("rust-edit-distance" ,rust-edit-distance-2)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-quote" ,rust-quote-1)
@@ -10717,7 +10717,7 @@ including HSMs or Cloud KMS services.")
 signing, and verification in pure Rust.")
     (license license:bsd-3)))
 
-(define-public rust-edit-distance-2.1
+(define-public rust-edit-distance-2
   (package
     (name "rust-edit-distance")
     (version "2.1.0")
