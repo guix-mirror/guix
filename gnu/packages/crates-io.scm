@@ -36282,7 +36282,7 @@ template language.")
 grid layout.")
     (license license:expat)))
 
-(define-public rust-term-size-1.0
+(define-public rust-term-size-1
   (package
     (name "rust-term-size")
     (version "1.0.0-beta1")
@@ -36311,7 +36311,7 @@ grid layout.")
 
 (define-public rust-term-size-0.3
   (package
-    (inherit rust-term-size-1.0)
+    (inherit rust-term-size-1)
     (name "rust-term-size")
     (version "0.3.2")
     (source
