@@ -30886,7 +30886,7 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-scopeguard-1.0
+(define-public rust-scopeguard-1
   (package
     (inherit rust-scopeguard-1)
     (name "rust-scopeguard")
