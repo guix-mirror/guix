@@ -41043,7 +41043,7 @@ first byte.")
 designed for reexporting.")
     (license license:expat)))
 
-(define-public rust-vergen-3.1
+(define-public rust-vergen-3
   (package
     (name "rust-vergen")
     (version "3.1.0")

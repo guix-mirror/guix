@@ -4859,7 +4859,7 @@ result in several formats:
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-vergen" ,rust-vergen-3.1)
+        ("rust-vergen" ,rust-vergen-3)
         ("rust-y4m" ,rust-y4m-0.5))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
