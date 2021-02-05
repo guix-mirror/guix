@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
+;;; Copyright @ 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39755,8 +39756,38 @@ extension for the Trust-DNS client to use rustls for TLS.")
 parser.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tuikit-0.4
+  (package
+    (name "rust-tuikit")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tuikit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hf6pgclb2lj08jzb45q0mpjq2a9zw27h7kwyi5cibjz5skd054b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.14)
+        ("rust-term" ,rust-term-0.6)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6))))
+    (home-page "https://github.com/lotabout/tuikit")
+    (synopsis "Toolkit for writing TUI applications")
+    (description
+     "This package provides a toolkit for writing TUI applications in Rust.")
+    (license license:expat)))
+
 (define-public rust-tuikit-0.2
   (package
+    (inherit rust-tuikit-0.4)
     (name "rust-tuikit")
     (version "0.2.9")
     (source
@@ -39768,7 +39799,6 @@ parser.")
         (sha256
          (base32
           "19f3jp12kqcx7aaykxbaj1j17zahd4drv049agpxaminr63w2sw4"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; tests fail in the build environment.
        #:cargo-inputs
@@ -39779,12 +39809,7 @@ parser.")
         ("rust-term" ,rust-term-0.5)
         ("rust-unicode-width" ,rust-unicode-width-0.1))
        #:cargo-development-inputs
-       (("rust-env-logger" ,rust-env-logger-0.6))))
-    (home-page "https://github.com/lotabout/tuikit")
-    (synopsis "Toolkit for writing TUI applications")
-    (description
-     "This package provides a toolkit for writing TUI applications in Rust.")
-    (license license:expat)))
+       (("rust-env-logger" ,rust-env-logger-0.6))))))
 
 (define-public rust-typeable-0.1
   (package
