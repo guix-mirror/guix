@@ -41018,7 +41018,7 @@ first byte.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-vecmath-1.0
+(define-public rust-vecmath-1
   (package
     (name "rust-vecmath")
     (version "1.0.0")
