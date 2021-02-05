@@ -36625,7 +36625,7 @@ handle Unicode characters correctly.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-thiserror-impl" ,rust-thiserror-impl-1.0))
+       (("rust-thiserror-impl" ,rust-thiserror-impl-1))
        #:cargo-development-inputs
        (("rust-anyhow" ,rust-anyhow-1)
         ("rust-ref-cast" ,rust-ref-cast-1)
@@ -36636,7 +36636,7 @@ handle Unicode characters correctly.")
     (description "This package provides @code{derive(Error)} in Rust.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-thiserror-impl-1.0
+(define-public rust-thiserror-impl-1
   (package
     (name "rust-thiserror-impl")
     (version "1.0.22")
