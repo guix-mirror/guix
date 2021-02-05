@@ -15016,7 +15016,7 @@ IEEE 754-2008 binary16 type.")
         #:cargo-development-inputs
         (("rust-criterion" ,rust-criterion-0.2)
          ("rust-env-logger" ,rust-env-logger-0.6)
-         ("rust-maplit" ,rust-maplit-1.0)
+         ("rust-maplit" ,rust-maplit-1)
          ("rust-serde-derive" ,rust-serde-derive-1)
          ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/sunng87/handlebars-rust")
@@ -19547,7 +19547,7 @@ platform-independently.")
     "This package provides structs for handling malloc'd memory passed to Rust.")
    (license license:expat)))
 
-(define-public rust-maplit-1.0
+(define-public rust-maplit-1
   (package
     (name "rust-maplit")
     (version "1.0.2")
@@ -24707,7 +24707,7 @@ algorithm.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-maplit" ,rust-maplit-1.0)
+       (("rust-maplit" ,rust-maplit-1)
         ("rust-pest" ,rust-pest-2)
         ("rust-sha-1" ,rust-sha-1-0.8))))
     (home-page "https://pest.rs")
