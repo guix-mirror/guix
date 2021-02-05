@@ -14988,7 +14988,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
 IEEE 754-2008 binary16 type.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-handlebars-2.0
+(define-public rust-handlebars-2
   (package
     (name "rust-handlebars")
     (version "2.0.4")
