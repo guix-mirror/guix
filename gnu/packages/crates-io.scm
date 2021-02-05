@@ -24681,7 +24681,7 @@ algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-pest" ,rust-pest-2)
-        ("rust-pest-meta" ,rust-pest-meta-2.1)
+        ("rust-pest-meta" ,rust-pest-meta-2)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))))
@@ -24690,7 +24690,7 @@ algorithm.")
     (description "Pest code generator.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-pest-meta-2.1
+(define-public rust-pest-meta-2
   (package
     (name "rust-pest-meta")
     (version "2.1.2")
