@@ -7770,7 +7770,7 @@ message passing.")
     (arguments
      `(#:cargo-inputs
         (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
-         ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
+         ("rust-maybe-uninit" ,rust-maybe-uninit-2))
         #:cargo-development-inputs
         (("rust-num-cpus" ,rust-num-cpus-1)
          ("rust-rand" ,rust-rand-0.6)
@@ -7840,7 +7840,7 @@ message passing.")
      `(#:cargo-inputs
        (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
-        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
@@ -7912,7 +7912,7 @@ message passing.")
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2)
         ("rust-memoffset" ,rust-memoffset-0.5)
         ("rust-scopeguard" ,rust-scopeguard-1))
        #:cargo-development-inputs
@@ -7960,7 +7960,7 @@ message passing.")
      `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
-        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
@@ -19754,7 +19754,7 @@ parallelize and optimize.")
      `(#:cargo-inputs (("rust-rawpointer" ,rust-rawpointer-0.1))
        #:cargo-development-inputs (("rust-bencher" ,rust-bencher-0.1))))))
 
-(define-public rust-maybe-uninit-2.0
+(define-public rust-maybe-uninit-2
   (package
     (name "rust-maybe-uninit")
     (version "2.0.0")
@@ -33841,7 +33841,7 @@ stack.")
          "1dl219vnfkmsfx28lm3f83lyw24zap6fdsli6rg8nnp1aa67bc7p"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+       (("rust-maybe-uninit" ,rust-maybe-uninit-2)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1))))))

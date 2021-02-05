@@ -2778,7 +2778,7 @@ the platform-specific getters provided by winit, or another library.")
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/erlepereira/x11-rs.git")
     (synopsis "X11 library bindings for Rust")
