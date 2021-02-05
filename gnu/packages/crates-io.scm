@@ -23029,7 +23029,7 @@ Things in odds may move to more appropriate crates if we find them.")
 library.")
     (license license:expat)))
 
-(define-public rust-onig-5.0
+(define-public rust-onig-5
   (package
     (inherit rust-onig-6)
     (name "rust-onig")
@@ -35581,7 +35581,7 @@ intelligence using Sublime Text's grammars.")
         ("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-walkdir" ,rust-walkdir-2)
-        ("rust-onig" ,rust-onig-5.0))))))
+        ("rust-onig" ,rust-onig-5))))))
 
 (define-public rust-syntex-0.58
  (package
