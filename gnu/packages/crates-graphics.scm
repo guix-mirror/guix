@@ -1452,7 +1452,7 @@ nicely with Piston libraries.")
       "This package provides a generic library for textures")
     (license license:expat)))
 
-(define-public rust-piston-viewport-1.0
+(define-public rust-piston-viewport-1
   (package
     (name "rust-piston-viewport")
     (version "1.0.0")
@@ -1555,7 +1555,7 @@ nicely with Piston libraries.")
        (("rust-interpolation" ,rust-interpolation-0.2)
         ("rust-rusttype" ,rust-rusttype-0.7)
         ("rust-piston-texture" ,rust-piston-texture-0.8)
-        ("rust-piston-viewport" ,rust-piston-viewport-1.0)
+        ("rust-piston-viewport" ,rust-piston-viewport-1)
         ("rust-read-color" ,rust-read-color-1.0)
         ("rust-vecmath" ,rust-vecmath-1.0)
         ("rust-fnv" ,rust-fnv-1))))
@@ -1635,7 +1635,7 @@ interactive applications.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-piston-viewport" ,rust-piston-viewport-1.0)
+       (("rust-piston-viewport" ,rust-piston-viewport-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-bitflags" ,rust-bitflags-1))))
