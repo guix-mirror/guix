@@ -9709,7 +9709,7 @@ intelligently transliterating them.  It supports Emoji and Chinese.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-diesel-derives" ,rust-diesel-derives-1.4)
+        ("rust-diesel-derives" ,rust-diesel-derives-1)
         ("rust-ipnetwork" ,rust-ipnetwork-0.17)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
@@ -9735,7 +9735,7 @@ intelligently transliterating them.  It supports Emoji and Chinese.")
 Builder for PostgreSQL, SQLite, and MySQL.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-diesel-derives-1.4
+(define-public rust-diesel-derives-1
   (package
     (name "rust-diesel-derives")
     (version "1.4.1")
