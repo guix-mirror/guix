@@ -17056,7 +17056,7 @@ whether or not a given path points to an executable file.")
     (arguments
      `(#:cargo-inputs
        (("rust-clippy" ,rust-clippy-0.0)
-        ("rust-nom" ,rust-nom-1.2))))
+        ("rust-nom" ,rust-nom-1))))
     (home-page "https://github.com/badboy/iso8601")
     (synopsis "Parsing ISO8601 dates using nom")
     (description "Parsing ISO8601 dates using nom.")
@@ -21886,7 +21886,7 @@ combinators library.")
         ("rust-regex" ,rust-regex-0.2))
        #:tests? #f))))
 
-(define-public rust-nom-1.2
+(define-public rust-nom-1
   (package
     (inherit rust-nom-4)
     (name "rust-nom")
