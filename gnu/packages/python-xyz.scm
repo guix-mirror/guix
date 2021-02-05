@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2020 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -5216,7 +5216,10 @@ toolkits.")
          ("python2-subprocess32" ,python2-subprocess32)
          ("python2-tkinter" ,python-2 "tk")
          ,@(fold alist-delete (package-propagated-inputs matplotlib)
-                 '("python-pycairo" "python-pygobject" "python-tkinter")))))))
+                 '("python-cairocffi"
+                   "python-pycairo"
+                   "python-pygobject"
+                   "python-tkinter")))))))
 
 (define-public python-matplotlib-documentation
   (package
