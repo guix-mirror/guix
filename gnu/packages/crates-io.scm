@@ -29855,20 +29855,6 @@ It is automatically published using the compiler repository at
      "This package provides a speedy, non-cryptographic hash used in rustc.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-rustc-hash-1
-  (package
-    (inherit rust-rustc-hash-1)
-    (name "rust-rustc-hash")
-    (version "1.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "rustc-hash" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1f4cnbcmz2c3zjidqszc9c4fip37ch4xl74nkkp9dw291j5zqh3m"))))))
-
 (define-public rust-rustc-rayon-0.3
   (package
     (name "rust-rustc-rayon")
