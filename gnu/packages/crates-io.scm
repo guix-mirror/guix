@@ -24657,13 +24657,13 @@ algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-pest" ,rust-pest-2)
-        ("rust-pest-generator" ,rust-pest-generator-2.1))))
+        ("rust-pest-generator" ,rust-pest-generator-2))))
     (home-page "https://pest.rs/")
     (synopsis "Pest's derive macro")
     (description "Pest's derive macro.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-pest-generator-2.1
+(define-public rust-pest-generator-2
   (package
     (name "rust-pest-generator")
     (version "2.1.1")
@@ -31590,7 +31590,7 @@ macOS and iOS.")
        #:cargo-inputs
        (("rust-pest" ,rust-pest-2))
        #:cargo-development-inputs
-       (("rust-pest-generator" ,rust-pest-generator-2.1))))
+       (("rust-pest-generator" ,rust-pest-generator-2))))
     (home-page "https://github.com/steveklabnik/semver-parser")
     (synopsis "Parsing of the Semver spec")
     (description "This package provides for parsing of the Semver spec.")
