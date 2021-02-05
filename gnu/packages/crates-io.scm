@@ -10160,7 +10160,7 @@ Central Dispatch.")
          "019nzy993hxaiazcdnayx3csv2iki34i535asw11ki96hakkrs84"))))
     (arguments '(#:tests? #f))))  ; Tests only run on Mac.
 
-(define-public rust-dissimilar-1.0
+(define-public rust-dissimilar-1
   (package
     (name "rust-dissimilar")
     (version "1.0.1")
@@ -39730,7 +39730,7 @@ extension for the Trust-DNS client to use rustls for TLS.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-dissimilar" ,rust-dissimilar-1.0)
+       (("rust-dissimilar" ,rust-dissimilar-1)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-serde" ,rust-serde-1)
