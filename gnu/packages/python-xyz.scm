@@ -4995,10 +4995,17 @@ that client code uses to construct the grammar directly in Python code.")
      "Numpy's Sphinx extensions")
     (description
      "Sphinx extension to support docstrings in Numpy format.")
-    (license license:bsd-2)))
+    (license license:bsd-2)
+    (properties `((python2-variant . ,(delay python2-numpydoc))))))
 
 (define-public python2-numpydoc
-  (package-with-python2 python-numpydoc))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-numpydoc))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-jinja2" ,python2-jinja2)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-numexpr
   (package
