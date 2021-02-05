@@ -6040,7 +6040,7 @@ colorization.")
      "This package provides simple way to interact with Windows clipboard.")
     (license license:expat)))
 
-(define-public rust-clipboard-win-2.1
+(define-public rust-clipboard-win-2
   (package
     (inherit rust-clipboard-win-3)
     (name "rust-clipboard-win")
