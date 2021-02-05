@@ -6501,7 +6501,7 @@ combinator.")
         ("rust-either" ,rust-either-1)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-0.2)
-        ("rust-unreachable" ,rust-unreachable-1.0))
+        ("rust-unreachable" ,rust-unreachable-1))
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-bytes" ,rust-bytes-0.4)
@@ -34254,7 +34254,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-unreachable" ,rust-unreachable-1.0))
+       (("rust-unreachable" ,rust-unreachable-1))
        #:cargo-development-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2))))
     (home-page "https://github.com/Alexhuszagh/rust-stackvector")
@@ -40512,7 +40512,7 @@ whitespace from a string.")
     (description "This package provides unix domain socket bindings.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-unreachable-1.0
+(define-public rust-unreachable-1
   (package
     (name "rust-unreachable")
     (version "1.0.0")
