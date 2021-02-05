@@ -28257,7 +28257,7 @@ functionality.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-ref-cast-impl" ,rust-ref-cast-impl-1.0))
+       (("rust-ref-cast-impl" ,rust-ref-cast-impl-1))
        #:cargo-development-inputs
        (("rust-rustversion" ,rust-rustversion-1)
         ("rust-trybuild" ,rust-trybuild-1))))
@@ -28293,7 +28293,7 @@ functionality.")
      "Safely cast &T to &U where the struct U contains a single field of type T.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-ref-cast-impl-1.0
+(define-public rust-ref-cast-impl-1
   (package
     (name "rust-ref-cast-impl")
     (version "1.0.2")
@@ -28320,7 +28320,7 @@ functionality.")
 
 (define-public rust-ref-cast-impl-0.2
   (package
-    (inherit rust-ref-cast-impl-1.0)
+    (inherit rust-ref-cast-impl-1)
     (name "rust-ref-cast-impl")
     (version "0.2.7")
     (source
