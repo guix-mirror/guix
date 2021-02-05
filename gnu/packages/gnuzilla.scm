@@ -929,8 +929,8 @@ from forcing GEXP-PROMISE."
 
        ("patch" ,(canonical-package patch))
 
-       ("rust" ,rust-1.41)
-       ("cargo" ,rust-1.41 "cargo")
+       ("rust" ,rust)
+       ("cargo" ,rust "cargo")
        ("rust-cbindgen" ,rust-cbindgen-0.14)
        ("llvm" ,llvm)
        ("clang" ,clang)
@@ -1600,7 +1600,7 @@ standards of the IceCat project.")
               (base32
                "0yabs4zlwb5jvlyk45lbw1nzfmra1f8bbwvwcwxjs1a8wcmrmb39")))))
        ("autoconf" ,autoconf-2.13)
-       ("cargo" ,rust-1.41 "cargo")
+       ("cargo" ,rust "cargo")
        ("clang" ,clang)
        ("llvm" ,llvm)
        ("nasm" ,nasm)
