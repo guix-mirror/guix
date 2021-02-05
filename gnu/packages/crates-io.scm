@@ -43313,7 +43313,7 @@ formatters with per-field documentation generated for each structure.
       "This package provides a CMSIS-SVD file parser")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-inflections-1.1
+(define-public rust-inflections-1
   (package
     (name "rust-inflections")
     (version "1.1.1")
@@ -43475,7 +43475,7 @@ formatters with per-field documentation generated for each structure.
          ("rust-clap" ,rust-clap-2)
          ("rust-env-logger" ,rust-env-logger-0.7)
          ("rust-error-chain" ,rust-error-chain-0.12)
-         ("rust-inflections" ,rust-inflections-1.1)
+         ("rust-inflections" ,rust-inflections-1)
          ("rust-log" ,rust-log-0.4)
          ("rust-proc-macro2" ,rust-proc-macro2-0.4)
          ("rust-quote" ,rust-quote-1)
