@@ -211,9 +211,17 @@ what matters."
                   channels))))
   (display-package-search-path fmt))
 
+(define (profile-generation-channels profile number)
+  "Return the list of channels for generation NUMBER of PROFILE."
+  (profile-channels (if (zero? number)
+                        profile
+                        (generation-file-name profile number))))
+
 (define* (display-profile-content profile number
                                   #:optional
-                                  (channels (profile-channels profile)))
+                                  (channels
+                                   (profile-generation-channels profile
+                                                                number)))
   "Display CHANNELS along with PROFILE info, generation NUMBER, in a
 human-readable way and displaying details about the channel's source code.
 PROFILE and NUMBER "
