@@ -43156,7 +43156,7 @@ library.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-zstd-sys" ,rust-zstd-sys-1.4.17))))
+        ("rust-zstd-sys" ,rust-zstd-sys-1))))
     (home-page "https://github.com/gyscos/zstd-rs")
     (synopsis "Safe low-level bindings to the zstd compression library")
     (description "This package provides safe low-level bindings to the zstd
@@ -43191,8 +43191,6 @@ compression library.")
     (description "This package provides low-level Rust bindings to the zstd
 compression library.")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-zstd-sys-1.4.17 rust-zstd-sys-1)
 
 (define-public rust-packed-struct
   (package
