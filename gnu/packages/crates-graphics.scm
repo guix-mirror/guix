@@ -689,7 +689,7 @@ and iOS.")
     (arguments
      `(#:tests? #f      ; tests not included in release
        #:cargo-inputs
-       (("rust-color-quant" ,rust-color-quant-1.0)
+       (("rust-color-quant" ,rust-color-quant-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-lzw" ,rust-lzw-0.10))
        #:cargo-development-inputs

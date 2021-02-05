@@ -6378,7 +6378,7 @@ CMAKE environmental variable is set.")
 programming languages.")
     (license license:asl2.0)))
 
-(define-public rust-color-quant-1.0
+(define-public rust-color-quant-1
   (package
     (name "rust-color-quant")
     (version "1.0.1")
