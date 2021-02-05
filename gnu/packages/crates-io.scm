@@ -3646,7 +3646,7 @@ bindings to C and C++ libraries.")
         ("rust-log" ,rust-log-0.4)
         ("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-quote" ,rust-quote-0.5)
-        ("rust-which" ,rust-which-1.0)
+        ("rust-which" ,rust-which-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-clap" ,rust-clap-2))
@@ -3716,7 +3716,7 @@ bindings to C and C++ libraries.")
         ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
         ("rust-quote" ,rust-quote-0.3)
         ("rust-regex" ,rust-regex-0.2)
-        ("rust-which" ,rust-which-1.0))
+        ("rust-which" ,rust-which-1))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1)
@@ -42223,7 +42223,7 @@ installed executable in cross platforms.")
 Locate installed executable in cross platforms.")
     (license license:expat)))
 
-(define-public rust-which-1.0
+(define-public rust-which-1
   (package
     (inherit rust-which-2)
     (name "rust-which")
