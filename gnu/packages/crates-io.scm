@@ -28241,7 +28241,7 @@ system calls.")
 functionality.")
     (license license:expat)))
 
-(define-public rust-ref-cast-1.0
+(define-public rust-ref-cast-1
   (package
     (name "rust-ref-cast")
     (version "1.0.2")
@@ -35255,7 +35255,7 @@ browsers.")
         ("rust-flate2" ,rust-flate2-1)
         ("rust-insta" ,rust-insta-0.16)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-ref-cast" ,rust-ref-cast-1.0)
+        ("rust-ref-cast" ,rust-ref-cast-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-reqwest" ,rust-reqwest-0.10)
         ("rust-syn-test-suite" ,rust-syn-test-suite-0)
@@ -36628,7 +36628,7 @@ handle Unicode characters correctly.")
        (("rust-thiserror-impl" ,rust-thiserror-impl-1.0))
        #:cargo-development-inputs
        (("rust-anyhow" ,rust-anyhow-1)
-        ("rust-ref-cast" ,rust-ref-cast-1.0)
+        ("rust-ref-cast" ,rust-ref-cast-1)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-trybuild" ,rust-trybuild-1))))
     (home-page "https://github.com/dtolnay/thiserror")
