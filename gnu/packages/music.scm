@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -3496,6 +3496,7 @@ websites such as Libre.fm.")
                 (uri (git-reference
                       (url "https://github.com/beetbox/beets")
                       (commit commit)))
+                (file-name (git-file-name "beets" version))
                 (sha256
                  (base32
                   "092a9sss2shhcjmpgbwvscv8brpm5970i5hddkhi81xcff3bg1h4"))))
