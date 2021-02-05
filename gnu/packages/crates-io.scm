@@ -43127,7 +43127,7 @@ implementation that works everywhere, even WASM!")
      `(#:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1)
-        ("rust-zstd-safe" ,rust-zstd-safe-2.0.5))
+        ("rust-zstd-safe" ,rust-zstd-safe-2))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-humansize" ,rust-humansize-1)
@@ -43162,8 +43162,6 @@ library.")
     (description "This package provides safe low-level bindings to the zstd
 compression library.")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-zstd-safe-2.0.5 rust-zstd-safe-2)
 
 ;; TODO: Unbundle zstd.
 (define-public rust-zstd-sys-1
