@@ -10013,7 +10013,7 @@ standard locations of directories for config, cache and other data.")
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dirs-sys" ,rust-dirs-sys-0.3))))))
 
-(define-public rust-dirs-1.0
+(define-public rust-dirs-1
   (package
     (inherit rust-dirs-2)
     (name "rust-dirs")
@@ -10035,7 +10035,7 @@ standard locations of directories for config, cache and other data.")
 
 (define-public rust-dirs-next-1
   (package
-    (inherit rust-dirs-1.0)
+    (inherit rust-dirs-1)
     (name "rust-dirs-next")
     (version "1.0.2")
     (source
@@ -12482,7 +12482,7 @@ implementation that is more efficient for smaller hash keys.")
          ,rust-core-foundation-0.6)
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-dwrote" ,rust-dwrote-0.9)
-        ("rust-dirs" ,rust-dirs-1.0)
+        ("rust-dirs" ,rust-dirs-1)
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-core-text" ,rust-core-text-13)
@@ -36240,7 +36240,7 @@ template language.")
     (arguments
      `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1)
-        ("rust-dirs" ,rust-dirs-1.0)
+        ("rust-dirs" ,rust-dirs-1)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-term-0.4
