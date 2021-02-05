@@ -11965,7 +11965,7 @@ supported in purely NFA-based implementations.")
         ("rust-log" ,rust-log-0.4)
         ("rust-reopen" ,rust-reopen-0.3)
         ("rust-syslog" ,rust-syslog-3.3)
-        ("rust-syslog" ,rust-syslog-4.0))
+        ("rust-syslog" ,rust-syslog-4))
        #:cargo-development-inputs
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
@@ -11998,7 +11998,7 @@ supported in purely NFA-based implementations.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-colored" ,rust-colored-1)
         ("rust-syslog" ,rust-syslog-3.3)
-        ("rust-syslog" ,rust-syslog-4.0))
+        ("rust-syslog" ,rust-syslog-4))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
@@ -35735,7 +35735,7 @@ syntax extension expansion.")
         ("rust-errno" ,rust-errno-0.2)
         ("rust-libc" ,rust-libc-0.2))))))
 
-(define-public rust-syslog-4.0
+(define-public rust-syslog-4
   (package
     (name "rust-syslog")
     (version "4.0.1")
