@@ -1189,7 +1189,7 @@ using AES-NI for high performance.")
        (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-csv" ,rust-csv-1)
-        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-docopt" ,rust-docopt-1)
         ("rust-memmap" ,rust-memmap-0.6)
         ("rust-quickcheck" ,rust-quickcheck-0.7)
         ("rust-rand" ,rust-rand-0.5)
@@ -5435,7 +5435,7 @@ capabilities")
         ("rust-serde-json" ,rust-serde-json-1))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
-        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-docopt" ,rust-docopt-1)
         ("rust-structopt" ,rust-structopt-0.2))))
     (home-page "https://github.com/oli-obk/cargo_metadata")
     (synopsis "Structured access to the output of `cargo metadata`")
@@ -10245,7 +10245,7 @@ from macros.")
     (description "Test Rust examples in your documentation.")
     (license license:expat)))
 
-(define-public rust-docopt-1.1
+(define-public rust-docopt-1
   (package
     (name "rust-docopt")
     (version "1.1.0")
@@ -10271,7 +10271,7 @@ from macros.")
     (license (list license:expat license:unlicense))))
 
 (define-public rust-docopt-0.8
-  (package/inherit rust-docopt-1.1
+  (package/inherit rust-docopt-1
     (name "rust-docopt")
     (version "0.8.3")
     (source
@@ -10291,7 +10291,7 @@ from macros.")
 
 (define-public rust-docopt-0.7
   (package
-    (inherit rust-docopt-1.1)
+    (inherit rust-docopt-1)
     (name "rust-docopt")
     (version "0.7.0")
     (source
@@ -14332,7 +14332,7 @@ reading and writing git repositories.")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
-       (("rust-docopt" ,rust-docopt-1.1)
+       (("rust-docopt" ,rust-docopt-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-tempfile" ,rust-tempfile-3)
@@ -14363,7 +14363,7 @@ reading and writing git repositories.")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-url" ,rust-url-1))
        #:cargo-development-inputs
-       (("rust-docopt" ,rust-docopt-1.1)
+       (("rust-docopt" ,rust-docopt-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-tempdir" ,rust-tempdir-0.3)
@@ -17847,7 +17847,7 @@ space, and comparing differences in color.")
        ("rust-atty" ,rust-atty-0.2)
        ("rust-bit-set" ,rust-bit-set-0.5)
        ("rust-diff" ,rust-diff-0.1)
-       ("rust-docopt" ,rust-docopt-1.1)
+       ("rust-docopt" ,rust-docopt-1)
        ("rust-ena" ,rust-ena-0.14)
        ("rust-itertools" ,rust-itertools-0.9)
        ("rust-lalrpop-util" ,rust-lalrpop-util-0.19)
@@ -17888,7 +17888,7 @@ grammars.")
        ("rust-atty" ,rust-atty-0.2)
        ("rust-bit-set" ,rust-bit-set-0.5)
        ("rust-diff" ,rust-diff-0.1)
-       ("rust-docopt" ,rust-docopt-1.1)
+       ("rust-docopt" ,rust-docopt-1)
        ("rust-ena" ,rust-ena-0.13)
        ("rust-itertools" ,rust-itertools-0.8)
        ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
@@ -28032,7 +28032,7 @@ accessors.")
         ("rust-either" ,rust-either-1)
         ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
-       (("rust-docopt" ,rust-docopt-1.1)
+       (("rust-docopt" ,rust-docopt-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
@@ -29909,7 +29909,7 @@ It is automatically published using the compiler repository at
         ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-docopt" ,rust-docopt-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
