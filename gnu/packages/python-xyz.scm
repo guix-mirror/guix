@@ -1080,17 +1080,15 @@ inter-process communication.")
 (define-public python-semantic-version
   (package
     (name "python-semantic-version")
-    (version "2.6.0")
+    (version "2.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "semantic_version" version))
        (sha256
         (base32
-         "1h2l9xyg1zzsda6kjcmfcgycbvrafwci283vcr1v5sbk01l2hhra"))))
+         "0m4avx8zdkzc7qglv5zlr54g8yna5vl098drg5396ql7aph2vjyj"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ; PyPI tarball lacks tests
     (home-page "https://github.com/rbarrois/python-semanticversion")
     (synopsis "Semantic versioning module for Python")
     (description
