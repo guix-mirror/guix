@@ -581,14 +581,14 @@ specification.  These are the main features:
   (package
     (inherit guile-json-3)
     (name "guile-json")
-    (version "4.5.1")
+    (version "4.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0iigada80cg7dl10z6ligiykci0cv9b88zmncz47nsz5g9gacdpc"))))))
+                "0cqr0ljqmzlc2bwrapcsmcgxg147h66mcxf23824ri5i6vn4dc0s"))))))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json-4))
