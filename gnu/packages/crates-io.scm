@@ -11964,7 +11964,7 @@ supported in purely NFA-based implementations.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-reopen" ,rust-reopen-0.3)
-        ("rust-syslog" ,rust-syslog-3.3)
+        ("rust-syslog" ,rust-syslog-3)
         ("rust-syslog" ,rust-syslog-4))
        #:cargo-development-inputs
        (("rust-chrono" ,rust-chrono-0.4)
@@ -11997,7 +11997,7 @@ supported in purely NFA-based implementations.")
         ("rust-log" ,rust-log-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-colored" ,rust-colored-1)
-        ("rust-syslog" ,rust-syslog-3.3)
+        ("rust-syslog" ,rust-syslog-3)
         ("rust-syslog" ,rust-syslog-4))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
@@ -35761,7 +35761,7 @@ syntax extension expansion.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
-(define-public rust-syslog-3.3
+(define-public rust-syslog-3
   (package
     (name "rust-syslog")
     (version "3.3.0")
