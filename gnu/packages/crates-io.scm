@@ -25407,7 +25407,7 @@ both WASM and native applications")
     (description "This package provides utils for proc-macro.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-pnacl-build-helper-1.4
+(define-public rust-pnacl-build-helper-1
   (package
     (name "rust-pnacl-build-helper")
     (version "1.4.11")
