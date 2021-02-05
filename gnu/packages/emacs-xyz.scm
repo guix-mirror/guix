@@ -9785,12 +9785,12 @@ CIDER).")
 
 (define-public emacs-sly
   ;; Update together with sbcl-slynk.
-  (let ((commit "dffdf3caa12e964127d6eb45ba92ac0442cc5a48"))
-    ;; Latest stable 1.0.42 is broken:
-    ;; https://github.com/joaotavora/sly/issues/394.
+  (let ((commit "602af24d22d4bffa23f6cb906cf86d1684545c2b"))
+    ;; Versions are not always tagged.  Besides, latest master contains
+    ;; important fixes.
     (package
       (name "emacs-sly")
-      (version (git-version "1.0.43" "1" commit))
+      (version (git-version "1.0.43" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -9800,7 +9800,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0vv185gz3rkfng5y79dijfnc11p92qdz2kdza05avjbpqfs6l0zn"))))
+           "1z48l0l1y1mhqp45arncfr98zbbipqz54kzl21w05qghn6z4ccp3"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
