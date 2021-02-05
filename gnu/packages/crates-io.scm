@@ -28125,7 +28125,7 @@ reference counting.")
 @code{rdrand} and @code{rdseed} instructions")
     (license license:isc)))
 
-(define-public rust-read-color-1.0
+(define-public rust-read-color-1
   (package
     (name "rust-read-color")
     (version "1.0.0")
