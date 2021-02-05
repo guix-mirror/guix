@@ -12813,7 +12813,7 @@ values to other threads.")
 duplication.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-fs-extra-1.1
+(define-public rust-fs-extra-1
   (package
     (name "rust-fs-extra")
     (version "1.1.0")
@@ -17286,7 +17286,7 @@ primitives to an @code{io::Write}.")
        (("rust-libc" ,rust-libc-0.2)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
-        ("rust-fs-extra" ,rust-fs-extra-1.1))
+        ("rust-fs-extra" ,rust-fs-extra-1))
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'override-jemalloc
