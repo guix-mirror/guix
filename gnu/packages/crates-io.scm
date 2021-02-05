@@ -1302,7 +1302,7 @@ using AES-NI for high performance.")
     (arguments
      `(#:cargo-inputs
        (("rust-approx" ,rust-approx-0.3)
-        ("rust-decimal" ,rust-decimal-2.0)
+        ("rust-decimal" ,rust-decimal-2)
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))
        #:cargo-development-inputs
@@ -9198,7 +9198,7 @@ GF(2^n).  This trait is implemented for 64, 128 and 256 bit block
 sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-decimal-2.0
+(define-public rust-decimal-2
   (package
     (name "rust-decimal")
     (version "2.0.4")
@@ -33279,7 +33279,7 @@ for additional details.")
      `(#:cargo-inputs
        (("rust-approx" ,rust-approx-0.3)
         ("rust-cordic" ,rust-cordic-0.1)
-        ("rust-decimal" ,rust-decimal-2.0)
+        ("rust-decimal" ,rust-decimal-2)
         ("rust-fixed" ,rust-fixed-1)
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2)
