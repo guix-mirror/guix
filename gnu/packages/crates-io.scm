@@ -2012,7 +2012,7 @@ differences.  This is useful when asserting that two large JSON
 objects are the same.")
     (license license:expat)))
 
-(define-public rust-assert-matches-1.3
+(define-public rust-assert-matches-1
   (package
     (name "rust-assert-matches")
     (version "1.3.0")
@@ -4548,7 +4548,7 @@ decompression and compression to Rust.")
      `(#:cargo-inputs
        (("rust-sha2" ,rust-sha2-0.8))
        #:cargo-development-inputs
-       (("rust-assert-matches" ,rust-assert-matches-1.3)
+       (("rust-assert-matches" ,rust-assert-matches-1)
         ("rust-base58" ,rust-base58-0.1)
         ("rust-rust-base58" ,rust-rust-base58-0.0))))
     (home-page "https://github.com/mycorrhiza/bs58-rs")
@@ -13076,7 +13076,7 @@ stabilized, and eventually removed.  This library reïnstates these traits.")
         ("rust-futures-task" ,rust-futures-task-0.3)
         ("rust-futures-util" ,rust-futures-util-0.3))
        #:cargo-development-inputs
-       (("rust-assert-matches" ,rust-assert-matches-1.3)
+       (("rust-assert-matches" ,rust-assert-matches-1)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-tokio" ,rust-tokio-0.1))))
     (home-page "https://rust-lang-nursery.github.io/futures-rs")
@@ -30576,7 +30576,7 @@ sub-processes using a fork-like interface.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("skim" ,skim-0.7))
        #:cargo-development-inputs
-       (("rust-assert-matches" ,rust-assert-matches-1.3)
+       (("rust-assert-matches" ,rust-assert-matches-1)
         ("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-rustyline-derive" ,rust-rustyline-derive-0.3)
