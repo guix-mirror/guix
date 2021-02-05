@@ -20229,7 +20229,7 @@ non-interactive protocols can be implemented as if they were interactive.")
 based on Rustls and Ring.")
     (license license:bsd-3)))
 
-(define-public rust-metadeps-1.1
+(define-public rust-metadeps-1
   (package
     (name "rust-metadeps")
     (version "1.1.2")

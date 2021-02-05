@@ -206,7 +206,7 @@ text or blue underlined text, on ANSI terminals.")
     (arguments
       `(#:cargo-inputs
         (("rust-bindgen" ,rust-bindgen-0.54)
-         ("rust-metadeps" ,rust-metadeps-1.1))))
+         ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -236,7 +236,7 @@ text or blue underlined text, on ANSI terminals.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.53)
-        ("rust-metadeps" ,rust-metadeps-1.1))))
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -531,7 +531,7 @@ and iOS.")
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.54)
-        ("rust-metadeps" ,rust-metadeps-1.1))))
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
