@@ -8583,7 +8583,7 @@ for block ciphers.
 Mode functionality is accessed using traits from re-exported cipher crate.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-ctrlc-3.1
+(define-public rust-ctrlc-3
   (package
     (name "rust-ctrlc")
     (version "3.1.3")
