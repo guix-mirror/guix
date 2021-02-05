@@ -5826,8 +5826,8 @@ Trivia.")
 ;;; Split the trivia package in two to work around the circular dependency
 ;;; between guicho271828/trivia and guicho271828/type-i.
 (define-public sbcl-trivia.trivial
-  (let ((commit "37698b47a14c2007630468de7a993694ef7bd475")
-        (revision "2"))
+  (let ((commit "7286d5d2a4f685f1cac8370816f95276c0851111")
+        (revision "3"))
     (package
       (name "sbcl-trivia.trivial")
       (version (git-version "0.0.0" revision commit))
@@ -5840,7 +5840,7 @@ Trivia.")
          (file-name (git-file-name "trivia" version))
          (sha256
           (base32
-           "0rsbwbw3ipxxgr6zzhci12nilq8zky475kmhz1rcxy4q8a85vn72"))))
+           "0ln0sj3jry7kzbmxhnin66kpbqan1wp8wwgdbw4k29afbdblkcca"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
