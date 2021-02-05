@@ -14007,7 +14007,7 @@ API library @code{gdi32}.")
      `(#:cargo-inputs
        (("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
-        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))
+        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1))
        #:cargo-development-inputs
        (("rust-log" ,rust-log-0.3))))
     (home-page "https://github.com/rust-lang/getopts")
@@ -30012,7 +30012,7 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-rustc-std-workspace-std-1.0
+(define-public rust-rustc-std-workspace-std-1
   (package
     (name "rust-rustc-std-workspace-std")
     (version "1.0.1")
@@ -40390,7 +40390,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
      `(#:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
-        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))))
+        ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1))))
     (home-page "https://github.com/unicode-rs/unicode-width")
     (synopsis "Determine displayed width according to Unicode rules")
     (description "This crate allows you to determine displayed width of
