@@ -13742,7 +13742,7 @@ futures-rs library.")
      `(#:cargo-inputs
        (("rust-thread-local" ,rust-thread-local-1))
        #:cargo-development-inputs
-       (("rust-termion" ,rust-termion-1.5))))
+       (("rust-termion" ,rust-termion-1))))
     (home-page "https://github.com/lotabout/fuzzy-matcher")
     (synopsis "Fuzzy Matching Library")
     (description "This package provides a fuzzy matching library in Rust.")
@@ -36403,7 +36403,7 @@ writing colored text to a terminal.")
     (description "Terminal capabilities with type-safe getters.")
     (license license:wtfpl2)))
 
-(define-public rust-termion-1.5
+(define-public rust-termion-1
   (package
     (name "rust-termion")
     (version "1.5.5")
