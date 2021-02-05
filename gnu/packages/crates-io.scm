@@ -1827,7 +1827,7 @@ ArrayVec and ArrayString.")
 traits.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-ascii-1.0
+(define-public rust-ascii-1
   (package
     (name "rust-ascii")
     (version "1.0.0")
@@ -1856,7 +1856,7 @@ standard library.")
 
 (define-public rust-ascii-0.9
   (package
-    (inherit rust-ascii-1.0)
+    (inherit rust-ascii-1)
     (name "rust-ascii")
     (version "0.9.3")
     (source
@@ -10845,7 +10845,7 @@ experimentation.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-ascii" ,rust-ascii-1.0)
+       (("rust-ascii" ,rust-ascii-1)
         ("rust-clippy" ,rust-clippy-0.0))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1))))
