@@ -1368,8 +1368,6 @@ stack, or by a package that wishes to simply use Box<>.  It also provides
 options to use calloc or a mutable global variable for pre-zeroed memory.")
     (license license:bsd-3)))
 
-(define-public rust-alloc-no-stdlib-2.0 rust-alloc-no-stdlib-2)
-
 (define-public rust-alloc-stdlib-0.2
   (package
     (name "rust-alloc-stdlib")
@@ -1385,7 +1383,7 @@ options to use calloc or a mutable global variable for pre-zeroed memory.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2.0))))
+       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2))))
     (home-page "https://github.com/dropbox/rust-alloc-no-stdlib")
     (synopsis "A dynamic allocator example that may be used with the stdlib")
     (description "This package provides a dynamic allocator example that may
@@ -4477,7 +4475,7 @@ devices and kernels.")
     (arguments
      `(#:tests? #f      ; not all test files included
        #:cargo-inputs
-       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2.0)
+       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2)
         ("rust-alloc-stdlib" ,rust-alloc-stdlib-0.2))))
     (home-page "https://github.com/dropbox/rust-brotli-decompressor")
     (synopsis "Brotli decompressor")
