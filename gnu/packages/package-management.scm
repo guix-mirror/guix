@@ -1003,24 +1003,18 @@ written entirely in Python.")
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.2.1")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gwl/gwl-" version ".tar.gz"))
               (sha256
                (base32
-                "1ji5jvzni8aml9fmimlr11g3k8isrnlvnbzhmwgdjh72hils0alc"))))
+                "1lqif00mq7fsaknbc2gvvcv1j89k311sm44jp9jklbrv0v2lc83n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-tests
-           (lambda _
-             ;; Avoid cross-device link.
-             (substitute* "tests/cache.scm"
-               (("/tmp/gwl-test-input-XXXXXX")
-                (string-append (getcwd) "/gwl-test-input-XXXXXX")))
-             #t)))))
+     `(#:parallel-build? #false ; for reproducibility
+       #:make-flags
+       '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1028,14 +1022,17 @@ written entirely in Python.")
        ("texinfo" ,texinfo)
        ("graphviz" ,graphviz)))
     (inputs
-     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
-    (propagated-inputs
-     `(("guix" ,guix)
-       ("guile-commonmark" ,guile-commonmark)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("guile-pfds" ,guile-pfds)
-       ("guile-syntax-highlight" ,guile-syntax-highlight)
-       ("guile-wisp" ,guile-wisp)))
+     (let ((p (package-input-rewriting
+               `((,guile-3.0 . ,guile-3.0-latest))
+               #:deep? #false)))
+       `(("guix" ,guix)
+         ("guile" ,guile-3.0-latest)
+         ("guile-commonmark" ,(p guile-commonmark))
+         ("guile-config" ,(p guile-config))
+         ("guile-gcrypt" ,(p guile-gcrypt))
+         ("guile-pfds" ,(p guile-pfds))
+         ("guile-syntax-highlight" ,(p guile-syntax-highlight))
+         ("guile-wisp" ,(p guile-wisp)))))
     (home-page "https://workflows.guix.info")
     (synopsis "Workflow management extension for GNU Guix")
     (description "The @dfn{Guix Workflow Language} (GWL) provides an
