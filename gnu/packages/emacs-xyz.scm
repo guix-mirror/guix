@@ -9124,17 +9124,6 @@ indentation guides in Emacs:
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
        #:phases
        (modify-phases %standard-phases
-         ;; The following tests fail when building with Emacs 27 (see:
-         ;; https://github.com/jorgenschaefer/elpy/issues/1812).
-         (add-after 'unpack 'disable-problematic-tests
-           (lambda _
-             (substitute* "test/elpy-company-backend-test.el"
-               (("elpy-company-backend-should-add-shell-candidates.*" all)
-                (string-append all "  (skip-unless nil)\n")))
-             (substitute* "test/elpy-folding-fold-comments-test.el"
-               (("elpy-fold-at-point-should-fold-and-unfold-comments.*" all)
-                (string-append all "  (skip-unless nil)\n")))
-             #t))
          ;; The default environment of the RPC uses Virtualenv to install
          ;; Python dependencies from PyPI.  We don't want/need this in Guix.
          (add-before 'check 'do-not-use-virtualenv
@@ -9142,24 +9131,21 @@ indentation guides in Emacs:
              (setenv "ELPY_TEST_DONT_USE_VIRTUALENV" "1")
              (substitute* "elpy-rpc.el"
                (("defcustom elpy-rpc-virtualenv-path 'default")
-                "defcustom elpy-rpc-virtualenv-path 'system"))
-             #t))
+                "defcustom elpy-rpc-virtualenv-path 'system"))))
          (add-before 'check 'build-doc
            (lambda _
              (with-directory-excursion "docs"
                (invoke "make" "info" "man"))
              ;; Move .info file at the root so that it can installed by the
              ;; 'move-doc phase.
-             (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")
-              #t))
+             (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")))
          (add-after 'build-doc 'install-manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (man1 (string-append out "/share/man/man1")))
                (mkdir-p man1)
                (copy-file "docs/_build/man/elpy.1"
-                          (string-append man1 "/elpy.1")))
-             #t)))
+                          (string-append man1 "/elpy.1"))))))
        #:tests? #t
        #:test-command '("ert-runner")))
     (propagated-inputs
