@@ -44,7 +44,7 @@
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2019, 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020, 2021 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
@@ -793,6 +793,65 @@ patterns.")
      (list
       license:lgpl2.1+
       license:gpl2+))))
+
+(define-public gnome-recipes
+  (package
+    (name "gnome-recipes")
+    (version "2.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/recipes")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h049mzqnlcfqwrhmzbq3pzzdglvy2bn9fj1p8wql7a60pn8sr32"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'unpack-libgd
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libgd (assoc-ref inputs "libgd")))
+               (copy-recursively libgd "subprojects/libgd")
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gnome-autoar" ,gnome-autoar)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
+       ("libsoup" ,libsoup)
+       ("rest" ,rest)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
+       ("libgd"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://gitlab.gnome.org/GNOME/libgd")
+                 (commit "c7c7ff4e05d3fe82854219091cf116cce6b19de0")))
+           (file-name (git-file-name "libgd" version))
+           (sha256
+            (base32 "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs"))))
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.gnome.org/Apps/Recipes")
+    (synopsis "Discover recipes for preparing food")
+    (description "GNOME Recipes helps you discover what to cook today,
+tomorrow, the rest of the week and for special occasions.")
+    (license license:gpl3+)))
 
 (define-public gnome-photos
   (package
