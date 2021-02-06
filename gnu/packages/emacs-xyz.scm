@@ -8043,10 +8043,10 @@ navigate code in a tree-like fashion.")
 (define-public emacs-lispy
   ;; No release since May 2019 and tons of fixes have landed on master.
   ;; https://github.com/abo-abo/lispy/issues/513
-  (let ((commit "5c8a59ae7dd3dd342e7c86a8c0acdbd13e2989f3"))
+  (let ((commit "38a7df4cbb16cfe3d62dc8ea98b50e2d9a572e58"))
     (package
       (name "emacs-lispy")
-      (version (git-version "0.27.0" "1" commit))
+      (version (git-version "0.27.0" "2" commit))
       (home-page "https://github.com/abo-abo/lispy")
       (source (origin
                 (method git-fetch)
@@ -8055,7 +8055,7 @@ navigate code in a tree-like fashion.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0738v9bp4dlxbwsnykvc35yh4dl4pvw25jl8srb7r3744ydvgyii"))
+                  "1q3sgk8ffwajmh8l7c4p4fz36xw4fqds8yqblbi5kardaa8bs8cs"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
