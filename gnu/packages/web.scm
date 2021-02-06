@@ -1056,7 +1056,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.14")
+    (version "0.15")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1064,8 +1064,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))
-              (patches (search-patches "json-c-CVE-2020-12762.patch"))))
+               "1im484iz08j3gmzpw07v16brwq46pxxj65i996kkp2vivcfhmn5q"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
