@@ -282,6 +282,45 @@ monitoring system.  It can configure and display various aspects of Zabbix
 through a text-based interface.")
     (license license:gpl3+)))
 
+(define-public python-pyzabbix
+  (package
+    (name "python-pyzabbix")
+    (version "0.8.2")
+    (home-page "http://github.com/lukecyca/pyzabbix")
+    ;; No tests on PyPI, use the git checkout.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15rrnpkv94wx6748hh4sd120v6x25rkbd6vlz6hfrhvjwxz5lgjl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch
+                    (lambda _
+                      ;; Permit newer versions of httpretty.
+                      (substitute* "setup.py"
+                        (("httpretty<0\\.8\\.7")
+                         "httpretty"))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "setup.py" "nosetests")
+                          (format #t "test suite not run~")))))))
+    (native-inputs
+     `(;; For tests.
+       ("python-httpretty" ,python-httpretty)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (synopsis "Python interface to the Zabbix API")
+    (description
+     "@code{pyzabbix} is a Python module for working with the Zabbix API.")
+    (license license:lgpl2.1+)))
+
 (define-public darkstat
   (package
     (name "darkstat")
