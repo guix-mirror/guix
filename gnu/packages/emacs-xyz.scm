@@ -7170,31 +7170,28 @@ style, or as multiple word prefixes.")
     (license license:gpl3+)))
 
 (define-public emacs-consult
-  ;; There are no tagged releases upstream on GitHub, instead we are using the
-  ;; most recent commit.
-  (let ((commit "ef6bb73a4a46e686826968fa25169e2d59b9a087")
-        (revision "0"))
-    (package
-      (name "emacs-consult")
-      (version (git-version "0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/minad/consult")
-               (commit commit)))
-         (sha256
-          (base32 "00cnwg2knd820wwx6zg71rr0whpdhqm64gm3qx1mgklk79g7daih"))
-         (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs `(("emacs-flycheck" ,emacs-flycheck)
-                           ("emacs-selectrum" ,emacs-selectrum)))
-      (home-page "https://github.com/minad/consult")
-      (synopsis "Consulting completing-read")
-      (description "This package provides various handy commands based on the
+  (package
+    (name "emacs-consult")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minad/consult")
+             (commit version)))
+       (sha256
+        (base32 "0rn98xkf1agyjiq7jqmc7cdq5zd9x9ym7r02wyd70xshvh7gm1rf"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-selectrum" ,emacs-selectrum)))
+    (home-page "https://github.com/minad/consult")
+    (synopsis "Consulting completing-read")
+    (description "This package provides various handy commands based on the
 Emacs completion function completing-read, which allows to quickly select from a
 list of candidates.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-marginalia
   ;; There are no tagged releases upstream on GitHub, instead we are using the
