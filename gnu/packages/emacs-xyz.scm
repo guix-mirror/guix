@@ -5566,7 +5566,7 @@ completion backends according to mode, and integrates with
 (define-public emacs-icomplete-vertical
   (package
     (name "emacs-icomplete-vertical")
-    (version "0.1")
+    (version "0.3")
     (source
      (origin
        (method git-fetch)
@@ -5575,11 +5575,10 @@ completion backends according to mode, and integrates with
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1bqnlvv1gvrjriazvzd3bq98r8ii6fqax0zznhvkl1ij5pf55a90"))))
+        (base32 "02v190pb802vck7di39jyf5prvmfsgcxln8mgwsls2b4clx9da97"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/oantolin/icomplete-vertical")
-    (synopsis "Display icomplete candidates vertically")
+    (synopsis "Display Icomplete candidates vertically")
     (description
      "This package defines a global minor mode to display Icomplete
 completion candidates vertically.")
