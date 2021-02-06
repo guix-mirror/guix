@@ -4633,20 +4633,20 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "060df92557d5a32dbd3ae4a32c2c5725cd53e09b")
-        (revision "24"))
+  (let ((commit "b7ba8d0c2ca3aca9ba5b5f9f27b9778ee949d20e")
+        (revision "25"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guix/data-service.git")
+                      (url "https://git.savannah.gnu.org/git/guix/data-service.git/")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ggwslwm041gkd0i45xhvnalxrhjaj4da27p5wrpknrhpa4ipf6v"))))
+                  "0brv64bsqysl7dncz067blwvmqrlx99c2kwrgpz6k0nqv8nzsa28"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4728,7 +4728,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 through a web interface.  It supports listening to the guix-commits mailing
 list to find out about new revisions, then loads the data from these in to a
 PostgreSQL database.")
-      (home-page "http://data.guix.gnu.org/")
+      (home-page "https://data.guix.gnu.org/")
       (license license:agpl3+))))
 
 (define-public gumbo-parser
