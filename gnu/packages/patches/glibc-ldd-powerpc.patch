@@ -1,0 +1,10 @@
+diff -r -U3 a/sysdeps/unix/sysv/linux/powerpc/ldd-rewrite.sed b/sysdeps/unix/sysv/linux/powerpc/ldd-rewrite.sed
+--- a/sysdeps/unix/sysv/linux/powerpc/ldd-rewrite.sed	1970-01-01 01:00:00.000000000 +0100
++++ b/sysdeps/unix/sysv/linux/powerpc/ldd-rewrite.sed	2020-02-29 00:15:41.080000000 +0100
+@@ -11,5 +11,5 @@
+ # this works for /lib64/ld64.so.x and /lib/ld.so.x as input
+ s_lib64_lib_
+ s_64\.so_\.so_
+-s_^RTLDLIST=\(.*lib\)\(/[^/]*\)\(\.so\.[0-9.]*\)[[:blank:]]*$_RTLDLIST="\1\2\3 \164\264\3"_
++s_^RTLDLIST=\(.*lib\)\(/[^/]*\)\(\.so\.[0-9.]*\)[[:blank:]]*$_RTLDLIST="\1\2\3 \1\264\3"_
+ 
