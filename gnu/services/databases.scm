@@ -396,12 +396,12 @@ and stores the database cluster in @var{data-directory}."
 rolname = '" ,name "')) as not_exists;\n"
 "\\gset\n"
 "\\if :not_exists\n"
-"CREATE ROLE " ,name
+"CREATE ROLE \"" ,name "\""
 " WITH " ,(format-permissions permissions)
 ";\n"
 ,@(if create-database?
-      `("CREATE DATABASE " ,name
-        " OWNER " ,name ";\n")
+      `("CREATE DATABASE \"" ,name "\""
+        " OWNER \"" ,name "\";\n")
       '())
 "\\endif\n")))
             roles)))
