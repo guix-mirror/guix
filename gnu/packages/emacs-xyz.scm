@@ -8105,8 +8105,8 @@ S-expression.")
       (license license:gpl3+))))
 
 (define-public emacs-lispyville
-  (let ((commit "1bf38088c981f5ab4ef2e2684952ab6af96378db")
-        (revision "2"))
+  (let ((commit "89316f01822b2135e52ca27fd308d207ef618052")
+        (revision "3"))
     (package
       (name "emacs-lispyville")
       (version (git-version "0.1" revision commit))
@@ -8116,7 +8116,7 @@ S-expression.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "07z8qqvaxf963kwn7l2gk47989zb7r3d8ybqjs2cg6hzmzb77wbw"))
+                  "10k3hxxpx2v2k4dyad7j1bzmr1q7rzvv4y6c67pa9zcqyaw8m91v"))
                 (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
