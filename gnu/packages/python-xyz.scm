@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -11974,6 +11974,28 @@ programmatically interfacing with your system's $EDITOR.")
 
 (define-public python2-editor
   (package-with-python2 python-editor))
+
+(define-public python-multiprocessing-logging
+  (package
+    (name "python-multiprocessing-logging")
+    (version "0.3.1")
+    (home-page "https://github.com/jruere/multiprocessing-logging")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1625wy3djlr3b2fpd3vi822f8gw6b75mnls5a4318dbi9za5pf0y"))))
+    (build-system python-build-system)
+    (synopsis "Manage logs from multiple processes")
+    (description
+     "This Python module implements a multiprocessing-aware @code{Handler}
+that, when set on the root @code{Logger}, will tunnel log records to the
+main process so that they are handled correctly.")
+    (license license:lgpl3+)))
 
 (define-public python-vobject
   (package
