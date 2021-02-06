@@ -9792,12 +9792,12 @@ CIDER).")
 
 (define-public emacs-sly
   ;; Update together with sbcl-slynk.
-  (let ((commit "602af24d22d4bffa23f6cb906cf86d1684545c2b"))
+  (let ((commit "0f46f91a9542599d62c0c332b39636b2941ea372"))
     ;; Versions are not always tagged.  Besides, latest master contains
     ;; important fixes.
     (package
       (name "emacs-sly")
-      (version (git-version "1.0.43" "2" commit))
+      (version (git-version "1.0.43" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -9807,7 +9807,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1z48l0l1y1mhqp45arncfr98zbbipqz54kzl21w05qghn6z4ccp3"))))
+           "0p3j0zylacy6vms8ngis2hx2351xnwfzsw3zy043q6vmqd14wrf1"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
