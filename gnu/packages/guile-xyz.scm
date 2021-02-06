@@ -2506,6 +2506,19 @@ key-value cache and store.")
                      "3.0 2.2 2.0"))
                   #t))))
     (build-system gnu-build-system)
+    ;; The tests throw exceptions with Guile 3.0.5, because they evaluate
+    ;; (exit ...).
+    ;;
+    ;; This has been fixed upstream, but there has not been a new release
+    ;; containing this change.
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests-when-building-with-guile-3.0.5
+           (lambda _
+             (substitute* (find-files "tests" "\\.scm$")
+               (("\\(exit.*") ""))
+             #t)))))
     (inputs
      `(("guile" ,guile-3.0)))
     (native-inputs
