@@ -25917,8 +25917,8 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
 (define-public emacs-ddskk
   ;; XXX: Upstream adds code names to their release tags, so version and code
   ;; name below need to be updated together.
-  (let ((version "16.3")
-        (code-name "Kutomatsunai"))
+  (let ((version "17.1")
+        (code-name "Neppu"))
     (package
       (name "emacs-ddskk")
       (version version)
@@ -25930,7 +25930,7 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
                (commit (string-append "ddskk-" version "_" code-name))))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0ln4x8f35z5y3kf9m718g223bn3lzcmw40jfjg2j5yi24ydf1wm9"))))
+          (base32 "0xm53rybxki2784gyjkafg6956viyhhcq51kbmnrwc6aw3yzh7aw"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -25950,9 +25950,14 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
                  ("SKK_PREFIX" "")
                  ("SKK_INFODIR" '(expand-file-name "info" PREFIX)))
                (for-each make-file-writable (find-files "./doc"))
-               #t)))))
+               #t))
+           (add-after 'unpack 'fix-test
+             (lambda _
+               (substitute* "Makefile"
+                 (("/bin/rm") (which "rm"))))))))
       (native-inputs
-       `(("emacs-minimal" ,emacs-minimal)))
+       `(("emacs-minimal" ,emacs-minimal)
+         ("ruby" ,ruby)))
       (home-page "https://github.com/skk-dev/ddskk")
       (synopsis "Simple Kana to Kanji conversion program")
       (description
