@@ -78,7 +78,7 @@ Features include:
 (define-public tootle
   (package
     (name "tootle")
-    (version "1.0-alpha2")
+    (version "1.0")
     (source
       (origin
         (method git-fetch)
@@ -88,7 +88,7 @@ Features include:
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "16xz58xasprza89j3ljrfpgvn05yc00p1ch96nyia99r1dyms9rx"))))
+          "1nm57239mhdq462an6bnhdlijpijxmjs9mqbyirwxwa048d3n4rm"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
