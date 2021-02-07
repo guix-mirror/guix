@@ -68,7 +68,7 @@
        ("sqlite" ,sqlite)))
     (arguments
      `(#:tests? #f ;; building the tests requires 9.7GB total
-       #:rust ,rust-1.46
+       #:rust ,rust
        #:cargo-inputs
        (("rust-anyhow" ,rust-anyhow-1)
         ("rust-backtrace" ,rust-backtrace-0.3)
