@@ -48,6 +48,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
@@ -725,4 +727,31 @@ more.")
     (description
      "The package is a Python implementation of the mathematics that standard
 JPL ephemerides use to predict raw (x,y,z) planetary positions.")
+    (license license:expat)))
+
+(define-public python-skyfield
+  (package
+    (name "python-skyfield")
+    (version "1.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "skyfield" version))
+       (sha256
+        (base32 "1dm1327a4qv3klj9blrvddbhl72v1fqz52ym9km8qjj9vdkpywh6"))))
+    (build-system python-build-system)
+    (arguments
+     ;; NOTE: (Sharlatan-20210207T163305+0000): tests depend on custom test
+     ;; framework https://github.com/brandon-rhodes/assay
+     `(#:tests? #f))
+    (inputs
+     `(("certifi" ,python-certifi)
+       ("jplephem" ,python-jplephem)
+       ("numpy" ,python-numpy)
+       ("sgp4" ,python-sgp4)))
+    (home-page "https://rhodesmill.org/skyfield/")
+    (synopsis "Astronomy for Python")
+    (description
+     "Skyfield computes positions for the stars, planets, and satellites in
+orbit around the Earth.")
     (license license:expat)))
