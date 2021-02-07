@@ -1712,9 +1712,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vinagre-newer-freerdp.patch             \
   %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
-  %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
-  %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
-  %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
