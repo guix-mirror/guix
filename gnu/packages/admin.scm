@@ -2818,13 +2818,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.48")
+    (version "4.48.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0crvvfsxh8ryc0j19a2x52i9zacvggm8zi6j3kzygkcwnpz4km8r"))))
+        (base32 "0rxli3bcm6vlcfx2jminviv8aawwczrpp9kja5zniawy6528al30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
