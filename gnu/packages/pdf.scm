@@ -396,47 +396,21 @@ reading and editing of existing PDF files.")
 (define-public xpdf
   (package
    (name "xpdf")
-   (version "4.02")
+   (version "4.03")
    (source
     (origin
       (method url-fetch)
-      (uri (string-append "https://xpdfreader-dl.s3.amazonaws.com/xpdf-"
-                          version "4.02.tar.gz"))
+      (uri (string-append "https://dl.xpdfreader.com/xpdf-" version ".tar.gz"))
       (sha256
-       (base32 "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
-   (build-system gnu-build-system)
-   (inputs `(("freetype" ,freetype)
-             ("gs-fonts" ,gs-fonts)
-             ("lesstif" ,lesstif)
-             ("libpaper" ,libpaper)
-             ("libx11" ,libx11)
-             ("libxext" ,libxext)
-             ("libxp" ,libxp)
-             ("libxpm" ,libxpm)
-             ("libxt" ,libxt)
+       (base32 "0ip81c9vy0igjnasl9iv2lz214fb01vvvdzbvjmgwc63fi1jgr0g"))))
+   (build-system cmake-build-system)
+   (inputs `(("cups" ,cups)
+             ("freetype" ,freetype)
              ("libpng" ,libpng)
+             ("qtbase" ,qtbase)
              ("zlib" ,zlib)))
    (arguments
-    `(#:tests? #f                     ; there is no check target
-      #:parallel-build? #f            ; build fails randomly on 8-way machines
-      #:configure-flags
-        (list (string-append "--with-freetype2-includes="
-                             (assoc-ref %build-inputs "freetype")
-                             "/include/freetype2"))
-      #:phases
-      (modify-phases %standard-phases
-        (replace 'install
-          (lambda* (#:key outputs inputs #:allow-other-keys #:rest args)
-            (let* ((install (assoc-ref %standard-phases 'install))
-                   (out (assoc-ref outputs "out"))
-                   (xpdfrc (string-append out "/etc/xpdfrc"))
-                   (gs-fonts (assoc-ref inputs "gs-fonts")))
-              (apply install args)
-              (substitute* xpdfrc
-                (("/usr/local/share/ghostscript/fonts")
-                 (string-append gs-fonts "/share/fonts/type1/ghostscript"))
-                (("#fontFile") "fontFile")))
-            #t)))))
+    `(#:tests? #f))                   ; there is no check target
    (synopsis "Viewer for PDF files based on the Motif toolkit")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files.")
