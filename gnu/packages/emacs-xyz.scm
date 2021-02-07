@@ -23811,7 +23811,7 @@ a variety of languages, including elisp itself.")
 (define-public emacs-flyspell-correct
   (package
     (name "emacs-flyspell-correct")
-    (version "0.5")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
@@ -23820,21 +23820,21 @@ a variety of languages, including elisp itself.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1r9hmz7sihhy7npv6nxp04sy57glzmfax5d67mwn96fdnc0yhlnd"))))
+        (base32 "1m5da6r82hk0c2x3lw03qnkk79sx67875afw0ybblj3cmfk6szd1"))))
     (build-system emacs-build-system)
+    ;; XXX: emacs-avy-menu is not packaged, so we ignore the file below.
+    (arguments
+     `(#:exclude '("flyspell-correct-avy-menu\\.el")))
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
        ("emacs-ivy" ,emacs-ivy)
        ("emacs-popup" ,emacs-popup)))
-    (home-page
-     "https://github.com/d12frosted/flyspell-correct")
-    (synopsis
-     "Correcting words with flyspell via custom interfaces")
+    (home-page "https://github.com/d12frosted/flyspell-correct")
+    (synopsis "Correcting words with flyspell via custom interfaces")
     (description
      "This package provides functionality for correcting words via custom
-interfaces.  Several interfaces are supported beside the classic ido: popup,
-helm and ivy.")
+interfaces.  Several interfaces are supported beside the classic Ido: Popup,
+Helm and Ivy.")
     (license license:gpl3+)))
 
 (define-public emacs-org-emms
