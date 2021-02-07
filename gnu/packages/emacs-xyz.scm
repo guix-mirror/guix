@@ -4045,7 +4045,7 @@ subconsciously blend out the parentheses.")
 (define-public emacs-page-break-lines
   (package
     (name "emacs-page-break-lines")
-    (version "0.11")
+    (version "0.14")
     (source
      (origin
        (method git-fetch)
@@ -4054,7 +4054,7 @@ subconsciously blend out the parentheses.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wp974716ih2cz9kdmdz7xwjy1qnnfzdzlfr9kchknagw8d9nn12"))))
+        (base32 "0plfyzmh93x1r3zgfjyx23cc7vi1pcniipclzlms1iwfkl7zsqvp"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/page-break-lines")
     (synopsis "Display page breaks as tidy horizontal lines")
