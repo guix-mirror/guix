@@ -3976,7 +3976,7 @@ ERC, an Emacs client for IRC (Internet Relay Chat).  It relies on the
 (define-public emacs-shut-up
   (package
     (name "emacs-shut-up")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method git-fetch)
@@ -3985,7 +3985,7 @@ ERC, an Emacs client for IRC (Internet Relay Chat).  It relies on the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "103yvfgkj78i4bnv1fwk76izsa8h4wyj3vwj1vq7xggj607hkxzq"))))
+        (base32 "1bnmrwrhra6cpc3jjgwwzrydj5ps7q2dlkh2ag4j7rkyv4dlk351"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cask/shut-up")
     (synopsis "Silence Emacs")
