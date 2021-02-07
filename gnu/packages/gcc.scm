@@ -3,13 +3,14 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,6 +273,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
                                libc line))))
+
+                  ;; TODO: Make this unconditional in core-updates.
+                  ,@(if (target-powerpc?)
+                      `((when (file-exists? "gcc/config/rs6000")
+                          ;; Force powerpc libdir to be /lib and not /lib64
+                          (substitute* (find-files "gcc/config/rs6000")
+                            (("/lib64") "/lib"))))
+                      `())
 
                   ;; Don't retain a dependency on the build-time sed.
                   (substitute* "fixincludes/fixincl.x"
@@ -598,12 +607,27 @@ using compilers other than GCC."
     (name "libstdc++")
     (arguments
      `(#:out-of-source? #t
-       #:phases (alist-cons-before
-                 'configure 'chdir
-                 (lambda _
-                   (chdir "libstdc++-v3")
-                   #t)
-                 %standard-phases)
+       #:phases
+       ;; TODO: Use the target-powerpc arm for everyone.
+        ,(if (target-powerpc?)
+           `(modify-phases %standard-phases
+              ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
+              (add-before 'chdir 'fix-rs6000-libdir
+                (lambda _
+                  (when (file-exists? "gcc/config/rs6000")
+                    (substitute* (find-files "gcc/config/rs6000")
+                      (("/lib64") "/lib")))
+                  #t))
+              (add-before 'configure 'chdir
+                (lambda _
+                  (chdir "libstdc++-v3")
+                  #t)))
+           `(alist-cons-before 'configure 'chdir
+              (lambda _
+                (chdir "libstdc++-v3")
+                #t)
+              %standard-phases))
+
        #:configure-flags `("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
