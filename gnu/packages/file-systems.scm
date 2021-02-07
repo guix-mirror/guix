@@ -847,7 +847,7 @@ APFS.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.0.1")
+    (version "2.0.2")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -856,7 +856,7 @@ APFS.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0y3992l4nzr67q18lz1kizw0za1shvqbpmsjz9shv4frh5ihllbi"))))
+           (base32 "090b2pp0cgzkjcnbjf8ms28dah5dff8s04q31z62czapwiy0drdx"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
