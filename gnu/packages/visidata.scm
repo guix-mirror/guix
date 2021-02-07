@@ -31,14 +31,14 @@
 (define-public visidata
   (package
     (name "visidata")
-    (version "2.1.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "visidata" version))
        (sha256
         (base32
-         "0sn0hnlrrbydgwdza20g2zdlchsas39hbkxzyxnrc13sp26zmmnx"))))
+         "1q53yyxiz4ir6nbws276ggb02fwix9jlq4gzrjw5ydrv3zwv4zb6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
