@@ -2361,7 +2361,7 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.6.3")
+    (version "0.6.4")
     (source
      (origin
        (method git-fetch)
@@ -2370,7 +2370,7 @@ Lock key.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ql72qh0bshv62nksv6awz5nqfhmgs8hkyvm7wvzfq64yrwghw50"))))
+        (base32 "1wlvc73qrz3i8d2r37pyp5f2m1vb779li7z19wp6nrfs9hn6jd8i"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
