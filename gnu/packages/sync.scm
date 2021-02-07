@@ -43,6 +43,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
@@ -153,27 +154,18 @@ See also: megacmd, the official tool set by MEGA.")
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.5.3.11470")
+    (version "2.7.5.3180")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.owncloud.com/desktop/stable/"
-                           "owncloudclient-" version ".tar.xz"))
+       (uri (string-append "https://download.owncloud.com/desktop/ownCloud/stable/"
+                           version "/source/ownCloud-" version ".tar.xz"))
        (sha256
-        (base32 "0cznis8qadsnlgm046lxn8vmbxli6zp4b8nk93n53mkfxlcw355n"))
-       (patches (search-patches "owncloud-disable-updatecheck.patch"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; libcrashreporter-qt has its own bundled dependencies
-           (delete-file-recursively "src/3rdparty/libcrashreporter-qt")
-           (delete-file-recursively "src/3rdparty/sqlite3")
-           ;; qprogessindicator, qlockedfile, qtokenizer and
-           ;; qtsingleapplication have not yet been packaged, but all are
-           ;; explicitly used from the 3rdparty folder during build.
-           ;; We can also remove the macgoodies folder
-           (delete-file-recursively "src/3rdparty/qtmacgoodies")
-           #t))))
+        (base32 "13vlkmkr3i99ww3fkps7lwrx6vgr43rvmjcpsix259rj7f2ikkrp"))
+       (patches (search-patches "owncloud-disable-updatecheck.patch"))))
+    ;; TODO: unbundle qprogessindicator, qlockedfile, qtokenizer and
+    ;; qtsingleapplication which have not yet been packaged, but all are
+    ;; explicitly used from the 3rdparty folder during build.
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -182,7 +174,7 @@ See also: megacmd, the official tool set by MEGA.")
            ;; "Could not create autostart folder"
            (lambda _
              (substitute* "test/CMakeLists.txt"
-                          (("owncloud_add_test\\(Utility \"\"\\)" test)
+                          (("owncloud_add_test\\(Utility\\)" test)
                            (string-append "#" test)))
              #t))
          (add-after 'unpack 'dont-embed-store-path
@@ -197,6 +189,7 @@ See also: megacmd, the official tool set by MEGA.")
                            "-DNO_SHIBBOLETH=1")))
     (native-inputs
      `(("cmocka" ,cmocka)
+       ("extra-cmake-modules" ,extra-cmake-modules)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("qtlinguist" ,qttools)))
