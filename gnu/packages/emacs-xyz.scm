@@ -4020,7 +4020,7 @@ Lisp.")
 (define-public emacs-paren-face
   (package
     (name "emacs-paren-face")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method git-fetch)
@@ -4029,7 +4029,7 @@ Lisp.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17bdcxah216z928387yx6z9lmp4jsi461n8fwiqaibn2qy5fagas"))))
+        (base32 "1zyrrrr8rmksr3rfsv96psk1z15wbbx1bvcfp3hf5ciyc2n79000"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/paren-face")
     (synopsis "Face for parentheses in Lisp modes")
