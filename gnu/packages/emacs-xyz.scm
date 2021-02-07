@@ -4188,16 +4188,16 @@ configuration, cache, and other data.")
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
-    (version "1.0.6")
+    (version "1.0.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/akicho8/string-inflection")
-                    (commit "a150e7bdda60b7824d3a936750ce23f73b0e4edd")))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1k0sm552iawi49v4zis6dbb81d1rzgky9v0dpv7nj31gnb7bmy7k"))))
+                "0f3nkfdpngax4zfw75jca2wywwh31ha6ywddh4125lbxi3y6m7s9"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("ert-runner" ,emacs-ert-runner)))
