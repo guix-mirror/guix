@@ -221,6 +221,41 @@ running pytest.  It can be used with packages that are not affiliated with the
 Astropy project, but is optimized for use with astropy-related projects.")
   (license license:bsd-3)))
 
+(define-public python-pytest-astropy
+  (package
+    (name "python-pytest-astropy")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-astropy" version))
+       (sha256
+        (base32 "18j6z6y2fvykmcs5z0mldhhaxxn6wzpnhlm2ps7m8r5z5kmh1631"))))
+    (build-system python-build-system)
+    (arguments
+     ;; No tests provided
+     '(#:tests? #f))
+    (native-inputs
+     `(("attrs" ,python-attrs)
+       ("hypothesis" ,python-hypothesis)
+       ("pytest" ,python-pytest)
+       ("pytest-arraydiff" ,python-pytest-arraydiff)
+       ("pytest-astropy-header" ,python-pytest-astropy-header)
+       ("pytest-cov" ,python-pytest-cov)
+       ("pytest-doctestplus" ,python-pytest-doctestplus)
+       ("pytest-filter-subpackage" ,python-pytest-filter-subpackage)
+       ("pytest-mock" ,python-pytest-mock)
+       ("pytest-openfiles" ,python-pytest-openfiles)
+       ("pytest-remotedata" ,python-pytest-remotedata)
+       ("setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/astropy/pytest-astropy")
+    (synopsis
+     "Metapackage for all the testing machinery used by the Astropy Project")
+    (description
+     "This is a meta-package that pulls in the dependencies that are used by
+astropy related packages.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-arraydiff
   (package
     (name "python-pytest-arraydiff")
