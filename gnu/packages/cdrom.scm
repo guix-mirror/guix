@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -159,7 +159,7 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.5.2")
+    (version "1.5.4.pl02")
     (outputs '("out" "gui"))
     (source (origin
              (method url-fetch)
@@ -167,7 +167,7 @@ libcdio.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1rqpzj95f70jfwpn4lamasfgqpizjsipz12aprdhri777b4zas9v"))))
+               "0wi92lxpm3dcjglmmfbh4z37w8jmbx0qmhh98gvzbjwx98ykkiry"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
