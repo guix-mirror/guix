@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,6 +196,30 @@ interactions, which will update them to correspond to the new API.")
      "This plugin defines Pytest markers to ensure that some tests, or groups
 of tests run in a specific order.")
     (license license:expat)))
+
+(define-public python-pytest-astropy-header
+(package
+  (name "python-pytest-astropy-header")
+  (version "0.1.2")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "pytest-astropy-header" version))
+      (sha256
+        (base32 "1y87agr324p6x5gvhziymxjlw54pyn4gqnd49papbl941djpkp5g"))))
+  (build-system python-build-system)
+  (native-inputs
+   `(("pytest" ,python-pytest)
+     ("setuptools-scm" ,python-setuptools-scm)))
+  (home-page "https://www.astropy.org/")
+  (synopsis
+   "Pytest plugin adding diagnostic data to the header of the test output")
+  (description
+    "This plugin package provides a way to include information about the system,
+Python installation, and select dependencies in the header of the output when
+running pytest.  It can be used with packages that are not affiliated with the
+Astropy project, but is optimized for use with astropy-related projects.")
+  (license license:bsd-3)))
 
 (define-public python-pytest-arraydiff
   (package
