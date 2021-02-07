@@ -96,6 +96,7 @@
 ;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
+;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2381,6 +2382,30 @@ software.")
   (package
     (inherit (package-with-python2 scons))
     (name "scons-python2")))
+
+(define-public python-extension-helpers
+(package
+  (name "python-extension-helpers")
+  (version "0.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "extension-helpers" version))
+      (sha256
+        (base32 "10iqjzmya2h4sk765dlm1pbqypwlqyh8rw59a5m9i63d3klnz2mc"))))
+  (build-system python-build-system)
+  (native-inputs
+    `(("coverage" ,python-coverage)
+      ("pytest" ,python-pytest-astropy)
+      ("pytest-cov" ,python-pytest-cov)
+      ("setuptools-scm" ,python-setuptools-scm)))
+  (home-page "https://github.com/astropy/astropy-helpers")
+  (synopsis
+   "Utilities for building and installing packages in the Astropy ecosystem")
+  (description
+    "The extension-helpers package includes many build, installation, and
+documentation-related tools used by the Astropy project.")
+  (license license:bsd-3)))
 
 (define-public python-extras
   (package
