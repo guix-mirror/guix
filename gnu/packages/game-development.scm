@@ -63,6 +63,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -1141,13 +1142,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.0")
+    (version "7.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "0av3mbh54xh6i3rvf60x5hbsjcfpzgia2j958mhyc5826zjxzfpg"))
+       (sha256 (base32 "1mlrq9q3r36izyskq674qhp8s32iirvvfb4r8z6hi26189aaydsw"))
        (modules '((guix build utils)))
        (patches
         (search-patches
@@ -1224,7 +1225,8 @@ developed mainly for Ren'py.")
      `(("python2-future" ,python2-future)
        ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
-     `(("python2-cython" ,python2-cython)
+     `(("gcc" ,gcc-8) ; for const variables as initializer elements
+       ("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
