@@ -3996,16 +3996,16 @@ Emacs shell script.")
 (define-public emacs-undercover
   (package
     (name "emacs-undercover")
-    (version "0.6.1")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sviridov/undercover.el")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "080bmfwyfi8663y8x594770hqz7mff7zvj2v03qdfwbhdr9w9y29"))))
+        (base32 "19d3373fy635vbfwr1yhxirwqn68qzny9byv74smxws4ly04mr02"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
