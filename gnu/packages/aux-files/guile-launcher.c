@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright 1996-1997,2000-2001,2006,2008,2011,2013,2018,2020
+   Copyright 1996-1997,2000-2001,2006,2008,2011,2013,2018,2020,2021
       Free Software Foundation, Inc.
    Copyright (C) 2020 Ludovic Courtès <ludo@gnu.org>
 
@@ -82,7 +82,11 @@ main (int argc, char **argv)
   unsetenv ("GUILE_LOAD_PATH");
   unsetenv ("GUILE_LOAD_COMPILED_PATH");
 
-  scm_install_gmp_memory_functions = 1;
+  /* XXX: Do not let GMP allocate via libgc as this can lead to memory
+     corruption in GnuTLS/Nettle since Nettle also uses GMP:
+     <https://issues.guix.gnu.org/46330>.  */
+  scm_install_gmp_memory_functions = 0;
+
   scm_boot_guile (argc, argv, inner_main, 0);
   return 0; /* never reached */
 }
