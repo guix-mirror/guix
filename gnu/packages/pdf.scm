@@ -869,7 +869,8 @@ program capable of converting PDF into other formats.")
                            "trunk/" version "/+download/"
                            "qpdfview-" version ".tar.gz"))
        (sha256
-        (base32 "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c"))))
+        (base32 "0v1rl126hvblajnph2hkansgi0s8vjdc5yxrm4y3faa0lxzjwr6c"))
+       (patches (search-patches "qpdfview-qt515-compat.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
