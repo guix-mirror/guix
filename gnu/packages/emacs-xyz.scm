@@ -10560,7 +10560,7 @@ pasting into and from @code{tmux} paste buffers.")
 
 (define-public emacs-evil-visualstar
   (let ((commit "06c053d8f7381f91c53311b1234872ca96ced752")
-        (version "0.0.2")
+        (version "0.2.0")
         (revision "1"))
     (package
       (name "emacs-evil-visualstar")
