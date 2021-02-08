@@ -5028,42 +5028,38 @@ Gnus, e.g., for applying patches received by email.")
       (license license:gpl2+))))
 
 (define-public emacs-sudo-edit
-  ;; No proper release nor tag.
-  (let ((commit "0e2c32b5e5242d30f8780cbe8e1b1649476cac4d")
-        (revision "0"))
-    (package
-      (name "emacs-sudo-edit")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/nflath/sudo-edit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1z26i4hzi2mksl4nr8szzlnrnyv96fg7jjddbm5dp5dlmh2pndk1"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("emacs-undercover" ,emacs-undercover)))
-      (arguments
-       `(#:emacs ,emacs
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'fix-makefile
-             (lambda _
-               (substitute* "Makefile"
-                 (("\\$\\(CASK\\) exec ") ""))
-               #t)))
-         #:tests? #t
-         #:test-command '("make" "test")))
-      (home-page "https://github.com/nflath/sudo-edit/")
-      (synopsis "Open files as another user")
-      (description
-       "This package allows editing files as another user, including the root
+  (package
+    (name "emacs-sudo-edit")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nflath/sudo-edit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hncxbg5lvywzkwvdmzvrz71midy4samjq2vvxxhz90z1y5l8l29"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (arguments
+     `(#:emacs ,emacs
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("\\$\\(CASK\\) exec ") ""))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/nflath/sudo-edit/")
+    (synopsis "Open files as another user")
+    (description
+     "This package allows editing files as another user, including the root
 user.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-miniedit
   (package
