@@ -10330,7 +10330,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
 (define-public perl-time-local
   (package
     (name "perl-time-local")
-    (version "1.28")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
@@ -10338,7 +10338,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                            "Time-Local-" version ".tar.gz"))
        (sha256
         (base32
-         "03p1mxk75vmmi4l0ibpd05b6hncbh8afjhvss87vpp4rrkjvjy4j"))))
+         "1jr0i57jqm0spdd98gp5mzdnrqdyf7rls0ygwb9ldfc655mlyx67"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-Local")
     (synopsis "Efficiently compute time from local and GMT time")
