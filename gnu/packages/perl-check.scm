@@ -1345,7 +1345,7 @@ test scripts.")
 (define-public perl-test-taint
   (package
     (name "perl-test-taint")
-    (version "1.06")
+    (version "1.08")
     (source
      (origin
        (method url-fetch)
@@ -1353,7 +1353,7 @@ test scripts.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "01rip5d7gdr1c7lq6yczzkqfd0500nfa977ryigylj6jj75526vj"))))
+         "0zd946qam0yffpciqqd9xhn92gdplyh3mii4a1w96b1max14snax"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-Taint")
     (synopsis "Checks for taintedness of variables")
