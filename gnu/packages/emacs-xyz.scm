@@ -5603,26 +5603,24 @@ succeeds.")
       (license license:gpl3+))))
 
 (define-public emacs-nswbuff
-  (let ((commit "362da7f3687e2eb5bb11667347de85f4a9d002bc")
-        (revision "1"))
-    (package
-      (name "emacs-nswbuff")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/joostkremers/nswbuff")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0l2xfz8z5qd4hz3kv6zn7h6qq3narkilri8a071y1n8j31jps4ma"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/joostkremers/nswbuff")
-      (synopsis "Quickly switch between buffers")
-      (description "This package allows for navigating between buffers within
+  (package
+    (name "emacs-nswbuff")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/nswbuff")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sswhr52rp8c4v4fv30sww1gadbdrlk3l35j8xmqfw6hbgzxb5dn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/joostkremers/nswbuff")
+    (synopsis "Quickly switch between buffers")
+    (description "This package allows for navigating between buffers within
 a customizable list.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-phi-search
   (let ((commit "9a089b8271cb1cff9640848850298c9ec855286c")
