@@ -824,6 +824,43 @@ programmer to write text-based user interfaces.")
 usable with any list--including files, command history, processes and more.")
     (license license:expat)))
 
+(define-public fzf
+  (package
+    (inherit go-github-com-junegunn-fzf)
+    (name "fzf")
+    (arguments
+     (ensure-keyword-arguments
+      (package-arguments go-github-com-junegunn-fzf)
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'copy-binaries
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (with-directory-excursion "src/github.com/junegunn/fzf"
+                  (install-file "bin/fzf-tmux"
+                                (string-append out "/bin"))))))
+          (add-after 'copy-binaries 'wrap-programs
+            (lambda* (#:key outputs inputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out"))
+                    (ncurses (assoc-ref inputs "ncurses")))
+                (wrap-program (string-append out "/bin/fzf-tmux")
+                  `("PATH" ":" prefix (,(string-append ncurses "/bin")))))))
+          (add-after 'install 'install-completions
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bash-completion (string-append out "/etc/bash_completion.d"))
+                     (zsh-completion (string-append out "/share/zsh/site-functions")))
+                (with-directory-excursion "src/github.com/junegunn/fzf"
+                  (mkdir-p bash-completion)
+                  (copy-file "shell/completion.bash"
+                             (string-append bash-completion "/fzf"))
+                  (mkdir-p zsh-completion)
+                  (copy-file "shell/completion.zsh"
+                             (string-append zsh-completion "/_fzf"))))))))))
+    (inputs
+     `(,@(package-inputs go-github-com-junegunn-fzf)
+       ("ncurses" ,ncurses)))))
+
 (define-public go-github.com-howeyc-gopass
   (let ((commit "bf9dde6d0d2c004a008c27aaee91170c786f6db8")
         (revision "0"))
