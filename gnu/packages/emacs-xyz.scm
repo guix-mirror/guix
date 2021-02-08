@@ -9335,7 +9335,7 @@ Emacs completion function instead.")
 (define-public emacs-ido-ubiquitous
   (package
     (name "emacs-ido-ubiquitous")
-    (version "3.12")
+    (version "4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com"
@@ -9344,7 +9344,7 @@ Emacs completion function instead.")
               (file-name (string-append "ido-ubiquitous-" version ".el"))
               (sha256
                (base32
-                "197ypji0fb6jsdcq40rpnknwlh3imas6s6jbsvkfm0pz9988c3q2"))))
+                "08iwvqknicqlffda7ixwgzw7q9g2g4j4nsxdw6544r85vaysi4cc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ido-completing-read+" ,emacs-ido-completing-read+)))
