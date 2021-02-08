@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
+;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
 
 ;; Note - when changing Docker versions it is important to update the versions
 ;; of several associated packages (docker-libnetwork and go-sctp).
-(define %docker-version "19.03.12")
+(define %docker-version "19.03.13")
 
 (define-public python-docker
   (package
@@ -319,7 +320,7 @@ built-in registry server of Docker.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dj6llfcgcbpq9q9j6b4wb0anbn1g5wzm8ikq2lyhg54i3154m93"))
+        (base32 "1mg3jjisdbqrqrrhyslj3715lslial2kcgjrpprb6q63i52963gj"))
        (patches
         (search-patches "docker-fix-tests.patch"))))
     (build-system gnu-build-system)
@@ -610,7 +611,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1bynmnaykhh1m42v6bxparlpm9kajpqsvlrlwgz1b9ivcklf5ik6"))))
+       (base32 "0wm5x8b8jll78h2zzncfdpxj0y3gv571z0nd39f036wsy7r23dsi"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"
