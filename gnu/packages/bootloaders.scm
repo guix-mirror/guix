@@ -478,7 +478,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.10")
+    (version "2021.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -486,7 +486,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "08m6f1bh4pdcqbxf983qdb66ccd5vak5cbzc114yf3jwq2yinj0d"))))
+                "0m04glv9kn3bhs62sn675w60wkrl4m3a4hnbnnw67s3l198y21xl"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -927,6 +927,13 @@ to Novena upstream, does not load u-boot.img from the first partition.")
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
            `(modify-phases ,phases
+              (add-after 'unpack 'patch-pinebook-pro-config
+                ;; Fix regression in 2020.10 causing freezes on boot with USB boot enabled.
+                ;; See https://gitlab.manjaro.org/manjaro-arm/packages/core/uboot-rockpro64/-/issues/4
+                (lambda _
+                  (substitute* "configs/pinebook-pro-rk3399_defconfig"
+                    (("CONFIG_USE_PREBOOT=y") "CONFIG_USE_PREBOOT=n"))
+                  #t))
               (add-after 'unpack 'set-environment
                 (lambda* (#:key inputs #:allow-other-keys)
                   (setenv "BL31" (string-append (assoc-ref inputs "firmware")
