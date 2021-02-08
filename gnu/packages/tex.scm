@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -2520,6 +2520,10 @@ formats.")
                           "eptex eptex" "ptex ptex" "pdfxmltex pdftex" "platex eptex"
                           "csplain pdftex" "mf mf-nowin" "mex pdftex" "pdfmex pdftex"
                           "luacsplain luatex"
+                          ,@(if (string-prefix? "powerpc64le"
+                                                (or (%current-target-system)
+                                                    (%current-system)))
+                              '("luajittex") '())
                           "cont-en xetex" "cont-en pdftex" "pdfcsplain xetex"
                           "pdfcsplain pdftex" "pdfcsplain luatex" "cslatex pdftex"
                           "mptopdf pdftex" "uplatex euptex" "jadetex pdftex"
