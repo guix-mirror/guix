@@ -9310,7 +9310,7 @@ restrict the text width to 80 characters.")
 (define-public emacs-ido-completing-read+
   (package
     (name "emacs-ido-completing-read+")
-    (version "3.12")
+    (version "4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com"
@@ -9319,8 +9319,10 @@ restrict the text width to 80 characters.")
               (file-name (string-append "ido-completing-read+-" version ".el"))
               (sha256
                (base32
-                "1cyalb0p7nfsm4n6n9q6rjmvn6adqc0fq8ybnlj3n41n289dkfjf"))))
+                "0g2ixvw2sxpvrgz78745zi6iql4501pqi85zi6j31dnc1hx1i0r6"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
     (home-page "https://github.com/DarwinAwardWinner/ido-ubiquitous")
     (synopsis "Replacement for completing-read using ido")
     (description
