@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -1489,15 +1489,15 @@ defined, and that the version is valid.")
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
-    (version "0.30")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BIGJ/"
                            "Test-Warn-" version ".tar.gz"))
        (sha256
         (base32
-         "0haf2ii7br5z0psmkvlvmx2z2q9qz1c70gx0969r378qjidmb5w1"))))
+         "1nkc7jzxff0w4x9axbpsgxrksqdjnf70rb74q39zikkrsd3a7g7c"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
