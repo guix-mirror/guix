@@ -10159,32 +10159,30 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "323bb7d85848a6a142ae14f39c3a073ce6423e20")
-        (revision "19"))
-    (package
-      (name "emacs-evil-collection")
-      (version (git-version "0.0.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-evil/evil-collection")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1pf51kj93i1k2ivkjgwcvgxj8shrl8h7rkg578jl4k4awargf0nz"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)
-         ("emacs-annalist" ,emacs-annalist)))
-      (arguments
-       `(#:include (cons* "^modes\\/" %default-include)))
-      (home-page "https://github.com/emacs-evil/evil-collection")
-      (synopsis "Collection of Evil bindings for many major and minor modes")
-      (description "This is a collection of Evil bindings for the parts of
+  (package
+    (name "emacs-evil-collection")
+    (version "0.0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-evil/evil-collection")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dxrwcf5dnww0a9mvwjkcgm8ry3y282v9l85jh0645zk71nz1in3"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)
+       ("emacs-annalist" ,emacs-annalist)))
+    (arguments
+     `(#:include (cons* "^modes\\/" %default-include)))
+    (home-page "https://github.com/emacs-evil/evil-collection")
+    (synopsis "Collection of Evil bindings for many major and minor modes")
+    (description "This is a collection of Evil bindings for the parts of
 Emacs that Evil does not cover properly by default, such as @code{help-mode},
 @code{M-x calendar}, Eshell and more.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-evil-goggles
   (let ((commit "08a22058fd6a167f9f1b684c649008caef571459")
