@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Holgr Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10434,14 +10435,14 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
 (define-public ruby-sassc
   (package
     (name "ruby-sassc")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sassc" version))
        (sha256
         (base32
-         "09bnid7r5z5hcin5hykvpvv8xig27wbbckxwis60z2aaxq4j9siz"))))
+         "0gpqv48xhl8mb8qqhcifcp0pixn206a7imc07g48armklfqa4q2c"))))
     (build-system ruby-build-system)
     (arguments
      '(#:modules ((guix build ruby-build-system)
