@@ -8460,29 +8460,24 @@ agree upon.")
     (license license:gpl3+)))
 
 (define-public emacs-undohist-el
-  (let ((commit "d2239a5f736724ceb9e3b6bcaa86f4064805cda0")
-        (revision "1"))
-    (package
-      (name "emacs-undohist-el")
-      (version (git-version "0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/m2ym/undohist-el")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1c0daw246ky7b1x5b8h55x79pl1pjqk1k348l487bdd8zdj4w9wx"))
-         (patches
-          (search-patches "emacs-undohist-ignored.patch"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/m2ym/undohist-el")
-      (synopsis "Save undo history between sessions")
-      (description "This package allows persistent use of undo history for
+  (package
+    (name "emacs-undohist-el")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m2ym/undohist-el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hmx2b20nrxg2lb8vplgrzdh8chgxwlbmjvbq5scddggd302sd56"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/m2ym/undohist-el")
+    (synopsis "Save undo history between sessions")
+    (description "This package allows persistent use of undo history for
 individual file buffers.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-eprime
   (let ((commit "17a481af26496be91c07139a9bfc05cfe722506f"))
