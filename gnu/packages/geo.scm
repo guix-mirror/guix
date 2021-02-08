@@ -2152,8 +2152,11 @@ growing set of geoscientific methods.")
              #t))
          (add-after 'wrap-qt 'wrap-gis
            (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO: Find if there is a way to get SAGA to work.
+             ;; Currently QGIS says "version of SAGA not supported".
+             ;; Disable it for now.
              (let* ((out (assoc-ref outputs "out"))
-                    (saga (string-append (assoc-ref inputs "saga") "/bin"))
+                    ;;(saga (string-append (assoc-ref inputs "saga") "/bin"))
                     (grass-version ,(package-version grass))
                     (grass-majorminor (string-join
                                        (list-head
@@ -2162,7 +2165,7 @@ growing set of geoscientific methods.")
                     (grass (string-append (assoc-ref inputs "grass")
                                           "/grass" grass-majorminor)))
                (wrap-program (string-append out "/bin/qgis")
-                 `("PATH" ":" prefix (,saga))
+                 ;;`("PATH" ":" prefix (,saga))
                  `("QGIS_PREFIX_PATH" = (,out))
                  `("GISBASE" = (,grass))))
              #t)))))
@@ -2209,7 +2212,7 @@ growing set of geoscientific methods.")
        ("qtsvg" ,qtsvg)
        ("qtwebkit" ,qtwebkit)
        ("qwt" ,qwt)
-       ("saga" ,saga)
+       ;;("saga" ,saga)
        ("sqlite" ,sqlite)))
     (native-inputs
      `(("bison" ,bison)
