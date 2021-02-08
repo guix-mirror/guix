@@ -10521,13 +10521,13 @@ bindings to the libsass library.  This enables rendering
 (define-public ruby-jekyll-sass-converter
   (package
     (name "ruby-jekyll-sass-converter")
-    (version "1.5.2")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-sass-converter" version))
               (sha256
                (base32
-                "008ikh5fk0n6ri54mylcl8jn0mq8p2nfyfqif2q3pp0lwilkcxsk"))))
+                "04ncr44wrilz26ayqwlg7379yjnkb29mvx4j04i62b7czmdrc9dv"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-sass" ,ruby-sass)))
