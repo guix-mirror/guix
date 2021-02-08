@@ -10797,7 +10797,7 @@ having to write a single line of XS.")
 (define-public perl-xml-writer
   (package
     (name "perl-xml-writer")
-    (version "0.625")
+    (version "0.900")
     (source
      (origin
        (method url-fetch)
@@ -10807,7 +10807,7 @@ having to write a single line of XS.")
              ".tar.gz"))
        (sha256
         (base32
-         "1gjzs570i67ywbv967g8ylb5sg59clwmyrl2yix3jl70dhn55070"))))
+         "07qd806kcs7si7qakx3x5p68xq2jdmkxdrns987kaayg7syzbj3k"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/XML-Writer")
     (synopsis "Easily generate well-formed, namespace-aware XML")
