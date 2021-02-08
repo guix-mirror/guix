@@ -11120,7 +11120,7 @@ procedures for emacs-lisp-mode.")
 (define-public emacs-ht
   (package
     (name "emacs-ht")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method git-fetch)
@@ -11129,7 +11129,7 @@ procedures for emacs-lisp-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1p3qa7g0wa0wbviv2f8bda39cjys3naayk5xjm3nxxmqsyy8papx"))))
+        (base32 "0can9v336lgnq0q2ha3js0565jzp3dlwwqxhcbx5swk5kp148f07"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (native-inputs
