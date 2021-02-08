@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -1520,3 +1522,28 @@ families, plus many of their variants.")
                    license:lgpl3+
                    license:public-domain
                    license:zlib))))
+
+(define-public python-psptool
+  (package
+    (name "python-psptool")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "psptool" version))
+              (sha256
+               (base32
+                "1kx0xpfx67m4zclk4gs97wiwjms8i7z4f6b6m68y8sfgpshy4rf3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; IPython is not used by the package at all
+                  (substitute* '("psptool/directory.py" "psptool/entry.py")
+                    (("from IPython.*") ""))))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-prettytable" ,python-prettytable)))
+    (home-page "https://github.com/PSPReverse/psptool")
+    (synopsis "Tool for dealing with AMD binary blobs")
+    (description "PSPTool is a tool for dealing with AMD binary blobs")
+    (license license:gpl3+)))
