@@ -10982,17 +10982,6 @@ is compatible with stylesheets designed for pygments.")
                ;; pygments is licensed under bsd-2
                license:bsd-2))))
 
-(define-public ruby-rouge-2
-  (package
-    (inherit ruby-rouge)
-    (version "2.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "rouge" version))
-              (sha256
-               (base32
-                "02kpahk5nkc33yxnn75649kzxaz073wvazr2zyg491nndykgnvcs"))))))
-
 (define-public ruby-hashie
   (package
     (name "ruby-hashie")
@@ -11201,13 +11190,13 @@ Unicode formatted tables.")
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.6")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1ph1jjjl25vmzif7bvxzviq7azjm384pm7ba4k24cah94285bzhz"))))
+                "0cqkh78jw8scrajyx5nla0vwm9fvp2qql3kdcvvplcq9mazy8snq"))))
     (build-system ruby-build-system)
     (arguments
      ;; No rakefile, but a test subdirectory.
@@ -11231,8 +11220,10 @@ Unicode formatted tables.")
        ("ruby-liquid" ,ruby-liquid)
        ("ruby-mercenary" ,ruby-mercenary)
        ("ruby-pathutil" ,ruby-pathutil)
-       ("ruby-rouge" ,ruby-rouge-2)
-       ("ruby-safe-yaml" ,ruby-safe-yaml)))
+       ("ruby-rouge" ,ruby-rouge)
+       ("ruby-safe-yaml" ,ruby-safe-yaml)
+       ("ruby-sassc" ,ruby-sassc)
+       ("ruby-terminal-table" ,ruby-terminal-table)))
     (home-page "https://jekyllrb.com/")
     (synopsis "Static site generator")
     (description "Jekyll is a simple, blog aware, static site generator.")
