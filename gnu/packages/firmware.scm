@@ -464,7 +464,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
-    (version "2.3")
+    (version "2.4")
     (source
       (origin
         (method git-fetch)
@@ -475,7 +475,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
         (file-name (git-file-name "arm-trusted-firmware" version))
        (sha256
         (base32
-         "113mcf1hwwl0i90cqh08lywxs1bfbg0nwqibay9wlkmx1a5v0bnj"))))
+         "12k0n79j156bdzqws18kpbli04kn00nh6dy42pjv6gakqrkx9px3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -512,17 +512,18 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
     (native-inputs
      `(,@(if (and (not (string-prefix? "aarch64" (%current-system)))
                   (string-prefix? "aarch64" arch))
-           ;; gcc-7 since it is used for u-boot, which needs gcc-7.
-           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu" #:xgcc gcc-7))
+           ;; Needs newer gcc version for some targets
+           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu" #:xgcc gcc-9))
              ("cross-binutils" ,(cross-binutils "aarch64-linux-gnu")))
            '())
        ,@(if (and (not (string-prefix? "armhf" (%current-system)))
                   (string-prefix? "armhf" arch))
-           ;; gcc-7 since it is used for u-boot, which needs gcc-7.
-           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf" #:xgcc gcc-7))
+           ;; Needs newer gcc version for some targets
+           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf" #:xgcc gcc-9))
              ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
            '())
-        ))
+       ;; Needs newer gcc version for some targets
+       ("gcc" ,gcc-9)))
     (home-page "https://www.trustedfirmware.org/")
     (synopsis "Implementation of \"secure world software\"")
     (description
