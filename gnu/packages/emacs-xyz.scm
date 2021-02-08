@@ -9259,15 +9259,16 @@ keybindings in Emacs, and does not come with any predefined bindings.")
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
-    (version "1.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://codeload.github.com/joostkremers/"
-                                  "visual-fill-column/tar.gz/" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "13jnviakp607zcms7f8ams56mr8wffnq1pghlc6fvqs39663pgwh"))))
+    (version "2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/visual-fill-column")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wjb4zm9mx07v0qx2fxmclg4pg0ssgnf8lp89wc56kmc0s40jhii"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/visual-fill-column")
     (synopsis "Fill-column for visual-line-mode")
