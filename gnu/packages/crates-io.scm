@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19122,19 +19123,19 @@ explosion.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
-(define-public rust-lopdf-0.25
+(define-public rust-lopdf-0.26
   (package
     (name "rust-lopdf")
-    (version "0.25.0")
+    (version "0.26.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "lopdf" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1yb4yj1a8a88w78hz9msg65xbkyx5n4d9gm1xb2c67zaj1xvyw1i"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lopdf" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wqnmibs8qzi6pr3ig4h3sg6bfkkgyv4ngdng81x069725r056ml"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -19142,15 +19143,25 @@ explosion.")
         ("rust-dtoa" ,rust-dtoa-0.4)
         ("rust-encoding" ,rust-encoding-0.2)
         ("rust-flate2" ,rust-flate2-1)
-        ("rust-image" ,rust-image-0.20)
+        ("rust-image" ,rust-image-0.23)
         ("rust-itoa" ,rust-itoa-0.4)
-        ("rust-linked-hash-map" ,rust-linked-hash-map-0.4)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-log" ,rust-log-0.4)
         ("rust-lzw" ,rust-lzw-0.10)
-        ("rust-nom" ,rust-nom-5)
+        ("rust-nom" ,rust-nom-6)
         ("rust-pom" ,rust-pom-3)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-time" ,rust-time-0.1))))
+        ("rust-time" ,rust-time-0.2))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-problematic-tests
+                    (lambda _
+                      ;; This tests depends on the test_1_create.pdf file
+                      ;; having created by create_document, but the file does
+                      ;; not always exist at the time the test run (see:
+                      ;; https://github.com/J-F-Liu/lopdf/issues/137).
+                      (substitute* "src/parser_aux.rs"
+                        (("fn load_and_save" all)
+                         (string-append "#[ignore] " all))))))))
     (home-page "https://github.com/J-F-Liu/lopdf")
     (synopsis "Rust library for PDF document manipulation")
     (description
