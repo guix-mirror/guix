@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -342,14 +343,23 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
          "--with-system-teckit"
          "--with-system-xpdf"
          "--with-system-zlib"
-         "--with-system-zziplib")
+         "--with-system-zziplib"
+         ;; LuaJIT is not ported to powerpc64le* yet.
+         ,@(if (string-prefix? "powerpc64le" (or (%current-target-system)
+                                                 (%current-system)))
+               '("--disable-luajittex"
+                 "--disable-mfluajit")
+               '()))
 
-      ;; Disable tests on mips64/aarch64 to cope with a failure of luajiterr.test.
-      ;; XXX FIXME fix luajit properly on mips64 and aarch64.
+      ;; Disable tests on some architectures to cope with a failure of
+      ;; luajiterr.test.
+      ;; XXX FIXME fix luajit properly on these architectures.
       #:tests? ,(let ((s (or (%current-target-system)
                              (%current-system))))
                   (not (or (string-prefix? "aarch64" s)
-                           (string-prefix? "mips64" s))))
+                           (string-prefix? "mips64" s)
+                           (string-prefix? "powerpc64le" s))))
+
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'configure-ghostscript-executable
