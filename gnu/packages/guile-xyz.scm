@@ -35,6 +35,7 @@
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4262,6 +4263,9 @@ errors.")
                              ,@%gnu-build-system-modules)
          #:make-flags
          '("GUILE_AUTO_COMPILE=0")    ;to prevent guild warnings
+         ;; Parallel builds fail on powerpc64le-linux.
+         ;; See https://lists.nongnu.org/archive/html/guile-avahi-bugs/2021-01/msg00000.html
+         #:parallel-build? #f
          #:phases
          (modify-phases %standard-phases
            (add-before 'check 'fix-guile-avahi-file-name
