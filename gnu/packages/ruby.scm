@@ -11079,13 +11079,13 @@ YAML.load suitable for accepting user input in Ruby applications.")
 (define-public ruby-mercenary
   (package
     (name "ruby-mercenary")
-    (version "0.3.6")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mercenary" version))
               (sha256
                (base32
-                "10la0xw82dh5mqab8bl0dk21zld63cqxb1g16fk8cb39ylc4n21a"))))
+                "0f2i827w4lmsizrxixsrv2ssa3gk1b7lmqh8brk8ijmdb551wnmj"))))
     (build-system ruby-build-system)
     (arguments `(#:test-target "spec"))
     (native-inputs
