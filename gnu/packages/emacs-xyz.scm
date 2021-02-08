@@ -8946,7 +8946,7 @@ provide the historic behavior of @code{flet}, as well as
 (define-public emacs-mocker
   (package
     (name "emacs-mocker")
-    (version "0.3.1")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8955,7 +8955,7 @@ provide the historic behavior of @code{flet}, as well as
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lav7am41v63xgavq8pr88y828jmd1cxd4prjq7jlbxm6nvrwxh2"))))
+                "1dc514cqbfmg33sb3j90s5jmw6jnm3wzvs0zhw3maz13bp7w6z48"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
