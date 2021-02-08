@@ -11657,7 +11657,7 @@ number on the left margin in Emacs.")
 (define-public emacs-ox-twbs
   (package
     (name "emacs-ox-twbs")
-    (version "1.1.1")
+    (version "1.1.4")
     (source
      (origin
        (method git-fetch)
@@ -11666,7 +11666,7 @@ number on the left margin in Emacs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kd45p8y7ykadmai4jn1x1pgpafyqggwb1ccbjzalxw4k9wmd45f"))))
+        (base32 "0nffy7ivs8fw0dj3s66hbsby0riz5wrv7xzm8g9mrfvhki938pqa"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/marsmining/ox-twbs")
     (synopsis "Export org-mode docs as HTML compatible with Twitter Bootstrap")
