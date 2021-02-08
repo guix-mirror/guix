@@ -5280,33 +5280,30 @@ This package is not compatible with a TTY.")
       (license license:gpl3+))))
 
 (define-public emacs-company-posframe
-  (let ((version "0.1.0")
-        (revision "2")
-        (commit "4bfb8bccef4b64479f4147de6bf6fbd05df2a67e"))
-    (package
-      (name "emacs-company-posframe")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/tumashu/company-posframe")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0k19gkh8xbap4j1jjqw6lnkp1v2q76fz3ryrns7kvbzmca3y5599"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-company" ,emacs-company)
-         ("emacs-posframe" ,emacs-posframe)))
-      (home-page "https://github.com/tumashu/company-posframe")
-      (synopsis "Use a posframe for @code{emacs-company}'s candidate menu")
-      (description
-       "Allows @code{emacs-company} to use child frames for its candidate menus.
+  (package
+    (name "emacs-company-posframe")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tumashu/company-posframe")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05ays6xkqbxcfplvx7wfc2slflmwc3aw7vkixvabk0ilvisndvgm"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-posframe" ,emacs-posframe)))
+    (home-page "https://github.com/tumashu/company-posframe")
+    (synopsis "Use a posframe for @code{emacs-company}'s candidate menu")
+    (description
+     "Allows @code{emacs-company} to use child frames for its candidate menus.
 
 @code{emacs-company-posframe} is fast enough for daily use and supports CJK
 languages.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-irony-mode
   (package
