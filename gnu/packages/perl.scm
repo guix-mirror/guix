@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
@@ -10869,7 +10869,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.80")
+    (version "0.82")
     (source
      (origin
        (method url-fetch)
@@ -10877,7 +10877,7 @@ on the YAML 1.0 specification.")
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
              version ".tar.gz"))
        (sha256
-        (base32 "1nhn4w52kpq757rxl052f61h36rdzsy416k740m3fy5ih7axhq4x"))))
+        (base32 "0j7yhxkaasccynl5iq1cqpf4x253p4bi5wsq6qbwwv2wjsiwgd02"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/YAML-LibYAML")
     (synopsis "Perl YAML Serialization using XS and libyaml")
