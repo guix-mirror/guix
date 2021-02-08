@@ -8578,7 +8578,7 @@ strings, and code folding.")
 (define-public emacs-nodejs-repl
   (package
     (name "emacs-nodejs-repl")
-    (version "0.2.2")
+    (version "0.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8587,7 +8587,7 @@ strings, and code folding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kkj888k9x5n0i7xkia177gzsa84my3g8n0n7v65281cc4f1yhk5"))))
+                "0a5mmg3cmdi73giblp07ksl06xzl9nb2m3f96ny4r3rv0ar3v1bx"))))
     (build-system emacs-build-system)
     (inputs
      `(("node" ,node)))
