@@ -11157,6 +11157,47 @@ methods for your source as @code{Forwardable::Extended}.")
 Pathname.")
     (license license:expat)))
 
+(define-public ruby-terminal-table
+  (package
+    (name "ruby-terminal-table")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "terminal-table" version))
+       (sha256
+        (base32
+         "18rbrh464ysqbdv53iwj0r8frshn65566kyj044cp3x9c2754jwh"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-gemfile-lock
+           (lambda _
+             (delete-file "Gemfile.lock")))
+         (add-before 'check 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "terminal-table.gemspec"
+               (("s.add_runtime_dependency.*") "\n")
+               (("s.add_development_dependency.*") "\n"))
+             (substitute* "Gemfile"
+               ((".*tins.*") "\n"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec")))))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-unicode-display-width" ,ruby-unicode-display-width)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/tj/terminal-table")
+    (synopsis "Simple, feature rich ASCII table generation library")
+    (description
+     "Terminal Table is a fast and simple, yet feature rich
+table generator written in Ruby.  It supports ASCII and
+Unicode formatted tables.")
+    (license license:expat)))
+
 (define-public jekyll
   (package
     (name "jekyll")
