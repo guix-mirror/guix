@@ -1160,7 +1160,7 @@ checks for pod coverage of all appropriate files.")
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -1168,7 +1168,7 @@ checks for pod coverage of all appropriate files.")
                            "Test-Requires-" version ".tar.gz"))
        (sha256
         (base32
-         "1d9f481lj12cw1ciil46xq9nq16p6a90nm7yrsalpf8asn8s6s17"))))
+         "03q49vi09b4n31kpnmq4v2dga5ja438a8f1wgkgwvvlpjmadx22b"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-Requires")
     (synopsis "Checks to see if the module can be loaded")
