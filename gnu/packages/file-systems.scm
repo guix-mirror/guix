@@ -627,7 +627,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.10")
+    (version "0.5.11")
     (source
      (origin
        (method git-fetch)
@@ -637,7 +637,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lsisx5118k0qk0b5klbxl03rvhycnznyfx05yxmjawh85bfhmlh"))))
+         "1pnrj0h8sgqwgsc18vz3fkqsp6vhigdbi75vdj0si1r6wgslnr7z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
