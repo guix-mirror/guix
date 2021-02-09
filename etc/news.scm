@@ -21,7 +21,8 @@
  (entry (commit "aa8de806252e3835d57fab351b02d13db762deac")
         (title
          (en "Risk of local privilege escalation @i{via} setuid programs")
-         (de "Risiko lokaler Rechteausweitung bei setuid-Programmen"))
+         (de "Risiko lokaler Rechteausweitung bei setuid-Programmen")
+         (fr "Risque de gain local de privilèges @i{via} les programmes setuid"))
         (body
          (en "On Guix System, setuid programs were, until now, installed as
 setuid-root @emph{and} setgid-root (in the @file{/run/setuid-programs}
@@ -53,7 +54,23 @@ guix system reconfigure /run/current-system/configuration.scm
 @end example
 
 Benutzer von Guix auf einer „Fremddistribution“ sind @emph{nicht} betroffen.
-Siehe @url{https://issues.guix.gnu.org/46395} für weitere Informationen.")))
+Siehe @url{https://issues.guix.gnu.org/46395} für weitere Informationen.")
+         (fr "Sur Guix System, les programmes setuid étaient jusqu'à présent
+installés setuid-root @emph{et} setgid-root (dans le répertoire
+@file{/run/setuid-programs}).  Ces programmes sont généralement conçus pour
+être setuid-root, mais pas setgid-root, et cette situation posait donc un
+risque de gain local de privilèges.
+
+Ce problème est corrigé et vous êtes encouragé·e à mettre à jour votre
+système, avec une commande de ce genre :
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Les usagers de Guix sur une distrib externe ne sont pas touché·es.  Plus
+d'informations sont disponibles à @url{https://issues.guix.gnu.org/46395} (en
+anglais).")))
 
  (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
         (title
