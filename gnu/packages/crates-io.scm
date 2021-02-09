@@ -38969,6 +38969,31 @@ applications backed by buffers.")
 Tokio.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tokio-native-tls-0.1
+  (package
+    (name "rust-tokio-native-tls")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-native-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sd0xmj7kwizybpsg8vh7a6sixj0bs4dzihzgmdf1a0rm69qaq6d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://tokio.rs")
+    (synopsis "TLS/SSL streams for Tokio")
+    (description
+     "This package provides an implementation of TLS/SSL streams for Tokio
+using native-tls giving an implementation of TLS for nonblocking I/O
+streams.")
+    (license license:expat)))
+
 (define-public rust-tokio-net-0.2
   (package
     (name "rust-tokio-net")
