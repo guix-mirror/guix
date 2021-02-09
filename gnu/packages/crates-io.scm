@@ -41650,19 +41650,39 @@ result.")
     (description "Detect when another Future wants a result.")
     (license license:expat)))
 
+(define-public rust-want-0.0
+  (package
+    (inherit rust-want-0.3)
+    (name "rust-want")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "want" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l9mbh4a0r2m3s8nckhy1vz9qm6lxsswlgxpimf4pyjkcyb9spd0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-try-lock" ,rust-try-lock-0.1))))))
+
 (define-public rust-wasi-0.9
   (package
     (name "rust-wasi")
     (version "0.9.0+wasi-snapshot-preview1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "wasi" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "06g5v3vrdapfzvfq662cij7v8a1flwr2my45nnncdv2galrdzkfc"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasi" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06g5v3vrdapfzvfq662cij7v8a1flwr2my45nnncdv2galrdzkfc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
