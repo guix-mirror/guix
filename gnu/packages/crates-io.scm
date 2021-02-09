@@ -8196,6 +8196,34 @@ manipulating terminals.")
 around common WinAPI calls.")
     (license license:expat)))
 
+(define-public rust-rust-crypto-0.2
+  (package
+    (name "rust-rust-crypto")
+    (version "0.2.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-crypto" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0aias7gh2ypj4skmh6hfsjli4fhnvcvf9s1ljjpz9m9zk79havgp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gcc" ,rust-gcc-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/DaGenix/rust-crypto/")
+    (synopsis "Mostly pure-Rust implementation of various cryptographic algorithms")
+    (description
+     "This package provides a (mostly) pure-Rust implementation of various
+common cryptographic algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crypto-mac-0.10
   (package
     (name "rust-crypto-mac")
