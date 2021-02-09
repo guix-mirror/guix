@@ -36023,6 +36023,26 @@ provides both a library for wrapping Rust @code{Writer}s and a small program
 that exposes the same functionality at the command line.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-take-0.1
+  (package
+    (name "rust-take")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "take" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i8p579k9kq21k7pcm4yzbc12xpshl39jfa5c1j6pxf1ia6qcmxi"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/carllerche/take")
+    (synopsis "Simple container utility for Rust")
+    (description
+     "This package provides a cell allowing the inner value to be consumed
+without a mutable reference.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-take-mut-0.2
   (package
     (name "rust-take-mut")
