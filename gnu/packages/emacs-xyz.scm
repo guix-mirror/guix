@@ -12234,7 +12234,7 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "1.8")
+    (version "2.0")
     (source
      (origin
        (method git-fetch)
@@ -12243,14 +12243,14 @@ containing words from the Rime project.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "16rma4cv7xgky0g3x4an27v30jdi6i1sqw43cl99zhkqvp43l3f9"))))
+        (base32 "06ahzyi2h353xj17mzsm9fxmkc6cyzd1mjzmvqfw8cyv538nijc0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
        ("emacs-pyim-basedict" ,emacs-pyim-basedict)
        ("emacs-popup" ,emacs-popup)
-       ("emacs-posframe" ,emacs-posframe)))
+       ("emacs-posframe" ,emacs-posframe)
+       ("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/tumashu/pyim")
     (synopsis "Chinese input method")
     (description "Chinese input method which supports quanpin, shuangpin, wubi
