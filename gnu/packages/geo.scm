@@ -848,14 +848,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.0.3")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05s8cx1rlysiq7dd44kf7cid0la61a4p895j9g95bvfb8v8dpzh7"))))
+                "0z9a39243fv37mansbbjq5mmxpnhr7xzn8pv92fr7dkdb3psz5hf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -880,6 +880,7 @@ utilities for data translation and processing.")
        ("libxml2" ,libxml2)
        ("pcre" ,pcre)
        ("postgresql" ,postgresql)
+       ("protobuf-c" ,protobuf-c)
        ("proj" ,proj)))
     (native-inputs
      `(("perl" ,perl)
