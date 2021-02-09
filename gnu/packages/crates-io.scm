@@ -40271,6 +40271,29 @@ be used directly.  See @code{rust-trackable} for more information.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-trash-1
+  (package
+    (name "rust-trash")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04nmmh6pnlsdpgz24bwnjpyqcs66414w1sip9whlx0aln6prdpwh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/ArturKovacs/trash-rs")
+    (synopsis "Library for moving files and folders to the recycle bin")
+    (description
+     "This package provides a library for moving files and folders to the
+recycle bin.")
+    (license license:expat)))
+
 (define-public rust-treeline-0.1
   (package
     (name "rust-treeline")
