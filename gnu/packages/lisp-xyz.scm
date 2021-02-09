@@ -3000,7 +3000,7 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "5ce3ea1fbf2b21e7ccb98402a818508ca9b79395"))
+  (let ((commit "0bc05cc73257670ab241853b9cc9ccb68940fe44"))
     (package
       (name "sbcl-cl-webkit")
       (version (git-version "2.4" "10" commit))
@@ -3013,7 +3013,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0zgd8hp2nalh0v4xgjvqxd6rf95f7mci181xbg3gmqxxwxd4mkpk"))))
+           "1kg6illspvb5647pm0x819ag2n7njnqvrm18jzgd28vk6nlkrcmq"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
