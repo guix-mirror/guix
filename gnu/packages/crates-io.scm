@@ -28661,6 +28661,31 @@ Rust.")
        ("rust-rand" ,rust-rand-0.3)
        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-rawkey-0.1
+  (package
+    (name "rust-rawkey")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rawkey" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bgbb0pd8wbhbwib2d39x2r1m8kasw8x3w13bdb4s17g6nnfzmks"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-readkey" ,rust-readkey-0.1)
+        ("rust-user32-sys" ,rust-user32-sys-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11" ,rust-x11-2))))
+    (home-page "https://github.com/jonathandturner/rawkey")
+    (synopsis "Raw terminal key input")
+    (description
+     "This packages provides support for raw key input in terminals.")
+    (license license:expat)))
+
 (define-public rust-rayon-core-1
   (package
     (name "rust-rayon-core")
