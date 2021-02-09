@@ -29345,6 +29345,40 @@ MessagePack format.")
     (description "This crate provides Serde bindings for RMP.")
     (license license:expat)))
 
+(define-public rust-romio-0.3
+  (package
+    (name "rust-romio")
+    (version "0.3.0-alpha.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "romio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0arxxgdp7j2y1nxd0a94qmkspyv92hyaz8lbirvf77f6qm0298vb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-datagram" ,rust-async-datagram-3)
+        ("rust-async-ready" ,rust-async-ready-3)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-slab" ,rust-slab-0.4))))
+    (home-page "https://github.com/withoutboats/romio")
+    (synopsis "Asynchronous networking primitives")
+    (description
+     "This package provides event loop and I/O resources for asynchronous
+network services using futures.")
+    (license license:expat)))
+
 (define-public rust-ron-0.5
   (package
     (name "rust-ron")
