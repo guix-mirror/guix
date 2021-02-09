@@ -17086,6 +17086,30 @@ written in Rust.")
      "This package provides inotify bindings for the Rust programming language.")
     (license license:isc)))
 
+(define-public rust-input-buffer-0.3
+  (package
+    (name "rust-input-buffer")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "input_buffer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m4pamqvr00z90cmrgjj25iwpqy6fyac53k1ms63k86m8d9aka0r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5))))
+    (home-page "https://github.com/snapview/input_buffer")
+    (synopsis
+     "Peekable FIFO-like buffer for receiving network data efficiently")
+    (description
+     "This package provides a peekable FIFO-like buffer for receiving network
+data efficiently.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-insta-0.16
   (package
     (name "rust-insta")
