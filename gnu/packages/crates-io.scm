@@ -35754,6 +35754,48 @@ cryptographic implementations.")
         (base32
          "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
+(define-public rust-surf-1
+  (package
+    (name "rust-surf")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "surf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kksp41r5w7pwv1bj8pq5cngny24flq4mybxyhbfycx8z04806kl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-hyper" ,rust-hyper-0.12)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.3)
+        ("rust-isahc" ,rust-isahc-0.7)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-runtime" ,rust-runtime-0.3)
+        ("rust-runtime-raw" ,rust-runtime-raw-0.3)
+        ("rust-runtime-tokio" ,rust-runtime-tokio-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-url" ,rust-url-2)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.3)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/http-rs/surf")
+    (synopsis "HTTP client framework")
+    (description
+     "Surf is a friendly HTTP client built for casual Rustaceans and veterans
+alike.  It's completely modular, and built directly for @code{async/await}. ")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sval-0.5
   (package
     (name "rust-sval")
