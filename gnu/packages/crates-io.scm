@@ -43476,8 +43476,33 @@ with webpki.")
 using @code{bindgen}.")
     (license license:mpl2.0)))
 
+(define-public rust-which-4
+  (package
+    (name "rust-which")
+    (version "4.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "which" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vqih4glz0kh3p08bl8mdzk4c02195ws7v6mfpyfrf5qw7vlxhc7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/harryfei/which-rs.git")
+    (synopsis "Rust equivalent of Unix command @command{which}")
+    (description
+     "This package provides a Rust equivalent of Unix command @command{which}.
+It locates installed executable in cross platforms.")
+    (license license:expat)))
+
 (define-public rust-which-3
   (package
+    (inherit rust-which-4)
     (name "rust-which")
     (version "3.1.1")
     (source
@@ -43489,21 +43514,15 @@ using @code{bindgen}.")
         (sha256
          (base32
           "094pw9pi48szshn9ln69z2kg7syq1jp80h5ps1qncbsaw4d0f4fh"))))
-    (build-system cargo-build-system)
     (arguments
       `(#:skip-build? #t
         #:cargo-inputs
         (("rust-failure" ,rust-failure-0.1)
-         ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/harryfei/which-rs.git")
-    (synopsis "Rust equivalent of Unix command \"which\"")
-    (description
-     "This package provides a Rust equivalent of Unix command \"which\".  Locate
-installed executable in cross platforms.")
-    (license license:expat)))
+         ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-which-2
   (package
+    (inherit rust-which-4)
     (name "rust-which")
     (version "2.0.1")
     (source
@@ -43515,20 +43534,13 @@ installed executable in cross platforms.")
        (sha256
         (base32
          "0r7i793sc0xqnd2fxnqbksj7j1kx65bwn81b8z49750v4c8cnymm"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-failure" ,rust-failure-0.1)
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/harryfei/which-rs")
-    (synopsis "Rust equivalent of Unix command \"which\"")
-    (description
-     "This package provides a Rust equivalent of Unix command \"which\".
-Locate installed executable in cross platforms.")
-    (license license:expat)))
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-which-1
   (package
