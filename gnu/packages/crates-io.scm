@@ -29623,6 +29623,30 @@ console applications.")
         (base32
          "1v255xqkig5lwnczvm3achydhxx6kf9jcdxdlgzndgpd18bp6x6k"))))))
 
+(define-public rust-runtime-attributes-0.3
+  (package
+    (name "rust-runtime-attributes")
+    (version "0.3.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "runtime-attributes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08n9sqpiwbjm7scyqz0xp57nggzb15rb0sydidw50lx0j0k9xn2n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/rustasync/runtime")
+    (synopsis "Proc Macro attributes for the Runtime crate")
+    (description
+     "This package Proc macro attributes for the Runtime crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-runtime-native-0.3
   (package
     (name "rust-runtime-native")
