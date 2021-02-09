@@ -38402,6 +38402,32 @@ closures after a delay or at a given timestamp.")
 @code{timerfd} API.")
     (license license:expat)))
 
+(define-public rust-tiny-http-0.6
+  (package
+    (name "rust-tiny-http")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tiny_http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0la95daknfh8g951ddb2zdz6av2459rncp6h9dh02pf98h5glq8n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ascii" ,rust-ascii-0.8)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chunked-transfer" ,rust-chunked-transfer-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-url" ,rust-url-1))))
+    (home-page "https://github.com/tiny-http/tiny-http")
+    (synopsis "Low level HTTP server library")
+    (description "This package provides a low level HTTP server library.")
+    (license license:asl2.0)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
