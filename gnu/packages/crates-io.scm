@@ -22265,6 +22265,43 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-nickel-0.11
+  (package
+    (name "rust-nickel")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nickel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1na619j2k0hkv5qhws7ccibzhn1v637f1vqwnsn2vnr84y1il1p5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiletest-rs" ,rust-compiletest-rs-0.3)
+        ("rust-groupable" ,rust-groupable-0.2)
+        ("rust-hyper" ,rust-hyper-0.10)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-modifier" ,rust-modifier-0.1)
+        ("rust-mustache" ,rust-mustache-0.9)
+        ("rust-plugin" ,rust-plugin-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-typemap" ,rust-typemap-0.3)
+        ("rust-url" ,rust-url-1))))
+    (home-page "http://nickel-org.github.io/")
+    (synopsis "Web application framework for Rust")
+    (description
+     "@code{nickel.rs} is a simple and lightweight foundation for web
+applications written in Rust.  Its API is inspired by the popular
+@code{express} framework for JavaScript.")
+    (license license:expat)))
+
 (define-public rust-nipper-0.1
   (package
     (name "rust-nipper")
