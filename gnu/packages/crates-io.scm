@@ -17853,6 +17853,36 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-juliex-0.3
+  (package
+    (name "rust-juliex")
+    (version "0.3.0-alpha.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "juliex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g4r23i7dkpid8zmkg6aiw73gkp7jagwhrjfi12yklyx4dczvp12"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam" ,rust-crossbeam-0.7)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-cpus" ,rust-num-cpus-1))))
+    (home-page "https://github.com/withoutboats/juliex")
+    (synopsis "Very basic future executor")
+    (description
+     "juliex is a concurrent executor for Rust futures.  It is implemented as
+a threadpool executor using a single, shared queue.  Algorithmically, it is
+very similar to the Threadpool executor provided by the futures crate.  The
+main difference is that juliex uses a crossbeam channel and performs a single
+allocation per spawned future, whereas the futures Threadpool uses std
+concurrency primitives and multiple allocations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-juniper-codegen-0.14
   (package
     (name "rust-juniper-codegen")
