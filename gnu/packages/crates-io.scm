@@ -16181,6 +16181,42 @@ SystemTime}}.")
         ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
         ("rust-url" ,rust-url-1))))))
 
+(define-public rust-hyper-0.11
+  (package
+    (inherit rust-hyper-0.13)
+    (name "rust-hyper")
+    (version "0.11.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1msrx9fgiiv7vl4kryn2zgahbqndph5szrgqvm6fjhfk1759199l"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-percent-encoding" ,rust-percent-encoding-1)
+        ("rust-relay" ,rust-relay-0.1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tokio-core" ,rust-tokio-core-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-proto" ,rust-tokio-proto-0.1)
+        ("rust-tokio-service" ,rust-tokio-service-0.1)
+        ("rust-unicase" ,rust-unicase-2)
+        ("rust-want" ,rust-want-0.0))))))
+
 (define-public rust-hyper-old-types-0.11
   (package
     (name "rust-hyper-old-types")
