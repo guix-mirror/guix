@@ -8287,8 +8287,32 @@ rasterizing glyphs, using native font engines whenever possible.")
 manipulating terminals.")
     (license license:expat)))
 
+(define-public rust-crossterm-winapi-0.7
+  (package
+    (name "rust-crossterm-winapi")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm_winapi" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fa047zz228qyqbcjdss64j0n01p4adr29yh9w24lgjdrr59da0d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/crossterm-rs/crossterm-winapi")
+    (synopsis "Basic simple abstractions around common WinAPI calls")
+    (description
+     "This package is a WinAPI wrapper that provides some basic simple
+abstractions around common WinAPI calls.")
+    (license license:expat)))
+
 (define-public rust-crossterm-winapi-0.4
   (package
+    (inherit rust-crossterm-winapi-0.7)
     (name "rust-crossterm-winapi")
     (version "0.4.0")
     (source
@@ -8298,14 +8322,8 @@ manipulating terminals.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1j3av8bba3f5y4n4w1vgn0iz28vdajxrli6lqxnvpddbphskmph2"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/crossterm-rs/crossterm-winapi")
-    (synopsis "Basic simple abstractions around common WinAPI calls")
-    (description "WinAPI wrapper that provides some basic simple abstractions
-around common WinAPI calls.")
-    (license license:expat)))
+     `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-rust-crypto-0.2
   (package
