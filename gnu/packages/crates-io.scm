@@ -29501,6 +29501,27 @@ console applications.")
         (base32
          "1v255xqkig5lwnczvm3achydhxx6kf9jcdxdlgzndgpd18bp6x6k"))))))
 
+(define-public rust-runtime-raw-0.3
+  (package
+    (name "rust-runtime-raw")
+    (version "0.3.0-alpha.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "runtime-raw" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k02nd0cg27s5ixflzsxqhil5rfzw4z3v0yvqbxzlhps90rq19y1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-preview" ,rust-futures-preview-0.3))))
+    (home-page "https://github.com/rustasync/runtime")
+    (synopsis "Traits to implement custom Runtimes.")
+    (description "This package provides traits to implement custom Runtimes.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rusqlite-0.24
   (package
     (name "rust-rusqlite")
