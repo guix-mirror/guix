@@ -17901,6 +17901,27 @@ primitives to an @code{io::Write}.")
     (native-inputs
      `(("jemalloc" ,jemalloc)))))
 
+(define-public rust-jetscii-0.3
+  (package
+    (name "rust-jetscii")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "jetscii" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sq6d6c9vi44gkr566w2f1d4n6mmrjx8gjdwgnhkgcsg051j391j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/shepmaster/jetscii")
+    (synopsis
+     "Search strings and byte slices for sets of ASCII characters or bytes")
+    (description
+     "This package provides a tiny library to efficiently search strings and
+byte slices for sets of ASCII characters or bytes.")
+    (license license:expat)))
+
 (define-public rust-jni-0.18
   (package
     (name "rust-jni")
