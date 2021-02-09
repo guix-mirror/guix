@@ -32,7 +32,7 @@ Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
@@ -7449,8 +7449,10 @@ supports builds of packages using Cargo, the build tool of the
 It adds @code{rustc} and @code{cargo} to the set of inputs.
 A different Rust package can be specified with the @code{#:rust} parameter.
 
-Regular cargo dependencies should be added to the package definition via the
-@code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
+Regular cargo dependencies should be added to the package definition similarly
+to other packages; those needed only at build time to native-inputs, others to
+inputs.  If you need to add source-only crates then you should add them to via
+the @code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
 spec can be a package or a source definition.  Note that the spec must
 evaluate to a path to a gzipped tarball which includes a @code{Cargo.toml}
 file at its root, or it will be ignored.  Similarly, cargo dev-dependencies
@@ -7461,8 +7463,11 @@ In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
 parameters available to cargo.  It will also remove an included
 @code{Cargo.lock} file to be recreated by @code{cargo} during the
-@code{build} phase.  The @code{install} phase installs the binaries
-defined by the crate.
+@code{build} phase.  The @code{package} phase will run @code{cargo package}
+to create a source crate for future use.  The @code{install} phase installs
+the binaries defined by the crate.  Unless @code{install-source? #f} is
+defined it will also install a source crate repository of itself and unpacked
+sources, to ease in future hacking on rust packages.
 @end defvr
 
 @defvr {Scheme Variable} chicken-build-system

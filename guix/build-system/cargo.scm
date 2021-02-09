@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,8 +78,10 @@ to NAME and VERSION."
                       (vendor-dir "guix-vendor")
                       (cargo-build-flags ''("--release"))
                       (cargo-test-flags ''("--release"))
+                      (cargo-package-flags ''("--no-metadata" "--no-verify"))
                       (features ''())
                       (skip-build? #f)
+                      (install-source? #t)
                       (phases '(@ (guix build cargo-build-system)
                                   %standard-phases))
                       (outputs '("out"))
@@ -106,8 +109,10 @@ to NAME and VERSION."
                     #:vendor-dir ,vendor-dir
                     #:cargo-build-flags ,cargo-build-flags
                     #:cargo-test-flags ,cargo-test-flags
+                    #:cargo-package-flags ,cargo-package-flags
                     #:features ,features
                     #:skip-build? ,skip-build?
+                    #:install-source? ,install-source?
                     #:tests? ,(and tests? (not skip-build?))
                     #:phases ,phases
                     #:outputs %outputs
