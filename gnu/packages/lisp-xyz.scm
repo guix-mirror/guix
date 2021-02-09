@@ -8208,6 +8208,38 @@ continuations of the @code{cl-cont} library.")
 (define-public ecl-cl-coroutine
   (sbcl-package->ecl-package sbcl-cl-coroutine))
 
+(define-public sbcl-vas-string-metrics
+  (let ((commit "f2e4500b180316123fbd549bd51c751ee2d6ba0f")
+        (revision "1"))
+    (package
+      (name "sbcl-vas-string-metrics")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vsedach/vas-string-metrics")
+               (commit commit)))
+         (file-name (git-file-name "vas-string-metrics" version))
+         (sha256
+          (base32 "11fcnd03ybzz37rkg3z0wsb727yqgcd9gn70sccfb34l89ia279k"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "test.vas-string-metrics.asd"))
+      (home-page "https://github.com/vsedach/vas-string-metrics")
+      (synopsis "String distance algorithms for Common Lisp")
+      (description
+       "VAS-STRING-METRICS provides the Jaro, Jaro-Winkler, Soerensen-Dice,
+Levenshtein, and normalized Levenshtein string distance/similarity metrics
+algorithms.")
+      (license license:lgpl3+))))
+
+(define-public ecl-vas-string-metrics
+  (sbcl-package->ecl-package sbcl-vas-string-metrics))
+
+(define-public cl-vas-string-metrics
+  (sbcl-package->cl-source-package sbcl-vas-string-metrics))
+
 (define-public sbcl-vom
   (let ((commit "1aeafeb5b74c53741b79497e0ef4acf85c92ff24")
         (revision "1"))
