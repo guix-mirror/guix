@@ -38107,6 +38107,28 @@ using Rustls.")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-tokio" ,rust-tokio-0.1))))))
 
+(define-public rust-tokio-service-0.1
+  (package
+    (name "rust-tokio-service")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-service" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qjinhax0y164kxp887mj8c5ih9829kdrnrb2ramzwg0fz825ni4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio-service")
+    (synopsis "Core @code{Service} trait for Tokio")
+    (description
+     "This package provides the core @code{Service} trait for Tokio.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-signal-0.2
   (package
     (name "rust-tokio-signal")
