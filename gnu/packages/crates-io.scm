@@ -37976,6 +37976,40 @@ backed by OpenSSL.")
 futures.")
     (license license:expat)))
 
+(define-public rust-tokio-proto-0.1
+  (package
+    (name "rust-tokio-proto")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-proto" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12833cckniq3y83zjhk2ayv6qpr99d4mj1h3hz266g1mh6p4gfwg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-slab" ,rust-slab-0.3)
+        ("rust-smallvec" ,rust-smallvec-0.2)
+        ("rust-take" ,rust-take-0.1)
+        ("rust-tokio-core" ,rust-tokio-core-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-service" ,rust-tokio-service-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Network application framework for deployment of clients and servers")
+    (description
+     "This package provides a network application framework for rapid
+development and highly scalable production deployments of clients and
+servers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-reactor-0.1
   (package
     (name "rust-tokio-reactor")
