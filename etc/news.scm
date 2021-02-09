@@ -18,6 +18,26 @@
 (channel-news
  (version 0)
 
+ (entry (commit "aa8de806252e3835d57fab351b02d13db762deac")
+        (title
+         (en "Risk of local privilege escalation @i{via} setuid programs"))
+        (body
+         (en "On Guix System, setuid programs were, until now, installed as
+setuid-root @emph{and} setgid-root (in the @file{/run/setuid-programs}
+directory).  However, most of these programs are meant to run as setuid-root,
+but not setgid-root.  Thus, this setting posed a risk of local privilege
+escalation.
+
+This bug has been fixed and users are advised to upgrade their system, with a
+command along the lines of:
+
+@example
+guix system reconfigure /run/current-system/configuration.scm
+@end example
+
+Users of Guix on a ``foreign distro'' are unaffected.  See
+@url{https://issues.guix.gnu.org/46395} for more information.")))
+
  (entry (commit "aedbc5ff32a62f45aeed74c6833399a6cf2c22dc")
         (title
          (en "Create a manifest with @command{guix package --export-manifest}")
