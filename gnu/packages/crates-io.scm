@@ -33012,6 +33012,29 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
        (("rust-digest" ,rust-digest-0.8)
         ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
+(define-public rust-sha2-0.6
+  (package
+    (inherit rust-sha2-0.9)
+    (name "rust-sha2")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0shircyawzg1q5lyi175l7l446v5bijwrf58grnz4z9nrrw3r5kx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.2)
+        ("rust-byte-tools" ,rust-byte-tools-0.2)
+        ("rust-digest" ,rust-digest-0.6)
+        ("rust-fake-simd" ,rust-fake-simd-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.8)
+        ("rust-sha2-asm" ,rust-sha2-asm-0.3))))))
+
 (define-public rust-sha2-asm-0.5
   (package
     (name "rust-sha2-asm")
