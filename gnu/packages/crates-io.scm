@@ -20226,6 +20226,29 @@ implementation of LZMA and xz stream encoding/decoding.")
      "This package provides a collection of great and ubiqutitous macros.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-mach-0.2
+  (package
+    (name "rust-mach")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mach" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qdhs16cl1j3w7kvy6ak7h8lbyqmr6i3i15qfzpnv9gyrn3j9pc6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/fitzgen/mach")
+    (synopsis "Rust interface to the Mach 3.0 kernel that underlies OSX")
+    (description
+     "This package provides a Rust interface to the user-space API of the
+Mach 3.0 kernel that underlies OSX.")
+    (license (list license:asl2.0 license:expat license:bsd-2))))
+
 (define-public rust-mach-o-sys-0.1
   (package
     (name "rust-mach-o-sys")
