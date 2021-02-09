@@ -4579,6 +4579,38 @@ bytes), doesn't have the 128 byte limitation and supports a configurable
 alphabet.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-bson-0.14
+  (package
+    (name "rust-bson")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bson" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "000wqyb4icy32h74wl5wb6iw2flzwwlrpgq51xgcw91g2b87w5rw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-decimal" ,rust-decimal-2)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
+        ("rust-md5" ,rust-md5-0.6)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/mongodb/bson-rust")
+    (synopsis "Encoding and decoding support for BSON in Rust")
+    (description
+     "This package provides encoding and decoding support for BSON in Rust.")
+    (license license:expat)))
+
 (define-public rust-bstr-0.2
   (package
     (name "rust-bstr")
