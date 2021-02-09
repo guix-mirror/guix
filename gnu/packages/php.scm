@@ -183,12 +183,18 @@
                                 "ext/calendar/tests/unixtojd_error1.phpt"
                                 ;; arm can be a lot slower, so a time-related test fails
                                 "ext/fileinfo/tests/cve-2014-3538-nojit.phpt"
+                                "ext/pcntl/tests/pcntl_unshare_01.phpt"
                                 "ext/pcre/tests/bug76514.phpt"
                                 "ext/pcre/tests/preg_match_error3.phpt"
+                                "ext/pcre/tests/cache_limit.phpt"
+                                "ext/sockets/tests/socket_getopt.phpt"
+                                "ext/sockets/tests/socket_sendrecvmsg_error.phpt"
                                 "ext/standard/tests/general_functions/var_export-locale.phpt"
                                 "ext/standard/tests/general_functions/var_export_basic1.phpt"
                                 "ext/intl/tests/timezone_getErrorCodeMessage_basic.phpt"
-                                "ext/intl/tests/timezone_getOffset_error.phpt")))
+                                "ext/intl/tests/timezone_getOffset_error.phpt"
+                                "sapi/cli/tests/cli_process_title_unix.phpt"
+                                "sapi/cli/tests/upload_2G.phpt")))
                    '())
 
              ;; Drop tests that are known to fail.
