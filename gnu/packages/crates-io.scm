@@ -39791,6 +39791,35 @@ implementation of TLS for nonblocking I/O streams.")
     (description "Core primitives for tokio-trace.")
     (license license:expat)))
 
+(define-public rust-tokio-tungstenite-0.11
+  (package
+    (name "rust-tokio-tungstenite")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-tungstenite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "033jypbksw394h75g5vxk3wafwqr9syrrq6a9mp2iji6sj58g7kd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-native-tls" ,rust-tokio-native-tls-0.1)
+        ("rust-tungstenite" ,rust-tungstenite-0.11))))
+    (home-page "https://github.com/snapview/tokio-tungstenite")
+    (synopsis "Tokio binding for Tungstenite")
+    (description
+     "This package provides Tokio binding for Tungstenite, the lightweight
+stream-based WebSocket implementation.")
+    (license license:expat)))
+
 (define-public rust-tokio-udp-0.1
   (package
     (name "rust-tokio-udp")
