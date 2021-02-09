@@ -13230,7 +13230,7 @@ settings).")
 (define-public emacs-hercules
   (package
     (name "emacs-hercules")
-    (version "0.2.1")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
@@ -13239,8 +13239,7 @@ settings).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "19939pf5d6p2facmfhpyghx0vipb5k6ry3bmkmjfkj1zp132zfqf"))))
+        (base32 "1rp37rhkj8jm07dwr74vc68dhrbvyvrxjdavpb0h073ps9vl9dsc"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-which-key" ,emacs-which-key)))
