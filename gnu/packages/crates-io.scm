@@ -21457,6 +21457,28 @@ which defines a default trait implementation, and @code{trait_impl} which uses
 a default trait implementation you've defined.")
     (license license:lgpl2.1+)))
 
+(define-public rust-mustache-0.9
+  (package
+    (name "rust-mustache")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mustache" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dfakqld6zf995nnkgs9ybccgps4zcbfd4adaa2162njqpqnx5ai"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-log" ,rust-log-0.3)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/nickel-org/rust-mustache")
+    (synopsis "Rust implementation of Mustache")
+    (description "This package provides a Rust implementation of Mustache.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mysqlclient-sys-0.2
   (package
     (name "rust-mysqlclient-sys")
