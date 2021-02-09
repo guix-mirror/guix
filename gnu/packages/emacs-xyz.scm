@@ -116,6 +116,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system perl)
@@ -14182,7 +14183,7 @@ languages while remaining inside the primary Org buffer.")
 (define-public eless
   (package
     (name "eless")
-    (version "0.3")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -14191,23 +14192,16 @@ languages while remaining inside the primary Org buffer.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jr7vhh4vw69llhi0fh9ljscljkszkj0acdxl04da5hvqv6pnqbb"))))
-    (build-system trivial-build-system)
+        (base32 "1xif339wsc79hsab3l1nnwvy20jg7s1r4akfj4qqi6qxizfhmb52"))))
+    (build-system copy-build-system)
     (inputs
-     `(("bash" ,bash)))
+     `(("bash" ,bash)
+       ("emacs" ,emacs)))
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (copy-recursively (assoc-ref %build-inputs "source") "source")
-         (chdir "source")
-         (substitute* "eless" (("/usr/bin/env bash")
-                               (string-append (assoc-ref %build-inputs "bash")
-                                              "/bin/bash")))
-         (install-file "eless" (string-append %output "/bin"))
-         (install-file "doc/eless.info" (string-append %output "/share/info"))
-         #t)))
+     `(#:install-plan
+       '(("eless" "bin/")
+         ("docs/eless.info" "share/info/")
+         ("eless.org" ,(string-append "share/doc/eless-" version "/")))))
     (home-page "https://github.com/kaushalmodi/eless")
     (synopsis "Use Emacs as a paginator")
     (description "@code{eless} provides a combination of Bash script
