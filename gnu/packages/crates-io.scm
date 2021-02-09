@@ -8293,6 +8293,32 @@ rasterizing glyphs, using native font engines whenever possible.")
 terminals.")
     (license license:expat)))
 
+(define-public rust-crossterm-0.18
+  (package
+    (inherit rust-crossterm-0.19)
+    (name "rust-crossterm")
+    (version "0.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yxpskm03lknj6h0rhggm54xzlpm1ir8q2nid1bpnh0b58zxg1jf"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-crossterm-winapi" ,rust-crossterm-winapi-0.6)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.7)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))))))
+
 (define-public rust-crossterm-0.13
   (package
     (inherit rust-crossterm-0.19)
