@@ -4731,6 +4731,31 @@ UTF-8.")
         (base32
          "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
+(define-public rust-buf-redux-0.8
+  (package
+    (name "rust-buf-redux")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "buf_redux" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zy0p4vd2kjk7z5m4m8kdwhs5cmx1z02n7v36njhgfs8fs4aclxr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-memchr" ,rust-memchr-2)
+        ("rust-safemem" ,rust-safemem-0.3)
+        ("rust-slice-deque" ,rust-slice-deque-0.2))))
+    (home-page "https://github.com/abonander/buf_redux")
+    (synopsis "Drop-in replacements for buffered I/O in @code{std::io}")
+    (description
+     "This package provides drop-in replacements for buffered I/O in
+@code{std::io}, with extra features.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-buffered-reader-0.9
   (package
     (name "rust-buffered-reader")
