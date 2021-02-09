@@ -3950,6 +3950,21 @@ behave like a set of bitflags.")
        (sha256
         (base32 "08qdq5w1nd3hzwsrxk0dxzqv4g8wbwj6v2193njskwzdd09r6rsg"))))))
 
+(define-public rust-bitflags-0.2
+  (package
+    (inherit rust-bitflags-1)
+    (name "rust-bitflags")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitflags" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09yk0lk3vjsrvfcnzljmgvz9inpjs0idykvni7kij38l5vn807x4"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))))
+
 (define-public rust-bitstream-io-0.8
   (package
     (name "rust-bitstream-io")
