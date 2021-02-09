@@ -41411,6 +41411,32 @@ design abstracts away all the internals of the WebSocket protocol but still
 makes them accessible for those who wants full control over the network.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-twoway-0.1
+  (package
+    (name "rust-twoway")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "twoway" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lbf64snscr3vz71jbl6i2c8zr2ndsiqbk6316z39fj1a8mipcar"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-galil-seiferas" ,rust-galil-seiferas-0.1)
+        ("rust-jetscii" ,rust-jetscii-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-unchecked-index" ,rust-unchecked-index-0.2))))
+    (home-page "https://github.com/bluss/twoway")
+    (synopsis "Fast substring search for strings and byte strings")
+    (description
+     "This package provides a fast substring search for strings and byte
+strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-typeable-0.1
   (package
     (name "rust-typeable")
