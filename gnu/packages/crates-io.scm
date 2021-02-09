@@ -35868,6 +35868,32 @@ developed as part of the Servo project.")
      "Code share between string_cache and string_cache_codegen.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-strip-ansi-escapes-0.1
+  (package
+    (name "rust-strip-ansi-escapes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "strip-ansi-escapes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vmc6cwxsvp02b17b6x42mnnnn5vlc1dqbcqc2a71yms59p6fqwx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-vte" ,rust-vte-0.3))))
+    (home-page "https://github.com/luser/strip-ansi-escapes")
+    (synopsis "Strip ANSI escape sequences from byte streams")
+    (description
+     "This crate is for stripping ANSI escape sequences from byte sequences.
+
+This can be used to take output from a program that includes escape sequences
+and write it somewhere that does not easily support them, such as a log
+file.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-strsim-0.9
   (package
     (name "rust-strsim")
