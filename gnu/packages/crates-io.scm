@@ -39867,6 +39867,21 @@ extension for the Trust-DNS client to use rustls for TLS.")
      "This package provides a lightweight atomic lock.")
     (license license:expat)))
 
+(define-public rust-try-lock-0.1
+  (package
+    (inherit rust-try-lock-0.2)
+    (name "rust-try-lock")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "try-lock" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hp76pyzyxhcxxjacf083gpp6gf8cqwkg188yy02i2a3axqs8apf"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))))
+
 (define-public rust-trybuild-1
   (package
     (name "rust-trybuild")
