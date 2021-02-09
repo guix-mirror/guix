@@ -29533,6 +29533,27 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-result-1
+  (package
+    (name "rust-result")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "result" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0q2mslk9mvpdrl5zr1yvlb8ikmynpq5786c8ybn1wpa03rcqwk8r"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/arcnmx/result-rs")
+    (synopsis
+     "Helpers for dealing with nested @code{Result} and @code{Option} types")
+    (description
+     "This package provides helpers for dealing with nested @code{Result} and
+@code{Option} types.")
+    (license license:expat)))
+
 (define-public rust-retain-mut-0.1
   (package
     (name "rust-retain-mut")
