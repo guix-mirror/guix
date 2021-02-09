@@ -29623,6 +29623,37 @@ console applications.")
         (base32
          "1v255xqkig5lwnczvm3achydhxx6kf9jcdxdlgzndgpd18bp6x6k"))))))
 
+(define-public rust-runtime-native-0.3
+  (package
+    (name "rust-runtime-native")
+    (version "0.3.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "runtime-native" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h6cp6c3wr3rmix01mfxm5vy5d6xai60qap711ylv5dzr53a8rv8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-datagram" ,rust-async-datagram-3)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-futures-timer" ,rust-futures-timer-0.3)
+        ("rust-juliex" ,rust-juliex-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-romio" ,rust-romio-0.3)
+        ("rust-runtime-raw" ,rust-runtime-raw-0.3)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.3))))
+    (home-page "https://github.com/rustasync/runtime")
+    (synopsis "Cross-platform asynchronous runtime")
+    (description
+     "This package provides a cross-platform asynchronous runtime.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-runtime-raw-0.3
   (package
     (name "rust-runtime-raw")
