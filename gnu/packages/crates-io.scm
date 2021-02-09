@@ -2482,6 +2482,27 @@ This is unlike the process API in the standard library, where dropping
 a running Child leaks its resources.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-ready-3
+  (package
+    (name "rust-async-ready")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-ready" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09xw34q0k48r1bvs3s1l2a1mglz98l7zjbkdcy861k8zsyfwfw4l"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rustasync/async-ready")
+    (synopsis "Async readiness traits")
+    (description
+     "This package provides Async readiness traits.  Those can be useful when
+implementing async state machines that can later be wrapped in dedicated
+futures.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-std-0.99
   (package
     (name "rust-async-std")
