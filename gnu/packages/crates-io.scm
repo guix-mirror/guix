@@ -44741,6 +44741,29 @@ formatters with per-field documentation generated for each structure.
     (description "This package provides a Rust XML DOM library.")
     (license license:expat)))
 
+(define-public rust-sxd-xpath-0.4
+  (package
+    (name "rust-sxd-xpath")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sxd-xpath" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sin3g8lzans065gjcwrpm7gdpwdpdg4rpi91rlvb1q8sfjrvqrn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-peresil" ,rust-peresil-0.3)
+        ("rust-quick-error" ,rust-quick-error-1)
+        ("rust-sxd-document" ,rust-sxd-document-0.3))))
+    (home-page "https://github.com/shepmaster/sxd-xpath")
+    (synopsis "Rust XML XPath library")
+    (description "This package provides a Rust XML XPath library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-inflections-1
   (package
     (name "rust-inflections")
