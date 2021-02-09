@@ -8337,6 +8337,23 @@ terminals.")
 abstractions around common WinAPI calls.")
     (license license:expat)))
 
+(define-public rust-crossterm-winapi-0.6
+  (package
+    (inherit rust-crossterm-winapi-0.7)
+    (name "rust-crossterm-winapi")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm_winapi" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nqhjp979c6iv092dbxl6hpncwgwjciafyj1nvcpa008iqzmq9n2"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.3))))))
+
 (define-public rust-crossterm-winapi-0.4
   (package
     (inherit rust-crossterm-winapi-0.7)
