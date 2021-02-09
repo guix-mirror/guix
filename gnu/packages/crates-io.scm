@@ -6345,20 +6345,48 @@ CMAKE environmental variable is set.")
      "This package provides bindings to Cocoa Foundation for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-codespan-reporting-0.11
+  (package
+    (name "rust-codespan-reporting")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "codespan-reporting" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04wwbn2c5rcfz3zn4kj7nyvpj37hn5cxh0m8w1r3af4ak6w45kn6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-termcolor" ,rust-termcolor-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/brendanzab/codespan")
+    (synopsis "Beautiful diagnostic reporting for text-based programming languages")
+    (description
+     "Languages like Rust and Elm already support beautiful error
+reporting output, but it can take a significant amount work to
+implement this for new programming languages! The
+@code{codespan-reporting} crate aims to make beautiful error
+diagnostics easy and relatively painless for everyone!")
+    (license license:asl2.0)))
+
 (define-public rust-codespan-reporting-0.9
   (package
+    (inherit rust-codespan-reporting-0.11)
     (name "rust-codespan-reporting")
     (version "0.9.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "codespan-reporting" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "07g86hv1lp5bbr6w6hsa3mgdmavs36igc7k5pi1fvc86ad2n41vf"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "codespan-reporting" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07g86hv1lp5bbr6w6hsa3mgdmavs36igc7k5pi1fvc86ad2n41vf"))))
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1)
@@ -6371,12 +6399,7 @@ CMAKE environmental variable is set.")
         ("rust-peg" ,rust-peg-0.6)
         ("rust-rustyline" ,rust-rustyline-6)
         ("rust-structopt" ,rust-structopt-0.3)
-        ("rust-unindent" ,rust-unindent-0.1))))
-    (home-page "https://github.com/brendanzab/codespan")
-    (synopsis "Diagnostic reporting for text-based programming languages")
-    (description "This package provides diagnostic reporting for text-based
-programming languages.")
-    (license license:asl2.0)))
+        ("rust-unindent" ,rust-unindent-0.1))))))
 
 (define-public rust-color-quant-1
   (package
