@@ -42102,6 +42102,26 @@ untrusted inputs in Rust.")
         ("rust-rustc-test" ,rust-rustc-test-0.3)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-urlencoding-1
+  (package
+    (name "rust-urlencoding")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "urlencoding" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14sm5c8idb5jzib8dwf85p5yhd65vxjh946p80p49d2j6fsjw8y9"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://lib.rs/urlencoding")
+    (synopsis "Rust library for doing URL percentage encoding")
+    (description
+     "This package provides a Rust library for doing URL percentage
+encoding.")
+    (license license:expat)))
+
 (define-public rust-urlocator-0.1
  (package
    (name "rust-urlocator")
