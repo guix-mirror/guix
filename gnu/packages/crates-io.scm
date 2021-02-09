@@ -21647,6 +21647,47 @@ which defines a default trait implementation, and @code{trait_impl} which uses
 a default trait implementation you've defined.")
     (license license:lgpl2.1+)))
 
+(define-public rust-multipart-0.17
+  (package
+    (name "rust-multipart")
+    (version "0.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "multipart" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m3nrydgc56wjixsahipmvjgnxnw2cz7w8ryghsgahwjr3nswl6h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-buf-redux" ,rust-buf-redux-0.8)
+        ("rust-clippy" ,rust-clippy-0.0)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-hyper" ,rust-hyper-0.10)
+        ("rust-iron" ,rust-iron-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-nickel" ,rust-nickel-0.11)
+        ("rust-quick-error" ,rust-quick-error-1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rocket" ,rust-rocket-0.4)
+        ("rust-safemem" ,rust-safemem-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-tiny-http" ,rust-tiny-http-0.6)
+        ("rust-twoway" ,rust-twoway-0.1))))
+    (home-page "https://github.com/abonander/multipart")
+    (synopsis
+     "Backend-agnostic extension for file uploads in HTTP libraries for Rust")
+    (description
+     "This package provides a backend-agnostic extension for HTTP libraries
+that provides support for POST multipart/form-data requests on both client and
+server.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-mustache-0.9
   (package
     (name "rust-mustache")
