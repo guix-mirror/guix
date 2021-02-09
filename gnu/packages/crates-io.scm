@@ -15278,6 +15278,25 @@ standard printing of search results, similar to grep itself.")
      "Fast line oriented regex searching as a library.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-groupable-0.2
+  (package
+    (name "rust-groupable")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "groupable" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0msfvg8xw4bqi7y7xdkm8nvjjllznc10dnzkx8wnjr5yp119jq9j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/ryman/groupable-rs")
+    (synopsis "Easily aggregate groups of values from key-value iterators")
+    (description
+     "This package aggregates groups of values from key-value iterators.")
+    (license license:expat)))
+
 (define-public rust-gzip-header-0.3
   (package
     (name "rust-gzip-header")
