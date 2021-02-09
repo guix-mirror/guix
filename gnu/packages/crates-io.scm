@@ -34456,6 +34456,25 @@ Unicode strings.")
 I/O programming.")
     (license license:expat)))
 
+(define-public rust-sluice-0.4
+  (package
+    (inherit rust-sluice-0.5)
+    (name "rust-sluice")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sluice" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c9mbbf9c1180yrld2fnfy0d0wbl4w1a7s3dkv0knx78ngghcz8a"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-io-preview" ,rust-futures-io-preview-0.3))))))
+
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
