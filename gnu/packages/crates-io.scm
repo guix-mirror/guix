@@ -1874,6 +1874,24 @@ standard library.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-ascii-0.8
+  (package
+    (inherit rust-ascii-1)
+    (name "rust-ascii")
+    (version "0.8.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ascii" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "051gh2bgjq90s0f0i0hd9p4z4fpg5k82b570d1223jj7rhd8kglp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.4))))))
+
 (define-public rust-assert-cli-0.6
   (package
     (name "rust-assert-cli")
