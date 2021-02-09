@@ -2647,6 +2647,37 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define-public ecl-queues
   (sbcl-package->ecl-package sbcl-queues))
 
+(define-public sbcl-glsl-spec
+  (let ((commit "f04476f7da89355ae6856b33283c60ba95c6555d")
+        (revision "1"))
+    (package
+      (name "sbcl-glsl-spec")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/glsl-spec")
+               (commit commit)))
+         (file-name (git-file-name "glsl-spec" version))
+         (sha256
+          (base32 "01ipspr22fgfj3w8wq2y81lzrjc4vpfiwnr3dqhjlpzzra46am8c"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-systems '("glsl-spec" "glsl-symbols" "glsl-docs")))
+      (home-page "https://github.com/cbaggers/glsl-spec")
+      (synopsis "Common Lisp GLSL specification as a datastructure")
+      (description
+       "This package contains the specification of all functions and variables
+from GLSL as data.")
+      (license license:unlicense))))
+
+(define-public ecl-glsl-spec
+  (sbcl-package->ecl-package sbcl-glsl-spec))
+
+(define-public cl-glsl-spec
+  (sbcl-package->cl-source-package sbcl-glsl-spec))
+
 (define-public sbcl-cffi
   (package
     (name "sbcl-cffi")
