@@ -13012,7 +13012,7 @@ JSON objects.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://github.com/mgyucht/jsonnet-mode")
+    (home-page "https://github.com/tminor/jsonnet-mode")
     (synopsis "Major mode for editing jsonnet files")
     (description "This package provides syntax highlighting, indenting,
 formatting, and utility methods for jsonnet files.")
