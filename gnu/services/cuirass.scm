@@ -148,11 +148,6 @@
                         #$@(if use-substitutes? '("--use-substitutes") '())
                         #$@(if one-shot? '("--one-shot") '())
                         #$@(if fallback? '("--fallback") '())
-                        #$@(if zabbix-uri
-                               (list (string-append
-                                      "--zabbix-uri="
-                                      zabbix-uri))
-                               '())
                         #$@extra-options)
 
                   #:environment-variables
@@ -178,6 +173,11 @@
                         "--interval" #$(number->string interval)
                         #$@(if use-substitutes? '("--use-substitutes") '())
                         #$@(if fallback? '("--fallback") '())
+                        #$@(if zabbix-uri
+                               (list (string-append
+                                      "--zabbix-uri="
+                                      zabbix-uri))
+                               '())
                         #$@extra-options)
 
                   #:user #$user
