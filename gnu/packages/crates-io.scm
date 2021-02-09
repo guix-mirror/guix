@@ -25250,6 +25250,25 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
          (base32
           "0cgq08v1fvr6bs5fvy390cz830lq4fak8havdasdacxcw790s09i"))))))
 
+(define-public rust-peresil-0.3
+  (package
+    (name "rust-peresil")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "peresil" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mwyw03yqp0yqdjf4a89vn86szxaksmxvgzv1j2nw69fsmp8hn7n"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/shepmaster/peresil")
+    (synopsis "Simple and simplistic string parsing library")
+    (description
+     "This package provides a simple and simplistic string parsing library.")
+    (license license:expat)))
+
 (define-public rust-permutohedron-0.2
   (package
     (name "rust-permutohedron")
