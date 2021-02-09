@@ -33008,6 +33008,31 @@ for the serde framework.")
      "Unstable AST representation used by Serde codegen.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-ini-0.2
+  (package
+    (name "rust-serde-ini")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_ini" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f8ir1bbcdyad50aj1c53dkiwr24x6dr88f045skl1xvwa3nc8zb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-result" ,rust-result-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-void" ,rust-void-1))))
+    (home-page "https://github.com/arcnmx/serde-ini")
+    (synopsis "Windows INI file {de,}serialization")
+    (description
+     "@code{serde_ini} provides a serde @code{Serializer} and
+@code{Deserializer} for the INI format.")
+    (license license:expat)))
+
 (define-public rust-serdeconv-0.4
   (package
     (name "rust-serdeconv")
