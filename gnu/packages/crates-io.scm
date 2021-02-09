@@ -26888,6 +26888,31 @@ to write.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-quick-xml-0.12
+  (package
+    (name "rust-quick-xml")
+    (version "0.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quick-xml" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zvpwph44c5vgqapmdh50ylcdl9rpxffikcmq4fc208pn35nb00x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2))))
+    (home-page "https://github.com/tafia/quick-xml")
+    (synopsis "High performance XML reader and writer")
+    (description
+     "This package provides a high performance XML reader and writer.")
+    (license license:expat)))
+
 (define-public rust-quickcheck-0.9
   (package
     (name "rust-quickcheck")
