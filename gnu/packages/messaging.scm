@@ -963,7 +963,7 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.2.2")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -972,7 +972,7 @@ of xmpppy.")
                        (version-major+minor version)
                        "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))
+        (base32 "1v0cx8r1zr9aj17ik5apxxfpr9rv5w8p1i7hfys6wp9292gc7s25"))
        (patches (search-patches "gajim-honour-GAJIM_PLUGIN_PATH.patch"))))
     (build-system python-build-system)
     (arguments
@@ -986,6 +986,11 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; https://dev.gajim.org/gajim/gajim/-/issues/10427
+             (delete-file "test/unit/test_gui_interface.py")
+             #t))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
