@@ -15740,6 +15740,26 @@ Hash-based Message Authentication Code}.")
         ("rust-md-5" ,rust-md-5-0.8)
         ("rust-sha2" ,rust-sha2-0.8))))))
 
+(define-public rust-hmac-0.4
+  (package
+    (inherit rust-hmac-0.8)
+    (name "rust-hmac")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hmac" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0amfn9wggxapyva1i0j7wldy9chj487cxal4wldwmid078bg84vs"))))
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.4)
+        ("rust-digest" ,rust-digest-0.6)
+        ("rust-generic-array" ,rust-generic-array-0.8))))))
+
 (define-public rust-hmac-sha1-0.1
   (package
     (name "rust-hmac-sha1")
