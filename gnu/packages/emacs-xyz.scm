@@ -13235,7 +13235,7 @@ settings).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/jjzmajic/hercules.el.git")
+             (url "https://gitlab.com/jjzmajic/hercules.el")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
