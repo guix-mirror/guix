@@ -1869,8 +1869,8 @@ streams, support is included for convenient stream wrappers.")
   (sbcl-package->ecl-package sbcl-ironclad))
 
 (define-public sbcl-named-readtables
-  (let ((commit "64bd53f37a1694cfde48fc38b8f03901f6f0c05b")
-        (revision "2"))
+  (let ((commit "585a28eee8b1b1999279b48cb7e9731187e14b66")
+        (revision "3"))
     (package
       (name "sbcl-named-readtables")
       (version (git-version "0.9" revision commit))
@@ -1881,16 +1881,14 @@ streams, support is included for convenient stream wrappers.")
                (url "https://github.com/melisgl/named-readtables")
                (commit commit)))
          (sha256
-          (base32 "01l4831m7k84qvhzyx0qgdl50isr4zmp40qf6dfq2iqcaj8y4h3n"))
+          (base32 "072p5djqq9pliw9r20rmpz5r5q5yn6rhbp98vkkp7gfcnp5ppj51"))
          (file-name (git-file-name "named-readtables" version))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       ;; Tests seem to be broken.
-       `(#:tests? #f))
       (home-page "https://github.com/melisgl/named-readtables/")
       (synopsis "Library that creates a namespace for named readtables")
-      (description "Named readtables is a library that creates a namespace for
-named readtables, which is akin to package namespacing in Common Lisp.")
+      (description
+       "Named readtables is a library that creates a namespace for named
+readtables, which is akin to package namespacing in Common Lisp.")
       (license license:bsd-3))))
 
 (define-public cl-named-readtables
