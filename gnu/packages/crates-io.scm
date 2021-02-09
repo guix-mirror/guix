@@ -5610,6 +5610,31 @@ metadata}.")
 used in argon2rs' bench suite.")
     (license license:wtfpl2)))
 
+(define-public rust-cassowary-0.3
+  (package
+    (name "rust-cassowary")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cassowary" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lvanj0gsk6pc1chqrh4k5k0vi1rfbgzmsk46dwy3nmrqyw711nz"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/dylanede/cassowary-rs")
+    (synopsis
+     "Implementation of the Cassowary linear constraint solving algorithm")
+    (description
+     "This package provides a Rust implementation of the Cassowary linear
+constraint solving algorithm.
+
+The Cassowary algorithm is designed for naturally laying out user interfaces
+using linear constraints, like ``this button must line up with this text
+box''.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cast-0.2
   (package
     (name "rust-cast")
