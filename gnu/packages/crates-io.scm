@@ -21668,6 +21668,31 @@ a non-blocking way, without waiting for the connection to become fully
 established.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-ncurses-5
+  (package
+    (name "rust-ncurses")
+    (version "5.100.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ncurses" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ss1ia7skbs5x2p5lccp38qmm3xnkq7spcp8cyr4yvvz5350gnx7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/jeaye/ncurses-rs")
+    (synopsis "Thin wrapper around the @code{ncurses} TUI library")
+    (description
+     "This package provides a very thin wrapper around the @code{ncurses} TUI
+library.")
+    (license license:expat)))
+
 (define-public rust-ndarray-0.12
   (package
     (name "rust-ndarray")
