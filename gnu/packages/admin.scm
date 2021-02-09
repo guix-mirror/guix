@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
@@ -614,28 +614,14 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.4")
+    (version "2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
-             (patches (search-patches "inetutils-hurd.patch"))
              (sha256
               (base32
-               "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Fix issues with GCC 10.  Can be removed for versions > 1.9.4.
-                 (substitute* "telnetd/utility.c"
-                   (("int not42;")
-                    "extern int not42;"))
-                 (substitute* "ftpd/extern.h"
-                   (("^jmp_buf errcatch;")
-                    "extern jmp_buf errcatch;"))
-                 (substitute* "ftpd/ftpd.c"
-                   (("struct credentials cred;" all)
-                    (string-append all "\njmp_buf errcatch;")))))))
+               "0j1nb69bhg29cm4xkqqjh2ln1zqcj2lnpm92v638lpwrs11dypxl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var"
