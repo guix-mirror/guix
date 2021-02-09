@@ -17659,6 +17659,40 @@ stable toolchain.")
 Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-iron-0.6
+  (package
+    (name "rust-iron")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "iron" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s4mf8395f693nhwsr0znw3j5frzn56gzllypyl50il85p50ily6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hyper" ,rust-hyper-0.10)
+        ("rust-hyper-native-tls" ,rust-hyper-native-tls-0.3)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-1)
+        ("rust-modifier" ,rust-modifier-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-plugin" ,rust-plugin-0.2)
+        ("rust-typemap" ,rust-typemap-0.3)
+        ("rust-url" ,rust-url-1))))
+    (home-page "https://github.com/iron/iron")
+    (synopsis "Extensible, concurrency focused web development in Rust")
+    (description
+     "Iron is a high level web framework built in and for Rust.  It is highly
+concurrent and can scale horizontally on more machines behind a load balancer
+or by running more threads on a more powerful machine.  Iron avoids the
+bottlenecks encountered in highly concurrent code by avoiding shared writes
+and locking in the core framework.")
+    (license license:expat)))
+
 (define-public rust-is-executable
   (package
     (name "rust-is-executable")
