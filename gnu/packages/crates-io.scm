@@ -34026,6 +34026,31 @@ functions core functionality.")
 picking compatible shaders.")
     (license license:expat)))
 
+(define-public rust-shadow-rs-0.5
+  (package
+    (name "rust-shadow-rs")
+    (version "0.5.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shadow-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qldaq7z09s6v0qp2yfhkrhvwprnjr4my6ngmidl2xj1v0ql9ln2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-git2" ,rust-git2-0.13))))
+    (home-page "https://github.com/baoyachi/shadow-rs")
+    (synopsis "Recall properties of the build process at run time")
+    (description
+     "@code{shadow-rs} allows you to recall properties of the build process
+and environment at run time.  You can use this tool to check in production
+exactly where a binary came from and how it was built.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sharded-slab-0.1
   (package
     (name "rust-sharded-slab")
