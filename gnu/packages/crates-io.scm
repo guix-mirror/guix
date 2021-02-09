@@ -29522,6 +29522,33 @@ console applications.")
     (description "This package provides traits to implement custom Runtimes.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-runtime-tokio-0.3
+  (package
+    (name "rust-runtime-tokio")
+    (version "0.3.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "runtime-tokio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mf5fyh164i4m5rj1j45hs7dwv1k4m1xckq0apa6y4c99gwzhq3a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-runtime-raw" ,rust-runtime-raw-0.3)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://github.com/rustasync/runtime")
+    (synopsis "Tokio-based asynchronous runtime")
+    (description
+     "This package provides a Tokio-based asynchronous runtime.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rusqlite-0.24
   (package
     (name "rust-rusqlite")
