@@ -12606,7 +12606,7 @@ and supports the use of a mouse.")
 (define-public emacs-gnuplot
   (package
     (name "emacs-gnuplot")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -12615,7 +12615,7 @@ and supports the use of a mouse.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bwri3cvm2vr27kyqkrddm28fs08axnd4nm9amfgp54xp20bn4yn"))))
+        (base32 "09y177sq24gs7wwjihw59g0m4n1rv2ws9890ynxjxawv823r0fxm"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacsorphanage/gnuplot-mode")
     (synopsis "Emacs major mode for interacting with Gnuplot")
