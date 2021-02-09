@@ -2678,6 +2678,47 @@ from GLSL as data.")
 (define-public cl-glsl-spec
   (sbcl-package->cl-source-package sbcl-glsl-spec))
 
+(define-public sbcl-varjo
+  (let ((commit "9e77f30220053155d2ef8870ceba157f75e538d4")
+        (revision "1"))
+    (package
+      (name "sbcl-varjo")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/varjo")
+               (commit commit)))
+         (file-name (git-file-name "varjo" version))
+         (sha256
+          (base32 "1p9x1wj576x5d31yvls9r1avkjkyhri7kyxbjfkg9z93a1w18j9z"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("documentation-utils" ,sbcl-documentation-utils)
+         ("fn" ,sbcl-fn)
+         ("glsl-spec" ,sbcl-glsl-spec)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("parse-float" ,sbcl-parse-float)
+         ("vas-string-metrics" ,sbcl-vas-string-metrics)))
+      (home-page "https://github.com/cbaggers/varjo")
+      (synopsis "Lisp to GLSL Language Translator")
+      (description
+       "Varjo is a Lisp to GLSL compiler.  Vari is the dialect of lisp Varjo
+compiles.  It aims to be as close to Common Lisp as possible, but naturally it
+is statically typed so there are differences.")
+      (license license:bsd-2))))
+
+(define-public ecl-varjo
+  (sbcl-package->ecl-package sbcl-varjo))
+
+(define-public cl-varjo
+  (sbcl-package->cl-source-package sbcl-varjo))
+
 (define-public sbcl-cffi
   (package
     (name "sbcl-cffi")
