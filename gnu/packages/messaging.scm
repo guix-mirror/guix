@@ -1122,7 +1122,7 @@ multi-client end-to-end encryption.")
 (define-public gajim-openpgp
   (package
     (name "gajim-openpgp")
-    (version "1.2.14")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1131,7 +1131,7 @@ multi-client end-to-end encryption.")
          "https://ftp.gajim.org/plugins_releases/openpgp_"
          version ".zip"))
        (sha256
-        (base32 "0wdjpf1i4pvl4ha4plfpywwi9aw5n2mhrpv8mmbidpawxqfbd94b"))))
+        (base32 "0fzvvrap1hmj4rbrcjs6cs5c9l9c0795bgw9vxxxk915n6j91m23"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1146,7 +1146,8 @@ multi-client end-to-end encryption.")
            #t))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
-       ("python-gnupg" ,python-gnupg)))
+       ("python-gnupg" ,python-gnupg)
+       ("python-gpg" ,python-gpg)))
     (synopsis "Gajim OpenPGP plugin")
     (description "Gajim-OpenPGP is a plugin that adds support for the OpenPGP
 Encryption to Gajim.")
