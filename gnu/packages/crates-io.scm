@@ -2152,6 +2152,24 @@ Rust.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-datagram-3
+  (package
+    (name "rust-async-datagram")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-datagram" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k4kiy67d24ay8l7xrfjpsa4zkmhxv97ddj0f16rcv61qkky3i4f"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rustasync/async-datagram")
+    (synopsis "Async datagram traits")
+    (description "This package provides asynchronous datagram traits.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-dup-1
   (package
     (name "rust-async-dup")
