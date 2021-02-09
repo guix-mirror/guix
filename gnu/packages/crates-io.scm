@@ -44719,6 +44719,28 @@ formatters with per-field documentation generated for each structure.
       "This package provides a CMSIS-SVD file parser")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-sxd-document-0.3
+  (package
+    (name "rust-sxd-document")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sxd-document" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y10shqmy9xb73g403rg1108wsagny9d8jrcm081pbwzpqvjzn4l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-peresil" ,rust-peresil-0.3)
+        ("rust-typed-arena" ,rust-typed-arena-1))))
+    (home-page "https://github.com/shepmaster/sxd-document")
+    (synopsis "Rust XML DOM library")
+    (description "This package provides a Rust XML DOM library.")
+    (license license:expat)))
+
 (define-public rust-inflections-1
   (package
     (name "rust-inflections")
