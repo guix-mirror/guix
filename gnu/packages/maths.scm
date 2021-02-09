@@ -3504,7 +3504,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.12.2")
+    (version "21.01.0")
     (source
      (origin
        (method git-fetch)
@@ -3513,13 +3513,12 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rxnxk7yanb9ac5pxbii6k7gg3b09pbp9rmwvsvgpbrk17mg79r9"))))
+        (base32 "1bnv9410xmk73adqi4r6w0qgbqk7qig0vr5219839c09xagyyd12"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libomp" ,libomp)
-       ("wxwidgets" ,wxwidgets)
+     `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
        ;; Runtime support.
        ("adwaita-icon-theme" ,adwaita-icon-theme)
