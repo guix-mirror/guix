@@ -13246,9 +13246,9 @@ settings).")
     (home-page "https://gitlab.com/jjzmajic/hercules.el")
     (synopsis "Call a chain of related commands without repeated prefix keys")
     (description
-     "This package provides sticky-key-like functionality to obviate the
-need for repeated prefix-key sequences, and can reuse existing keymaps. The
-list of commands is displayed in a handy popup.")
+     "This package provides sticky-key-like functionality to obviate the need
+for repeated prefix-key sequences, and can reuse existing keymaps.  The list
+of commands is displayed in a handy popup.")
     (license license:gpl3+)))
 
 (define-public emacs-ws-butler
