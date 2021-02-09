@@ -21916,6 +21916,35 @@ general elements and for numerics.")
     (description "This package provides FFI bindings for the Android NDK.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-neso-0.5
+  (package
+    (name "rust-neso")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "neso" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j78iyrv3r46n7jdayvgwarpq9iaikc7yhqqvdii226bzgg32g3b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-console-error-panic-hook" ,rust-console-error-panic-hook-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://gitlab.com/jeffrey-xiao/neso-rs")
+    (synopsis "Nintendo Entertainment System (NES) emulator")
+    (description
+     "NES Oxidized (NESO) is a Nintendo Entertainment System emulator written
+in Rust that can compile to WebAssembly.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-net2-0.2
   (package
     (name "rust-net2")
