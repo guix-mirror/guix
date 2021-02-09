@@ -10792,6 +10792,29 @@ waiting for them to complete.  Threads are allowed to borrow local variables
 from the main thread.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-easycurses-0.12
+  (package
+    (name "rust-easycurses")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "easycurses" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10cp60lrhn1k0vg97jgzqbk03x4hmhrgxbz9m3gcmzhzbpn88m2a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pancurses" ,rust-pancurses-0.16))))
+    (home-page "https://github.com/Lokathor/easycurses-rs")
+    (synopsis "Work with @code{curses} easily")
+    (description
+     "This package provides a crate that makes working with @code{curses}
+easy.")
+    (license (list license:unlicense license:zlib))))
+
 (define-public rust-eax-0.3
   (package
     (name "rust-eax")
