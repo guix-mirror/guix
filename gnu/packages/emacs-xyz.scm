@@ -13278,20 +13278,24 @@ characters from end of lines.")
     (license license:gpl3+)))
 
 (define-public emacs-openwith
-  (let ((changeset "aeb78782ec87680ea9f082a3f20a3675b3770cf9")
-        (revision "0"))
+  ;; There is no release tag. Version is extracted from main file.
+  (let ((version "20120531")
+        (revision "0")
+        (commit "5fe01dee520d24c839ad5ee18822667457d9f352"))
     (package
       (name "emacs-openwith")
-      (home-page "https://bitbucket.org/jpkotta/openwith")
-      (version (git-version "0.0.1" revision changeset))
-      (source (origin
-                (method hg-fetch)
-                (uri (hg-reference (url home-page) (changeset changeset)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1wl6gnxsyhaad4cl9bxjc0qbc5jzvlwbwjbajs0n1s6qr07d6r01"))))
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/garberw/openwith")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1scbawhlzmj5nhix779rlqf462g37q84vpq205qhg4qyscvfx6bi"))))
       (build-system emacs-build-system)
+      (home-page "https://github.com/garberw/openwith")
       (synopsis "Open external applications for files with Emacs")
       (description
        "This package enables you to associate file name patterns with external
