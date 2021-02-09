@@ -21035,6 +21035,26 @@ drop-in allocator.")
 file's MIME type by its extension.")
     (license license:expat)))
 
+(define-public rust-mime-guess-1
+  (package
+    (inherit rust-mime-guess-2)
+    (name "rust-mime-guess")
+    (version "1.8.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mime_guess" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18qcd5aa3363mb742y7lf39j7ha88pkzbv9ff2qidlsdxsjjjs91"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-mime" ,rust-mime-0.2)
+        ("rust-phf" ,rust-phf-0.7)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.7)
+        ("rust-unicase" ,rust-unicase-1))))))
+
 (define-public rust-miniz-oxide-0.3
   (package
     (name "rust-miniz-oxide")
