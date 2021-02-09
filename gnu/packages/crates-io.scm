@@ -31896,6 +31896,29 @@ macOS and iOS.")
          (base32
           "18vhypw6zgccnrlm5ps1pwa0khz7ry927iznpr88b87cagr1v2iq"))))))
 
+(define-public rust-send-wrapper-0.4
+  (package
+    (name "rust-send-wrapper")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "send_wrapper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l7s28vfnwdbjyrrk3lx81jy4f0dcrv4iwyah2wj6vndxhqxaf7n"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/thk1/send_wrapper")
+    (synopsis "Wrapper moving around non-@code{Send} types between threads")
+    (description
+     "This Rust library implements a wrapper type called @code{SendWrapper}
+which allows you to move around non-@code{Send} types between threads, as long
+as you access the contained value only from within the original thread.  You
+also have to make sure that the wrapper is dropped from within the original
+thread.  If any of these constraints is violated, a panic occurs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sequoia-openpgp-0.9
   (package
     (name "rust-sequoia-openpgp")
