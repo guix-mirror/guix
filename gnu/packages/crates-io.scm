@@ -30127,6 +30127,32 @@ password hashing function.")
      "This package provides a sys crate for the rust_hawktracer library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustbox-0.11
+  (package
+    (name "rust-rustbox")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustbox" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cahyxncijdwvy9kw87ahizpfbdq76hf333y4nrhbxzssajhdzcf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.2)
+        ("rust-gag" ,rust-gag-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.1)
+        ("rust-termbox-sys" ,rust-termbox-sys-0.2))))
+    (home-page "https://github.com/gchp/rustbox")
+    (synopsis "Rust implementation of the @code{termbox} library")
+    (description
+     "This package provides a Rust implementation of the @code{termbox}
+library.")
+    (license license:expat)))
+
 (define-public rust-rustc-ap-arena-654
   (package
     (name "rust-rustc-ap-arena")
