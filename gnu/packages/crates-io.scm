@@ -13804,6 +13804,25 @@ timeouts and delays with futures.")
        (("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
         ("rust-pin-utils" ,rust-pin-utils-0.1))))))
 
+(define-public rust-futures-timer-0.3
+  (package
+    (inherit rust-futures-timer-3)
+    (name "rust-futures-timer")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-timer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0l35r7nm8p43j0adkhybnwxzbjiqy0b00kgccjy3l513m9abb7lg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-pin-utils" ,rust-pin-utils-0.1))))))
+
 (define-public rust-futures-timer-0.1
   (package
     (inherit rust-futures-timer-1)
