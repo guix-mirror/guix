@@ -35,7 +35,7 @@
 ;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
-;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -2875,14 +2875,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.7.0")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0ymqxzpwk7mr77w0dnnv7dj63d46q7cl1l4vj9llgn8jfaj64ypq"))))
+          "1nv2kj1k42a1b20ws8sdzlxk3wh1qz6pg5mxp75433b3c7lxksn0"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
