@@ -15740,6 +15740,29 @@ Hash-based Message Authentication Code}.")
         ("rust-md-5" ,rust-md-5-0.8)
         ("rust-sha2" ,rust-sha2-0.8))))))
 
+(define-public rust-hmac-sha1-0.1
+  (package
+    (name "rust-hmac-sha1")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hmac-sha1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08k7aylc0v8x3abmxn3h73dkad3anfq2i94xk2mjrf4linnkycz1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-sha1" ,rust-sha1-0.2))))
+    (home-page "https://github.com/pantsman0/rust-hmac-sha1")
+    (synopsis "Minimal implementation of HMAC-SHA1 in Rust")
+    (description
+     "This package is a pure Rust implementation of the Hash-based Message
+Authentication Code Algoritm (HMAC) for SHA1.")
+    (license license:bsd-3)))
+
 (define-public rust-hostname-0.3
   (package
     (name "rust-hostname")
