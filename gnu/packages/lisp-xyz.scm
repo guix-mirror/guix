@@ -1759,6 +1759,38 @@ Common Lisp.")
 (define-public ecl-cl-fad
   (sbcl-package->ecl-package sbcl-cl-fad))
 
+(define-public sbcl-fn
+  (let ((commit "8d8587d03a7b5e26b306fc90018e385d9e5acc2c")
+        (revision "1"))
+    (package
+      (name "sbcl-fn")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/fn")
+               (commit commit)))
+         (file-name (git-file-name "fn" version))
+         (sha256
+          (base32 "0yyp9z6iwx476whz0n1rpjznjyqqhlylhzwpgg5xx92lxmskl752"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://github.com/cbaggers/fn")
+      (synopsis "Macros for lambda brevity")
+      (description
+       "This is a Common Lisp library providing lambda shorthand macros aiming
+to be used in cases where the word @emph{lambda} and the arguments are longer
+than the body of the lambda.")
+      (license license:public-domain))))
+
+(define-public ecl-fn
+  (sbcl-package->ecl-package sbcl-fn))
+
+(define-public cl-fn
+  (sbcl-package->cl-source-package sbcl-fn))
+
 (define-public sbcl-rt
   (let ((commit "a6a7503a0b47953bc7579c90f02a6dba1f6e4c5a")
         (revision "1"))
