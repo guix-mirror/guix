@@ -13966,6 +13966,29 @@ futures-rs library.")
 derived from an internal hasher used in FireFox and Rustc.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-gag-0.1
+  (package
+    (name "rust-gag")
+    (version "0.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gag" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d874gmyhyqbb78k6mkk9p0sd21n5vwd5w88m2nmzp3m6bsvkh4c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/Stebalien/gag-rs")
+    (synopsis "Gag, redirect, or hold stdout/stderr output")
+    (description
+     "This packages gags, redirects, or holds stdout/stderr output.")
+    (license license:expat)))
+
 (define-public rust-gcc-0.3
   (package
     (name "rust-gcc")
