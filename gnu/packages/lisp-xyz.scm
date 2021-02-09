@@ -3988,8 +3988,8 @@ addition, removal, and random selection.")
   (sbcl-package->ecl-package sbcl-map-set))
 
 (define-public sbcl-quri
-  (let ((commit "3a2ad208d71506b6243c0a4cf6a116f8ecf5ad2c")
-        (revision "3"))
+  (let ((commit "d7f2720568146c6674187f625f115925e6364a7f")
+        (revision "4"))
     (package
       (name "sbcl-quri")
       (version (git-version "0.1.0" revision commit))
@@ -4001,12 +4001,14 @@ addition, removal, and random selection.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1n0gs5xib42ccpai17f5xj9krmn9mwzkhlwdh59bka2sma64l829"))))
+          (base32 "0yrcvz5ksfr7x8yx741vp65il0fxxaskppq3iyk9bq895s1jn37w"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       ;; Tests fail with: Component QURI-ASD::QURI-TEST not found,
-       ;; required by #<SYSTEM "quri">. Why?
-       '(#:tests? #f))
+       ;; Test system must be loaded before, otherwise tests fail with:
+       ;; Component QURI-ASD::QURI-TEST not found, required by #<SYSTEM
+       ;; "quri">.
+       '(#:asd-systems '("quri-test"
+                         "quri")))
       (native-inputs `(("sbcl-prove" ,sbcl-prove)))
       (inputs `(("sbcl-babel" ,sbcl-babel)
                 ("sbcl-split-sequence" ,sbcl-split-sequence)
