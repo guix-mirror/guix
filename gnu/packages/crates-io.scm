@@ -44128,6 +44128,48 @@ result.")
         ("rust-log" ,rust-log-0.4)
         ("rust-try-lock" ,rust-try-lock-0.1))))))
 
+(define-public rust-warp-0.2
+  (package
+    (name "rust-warp")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "warp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01wl8kv5hh1dd7gcwdrmn9xfs7jjsh9yc8xa06ph8yf9akgyc6zl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-compression" ,rust-async-compression-0.3)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-headers" ,rust-headers-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-hyper" ,rust-hyper-0.13)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-multipart" ,rust-multipart-0.17)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-scoped-tls" ,rust-scoped-tls-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.14)
+        ("rust-tokio-tungstenite" ,rust-tokio-tungstenite-0.11)
+        ("rust-tower-service" ,rust-tower-service-0.3)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-futures" ,rust-tracing-futures-0.2)
+        ("rust-urlencoding" ,rust-urlencoding-1))))
+    (home-page "https://github.com/seanmonstar/warp")
+    (synopsis "Composable web server framework")
+    (description "Warp is a composable, web server framework.")
+    (license license:expat)))
+
 (define-public rust-wasi-0.9
   (package
     (name "rust-wasi")
