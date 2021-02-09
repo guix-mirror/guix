@@ -14140,6 +14140,30 @@ derived from an internal hasher used in FireFox and Rustc.")
      "This packages gags, redirects, or holds stdout/stderr output.")
     (license license:expat)))
 
+(define-public rust-galil-seiferas-0.1
+  (package
+    (name "rust-galil-seiferas")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "galil-seiferas" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nhxks4qv1q6wrclxxbdch8k9h66i5ccdy3zn3913ym3zmfc4jkr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-defmac" ,rust-defmac-0.1)
+        ("rust-unchecked-index" ,rust-unchecked-index-0.2))))
+    (home-page "https://github.com/bluss/galil-seiferas")
+    (synopsis "General string search in constant space, linear time")
+    (description
+     "This package provides general string search in constant space, linear
+time, for nonorderable alphabets.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gcc-0.3
   (package
     (name "rust-gcc")
