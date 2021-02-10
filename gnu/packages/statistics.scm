@@ -653,14 +653,14 @@ distributions beyond the exponential family.")
 (define-public r-nnet
   (package
     (name "r-nnet")
-    (version "7.3-14")
+    (version "7.3-15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nnet" version))
        (sha256
         (base32
-         "1bzl62p5awva5kxcncs6lrdrkqp9ljd993zia731ckfpcjbrw6sx"))))
+         "068yxmx165r9gk4s267iczrzwbwbbg3a8qi0cgncqn78892yvsdc"))))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
     (synopsis "Feed-forward neural networks and multinomial log-linear models")
