@@ -26650,3 +26650,36 @@ HarfBuzz library and the bidirectional algorithm in the Fribidi library.  This
 is a low-level utility package mainly for graphic devices that expands upon
 the font tool-set provided by the @code{systemfonts} package.")
     (license license:expat)))
+
+(define-public r-ragg
+  (package
+    (name "r-ragg")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ragg" version))
+       (sha256
+        (base32
+         "0443dhfi7bjfpap041vrnslw3ql3vpsxx18raz2w9nfdb7id8lsc"))))
+    (properties `((upstream-name . "ragg")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-systemfonts" ,r-systemfonts)
+       ("r-textshaping" ,r-textshaping)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://ragg.r-lib.org")
+    (synopsis "Graphic devices based on AGG")
+    (description
+     "Anti-Grain Geometry (AGG) is a high-quality and high-performance 2D
+drawing library.  The ragg package provides a set of graphic devices based on
+AGG to use as alternative to the raster devices provided through the
+@code{grDevices} package.")
+    (license license:expat)))
