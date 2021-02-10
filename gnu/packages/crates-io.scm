@@ -43248,6 +43248,25 @@ panic-free alternative to @code{core::fmt}.")
     (description "This package provides @code{μfmt}'s @code{uWrite} trait.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-umask-1
+  (package
+    (name "rust-umask")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "umask" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ipyyv82lpy5xpqzmq3ra0d61vsd3bfh6b06c9w8zln41vvznblq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Canop/umask")
+    (synopsis "Utility to deal with unix access mode")
+    (description
+     "This package provides an utility to deal with Unix access mode.")
+    (license license:expat)))
+
 (define-public rust-unchecked-index-0.2
   (package
     (name "rust-unchecked-index")
