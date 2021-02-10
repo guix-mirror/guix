@@ -15258,14 +15258,14 @@ generalized linear models, and quantile regression.")
 (define-public r-arsenal
   (package
     (name "r-arsenal")
-    (version "3.5.0")
+    (version "3.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arsenal" version))
        (sha256
         (base32
-         "0avi434wkk3w7axd89a4jwsbb11fi0239mkkla6zasnjwbqgjim0"))))
+         "13ql3rb79a764ppsc1sqi8glzzkw79la0j2ahzbxgz7cz879sazy"))))
     (properties `((upstream-name . "arsenal")))
     (build-system r-build-system)
     (propagated-inputs `(("r-knitr" ,r-knitr)))
