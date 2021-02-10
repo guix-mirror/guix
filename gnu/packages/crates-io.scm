@@ -30444,6 +30444,39 @@ MessagePack format.")
     (description "This crate provides Serde bindings for RMP.")
     (license license:expat)))
 
+(define-public rust-rocket-http-0.4
+  (package
+    (name "rust-rocket-http")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rocket_http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0msjjclqcgh8kpa54b4kv6zbybambc9kmkfm1q5adiq3fbg8gl59"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cookie" ,rust-cookie-0.11)
+        ("rust-hyper" ,rust-hyper-0.10)
+        ("rust-hyper-sync-rustls" ,rust-hyper-sync-rustls-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-pear" ,rust-pear-0.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-1)
+        ("rust-rustls" ,rust-rustls-0.14)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-state" ,rust-state-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.1))))
+    (home-page "https://rocket.rs")
+    (synopsis "HTTP requests, responses and headers tooling for Rocket")
+    (description
+     "This package provides types, traits, and parsers for HTTP requests,
+responses, and headers for the Rocket web framework.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-romio-0.3
   (package
     (name "rust-romio")
