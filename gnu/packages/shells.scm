@@ -1380,6 +1380,37 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-to-sqlite-0.26
+  (package
+    (name "rust-nu-plugin-to-sqlite")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_to_sqlite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05z4cwaq55rfwdvr3vr8kqdyqbzpkbrdpz1mp4d9fa9b273xs393"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hex" ,rust-hex-0.4)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rusqlite" ,rust-rusqlite-0.24)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Converter plugin to the bson format for Nushell")
+    (description
+     "This package provides a converter plugin to the bson format for
+Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-tree-0.26
   (package
     (name "rust-nu-plugin-tree")
