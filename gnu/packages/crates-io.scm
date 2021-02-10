@@ -35734,6 +35734,32 @@ shell.")
        (sha256
         (base32 "0jnrw3f174974fsi2hg48l0klpy24767ib28w0xcvi2ll5axxb1r"))))))
 
+(define-public rust-shellexpand-2
+  (package
+    (name "rust-shellexpand")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shellexpand" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a981ynym0hipnvkd93ihszdszjqs0cslj5ilzsdv19d3f1vggc3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dirs-next" ,rust-dirs-next-2))))
+    (home-page "https://github.com/netvl/shellexpand")
+    (synopsis "Shell-like expansions in strings")
+    (description
+     "@code{shellexpand} is a single dependency library which allows one to
+perform shell-like expansions in strings, that is, to expand variables like
+@samp{$A} or @samp{$@{B@}} into their values inside some context and to expand
+@samp{~} in the beginning of a string into the home directory (again, inside
+some context).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-shlex-0.1
   (package
     (name "rust-shlex")
