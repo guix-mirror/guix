@@ -992,6 +992,25 @@ acceleration.")
 AES (Rijndael) block ciphers.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aes-soft-0.3
+  (package
+    (inherit rust-aes-soft-0.4)
+    (name "rust-aes-soft")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes-soft" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "039si7yjp0wcd750sgq52c60sh2ikaxwd7rq7g0ba7ws7ypfgmyg"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-block-cipher-trait" ,rust-block-cipher-trait-0.6)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2))))))
+
 (define-public rust-aesni-0.7
   (package
     (name "rust-aesni")
