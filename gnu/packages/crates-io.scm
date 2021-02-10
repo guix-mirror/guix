@@ -26687,6 +26687,24 @@ applications.")
 for constructing a Message Authentication Code (MAC).")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-polyval-0.3
+  (package
+    (inherit rust-polyval-0.4)
+    (name "rust-polyval")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polyval" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256 (base32 "04m2wf4pk6gglvl12fj7ylc2iqhxmzqj46rds6zy73cpk0a39hvy"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-universal-hash" ,rust-universal-hash-0.3)
+        ("rust-zeroize" ,rust-zeroize-1))))))
+
 (define-public rust-pom-3
   (package
     (name "rust-pom")
