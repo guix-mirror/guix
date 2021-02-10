@@ -67,6 +67,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
@@ -13898,10 +13899,10 @@ standard library.")
   (sbcl-package->cl-source-package sbcl-shlex))
 
 (define-public sbcl-cmd
-  (let ((commit "e6a54dbf660bf229c80abc124fa47e7bb6d20c93"))
+  (let ((commit "bc5a3bee8f22917126e4c3d05b33f766e562dbd8"))
     (package
       (name "sbcl-cmd")
-      (version (git-version "0.0.1" "2" commit))
+      (version (git-version "0.0.1" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -13910,11 +13911,12 @@ standard library.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1i0l8ci4cnkx84q4afmpkq51nxah24fqpi6k9kgjbxz6li3zp8hy"))))
+          (base32 "1sjlabrknw1kjb2y89vssjhcqh3slgly8wnr3152zgis8lsj2yc7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("coreutils" ,coreutils)
+         ("procps" ,procps)
          ("serapeum" ,sbcl-serapeum)
          ("shlex" ,sbcl-shlex)
          ("trivia" ,sbcl-trivia)))
@@ -13923,10 +13925,21 @@ standard library.")
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((bin (string-append (assoc-ref inputs "coreutils") "/bin")))
+               (let ((bin (string-append (assoc-ref inputs "coreutils") "/bin"))
+                     (ps-bin (string-append (assoc-ref inputs "procps") "/bin")))
                  (substitute* "cmd.lisp"
-                   (("\"env\"") (format #f "\"~a/env\"" bin))
-                   (("\"pwd\"") (format #f "\"~a/pwd\"" bin)))))))))
+                   (("\\(def \\+env\\+ \"env\"\\)")
+                    (format #f "(def +env+ \"~a/env\")" bin))
+                   (("\\(def \\+kill\\+ \"kill\"\\)")
+                    (format #f "(def +kill+ \"~a/kill\")" bin))
+                   (("\\(def \\+ps\\+ \"ps\"\\)")
+                    (format #f "(def +ps+ \"~a/ps\")" ps-bin))
+                   (("\\(def \\+pwd\\+ \"pwd\"\\)")
+                    (format #f "(def +pwd+ \"~a/pwd\")" bin))
+                   (("\\(def \\+sh\\+ \"/bin/sh\"\\)")
+                    (format #f "(def +sh+ \"~a\")" (which "sh")))
+                   (("\\(def \\+tr\\+ \"tr\"\\)")
+                    (format #f "(def +tr+ \"~a/tr\")" bin)))))))))
       (home-page "https://github.com/ruricolist/cmd")
       (synopsis "Conveniently run external programs from Common Lisp")
       (description
