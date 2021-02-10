@@ -36726,8 +36726,32 @@ words, like Python's shlex.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-signal-hook-0.3
+  (package
+    (name "rust-signal-hook")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "signal-hook" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h628smm9y22qi3szpkg3xpj31hyvs4ps29nf8cnfvy6w0zmw3vq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1))))
+    (home-page "https://github.com/vorner/signal-hook")
+    (synopsis "Unix signal handling")
+    (description "This package provides Unix signal handling.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-signal-hook-0.1
   (package
+    (inherit rust-signal-hook-0.3)
     (name "rust-signal-hook")
     (version "0.1.16")
     (source
@@ -36739,7 +36763,6 @@ words, like Python's shlex.")
        (sha256
         (base32
          "1v85mgs4dbgw0765b9nx0jd8lamv55425aawjbhxz6cb870hhib0"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
@@ -36750,11 +36773,7 @@ words, like Python's shlex.")
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
        #:cargo-development-inputs
        (("rust-tokio" ,rust-tokio-0.1)
-        ("rust-version-sync" ,rust-version-sync-0.8))))
-    (home-page "https://github.com/vorner/signal-hook")
-    (synopsis "Unix signal handling")
-    (description "Unix signal handling.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-version-sync" ,rust-version-sync-0.8))))))
 
 (define-public rust-signal-hook-registry-1
   (package
