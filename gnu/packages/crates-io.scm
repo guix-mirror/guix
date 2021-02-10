@@ -15186,6 +15186,30 @@ API library @code{gdi32}.")
      "This package provides a package for generating 3D meshes/")
     (license license:asl2.0)))
 
+(define-public rust-geo-0.4
+  (package
+    (name "rust-geo")
+    (version "0.4.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "geo" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10mvrmi5xgpil6hxl6h3b0w4lvg7mxy04n3388ah0gwhcnc1whh3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://github.com/georust/geo")
+    (synopsis "Geospatial primitives and algorithms")
+    (description
+     "This package provides geospatial primitives and algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-getch-0.2
   (package
     (name "rust-getch")
