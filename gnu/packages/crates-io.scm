@@ -4486,28 +4486,41 @@ behave like a set of bitflags.")
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))))
 
+(define-public rust-bitstream-io-1
+  (package
+    (name "rust-bitstream-io")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitstream-io" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01pyk3pipwcbaghi7f0lmp3izjl902cv21yf4b1v5nipkrrrqlq3"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/tuffy/bitstream-io")
+    (synopsis "Read/write un-aligned values from big or little-endian streams")
+    (description
+     "This package is a library for reading/writing un-aligned values from/to
+streams in big-endian and little-endian formats.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bitstream-io-0.8
   (package
+    (inherit rust-bitstream-io-1)
     (name "rust-bitstream-io")
     (version "0.8.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "bitstream-io" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "00a6wy54s1dmadm5xz8k2cbsd7ixvm48mlc45bk0fdy0pbra6jk1"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page
-      "https://github.com/tuffy/bitstream-io")
-    (synopsis
-      "Library for reading/writing un-aligned values from/to streams in big-endian and little-endian formats.")
-    (description
-      "Library for reading/writing un-aligned values from/to streams in big-endian and little-endian formats.")
-    (license (list license:expat license:asl2.0))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitstream-io" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00a6wy54s1dmadm5xz8k2cbsd7ixvm48mlc45bk0fdy0pbra6jk1"))))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-bitvec-0.19
   (package
