@@ -1381,6 +1381,32 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-selector-0.26
+  (package
+    (name "rust-nu-plugin-selector")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_selector" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vcwa4g6j8w27g2m4wkk04gja2bw8s9m72v7hbcdmfncgq4cnjrw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nipper" ,rust-nipper-0.1)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Web scraping using CSS selector")
+    (description
+     "This package provides web scraping using CSS selector.")
+    (license expat)))
+
 (define-public rust-nu-plugin-start-0.26
   (package
     (name "rust-nu-plugin-start")
