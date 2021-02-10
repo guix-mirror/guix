@@ -39460,6 +39460,25 @@ closures after a delay or at a given timestamp.")
      "A 100% safe crate of vec-like types.")
     (license (list license:zlib license:asl2.0 license:expat))))
 
+(define-public rust-tinyvec-macros-0.1
+  (package
+    (name "rust-tinyvec-macros")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tinyvec_macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p5zvgbas5nh403fbxica819mf3g83n8g2hzpfazfr56w6klv9yd"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/Soveu/tinyvec_macros")
+    (synopsis "Some macros for tiny containers")
+    (description "This package provides a few useful macros for tiny
+containers.")
+    (license (list license:expat license:asl2.0 license:zlib))))
+
 (define-public rust-titlecase-1
   (package
     (name "rust-titlecase")
