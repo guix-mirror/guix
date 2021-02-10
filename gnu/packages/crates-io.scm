@@ -39437,8 +39437,33 @@ closures after a delay or at a given timestamp.")
      "Simple, lightweight template engine.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tinyvec-1
+  (package
+    (name "rust-tinyvec")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tinyvec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08qhf0a9vxf85bj1hd38i8qzwiwm6v4vvwd11k7c728f59bwlz1i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-tinyvec-macros" ,rust-tinyvec-macros-0.1))))
+    (home-page "https://crates.io/crates/tinyvec")
+    (synopsis "Safe vec-like data structures")
+    (description
+     "@code{tinyvec} provides 100% safe vec-like data structures.")
+    (license
+     (list license:zlib license:asl2.0 license:expat))))
+
 (define-public rust-tinyvec-0.3
   (package
+    (inherit rust-tinyvec-1)
     (name "rust-tinyvec")
     (version "0.3.4")
     (source
@@ -39450,15 +39475,9 @@ closures after a delay or at a given timestamp.")
        (sha256
         (base32
          "05vijqpckjsnbv07rwadwcny4pkcq7z1wi9ikl7p3ib7s9qy1313"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-criterion" ,rust-criterion-0.3))))
-    (home-page "https://crates.io/crates/tinyvec")
-    (synopsis "Tiny vec-like types for Rust")
-    (description
-     "A 100% safe crate of vec-like types.")
-    (license (list license:zlib license:asl2.0 license:expat))))
+       (("rust-criterion" ,rust-criterion-0.3))))))
 
 (define-public rust-tinyvec-macros-0.1
   (package
