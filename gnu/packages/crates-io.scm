@@ -24421,26 +24421,25 @@ directly.")
 (define-public rust-num-traits-0.2
   (package
     (name "rust-num-traits")
-    (version "0.2.12")
+    (version "0.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "num-traits" version))
-       (file-name
-        (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "04fnzwlnn6fcy09jjbi9l7bj5dvg657x5c2sjgwfb3pl0z67n9mc"))))
+        (base32 "144j176s2p76azy2ngk2vkdzgwdc0bc8c93jhki8c9fsbknb2r4s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1)
         ("rust-libm" ,rust-libm-0.2))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
-    (description "Numeric traits for generic mathematics.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (description "This package provides numeric traits for generic
+mathematics.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-num-traits-0.1
   (package
