@@ -3633,6 +3633,24 @@ c6e7d37.  However, this package works only up to 128 bytes.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-base64-0.6
+  (package
+    (inherit rust-base64-0.13)
+    (name "rust-base64")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ja3c7wlzp3sb14f2ksp27x1mk8ycgh1391nnd7fvw01fnc4yhwn"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-safemem" ,rust-safemem-0.2))))))
+
 (define-public rust-base-x-0.2
   (package
     (name "rust-base-x")
