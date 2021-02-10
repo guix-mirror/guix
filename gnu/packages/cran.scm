@@ -11071,13 +11071,13 @@ isosurfaces.")
 (define-public r-ks
   (package
     (name "r-ks")
-    (version "1.11.7")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ks" version))
        (sha256
-        (base32 "1f6jvxy0hmngyvnvrknzbmhl42njk0vqyycvydm4qnp8cqirqvba"))))
+        (base32 "1sff6rlpq64lqyvwgral9zbcan30wpgmfb26hw9y6wzypd9gxbz6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fnn" ,r-fnn)
@@ -11087,7 +11087,8 @@ isosurfaces.")
        ("r-mclust" ,r-mclust)
        ("r-mgcv" ,r-mgcv)
        ("r-multicool" ,r-multicool)
-       ("r-mvtnorm" ,r-mvtnorm)))
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plot3d" ,r-plot3d)))
     (home-page "http://www.mvstat.net/tduong/")
     (synopsis "Kernel smoothing")
     (description
