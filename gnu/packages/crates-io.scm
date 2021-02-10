@@ -39280,6 +39280,23 @@ writing colored text to a terminal.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-termcolor-0.3
+  (package
+    (inherit rust-termcolor-1)
+    (name "rust-termcolor")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "termcolor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10sg0w2xhwz5zn84xnqrba5mc1jcc9dfa0xg25ph3gs1mmz5ii5d"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-wincolor" ,rust-wincolor-0.1))))))
+
 (define-public rust-terminal-size-0.1
   (package
     (name "rust-terminal-size")
