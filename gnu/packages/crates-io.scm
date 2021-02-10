@@ -32629,6 +32629,24 @@ Pwrite traits from the scroll crate.")
        (("rust-ring" ,rust-ring-0.14)
         ("rust-untrusted" ,rust-untrusted-0.6))))))
 
+(define-public rust-sct-0.4
+  (package
+    (inherit rust-sct-0.6)
+    (name "rust-sct")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sct" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nkl03nqfczz0784sg3bf2j08qq350yh9063f4m0dpgawvwn33yb"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ring" ,rust-ring-0.13)
+        ("rust-untrusted" ,rust-untrusted-0.6))))))
+
 (define-public rust-sct-0.3
   (package/inherit rust-sct-0.6
     (name "rust-sct")
