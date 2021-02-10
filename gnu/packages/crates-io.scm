@@ -31750,6 +31750,25 @@ the file-system during development.")
      "This package provides a sys crate for the rust_hawktracer library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rust-ini-0.13
+  (package
+    (name "rust-rust-ini")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-ini" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hifnbgaz01zja5995chy6vjacbif2m76nlxsisw7y1pxx4c2liy"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/zonyitoo/rust-ini")
+    (synopsis "INI configuration file parsing library in Rust")
+    (description
+     "This package is an INI configuration file parsing library in Rust.")
+    (license license:expat)))
+
 (define-public rust-rustbox-0.11
   (package
     (name "rust-rustbox")
