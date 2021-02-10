@@ -313,8 +313,71 @@ protocols.")
      "This package provides proc macros for the Rust actor framework Actix.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-http-2
+  (package
+    (name "rust-actix-http")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-http" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x78h9lzqdhp06v1kf4dhbiqp8sc911w4lqfj5rmdbhpg3l9j8j5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix" ,rust-actix-0.10)
+        ("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-connect" ,rust-actix-connect-2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.3)
+        ("rust-actix-tls" ,rust-actix-tls-2)
+        ("rust-actix-utils" ,rust-actix-utils-2)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-brotli2" ,rust-brotli2-0.3)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-cookie" ,rust-cookie-0.14)
+        ("rust-copyless" ,rust-copyless-0.1)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-either" ,rust-either-1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-h2" ,rust-h2-0.2)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-pin-project" ,rust-pin-project-1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-time" ,rust-time-0.2))))
+    (home-page "https://actix.rs")
+    (synopsis "HTTP primitives for the Actix ecosystem")
+    (description
+     "This package provides HTTP primitives for the Actix ecosystem.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-http-1
   (package
+    (inherit rust-actix-http-2)
     (name "rust-actix-http")
     (version "1.0.1")
     (source
@@ -324,7 +387,6 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "06chrs9asbxmxzgiw5sw7ky97yrin9g88nmd6w407a6y9z668rn1"))))
-    (build-system cargo-build-system)
     ;; XXX: The crate fails to't build with with the same error as
     ;; rust-actix-connect.  Skip build for now.
     (arguments
@@ -372,12 +434,7 @@ protocols.")
         ("rust-slab" ,rust-slab-0.4)
         ("rust-time" ,rust-time-0.1))
        #:cargo-development-inputs
-       (("rust-actix-http-test" ,rust-actix-http-test-1))))
-    (home-page "https://actix.rs")
-    (synopsis "HTTP primitives for the Actix ecosystem")
-    (description
-     "This package provides HTTP primitives for the Actix ecosystem.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-actix-http-test" ,rust-actix-http-test-1))))))
 
 (define-public rust-actix-http-test-1
   (package
