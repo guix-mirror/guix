@@ -10750,6 +10750,24 @@ on Linux, the Known Folder API on Windows, and the Standard
 Directory guidelines on macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-directories-2
+  (package
+    (inherit rust-directories-3)
+    (name "rust-directories")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "071pjx760m0dccdxlhwsz9m0zl180hxwlag62bydfl54fa0pf6jm"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dirs-sys" ,rust-dirs-sys-0.3))))))
+
 (define-public rust-directories-next-1
   (package
     (inherit rust-directories-3)
