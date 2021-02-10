@@ -2859,8 +2859,28 @@ the platform-specific getters provided by winit, or another library.")
     (description "This package provides X11 library bindings for Rust.")
     (license license:cc0)))
 
+(define-public rust-y4m-0.7
+  (package
+    (name "rust-y4m")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "y4m" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bhdgb7hgx7j92nm6ij5n8wisp50j8ff66ks14jzwdw2mwhrjam7"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/image-rs/y4m")
+    (synopsis "YUV4MPEG2 (@file{.y4m}) encoder and decoder")
+    (description
+     "This package provides a YUV4MPEG2 (@file{.y4m}) encoder and decoder.")
+    (license license:expat)))
+
 (define-public rust-y4m-0.5
   (package
+    (inherit rust-y4m-0.7)
     (name "rust-y4m")
     (version "0.5.3")
     (source
@@ -2872,11 +2892,6 @@ the platform-specific getters provided by winit, or another library.")
         (sha256
          (base32
           "1933677by64y06zfgip2yq8b2dza8xnljhaksx93czq90b54kscz"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-resize" ,rust-resize-0.3))))
-    (home-page "https://github.com/image-rs/y4m")
-    (synopsis "YUV4MPEG2 (.y4m) Encoder/Decoder.")
-    (description "YUV4MPEG2 (.y4m) Encoder/Decoder.")
-    (license license:expat)))
+       (("rust-resize" ,rust-resize-0.3))))))
