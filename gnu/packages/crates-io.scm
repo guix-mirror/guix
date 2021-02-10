@@ -11571,6 +11571,29 @@ floating-point primitives to an @code{io::Write}.")
      "A library for running child processes.")
     (license license:expat)))
 
+(define-public rust-dunce-1
+  (package
+    (name "rust-dunce")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dunce" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d7f7wg83i1by16rxc1fdipi872nvkzjnmzaaggh2h8cgi51qr5j"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://gitlab.com/kornelski/dunce")
+    (synopsis "Normalize Windows paths to the most compatible format")
+    (description
+     "This crate converts Windows UNC paths to the MS-DOS-compatible format
+whenever possible, but leaves UNC paths as-is when they can't be unambiguously
+expressed in a simpler way.  This allows legacy programs to access all paths
+they can possibly access, and doesn't break any paths for UNC-aware
+programs.")
+    (license license:cc0)))
+
 (define-public rust-dyn-clone-1
   (package
     (name "rust-dyn-clone")
