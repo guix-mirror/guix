@@ -1381,6 +1381,37 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-binaryview-0.26
+  (package
+    (name "rust-nu-plugin-binaryview")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_binaryview" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ngnkpcl6gqi3rp2k666rfq35hlqhii3jlg0yfi42inxsh5mxgpf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-crossterm" ,rust-crossterm-0.18)
+        ("rust-image" ,rust-image-0.22)
+        ("rust-neso" ,rust-neso-0.5)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-pretty-hex" ,rust-pretty-hex-0.2)
+        ("rust-rawkey" ,rust-rawkey-0.1))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Binary viewer plugin for Nushell")
+    (description
+     "This package provides a binary viewer plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-chart-0.26
   (package
     (name "rust-nu-plugin-chart")
