@@ -21664,17 +21664,17 @@ machine learning, visually representing text and text analyses, and more.")
 (define-public r-topicmodels
   (package
     (name "r-topicmodels")
-    (version "0.2-11")
+    (version "0.2-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "topicmodels" version))
        (sha256
         (base32
-         "0jmp6wva99y0w40cfw7b0faylndhjam097x36ilc4vmyczcv89lw"))))
+         "1d6iizmn042b59q2y6qc82z19wq3xm0zvgkf8iqf8fdzh51kmn5g"))))
     (properties `((upstream-name . "topicmodels")))
     (build-system r-build-system)
-    (native-inputs
+    (inputs
      `(("gsl" ,gsl)))
     (propagated-inputs
      `(("r-modeltools" ,r-modeltools)
