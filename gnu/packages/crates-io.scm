@@ -17288,6 +17288,31 @@ let} expressions.")
 ignore files such as @file{.gitignore} against file paths.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-include-flate-0.1
+  (package
+    (name "rust-include-flate")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "include-flate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xd63rhr03ax1w327ws46wc9zyw5k9jsaxfy24j6wg9km3xhfqii"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-include-flate-codegen-exports" ,rust-include-flate-codegen-exports-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libflate" ,rust-libflate-0.1))))
+    (home-page "https://github.com/SOF3/include-flate")
+    (synopsis "Variant of @code{include_bytes!/include_str!} with compression")
+    (description
+     "This package provides a variant of @code{include_bytes!/include_str!}
+with compile-time deflation and runtime lazy inflation.")
+    (license license:asl2.0)))
+
 (define-public rust-include-flate-codegen-0.1
   (package
     (name "rust-include-flate-codegen")
