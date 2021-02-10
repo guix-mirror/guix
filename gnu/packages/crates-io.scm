@@ -27940,6 +27940,38 @@ overloading without macros in Rust.")
 UDP.")
     (license license:unlicense)))
 
+(define-public rust-postgres-protocol-0.3
+  (package
+    (name "rust-postgres-protocol")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "postgres-protocol" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04kkznbhwspfn0hdja3jsv37l6g5gz7a625z8yra325zamjfd1r4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.6)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.9)
+        ("rust-hmac" ,rust-hmac-0.5)
+        ("rust-md5" ,rust-md5-0.3)
+        ("rust-memchr" ,rust-memchr-1)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-sha2" ,rust-sha2-0.7)
+        ("rust-stringprep" ,rust-stringprep-0.1))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis "Low level Postgres protocol APIs")
+    (description
+     "This package provides low level Postgres protocol APIs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
