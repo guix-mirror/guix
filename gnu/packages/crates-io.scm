@@ -40323,19 +40323,17 @@ writing colored text to a terminal.")
 (define-public rust-terminal-size-0.1
   (package
     (name "rust-terminal-size")
-    (version "0.1.13")
+    (version "0.1.16")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "terminal-size" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "04qy9i0k3qkhl749xk30xga0l7w61rf4bj5zy0r44w3jijgws54s"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "terminal-size" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01i4zlv8dplx8ps328wl14xv7w1ah0ni6i3g0w1dnd07fpnqrjl6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Tests expect access to /dev/stderr
+     `(#:skip-build? #f
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-winapi" ,rust-winapi-0.3))))
