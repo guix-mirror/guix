@@ -8608,8 +8608,35 @@ criterion.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-crossbeam-0.8
+  (package
+    (name "rust-crossbeam")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "103xnwzkk1zd9kiy6f0f131ap433qfkc757wyrha5bxa7pmsc0gx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.8)
+        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.9)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.3)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8))))
+    (home-page "https://github.com/crossbeam-rs/crossbeam")
+    (synopsis "Tools for concurrent programming in Rust")
+    (description "This package provides tools for concurrent programming.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-0.7
   (package
+    (inherit rust-crossbeam-0.8)
     (name "rust-crossbeam")
     (version "0.7.3")
     (source
@@ -8621,7 +8648,6 @@ criterion.")
        (sha256
         (base32
          "13kzn2d49n2qn5q42y2dj48kyv6aln2d9smq8x9n675l3zzknck9"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
@@ -8631,11 +8657,7 @@ criterion.")
         ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.6))))
-    (home-page "https://github.com/crossbeam-rs/crossbeam")
-    (synopsis "Tools for concurrent programming")
-    (description "Tools for concurrent programming.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-channel-0.5
   (package
