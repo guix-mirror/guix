@@ -33381,8 +33381,32 @@ require unstable language features.")
      "small helper to generate version information for git packages")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-version-0.3
+  (package
+    (name "rust-rustc-version")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vjmw7xcdri0spsf24mkpwpph853wrbqppihhw061i2igh4f5pzh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-semver" ,rust-semver-0.11))))
+    (home-page "https://github.com/Kimundi/rustc-version-rs")
+    (synopsis "Library for querying the version of an installed rustc compiler")
+    (description
+     "This package provides a library for querying the version of an installed
+rustc compiler.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-version-0.2
   (package
+    (inherit rust-rustc-version-0.3)
     (name "rust-rustc-version")
     (version "0.2.3")
     (source
@@ -33394,17 +33418,9 @@ require unstable language features.")
        (sha256
         (base32
          "02h3x57lcr8l2pm0a645s9whdh33pn5cnrwvn5cb57vcrc53x3hk"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-semver" ,rust-semver-0.9))))
-    (home-page "https://github.com/Kimundi/rustc-version-rs")
-    (synopsis
-     "Library for querying the version of a installed rustc compiler")
-    (description
-     "This package provides a library for querying the version of a installed
-rustc compiler.")
-    (license (list license:expat license:asl2.0))))
+       #:cargo-inputs (("rust-semver" ,rust-semver-0.9))))))
 
 (define-public rust-rustdoc-stripper-0.1
   (package
