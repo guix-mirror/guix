@@ -28648,6 +28648,29 @@ compliant email address validation.")
     (description "This package provides a quasi-quoting macro system.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-query-interface-0.3
+  (package
+    (name "rust-query-interface")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "query_interface" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14rn7i6jr8zf3h103jhmivw39429gmkzk4wgns3bpvl4c82g1h3q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/Diggsey/query_interface")
+    (synopsis "Dynamically query a type-erased object for any trait implementation")
+    (description
+     "This package dynamically queries a type-erased object for any trait
+implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-quick-error-1
   (package
     (name "rust-quick-error")
