@@ -45613,6 +45613,26 @@ Read/Write streams as well as low-level in-memory encoding and decoding.")
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.3))))))
 
+(define-public rust-yansi-0.5
+  (package
+    (name "rust-yansi")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "yansi" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wdx8syhc61lphmgw5cw1vq73isi4szjqriz1k07z19r3r59ziwz"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/SergioBenitez/yansi")
+    (synopsis "Simple ANSI terminal color painting library")
+    (description
+     "This package provides a dead simple ANSI terminal color painting
+library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-zbase32-0.1
   (package
     (name "rust-zbase32")
