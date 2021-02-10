@@ -35957,6 +35957,29 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (description "New standard library, old compiler.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-state-0.4
+  (package
+    (name "rust-state")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "state" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10v4k9bgjryc9m40c8nnhyrby2ngkhpx841p3k4halgxlp8af59h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/SergioBenitez/state")
+    (synopsis "Library for safe global and thread-local state management")
+    (description
+     "This package provides a library for safe global and thread-local state
+management.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-static-assertions-1
   (package
     (name "rust-static-assertions")
