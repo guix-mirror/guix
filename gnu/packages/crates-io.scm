@@ -2601,6 +2601,27 @@ types (and many other types) to use in async programs, and Timer, a future
 that expires at a point in time.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-lock-2
+  (package
+    (name "rust-async-lock")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-lock" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yrvnshs94aiimvprqkhcg1z7x9abzsja8f4ifcakr5x6abn15hr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-event-listener" ,rust-event-listener-2))))
+    (home-page "https://github.com/stjepang/async-lock")
+    (synopsis "Async synchronization primitives")
+    (description "This package provides Async synchronization primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-log-1
   (package
     (name "rust-async-log")
