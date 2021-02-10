@@ -14268,14 +14268,14 @@ graphs.")
 (define-public r-pbdzmq
   (package
     (name "r-pbdzmq")
-    (version "0.3-4")
+    (version "0.3-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pbdZMQ" version))
        (sha256
         (base32
-         "0adiac53yq305ymhrds1gas4jm0rn1ddv7c7df5ky2cfhpb4ny87"))))
+         "1v8iv1pzs4j3ics9k9h4xjkv6z1ma2xbqy003xk2lqax6srqi02d"))))
     (properties `((upstream-name . "pbdZMQ")))
     (build-system r-build-system)
     (inputs
