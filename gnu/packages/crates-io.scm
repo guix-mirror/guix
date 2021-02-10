@@ -14217,6 +14217,36 @@ featuring zero allocations, composability, and iterator-like interfaces.")
      "Channels for asynchronous communication using futures-rs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-codec-0.4
+  (package
+    (name "rust-futures-codec")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures_codec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nzadpxhdxdlnlk2f0gfn0qbifqc3pbnzm10v4z04x8ciczxcm6f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-cbor" ,rust-serde-cbor-0.11)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/matthunz/futures-codec")
+    (synopsis
+     "Utilities for encoding and decoding frames using @code{async/await}")
+    (description
+     "This package provides utilities for encoding and decoding frames using
+@code{async/await}.")
+    (license license:expat)))
+
 (define-public rust-futures-core-0.3
   (package
     (name "rust-futures-core")
