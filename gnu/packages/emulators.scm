@@ -132,9 +132,11 @@
     (license license:gpl2)))
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
+;; Following commits and revision numbers of beta versions listed at
+;; https://dolphin-emu.org/download/.
 (define-public dolphin-emu
-  (let ((commit "3e4bf57c696ed1e4f465075ae311653de2cd33b0")
-        (revision "8"))
+  (let ((commit "a34823df61df65168aa40ef5e82e44defd4a0138")
+        (revision "13178"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -160,7 +162,7 @@
              #t))
          (sha256
           (base32
-           "0mscspwd4k635b0857253ic55idlv2jvjdljssbryf8kd1ikwlhs"))))
+           "0j6hnj60iai366kl0kdbn1jkwc183l02g65mp2vq4qb2yd4399l1"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -183,11 +185,9 @@
                  (copy-file "font_western.bin" "../Data/Sys/GC/font_western.bin")
                  (chdir "..")
                  (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
-                              (("\"vulkan\", 1") (string-append "\"vulkan\"")))
-                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
-                              (("\"vulkan\"") (string-append "\"" libvulkan "\"")))
-                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
-                              (("Common::DynamicLibrary::GetVersionedFilename") ""))
+                   (("\"vulkan\", 1") (string-append "\"vulkan\""))
+                   (("\"vulkan\"") (string-append "\"" libvulkan "\""))
+                   (("Common::DynamicLibrary::GetVersionedFilename") ""))
                  #t))))
 
          ;; The FindGTK2 cmake script only checks hardcoded directories for
