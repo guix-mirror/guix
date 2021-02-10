@@ -1323,14 +1323,14 @@ and vice-versa.")
 (define-public r-fastmap
   (package
     (name "r-fastmap")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastmap" version))
        (sha256
         (base32
-         "1v7sp56xiha0bh78g3w92k52p9vkp7ryzpw0z66nyddxzrfv0y27"))))
+         "0aw29hnq3ppn7bsnwg9d9sp84k1cvq30lrmfzqn315n0nhkfa4wi"))))
     (properties `((upstream-name . "fastmap")))
     (build-system r-build-system)
     (home-page "https://r-lib.github.io/fastmap/")
