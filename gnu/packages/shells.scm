@@ -930,6 +930,50 @@ Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
     (license gpl3+)))
 
+(define-public rust-nu-data-0.26
+  (package
+    (name "rust-nu-data")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-data" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jmicfs49laczgvif5axv2gb0c52hrfxvf3ywi7iinr7n8h1sfpx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-byte-unit" ,rust-byte-unit-4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-directories-next" ,rust-directories-next-2)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-getset" ,rust-getset-0.1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-table" ,rust-nu-table-0.26)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-format" ,rust-num-format-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-query-interface" ,rust-query-interface-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-users" ,rust-users-0.10))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "CLI for nushell")
+    (description "CLI for nushell")
+    (license expat)))
+
 (define-public rust-nu-errors-0.26
   (package
     (name "rust-nu-errors")
