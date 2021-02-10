@@ -7037,6 +7037,29 @@ CMAKE environmental variable is set.")
      "This package provides bindings to Cocoa Foundation for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-codepage-0.1
+  (package
+    (name "rust-codepage")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "codepage" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sdxp0f8dy2rscln646326lny9i0jm7ncgyp4yncdwndq0i943lb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encoding-rs" ,rust-encoding-rs-0.8))))
+    (home-page "https://docs.rs/codepage/")
+    (synopsis "Mapping between Windows code page and @code{encoding_rs}")
+    (description
+     "This package provides mapping between Windows code page numbers and
+@code{encoding_rs} character encodings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-codespan-reporting-0.11
   (package
     (name "rust-codespan-reporting")
