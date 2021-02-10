@@ -1050,6 +1050,39 @@ Nushell.")
     (description "Nushell table printing")
     (license expat)))
 
+(define-public rust-nu-test-support-0.26
+  (package
+    (name "rust-nu-test-support")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-test-support" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nlr9sqjiwviw15x76cc87n6366fxkxz1lsfh6m2ncca1zwgpa69"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-dunce" ,rust-dunce-1)
+        ("rust-getset" ,rust-getset-0.1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Support for writing Nushell tests")
+    (description "This package provides support for writing Nushell
+tests.")
+    (license expat)))
+
 (define-public rust-nu-value-ext-0.26
   (package
     (name "rust-nu-value-ext")
