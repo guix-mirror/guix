@@ -8816,6 +8816,28 @@ abstractions around common WinAPI calls.")
     (arguments
      `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-roxmltree-0.14
+  (package
+    (name "rust-roxmltree")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "roxmltree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "010mahzyarkzb7kaawgga1a9y46nsp209yh2i4g4pq98bg8afn5z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-xmlparser" ,rust-xmlparser-0.13))))
+    (home-page "https://github.com/RazrFalcon/roxmltree")
+    (synopsis "Represent an XML as a read-only tree")
+    (description
+     "@code{roxmltree} represents an XML 1.0 document as a read-only tree.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rust-crypto-0.2
   (package
     (name "rust-rust-crypto")
