@@ -10126,6 +10126,32 @@ structs and enums.")
 intelligently transliterating them.  It supports Emoji and Chinese.")
     (license license:bsd-3)))
 
+(define-public rust-devise-core-0.2
+  (package
+    (name "rust-devise-core")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "devise_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11v4z5kljmpiyif3mmfnm3rl1lsqygjlfy2wll7frqxm4adwahfg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/SergioBenitez/Devise")
+    (synopsis "Library for devising derives and other procedural macros")
+    (description
+     "This package provides a library for devising derives and other
+procedural macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dialoguer-0.6
   (package
     (name "rust-dialoguer")
