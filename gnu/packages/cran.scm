@@ -25904,13 +25904,13 @@ other R users.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.2.3")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "11rzc7h2ad8z8k5r1sbz4d7y4rl3080qp2hh7vibwmipbkvlial3"))))
+                "1mp3py00bmzj4541d8ry5sfzkpfzvnl9dpa8n4qhakd13dl30xdn"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25947,11 +25947,11 @@ other R users.")
        ("r-reticulate" ,r-reticulate)
        ("r-rlang" ,r-rlang)
        ("r-rocr" ,r-rocr)
-       ("r-rsvd" ,r-rsvd)
        ("r-rtsne" ,r-rtsne)
        ("r-scales" ,r-scales)
        ("r-scattermore" ,r-scattermore)
        ("r-sctransform" ,r-sctransform)
+       ("r-seuratobject" ,r-seuratobject)
        ("r-shiny" ,r-shiny)
        ("r-spatstat" ,r-spatstat)
        ("r-tibble" ,r-tibble)
