@@ -33629,6 +33629,20 @@ client (S3RS).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-safemem-0.2
+  (package
+    (inherit rust-safemem-0.3)
+    (name "rust-safemem")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "safemem" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13rx2vl5bqc7x4xpfc0can3a39f3bhgqg3l112lsxxrmp0cqnyp2"))))
+    (arguments `(#:skip-build? #t))))
+
 (define-public rust-same-file-1
   (package
     (name "rust-same-file")
