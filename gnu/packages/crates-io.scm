@@ -2585,6 +2585,37 @@ AsyncSeek if the inner type does.")
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))))
 
+(define-public rust-async-h1-2
+  (package
+    (name "rust-async-h1")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-h1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1p6ls50p1ixnxrhmx4sdb5d2kqrl1kfhcb0lkqlhzzqjz1sqmip5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-dup" ,rust-async-dup-1)
+        ("rust-async-std" ,rust-async-std-1)
+        ("rust-byte-pool" ,rust-byte-pool-0.2)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-http-types" ,rust-http-types-2)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project" ,rust-pin-project-1))))
+    (home-page "https://github.com/http-rs/async-h1")
+    (synopsis "Asynchronous HTTP 1.1 parser")
+    (description
+     "This package provides an asynchronous HTTP 1.1 parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-io-1
   (package
     (name "rust-async-io")
@@ -2869,8 +2900,54 @@ implementing async state machines that can later be wrapped in dedicated
 futures.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-std-1
+  (package
+    (name "rust-async-std")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-std" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h834fni3npsggjqin8386d2fn11m2z42dr1ymq0aknppa2ndw6r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-attributes" ,rust-async-attributes-1)
+        ("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-global-executor" ,rust-async-global-executor-2)
+        ("rust-async-io" ,rust-async-io-1)
+        ("rust-async-lock" ,rust-async-lock-2)
+        ("rust-async-process" ,rust-async-process-1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-gloo-timers" ,rust-gloo-timers-0.2)
+        ("rust-kv-log-macro" ,rust-kv-log-macro-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-pin-utils" ,rust-pin-utils-0.1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-surf" ,rust-surf-2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4))))
+    (home-page "https://async.rs")
+    (synopsis "Async version of the Rust standard library")
+    (description
+     "This crate provides an async version of @code{std}.  It provides all the
+interfaces you are used to, but in an async version and ready for Rust's
+@code{async/await} syntax.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-std-0.99
   (package
+    (inherit rust-async-std-1)
     (name "rust-async-std")
     (version "0.99.12")
     (source
@@ -2881,7 +2958,6 @@ futures.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1k34181r1xzalyf7alka0ibnbqll6s5l435ycydm7fv1g6gill24"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags '("--release" "--" "--skip=io_timeout")
        #:cargo-inputs
@@ -2908,14 +2984,7 @@ futures.")
        #:cargo-development-inputs
        (("rust-femme" ,rust-femme-1)
         ("rust-futures" ,rust-futures-0.3)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://async.rs")
-    (synopsis "Async version of the Rust standard library")
-    (description
-     "This crate provides an async version of @code{std}.  It provides all the
-interfaces you are used to, but in an async version and ready for Rust's
-@code{async/await} syntax.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-async-stream-0.3
   (package
@@ -17096,6 +17165,41 @@ or response body.")
         ("rust-http" ,rust-http-0.1)
         ("rust-tokio-buf" ,rust-tokio-buf-0.1))))))
 
+(define-public rust-http-client-6
+  (package
+    (name "rust-http-client")
+    (version "6.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http-client" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "077jw39npmjgm27hij4r825qnxq7lvkmqqlm74llkvll3fvr4001"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-h1" ,rust-async-h1-2)
+        ("rust-async-native-tls" ,rust-async-native-tls-0.3)
+        ("rust-async-std" ,rust-async-std-1)
+        ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http-types" ,rust-http-types-2)
+        ("rust-hyper" ,rust-hyper-0.13)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.4)
+        ("rust-isahc" ,rust-isahc-0.9)
+        ("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/http-rs/http-client")
+    (synopsis "Types and traits for HTTP clients")
+    (description "This package provides types and traits for HTTP clients.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-http-req-0.5
   (package
     (name "rust-http-req")
@@ -17122,6 +17226,42 @@ or response body.")
     (description
      "Simple and lightweight HTTP client with built-in HTTPS support.")
     (license license:expat)))
+
+(define-public rust-http-types-2
+  (package
+    (name "rust-http-types")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http-types" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p7g2rzgzvnd419a5ddlyb2nz85z9bw7cdkqyl7467cx2fxkwq9j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-std" ,rust-async-std-1)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-cookie" ,rust-cookie-0.14)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-infer" ,rust-infer-0.2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-qs" ,rust-serde-qs-0.7)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://github.com/http-rs/http-types")
+    (synopsis "Common types for HTTP operations.")
+    (description
+     "This package provides common types for HTTP operations.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-httparse-1
   (package
@@ -37942,8 +38082,45 @@ cryptographic implementations.")
         (base32
          "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
+(define-public rust-surf-2
+  (package
+    (name "rust-surf")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "surf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sl2d1ka01qz3qh4m2l5f2fjs0lhsmvdwl29f3pqzqbgv63wg2bi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-std" ,rust-async-std-1)
+        ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http-client" ,rust-http-client-6)
+        ("rust-http-types" ,rust-http-types-2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime-guess" ,rust-mime-guess-2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/http-rs/surf")
+    (synopsis "HTTP client framework")
+    (description
+     "Surf is a friendly HTTP client built for casual Rustaceans and veterans
+alike.  It's completely modular, and built directly for @code{async/await}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-surf-1
   (package
+    (inherit rust-surf-2)
     (name "rust-surf")
     (version "1.0.3")
     (source
@@ -37953,7 +38130,6 @@ cryptographic implementations.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1kksp41r5w7pwv1bj8pq5cngny24flq4mybxyhbfycx8z04806kl"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -37976,13 +38152,7 @@ cryptographic implementations.")
         ("rust-url" ,rust-url-2)
         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.3)
-        ("rust-web-sys" ,rust-web-sys-0.3))))
-    (home-page "https://github.com/http-rs/surf")
-    (synopsis "HTTP client framework")
-    (description
-     "Surf is a friendly HTTP client built for casual Rustaceans and veterans
-alike.  It's completely modular, and built directly for @code{async/await}. ")
-    (license (list license:expat license:asl2.0))))
+        ("rust-web-sys" ,rust-web-sys-0.3))))))
 
 (define-public rust-sval-0.5
   (package
