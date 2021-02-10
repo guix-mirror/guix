@@ -906,6 +906,24 @@ algorithms")
 with Associated Data (AEAD) algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aead-0.2
+  (package
+    (inherit rust-aead-0.3)
+    (name "rust-aead")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aead" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r3ijikx9h117q0xgkc56yb0501kifjr3gsfp5bvnrz7asdipw2c"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.12)
+        ("rust-heapless" ,rust-heapless-0.5))))))
+
 (define-public rust-aes-0.4
   (package
     (name "rust-aes")
