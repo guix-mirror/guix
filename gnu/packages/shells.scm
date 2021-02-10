@@ -1381,6 +1381,35 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-ps-0.26
+  (package
+    (name "rust-nu-plugin-ps")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_ps" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1znj1hjy2c2bj14hjx6yh4r3dknb7qflza1vmq5x98vnvf04i8c4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-timer" ,rust-futures-timer-3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-sysinfo" ,rust-sysinfo-0.16))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Process list plugin for Nushell")
+    (description
+     "This package provides a process list plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-s3-0.26
   (package
     (name "rust-nu-plugin-s3")
