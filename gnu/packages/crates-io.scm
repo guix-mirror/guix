@@ -10798,9 +10798,34 @@ Directory guidelines on macOS.")
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dirs-sys" ,rust-dirs-sys-0.3))))))
 
+(define-public rust-directories-next-2
+  (package
+    (name "rust-directories-next")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories-next" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g1vq8d8mv0vp0l317gh9y46ipqg2fxjnbc7lnjhwqbsv4qf37ik"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-sys-next" ,rust-dirs-sys-next-0.1))))
+    (home-page "https://github.com/xdg-rs/dirs/tree/master/directories")
+    (synopsis "Mid-level library for standard locations of data directories")
+    (description
+     "This package provides a tiny mid-level library that provides
+platform-specific standard locations of directories for config, cache and
+other data.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-directories-next-1
   (package
-    (inherit rust-directories-3)
+    (inherit rust-directories-next-2)
     (name "rust-directories-next")
     (version "1.0.3")
     (source
@@ -10817,8 +10842,7 @@ Directory guidelines on macOS.")
        (("rust-cfg-if" ,rust-cfg-if-1)
         ("rust-dirs-sys" ,rust-dirs-sys-next-0.1))
        #:cargo-development-inputs
-       (("rust-bencher" ,rust-bencher-0.1))))
-    (home-page "https://github.com/xdg-rs/dirs/tree/master/directories")))
+       (("rust-bencher" ,rust-bencher-0.1))))))
 
 (define-public rust-dirs-3
   (package
