@@ -31740,6 +31740,28 @@ Rust.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-webpki-roots" ,rust-webpki-roots-0.16))))))
 
+(define-public rust-rustls-0.14
+  (package
+    (inherit rust-rustls-0.18)
+    (name "rust-rustls")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nal4qca7f7mhwnvx3m824ymdj6qmzfcl64sxmrmpis32dwr2y4b"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.13)
+        ("rust-sct" ,rust-sct-0.4)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-webpki" ,rust-webpki-0.18))))))
+
 (define-public rust-rustls-0.12
   (package/inherit rust-rustls-0.16
     (name "rust-rustls")
