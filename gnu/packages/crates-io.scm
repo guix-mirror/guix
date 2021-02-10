@@ -19237,8 +19237,32 @@ whether or not a given path points to an executable file.")
     (description "Parsing ISO8601 dates using nom.")
     (license license:expat)))
 
+(define-public rust-itertools-0.10
+  (package
+    (name "rust-itertools")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itertools" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06dkghwi1a6ah2103gibxnr2ys762m5x4rp75x0q43imis8p5m9p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-either" ,rust-either-1))))
+    (home-page "https://github.com/rust-itertools/itertools")
+    (synopsis "Extra iterator adaptors, methods, free functions, and macros")
+    (description
+     "This package provides extra iterator adaptors, iterator methods, free
+functions, and macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-itertools-0.9
   (package
+    (inherit rust-itertools-0.10)
     (name "rust-itertools")
     (version "0.9.0")
     (source
@@ -19250,7 +19274,6 @@ whether or not a given path points to an executable file.")
         (sha256
          (base32
           "0jyml7ygr7kijkcjdl3fk5f34y5h5jsavclim7l13zjiavw1hkr8"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-either" ,rust-either-1))
@@ -19265,14 +19288,7 @@ whether or not a given path points to an executable file.")
            (lambda _
              (substitute* "Cargo.toml"
                (("=0.3.0") "0.3"))
-             #t)))))
-    (home-page
-     "https://github.com/rust-itertools/itertools")
-    (synopsis
-     "Extra iterator adaptors, iterator methods, free functions, and macros")
-    (description
-     "Extra iterator adaptors, iterator methods, free functions, and macros.")
-    (license (list license:expat license:asl2.0))))
+             #t)))))))
 
 (define-public rust-itertools-0.8
   (package
