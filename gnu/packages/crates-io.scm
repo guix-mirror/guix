@@ -24355,28 +24355,41 @@ combinators library.")
       ;; This is an ancient version and all inputs are optional.
      `(#:skip-build? #t))))
 
+(define-public rust-noop-proc-macro-0.3
+  (package
+    (name "rust-noop-proc-macro")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "noop_proc_macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j2v1c6ric4w9v12h34jghzmngcwmn0hll1ywly4h6lcm4rbnxh6"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/lu-zero/noop_proc_macro")
+    (synopsis "No-op procedural macro, literally does nothing")
+    (description
+     "This package provides a no-op procedural macro, which literally does
+nothing.")
+    (license license:expat)))
+
 (define-public rust-noop-proc-macro-0.2
   (package
+    (inherit rust-noop-proc-macro-0.3)
     (name "rust-noop-proc-macro")
     (version "0.2.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "noop_proc_macro" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "0in1l0rjxzs4fylb6zad484z1c58jxyzchhc12k0cjrvm0y6zwsz"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page
-      "https://github.com/lu-zero/noop_proc_macro")
-    (synopsis
-      "No-op proc_macro, literally does nothing")
-    (description
-      "No-op proc_macro, literally does nothing")
-    (license license:expat)))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "noop_proc_macro" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0in1l0rjxzs4fylb6zad484z1c58jxyzchhc12k0cjrvm0y6zwsz"))))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-normalize-line-endings-0.3
   (package
