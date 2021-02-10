@@ -32351,6 +32351,33 @@ password hashing function.")
  Currently the conversion uses the Bitcoin base58 alphabet.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rust-decimal-0.10
+  (package
+    (name "rust-rust-decimal")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust_decimal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h80xz88f07ifb4i0mfh9j9p67afiy4xm6xswkk9gnf1spirag59"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num" ,rust-num-0.2)
+        ("rust-postgres" ,rust-postgres-0.15)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/paupino/rust-decimal")
+    (synopsis "Decimal implementation suitable for financial calculations")
+    (description
+     "This package provides a decimal implementation written in pure Rust
+suitable for financial calculations.")
+    (license license:expat)))
+
 (define-public rust-rust-embed-5
   (package
     (name "rust-rust-embed")
