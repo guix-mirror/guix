@@ -21268,14 +21268,14 @@ both exclusive and shared locking.")
 (define-public r-archivist
   (package
     (name "r-archivist")
-    (version "2.3.4")
+    (version "2.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "archivist" version))
        (sha256
         (base32
-         "1i11hrcq1910jgd6diw6h3sxx624v57zjianm49pqvb2dvd0b8y7"))))
+         "0sk16bcafgswrvwh39ysbgm6jvsg20yil4pdsg3wsp81nnsrb43k"))))
     (properties `((upstream-name . "archivist")))
     (build-system r-build-system)
     (propagated-inputs
@@ -21287,6 +21287,8 @@ both exclusive and shared locking.")
        ("r-magrittr" ,r-magrittr)
        ("r-rcurl" ,r-rcurl)
        ("r-rsqlite" ,r-rsqlite)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://pbiecek.github.io/archivist/")
     (synopsis "Tools for storing, restoring and searching for R objects")
     (description
