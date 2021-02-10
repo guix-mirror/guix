@@ -22163,30 +22163,26 @@ network, tree, dendrogram, and Sankey graphs from R using data frames.")
 (define-public r-qgraph
   (package
     (name "r-qgraph")
-    (version "1.6.5")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "qgraph" version))
        (sha256
         (base32
-         "0pwys9irxvp0ap158drplyypkplbmwqinv0fmlsblk7q875cr592"))))
+         "153bqfmsrghkg7598nfr57r3cxv6dn6ir084njl2sqq5np0sj9di"))))
     (properties `((upstream-name . "qgraph")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
-       ("r-bdgraph" ,r-bdgraph)
        ("r-colorspace" ,r-colorspace)
        ("r-corpcor" ,r-corpcor)
-       ("r-d3network" ,r-d3network)
        ("r-dplyr" ,r-dplyr)
        ("r-fdrtool" ,r-fdrtool)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-ggraph" ,r-ggraph)
        ("r-glasso" ,r-glasso)
        ("r-gtools" ,r-gtools)
        ("r-hmisc" ,r-hmisc)
-       ("r-huge" ,r-huge)
        ("r-igraph" ,r-igraph)
        ("r-jpeg" ,r-jpeg)
        ("r-lavaan" ,r-lavaan)
@@ -22196,8 +22192,7 @@ network, tree, dendrogram, and Sankey graphs from R using data frames.")
        ("r-png" ,r-png)
        ("r-psych" ,r-psych)
        ("r-rcpp" ,r-rcpp)
-       ("r-reshape2" ,r-reshape2)
-       ("r-tidygraph" ,r-tidygraph)))
+       ("r-reshape2" ,r-reshape2)))
     (home-page "http://sachaepskamp.com/qgraph/")
     (synopsis "Weighted network visualization and analysis")
     (description
