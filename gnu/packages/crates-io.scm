@@ -16624,6 +16624,33 @@ SystemTime}}.")
         ("rust-unicase" ,rust-unicase-2)
         ("rust-want" ,rust-want-0.0))))))
 
+(define-public rust-hyper-0.10
+  (package
+    (inherit rust-hyper-0.13)
+    (name "rust-hyper")
+    (version "0.10.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wwjh9p3mzvg3fss2lqz5r7ddcgl1fh9w6my2j69d6k0lbcm41ha"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-mime" ,rust-mime-0.2)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-traitobject" ,rust-traitobject-0.1)
+        ("rust-typeable" ,rust-typeable-0.1)
+        ("rust-unicase" ,rust-unicase-1)
+        ("rust-url" ,rust-url-1))))))
+
 (define-public rust-hyper-old-types-0.11
   (package
     (name "rust-hyper-old-types")
