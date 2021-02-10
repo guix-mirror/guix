@@ -26714,3 +26714,49 @@ designed for the needs of RMarkdown packages like @code{pkgdown},
 to their documentation on the web, and automatic translation of ANSI escapes
 in output to the equivalent HTML.")
     (license license:expat)))
+
+(define-public r-pkgdown
+  (package
+    (name "r-pkgdown")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pkgdown" version))
+       (sha256
+        (base32
+         "1k31biyvxkv3xjc1yy3nzb9wfza3vbx97fv17nly5a6vlv7zqbs4"))))
+    (properties `((upstream-name . "pkgdown")))
+    (build-system r-build-system)
+    (inputs `(("pandoc" ,pandoc)))
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-digest" ,r-digest)
+       ("r-downlit" ,r-downlit)
+       ("r-fs" ,r-fs)
+       ("r-httr" ,r-httr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-memoise" ,r-memoise)
+       ("r-openssl" ,r-openssl)
+       ("r-purrr" ,r-purrr)
+       ("r-ragg" ,r-ragg)
+       ("r-rematch2" ,r-rematch2)
+       ("r-rlang" ,r-rlang)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-tibble" ,r-tibble)
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)
+       ("r-xml2" ,r-xml2)
+       ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://pkgdown.r-lib.org")
+    (synopsis "Make static HTML documentation for an R package")
+    (description
+     "The goal of this package is to generate an attractive and useful website
+from a source package.  @code{pkgdown} converts your documentation, vignettes,
+README file, and more to HTML making it easy to share information about your
+package online.")
+    (license license:expat)))
