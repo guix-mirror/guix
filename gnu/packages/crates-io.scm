@@ -4745,6 +4745,19 @@ memory usage.")
     (description "Bytes related utility functions.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-byte-tools-0.2
+  (package
+    (inherit rust-byte-tools-0.3)
+    (name "rust-byte-tools")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "byte-tools" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0h2zxygfnn46akmgh8cdp4x6xy4kb0b45rzmj76rxa0j99bk432n"))))))
+
 (define-public rust-byte-unit-4
   (package
     (name "rust-byte-unit")
