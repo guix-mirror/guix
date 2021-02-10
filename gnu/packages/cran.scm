@@ -17128,19 +17128,22 @@ and model output.")
 (define-public r-enrichr
   (package
     (name "r-enrichr")
-    (version "2.1")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "enrichR" version))
        (sha256
         (base32
-         "0ymhzs9d2wl0s9rvbqc1hqb78mlzwhlc7mmijpfqkm5r720pf6m1"))))
+         "0i3kfq4fkmx47n61zj5f87iv8ci6gbgy90a7s8dy9zbndzvbgya3"))))
     (properties `((upstream-name . "enrichR")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-httr" ,r-httr)
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-httr" ,r-httr)
        ("r-rjson" ,r-rjson)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/enrichR/")
     (synopsis "R Interface to Enrichr database for analyzing gene sets")
     (description
