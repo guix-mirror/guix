@@ -8852,8 +8852,33 @@ message passing.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))))
 
+(define-public rust-crossbeam-queue-0.3
+  (package
+    (name "rust-crossbeam-queue")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossbeam-queue" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mk790w2y7cn9zqj6cn1kl8vvgaamlkj6fmpxg1iprdqyp3v6v0g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8))))
+    (home-page
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+    (synopsis "Concurrent queues in Rust")
+    (description
+     "This crate provides concurrent queues that can be shared among threads.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-queue-0.2
   (package
+    (inherit rust-crossbeam-queue-0.3)
     (name "rust-crossbeam-queue")
     (version "0.2.3")
     (source
@@ -8864,22 +8889,13 @@ message passing.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0w15z68nz3ac4f2s4djhwha8vmlwsh9dlfrmsl4x84y2ah5acjvp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-maybe-uninit" ,rust-maybe-uninit-2))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-queue")
-    (synopsis "Concurrent queues in Rust")
-    (description
-     "This crate provides concurrent queues that can be shared among threads.")
-    (license (list license:expat
-                   license:asl2.0
-                   license:bsd-2))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-queue-0.1
   (package
