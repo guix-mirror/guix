@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,10 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
   (let-values (((args command) (break (cut string=? "--" <>) args)))
     (let ((opts (parse-command-line args %options
                                     (list %default-options))))
+      (when (assoc-ref opts 'argument)
+        (leave (G_ "~A: extraneous argument~%")
+               (assoc-ref opts 'argument)))
+
       (match command
         (() opts)
         (("--") opts)
