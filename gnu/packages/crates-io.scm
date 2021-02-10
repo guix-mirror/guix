@@ -28016,6 +28016,41 @@ UDP.")
      "This package provides low level Postgres protocol APIs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-postgres-shared-0.4
+  (package
+    (name "rust-postgres-shared")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "postgres-shared" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vzk1njkqkd2xxz34jnax29z4179ni4j3f534i6416q2w2rkbb7z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bit-vec" ,rust-bit-vec-0.4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-eui48" ,rust-eui48-0.3)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.1)
+        ("rust-geo" ,rust-geo-0.4)
+        ("rust-hex" ,rust-hex-0.2)
+        ("rust-phf" ,rust-phf-0.7)
+        ("rust-postgres-protocol" ,rust-postgres-protocol-0.3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-uuid" ,rust-uuid-0.5))))
+    (home-page "https://github.com/sfackler/rust-postgres")
+    (synopsis
+     "Internal crate used by @code{postgres} and @code{postgres-tokio}")
+    (description
+     "This is an internal crate used by @code{postgres} and
+@code{postgres-tokio}.")
+    (license license:expat)))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
