@@ -39664,6 +39664,28 @@ closures after a delay or at a given timestamp.")
 @code{timerfd} API.")
     (license license:expat)))
 
+(define-public rust-tint-1
+  (package
+    (name "rust-tint")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tint" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15k89pp3ddxczfnv2j995yvy02mfpmjrmxmv7mkp8c2acrq4bwks"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-0.2))))
+    (home-page "https://github.com/savage13/tint")
+    (synopsis "Color creation and manipulation")
+    (description "This packages provides tools for color creation and
+manipulation in Rust.")
+    (license license:expat)))
+
 (define-public rust-tiny-http-0.6
   (package
     (name "rust-tiny-http")
