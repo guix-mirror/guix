@@ -14829,6 +14829,27 @@ is compatible with the @code{POSIXct}, @code{Date} and @code{difftime}
 classes.")
     (license license:gpl2)))
 
+(define-public r-udunits2
+  (package
+    (name "r-udunits2")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "udunits2" version))
+       (sha256
+        (base32
+         "0yav7rm2afcx67xqrknybxgz7x63w78zyxa0xifvc0k2gz0d6mfi"))))
+    (properties `((upstream-name . "udunits2")))
+    (build-system r-build-system)
+    (inputs
+     `(("udunits" ,udunits)))
+    (home-page "https://cran.r-project.org/package=udunits2")
+    (synopsis "Udunits-2 bindings for R")
+    (description
+     "This package provides simple bindings to Unidata's udunits library.")
+    (license license:gpl2)))
+
 (define-public r-classint
   (package
     (name "r-classint")
