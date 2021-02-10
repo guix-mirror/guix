@@ -11611,6 +11611,33 @@ floating-point primitives to an @code{io::Write}.")
      "Serialize float number and truncate to certain precision in Rust.")
     (license license:mpl2.0)))
 
+(define-public rust-dtparse-1
+  (package
+    (name "rust-dtparse")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dtparse" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xh9hasfffnfyv8q9pwr31g63rigfx114qz6xw05wdkzpmfnq9qk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chrono-tz" ,rust-chrono-tz-0.5)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rust-decimal" ,rust-rust-decimal-0.10))))
+    (home-page "https://github.com/bspeice/dtparse.git")
+    (synopsis "Dateutil-compatible timestamp parser for Rust")
+    (description
+     "This package provides a @code{dateutil}-compatible timestamp parser for
+Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-duct-0.13
   (package
     (name "rust-duct")
