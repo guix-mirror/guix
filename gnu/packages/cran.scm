@@ -25857,6 +25857,35 @@ as allowing spectra with different resolutions.")
 data to rasters.  It speeds up plotting of data with millions of points.")
     (license license:gpl3+)))
 
+(define-public r-seuratobject
+  (package
+    (name "r-seuratobject")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SeuratObject" version))
+       (sha256
+        (base32
+         "03k27z7g76wy7mfja2cpxq183xk0906k9gxb2j6p1zw341gv4gii"))))
+    (properties `((upstream-name . "SeuratObject")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rlang" ,r-rlang)
+       ("r-sctransform" ,r-sctransform)))
+    (home-page "https://satijalab.org/seurat")
+    (synopsis "Data structures for single cell data")
+    (description
+     "This package defines S4 classes for single-cell genomic data and
+associated information, such as dimensionality reduction embeddings,
+nearest-neighbor graphs, and spatially-resolved coordinates.  It provides data
+access methods and R-native hooks to ensure the Seurat object is familiar to
+other R users.")
+    (license license:gpl3)))
+
 (define-public r-seurat
   (package
     (name "r-seurat")
