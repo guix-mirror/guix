@@ -1381,6 +1381,32 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-match-0.26
+  (package
+    (name "rust-nu-plugin-match")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_match" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0iifbi739x077wwvjgdjw2h7cr149sznvjl6c5m06llmvniga4sa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Regex match plugin for Nushell")
+    (description
+     "This package provides a regex match plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-post-0.26
   (package
     (name "rust-nu-plugin-post")
