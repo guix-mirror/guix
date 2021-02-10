@@ -9873,14 +9873,14 @@ and permutation inference in the framework of Strasser and Weber (1999).")
 (define-public r-coin
   (package
     (name "r-coin")
-    (version "1.4-0")
+    (version "1.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "coin" version))
        (sha256
         (base32
-         "1n2ad4m3zw8px6yc0h750k59pci3fqpnr742hhvsqirrwcdzp6zv"))))
+         "15xvhnbyg34aacn6jfz4bsa1f7wq2ci0hslj8mgymql90k50x1qi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-libcoin" ,r-libcoin)
