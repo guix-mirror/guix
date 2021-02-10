@@ -2297,13 +2297,13 @@ initiative to bring PASSTEC 2000 functionalities to R.")
 (define-public r-partykit
   (package
    (name "r-partykit")
-   (version "1.2-11")
+   (version "1.2-12")
    (source (origin
              (method url-fetch)
              (uri (cran-uri "partykit" version))
              (sha256
               (base32
-               "00n6a74x257m2jk7jadjfxaclihxqpqwh356bgxmq8rag0nk70rs"))))
+               "15d5g89winndv8cy8jjjxy87fliafp5zyb8b58czrijwcmagg50l"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-formula" ,r-formula)
