@@ -799,8 +799,64 @@ the Actix ecosystem.")
         ("rust-pin-project" ,rust-pin-project-0.4)
         ("rust-slab" ,rust-slab-0.4))))))
 
+(define-public rust-actix-web-3
+  (package
+    (name "rust-actix-web")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11kv8y1p9dw78lnhrw3rqavhmazmy7s0z8j14a3a1yp7fahx8hg6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-actix-codec" ,rust-actix-codec-0.3)
+        ("rust-actix-http" ,rust-actix-http-2)
+        ("rust-actix-macros" ,rust-actix-macros-0.1)
+        ("rust-actix-router" ,rust-actix-router-0.2)
+        ("rust-actix-rt" ,rust-actix-rt-1)
+        ("rust-actix-server" ,rust-actix-server-1)
+        ("rust-actix-service" ,rust-actix-service-1)
+        ("rust-actix-testing" ,rust-actix-testing-1)
+        ("rust-actix-threadpool" ,rust-actix-threadpool-0.3)
+        ("rust-actix-tls" ,rust-actix-tls-2)
+        ("rust-actix-utils" ,rust-actix-utils-2)
+        ("rust-actix-web-codegen" ,rust-actix-web-codegen-0.4)
+        ("rust-awc" ,rust-awc-2)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-pin-project" ,rust-pin-project-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustls" ,rust-rustls-0.18)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.7)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-tinyvec" ,rust-tinyvec-1)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://actix.rs")
+    (synopsis "Powerful, pragmatic, and fast web framework for Rust")
+    (description
+     "Actix Web is a powerful, pragmatic, and fast web framework for
+Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-web-2
   (package
+    (inherit rust-actix-web-3)
     (name "rust-actix-web")
     (version "2.0.0")
     (source
@@ -810,7 +866,6 @@ the Actix ecosystem.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0dgnn7xiw2yhvrx7l7b57gwra7yfqawka5xz1lpq4h0h8qifhn1i"))))
-    (build-system cargo-build-system)
     (arguments
      ;; XXX: The crate fails to't build with with the same error as
      ;; rust-actix-connect.  Skip build for now.
@@ -845,13 +900,7 @@ the Actix ecosystem.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-urlencoded" ,rust-serde-urlencoded-0.6)
         ("rust-time" ,rust-time-0.1)
-        ("rust-url" ,rust-url-2))))
-    (home-page "https://actix.rs")
-    (synopsis "Powerful, pragmatic, and fast web framework for Rust")
-    (description
-     "Actix Web is a powerful, pragmatic, and fast web framework for
-Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-url" ,rust-url-2))))))
 
 (define-public rust-actix-web-codegen-0.4
   (package
