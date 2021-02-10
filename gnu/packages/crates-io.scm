@@ -31322,17 +31322,15 @@ please consider using @code{async-std} or @code{tokio}.")
 (define-public rust-rusqlite-0.24
   (package
     (name "rust-rusqlite")
-    (version "0.24.1")
+    (version "0.24.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rusqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0s5svm32zl1qqmln8ww8g6ziwg5mi2k88si1a5zj25smmf8lfgby"))))
+        (base32 "04jiqa9y7pk7byk0kicjxqy75jifz1v4xhhaxhkwicms3kkqxwym"))))
     (build-system cargo-build-system)
-    (inputs
-     `(("sqlite" ,sqlite)))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -31341,25 +31339,16 @@ please consider using @code{async-std} or @code{tokio}.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-csv" ,rust-csv-1)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
-        ("rust-fallible-streaming-iterator"
-         ,rust-fallible-streaming-iterator-0.1)
+        ("rust-fallible-streaming-iterator" ,rust-fallible-streaming-iterator-0.1)
         ("rust-hashlink" ,rust-hashlink-0.6)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.20)
-        ;;("rust-lru-cache" ,rust-lru-cache-0.1)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-smallvec" ,rust-smallvec-1)
         ("rust-time" ,rust-time-0.2)
         ("rust-url" ,rust-url-2)
-        ("rust-uuid" ,rust-uuid-0.7))
-       #:cargo-development-inputs
-       (("rust-bencher" ,rust-bencher-0.1)
-        ("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-unicase" ,rust-unicase-2)
-        ("rust-uuid" ,rust-uuid-0.7))))
+        ("rust-uuid" ,rust-uuid-0.8))))
     (home-page "https://github.com/rusqlite/rusqlite")
     (synopsis "Wrapper for SQLite")
     (description "This prackage provides a wrapper for SQLite.")
