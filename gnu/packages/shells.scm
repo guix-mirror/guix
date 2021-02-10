@@ -1381,6 +1381,34 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-fetch-0.26
+  (package
+    (name "rust-nu-plugin-fetch")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_fetch" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f61f3n5wdzqwfi94ym8j60sd1wah1z1gdyhyg60fbyygd9scm4r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-surf" ,rust-surf-1)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "URL fetch plugin for Nushell")
+    (description "This package provides a URL fetch plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-from-bson-0.26
   (package
     (name "rust-nu-plugin-from-bson")
