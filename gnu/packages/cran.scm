@@ -20375,14 +20375,14 @@ API; see the package vignette for details.")
 (define-public r-actuar
   (package
     (name "r-actuar")
-    (version "3.1-0")
+    (version "3.1-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "actuar" version))
        (sha256
         (base32
-         "15a8axb2ym46j8vlm7icwnsc950p8m66hp0armha7drk0725y77k"))))
+         "0sxn1mskh7x164f1vbrqnadgxnq7y2p3a9mlmqc0sp6cqkw9lhp9"))))
     (properties `((upstream-name . "actuar")))
     (build-system r-build-system)
     (propagated-inputs `(("r-expint" ,r-expint)))
