@@ -27705,6 +27705,24 @@ replacements, adding colorful diffs.")
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-env-logger" ,rust-env-logger-0.6))))))
 
+(define-public rust-pretty-hex-0.2
+  (package
+    (name "rust-pretty-hex")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pretty-hex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c91f9sdwmn3mz2d414dp1xk4iw0k1nsif7lyqvhklzh57arjp5w"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/wolandr/pretty-hex")
+    (synopsis "Pretty hex dump of bytes slice in the common style")
+    (description "This is a Rust library providing pretty hex dump.")
+    (license license:expat)))
+
 (define-public rust-prettytable-rs-0.8
   (package
     (name "rust-prettytable-rs")
