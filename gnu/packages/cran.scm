@@ -17902,14 +17902,14 @@ PROJ.4 library.")
 (define-public r-insol
   (package
     (name "r-insol")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insol" version))
        (sha256
         (base32
-         "1d2vqmbp94ff80mfkmq4a8y12r6ryym8hh1568ip9qbn7snc64v1"))))
+         "166kgxgzbh55y2qqya6c2si22x0v7asi70im054g6xxwc5187kh3"))))
     (properties `((upstream-name . "insol")))
     (build-system r-build-system)
     (propagated-inputs
