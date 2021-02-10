@@ -10533,6 +10533,31 @@ algorithm which serves to quantify the difference between two colors.")
 Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derive-arbitrary-0.4
+  (package
+    (name "rust-derive-arbitrary")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive_arbitrary" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rp0z4k0j5ip0bx6dssg97l4q6bakhf6lm5h1lpr3p3kwjsi585i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/rust-fuzz/arbitrary")
+    (synopsis "Derives arbitrary traits")
+    (description "This crate implements support for automatically deriving the
+@code{Arbitrary} trait.  Don't depend on this crate directly, though.
+Instead, enable the @code{derive} feature of the @code{arbitrary} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-builder-0.9
   (package
     (name "rust-derive-builder")
