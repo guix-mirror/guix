@@ -559,11 +559,7 @@ This package provides the core library and elements.")
        ("libXext" ,libxext)
        ("libxv" ,libxv)
        ("alsa-lib" ,alsa-lib)
-       ;; XXX Don't build with opus on 32-bit systems:
-       ;; <https://bugs.gnu.org/32360>
-       ,@(if (target-64bit?)
-             `(("opus" ,opus))
-             '())))
+       ("opus" ,opus)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib:bin" ,glib "bin")
