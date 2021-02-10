@@ -15217,6 +15217,32 @@ retrieving random data from system source.")
         ("rust-wasi" ,rust-wasi-0.9)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))))
 
+(define-public rust-getset-0.1
+  (package
+    (name "rust-getset")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "getset" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "016590lxhlqga016z1qnavl0zavk59b97aix2zcd4wad3b02icr4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro-error" ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/Hoverbear/getset")
+    (synopsis "Getters and setters for Rust")
+    (description
+     "This package provides a procedural macro for generating the most basic
+getters and setters on fields.")
+    (license license:expat)))
+
 (define-public rust-gettext-rs-0.5
   (package
     (name "rust-gettext-rs")
