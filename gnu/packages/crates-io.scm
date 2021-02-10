@@ -37971,6 +37971,30 @@ developed as part of the Servo project.")
      "Code share between string_cache and string_cache_codegen.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-stringprep-0.1
+  (package
+    (name "rust-stringprep")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stringprep" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hd1x7s8fnzqwz5fm2pq0jh10n024zvwnldmykzm8x5qfk5liqwf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-bidi" ,rust-unicode-bidi-0.3)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))
+    (home-page "https://github.com/sfackler/rust-stringprep")
+    (synopsis "Implementation of the ``stringprep'' algorithm")
+    (description
+     "This package provides an implementation of the ``stringprep'' algorithm
+as defined in RFC 3454.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-strip-ansi-escapes-0.1
   (package
     (name "rust-strip-ansi-escapes")
