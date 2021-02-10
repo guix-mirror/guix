@@ -3373,6 +3373,36 @@ methods.")
 in Rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-av-metrics-0.6
+  (package
+    (name "rust-av-metrics")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "av-metrics" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g4k2q3226246jad3jl8pny7aphq8i03x4qyilzj4zgp27350hsz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossbeam" ,rust-crossbeam-0.8)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-lab" ,rust-lab-0.8)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-v-frame" ,rust-v-frame-0.2))))
+    (home-page "https://github.com/rust-av/av-metrics")
+    (synopsis "Collection of algorithms for measuring audio/video metrics")
+    (description
+     "This package provides a collection of algorithms for measuring
+audio/video metrics.")
+    (license license:expat)))
+
 (define-public rust-average-0.9
   (package
     (inherit rust-average-0.10)
