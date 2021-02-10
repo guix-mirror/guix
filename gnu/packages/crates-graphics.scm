@@ -696,8 +696,31 @@ EUI-64, also known as MAC-48 media access control addresses.")
      "This package provides OpenGL bindings for gfx, based on gl-rs.")
     (license license:asl2.0)))
 
+(define-public rust-gif-0.11
+  (package
+    (name "rust-gif")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gif" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1i4n9fwg3zrp07pi5zsgyza2gl8lqnap6fj6875lfy121xbbmvq2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-color-quant" ,rust-color-quant-1)
+        ("rust-weezl" ,rust-weezl-0.1))))
+    (home-page "https://github.com/image-rs/image-gif")
+    (synopsis "GIF decoder and encoder")
+    (description "This package provides a GIF decoder and encoder in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gif-0.10
   (package
+    (inherit rust-gif-0.11)
     (name "rust-gif")
     (version "0.10.3")
     (source
@@ -709,7 +732,6 @@ EUI-64, also known as MAC-48 media access control addresses.")
        (sha256
         (base32
          "1bw174f7civdfgryvc8pvyhicpr96hzdajnda4s3y8iv3ch907a7"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; tests not included in release
        #:cargo-inputs
@@ -717,11 +739,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-lzw" ,rust-lzw-0.10))
        #:cargo-development-inputs
-       (("rust-glob" ,rust-glob-0.3))))
-    (home-page "https://github.com/image-rs/image-gif")
-    (synopsis "GIF decoder and encoder")
-    (description "This package provides a GIF decoder and encoder in Rust.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-glob" ,rust-glob-0.3))))))
 
 (define-public rust-gl-0.11
   (package
