@@ -7226,6 +7226,36 @@ harness.")
 queue.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-config-0.10
+  (package
+    (name "rust-config")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "config" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qrcp7nm24xzp418xnqf0i26qahw93w31nk5vs6m7ng18ghpdc0r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-rust-ini" ,rust-rust-ini-0.13)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-hjson" ,rust-serde-hjson-0.9)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-yaml-rust" ,rust-yaml-rust-0.4))))
+    (home-page "https://github.com/mehcode/config-rs")
+    (synopsis "Layered configuration system for Rust applications")
+    (description
+     "This package provides a layered configuration system for Rust
+applications.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-console-0.13
   (package
     (name "rust-console")
