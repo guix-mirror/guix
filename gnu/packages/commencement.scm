@@ -2490,6 +2490,8 @@ exec " gcc "/bin/" program
        ,@(%bootstrap-inputs+toolchain)))
     (arguments
      `(#:implicit-inputs? #f
+       ;; Ignore test failure in gnulib for armhf/aarch64.
+       #:tests? ,(not (target-arm?))
        #:guile ,%bootstrap-guile
 
        ;; The build system assumes we have done a mistake when time_t is 32-bit
