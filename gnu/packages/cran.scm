@@ -6905,14 +6905,14 @@ the source data frame.")
 (define-public r-rappdirs
   (package
     (name "r-rappdirs")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rappdirs" version))
        (sha256
         (base32
-         "0ji6sg3bdn5gazkq14xmmcq7jnbsyxw4lzmmbgv6526j2vn93n1g"))))
+         "1161i3jgjvzjv4p8qbz9r976fnggkcrw3mlj4yd1h2svnijrz5a9"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rappdirs/")
     (synopsis "Determine where to save data, caches, and logs")
