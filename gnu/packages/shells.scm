@@ -1381,6 +1381,36 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-chart-0.26
+  (package
+    (name "rust-nu-plugin-chart")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_chart" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1pyccvidzqgz7yp16jdjgyb708cimx0j334wzi8ij8l7x395qwn3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-crossterm" ,rust-crossterm-0.19)
+        ("rust-nu-cli" ,rust-nu-cli-0.26)
+        ("rust-nu-data" ,rust-nu-data-0.26)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-tui" ,rust-tui-0.14))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Plugin to display charts")
+    (description
+     "This package provides a plugin to display charts in Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-fetch-0.26
   (package
     (name "rust-nu-plugin-fetch")
