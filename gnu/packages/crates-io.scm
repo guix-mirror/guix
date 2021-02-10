@@ -9097,6 +9097,24 @@ Code} (MAC) algorithms.")
         ("rust-generic-array" ,rust-generic-array-0.12)
         ("rust-subtle" ,rust-subtle-1))))))
 
+(define-public rust-crypto-mac-0.5
+  (package
+    (inherit rust-crypto-mac-0.10)
+    (name "rust-crypto-mac")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-mac" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0n6r10zlnfv9gbjj0380sxfffxhq1khfjqwsn7fx8iil9pzv9689"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-constant-time-eq" ,rust-constant-time-eq-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.9))))))
+
 (define-public rust-crypto-mac-0.4
   (package
     (name "rust-crypto-mac")
