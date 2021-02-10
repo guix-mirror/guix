@@ -13876,15 +13876,14 @@ duplication.")
 (define-public rust-fs-extra-1
   (package
     (name "rust-fs-extra")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "fs_extra" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0x6675wdhsx277k1k1235jwcv38naf20d8kwrk948ds26hh4lajz"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fs_extra" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "151k6dr35mhq5d8pc8krhw55ajhkyiv0pm14s7zzlc5bc9fp28i0"))))
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/webdesus/fs_extra")
