@@ -16835,6 +16835,31 @@ HTTPS.")
         ("rust-webpki" ,rust-webpki-0.21)
         ("rust-webpki-roots" ,rust-webpki-roots-0.17))))))
 
+(define-public rust-hyper-sync-rustls-0.3
+  (package
+    (name "rust-hyper-sync-rustls")
+    (version "0.3.0-rc.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-sync-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "16zirxhsk26kz5jxxxs37wxsm02id97h57kkqs512fj1j0x486kd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hyper" ,rust-hyper-0.10)
+        ("rust-rustls" ,rust-rustls-0.14)
+        ("rust-webpki" ,rust-webpki-0.18)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.15))))
+    (home-page "https://github.com/SergioBenitez/hyper-sync-rustls")
+    (synopsis "Glue code for Rustls and synchronous Hyper")
+    (description
+     "This package provides glue code for Rustls and synchronous Hyper.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hyper-tls-0.4
   (package
     (name "rust-hyper-tls")
