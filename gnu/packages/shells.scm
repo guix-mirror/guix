@@ -963,6 +963,42 @@ files and text.")
     (description "Core error subsystem for Nushell")
     (license expat)))
 
+(define-public rust-nu-parser-0.26
+  (package
+    (name "rust-nu-parser")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05wns7z1xifdlypklar2hb2q9515lrlwx5jl69aw3k877nmwg07p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-codespan-reporting" ,rust-codespan-reporting-0.11)
+        ("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-derive-is-enum-variant" ,rust-derive-is-enum-variant-0.1)
+        ("rust-dunce" ,rust-dunce-1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-test-support" ,rust-nu-test-support-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-shellexpand" ,rust-shellexpand-2)
+        ("rust-smart-default" ,rust-smart-default-0.6))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Nushell parser")
+    (description "Nushell parser")
+    (license expat)))
+
 (define-public rust-nu-protocol-0.26
   (package
     (name "rust-nu-protocol")
