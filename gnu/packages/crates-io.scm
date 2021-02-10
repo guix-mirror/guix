@@ -736,8 +736,32 @@ the Actix ecosystem.")
 Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-actix-web-codegen-0.4
+  (package
+    (name "rust-actix-web-codegen")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "actix-web-codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ys3f6q0hgflqvp271s49q88m41db3iynm7ydxy0wgikjdqgf9md"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://actix.rs")
+    (synopsis "Actix web proc macros")
+    (description "This package provides Actix web proc macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-actix-web-codegen-0.2
   (package
+    (inherit rust-actix-web-codegen-0.4)
     (name "rust-actix-web-codegen")
     (version "0.2.2")
     (source
@@ -747,7 +771,6 @@ Rust.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0rjpzwsm51nfjqsz269jwbkiic9d454bnsk9ng882wp0rdsz86x7"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
@@ -755,11 +778,7 @@ Rust.")
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
        (("rust-actix-rt" ,rust-actix-rt-1)
-        ("rust-actix-web" ,rust-actix-web-2))))
-    (home-page "https://actix.rs")
-    (synopsis "Actix web proc macros")
-    (description "This package provides Actix web proc macros.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-actix-web" ,rust-actix-web-2))))))
 
 (define-public rust-adaptive-barrier-0.1
   (package
