@@ -2900,6 +2900,31 @@ implementing async state machines that can later be wrapped in dedicated
 futures.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-recursion-0.3
+  (package
+    (name "rust-async-recursion")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-recursion" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18npixkwglnpvjgp89fpcyzf820ngx3a1hxp4hqbkw81p9b8dmyp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/dcchut/async-recursion")
+    (synopsis "Recursion for async functions")
+    (description
+     "This package provides a procedural macro for recursive async
+functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-async-std-1
   (package
     (name "rust-async-std")
