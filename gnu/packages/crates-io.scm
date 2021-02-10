@@ -14585,7 +14585,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
 (define-public rust-futures-channel-0.3
   (package
     (name "rust-futures-channel")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -14594,17 +14594,18 @@ featuring zero allocations, composability, and iterator-like interfaces.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0r7y228kkhwx9jj3ny5ppmw2gvw0capm6ig8dzppgqd4g9l0jwab"))))
+         "0ihq3a3yc6ial3sw536q75hrhixq22xk6wn5qzpnxazgqxz1plzj"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-futures-sink" ,rust-futures-sink-0.3))))
-    (home-page  "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "Channels for asynchronous communication using futures-rs")
+    (home-page  "https://rust-lang.github.io/futures-rs")
+    (synopsis "Channels for asynchronous communication using @code{futures-rs}")
     (description
-     "Channels for asynchronous communication using futures-rs.")
+     "This package provides channels for asynchronous communication using
+@code{futures-rs}.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-futures-channel-preview-0.3
