@@ -44254,6 +44254,26 @@ with webpki.")
        (("rust-untrusted" ,rust-untrusted-0.6)
         ("rust-webpki" ,rust-webpki-0.19))))))
 
+(define-public rust-webpki-roots-0.15
+  (package
+    (inherit rust-webpki-roots-0.20)
+    (name "rust-webpki-roots")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gya8j75jnvf9lz36w0l4bf2xnw8qdx6plvhia891mcgj44g9lc5"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-webpki" ,rust-webpki-0.18))))))
+
 (define-public rust-webpki-roots-0.14
   (package/inherit rust-webpki-roots-0.18
     (name "rust-webpki-roots")
