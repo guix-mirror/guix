@@ -12283,16 +12283,18 @@ library.")
 (define-public r-ontologyindex
   (package
     (name "r-ontologyindex")
-    (version "2.5")
+    (version "2.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ontologyIndex" version))
        (sha256
         (base32
-         "127hlf0z5fmbgnq4p9h8nvn6p72d2fpcn846zzb99s213421jnry"))))
+         "0j3h1spqwjhh1wbmwivmqcyi042yy7d565c3kxgn70xrmy693x1k"))))
     (properties `((upstream-name . "ontologyIndex")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ontologyIndex")
     (synopsis "Functions for processing ontologies in R")
     (description
