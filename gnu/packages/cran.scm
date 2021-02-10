@@ -14320,14 +14320,14 @@ several formats and MIME types.")
 (define-public r-irdisplay
   (package
     (name "r-irdisplay")
-    (version "0.7.0")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "IRdisplay" version))
        (sha256
         (base32
-         "12chk53nf4zckgc4yl7gbvd7m5dvli52inp5b3f0zvcjvfncksli"))))
+         "15jbjrihm1mk899357h9xb08iq3xyagds1xb40fmdpkfcmcfqrw9"))))
     (properties `((upstream-name . "IRdisplay")))
     (build-system r-build-system)
     (propagated-inputs
