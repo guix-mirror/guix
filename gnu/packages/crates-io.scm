@@ -46594,6 +46594,36 @@ formatters with per-field documentation generated for each structure.
      "This crate provides async pipes, channels, mutexes, and more.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ptree-0.3
+  (package
+    (name "rust-ptree")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ptree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bp6r88hcw0ygmdfdf1gwsj6krcah2qhwp3kw284wvni080l1zcm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-config" ,rust-config-0.10)
+        ("rust-directories" ,rust-directories-2)
+        ("rust-petgraph" ,rust-petgraph-0.5)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-value" ,rust-serde-value-0.6)
+        ("rust-tint" ,rust-tint-1))))
+    (home-page "https://gitlab.com/Noughmad/ptree")
+    (synopsis "Pretty-print tree-like structures")
+    (description
+     "The @code{ptree} crate supports output formatting due to a user-provided
+configuration file and/or environment variables.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xmltree-0.8
   (package
     (name "rust-xmltree")
