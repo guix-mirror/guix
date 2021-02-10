@@ -21009,6 +21009,25 @@ drop-in allocator.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-mime-0.2
+  (package
+    (inherit rust-mime-0.3)
+    (name "rust-mime")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mime" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q1s1ax1gaz8ld3513nvhidfwnik5asbs1ma3hp6inp5dn56nqms"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-heapsize" ,rust-heapsize-0.3)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-serde" ,rust-serde-0.8))))))
+
 (define-public rust-mime-guess-2
   (package
     (name "rust-mime-guess")
