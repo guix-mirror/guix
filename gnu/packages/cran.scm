@@ -10351,14 +10351,14 @@ user credentials.")
 (define-public r-gert
   (package
     (name "r-gert")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gert" version))
        (sha256
         (base32
-         "1lq4hgv2727lwcv8vha5af26nslj99rjxjrgflshmmcihawpls1n"))))
+         "09har6mj7qy813s6dxyzfzmjwg60m8c01yx3q6lfsnvwqzxlqxv8"))))
     (properties `((upstream-name . "gert")))
     (build-system r-build-system)
     (inputs
@@ -10369,6 +10369,7 @@ user credentials.")
        ("r-credentials" ,r-credentials)
        ("r-openssl" ,r-openssl)
        ("r-rstudioapi" ,r-rstudioapi)
+       ("r-sys" ,r-sys)
        ("r-zip" ,r-zip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
