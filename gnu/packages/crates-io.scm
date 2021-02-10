@@ -10879,9 +10879,34 @@ standard locations of directories for config, cache and other data.")
         ("rust-redox-users" ,rust-redox-users-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-dirs-next-2
+  (package
+    (name "rust-dirs-next")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dirs-next" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q9kr151h9681wwp6is18750ssghz6j9j7qm7qi1ngcwy7mzi35r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-dirs-sys-next" ,rust-dirs-sys-next-0.1))))
+    (home-page "https://github.com/xdg-rs/dirs")
+    (synopsis "Abstractions for standard locations for various platforms")
+    (description
+     "This package provides a tiny low-level library that provides
+platform-specific standard locations of directories for config, cache and
+other data.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-next-1
   (package
-    (inherit rust-dirs-1)
+    (inherit rust-dirs-next-2)
     (name "rust-dirs-next")
     (version "1.0.2")
     (source
