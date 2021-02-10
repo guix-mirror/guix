@@ -27664,6 +27664,30 @@ functions.")
        (("rust-predicates-core" ,rust-predicates-core-0.9)
         ("rust-treeline" ,rust-treeline-0.1))))))
 
+(define-public rust-pretty-0.5
+  (package
+    (name "rust-pretty")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pretty" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lzn7d60l79vsdwcfgrh6jmk193nzwh1j36r8p9cv3n8dyghs37n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-termcolor" ,rust-termcolor-0.3)
+        ("rust-typed-arena" ,rust-typed-arena-1))))
+    (home-page "https://github.com/Marwes/pretty.rs")
+    (synopsis "Pretty printing combinators for Rust")
+    (description
+     "This crate provides functionality for defining pretty printers.  It is
+particularly useful for printing structured recursive data like trees.")
+    (license license:expat)))
+
 (define-public rust-pretty-assertions-0.6
   (package
     (name "rust-pretty-assertions")
