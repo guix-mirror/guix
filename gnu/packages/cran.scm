@@ -126,6 +126,30 @@ functions always read and write UTF-8 (8-bit Unicode Transformation Format)
 files and provide more explicit control over line endings.")
     (license license:expat)))
 
+(define-public r-cachem
+  (package
+    (name "r-cachem")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cachem" version))
+       (sha256
+        (base32
+         "0y3jb96lyn3vc3nq8gs9x669w3xp69vdg5xc69qy0l356r39gp3r"))))
+    (properties `((upstream-name . "cachem")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fastmap" ,r-fastmap)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://cachem.r-lib.org/")
+    (synopsis "Cache R objects with automatic pruning")
+    (description
+     "This package provides key-value stores with automatic pruning.  Caches
+can limit either their total size or the age of the oldest object (or both),
+automatically pruning objects to maintain the constraints.")
+    (license license:expat)))
+
 (define-public r-diffobj
   (package
     (name "r-diffobj")
