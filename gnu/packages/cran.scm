@@ -26559,3 +26559,25 @@ unit tests of graphics).")
 to add graphical unit tests.  It provides a Shiny application to manage the
 test cases.")
     (license license:gpl3)))
+
+(define-public r-highlight
+  (package
+    (name "r-highlight")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "highlight" version))
+       (sha256
+        (base32
+         "1shar4y07wyixg0ichdrn2xhgwkl3mv2pxkalqzisc69w605b3hf"))))
+    (properties `((upstream-name . "highlight")))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/highlight")
+    (synopsis "Syntax highlighter for R code")
+    (description
+     "This package provides a syntax highlighter for R code based on the
+results of the R parser.  It supports rendering in HTML and LaTeX markup.  It
+includes a custom Sweave driver performing syntax highlighting of R code
+chunks.")
+    (license license:gpl3+)))
