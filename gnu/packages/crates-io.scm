@@ -14936,27 +14936,27 @@ and removes almost all unsafe code from it.")
 (define-public rust-futures-macro-0.3
   (package
     (name "rust-futures-macro")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "futures-macro" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0mjmb46zapb59iilsbljpj7l0hq6w19df0f03p3br5qz5xlqlh3p"))))
+        (base32 "1pgyb219ybh3fj3ig0h1c2b7k4cqldy95ifdpnd9yb9jvmdd51y2"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))))
-    (home-page "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "Futures-rs procedural macro implementations")
+    (home-page "https://rust-lang.github.io/futures-rs")
+    (synopsis "@code{futures-rs} procedural macro implementations")
     (description
-     "This package provides the @code{futures-rs} procedural macro implementations.")
+     "This package provides the @code{futures-rs} procedural macro
+implementations.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-futures-preview-0.3
