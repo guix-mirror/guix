@@ -1380,6 +1380,33 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-tree-0.26
+  (package
+    (name "rust-nu-plugin-tree")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_tree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q80fr430igfw9a4qa5l3ydw6xhppzhqf2i6pvfjmdgf2vhflpdr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-ptree" ,rust-ptree-0.3))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Tree viewer plugin for Nushell")
+    (description "This package provides a tree viewer plugin for
+Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-xpath-0.26
   (package
     (name "rust-nu-plugin-xpath")
