@@ -2084,7 +2084,7 @@ that runs on Argon2.")
 (define-public rust-arrayvec-0.5
   (package
     (name "rust-arrayvec")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -2093,7 +2093,7 @@ that runs on Argon2.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1f5mca8kiiwhvhxd1mbnq68j6v6rk139sch567zwwzl6hs37vxyg"))))
+         "12q6hn01x5435bprwlb7w9m7817dyfq55yrl4psygr78bp32zdi3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
