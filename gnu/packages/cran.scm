@@ -68,6 +68,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
@@ -26616,3 +26617,36 @@ look at how samples move as the number of clusters increases.  This package
 allows you to produce clustering trees, a visualization for interrogating
 clusterings as resolution increases.")
     (license license:gpl3)))
+
+(define-public r-textshaping
+  (package
+    (name "r-textshaping")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "textshaping" version))
+       (sha256
+        (base32
+         "053pbw45by96q62kjfnyc3d0ssar9svssrdqy6a09kdmdh75xdar"))))
+    (properties `((upstream-name . "textshaping")))
+    (build-system r-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("harfbuzz" ,harfbuzz)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-cpp11" ,r-cpp11)
+       ("r-systemfonts" ,r-systemfonts)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/r-lib/textshaping")
+    (synopsis "Bindings to the HarfBuzz and Fribidi libraries for text shaping")
+    (description
+     "This package provides access to the text shaping functionality in the
+HarfBuzz library and the bidirectional algorithm in the Fribidi library.  This
+is a low-level utility package mainly for graphic devices that expands upon
+the font tool-set provided by the @code{systemfonts} package.")
+    (license license:expat)))
