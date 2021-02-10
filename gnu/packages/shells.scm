@@ -1381,6 +1381,32 @@ files and text.")
     (description "Nushell Plugin")
     (license expat)))
 
+(define-public rust-nu-plugin-s3-0.26
+  (package
+    (name "rust-nu-plugin-s3")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_s3" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0978rsy95qdvwnh5m2bl8ypl7rb7c0dv3zcnd986jyq3n1ykqykj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-s3handler" ,rust-s3handler-0.5))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "S3 plugin for Nushell")
+    (description "This package is an S3 plugin for Nushell.")
+    (license expat)))
+
 (define-public rust-nu-plugin-selector-0.26
   (package
     (name "rust-nu-plugin-selector")
