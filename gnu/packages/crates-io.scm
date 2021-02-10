@@ -7266,7 +7266,7 @@ diagnostics easy and relatively painless for everyone!")
 (define-public rust-color-quant-1
   (package
     (name "rust-color-quant")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -7274,14 +7274,14 @@ diagnostics easy and relatively painless for everyone!")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1ga56jrafnjm80903nnqjkyii4bwd6a7visxh0g8hgi6cmrvbfqd"))))
+        (base32 "12q1n427h2bbmmm1mnglr57jaz2dj9apk0plcxw7nwqiai7qjyrx"))))
     (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/PistonDevelopers/color_quant.git")
-    (synopsis
-     "Color quantization library to reduce n colors to 256 colors")
+    (synopsis "Color quantization library to reduce n colors to 256 colors")
     (description
-     "Color quantization library to reduce n colors to 256 colors.")
+     "This package is a color quantization library to reduce n colors to 256
+colors.")
     (license license:expat)))
 
 (define-public rust-colored-1
