@@ -1523,16 +1523,17 @@ understand the language at a deeper level.")
 (define-public r-memoise
   (package
     (name "r-memoise")
-    (version "1.1.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "memoise" version))
               (sha256
                (base32
-                "034qfc2xlh30x1q2vya239w34a3ir3y2fwnx2agbgbi6592zjxmj"))))
+                "1bzcv7pmls3bx2w5ccv1pm20wycbfqba1v76k0fjgmjsm6hy76pz"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)))
+     `(("r-cachem" ,r-cachem)
+       ("r-rlang" ,r-rlang)))
     (home-page "https://github.com/hadley/memoise")
     (synopsis "Memoise functions for R")
     (description
