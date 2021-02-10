@@ -15195,7 +15195,7 @@ timeouts and delays with futures.")
 (define-public rust-futures-util-0.3
   (package
     (name "rust-futures-util")
-    (version "0.3.8")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
@@ -15203,11 +15203,10 @@ timeouts and delays with futures.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1lnbhpyrypn9giw6122af0pffxfijfz3zm7phrwzp75rlzscy16k"))))
+        (base32 "0jv25s07igmqavigdfzr02yw6j1q0vg8pw2p2vmgvcx4yb88qak3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #false
+     `(#:skip-build? #t
        #:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-futures-channel" ,rust-futures-channel-0.3)
@@ -15217,16 +15216,17 @@ timeouts and delays with futures.")
         ("rust-futures-sink" ,rust-futures-sink-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
         ("rust-memchr" ,rust-memchr-2)
-        ("rust-pin-project" ,rust-pin-project-1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-tokio-io" ,rust-tokio-io-0.1))))
-    (home-page "https://rust-lang-nursery.github.io/futures-rs")
-    (synopsis "Common utilities and extension traits for the futures-rs library")
+    (home-page "https://rust-lang.github.io/futures-rs")
+    (synopsis
+     "Common utilities and extension traits for the @code{futures-rs} library")
     (description "This package provides common utilities and extension traits
-for the futures-rs library.")
+for the @code{futures-rs} library.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-futures-util-preview-0.3
