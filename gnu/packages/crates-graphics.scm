@@ -569,6 +569,30 @@ and iOS.")
     (description "Geometry primitives written in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-eui48-0.3
+  (package
+    (name "rust-eui48")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "eui48" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mmdhczfdxwv5v5h90ydqkx0mdqiv0h2clshm2cm4qlwp0gacw29"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/abaumhauer/eui48")
+    (synopsis "Library to generate and parse IEEE EUI-48 and EUI-64")
+    (description
+     "This package provides a library to generate and parse IEEE EUI-48 and
+EUI-64, also known as MAC-48 media access control addresses.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gfx-0.18
   (package
     (name "rust-gfx")
