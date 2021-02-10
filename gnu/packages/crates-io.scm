@@ -1037,6 +1037,33 @@ Rust, using gimli.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-rustc-test" ,rust-rustc-test-0.3))))))
 
+(define-public rust-adler-0.2
+  (package
+    (name "rust-adler")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "adler" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zpdsrfq5bd34941gmrlamnzjfbsx0x586afb7b0jqhr8g1lwapf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
+    (home-page "https://github.com/jonas-schievink/adler")
+    (synopsis "Implementation of the Adler-32 checksum")
+    (description
+     "This crate provides a simple implementation of the Adler-32
+checksum, used in the zlib compression format.")
+    (license
+     (list license:expat
+           license:asl2.0
+           (license:non-copyleft "https://spdx.org/licenses/0BSD.html")))))
+
 (define-public rust-adler32-1
   (package
     (name "rust-adler32")
