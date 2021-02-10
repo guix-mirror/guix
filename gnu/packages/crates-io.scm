@@ -932,6 +932,25 @@ with Associated Data (AEAD) algorithms.")
 ciphers implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aes-0.3
+  (package
+    (inherit rust-aes-0.4)
+    (name "rust-aes")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j90iwpax0y1dqq14i8y9xgpcnnlgnljwkxg3mhzrralwf7ivssl"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aes-soft" ,rust-aes-soft-0.3)
+        ("rust-aesni" ,rust-aesni-0.6)
+        ("rust-block-cipher-trait" ,rust-block-cipher-trait-0.6))))))
+
 (define-public rust-aes-gcm-0.6
   (package
     (name "rust-aes-gcm")
