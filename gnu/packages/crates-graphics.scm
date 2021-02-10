@@ -269,6 +269,31 @@ the term library to handle the ANSI nonsense and hence it works on Windows,
 Mac, and Unix.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-avif-serialize-0.6
+  (package
+    (name "rust-avif-serialize")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "avif-serialize" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "130wq838lslkcqcp2kjci7q3aq9qpir07pvxndc81xqbn63wvdjg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.5))))
+    (home-page "https://lib.rs/avif-serialize")
+    (synopsis "Writer for AVIF header structure (MPEG/HEIF/MIAF/ISO-BMFF)")
+    (description
+     "This package provides a minimal writer for AVIF header structure.  This
+is a tiny alternative to @code{libavif}.  It creates the jungle of
+MPEG/HEIF/MIAF/ISO-BMFF ``boxes'' as appropriate for AVIF files.  It supports
+alpha channel embedding.")
+    (license license:bsd-3)))
+
 (define-public rust-cgl-0.3
   (package
     (name "rust-cgl")
