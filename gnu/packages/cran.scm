@@ -26683,3 +26683,34 @@ drawing library.  The ragg package provides a set of graphic devices based on
 AGG to use as alternative to the raster devices provided through the
 @code{grDevices} package.")
     (license license:expat)))
+
+(define-public r-downlit
+  (package
+    (name "r-downlit")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "downlit" version))
+       (sha256
+        (base32
+         "0z4fz7c9kyd9v72wl3iqs2wxspi975d6b0rgjr9lvg8a18maa9z6"))))
+    (properties `((upstream-name . "downlit")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-brio" ,r-brio)
+       ("r-digest" ,r-digest)
+       ("r-evaluate" ,r-evaluate)
+       ("r-fansi" ,r-fansi)
+       ("r-rlang" ,r-rlang)
+       ("r-vctrs" ,r-vctrs)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://downlit.r-lib.org/")
+    (synopsis "Syntax highlighting and automatic linking")
+    (description
+     "This package provides syntax highlighting of R code, specifically
+designed for the needs of RMarkdown packages like @code{pkgdown},
+@code{hugodown}, and @code{bookdown}.  It includes linking of function calls
+to their documentation on the web, and automatic translation of ANSI escapes
+in output to the equivalent HTML.")
+    (license license:expat)))
