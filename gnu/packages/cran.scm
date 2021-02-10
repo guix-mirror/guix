@@ -4280,19 +4280,21 @@ clustered data.")
 (define-public r-mitml
   (package
     (name "r-mitml")
-    (version "0.3-7")
+    (version "0.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mitml" version))
        (sha256
         (base32
-         "0yqyxkyi1kmv5k63wxj5kkg5g8igk1axk2csb4xhj6wz0p89dxy6"))))
+         "1bw92fl6xp3yvawh3nbjzs4hp4alpwj6vnv6lsysd74aqndw447c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-haven" ,r-haven)
        ("r-jomo" ,r-jomo)
        ("r-pan" ,r-pan)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/mitml/")
     (synopsis "Tools for multiple imputation in multilevel modeling")
     (description
