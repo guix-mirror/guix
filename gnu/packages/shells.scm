@@ -963,6 +963,30 @@ files and text.")
     (description "Core error subsystem for Nushell")
     (license expat)))
 
+(define-public rust-nu-json-0.26
+  (package
+    (name "rust-nu-json")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-json" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "085k9p41pqzivw6z6rxxzr8haagwqi795a2dh084qs99cyi5hj2n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-0.8))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Fork of @code{serde-hjson}")
+    (description "This package is a fork of @code{serde-hjson}.")
+    (license expat)))
+
 (define-public rust-nu-parser-0.26
   (package
     (name "rust-nu-parser")
