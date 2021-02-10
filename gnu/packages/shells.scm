@@ -963,6 +963,43 @@ files and text.")
     (description "Core error subsystem for Nushell")
     (license expat)))
 
+(define-public rust-nu-protocol-0.26
+  (package
+    (name "rust-nu-protocol")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-protocol" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s2lm9aydgcwi0h9jhpi9ba5i55k7iv70fpgl85cm7dlw4kyzjv0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-byte-unit" ,rust-byte-unit-4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-getset" ,rust-getset-0.1)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-bytes" ,rust-serde-bytes-0.11)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-toml" ,rust-toml-0.5))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Core values and protocols for Nushell")
+    (description "Core values and protocols for Nushell")
+    (license expat)))
+
 (define-public rust-nu-source-0.26
   (package
     (name "rust-nu-source")
