@@ -17067,6 +17067,25 @@ Authentication Code Algoritm (HMAC) for SHA1.")
         ("rust-rustc-test" ,rust-rustc-test-0.3)
         ("rust-typed-arena" ,rust-typed-arena-1))))))
 
+(define-public rust-htmlescape-0.3
+  (package
+    (name "rust-htmlescape")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "htmlescape" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qria8paf19qy5sgzzk3iiii9fp2j7spbhqf0zjxwrg7v9c500p9"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/veddan/rust-htmlescape")
+    (synopsis "Library for HTML entity encoding and decoding")
+    (description
+     "This package provides a library for HTML entity encoding and decoding.")
+    (license (list license:asl2.0 license:expat license:mpl2.0))))
+
 (define-public rust-http-0.2
   (package
     (name "rust-http")
