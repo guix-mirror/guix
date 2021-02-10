@@ -10126,6 +10126,30 @@ structs and enums.")
 intelligently transliterating them.  It supports Emoji and Chinese.")
     (license license:bsd-3)))
 
+(define-public rust-devise-codegen-0.2
+  (package
+    (name "rust-devise-codegen")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "devise_codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1msmq0h19l03n9qmkxxi1a5h8904i8m623kdvjzak4ya51wynv06"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-devise-core" ,rust-devise-core-0.2)
+        ("rust-quote" ,rust-quote-0.6))))
+    (home-page "https://github.com/SergioBenitez/Devise")
+    (synopsis "Library for devising derives and other procedural macros")
+    (description
+     "This package provides a library for devising derives and other
+procedural macros")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-devise-core-0.2
   (package
     (name "rust-devise-core")
