@@ -1049,3 +1049,32 @@ Nushell.")
     (synopsis "Nushell table printing")
     (description "Nushell table printing")
     (license expat)))
+
+(define-public rust-nu-value-ext-0.26
+  (package
+    (name "rust-nu-value-ext")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-value-ext" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12qwxhkxdxsg7q6kbsqg46127lsy150b53kpbly0s8cgwra3bhv5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "@code{Extension} traits for values in Nushell")
+    (description
+     "This package provides @code{Extension} traits for values in
+Nushell.")
+    (license expat)))
