@@ -974,6 +974,61 @@ files and text.")
     (description "CLI for nushell")
     (license expat)))
 
+(define-public rust-nu-engine-0.26
+  (package
+    (name "rust-nu-engine")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu-engine" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fbvv8dvxzfbkyvy8iyis9xvijv794lpjfp0hrl25s0lrjykbji0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-async-recursion" ,rust-async-recursion-0.3)
+        ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-derive-new" ,rust-derive-new-0.5)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-dunce" ,rust-dunce-1)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-filesize" ,rust-filesize-0.2)
+        ("rust-fs-extra" ,rust-fs-extra-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-futures-codec" ,rust-futures-codec-0.4)
+        ("rust-getset" ,rust-getset-0.1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nu-data" ,rust-nu-data-0.26)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-parser" ,rust-nu-parser-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-nu-stream" ,rust-nu-stream-0.26)
+        ("rust-nu-value-ext" ,rust-nu-value-ext-0.26)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-term-size" ,rust-term-size-0.3)
+        ("rust-termcolor" ,rust-termcolor-1)
+        ("rust-umask" ,rust-umask-1)
+        ("rust-users" ,rust-users-0.10))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Core commands for nushell")
+    (description "Core commands for nushell")
+    (license expat)))
+
 (define-public rust-nu-errors-0.26
   (package
     (name "rust-nu-errors")
