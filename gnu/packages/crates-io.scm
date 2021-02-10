@@ -12958,6 +12958,20 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fallible-iterator-0.1
+  (package
+    (inherit rust-fallible-iterator-0.2)
+    (name "rust-fallible-iterator")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fallible-iterator" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bpp2812lxm9fjv082dsy70ggsfg40nhqva7nxr5dp0j9091fwpb"))))
+    (arguments `(#:skip-build? #t))))
+
 (define-public rust-fallible-streaming-iterator-0.1
   (package
     (name "rust-fallible-streaming-iterator")
