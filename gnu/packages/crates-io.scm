@@ -30782,6 +30782,35 @@ password hashing function.")
  Currently the conversion uses the Bitcoin base58 alphabet.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rust-embed-impl-5
+  (package
+    (name "rust-rust-embed-impl")
+    (version "5.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-embed-impl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rlykmykrpllkf4900wv2jfdmq3m5qqrqhw4fdlbzxrfqi0irn9y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-rust-embed-utils" ,rust-rust-embed-utils-5)
+        ("rust-shellexpand" ,rust-shellexpand-2)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/pyros2097/rust-embed")
+    (synopsis "Rust custom @code{Derive} macro")
+    (description
+     "This package provides a custom @code{Derive} macro which loads files
+into the Rust binary at compile time during release and loads the file from
+the file-system during development.")
+    (license license:expat)))
+
 (define-public rust-rust-embed-utils-5
   (package
     (name "rust-rust-embed-utils")
