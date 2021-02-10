@@ -28,7 +28,7 @@
 (define-public nim
   (package
     (name "nim")
-    (version "1.0.6")
+    (version "1.4.2")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1cv6bxc7w21455c0pv0r2h64ljyzw266jsk1fsgiiyk2rx8mfkhk"))))
+        "0q8i56343b69f1bh48a8vxkqman9i2kscyj0lf017n3xfy1pb903"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
