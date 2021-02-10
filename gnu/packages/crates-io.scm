@@ -16118,6 +16118,24 @@ compile time.")
 Derivation Function (HKDF).")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hkdf-0.8
+  (package
+    (inherit rust-hkdf-0.9)
+    (name "rust-hkdf")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hkdf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qzsmqrvcmgnrb109qr2mvsmr5c4psm1702vrpcqnj02c408m81z"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-digest" ,rust-digest-0.8)
+        ("rust-hmac" ,rust-hmac-0.7))))))
+
 (define-public rust-hmac-0.8
   (package
     (name "rust-hmac")
