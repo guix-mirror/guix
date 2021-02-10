@@ -5381,17 +5381,16 @@ exhaustive search.")
 (define-public r-splus2r
   (package
     (name "r-splus2r")
-    (version "1.2-2")
+    (version "1.3-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "splus2R" version))
        (sha256
         (base32
-         "0xrbj8vxy0pc6hl7m8abv71d3hjw47cl51s7j7priadyqczkq6sz"))))
+         "035zd22zcpkh74rik9ws6g8al6vjz7jgrqs5si361bzb5n290p3x"))))
     (properties `((upstream-name . "splus2R")))
     (build-system r-build-system)
-    (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/splus2R/")
     (synopsis "Supplemental S-PLUS functionality in R")
     (description
