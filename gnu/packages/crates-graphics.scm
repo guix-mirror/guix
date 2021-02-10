@@ -1904,7 +1904,7 @@ interactive applications.")
 (define-public rust-rgb-0.8
   (package
     (name "rust-rgb")
-    (version "0.8.20")
+    (version "0.8.25")
     (source
      (origin
        (method url-fetch)
@@ -1912,7 +1912,7 @@ interactive applications.")
        (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "1620mn5dp1rr9fpvd9wbr3b8l2g4zrij8zjri1x34cg1bas59vwh"))))
+         "1lrv3x5h1lvdzg1qqr8aiysz978m35zpjdkyicnvkarnh8zkqzr8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
