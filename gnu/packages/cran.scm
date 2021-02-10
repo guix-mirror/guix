@@ -17817,14 +17817,14 @@ cell RNA-seq experiments.")
 (define-public r-assertr
   (package
     (name "r-assertr")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertr" version))
        (sha256
         (base32
-         "1x868pd4dac1c7b1q5390wqh2f6s50km8nqcpim3nxcj2l4qkqdb"))))
+         "00764vv86r3bn4r85in4w637harffyw605fgq0dj6mrbrwcfb650"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
