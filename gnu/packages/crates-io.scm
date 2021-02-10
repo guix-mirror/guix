@@ -32122,6 +32122,28 @@ the file-system during development.")
     (description "This package provides utilities for @code{rust-embed}.")
     (license license:expat)))
 
+(define-public rust-eml-parser-0.1
+  (package
+    (name "rust-eml-parser")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "eml-parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f82z4ryz4wchr0n99gj20s093ygx8ps0dqq6pr01ljcw8a0vqyr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/aeshirey/EmlParser/")
+    (synopsis "Library for parsing @file{.eml} files")
+    (description
+     "This package provides a library for parsing @file{.eml} files.")
+    (license license:asl2.0)))
+
 (define-public rust-rust-hawktracer-0.7
   (package
     (name "rust-rust-hawktracer")
