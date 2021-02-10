@@ -13185,14 +13185,14 @@ model with finite state space using the Aalen-Johansen estimator.")
 (define-public r-epi
   (package
     (name "r-epi")
-    (version "2.42")
+    (version "2.43")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Epi" version))
        (sha256
         (base32
-         "1vsyxlxl6n5y3wr8w7ji17hnhvbr0xsawqbdl1ajcfg5faizm9sl"))))
+         "0wsjvilcivrhy2kh2dcagkzy7bjmfa0sq9xjpv6qb4b0nc0mv089"))))
     (properties `((upstream-name . "Epi")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13205,6 +13205,7 @@ model with finite state space using the Aalen-Johansen estimator.")
        ("r-mgcv" ,r-mgcv)
        ("r-numderiv" ,r-numderiv)
        ("r-plyr" ,r-plyr)
+       ("r-purrr" ,r-purrr)
        ("r-survival" ,r-survival)
        ("r-zoo" ,r-zoo)))
     (home-page "https://BendixCarstensen.com/Epi/")
