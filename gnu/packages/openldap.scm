@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -61,6 +61,7 @@
 (define-public openldap
   (package
    (name "openldap")
+   (replacement openldap-2.4.57)
    (version "2.4.50")
    (source (origin
              (method url-fetch)
@@ -124,6 +125,27 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "https://www.openldap.org/")))
+
+(define-public openldap-2.4.57
+  (package
+    (inherit openldap)
+    (version "2.4.57")
+    (source (origin
+              (method url-fetch)
+              ;; See <http://www.openldap.org/software/download/> for a list of
+              ;; mirrors.
+              (uri (list (string-append
+                          "ftp://mirror.switch.ch/mirror/OpenLDAP/"
+                          "openldap-release/openldap-" version ".tgz")
+                         (string-append
+                          "https://www.openldap.org/software/download/OpenLDAP/"
+                          "openldap-release/openldap-" version ".tgz")
+                         (string-append
+                          "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
+                          "openldap-release/openldap-" version ".tgz")))
+              (sha256
+               (base32
+                "0nmlyqhc52v24b4awh914sczmvxbazgq2cnlycvb9dgcwvhlgfn7"))))))
 
 (define-public nss-pam-ldapd
   (package
