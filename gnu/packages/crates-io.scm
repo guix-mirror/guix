@@ -20454,6 +20454,30 @@ algorithm and related formats (ZLIB, GZIP).")
     (description "This package provides a LZ77 encoder for libflate crate.")
     (license license:expat)))
 
+(define-public rust-libfuzzer-sys-0.3
+  (package
+    (name "rust-libfuzzer-sys")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libfuzzer-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vv42rpvmfr83hlblyrjf8ifilsmc3d5gcznblmghx5jnsj89wgw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-arbitrary" ,rust-arbitrary-0.4)
+        ("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/rust-fuzz/libfuzzer")
+    (synopsis "Wrapper around LLVM's libFuzzer runtime")
+    (description
+     "This package provides a wrapper around LLVM's libFuzzer runtime.")
+    (license
+     (list license:expat license:asl2.0 license:ncsa))))
+
 (define-public rust-libgit2-sys-0.12
   (package
     (name "rust-libgit2-sys")
