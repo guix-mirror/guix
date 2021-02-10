@@ -5564,20 +5564,22 @@ and the corresponding decision threshold.")
 (define-public r-forcats
   (package
     (name "r-forcats")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "forcats" version))
        (sha256
         (base32
-         "1i4hblsjgwkrcwgvgsb5yj33pw1hwdj3lr9dvxymkv1kjdw0x5lg"))))
+         "12d2nv2w15085jscgidmjdnr1ryymciflcmal6ldmgp2fkl9dyy4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
        ("r-magrittr" ,r-magrittr)
        ("r-tibble" ,r-tibble)
        ("r-rlang" ,r-rlang)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://forcats.tidyverse.org")
     (synopsis "Tools for working with factors")
     (description "This package provides helpers for reordering factor
