@@ -1610,14 +1610,14 @@ well as file saving is available.")
 (define-public r-shinythemes
   (package
     (name "r-shinythemes")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinythemes" version))
        (sha256
         (base32
-         "12miz44n2zxfswnia7p8dirxj3miw0aqn4pkx2111ikz67ax84rf"))))
+         "0qr9bfxw8afxns44i2j4msignf6g5qb2nzpay2lpv343rrlqbmip"))))
     (properties `((upstream-name . "shinythemes")))
     (build-system r-build-system)
     (propagated-inputs `(("r-shiny" ,r-shiny)))
