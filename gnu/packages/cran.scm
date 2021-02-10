@@ -6326,15 +6326,19 @@ are included.")
 (define-public r-riverplot
   (package
     (name "r-riverplot")
-    (version "0.6")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "riverplot" version))
        (sha256
         (base32
-         "0q1icpny8nkxyjhawyjzwrw8qlz0ayn2xyrsqrm4vkxyv6c9xk8z"))))
+         "04ap1dsa7fx03l73jhv1ql3adaaaz2100qawdplxa9xmrllgcgbj"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://logfc.wordpress.com")
     (synopsis "Sankey or ribbon plots")
     (description
