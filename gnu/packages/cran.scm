@@ -9220,13 +9220,13 @@ singular or ill-conditioned Jacobian.")
 (define-public r-physicalactivity
   (package
     (name "r-physicalactivity")
-    (version "0.2-2")
+    (version "0.2-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PhysicalActivity" version))
        (sha256
-        (base32 "14z6plgwyr46vs9m997rvlz8sdglfs9g087an8668zqkzzs2w4ln"))))
+        (base32 "0b27prkv3x6v2afz0y53ccs9scibpc7nj54n0hpd9fgn1wyg4c40"))))
     (properties
      `((upstream-name . "PhysicalActivity")))
     (build-system r-build-system)
