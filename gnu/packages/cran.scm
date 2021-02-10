@@ -26581,3 +26581,38 @@ results of the R parser.  It supports rendering in HTML and LaTeX markup.  It
 includes a custom Sweave driver performing syntax highlighting of R code
 chunks.")
     (license license:gpl3+)))
+
+(define-public r-clustree
+  (package
+    (name "r-clustree")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clustree" version))
+       (sha256
+        (base32
+         "0lxydy2f83qqd5dhlp2l546jax759l43b29j6g82079yzg1szwsz"))))
+    (properties `((upstream-name . "clustree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggraph" ,r-ggraph)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-igraph" ,r-igraph)
+       ("r-rlang" ,r-rlang)
+       ("r-tidygraph" ,r-tidygraph)
+       ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/lazappi/clustree")
+    (synopsis "Visualize clusterings at different resolutions")
+    (description
+     "Deciding what resolution to use can be a difficult question when
+approaching a clustering analysis.  One way to approach this problem is to
+look at how samples move as the number of clusters increases.  This package
+allows you to produce clustering trees, a visualization for interrogating
+clusterings as resolution increases.")
+    (license license:gpl3)))
