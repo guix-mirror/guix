@@ -54,6 +54,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
@@ -1378,6 +1379,36 @@ files and text.")
     (home-page "https://www.nushell.sh")
     (synopsis "Nushell Plugin")
     (description "Nushell Plugin")
+    (license expat)))
+
+(define-public rust-nu-plugin-textview-0.26
+  (package
+    (name "rust-nu-plugin-textview")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nu_plugin_textview" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12zxphslc56n7s60i8603pq4g9iji58fg5zjvx2g6b06h83070qv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("bat" ,bat)
+        ("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-nu-data" ,rust-nu-data-0.26)
+        ("rust-nu-errors" ,rust-nu-errors-0.26)
+        ("rust-nu-plugin" ,rust-nu-plugin-0.26)
+        ("rust-nu-protocol" ,rust-nu-protocol-0.26)
+        ("rust-nu-source" ,rust-nu-source-0.26)
+        ("rust-term-size" ,rust-term-size-0.3)
+        ("rust-url" ,rust-url-2))))
+    (home-page "https://www.nushell.sh")
+    (synopsis "Text viewer plugin for Nushell")
+    (description "This package provides a text viewer plugin for
+Nushell.")
     (license expat)))
 
 (define-public rust-nu-plugin-to-bson-0.26
