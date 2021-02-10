@@ -30565,6 +30565,43 @@ MessagePack format.")
     (description "This crate provides Serde bindings for RMP.")
     (license license:expat)))
 
+(define-public rust-rocket-0.4
+  (package
+    (name "rust-rocket")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rocket" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sb6i0y65hq4wy4awa14diyv19wcd1sii2mfjdlcwam3mbbfbisg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-base64" ,rust-base64-0.12)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-pear" ,rust-pear-0.1)
+        ("rust-rocket-codegen" ,rust-rocket-codegen-0.4)
+        ("rust-rocket-http" ,rust-rocket-http-0.4)
+        ("rust-state" ,rust-state-0.4)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-toml" ,rust-toml-0.4)
+        ("rust-version-check" ,rust-version-check-0.9)
+        ("rust-yansi" ,rust-yansi-0.5)
+        ("rust-yansi" ,rust-yansi-0.5))))
+    (home-page "https://rocket.rs")
+    (synopsis
+     "Web framework with focus on ease-of-use, expressibility, and speed")
+    (description
+     "Rocket is a web framework with a focus on ease-of-use, expressibility,
+and speed.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rocket-codegen-0.4
   (package
     (name "rust-rocket-codegen")
